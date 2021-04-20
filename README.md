@@ -1,2 +1,2 @@
 # HYDROLIB-core
-Core code around the I/O of the DHYDRO-suite
+HYDROLIB-core is the core library of Python wrappers around the D-HYDRO model files (input and output) and model engines (kernel libraries).
