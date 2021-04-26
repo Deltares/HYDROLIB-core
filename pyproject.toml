@@ -3,7 +3,7 @@ name = "hydrolib-core"
 version = "0.1.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
-license = "LGPL"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
