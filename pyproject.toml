@@ -37,6 +37,23 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 88
 target-version = ['py37', 'py38']
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | \.virtualenvs
+  )/
+)
+'''
 
 [tool.isort]
 profile = "black"

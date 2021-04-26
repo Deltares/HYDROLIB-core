@@ -44,6 +44,6 @@ extra:
       link: https://github.com/Deltares/hydrolib-core
       name: Source code
     - icon: fontawesome/brands/gitter
-      link: https://gitter.im/Deltares/hydrolib-core
+      link: https://gitter.im/Deltares/hydrolib
       name: Chat with us on Gitter
 copyright: Copyright &copy; 2021 Deltares
