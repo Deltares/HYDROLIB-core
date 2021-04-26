@@ -13,8 +13,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
 
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
@@ -30,9 +28,9 @@ jobs:
         id: cache
         with:
           path: ~/.virtualenvs
-          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          key: poetry2-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
-            poetry-${{ hashFiles('**/poetry.lock') }}
+            poetry2-${{ hashFiles('**/poetry.lock') }}
 
       - name: Set Poetry config
         run: |
