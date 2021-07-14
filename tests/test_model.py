@@ -7,4 +7,3 @@ from devtools import debug
 def test_models():
     d = DIMR(model=Path(test_data_dir / "test.mdu"))
     debug(d)
-    0 / 0
