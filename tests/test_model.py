@@ -16,7 +16,7 @@ def test_filemodel_load():
 
 
 def test_filemodel_serialize():
-    d = DIMR(filepath="a", model=Path(test_data_dir / "test.mdu"))
+    d = DIMR(filepath=f"{test_output_dir}/a", model=Path(test_data_dir / "test.mdu"))
     d.save(folder=test_output_dir / "tmp")
 
 
