@@ -7,7 +7,6 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-Shapely = "^1.7.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.3"
