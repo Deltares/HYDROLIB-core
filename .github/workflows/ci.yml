@@ -30,9 +30,9 @@ jobs:
         id: cache
         with:
           path: ~/.virtualenvs
-          key: poetry2-${{ hashFiles('**/poetry.lock') }}
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
-            poetry2-${{ hashFiles('**/poetry.lock') }}
+            venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Set Poetry config
         run: |
