@@ -1,23 +1,16 @@
-from typing import Protocol, Optional, List, Union, Type, Any
-from pydantic import BaseModel as PydanticBaseModel
-from pydantic import FilePath, validator
-from .utils import get_model_type_from_union
+"""
+# BaseModel and FileModel
+
+Nice *description*.
+
+"""
+from abc import ABC, abstractclassmethod, abstractmethod
+from hydrolib.core.io.base import DummmyParser, DummySerializer
 from pathlib import Path
+from typing import Any, Callable, List, Optional, Protocol, Type, Union
 
-
-class RootModel(Protocol):
-    """
-    A Root Model probably has some children
-    but the root manages them. Like a MDU that
-    knows about the relations between geometry
-    and other objects.
-    """
-
-    def copy(self, DirectoryPath) -> None:
-        pass
-
-    def validate(self) -> None:
-        pass
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic.types import DirectoryPath
 
 
 class BaseModel(PydanticBaseModel):
@@ -28,52 +21,88 @@ class BaseModel(PydanticBaseModel):
         extra = "allow"
 
 
-class FileModel(BaseModel):
-    """Base class to represent models with a file representation."""
+class FileModel(BaseModel, ABC):
+    """Base class to represent models with a file representation.
 
-    # TODO Some logic that if such a thing is
-    # initialised (from a string/filepath) it will work.
-    # but also when you call serialize, a name should be generated?
+    It therefore always has a `filepath` and if it is given on
+    initilization, it will parse that file.
 
-    filepath: Optional[FilePath] = None
+    This class extends the `validate` option of Pydantic,
+    so when when a Path is given to a field with type `FileModel`,
+    it doesn't error, but actually initializes the `FileModel`.
+    """
 
-    def __init__(self, *args, **kwargs):
+    filepath: Optional[Path] = None
+
+    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+        # Parse the file if path is given
+        if filepath:
+            data = self._load(filepath)
+            data["filepath"] = filepath
+            kwargs.update(data)
         super().__init__(*args, **kwargs)
-        if self.filepath:
-            self.fill()
 
     @classmethod
     def validate(cls: Type["FileModel"], value: Any) -> "FileModel":
-        # Enable initialization with a Path
+        # Enable initialization with a Path.
         if isinstance(value, Path):
+            # Pydantic Model init requires a dict
             value = {"filepath": value}
         return super().validate(value)
 
+    def _load(self, filepath: Path):
+        return self._parse(filepath)
+
+    def save(self, folder: Path):
+        """Save model and child models to set filepaths."""
+
+        if not self.filepath:
+            self.filepath = folder / self._generate_name()
+
+        # Convert child FileModels first
+        exclude = {"filepath"}
+        filemodel_fields = {}
+        for name, value in self:
+            if isinstance(value, FileModel):
+                filepath = value.save(folder)
+                filemodel_fields[name] = filepath
+                exclude.add(name)
+
+        # Convert other values to dict
+        data = self.dict(
+            exclude=exclude,
+            exclude_none=True,  # either skip it here, or in serializer
+        )
+        data.update(filemodel_fields)
+
+        self._serialize(data)
+
+        return str(self.filepath.absolute())
+
+    def _serialize(self, data: dict):
+        self._get_serializer()(self.filepath, data)
+
     @classmethod
-    def parse(cls, filepath: FilePath):
-        # cls.get_parser().parse(filepath)  # actual implementation
-        return cls(filepath=filepath)
+    def _parse(cls, path: Path):
+        return cls._get_parser()(path)
 
-    def fill(self):
-        """Update instance based on parsing the filepath"""
-        # parsemethod(self.filepath)
-        pass
+    @classmethod
+    def _generate_name(cls):
+        name, ext = cls._filename(), cls._ext()
+        return Path(f"{name}{ext}")
 
+    @abstractclassmethod
+    def _filename(cls):
+        return "test"
 
-class Edge(BaseModel):
-    a: int = 0
-    b: int = 1
+    @abstractclassmethod
+    def _ext(cls):
+        return ".test"
 
+    @abstractclassmethod
+    def _get_serializer(cls) -> Callable:
+        return DummySerializer.serialize
 
-class Network(FileModel):
-    n_vertices: int = 100
-    edges: List[Edge] = [Edge()]
-
-
-class FMModel(FileModel):
-    name: str = "Dummy"
-    network: Optional[Network]
-
-
-class DIMR(FileModel):
-    model: Optional[FMModel]
+    @abstractclassmethod
+    def _get_parser(cls) -> Callable:
+        return DummmyParser.parse
