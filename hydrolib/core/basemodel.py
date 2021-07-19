@@ -7,6 +7,7 @@ also represents a file on disk.
 from abc import ABC, abstractclassmethod
 from pathlib import Path
 from typing import Any, Callable, Optional, Type
+from warnings import warn
 
 from pydantic import BaseModel as PydanticBaseModel
 
@@ -55,10 +56,11 @@ class FileModel(BaseModel, ABC):
         return super().validate(value)
 
     def _load(self, filepath: Path):
-        if filepath.is_file():
+        if Path(filepath).is_file():
             return self._parse(filepath)
         else:
-            raise ValueError("File: {filepath} not found.")
+            warn(f"File: `{filepath}` not found, skipped parsing.")
+            return {}
 
     def save(self, folder: Path, force=False):
         """Save model and child models to their set filepaths.
