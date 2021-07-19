@@ -28,10 +28,14 @@ plugins:
       handlers:
         python:
           rendering:
+            show_root_toc_entry: false
             show_source: true
+            show_signature_annotations: true
+            heading_level: 3
+            group_by_category: true
       custom_templates: templates
       watch:
-        - hydrolib-core
+        - hydrolib/core
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences

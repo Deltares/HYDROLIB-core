@@ -1,7 +1,3 @@
-from typing import Type, Union, get_args, get_origin
-from pydantic import FilePath
-
-
 def example(a: float, b: float = 1.0) -> float:
     """[summary]
 

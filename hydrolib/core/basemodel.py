@@ -1,16 +1,16 @@
 """
-# BaseModel and FileModel
-
-Nice *description*.
+Here we define our Pydantic `BaseModel` with custom settings,
+as well as a `FileModel` that inherits from a `BaseModel` but
+also represents a file on disk.
 
 """
-from abc import ABC, abstractclassmethod, abstractmethod
-from hydrolib.core.io.base import DummmyParser, DummySerializer
+from abc import ABC, abstractclassmethod
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Protocol, Type, Union
+from typing import Any, Callable, Optional, Type
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic.types import DirectoryPath
+
+from hydrolib.core.io.base import DummmyParser, DummySerializer
 
 
 class BaseModel(PydanticBaseModel):
@@ -35,6 +35,10 @@ class FileModel(BaseModel, ABC):
     filepath: Optional[Path] = None
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+        """Initialize a model.
+
+        The model is empty (with defaults) if no `filepath` is given,
+        otherwise the file at `filepath` will be parsed."""
         # Parse the file if path is given
         if filepath:
             data = self._load(filepath)
@@ -51,20 +55,33 @@ class FileModel(BaseModel, ABC):
         return super().validate(value)
 
     def _load(self, filepath: Path):
-        return self._parse(filepath)
+        if filepath.is_file():
+            return self._parse(filepath)
+        else:
+            raise ValueError("File: {filepath} not found.")
 
-    def save(self, folder: Path):
-        """Save model and child models to set filepaths."""
+    def save(self, folder: Path, force=False):
+        """Save model and child models to their set filepaths.
+
+        For models with an unset filepath, we generate one based
+        on the given `folder`.
+
+        If `force` is set, we override the folder part of
+        already set filepaths, which can be used to copy complete models.
+        """
 
         if not self.filepath:
             self.filepath = folder / self._generate_name()
+
+        if force:
+            self.filepath = folder / self.filepath.name
 
         # Convert child FileModels first
         exclude = {"filepath"}
         filemodel_fields = {}
         for name, value in self:
             if isinstance(value, FileModel):
-                filepath = value.save(folder)
+                filepath = value.save(folder, force)
                 filemodel_fields[name] = filepath
                 exclude.add(name)
 

@@ -1,5 +1,11 @@
+"""
+Implementations of the [`FileModel`][hydrolib.core.basemodel.FileModel] for
+all known extensions.
+"""
+
+from typing import Callable, List, Optional
+
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from typing import Any, List, Optional, Protocol, Type, Union, Callable
 
 from .basemodel import BaseModel, FileModel
 
@@ -10,6 +16,8 @@ class Edge(BaseModel):
 
 
 class Network(FileModel):
+    """Network model representation."""
+
     n_vertices: int = 100
     edges: List[Edge] = [Edge()]
 
@@ -31,6 +39,8 @@ class Network(FileModel):
 
 
 class FMModel(FileModel):
+    """FM Model representation."""
+
     name: str = "Dummy"
     network: Optional[Network] = Network()
 
@@ -52,6 +62,8 @@ class FMModel(FileModel):
 
 
 class DIMR(FileModel):
+    """DIMR model representation."""
+
     model: Optional[FMModel]
 
     @classmethod

@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from devtools import debug
-
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.models import DIMR, FMModel
 
@@ -18,8 +16,13 @@ def test_filemodel_load():
 def test_filemodel_serialize():
     d = DIMR(filepath=f"{test_output_dir}/a", model=Path(test_data_dir / "test.mdu"))
     d.save(folder=test_output_dir / "tmp")
+    assert d.filepath.is_file()
+    assert d.model.filepath.is_file()
+    assert d.model.network.filepath.is_file()
 
 
 def test_tutorial():
     model = FMModel(name="testproject")
     model.save(folder=test_output_dir / "test")
+    assert model.filepath.is_file()
+    assert model.network.filepath.is_file()
