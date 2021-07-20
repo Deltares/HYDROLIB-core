@@ -28,7 +28,7 @@ class XYZ(FileModel):
     """Sample or forcing file.
 
     Attributes:
-        points: List of [`FileModel`][hydrolib.core.models.XYZPoint]
+        points: List of [`XYZPoint`][hydrolib.core.io.xyz.models.XYZPoint]
     """
 
     points: List[XYZPoint]

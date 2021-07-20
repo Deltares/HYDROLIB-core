@@ -19,7 +19,7 @@ class XYZParser:
     @staticmethod
     def parse(filepath: Path) -> Dict:
 
-        data = dict(points=[])
+        data: Dict = dict(points=[])
 
         with filepath.open() as f:
             for line in f.readlines():
