@@ -1,5 +1,5 @@
 from hydrolib.io.polyfile import Description, Parser, Point, PolyObject, Metadata
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import pytest
 
@@ -207,3 +207,70 @@ another-name
         assert len(warnings) == 0
 
         assert poly_objects == expected_poly_objects
+
+    @pytest.mark.parametrize(
+        "input,warnings_description",
+        [
+            (
+                """*description
+name
+1 2
+0.0 0.0""",
+                [],
+            ),
+            (
+                """    * description
+name
+1 2
+0.0 0.0""",
+                [(0, 3)],
+            ),
+            (
+                """* description
+        name
+1 2
+0.0 0.0""",
+                [(1, 7)],
+            ),
+            (
+                """* description
+name
+ 1 2
+0.0 0.0""",
+                [(2, 0)],
+            ),
+            (
+                """*description
+name
+1 2
+    0.0     0.0""",
+                [],
+            ),
+            (
+                """    *description
+        name
+            1 2
+0.0 0.0""",
+                [
+                    (0, 3),
+                    (1, 7),
+                    (2, 11),
+                ],
+            ),
+        ],
+    )
+    def test_whitespace_is_correctly_logged(
+        self, input: str, warnings_description: List[Tuple[int, int]]
+    ):
+        parser = Parser()
+
+        for l in input.splitlines():
+            parser.feed_line(l)
+
+        (_, __, warnings) = parser.finalise()
+
+        assert len(warnings) == len(warnings_description)
+
+        for warning, (line, col) in zip(warnings, warnings_description):
+            assert warning.line == (line, line)
+            assert warning.column == (0, col)

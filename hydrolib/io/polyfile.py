@@ -117,13 +117,26 @@ class Parser:
             StateType.PARSING_POINTS: self._add_current_block_as_incomplete_error,
         }
 
+        self._handle_ws: Dict[StateType, Callable[[str], None]] = {
+            StateType.NEW_BLOCK: self._log_ws_warning,
+            StateType.PARSED_DESCRIPTION: self._log_ws_warning,
+            StateType.PARSED_NAME: self._log_ws_warning,
+            StateType.PARSING_POINTS: self._noop,
+        }
+
     def feed_line(self, line: str) -> None:
         """Parse the next line with this Parser.
 
         Args:
             line (str): The line to parse
         """
-        self._feed_line[self._state](line)
+
+        if not Parser._is_empty_line(line):
+            self._handle_ws[self._state](line)
+            self._feed_line[self._state](line)
+        else:
+            self._handle_empty_line()
+
         self._increment_line()
 
     def finalise(
@@ -161,7 +174,7 @@ class Parser:
     def _increment_line(self) -> None:
         self._line += 1
 
-    def _noop(self) -> None:
+    def _noop(self, *_, **__) -> None:
         # no operation
         pass
 
@@ -234,6 +247,29 @@ class Parser:
     def _handle_next_description(self, line: str) -> None:
         comment = Parser._convert_to_comment(line)
         self._current_block.description.append(comment)  # type: ignore
+
+    def _handle_empty_line(self) -> None:
+        # if is already in error mode do nothing
+        # if not has empty line message create empty line msg
+        # if has empty line message do nothing
+        pass
+
+    def _log_ws_warning(self, line: str) -> None:
+        if line[0] != " ":
+            return
+
+        end_column = len(line) - len(line.lstrip()) - 1
+        self._warnings.append(
+            ParseMsg(
+                line=(self.line, self.line),
+                column=(0, end_column),
+                reason="White space at the start of the line is ignored.",
+            )
+        )
+
+    @staticmethod
+    def _is_empty_line(line: str) -> bool:
+        return len(line.strip()) == 0
 
     @staticmethod
     def _is_name(line: str) -> bool:
