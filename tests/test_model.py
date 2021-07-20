@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.models import DIMR, FMModel
 
@@ -7,7 +9,9 @@ from .utils import test_data_dir, test_output_dir
 
 
 def test_filemodel_load():
-    d = DIMR(filepath="a", model=Path(test_data_dir / "test.mdu"))
+    # If we give a non existing path, it will throw a warning
+    with pytest.warns(UserWarning):
+        d = DIMR(filepath="a", model=Path(test_data_dir / "test.mdu"))
     assert isinstance(d.filepath, Path)
     assert isinstance(d.model, FMModel)
     assert isinstance(d.model, FileModel)

@@ -32,7 +32,11 @@ plugins:
             show_source: true
             show_signature_annotations: true
             heading_level: 3
-            group_by_category: true
+            show_category_heading: false
+            group_by_category: false
+          selection:
+            inherited_members: false
+
       custom_templates: templates
       watch:
         - hydrolib/core

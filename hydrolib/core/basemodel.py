@@ -6,7 +6,7 @@ also represents a file on disk.
 """
 from abc import ABC, abstractclassmethod
 from pathlib import Path
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, Dict, Optional, Type
 from warnings import warn
 
 from pydantic import BaseModel as PydanticBaseModel
@@ -35,14 +35,14 @@ class FileModel(BaseModel, ABC):
 
     filepath: Optional[Path] = None
 
-    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs) -> None:
         """Initialize a model.
 
         The model is empty (with defaults) if no `filepath` is given,
         otherwise the file at `filepath` will be parsed."""
         # Parse the file if path is given
         if filepath:
-            data = self._load(filepath)
+            data = self._load(Path(filepath))  # so we also accept strings
             data["filepath"] = filepath
             kwargs.update(data)
         super().__init__(*args, **kwargs)
@@ -55,35 +55,41 @@ class FileModel(BaseModel, ABC):
             value = {"filepath": value}
         return super().validate(value)
 
-    def _load(self, filepath: Path):
-        if Path(filepath).is_file():
+    def _load(self, filepath: Path) -> Dict:
+        if filepath.is_file():
             return self._parse(filepath)
         else:
             warn(f"File: `{filepath}` not found, skipped parsing.")
             return {}
 
-    def save(self, folder: Path, force=False):
+    def save(self, folder: Optional[Path] = None) -> Path:
         """Save model and child models to their set filepaths.
 
-        For models with an unset filepath, we generate one based
-        on the given `folder`.
+        If a folder is given, for models with an unset filepath,
+        we generate one based on the given `folder` and a default name.
+        Otherwise we override the folder part of already set filepaths.
+        This can thus be used to copy complete models.
 
-        If `force` is set, we override the folder part of
-        already set filepaths, which can be used to copy complete models.
+        Args:
+            folder: path to the folder where this FileModel will be stored
         """
+        if not self.filepath and not folder:
+            raise ValueError(
+                "Either set the `filepath` on the model or pass a `folder` when saving."
+            )
 
-        if not self.filepath:
-            self.filepath = folder / self._generate_name()
-
-        if force:
-            self.filepath = folder / self.filepath.name
+        if folder:
+            filename = (
+                Path(self.filepath.name) if self.filepath else self._generate_name()
+            )
+            self.filepath = folder / filename
 
         # Convert child FileModels first
         exclude = {"filepath"}
         filemodel_fields = {}
         for name, value in self:
             if isinstance(value, FileModel):
-                filepath = value.save(folder, force)
+                filepath = value.save(folder)
                 filemodel_fields[name] = filepath
                 exclude.add(name)
 
@@ -96,17 +102,17 @@ class FileModel(BaseModel, ABC):
 
         self._serialize(data)
 
-        return str(self.filepath.absolute())
+        return self.filepath.absolute()
 
-    def _serialize(self, data: dict):
+    def _serialize(self, data: dict) -> None:
         self._get_serializer()(self.filepath, data)
 
     @classmethod
-    def _parse(cls, path: Path):
+    def _parse(cls, path: Path) -> Dict:
         return cls._get_parser()(path)
 
     @classmethod
-    def _generate_name(cls):
+    def _generate_name(cls) -> Path:
         name, ext = cls._filename(), cls._ext()
         return Path(f"{name}{ext}")
 

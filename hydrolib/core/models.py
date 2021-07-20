@@ -11,6 +11,12 @@ from .basemodel import BaseModel, FileModel
 
 
 class Edge(BaseModel):
+    """Test
+
+    Attributes:
+        a: This is some weird `int`.
+    """
+
     a: int = 0
     b: int = 1
 
