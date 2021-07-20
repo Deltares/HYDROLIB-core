@@ -3,8 +3,9 @@
 
 from enum import Enum
 from pathlib import Path
+
+from attr import field
 from hydrolib.io.common import LineReader, ParseMsg, BaseModel
-from functools import reduce
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 
@@ -59,18 +60,56 @@ class Block(BaseModel):
     dimensions: Optional[Tuple[int, int]] = None
     points: Optional[List[Point]] = None
 
-    def get_description(self) -> Optional[Description]:
+    ws_warnings: List[ParseMsg] = []
+    empty_lines: List[int] = []
+
+    def finalise(self) -> Optional[Tuple[PolyObject, List[ParseMsg]]]:
+        metadata = self._get_metadata()
+
+        if metadata is None or self.points is None:
+            return None
+
+        obj = PolyObject(
+            description=self._get_description(), metadata=metadata, points=self.points
+        )
+
+        return obj, self.ws_warnings + self._get_empty_line_warnings()
+
+    def _get_description(self) -> Optional[Description]:
         if self.description is not None:
             return Description(content="\n".join(self.description))
         else:
             return None
 
-    def get_metadata(self) -> Optional[Metadata]:
+    def _get_metadata(self) -> Optional[Metadata]:
         if self.name is None or self.dimensions is None:
             return None
 
         (n_rows, n_columns) = self.dimensions
         return Metadata(name=self.name, n_rows=n_rows, n_columns=n_columns)
+
+    def _get_empty_line_warnings(self):
+        if len(self.empty_lines) == 0:
+            return []
+
+        warnings = []
+        empty_line = (self.empty_lines[0], self.empty_lines[0])
+
+        for line in self.empty_lines[1:]:
+            if line == empty_line[1] + 1:
+                empty_line = (empty_line[0], line)
+            else:
+                warnings.append(Block._get_empty_line_msg(empty_line))
+                empty_line = (line, line)
+        warnings.append(Block._get_empty_line_msg(empty_line))
+
+        return warnings
+
+    @staticmethod
+    def _get_empty_line_msg(line_range: Tuple[int, int]) -> ParseMsg:
+        return ParseMsg(
+            line=line_range, reason="White space at the start of the line is ignored."
+        )
 
 
 class StateType(Enum):
@@ -80,6 +119,7 @@ class StateType(Enum):
     PARSED_DESCRIPTION = 1
     PARSED_NAME = 2
     PARSING_POINTS = 3
+    INVALID_STATE = 4
 
 
 class Parser:
@@ -162,13 +202,9 @@ class Parser:
         self._current_block = Block(start_line=self.line)
 
     def _finish_block(self):
-        self._poly_objects.append(
-            PolyObject(
-                description=self._current_block.get_description(),
-                metadata=self._current_block.get_metadata(),  # type: ignore
-                points=self._current_block.points,
-            )
-        )
+        (obj, warnings) = self._current_block.finalise()  # type: ignore
+        self._poly_objects.append(obj)
+        self._warnings.extend(warnings)
         # handle error here
 
     def _increment_line(self) -> None:
@@ -249,17 +285,15 @@ class Parser:
         self._current_block.description.append(comment)  # type: ignore
 
     def _handle_empty_line(self) -> None:
-        # if is already in error mode do nothing
-        # if not has empty line message create empty line msg
-        # if has empty line message do nothing
-        pass
+        if self._state != StateType.INVALID_STATE:
+            self._current_block.empty_lines.append(self.line)
 
     def _log_ws_warning(self, line: str) -> None:
         if line[0] != " ":
             return
 
         end_column = len(line) - len(line.lstrip()) - 1
-        self._warnings.append(
+        self._current_block.ws_warnings.append(
             ParseMsg(
                 line=(self.line, self.line),
                 column=(0, end_column),
@@ -330,7 +364,7 @@ class Parser:
             return None
 
 
-def _determine_z_value(input: Union[Path, LineReader]) -> bool:
+def _determine_has_z_value(input: Union[Path, LineReader]) -> bool:
     return isinstance(input, Path) and input.suffix == ".pliz"
 
 
@@ -417,7 +451,7 @@ def read_polyfile(
     # TODO: add some common file verification.
 
     if has_z_values is None:
-        has_z_values = _determine_z_value(input_data)
+        has_z_values = _determine_has_z_value(input_data)
 
     if isinstance(input_data, Path):
         with input_data.open("r") as f:

@@ -1,4 +1,10 @@
-from hydrolib.io.polyfile import Description, Parser, Point, PolyObject, Metadata
+from hydrolib.io.polyfile import (
+    Description,
+    Parser,
+    Point,
+    PolyObject,
+    Metadata,
+)
 from typing import List, Optional, Tuple
 
 import pytest
@@ -274,3 +280,69 @@ name
         for warning, (line, col) in zip(warnings, warnings_description):
             assert warning.line == (line, line)
             assert warning.column == (0, col)
+
+    @pytest.mark.parametrize(
+        "input,warnings_description",
+        [
+            (
+                """*description
+name
+1 2
+0.0 0.0""",
+                [],
+            ),
+            (
+                """
+* description
+name
+1 2
+0.0 0.0""",
+                [(0, 0)],
+            ),
+            (
+                """* description
+
+name
+1 2
+0.0 0.0""",
+                [(1, 1)],
+            ),
+            (
+                """* description
+
+
+
+name
+1 2
+0.0 0.0""",
+                [(1, 3)],
+            ),
+            (
+                """* description
+
+
+
+name
+
+1 2
+
+
+0.0 0.0""",
+                [(1, 3), (5, 5), (7, 8)],
+            ),
+        ],
+    )
+    def test_empty_lines_is_correctly_logged(
+        self, input: str, warnings_description: List[Tuple[int, int]]
+    ):
+        parser = Parser()
+
+        for l in input.splitlines():
+            parser.feed_line(l)
+
+        (_, __, warnings) = parser.finalise()
+
+        assert len(warnings) == len(warnings_description)
+
+        for warning, (line_start, line_end) in zip(warnings, warnings_description):
+            assert warning.line == (line_start, line_end)
