@@ -1,0 +1,2 @@
+The rr/ subdir needed for this integral model is not included yet.
+Pending any choices about functional scope/API design.
