@@ -1,4 +1,3 @@
-import pathlib
 from pathlib import Path
 
 from lxml import etree
@@ -36,8 +35,11 @@ class DimrParser:
         result = dict(node.attrib)
 
         for child_node in node.iterchildren():
-
-            key = child_node.tag.split("}")[1] if "}" in child_node.tag else child_node.tag
+            
+            if "}" in child_node.tag:
+                key = child_node.tag.split("}")[1]
+            else:
+                key = child_node.tag
 
             if child_node.text and child_node.text.strip():
                 value = child_node.text

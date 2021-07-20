@@ -6,17 +6,20 @@ from hydrolib.core.dimr_parser import DimrParser
 
 
 def test_parse_returns_correct_data():
-
+    test_file = 'tests/data/input/e02/c11_korte-woerden-1d/dimr_model/'\
+                'dimr_config.xml'
     parser = DimrParser()
-    result = parser.Parse(Path("tests/data/input/e02/c11_korte-woerden-1d/dimr_model/dimr_config.xml"))
+    result = parser.Parse(Path(test_file))
 
-    assert result['documentation']['fileVersion'] == '1.2'
-    assert result['documentation']['createdBy'] == 'Deltares, Coupling Team'
-    assert result['documentation']['creationDate'] == '2020-03-17T10:02:49.4520672Z'
+    documentation = result['documentation']
+    assert documentation['fileVersion'] == '1.2'
+    assert documentation['createdBy'] == 'Deltares, Coupling Team'
+    assert documentation['creationDate'] == '2020-03-17T10:02:49.4520672Z'
 
-    assert result['control']['parallel']['startGroup']['time'] == '0 60 7200'
-    assert result['control']['parallel']['startGroup']['start']['name'] == 'Rainfall Runoff'
-    assert result['control']['parallel']['startGroup']['coupler']['name'] == 'rr_to_flow'
+    start_group = result['control']['parallel']['startGroup']
+    assert start_group['time'] == '0 60 7200'
+    assert start_group['start']['name'] == 'Rainfall Runoff'
+    assert start_group['coupler']['name'] == 'rr_to_flow'
 
     components = result['component']
     assert isinstance(components, list)
@@ -49,8 +52,8 @@ def test_parse_returns_correct_data():
 
 
 def test_parse_when_file_does_not_exist_raises_exception():
-        with pytest.raises(Exception):
-            DimrParser().Parse(Path('does/not/exist.xml'))
+    with pytest.raises(Exception):
+        DimrParser().Parse(Path('does/not/exist.xml'))
 
 
 
