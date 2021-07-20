@@ -6,7 +6,8 @@ from lxml import etree
 class DimrParser:
     """A parser for DIMR xml files."""
 
-    def Parse(self, path: Path) -> dict:
+    @staticmethod
+    def Parse(path: Path) -> dict:
         """Parses a DIMR file to a dictionary.
 
         Args:
@@ -21,9 +22,10 @@ class DimrParser:
         parser = etree.XMLParser(remove_comments=True)
         root = etree.fromstring(xml, parser)
 
-        return self._node_to_dictionary(root)
+        return DimrParser._node_to_dictionary(root)
 
-    def _node_to_dictionary(self, node: etree):
+    @staticmethod
+    def _node_to_dictionary(node: etree):
         """
         Convert an lxml.etree node tree recursively into a nested dictionary.
         The node's attributes and child items will be added to it's dictionary.
@@ -35,7 +37,7 @@ class DimrParser:
         result = dict(node.attrib)
 
         for child_node in node.iterchildren():
-            
+
             if "}" in child_node.tag:
                 key = child_node.tag.split("}")[1]
             else:
@@ -44,7 +46,7 @@ class DimrParser:
             if child_node.text and child_node.text.strip():
                 value = child_node.text
             else:
-                value = self._node_to_dictionary(child_node)
+                value = DimrParser._node_to_dictionary(child_node)
 
             if key in result:
 

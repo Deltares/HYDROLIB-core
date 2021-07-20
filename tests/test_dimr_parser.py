@@ -8,8 +8,7 @@ from hydrolib.core.dimr_parser import DimrParser
 def test_parse_returns_correct_data():
     test_file = 'tests/data/input/e02/c11_korte-woerden-1d/dimr_model/'\
                 'dimr_config.xml'
-    parser = DimrParser()
-    result = parser.Parse(Path(test_file))
+    result = DimrParser.Parse(Path(test_file))
 
     documentation = result['documentation']
     assert documentation['fileVersion'] == '1.2'

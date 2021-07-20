@@ -3,6 +3,7 @@ Implementations of the [`FileModel`][hydrolib.core.basemodel.FileModel] for
 all known extensions.
 """
 
+from hydrolib.core.dimr_parser import DimrParser
 from typing import Callable, List, Optional
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
@@ -86,4 +87,4 @@ class DIMR(FileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        return DummmyParser.parse
+        return DimrParser.Parse
