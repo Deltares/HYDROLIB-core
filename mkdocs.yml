@@ -2,8 +2,10 @@ site_name: hydrolib-core documentation
 theme:
   name: material
   language: en
+  icon:
+    logo: material/water-polo
   palette:
-    - scheme: default
+    - scheme: deltares
       toggle:
         icon: material/lightbulb-outline
         name: Switch to dark mode
@@ -26,10 +28,18 @@ plugins:
       handlers:
         python:
           rendering:
+            show_root_toc_entry: false
             show_source: true
+            show_signature_annotations: true
+            heading_level: 3
+            show_category_heading: false
+            group_by_category: false
+          selection:
+            inherited_members: false
+
       custom_templates: templates
       watch:
-        - hydrolib-core
+        - hydrolib/core
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
@@ -47,3 +57,5 @@ extra:
       link: https://gitter.im/Deltares/hydrolib
       name: Chat with us on Gitter
 copyright: Copyright &copy; 2021 Deltares
+extra_css:
+  - stylesheets/extra.css

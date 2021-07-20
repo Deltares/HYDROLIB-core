@@ -3,8 +3,8 @@
 Let's import and create a first blanco model.
 
 ``` python
-import hydrolib-core as hl
+import hydrolib.core as hlc
 
-model = hl.models.FMModel(name="testproject")
-model.save(dir="test")
+model = hlc.models.FMModel(name="testproject")
+model.save(folder="test")
 ```
