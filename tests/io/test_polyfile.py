@@ -23,7 +23,7 @@ class TestParser:
             ("1_1:type=terrainjump", False),
             ("Not a comment but a regular string", False),
             ("      ", False),
-            ("         * some comment", False),
+            ("         * some comment", True),
         ],
     )
     def test_is_comment(self, input: str, expected_value: bool):
@@ -346,3 +346,93 @@ name
 
         for warning, (line_start, line_end) in zip(warnings, warnings_description):
             assert warning.line == (line_start, line_end)
+
+    @pytest.mark.parametrize(
+        "input,errors_description",
+        [
+            (
+                "*description",
+                [((0, 1), "EoF encountered before the block is finished.")],
+            ),
+            (
+                """*description
+not a name""",
+                [((0, 2), "Expected a valid name or description at line 1.")],
+            ),
+            (
+                """*description
+name
+1     """,
+                [((0, 3), "Expected valid dimensions at line 2.")],
+            ),
+            (
+                """*description
+name
+1  5   
+1.0 2.0 3.0""",
+                [((0, 4), "Expected a valid next point at line 3.")],
+            ),
+            (
+                """*description
+name
+1  5   
+1.0 2.0 3.0 4.0 5.0 6.0""",
+                [((0, 4), "Expected a valid next point at line 3.")],
+            ),
+            (
+                """*description
+name
+1  5   
+1.0 2.0 3.0 4.0 5.0
+another-name
+1 3
+1.0 2.0""",
+                [((4, 7), "Expected a valid next point at line 6.")],
+            ),
+            (
+                """*description
+name
+1  5   
+1.0 2.0 3.0 4.0 5.0
+* 
+another-name
+1 3
+1.0 2.0
+* durp
+* durp
+last-name
+1 2
+1.0 2.0""",
+                [((4, 8), "Expected a valid next point at line 7.")],
+            ),
+            (
+                """*description
+name
+1  5   
+another-name
+1 3
+1.0 2.0 3.0
+* durp
+* durp
+last-name
+1 2
+1.0 2.0""",
+                [((0, 3), "Expected a valid next point at line 3.")],
+            ),
+        ],
+    )
+    def test_invalid_block_is_correctly_logged(
+        self, input: str, errors_description: List
+    ):
+        parser = Parser()
+
+        for l in input.splitlines():
+            parser.feed_line(l)
+
+        (_, errors, __) = parser.finalise()
+
+        assert len(errors) == len(errors_description)
+
+        for error, (lines, reason) in zip(errors, errors_description):
+            assert error.line == lines
+            assert error.reason == reason

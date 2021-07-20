@@ -4,7 +4,6 @@
 from enum import Enum
 from pathlib import Path
 
-from attr import field
 from hydrolib.io.common import LineReader, ParseMsg, BaseModel
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -64,6 +63,14 @@ class Block(BaseModel):
     empty_lines: List[int] = []
 
     def finalise(self) -> Optional[Tuple[PolyObject, List[ParseMsg]]]:
+        """Finalise this Block and return the constructed PolyObject and warnings
+
+        If the metadata or the points are None, then None is returned.
+
+        Returns:
+            Optional[Tuple[PolyObject, List[ParseMsg]]]:
+                The constructed PolyObject and warnings encountered while parsing it.
+        """
         metadata = self._get_metadata()
 
         if metadata is None or self.points is None:
@@ -112,6 +119,82 @@ class Block(BaseModel):
         )
 
 
+class InvalidBlock(BaseModel):
+    """InvalidBlock is a temporary object which will be converted into a ParseMsg."""
+
+    start_line: int
+    end_line: Optional[int] = None
+    invalid_line: int
+    reason: str
+
+    def to_msg(self) -> ParseMsg:
+        """Convert this InvalidBlock to the corresponding ParseMsg
+
+        Returns:
+            ParseMsg: The ParseMsg corresponding with this InvalidBlock
+        """
+        return ParseMsg(
+            line=(self.start_line, self.end_line),
+            reason=f"{self.reason} at line {self.invalid_line}.",
+        )
+
+
+class ErrorBuilder:
+    """ErrorBuilder provides the functionality to the Parser to keep track of errors."""
+
+    def __init__(self) -> None:
+        """Create a new ErorrorBuilder"""
+        self._current_block: Optional[InvalidBlock] = None
+
+    def start_invalid_block(
+        self, block_start: int, invalid_line: int, reason: str
+    ) -> None:
+        """Start a new invalid block if none exists at the moment
+
+        If we are already in an invalid block, or the previous one
+        was never finalised, we will not log the reason, and assume
+        it is one long invalid block.
+
+        Args:
+            block_start (int): The start of the invalid block.
+            invalid_line (int): The actual offending line number.
+            reason (str): The reason why this block is invalid.
+        """
+        if self._current_block is None:
+            self._current_block = InvalidBlock(
+                start_line=block_start, invalid_line=invalid_line, reason=reason
+            )
+
+    def end_invalid_block(self, line: int) -> None:
+        """Store the end line of the current block
+
+        If no invalid block currently exists, nothing will be done.
+
+        Args:
+            line (int): the final line of this invalid block
+        """
+        if self._current_block is not None:
+            self._current_block.end_line = line
+
+    def finalise_previous_error(self) -> Optional[ParseMsg]:
+        """Finalise the current invalid block if it exists
+
+        If no current invalid block exists, None will be returned, and nothing will
+        change. If a current block exists, it will be converted into a ParseMsg and
+        returned. The current invalid block will be reset.
+
+        Returns:
+            Optional[ParseMsg]: The corresponding ParseMsg if an InvalidBlock exists.
+        """
+        if self._current_block is not None:
+            msg = self._current_block.to_msg()
+            self._current_block = None
+
+            return msg
+        else:
+            return None
+
+
 class StateType(Enum):
     """The types of state of a Parser."""
 
@@ -123,7 +206,25 @@ class StateType(Enum):
 
 
 class Parser:
-    """Parser provides the functionality to parse a polyfile line by line."""
+    """Parser provides the functionality to parse a polyfile line by line.
+
+    The Parser parses blocks describing PolyObject instances by relying on
+    a rudimentary state machine. The states are encoded with the StateType.
+    New lines are fed through the feed_line method. After each line the
+    internal state will be updated. When a complete block is read, it will
+    be converted into a PolyObject and stored internally.
+    When finalise is called, the constructed objects, as well as any warnings
+    and errors describing invalid blocks, will be returned.
+
+    Each state defines a feed_line method, stored in the _feed_line dict,
+    which consumes a line and potentially transitions the state into the next.
+    Each state further defines a finalise method, stored in the _finalise dict,
+    which is called upon finalising the parser.
+
+    Invalid states are encoded with INVALID_STATE. In this state the Parser
+    attempts to find a new block, and thus looks for a new description or
+    name.
+    """
 
     def __init__(self, has_z_value: bool = False) -> None:
         """Create a new Parser
@@ -137,6 +238,8 @@ class Parser:
         self._line = 0
         self._new_block()
 
+        self._error_builder = ErrorBuilder()
+
         self._poly_objects: List[PolyObject] = []
         self._warnings: List[ParseMsg] = []
         self._errors: List[ParseMsg] = []
@@ -148,6 +251,7 @@ class Parser:
             StateType.PARSED_DESCRIPTION: self._parse_name_or_next_description,
             StateType.PARSED_NAME: self._parse_dimensions,
             StateType.PARSING_POINTS: self._parse_next_point,
+            StateType.INVALID_STATE: self._parse_name_or_new_description,
         }
 
         self._finalise: Dict[StateType, Callable[[], None]] = {
@@ -155,6 +259,7 @@ class Parser:
             StateType.PARSED_DESCRIPTION: self._add_current_block_as_incomplete_error,
             StateType.PARSED_NAME: self._add_current_block_as_incomplete_error,
             StateType.PARSING_POINTS: self._add_current_block_as_incomplete_error,
+            StateType.INVALID_STATE: self._noop,
         }
 
         self._handle_ws: Dict[StateType, Callable[[str], None]] = {
@@ -162,6 +267,7 @@ class Parser:
             StateType.PARSED_DESCRIPTION: self._log_ws_warning,
             StateType.PARSED_NAME: self._log_ws_warning,
             StateType.PARSING_POINTS: self._noop,
+            StateType.INVALID_STATE: self._noop,
         }
 
     def feed_line(self, line: str) -> None:
@@ -189,7 +295,13 @@ class Parser:
                 A tuple consisting of the constructed PolyObject instances, error
                 ParseMsg objects and warning ParseMsg objects.
         """
-        self._finalise[self._state]
+        self._error_builder.end_invalid_block(self.line)
+        last_error_msg = self._error_builder.finalise_previous_error()
+        if last_error_msg is not None:
+            self._errors.append(last_error_msg)
+
+        self._finalise[self._state]()
+
         return self._poly_objects, self._errors, self._warnings
 
     @property
@@ -197,15 +309,18 @@ class Parser:
         """Current line index."""
         return self._line
 
-    def _new_block(self) -> None:
+    def _new_block(self, offset: int = 0) -> None:
         self._state = StateType.NEW_BLOCK
-        self._current_block = Block(start_line=self.line)
+        self._current_block = Block(start_line=(self.line + offset))
 
     def _finish_block(self):
         (obj, warnings) = self._current_block.finalise()  # type: ignore
         self._poly_objects.append(obj)
         self._warnings.extend(warnings)
-        # handle error here
+
+        last_error = self._error_builder.finalise_previous_error()
+        if last_error is not None:
+            self._errors.append(last_error)
 
     def _increment_line(self) -> None:
         self._line += 1
@@ -227,9 +342,13 @@ class Parser:
             self._handle_new_description(line)
         elif Parser._is_name(line):
             self._handle_parse_name(line)
-        else:
-            # Handle exception here
-            pass
+        elif self._state != StateType.INVALID_STATE:
+            self._handle_new_error("Expected a valid name or description")
+            return
+
+        # If we come from an invalid state, and we started a correct new block
+        # we will end the previous invalid block, if it exists.
+        self._error_builder.end_invalid_block(self.line)
 
     def _parse_name_or_next_description(self, line: str) -> None:
         if Parser._is_comment(line):
@@ -237,8 +356,7 @@ class Parser:
         elif Parser._is_name(line):
             self._handle_parse_name(line)
         else:
-            # Handle exception here
-            pass
+            self._handle_new_error("Expected a valid name or description")
 
     def _parse_dimensions(self, line: str) -> None:
         dimensions = Parser._convert_to_dimensions(line)
@@ -249,8 +367,7 @@ class Parser:
             self._current_point = 0
             self._state = StateType.PARSING_POINTS
         else:
-            # Handle exception here
-            pass
+            self._handle_new_error("Expected valid dimensions")
 
     def _parse_next_point(self, line: str) -> None:
         point = Parser._convert_to_point(
@@ -263,11 +380,12 @@ class Parser:
 
             if self._current_block.dimensions[0] == self._current_point:  # type: ignore
                 self._finish_block()
-                self._new_block()
+                self._new_block(offset=1)
 
         else:
-            # Handle exception here
-            pass
+            self._handle_new_error("Expected a valid next point")
+            # we parse the point again, as this line might be a valid start of the next block.
+            self._feed_line[self._state](line)
 
     def _handle_parse_name(self, line: str) -> None:
         self._current_block.name = Parser._convert_to_name(line)
@@ -301,6 +419,12 @@ class Parser:
             )
         )
 
+    def _handle_new_error(self, reason: str) -> None:
+        self._error_builder.start_invalid_block(
+            self._current_block.start_line, self.line, reason
+        )
+        self._state = StateType.INVALID_STATE
+
     @staticmethod
     def _is_empty_line(line: str) -> bool:
         return len(line.strip()) == 0
@@ -316,11 +440,12 @@ class Parser:
 
     @staticmethod
     def _is_comment(line: str) -> bool:
-        return len(line) >= 1 and line[0] == "*"
+        stripped = line.strip()
+        return len(stripped) >= 1 and stripped[0] == "*"
 
     @staticmethod
     def _convert_to_comment(line: str) -> str:
-        return line.rstrip()[1:]
+        return line.strip()[1:]
 
     @staticmethod
     def _convert_to_dimensions(line: str) -> Optional[Tuple[int, int]]:
