@@ -1,4 +1,4 @@
-from hydrolib.io.polyfile import Parser, Point
+from hydrolib.io.polyfile import Description, Parser, Point, PolyObject, Metadata
 from typing import Optional, Tuple
 
 import pytest
@@ -156,3 +156,51 @@ class TestParser:
         self, input: str, n_total_points: int, has_z: bool, expected_value: Point
     ):
         assert Parser._convert_to_point(input, n_total_points, has_z) == expected_value
+
+    def test_correct_pli_expected_result(self):
+        input = """* Some header
+* with multiple
+* descriptions
+the-name
+2    3
+1.0 2.0 3.0
+4.0 5.0 6.0
+another-name
+3    2
+7.0 8.0
+9.0 10.0
+11.0 12.0"""
+
+        expected_poly_objects = [
+            PolyObject(
+                description=Description(
+                    content=" Some header\n with multiple\n descriptions"
+                ),
+                metadata=Metadata(name="the-name", n_rows=2, n_columns=3),
+                points=[
+                    Point(x=1.0, y=2.0, z=None, data=[3.0]),
+                    Point(x=4.0, y=5.0, z=None, data=[6.0]),
+                ],
+            ),
+            PolyObject(
+                description=None,
+                metadata=Metadata(name="another-name", n_rows=3, n_columns=2),
+                points=[
+                    Point(x=7.0, y=8.0, z=None, data=[]),
+                    Point(x=9.0, y=10.0, z=None, data=[]),
+                    Point(x=11.0, y=12.0, z=None, data=[]),
+                ],
+            ),
+        ]
+
+        parser = Parser(has_z_value=False)
+
+        for l in input.splitlines():
+            parser.feed_line(l)
+
+        (poly_objects, errors, warnings) = parser.finalise()
+
+        assert len(errors) == 0
+        assert len(warnings) == 0
+
+        assert poly_objects == expected_poly_objects
