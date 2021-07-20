@@ -2,9 +2,10 @@
 """
 
 from enum import Enum
-from hydrolib.io.common import ParseMsg, BaseModel
+from pathlib import Path
+from hydrolib.io.common import LineReader, ParseMsg, BaseModel
 from functools import reduce
-from typing import Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 
 class Description(BaseModel):
@@ -291,3 +292,99 @@ class Parser:
 
         except ValueError:
             return None
+
+
+def _determine_z_value(input: Union[Path, LineReader]) -> bool:
+    return isinstance(input, Path) and input.suffix == ".pliz"
+
+
+def _read_poly_file(
+    input: LineReader, has_z_values: bool
+) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
+    parser = Parser(has_z_value=has_z_values)
+
+    while True:
+        next_line = input.readline()
+        if next_line is None:
+            break
+
+        parser.feed_line(next_line)
+
+    return parser.finalise()
+
+
+def read_polyfile(
+    input: Union[str, Path, LineReader], has_z_values: Optional[bool] = None
+) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
+    """Read the specified file and return the corresponding data.
+
+    The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
+    file is defined as consisting of a number of blocks of lines adhering to the
+    following format:
+
+    - Optional description record consisting of one or more lines starting with '*'.
+        These will be ignored.
+    - Name consisting of a non-blank character string
+    - Two integers, Nr and Nc, representing the numbers of rows and columns respectively
+    - Nr number of data points, consisting of Nc floats separated by whitespace
+
+    For example:
+    ```
+    ...
+    *
+    * Polyline L008
+    *
+    L008
+    4 2
+        131595.0 549685.0
+        131750.0 549865.0
+        131595.0 550025.0
+        131415.0 550175.0
+    ...
+    ```
+
+    Note that the points can be arbitrarily indented, and the comments are optional.
+
+    if no has_z_value has been defined, it will be based on the file path
+    extensions:
+    - pliz will default to True
+    - pli and poll will default to False
+    - LineReader objects will default to False
+
+    Empty lines will be flagged by warning ParseMsg objects, and ignored. Whitespace
+    before comments, names, and dimensions will be flagged by warning ParseMsg objects
+    as well, and ignored.
+
+    If invalid syntax is detected within a block, an error will be created. This block
+    will be ignored for the purpose of create PolyObject instances.
+    Once an error is encountered, any following lines will be marked as part of the
+    invalid block, until a new block is found. Note that this means that sequential
+    invalid blocks will be reported as a single invalid block.
+
+    Args:
+        path (Path):
+            Path to the pli(z)/pol convention structured file
+        has_z_values (Optional[bool]):
+            Whether to create points containing a z-value
+
+    Returns:
+        Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
+            Three sequences containing respectively:
+            - The constructed PolyObject instances
+            - The error ParseMsg instances encountered during parsing
+            - The warning ParseMsg instances encountered during parsing
+    """
+
+    if isinstance(input, str):
+        input = Path(input)
+
+    # TODO: add some common file verification.
+
+    if has_z_values is None:
+        has_z_values = _determine_z_value(input)
+
+    if isinstance(input, Path):
+        with input.open("r") as f:
+            return _read_poly_file(f, has_z_values)
+    else:
+        return _read_poly_file(input, has_z_values)
