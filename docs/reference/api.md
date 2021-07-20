@@ -1,5 +1,5 @@
-# API
+## BaseModel and FileModel
+::: hydrolib.core.basemodel
 
-## Example function
-## ::: hydrolib.core.utils.example
-
+## Implementations
+::: hydrolib.core.models
