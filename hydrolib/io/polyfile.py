@@ -85,10 +85,11 @@ class Parser:
     """Parser provides the functionality to parse a polyfile line by line."""
 
     def __init__(self, has_z_value: bool = False) -> None:
-        """[summary]
+        """Create a new Parser
 
         Args:
-            has_z_value (bool, optional): [description]. Defaults to False.
+            has_z_value (bool, optional): Whether to interpret the third column as
+                                          z-coordinates. Defaults to False.
         """
         self._has_z_value = has_z_value
 
@@ -217,10 +218,6 @@ class Parser:
         else:
             # Handle exception here
             pass
-
-    @staticmethod
-    def _parse_point(line) -> Tuple[int, int]:
-        return (-1, -1)
 
     def _handle_parse_name(self, line: str) -> None:
         self._current_block.name = Parser._convert_to_name(line)
