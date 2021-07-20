@@ -314,7 +314,7 @@ def _read_poly_file(
 
 
 def read_polyfile(
-    input: Union[str, Path, LineReader], has_z_values: Optional[bool] = None
+    input_data: Union[str, Path, LineReader], has_z_values: Optional[bool] = None
 ) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
     """Read the specified file and return the corresponding data.
 
@@ -362,7 +362,7 @@ def read_polyfile(
     invalid blocks will be reported as a single invalid block.
 
     Args:
-        path (Path):
+        input_data (Union[str, Path, LineReader]):
             Path to the pli(z)/pol convention structured file
         has_z_values (Optional[bool]):
             Whether to create points containing a z-value
@@ -375,16 +375,16 @@ def read_polyfile(
             - The warning ParseMsg instances encountered during parsing
     """
 
-    if isinstance(input, str):
-        input = Path(input)
+    if isinstance(input_data, str):
+        input_data = Path(input_data)
 
     # TODO: add some common file verification.
 
     if has_z_values is None:
-        has_z_values = _determine_z_value(input)
+        has_z_values = _determine_z_value(input_data)
 
-    if isinstance(input, Path):
-        with input.open("r") as f:
+    if isinstance(input_data, Path):
+        with input_data.open("r") as f:
             return _read_poly_file(f, has_z_values)
     else:
-        return _read_poly_file(input, has_z_values)
+        return _read_poly_file(input_data, has_z_values)

@@ -77,6 +77,9 @@ class TestParser:
             ("1 1.0", None),
             ("1.0 1", None),
             ("1.0 1.0", None),
+            ("1", None),
+            ("a", None),
+            ("* Description", None),
         ],
     )
     def test_convert_to_dimensions(
@@ -158,7 +161,7 @@ class TestParser:
         assert Parser._convert_to_point(input, n_total_points, has_z) == expected_value
 
     def test_correct_pli_expected_result(self):
-        input = """* Some header
+        input_data = """* Some header
 * with multiple
 * descriptions
 the-name
@@ -195,7 +198,7 @@ another-name
 
         parser = Parser(has_z_value=False)
 
-        for l in input.splitlines():
+        for l in input_data.splitlines():
             parser.feed_line(l)
 
         (poly_objects, errors, warnings) = parser.finalise()
