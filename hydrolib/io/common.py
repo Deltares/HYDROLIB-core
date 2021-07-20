@@ -16,8 +16,8 @@ class BaseModel(PydanticBaseModel):
 
 
 class ParseMsg(BaseModel):
-    """ParseMsg defines a single message indicating a significant parse event.
-    """
+    """ParseMsg defines a single message indicating a significant parse event."""
+
     line: Tuple[int, int]
     column: Optional[Tuple[int, int]]
     reason: str
