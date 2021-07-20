@@ -30,9 +30,9 @@ jobs:
         id: cache
         with:
           path: ~/.virtualenvs
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
-            venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+            venv-${{ matrix.os }}-${{ matrix.python-version }}-
 
       - name: Set Poetry config
         run: |
