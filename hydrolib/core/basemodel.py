@@ -56,6 +56,8 @@ class FileModel(BaseModel, ABC):
         return super().validate(value)
 
     def _load(self, filepath: Path) -> Dict:
+        # TODO Make this lazy in some cases
+        # so it doesn't become slow
         if filepath.is_file():
             return self._parse(filepath)
         else:
@@ -96,7 +98,6 @@ class FileModel(BaseModel, ABC):
         # Convert other values to dict
         data = self.dict(
             exclude=exclude,
-            exclude_none=True,  # either skip it here, or in serializer
         )
         data.update(filemodel_fields)
 

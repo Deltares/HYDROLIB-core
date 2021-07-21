@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.basemodel import FileModel
-from hydrolib.core.models import DIMR, FMModel
+from hydrolib.core.models import DIMR, FMModel, XYZ
 
 from .utils import test_data_dir, test_output_dir
 
@@ -30,3 +30,12 @@ def test_tutorial():
     model.save(folder=test_output_dir / "test")
     assert model.filepath.is_file()
     assert model.network.filepath.is_file()
+
+
+def test_xyz_model():
+    model = XYZ(filepath=Path(test_data_dir / "input/test.xyz"))
+    assert len(model.points) == 7, model
+    model.filepath = Path(test_output_dir / "test.xyz")
+    assert not model.filepath.is_file()
+    model.save()
+    assert model.filepath.is_file()
