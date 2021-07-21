@@ -1,123 +1,18 @@
-"""polyfily.py defines all classes and functions related to handling pol/pli(z) files.
+"""parser.py defines all classes and functions related to parsing pol/pli(z) files.
 """
 
 from enum import Enum
-from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.io.polyfile.models import (
+    Description,
+    Metadata,
+    Point,
+    PolyFile,
+    PolyObject,
+)
+from hydrolib.core.basemodel import BaseModel
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 import warnings
-
-
-class Description(BaseModel):
-    """Description of a single PolyObject.
-
-    The Description will be prepended to a block. Each line will
-    start with a '*'.
-    """
-
-    content: str
-
-    def serialise(self) -> str:
-        """Serialise this Description to a string which can be used within a polyfile.
-
-        Returns:
-            str: The serialised equivalent of this Description
-        """
-        if self.content == "":
-            return "*"
-        else:
-            return "\n".join(f"*{v.rstrip()}" for v in self.content.splitlines())
-
-
-class Metadata(BaseModel):
-    """Metadata of a single PolyObject."""
-
-    name: str
-    n_rows: int
-    n_columns: int
-
-    def serialise(self) -> str:
-        """Serialise this Metadata to a string which can be used within a polyfile.
-
-        The number of rows and number of columns are separated by four spaces.
-
-        Returns:
-            str: The serialised equivalent of this Metadata
-        """
-        return f"{self.name}\n{self.n_rows}    {self.n_columns}"
-
-
-class Point(BaseModel):
-    """Point consisting of a x and y coordinate, an optional z coordinate and data."""
-
-    x: float
-    y: float
-    z: Optional[float]
-    data: Sequence[float]
-
-    def serialise(self) -> str:
-        """Serialise this Point to a string which can be used within a polyfile.
-
-        the point data is indented with 4 spaces, and the individual values are
-        separated by 4 spaces as well.
-
-        Returns:
-            str: The serialised equivalent of this Point
-        """
-        z_val = f"{self.z}    " if self.z is not None else ""
-        data_vals = "    ".join(str(v) for v in self.data)
-        return f"    {self.x}    {self.y}    {z_val}{data_vals}".rstrip()
-
-
-class PolyObject(BaseModel):
-    """PolyObject describing a single block in a poly file.
-
-    The metadata should be consistent with the points:
-    - The number of points should be equal to number of rows defined in the metadata
-    - The data of each point should be equal to the number of columns defined in the
-      metadata.
-    """
-
-    description: Optional[Description]
-    metadata: Metadata
-    points: List[Point]
-
-    def serialise(self) -> str:
-        """Serialise this PolyObject to a string which can be used within a polyfile.
-
-        Returns:
-            str: The serialised equivalent of this Point
-        """
-        description = (
-            f"{self.description.serialise()}\n" if self.description is not None else ""
-        )
-        metadata = f"{self.metadata.serialise()}\n"
-        points = "\n".join(p.serialise() for p in self.points)
-        return f"{description}{metadata}{points}"
-
-
-class PolyFile(FileModel):
-    """Poly-file (.pol/.pli/.pliz) representation."""
-
-    has_z_values: bool = False
-    objects: Sequence[PolyObject] = []
-
-    @classmethod
-    def _ext(cls) -> str:
-        return ".pli"
-
-    @classmethod
-    def _filename(cls) -> str:
-        return "objects"
-
-    @classmethod
-    def _get_serializer(cls) -> Callable:
-        return DummySerializer.serialize
-
-    @classmethod
-    def _get_parser(cls) -> Callable:
-        return DummmyParser.parse
 
 
 class ParseMsg(BaseModel):
@@ -156,7 +51,7 @@ class Block(BaseModel):
     ws_warnings: List[ParseMsg] = []
     empty_lines: List[int] = []
 
-    def finalise(self) -> Optional[Tuple[PolyObject, List[ParseMsg]]]:
+    def finalize(self) -> Optional[Tuple[PolyObject, List[ParseMsg]]]:
         """Finalise this Block and return the constructed PolyObject and warnings
 
         If the metadata or the points are None, then None is returned.
@@ -268,8 +163,8 @@ class ErrorBuilder:
         if self._current_block is not None:
             self._current_block.end_line = line
 
-    def finalise_previous_error(self) -> Optional[ParseMsg]:
-        """Finalise the current invalid block if it exists
+    def finalize_previous_error(self) -> Optional[ParseMsg]:
+        """Finalize the current invalid block if it exists
 
         If no current invalid block exists, None will be returned, and nothing will
         change. If a current block exists, it will be converted into a ParseMsg and
@@ -378,15 +273,15 @@ class Parser:
 
         self._increment_line()
 
-    def finalise(self) -> Sequence[PolyObject]:
-        """Finalise parsing and return the constructed PolyObject.
+    def finalize(self) -> Sequence[PolyObject]:
+        """Finalize parsing and return the constructed PolyObject.
 
         Returns:
             PolyObject:
                 A PolyObject containing the constructed PolyObject instances.
         """
         self._error_builder.end_invalid_block(self.line)
-        last_error_msg = self._error_builder.finalise_previous_error()
+        last_error_msg = self._error_builder.finalize_previous_error()
         if last_error_msg is not None:
             self._handle_parse_msg(last_error_msg)
 
@@ -404,13 +299,13 @@ class Parser:
         self._current_block = Block(start_line=(self.line + offset))
 
     def _finish_block(self):
-        (obj, warnings) = self._current_block.finalise()  # type: ignore
+        (obj, warnings) = self._current_block.finalize()  # type: ignore
         self._poly_objects.append(obj)
 
         for msg in warnings:
             self._handle_parse_msg(msg)
 
-        last_error = self._error_builder.finalise_previous_error()
+        last_error = self._error_builder.finalize_previous_error()
         if last_error is not None:
             self._handle_parse_msg(last_error)
 
@@ -655,22 +550,6 @@ def read_polyfile(path: Path, has_z_values: Optional[bool] = None) -> PolyFile:
         for line in f:
             parser.feed_line(line)
 
-    objs = parser.finalise()
+    objs = parser.finalize()
 
     return PolyFile(has_z_values=has_z_values, objects=objs, filepath=path)
-
-
-def write_polyfile(path: Path, data: PolyFile) -> None:
-    """Write the data to a new file at path
-
-    Args:
-        path (Path): The path to write the data to
-        data (PolyFile): The data to write
-    """
-    serialized_data = "\n".join(obj.serialise() for obj in data.objects)
-
-    if not path.parent.exists():
-        path.parent.mkdir(parents=True)
-
-    with path.open("w") as f:
-        f.write(serialized_data)

@@ -1,18 +1,26 @@
-from hydrolib.io.polyfile import (
-    Block,
+from hydrolib.core.io.polyfile.models import (
     Description,
-    ErrorBuilder,
-    InvalidBlock,
-    ParseMsg,
-    Parser,
     Point,
     PolyFile,
     PolyObject,
     Metadata,
+)
+
+from hydrolib.core.io.polyfile.parser import (
+    Block,
+    ErrorBuilder,
+    InvalidBlock,
+    ParseMsg,
+    Parser,
     _determine_has_z_value,
     read_polyfile,
+)
+
+from hydrolib.core.io.polyfile.serializer import (
+    Serializer,
     write_polyfile,
 )
+
 from pathlib import Path
 from typing import Iterator, List, Optional, Tuple, Union
 from ..utils import test_data_dir, test_output_dir
@@ -20,7 +28,7 @@ from ..utils import test_data_dir, test_output_dir
 import pytest
 
 
-class TestDescription:
+class TestSerializer:
     @pytest.mark.parametrize(
         "description,expected_output",
         [
@@ -35,11 +43,11 @@ class TestDescription:
             ),
         ],
     )
-    def test_serialise(self, description: Description, expected_output: str):
-        assert description.serialise() == expected_output
+    def test_serialize_description(
+        self, description: Description, expected_output: str
+    ):
+        assert Serializer.serialize_description(description) == expected_output
 
-
-class TestMetadata:
     @pytest.mark.parametrize(
         "metadata,expected_output",
         [
@@ -47,11 +55,9 @@ class TestMetadata:
             (Metadata(name="name", n_rows=25, n_columns=10), "name\n25    10"),
         ],
     )
-    def test_serialise(self, metadata: Metadata, expected_output: str):
-        assert metadata.serialise() == expected_output
+    def test_serialize_metadata(self, metadata: Metadata, expected_output: str):
+        assert Serializer.serialize_metadata(metadata) == expected_output
 
-
-class TestPoint:
     @pytest.mark.parametrize(
         "point,expected_output",
         [
@@ -93,8 +99,8 @@ class TestPoint:
             ),
         ],
     )
-    def test_serialise(self, point: Point, expected_output: str):
-        assert point.serialise() == expected_output
+    def test_serialize_point(self, point: Point, expected_output: str):
+        assert Serializer.serialize_point(point) == expected_output
 
 
 class TestBlock:
@@ -116,7 +122,7 @@ class TestBlock:
             points=[],
         )
 
-        (result_object, result_warnings) = block.finalise()  # type: ignore
+        (result_object, result_warnings) = block.finalize()  # type: ignore
         assert result_warnings == warning_msgs
         assert result_object == expected_object
 
@@ -136,11 +142,9 @@ class TestBlock:
         points: Optional[List[Point]],
     ):
         block = Block(start_line=0, name=name, dimensions=dimensions, points=points)
-        assert block.finalise() is None
+        assert block.finalize() is None
 
-
-class TestPolyObject:
-    def test_serialise(self):
+    def test_serialize_poly_object(self):
         poly_object = PolyObject(
             description=Description(content=" description\n more description"),
             metadata=Metadata(name="name", n_rows=2, n_columns=2),
@@ -157,7 +161,7 @@ name
     1.0    2.0
     3.0    4.0"""
 
-        assert poly_object.serialise() == expected_str
+        assert Serializer.serialize_poly_object(poly_object) == expected_str
 
 
 class TestInvalidBlock:
@@ -172,7 +176,7 @@ class TestInvalidBlock:
 class TestErrorBuilder:
     def test_finalise_previous_error_no_error_returns_none(self):
         builder = ErrorBuilder()
-        assert builder.finalise_previous_error() is None
+        assert builder.finalize_previous_error() is None
 
     def test_finalise_previous_error(self):
         builder = ErrorBuilder()
@@ -184,7 +188,7 @@ class TestErrorBuilder:
 
         builder.start_invalid_block(line[0], invalid_line, reason)
         builder.end_invalid_block(line[1])
-        msg = builder.finalise_previous_error()
+        msg = builder.finalize_previous_error()
 
         assert msg is not None
         assert msg.line == line
@@ -201,7 +205,7 @@ class TestErrorBuilder:
         builder.start_invalid_block(line[0], invalid_line, reason)
         builder.start_invalid_block(12, 15, "some other reason")
         builder.end_invalid_block(line[1])
-        msg = builder.finalise_previous_error()
+        msg = builder.finalize_previous_error()
 
         assert msg is not None
         assert msg.line == line
@@ -405,7 +409,7 @@ another-name
         for l in input_data.splitlines():
             parser.feed_line(l)
 
-        poly_objects = parser.finalise()
+        poly_objects = parser.finalize()
 
         assert len(recwarn) == 0
         assert poly_objects == expected_poly_objects
@@ -469,7 +473,7 @@ name
         for l in input.splitlines():
             parser.feed_line(l)
 
-        _ = parser.finalise()
+        _ = parser.finalize()
 
         assert len(recwarn) == len(warnings_description)
 
@@ -540,7 +544,7 @@ name
         for l in input.splitlines():
             parser.feed_line(l)
 
-        _ = parser.finalise()
+        _ = parser.finalize()
 
         assert len(recwarn) == len(warnings_description)
 
@@ -637,7 +641,7 @@ last-name
         for l in input.splitlines():
             parser.feed_line(l)
 
-        _ = parser.finalise()
+        _ = parser.finalize()
 
         assert len(recwarn) == len(errors_description)
 
