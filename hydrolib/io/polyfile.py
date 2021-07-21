@@ -3,11 +3,10 @@
 
 from enum import Enum
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from pathlib import Path
-
 from hydrolib.core.basemodel import BaseModel, FileModel
-from hydrolib.io.common import ParseMsg
+from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
+import warnings
 
 
 class Description(BaseModel):
@@ -121,6 +120,29 @@ class PolyFile(FileModel):
         return DummmyParser.parse
 
 
+class ParseMsg(BaseModel):
+    """ParseMsg defines a single message indicating a significant parse event."""
+
+    line: Tuple[int, int]
+    column: Optional[Tuple[int, int]]
+    reason: str
+
+    def notify_as_warning(self, file_path: Optional[Path] = None):
+        if self.line[0] != self.line[1]:
+            block_suffix = f"\nInvalid block {self.line[0]}:{self.line[1]}"
+        else:
+            block_suffix = f"\nInvalid line {self.line[0]}"
+
+        col_suffix = (
+            f"\nColumns {self.column[0]}:{self.column[1]}"
+            if self.column is not None
+            else ""
+        )
+        file_suffix = f"\nFile: {file_path}" if file_path is not None else ""
+
+        warnings.warn(f"{self.reason}{block_suffix}{col_suffix}{file_suffix}")
+
+
 class Block(BaseModel):
     """Block is a temporary object which will be converted into a PolyObject."""
 
@@ -186,9 +208,7 @@ class Block(BaseModel):
 
     @staticmethod
     def _get_empty_line_msg(line_range: Tuple[int, int]) -> ParseMsg:
-        return ParseMsg(
-            line=line_range, reason="White space at the start of the line is ignored."
-        )
+        return ParseMsg(line=line_range, reason="Empty lines are ignored.")
 
 
 class InvalidBlock(BaseModel):
@@ -298,14 +318,17 @@ class Parser:
     name.
     """
 
-    def __init__(self, has_z_value: bool = False) -> None:
+    def __init__(self, file_path: Path, has_z_value: bool = False) -> None:
         """Create a new Parser
 
         Args:
+            file_path (Path): Name of the file being parsed, only used for providing
+                              proper warnings.
             has_z_value (bool, optional): Whether to interpret the third column as
                                           z-coordinates. Defaults to False.
         """
         self._has_z_value = has_z_value
+        self._file_path = file_path
 
         self._line = 0
         self._new_block()
@@ -313,8 +336,6 @@ class Parser:
         self._error_builder = ErrorBuilder()
 
         self._poly_objects: List[PolyObject] = []
-        self._warnings: List[ParseMsg] = []
-        self._errors: List[ParseMsg] = []
 
         self._current_point: int = 0
 
@@ -357,24 +378,21 @@ class Parser:
 
         self._increment_line()
 
-    def finalise(
-        self,
-    ) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
-        """Finalise parsing and return the constructed objects.
+    def finalise(self) -> Sequence[PolyObject]:
+        """Finalise parsing and return the constructed PolyObject.
 
         Returns:
-            Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
-                A tuple consisting of the constructed PolyObject instances, error
-                ParseMsg objects and warning ParseMsg objects.
+            PolyObject:
+                A PolyObject containing the constructed PolyObject instances.
         """
         self._error_builder.end_invalid_block(self.line)
         last_error_msg = self._error_builder.finalise_previous_error()
         if last_error_msg is not None:
-            self._errors.append(last_error_msg)
+            self._handle_parse_msg(last_error_msg)
 
         self._finalise[self._state]()
 
-        return self._poly_objects, self._errors, self._warnings
+        return self._poly_objects
 
     @property
     def line(self) -> int:
@@ -388,11 +406,13 @@ class Parser:
     def _finish_block(self):
         (obj, warnings) = self._current_block.finalise()  # type: ignore
         self._poly_objects.append(obj)
-        self._warnings.extend(warnings)
+
+        for msg in warnings:
+            self._handle_parse_msg(msg)
 
         last_error = self._error_builder.finalise_previous_error()
         if last_error is not None:
-            self._errors.append(last_error)
+            self._handle_parse_msg(last_error)
 
     def _increment_line(self) -> None:
         self._line += 1
@@ -402,12 +422,11 @@ class Parser:
         pass
 
     def _add_current_block_as_incomplete_error(self) -> None:
-        self._errors.append(
-            ParseMsg(
-                line=(self._current_block.start_line, self.line),
-                reason="EoF encountered before the block is finished.",
-            )
+        msg = ParseMsg(
+            line=(self._current_block.start_line, self.line),
+            reason="EoF encountered before the block is finished.",
         )
+        self._handle_parse_msg(msg)
 
     def _parse_name_or_new_description(self, line: str) -> None:
         if Parser._is_comment(line):
@@ -497,6 +516,9 @@ class Parser:
         )
         self._state = StateType.INVALID_STATE
 
+    def _handle_parse_msg(self, msg: ParseMsg) -> None:
+        msg.notify_as_warning(self._file_path)
+
     @staticmethod
     def _is_empty_line(line: str) -> bool:
         return len(line.strip()) == 0
@@ -565,20 +587,7 @@ def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
     return isinstance(input_val, Path) and input_val.suffix == ".pliz"
 
 
-def _read_poly_file(
-    input_iterator: Iterator[str], has_z_values: bool
-) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
-    parser = Parser(has_z_value=has_z_values)
-
-    for line in input_iterator:
-        parser.feed_line(line)
-
-    return parser.finalise()
-
-
-def read_polyfile(
-    input_data: Union[str, Path, Iterator[str]], has_z_values: Optional[bool] = None
-) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
+def read_polyfile(path: Path, has_z_values: Optional[bool] = None) -> PolyFile:
     """Read the specified file and return the corresponding data.
 
     The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
@@ -625,11 +634,10 @@ def read_polyfile(
     invalid blocks will be reported as a single invalid block.
 
     Args:
-        input_data (Union[str, Path, Iterator[str]]):
-            Path to the pli(z)/pol convention structured file or an iterator where
-            each item corresponds with a line of a file (e.g. a File object).
+        path (Path):
+            Path to the pli(z)/pol convention structured file.
         has_z_values (Optional[bool]):
-            Whether to create points containing a z-value
+            Whether to create points containing a z-value.
 
     Returns:
         Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
@@ -638,15 +646,31 @@ def read_polyfile(
             - The error ParseMsg instances encountered during parsing
             - The warning ParseMsg instances encountered during parsing
     """
-
-    if isinstance(input_data, str):
-        input_data = Path(input_data)
-
     if has_z_values is None:
-        has_z_values = _determine_has_z_value(input_data)
+        has_z_values = _determine_has_z_value(path)
 
-    if isinstance(input_data, Path):
-        with input_data.open("r") as f:
-            return _read_poly_file(f, has_z_values)
-    else:
-        return _read_poly_file(input_data, has_z_values)
+    parser = Parser(path, has_z_value=has_z_values)
+
+    with path.open("r") as f:
+        for line in f:
+            parser.feed_line(line)
+
+    objs = parser.finalise()
+
+    return PolyFile(has_z_values=has_z_values, objects=objs, filepath=path)
+
+
+def write_polyfile(path: Path, data: PolyFile) -> None:
+    """Write the data to a new file at path
+
+    Args:
+        path (Path): The path to write the data to
+        data (PolyFile): The data to write
+    """
+    serialized_data = "\n".join(obj.serialise() for obj in data.objects)
+
+    if not path.parent.exists():
+        path.parent.mkdir(parents=True)
+
+    with path.open("w") as f:
+        f.write(serialized_data)

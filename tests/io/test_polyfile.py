@@ -1,17 +1,21 @@
-from hydrolib.io.common import ParseMsg
 from hydrolib.io.polyfile import (
     Block,
     Description,
     ErrorBuilder,
     InvalidBlock,
+    ParseMsg,
     Parser,
     Point,
+    PolyFile,
     PolyObject,
     Metadata,
     _determine_has_z_value,
+    read_polyfile,
+    write_polyfile,
 )
 from pathlib import Path
 from typing import Iterator, List, Optional, Tuple, Union
+from ..utils import test_data_dir, test_output_dir
 
 import pytest
 
@@ -360,7 +364,7 @@ class TestParser:
     ):
         assert Parser._convert_to_point(input, n_total_points, has_z) == expected_value
 
-    def test_correct_pli_expected_result(self):
+    def test_correct_pli_expected_result(self, recwarn):
         input_data = """* Some header
 * with multiple
 * descriptions
@@ -396,16 +400,14 @@ another-name
             ),
         ]
 
-        parser = Parser(has_z_value=False)
+        parser = Parser(Path("dummy.pli"), has_z_value=False)
 
         for l in input_data.splitlines():
             parser.feed_line(l)
 
-        (poly_objects, errors, warnings) = parser.finalise()
+        poly_objects = parser.finalise()
 
-        assert len(errors) == 0
-        assert len(warnings) == 0
-
+        assert len(recwarn) == 0
         assert poly_objects == expected_poly_objects
 
     @pytest.mark.parametrize(
@@ -460,20 +462,24 @@ name
         ],
     )
     def test_whitespace_is_correctly_logged(
-        self, input: str, warnings_description: List[Tuple[int, int]]
+        self, input: str, warnings_description: List[Tuple[int, int]], recwarn
     ):
-        parser = Parser()
+        parser = Parser(Path("dummy.pli"))
 
         for l in input.splitlines():
             parser.feed_line(l)
 
-        (_, __, warnings) = parser.finalise()
+        _ = parser.finalise()
 
-        assert len(warnings) == len(warnings_description)
+        assert len(recwarn) == len(warnings_description)
 
-        for warning, (line, col) in zip(warnings, warnings_description):
-            assert warning.line == (line, line)
-            assert warning.column == (0, col)
+        for warning, (line, col) in zip(recwarn, warnings_description):
+            block_suffix = f"Invalid line {line}"
+            column_suffix = f"Columns 0:{col}"
+
+            found_msg = warning.message.args[0]
+            expected_msg = f"White space at the start of the line is ignored.\n{block_suffix}\n{column_suffix}\nFile: dummy.pli"
+            assert found_msg == expected_msg
 
     @pytest.mark.parametrize(
         "input,warnings_description",
@@ -527,19 +533,27 @@ name
         ],
     )
     def test_empty_lines_is_correctly_logged(
-        self, input: str, warnings_description: List[Tuple[int, int]]
+        self, input: str, warnings_description: List[Tuple[int, int]], recwarn
     ):
-        parser = Parser()
+        parser = Parser(Path("dummy.pli"))
 
         for l in input.splitlines():
             parser.feed_line(l)
 
-        (_, __, warnings) = parser.finalise()
+        _ = parser.finalise()
 
-        assert len(warnings) == len(warnings_description)
+        assert len(recwarn) == len(warnings_description)
 
-        for warning, (line_start, line_end) in zip(warnings, warnings_description):
-            assert warning.line == (line_start, line_end)
+        for warning, (line_start, line_end) in zip(recwarn, warnings_description):
+            block_suffix = (
+                f"Invalid block {line_start}:{line_end}"
+                if line_start != line_end
+                else f"Invalid line {line_start}"
+            )
+
+            found_msg = warning.message.args[0]
+            expected_msg = f"Empty lines are ignored.\n{block_suffix}\nFile: dummy.pli"
+            assert found_msg == expected_msg
 
     @pytest.mark.parametrize(
         "input,errors_description",
@@ -616,20 +630,27 @@ last-name
         ],
     )
     def test_invalid_block_is_correctly_logged(
-        self, input: str, errors_description: List
+        self, input: str, errors_description: List, recwarn
     ):
-        parser = Parser()
+        parser = Parser(Path("dummy.pli"))
 
         for l in input.splitlines():
             parser.feed_line(l)
 
-        (_, errors, __) = parser.finalise()
+        _ = parser.finalise()
 
-        assert len(errors) == len(errors_description)
+        assert len(recwarn) == len(errors_description)
 
-        for error, (lines, reason) in zip(errors, errors_description):
-            assert error.line == lines
-            assert error.reason == reason
+        for warning, (lines, reason) in zip(recwarn, errors_description):
+            block_suffix = (
+                f"Invalid block {lines[0]}:{lines[1]}"
+                if lines[0] != lines[1]
+                else f"Invalid line {lines[0]}"
+            )
+
+            found_msg = warning.message.args[0]
+            expected_msg = f"{reason}\n{block_suffix}\nFile: dummy.pli"
+            assert found_msg == expected_msg
 
 
 @pytest.mark.parametrize(
@@ -647,3 +668,48 @@ def test_determine_has_z_value(
     input_value: Union[Path, Iterator[str]], expected_value: bool
 ):
     assert _determine_has_z_value(input_value) == expected_value
+
+
+def test_write_read_write_should_have_the_same_data():
+    path = test_output_dir / "tmp" / "test.pliz"
+
+    poly_file = PolyFile(
+        file_path=path,
+        has_z_values=True,
+        objects=[
+            PolyObject(
+                description=None,
+                metadata=Metadata(name="someName", n_rows=2, n_columns=3),
+                points=[
+                    Point(x=0.0, y=1.0, z=2.0, data=[]),
+                    Point(x=0.01, y=1.01, z=2.01, data=[]),
+                ],
+            ),
+            PolyObject(
+                description=Description(content=" header"),
+                metadata=Metadata(name="014", n_rows=3, n_columns=4),
+                points=[
+                    Point(x=0.0, y=1.0, z=2.0, data=[1.0]),
+                    Point(x=0.01, y=1.01, z=2.01, data=[2.0]),
+                    Point(x=5.01, y=6.01, z=7.01, data=[2.0]),
+                ],
+            ),
+            PolyObject(
+                description=Description(content=" header"),
+                metadata=Metadata(name="014", n_rows=5, n_columns=4),
+                points=[
+                    Point(x=0.0, y=1.0, z=2.0, data=[1.0]),
+                    Point(x=0.01, y=1.01, z=2.01, data=[2.0]),
+                    Point(x=5.01, y=-6.01, z=-7.01, data=[2.0]),
+                    Point(x=0.0, y=-1.0, z=2.0, data=[1.0]),
+                    Point(x=-0.01, y=1.01, z=2.01, data=[2.0]),
+                ],
+            ),
+        ],
+    )
+
+    write_polyfile(path, poly_file)
+    read_result = read_polyfile(path, has_z_values=True)
+
+    assert read_result.objects == poly_file.objects
+    assert read_result.has_z_values == poly_file.has_z_values
