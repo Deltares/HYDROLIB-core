@@ -4,8 +4,8 @@
 from enum import Enum
 from pathlib import Path
 
-from hydrolib.io.common import LineReader, ParseMsg, BaseModel
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from hydrolib.io.common import ParseMsg, BaseModel
+from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
 
 class Description(BaseModel):
@@ -489,27 +489,23 @@ class Parser:
             return None
 
 
-def _determine_has_z_value(input: Union[Path, LineReader]) -> bool:
-    return isinstance(input, Path) and input.suffix == ".pliz"
+def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
+    return isinstance(input_val, Path) and input_val.suffix == ".pliz"
 
 
 def _read_poly_file(
-    input: LineReader, has_z_values: bool
+    input_iterator: Iterator[str], has_z_values: bool
 ) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
     parser = Parser(has_z_value=has_z_values)
 
-    while True:
-        next_line = input.readline()
-        if next_line is None:
-            break
-
-        parser.feed_line(next_line)
+    for line in input_iterator:
+        parser.feed_line(line)
 
     return parser.finalise()
 
 
 def read_polyfile(
-    input_data: Union[str, Path, LineReader], has_z_values: Optional[bool] = None
+    input_data: Union[str, Path, Iterator[str]], has_z_values: Optional[bool] = None
 ) -> Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
     """Read the specified file and return the corresponding data.
 
