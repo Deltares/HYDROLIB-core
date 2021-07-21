@@ -1,13 +1,110 @@
+from hydrolib.io.common import ParseMsg
 from hydrolib.io.polyfile import (
+    Block,
     Description,
+    ErrorBuilder,
+    InvalidBlock,
     Parser,
     Point,
     PolyObject,
     Metadata,
+    read_polyfile,
+    _determine_has_z_value,
 )
-from typing import List, Optional, Tuple
+from pathlib import Path
+from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
+
+
+class TestBlock:
+    def test_finalise_valid_state_returns_corresponding_poly_object(self):
+        warning_msgs = [ParseMsg(line=(0, 0), column=None, reason="")]
+
+        block = Block(
+            start_line=0,
+            description=None,
+            name="some-name",
+            dimensions=(4, 5),
+            points=[],
+            ws_warnings=warning_msgs,
+        )
+
+        expected_object = PolyObject(
+            description=None,
+            metadata=Metadata(name="some-name", n_rows=4, n_columns=5),
+            points=[],
+        )
+
+        (result_object, result_warnings) = block.finalise()  # type: ignore
+        assert result_warnings == warning_msgs
+        assert result_object == expected_object
+
+    @pytest.mark.parametrize(
+        "name,dimensions,points",
+        [
+            (None, (1, 1), []),
+            ("name", None, []),
+            ("name", (1, 1), None),
+            (None, None, None),
+        ],
+    )
+    def test_finalise_invalid_state_returns_none(
+        self,
+        name: Optional[str],
+        dimensions: Optional[Tuple[int, int]],
+        points: Optional[List[Point]],
+    ):
+        block = Block(start_line=0, name=name, dimensions=dimensions, points=points)
+        assert block.finalise() is None
+
+
+class TestInvalidBlock:
+    def to_msg_returns_corresponding_msg(self):
+        block = InvalidBlock(
+            start_line=0, end_line=20, invalid_line=10, reason="reason"
+        )
+        expected_msg = ParseMsg(line=(0, 20), reason="reason at line 10")
+        assert block.to_msg() == expected_msg
+
+
+class TestErrorBuilder:
+    def test_finalise_previous_error_no_error_returns_none(self):
+        builder = ErrorBuilder()
+        assert builder.finalise_previous_error() is None
+
+    def test_finalise_previous_error(self):
+        builder = ErrorBuilder()
+
+        line = (0, 20)
+        invalid_line = 10
+        reason = "reason"
+        expected_reason = f"reason at line {invalid_line}."
+
+        builder.start_invalid_block(line[0], invalid_line, reason)
+        builder.end_invalid_block(line[1])
+        msg = builder.finalise_previous_error()
+
+        assert msg is not None
+        assert msg.line == line
+        assert msg.reason == expected_reason
+
+    def test_finalise_previous_error_after_adding_second_start(self):
+        builder = ErrorBuilder()
+
+        line = (0, 20)
+        invalid_line = 10
+        reason = "reason"
+        expected_reason = f"reason at line {invalid_line}."
+
+        builder.start_invalid_block(line[0], invalid_line, reason)
+        builder.start_invalid_block(12, 15, "some other reason")
+        builder.end_invalid_block(line[1])
+        msg = builder.finalise_previous_error()
+
+        assert msg is not None
+        assert msg.line == line
+        assert msg.reason == expected_reason
 
 
 class TestParser:
@@ -436,3 +533,20 @@ last-name
         for error, (lines, reason) in zip(errors, errors_description):
             assert error.line == lines
             assert error.reason == reason
+
+
+@pytest.mark.parametrize(
+    "input_value,expected_value",
+    [
+        (Path("some.pliz"), True),
+        (Path("some.pol"), False),
+        (Path("some.pli"), False),
+        (Path("some.png"), False),
+        (Path("some.ext"), False),
+        (["some iterator value"], False),
+    ],
+)
+def test_determine_has_z_value(
+    input_value: Union[Path, Iterator[str]], expected_value: bool
+):
+    assert _determine_has_z_value(input_value) == expected_value

@@ -554,8 +554,9 @@ def read_polyfile(
     invalid blocks will be reported as a single invalid block.
 
     Args:
-        input_data (Union[str, Path, LineReader]):
-            Path to the pli(z)/pol convention structured file
+        input_data (Union[str, Path, Iterator[str]]):
+            Path to the pli(z)/pol convention structured file or an iterator where
+            each item corresponds with a line of a file (e.g. a File object).
         has_z_values (Optional[bool]):
             Whether to create points containing a z-value
 
@@ -569,8 +570,6 @@ def read_polyfile(
 
     if isinstance(input_data, str):
         input_data = Path(input_data)
-
-    # TODO: add some common file verification.
 
     if has_z_values is None:
         has_z_values = _determine_has_z_value(input_data)
