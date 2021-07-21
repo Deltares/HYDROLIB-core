@@ -1,9 +1,9 @@
 from pathlib import Path
-from hydrolib.core.io.polyfile.models import (
+from typing import Dict
+from hydrolib.core.io.polyfile.components import (
     Description,
     Metadata,
     Point,
-    PolyFile,
     PolyObject,
 )
 
@@ -64,17 +64,16 @@ class Serializer:
         return f"{description}{metadata}{points}"
 
 
-def write_polyfile(path: Path, data: PolyFile) -> None:
+def write_polyfile(path: Path, data: Dict) -> None:
     """Write the data to a new file at path
 
     Args:
         path (Path): The path to write the data to
         data (PolyFile): The data to write
     """
-    serialized_data = "\n".join(map(Serializer.serialize_poly_object, data.objects))
+    serialized_data = "\n".join(map(Serializer.serialize_poly_object, data["objects"]))
 
-    if not path.parent.exists():
-        path.parent.mkdir(parents=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
 
     with path.open("w") as f:
         f.write(serialized_data)

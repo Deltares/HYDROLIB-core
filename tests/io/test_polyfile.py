@@ -1,10 +1,11 @@
-from hydrolib.core.io.polyfile.models import (
+from hydrolib.core.io.polyfile.components import (
     Description,
     Point,
-    PolyFile,
     PolyObject,
     Metadata,
 )
+
+from hydrolib.core.io.polyfile.model import PolyFile
 
 from hydrolib.core.io.polyfile.parser import (
     Block,
@@ -681,43 +682,39 @@ def test_determine_has_z_value(
 def test_write_read_write_should_have_the_same_data():
     path = test_output_dir / "tmp" / "test.pliz"
 
-    poly_file = PolyFile(
-        file_path=path,
-        has_z_values=True,
-        objects=[
-            PolyObject(
-                description=None,
-                metadata=Metadata(name="someName", n_rows=2, n_columns=3),
-                points=[
-                    Point(x=0.0, y=1.0, z=2.0, data=[]),
-                    Point(x=0.01, y=1.01, z=2.01, data=[]),
-                ],
-            ),
-            PolyObject(
-                description=Description(content=" header"),
-                metadata=Metadata(name="014", n_rows=3, n_columns=4),
-                points=[
-                    Point(x=0.0, y=1.0, z=2.0, data=[1.0]),
-                    Point(x=0.01, y=1.01, z=2.01, data=[2.0]),
-                    Point(x=5.01, y=6.01, z=7.01, data=[2.0]),
-                ],
-            ),
-            PolyObject(
-                description=Description(content=" header"),
-                metadata=Metadata(name="014", n_rows=5, n_columns=4),
-                points=[
-                    Point(x=0.0, y=1.0, z=2.0, data=[1.0]),
-                    Point(x=0.01, y=1.01, z=2.01, data=[2.0]),
-                    Point(x=5.01, y=-6.01, z=-7.01, data=[2.0]),
-                    Point(x=0.0, y=-1.0, z=2.0, data=[1.0]),
-                    Point(x=-0.01, y=1.01, z=2.01, data=[2.0]),
-                ],
-            ),
-        ],
-    )
+    objects = [
+        PolyObject(
+            description=None,
+            metadata=Metadata(name="someName", n_rows=2, n_columns=3),
+            points=[
+                Point(x=0.0, y=1.0, z=2.0, data=[]),
+                Point(x=0.01, y=1.01, z=2.01, data=[]),
+            ],
+        ),
+        PolyObject(
+            description=Description(content=" header"),
+            metadata=Metadata(name="014", n_rows=3, n_columns=4),
+            points=[
+                Point(x=0.0, y=1.0, z=2.0, data=[1.0]),
+                Point(x=0.01, y=1.01, z=2.01, data=[2.0]),
+                Point(x=5.01, y=6.01, z=7.01, data=[2.0]),
+            ],
+        ),
+        PolyObject(
+            description=Description(content=" header"),
+            metadata=Metadata(name="014", n_rows=5, n_columns=4),
+            points=[
+                Point(x=0.0, y=1.0, z=2.0, data=[1.0]),
+                Point(x=0.01, y=1.01, z=2.01, data=[2.0]),
+                Point(x=5.01, y=-6.01, z=-7.01, data=[2.0]),
+                Point(x=0.0, y=-1.0, z=2.0, data=[1.0]),
+                Point(x=-0.01, y=1.01, z=2.01, data=[2.0]),
+            ],
+        ),
+    ]
 
-    write_polyfile(path, poly_file)
+    write_polyfile(path, {"objects": objects})
     read_result = read_polyfile(path, has_z_values=True)
 
-    assert read_result.objects == poly_file.objects
-    assert read_result.has_z_values == poly_file.has_z_values
+    assert read_result["objects"] == objects
+    assert read_result["has_z_values"] == True
