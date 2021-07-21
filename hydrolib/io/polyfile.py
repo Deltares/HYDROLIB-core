@@ -4,7 +4,8 @@
 from enum import Enum
 from pathlib import Path
 
-from hydrolib.io.common import ParseMsg, BaseModel
+from hydrolib.core.basemodel import BaseModel
+from hydrolib.io.common import ParseMsg
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
 
