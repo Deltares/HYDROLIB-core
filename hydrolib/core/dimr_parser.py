@@ -18,7 +18,9 @@ class DimrParser:
             warn(f"File: `{path}` not found, skipped parsing.")
             return {}
 
-        parser = etree.XMLParser(remove_comments=True)
+        parser = etree.XMLParser(
+            remove_comments=True, resolve_entities=False, no_network=True
+        )
         root = etree.parse(str(path), parser=parser).getroot()
 
         return DimrParser._node_to_dictionary(root)
