@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.8"
 numpy = "^1.21.0"
 pydantic = {extras = ["dotenv"], version = "^1.8.2"}
+lxml = "^4.6.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
