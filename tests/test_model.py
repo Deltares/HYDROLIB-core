@@ -36,4 +36,6 @@ def test_xyz_model():
     model = XYZ(filepath=Path(test_data_dir / "input/test.xyz"))
     assert len(model.points) == 7, model
     model.filepath = Path(test_output_dir / "test.xyz")
+    assert not model.filepath.is_file()
     model.save()
+    assert model.filepath.is_file()
