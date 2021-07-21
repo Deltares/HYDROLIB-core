@@ -53,8 +53,3 @@ def test_parse_returns_correct_data():
 def test_parse_when_file_does_not_exist_raises_exception():
     with pytest.raises(Exception):
         DimrParser().Parse(Path('does/not/exist.xml'))
-
-
-
-    
-
