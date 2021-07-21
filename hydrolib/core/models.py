@@ -7,6 +7,9 @@ from hydrolib.core.dimr_parser import DimrParser
 from typing import Callable, List, Optional
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
+from hydrolib.core.io.xyz.parser import XYZParser
+from hydrolib.core.io.xyz.serializer import XYZSerializer
+from hydrolib.core.io.xyz.models import XYZPoint
 
 from .basemodel import BaseModel, FileModel
 
@@ -20,6 +23,36 @@ class Edge(BaseModel):
 
     a: int = 0
     b: int = 1
+
+
+class XYZ(FileModel):
+    """Sample or forcing file.
+
+    Attributes:
+        points: List of [`XYZPoint`][hydrolib.core.io.xyz.models.XYZPoint]
+    """
+
+    points: List[XYZPoint]
+
+    def dict(self, *args, **kwargs):
+        # speed up serializing by not converting these lowest models to dict
+        return dict(points=self.points)
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".xyz"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "sample"
+
+    @classmethod
+    def _get_serializer(cls) -> Callable:
+        return XYZSerializer.serialize
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return XYZParser.parse
 
 
 class Network(FileModel):
