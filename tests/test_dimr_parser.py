@@ -3,10 +3,18 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.dimr_parser import DimrParser
+from tests.utils import test_data_dir
 
 
 def test_parse_returns_correct_data():
-    test_file = "tests/data/input/e02/c11_korte-woerden-1d/dimr_model/dimr_config.xml"
+    test_file = (
+        test_data_dir
+        / "input"
+        / "e02"
+        / "c11_korte-woerden-1d"
+        / "dimr_model"
+        / "dimr_config.xml"
+    )
     result = DimrParser.Parse(Path(test_file))
 
     documentation = result["documentation"]
