@@ -3,10 +3,21 @@ Implementations of the [`FileModel`][hydrolib.core.basemodel.FileModel] for
 all known extensions.
 """
 
-from hydrolib.core.dimr_parser import DimrParser
-from typing import Callable, List, Optional
+from datetime import datetime
+from pathlib import Path
+from typing import Callable, List, Optional, Union
 
+from hydrolib.core import __version__
+from hydrolib.core.dimr_parser import DIMRParser
 from hydrolib.core.io.base import DummmyParser, DummySerializer
+from hydrolib.core.io.dimr.models import (
+    Component,
+    Control,
+    Coupler,
+    Documentation,
+    FMComponent,
+    RRComponent,
+)
 
 from .basemodel import BaseModel, FileModel
 
@@ -71,7 +82,22 @@ class FMModel(FileModel):
 class DIMR(FileModel):
     """DIMR model representation."""
 
-    model: Optional[FMModel]
+    component: List[Union[RRComponent, FMComponent, Component]] = []
+    documentation: Documentation = Documentation()
+    coupler: Coupler
+    control: Control
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # After initilization, try to load all component models
+        if self.filepath:
+            for comp in self.component:
+                fn = self.filepath.parent / comp.filepath
+                try:
+                    comp.model = comp.get_model()(filepath=fn)
+                except NotImplementedError:
+                    continue
 
     @classmethod
     def _ext(cls) -> str:
@@ -87,4 +113,4 @@ class DIMR(FileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        return DimrParser.parse
+        return DIMRParser.parse

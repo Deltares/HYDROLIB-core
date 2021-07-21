@@ -9,3 +9,7 @@ def example(a: float, b: float = 1.0) -> float:
         float: [description]
     """
     return a * b
+
+
+def to_lowercase(string: str) -> str:
+    return string.lower()

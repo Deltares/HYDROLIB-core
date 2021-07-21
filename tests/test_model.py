@@ -25,6 +25,21 @@ def test_filemodel_serialize():
     assert d.model.network.filepath.is_file()
 
 
+def test_dimr_model():
+    test_file = (
+        test_data_dir
+        / "input"
+        / "e02"
+        / "c11_korte-woerden-1d"
+        / "dimr_model"
+        / "dimr_config.xml"
+    )
+    d = DIMR(filepath=test_file)
+    d.save(folder=test_output_dir / "tmp")
+    assert d.filepath.is_file()
+    assert d.component[1].model.filepath.is_file()
+
+
 def test_tutorial():
     model = FMModel(name="testproject")
     model.save(folder=test_output_dir / "test")

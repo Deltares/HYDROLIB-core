@@ -4,7 +4,7 @@ from warnings import warn
 from lxml import etree
 
 
-class DimrParser:
+class DIMRParser:
     """A parser for DIMR xml files."""
 
     @staticmethod
@@ -23,7 +23,7 @@ class DimrParser:
         )
         root = etree.parse(str(path), parser=parser).getroot()
 
-        return DimrParser._node_to_dictionary(root)
+        return DIMRParser._node_to_dictionary(root)
 
     @staticmethod
     def _node_to_dictionary(node: etree):
@@ -44,7 +44,7 @@ class DimrParser:
             if child_node.text and child_node.text.strip():
                 value = child_node.text
             else:
-                value = DimrParser._node_to_dictionary(child_node)
+                value = DIMRParser._node_to_dictionary(child_node)
 
             if key in result:
 
