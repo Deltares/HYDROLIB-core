@@ -8,13 +8,89 @@ from hydrolib.io.polyfile import (
     Point,
     PolyObject,
     Metadata,
-    read_polyfile,
     _determine_has_z_value,
 )
 from pathlib import Path
 from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
+
+
+class TestDescription:
+    @pytest.mark.parametrize(
+        "description,expected_output",
+        [
+            (Description(content=""), "*"),
+            (Description(content="    "), "*"),
+            (Description(content="some comment"), "*some comment"),
+            (Description(content=" some comment"), "* some comment"),
+            (Description(content=" multiple\n lines"), "* multiple\n* lines"),
+            (
+                Description(content=" multiple lines\n\n\n with whitespace"),
+                "* multiple lines\n*\n*\n* with whitespace",
+            ),
+        ],
+    )
+    def test_serialise(self, description: Description, expected_output: str):
+        assert description.serialise() == expected_output
+
+
+class TestMetadata:
+    @pytest.mark.parametrize(
+        "metadata,expected_output",
+        [
+            (Metadata(name="some-name", n_rows=5, n_columns=10), "some-name\n5    10"),
+            (Metadata(name="name", n_rows=25, n_columns=10), "name\n25    10"),
+        ],
+    )
+    def test_serialise(self, metadata: Metadata, expected_output: str):
+        assert metadata.serialise() == expected_output
+
+
+class TestPoint:
+    @pytest.mark.parametrize(
+        "point,expected_output",
+        [
+            (
+                Point(
+                    x=0.0,
+                    y=1.0,
+                    z=2.0,
+                    data=[
+                        3.0,
+                        4.0,
+                        5.0,
+                    ],
+                ),
+                "    0.0    1.0    2.0    3.0    4.0    5.0",
+            ),
+            (
+                Point(
+                    x=0.0,
+                    y=1.0,
+                    z=None,
+                    data=[
+                        2.0,
+                        3.0,
+                        4.0,
+                        5.0,
+                    ],
+                ),
+                "    0.0    1.0    2.0    3.0    4.0    5.0",
+            ),
+            (
+                Point(
+                    x=0.0,
+                    y=1.0,
+                    z=None,
+                    data=[],
+                ),
+                "    0.0    1.0",
+            ),
+        ],
+    )
+    def test_serialise(self, point: Point, expected_output: str):
+        assert point.serialise() == expected_output
 
 
 class TestBlock:
@@ -57,6 +133,27 @@ class TestBlock:
     ):
         block = Block(start_line=0, name=name, dimensions=dimensions, points=points)
         assert block.finalise() is None
+
+
+class TestPolyObject:
+    def test_serialise(self):
+        poly_object = PolyObject(
+            description=Description(content=" description\n more description"),
+            metadata=Metadata(name="name", n_rows=2, n_columns=2),
+            points=[
+                Point(x=1.0, y=2.0, z=None, data=[]),
+                Point(x=3.0, y=4.0, z=None, data=[]),
+            ],
+        )
+
+        expected_str = """* description
+* more description
+name
+2    2
+    1.0    2.0
+    3.0    4.0"""
+
+        assert poly_object.serialise() == expected_str
 
 
 class TestInvalidBlock:

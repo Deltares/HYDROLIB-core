@@ -18,6 +18,17 @@ class Description(BaseModel):
 
     content: str
 
+    def serialise(self) -> str:
+        """Serialise this Description to a string which can be used within a polyfile.
+
+        Returns:
+            str: The serialised equivalent of this Description
+        """
+        if self.content == "":
+            return "*"
+        else:
+            return "\n".join(f"*{v.rstrip()}" for v in self.content.splitlines())
+
 
 class Metadata(BaseModel):
     """Metadata of a single PolyObject."""
@@ -25,6 +36,16 @@ class Metadata(BaseModel):
     name: str
     n_rows: int
     n_columns: int
+
+    def serialise(self) -> str:
+        """Serialise this Metadata to a string which can be used within a polyfile.
+
+        The number of rows and number of columns are separated by four spaces.
+
+        Returns:
+            str: The serialised equivalent of this Metadata
+        """
+        return f"{self.name}\n{self.n_rows}    {self.n_columns}"
 
 
 class Point(BaseModel):
@@ -34,6 +55,19 @@ class Point(BaseModel):
     y: float
     z: Optional[float]
     data: Sequence[float]
+
+    def serialise(self) -> str:
+        """Serialise this Point to a string which can be used within a polyfile.
+
+        the point data is indented with 4 spaces, and the individual values are
+        separated by 4 spaces as well.
+
+        Returns:
+            str: The serialised equivalent of this Point
+        """
+        z_val = f"{self.z}    " if self.z is not None else ""
+        data_vals = "    ".join(str(v) for v in self.data)
+        return f"    {self.x}    {self.y}    {z_val}{data_vals}".rstrip()
 
 
 class PolyObject(BaseModel):
@@ -48,6 +82,19 @@ class PolyObject(BaseModel):
     description: Optional[Description]
     metadata: Metadata
     points: List[Point]
+
+    def serialise(self) -> str:
+        """Serialise this PolyObject to a string which can be used within a polyfile.
+
+        Returns:
+            str: The serialised equivalent of this Point
+        """
+        description = (
+            f"{self.description.serialise()}\n" if self.description is not None else ""
+        )
+        metadata = f"{self.metadata.serialise()}\n"
+        points = "\n".join(p.serialise() for p in self.points)
+        return f"{description}{metadata}{points}"
 
 
 class Block(BaseModel):
