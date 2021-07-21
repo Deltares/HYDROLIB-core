@@ -2,9 +2,10 @@
 """
 
 from enum import Enum
+from hydrolib.core.io.base import DummmyParser, DummySerializer
 from pathlib import Path
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.basemodel import BaseModel, FileModel
 from hydrolib.io.common import ParseMsg
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
@@ -95,6 +96,29 @@ class PolyObject(BaseModel):
         metadata = f"{self.metadata.serialise()}\n"
         points = "\n".join(p.serialise() for p in self.points)
         return f"{description}{metadata}{points}"
+
+
+class PolyFile(FileModel):
+    """Poly-file (.pol/.pli/.pliz) representation."""
+
+    has_z_values: bool = False
+    objects: Sequence[PolyObject] = []
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".pli"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "objects"
+
+    @classmethod
+    def _get_serializer(cls) -> Callable:
+        return DummySerializer.serialize
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return DummmyParser.parse
 
 
 class Block(BaseModel):
