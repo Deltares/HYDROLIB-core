@@ -19,7 +19,7 @@ class DimrParser:
             return {}
 
         with open(str(path)) as xml_file:
-            xml = xml_file.read().encode()
+            xml = xml_file.read()
 
         parser = etree.XMLParser(remove_comments=True)
         root = etree.fromstring(xml, parser)
