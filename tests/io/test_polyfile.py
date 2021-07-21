@@ -213,6 +213,8 @@ class TestErrorBuilder:
 
 
 class TestParser:
+    file_path = Path("dummy.pli")
+
     @pytest.mark.parametrize(
         "input,expected_value",
         [
@@ -404,7 +406,7 @@ another-name
             ),
         ]
 
-        parser = Parser(Path("dummy.pli"), has_z_value=False)
+        parser = Parser(self.file_path, has_z_value=False)
 
         for l in input_data.splitlines():
             parser.feed_line(l)
@@ -468,7 +470,7 @@ name
     def test_whitespace_is_correctly_logged(
         self, input: str, warnings_description: List[Tuple[int, int]], recwarn
     ):
-        parser = Parser(Path("dummy.pli"))
+        parser = Parser(self.file_path)
 
         for l in input.splitlines():
             parser.feed_line(l)
@@ -482,7 +484,7 @@ name
             column_suffix = f"Columns 0:{col}"
 
             found_msg = warning.message.args[0]
-            expected_msg = f"White space at the start of the line is ignored.\n{block_suffix}\n{column_suffix}\nFile: dummy.pli"
+            expected_msg = f"White space at the start of the line is ignored.\n{block_suffix}\n{column_suffix}\nFile: {self.file_path}"
             assert found_msg == expected_msg
 
     @pytest.mark.parametrize(
@@ -539,7 +541,7 @@ name
     def test_empty_lines_is_correctly_logged(
         self, input: str, warnings_description: List[Tuple[int, int]], recwarn
     ):
-        parser = Parser(Path("dummy.pli"))
+        parser = Parser(self.file_path)
 
         for l in input.splitlines():
             parser.feed_line(l)
@@ -556,7 +558,9 @@ name
             )
 
             found_msg = warning.message.args[0]
-            expected_msg = f"Empty lines are ignored.\n{block_suffix}\nFile: dummy.pli"
+            expected_msg = (
+                f"Empty lines are ignored.\n{block_suffix}\nFile: {self.file_path}"
+            )
             assert found_msg == expected_msg
 
     @pytest.mark.parametrize(
@@ -636,7 +640,7 @@ last-name
     def test_invalid_block_is_correctly_logged(
         self, input: str, errors_description: List, recwarn
     ):
-        parser = Parser(Path("dummy.pli"))
+        parser = Parser(self.file_path)
 
         for l in input.splitlines():
             parser.feed_line(l)
@@ -653,7 +657,7 @@ last-name
             )
 
             found_msg = warning.message.args[0]
-            expected_msg = f"{reason}\n{block_suffix}\nFile: dummy.pli"
+            expected_msg = f"{reason}\n{block_suffix}\nFile: {self.file_path}"
             assert found_msg == expected_msg
 
 
