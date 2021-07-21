@@ -15,7 +15,7 @@ def test_parse_returns_correct_data():
         / "dimr_model"
         / "dimr_config.xml"
     )
-    result = DimrParser.Parse(Path(test_file))
+    result = DimrParser.parse(Path(test_file))
 
     documentation = result["documentation"]
     assert documentation["fileVersion"] == "1.2"
@@ -58,5 +58,5 @@ def test_parse_returns_correct_data():
 
 
 def test_parse_when_file_does_not_exist_raises_exception():
-    with pytest.raises(Exception):
-        DimrParser().Parse(Path("does/not/exist.xml"))
+    with pytest.warns(UserWarning):
+        DimrParser.parse(Path("does/not/exist.xml"))

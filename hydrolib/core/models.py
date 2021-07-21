@@ -87,4 +87,4 @@ class DIMR(FileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        return DimrParser.Parse
+        return DimrParser.parse

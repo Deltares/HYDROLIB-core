@@ -1,4 +1,5 @@
 from pathlib import Path
+from warnings import warn
 
 from lxml import etree
 
@@ -7,14 +8,15 @@ class DimrParser:
     """A parser for DIMR xml files."""
 
     @staticmethod
-    def Parse(path: Path) -> dict:
+    def parse(path: Path) -> dict:
         """Parses a DIMR file to a dictionary.
 
         Args:
             path (Path): Path to the DIMR configuration file.
         """
         if not path.is_file():
-            raise Exception(f"File does not exist: {path}")
+            warn(f"File: `{path}` not found, skipped parsing.")
+            return {}
 
         with open(str(path)) as xml_file:
             xml = xml_file.read().encode()
@@ -38,10 +40,7 @@ class DimrParser:
 
         for child_node in node.iterchildren():
 
-            if "}" in child_node.tag:
-                key = child_node.tag.split("}")[1]
-            else:
-                key = child_node.tag
+            key = child_node.tag.split("}")[1]
 
             if child_node.text and child_node.text.strip():
                 value = child_node.text
