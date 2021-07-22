@@ -6,6 +6,7 @@ all known extensions.
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Sequence
 
 from pydantic import validator
 
@@ -22,6 +23,9 @@ from hydrolib.core.io.dimr.models import (
     RRComponent,
 )
 from hydrolib.core.io.xyz.models import XYZPoint
+from hydrolib.core.io.polyfile.models import PolyObject
+from hydrolib.core.io.polyfile.parser import read_polyfile
+from hydrolib.core.io.polyfile.serializer import write_polyfile
 from hydrolib.core.io.xyz.parser import XYZParser
 from hydrolib.core.io.xyz.serializer import XYZSerializer
 from hydrolib.core.utils import to_list
@@ -126,6 +130,10 @@ class DIMR(FileModel):
     waitFile: Optional[str]
     global_settings = Optional[GlobalSettings]
 
+    @validator("component", "coupler", pre=True)
+    def validate_component(cls, v):
+        return to_list(v)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -154,6 +162,25 @@ class DIMR(FileModel):
     def _get_parser(cls) -> Callable:
         return DIMRParser.parse
 
-    @validator("component", "coupler", pre=True)
-    def validate_component(cls, v):
-        return to_list(v)
+
+class PolyFile(FileModel):
+    """Poly-file (.pol/.pli/.pliz) representation."""
+
+    has_z_values: bool = False
+    objects: Sequence[PolyObject] = []
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".pli"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "objects"
+
+    @classmethod
+    def _get_serializer(cls) -> Callable:
+        return write_polyfile
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return read_polyfile
