@@ -9,6 +9,8 @@ from hydrolib.core.io.polyfile.components import (
 
 
 class Serializer:
+    """Serializer provides several static serialize methods for the models."""
+
     @staticmethod
     def serialize_description(description: Description) -> str:
         """Serialize the Description to a string which can be used within a polyfile.

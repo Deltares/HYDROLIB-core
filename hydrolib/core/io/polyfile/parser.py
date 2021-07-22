@@ -15,13 +15,27 @@ import warnings
 
 
 class ParseMsg(BaseModel):
-    """ParseMsg defines a single message indicating a significant parse event."""
+    """ParseMsg defines a single message indicating a significant parse event.
+
+    Attributes:
+        line_start (int): The start line of the block to which this ParseMsg refers.
+        line_end (int): The end line of the block to which this ParseMsg refers.
+        column (Optional[Tuple[int, int]]):
+            An optional begin and end column to which this ParseMsg refers.
+        reason (str): A human-readable string detailing the reason of the ParseMsg.
+    """
 
     line: Tuple[int, int]
     column: Optional[Tuple[int, int]]
     reason: str
 
     def notify_as_warning(self, file_path: Optional[Path] = None):
+        """Call warnings.warn with a formatted string describing this ParseMsg
+
+        Args:
+            file_path (Optional[Path], optional):
+                The file path mentioned in the warning if specified. Defaults to None.
+        """
         if self.line[0] != self.line[1]:
             block_suffix = f"\nInvalid block {self.line[0]}:{self.line[1]}"
         else:
@@ -38,7 +52,24 @@ class ParseMsg(BaseModel):
 
 
 class Block(BaseModel):
-    """Block is a temporary object which will be converted into a PolyObject."""
+    """Block is a temporary object which will be converted into a PolyObject.
+
+    The fields are supposed to be set during the lifetime of this object.
+    When all fields are set, finalize can be called.
+
+    Attributes:
+        start_line (int): The starting line of this current block.
+        name (Optional[str]): The name of this block. Defaults to None.
+        dimensions (Optional[Tuple[int, int]]):
+            The dimensions (n_rows, n_columns) of this Block. Defaults to None.
+        points (Optional[List[Point]]):
+            The points of this block. Defaults to None.
+        ws_warnings (List[ParseMsg]):
+            The whitespace warnings associated with this block.
+            Defaults to an empty list.
+        empty_lines (List[int]):
+            The line numbers of the empty lines. Defaults to an empty list.
+    """
 
     start_line: int
 
@@ -106,7 +137,15 @@ class Block(BaseModel):
 
 
 class InvalidBlock(BaseModel):
-    """InvalidBlock is a temporary object which will be converted into a ParseMsg."""
+    """InvalidBlock is a temporary object which will be converted into a ParseMsg.
+
+    Attributes:
+        start_line (int): The start line of this InvalidBlock
+        end_line (Optional[int]):
+            The end line of this InvalidBlock if it is set. Defaults to None.
+        invalid_line (int): The line which is causing this block to be invalid.
+        reason (str): A human-readable string detailing the reason of the ParseMsg.
+    """
 
     start_line: int
     end_line: Optional[int] = None
@@ -216,10 +255,11 @@ class Parser:
         """Create a new Parser
 
         Args:
-            file_path (Path): Name of the file being parsed, only used for providing
-                              proper warnings.
-            has_z_value (bool, optional): Whether to interpret the third column as
-                                          z-coordinates. Defaults to False.
+            file_path (Path):
+                Name of the file being parsed, only used for providing proper warnings.
+            has_z_value (bool, optional):
+                Whether to interpret the third column as z-coordinates.
+                Defaults to False.
         """
         self._has_z_value = has_z_value
         self._file_path = file_path
@@ -279,7 +319,7 @@ class Parser:
             PolyObject:
                 A PolyObject containing the constructed PolyObject instances.
         """
-        self._error_builder.end_invalid_block(self.line)
+        self._error_builder.end_invalid_block(self._line)
         last_error_msg = self._error_builder.finalize_previous_error()
         if last_error_msg is not None:
             self._handle_parse_msg(last_error_msg)
@@ -288,14 +328,9 @@ class Parser:
 
         return self._poly_objects
 
-    @property
-    def line(self) -> int:
-        """Current line index."""
-        return self._line
-
     def _new_block(self, offset: int = 0) -> None:
         self._state = StateType.NEW_BLOCK
-        self._current_block = Block(start_line=(self.line + offset))
+        self._current_block = Block(start_line=(self._line + offset))
 
     def _finish_block(self):
         (obj, warnings) = self._current_block.finalize()  # type: ignore
@@ -317,7 +352,7 @@ class Parser:
 
     def _add_current_block_as_incomplete_error(self) -> None:
         msg = ParseMsg(
-            line=(self._current_block.start_line, self.line),
+            line=(self._current_block.start_line, self._line),
             reason="EoF encountered before the block is finished.",
         )
         self._handle_parse_msg(msg)
@@ -333,7 +368,7 @@ class Parser:
 
         # If we come from an invalid state, and we started a correct new block
         # we will end the previous invalid block, if it exists.
-        self._error_builder.end_invalid_block(self.line)
+        self._error_builder.end_invalid_block(self._line)
 
     def _parse_name_or_next_description(self, line: str) -> None:
         if Parser._is_comment(line):
@@ -369,7 +404,8 @@ class Parser:
 
         else:
             self._handle_new_error("Expected a valid next point")
-            # we parse the point again, as this line might be a valid start of the next block.
+            # we parse the line again, as it might be the first line of a new valid
+            # block. For example when the invalid block was missing points.
             self._feed_line[self._state](line)
 
     def _handle_parse_name(self, line: str) -> None:
@@ -389,7 +425,7 @@ class Parser:
 
     def _handle_empty_line(self) -> None:
         if self._state != StateType.INVALID_STATE:
-            self._current_block.empty_lines.append(self.line)
+            self._current_block.empty_lines.append(self._line)
 
     def _log_ws_warning(self, line: str) -> None:
         if line[0] != " ":
@@ -398,7 +434,7 @@ class Parser:
         end_column = len(line) - len(line.lstrip()) - 1
         self._current_block.ws_warnings.append(
             ParseMsg(
-                line=(self.line, self.line),
+                line=(self._line, self._line),
                 column=(0, end_column),
                 reason="White space at the start of the line is ignored.",
             )
@@ -406,7 +442,7 @@ class Parser:
 
     def _handle_new_error(self, reason: str) -> None:
         self._error_builder.start_invalid_block(
-            self._current_block.start_line, self.line, reason
+            self._current_block.start_line, self._line, reason
         )
         self._state = StateType.INVALID_STATE
 
@@ -512,33 +548,27 @@ def read_polyfile(filepath: Path, has_z_values: bool) -> Dict:
     Note that the points can be arbitrarily indented, and the comments are optional.
 
     if no has_z_value has been defined, it will be based on the file path
-    extensions:
-    - pliz will default to True
-    - pli and poll will default to False
-    - LineReader objects will default to False
+    extensions of the filepath:
+    - .pliz will default to True
+    - .pli and .pol will default to False
 
-    Empty lines will be flagged by warning ParseMsg objects, and ignored. Whitespace
-    before comments, names, and dimensions will be flagged by warning ParseMsg objects
-    as well, and ignored.
+    Empty lines and unexpected whitespace will be flagged as warnings, and ignored.
 
     If invalid syntax is detected within a block, an error will be created. This block
-    will be ignored for the purpose of create PolyObject instances.
+    will be ignored for the purpose of creating PolyObject instances.
     Once an error is encountered, any following lines will be marked as part of the
-    invalid block, until a new block is found. Note that this means that sequential
-    invalid blocks will be reported as a single invalid block.
+    invalid block, until a new valid block is found. Note that this means that sequential
+    invalid blocks will be reported as a single invalid block. Such invalid blocks will
+    be reported as warnings.
 
     Args:
         path (Path):
             Path to the pli(z)/pol convention structured file.
         has_z_values (Optional[bool]):
-            Whether to create points containing a z-value.
+            Whether to create points containing a z-value. Defaults to None.
 
     Returns:
-        Tuple[Sequence[PolyObject], Sequence[ParseMsg], Sequence[ParseMsg]]:
-            Three sequences containing respectively:
-            - The constructed PolyObject instances
-            - The error ParseMsg instances encountered during parsing
-            - The warning ParseMsg instances encountered during parsing
+        Dict: The dictionary describing the data of a PolyObject.
     """
     if has_z_values is None:
         has_z_values = _determine_has_z_value(filepath)

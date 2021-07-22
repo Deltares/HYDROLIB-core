@@ -10,13 +10,22 @@ class Description(BaseModel):
 
     The Description will be prepended to a block. Each line will
     start with a '*'.
+
+    Attributes:
+        content (str): The content of this Description.
     """
 
     content: str
 
 
 class Metadata(BaseModel):
-    """Metadata of a single PolyObject."""
+    """Metadata of a single PolyObject.
+
+    Attributes:
+        name (str): The name of the PolyObject
+        n_rows (int): The number of rows (i.e. Point instances) of the PolyObject
+        n_columns (int): The total number of values in a Point, including x, y, and z.
+    """
 
     name: str
     n_rows: int
@@ -24,7 +33,14 @@ class Metadata(BaseModel):
 
 
 class Point(BaseModel):
-    """Point consisting of a x and y coordinate, an optional z coordinate and data."""
+    """Point consisting of a x and y coordinate, an optional z coordinate and data.
+
+    Attributes:
+        x (float): The x-coordinate of this Point
+        y (float): The y-coordinate of this Point
+        z (Optional[float]): An optional z-coordinate of this Point.
+        data (Sequence[float]): The additional data variables of this Point.
+    """
 
     x: float
     y: float
