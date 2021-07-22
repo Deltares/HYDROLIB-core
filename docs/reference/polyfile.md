@@ -1,8 +1,7 @@
 ## polyfile: .pli(z) and .pol files
 
 ### Model
-::: hydrolib.core.io.polyfile.model
-::: hydrolib.core.io.polyfile.components
+::: hydrolib.core.io.polyfile.models
 
 ### Parser
 ::: hydrolib.core.io.polyfile.parser

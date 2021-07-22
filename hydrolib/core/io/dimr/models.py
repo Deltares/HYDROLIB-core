@@ -16,6 +16,18 @@ class KeyValuePair(BaseModel):
 
 
 class Component(BaseModel, ABC):
+    """
+    Attributes:
+        library:
+        name:
+        workingDir:
+        inputFile:
+        process:
+        setting:
+        parameter:
+        mpiCommunicator:
+    """
+
     library: str
     name: str
     workingDir: Path
@@ -59,30 +71,68 @@ class RRComponent(Component):
 
 
 class Documentation(BaseModel):
+    """
+    Attributes:
+        fileVersion:
+        createdBy:
+        creationDate:
+    """
+
     fileVersion: str = "1.3"
     createdBy: str = f"hydrolib-core {__version__}"
     creationDate: datetime = Field(default_factory=datetime.utcnow)
 
 
 class GlobalSettings(BaseModel):
+    """
+    Attributes:
+        logger_ncFormat:
+    """
+
     logger_ncFormat: int
 
 
 class ComponentOrCouplerRef(BaseModel):
+    """
+    Attributes:
+        name:
+    """
+
     name: str
 
 
 class CoupledItem(BaseModel):
+    """
+    Attributes:
+        sourceName:
+        targetName:
+    """
+
     sourceName: str
     targetName: str
 
 
 class Logger(BaseModel):
+    """
+    Attributes:
+        workingDir:
+        outputFile:
+    """
+
     workingDir: Path
     outputFile: Path
 
 
 class Coupler(BaseModel):
+    """
+    Attributes:
+        name:
+        sourceComponent:
+        targetComponent:
+        item:
+        logger:
+    """
+
     name: str
     sourceComponent: str
     targetComponent: str
@@ -95,6 +145,13 @@ class Coupler(BaseModel):
 
 
 class StartGroup(BaseModel):
+    """
+    Attributes:
+        time:
+        start:
+        coupler:
+    """
+
     time: str
     start: List[ComponentOrCouplerRef]
     coupler: List[ComponentOrCouplerRef]
@@ -105,11 +162,23 @@ class StartGroup(BaseModel):
 
 
 class Parallel(BaseModel):
+    """
+    Attributes:
+        startGroup
+        start:
+    """
+
     startGroup: StartGroup
     start: ComponentOrCouplerRef
 
 
 class Control(BaseModel):
+    """
+    Attributes:
+        parallel:
+        start:
+    """
+
     parallel: Optional[List[Parallel]]
     start: Optional[List[ComponentOrCouplerRef]]
 
