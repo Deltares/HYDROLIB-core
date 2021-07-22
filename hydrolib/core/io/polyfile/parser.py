@@ -576,9 +576,9 @@ def read_polyfile(filepath: Path, has_z_values: bool) -> Dict:
     be reported as warnings.
 
     Args:
-        path (Path):
+        filepath:
             Path to the pli(z)/pol convention structured file.
-        has_z_values (Optional[bool]):
+        has_z_values:
             Whether to create points containing a z-value. Defaults to None.
 
     Returns:
