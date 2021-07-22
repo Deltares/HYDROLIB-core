@@ -46,7 +46,9 @@ class TestSerializer:
     def test_serialize_description(
         self, description: Description, expected_output: str
     ):
-        assert Serializer.serialize_description(description) == expected_output
+        assert (
+            "\n".join(Serializer.serialize_description(description)) == expected_output
+        )
 
     @pytest.mark.parametrize(
         "metadata,expected_output",
@@ -56,7 +58,7 @@ class TestSerializer:
         ],
     )
     def test_serialize_metadata(self, metadata: Metadata, expected_output: str):
-        assert Serializer.serialize_metadata(metadata) == expected_output
+        assert "\n".join(Serializer.serialize_metadata(metadata)) == expected_output
 
     @pytest.mark.parametrize(
         "point,expected_output",
@@ -102,6 +104,27 @@ class TestSerializer:
     def test_serialize_point(self, point: Point, expected_output: str):
         assert Serializer.serialize_point(point) == expected_output
 
+    def test_serialize_poly_object(self):
+        poly_object = PolyObject(
+            description=Description(content=" description\n more description"),
+            metadata=Metadata(name="name", n_rows=2, n_columns=2),
+            points=[
+                Point(x=1.0, y=2.0, z=None, data=[]),
+                Point(x=3.0, y=4.0, z=None, data=[]),
+            ],
+        )
+
+        expected_str = """
+            * description
+            * more description
+            name
+            2    2
+                1.0    2.0
+                3.0    4.0"""
+        expected_str = inspect.cleandoc(expected_str)
+
+        assert "\n".join(Serializer.serialize_poly_object(poly_object)) == expected_str
+
 
 class TestBlock:
     def test_finalise_valid_state_returns_corresponding_poly_object(self):
@@ -143,27 +166,6 @@ class TestBlock:
     ):
         block = Block(start_line=0, name=name, dimensions=dimensions, points=points)
         assert block.finalize() is None
-
-    def test_serialize_poly_object(self):
-        poly_object = PolyObject(
-            description=Description(content=" description\n more description"),
-            metadata=Metadata(name="name", n_rows=2, n_columns=2),
-            points=[
-                Point(x=1.0, y=2.0, z=None, data=[]),
-                Point(x=3.0, y=4.0, z=None, data=[]),
-            ],
-        )
-
-        expected_str = """
-            * description
-            * more description
-            name
-            2    2
-                1.0    2.0
-                3.0    4.0"""
-        expected_str = inspect.cleandoc(expected_str)
-
-        assert Serializer.serialize_poly_object(poly_object) == expected_str
 
 
 class TestInvalidBlock:

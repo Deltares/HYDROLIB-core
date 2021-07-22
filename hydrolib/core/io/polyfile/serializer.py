@@ -1,5 +1,6 @@
+from itertools import chain
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Iterable, Optional
 from hydrolib.core.io.polyfile.models import (
     Description,
     Metadata,
@@ -12,19 +13,22 @@ class Serializer:
     """Serializer provides several static serialize methods for the models."""
 
     @staticmethod
-    def serialize_description(description: Description) -> str:
+    def serialize_description(description: Optional[Description]) -> Iterable[str]:
         """Serialize the Description to a string which can be used within a polyfile.
 
         Returns:
             str: The serialised equivalent of this Description
         """
+        if description is None:
+            return []
         if description.content == "":
-            return "*"
-        else:
-            return "\n".join(f"*{v.rstrip()}" for v in description.content.splitlines())
+            return [
+                "*",
+            ]
+        return (f"*{v.rstrip()}" for v in description.content.splitlines())
 
     @staticmethod
-    def serialize_metadata(metadata: Metadata) -> str:
+    def serialize_metadata(metadata: Metadata) -> Iterable[str]:
         """Serialize this Metadata to a string which can be used within a polyfile.
 
         The number of rows and number of columns are separated by four spaces.
@@ -32,7 +36,7 @@ class Serializer:
         Returns:
             str: The serialised equivalent of this Metadata
         """
-        return f"{metadata.name}\n{metadata.n_rows}    {metadata.n_columns}"
+        return [metadata.name, f"{metadata.n_rows}    {metadata.n_columns}"]
 
     @staticmethod
     def serialize_point(point: Point) -> str:
@@ -49,21 +53,17 @@ class Serializer:
         return f"    {point.x}    {point.y}    {z_val}{data_vals}".rstrip()
 
     @staticmethod
-    def serialize_poly_object(obj: PolyObject) -> str:
+    def serialize_poly_object(obj: PolyObject) -> Iterable[str]:
         """Serialize this PolyObject to a string which can be used within a polyfile.
 
         Returns:
             str: The serialised equivalent of this Point
         """
-        description = (
-            f"{Serializer.serialize_description(obj.description)}\n"
-            if obj.description is not None
-            else ""
-        )
 
-        metadata = f"{Serializer.serialize_metadata(obj.metadata)}\n"
-        points = "\n".join(map(Serializer.serialize_point, obj.points))
-        return f"{description}{metadata}{points}"
+        description = Serializer.serialize_description(obj.description)
+        metadata = Serializer.serialize_metadata(obj.metadata)
+        points = map(Serializer.serialize_point, obj.points)
+        return chain(description, metadata, points)
 
 
 def write_polyfile(path: Path, data: Dict) -> None:
@@ -73,9 +73,14 @@ def write_polyfile(path: Path, data: Dict) -> None:
         path (Path): The path to write the data to
         data (PolyFile): The data to write
     """
-    serialized_data = "\n".join(map(Serializer.serialize_poly_object, data["objects"]))
+    serialized_data = chain.from_iterable(
+        map(Serializer.serialize_poly_object, data["objects"])
+    )
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
     with path.open("w") as f:
-        f.write(serialized_data)
+
+        for line in serialized_data:
+            f.write(line)
+            f.write("\n")
