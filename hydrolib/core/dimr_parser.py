@@ -23,19 +23,21 @@ class DIMRParser:
         )
         root = etree.parse(str(path), parser=parser).getroot()
 
-        return DIMRParser._node_to_dictionary(root)
+        return DIMRParser._node_to_dictionary(root, True)
 
     @staticmethod
-    def _node_to_dictionary(node: etree):
+    def _node_to_dictionary(node: etree, ignore_attributes: bool = False):
         """
         Convert an lxml.etree node tree recursively into a nested dictionary.
         The node's attributes and child items will be added to it's dictionary.
 
         Args:
             node (etree): The etree node
+            ignore_attributes (bool): Optional parameter; whether or not to
+                                      skip the node's attributes. Default is False.
         """
 
-        result = dict(node.attrib)
+        result = {} if ignore_attributes else dict(node.attrib)
 
         for child_node in node.iterchildren():
 
