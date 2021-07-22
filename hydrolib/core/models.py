@@ -121,7 +121,7 @@ class DIMR(FileModel):
 
     component: List[Union[RRComponent, FMComponent, Component]] = []
     documentation: Documentation = Documentation()
-    coupler: Optional[Union[List[Coupler], Coupler]]
+    coupler: Optional[List[Coupler]]
     control: Control = Control()
     waitFile: Optional[str]
     global_settings = Optional[GlobalSettings]
@@ -154,10 +154,6 @@ class DIMR(FileModel):
     def _get_parser(cls) -> Callable:
         return DIMRParser.parse
 
-    @validator("component", pre=True)
+    @validator("component", "coupler", pre=True)
     def validate_component(cls, v):
-        return to_list(v)
-
-    @validator("coupler", pre=True)
-    def validate_coupler(cls, v):
         return to_list(v)

@@ -50,6 +50,19 @@ def test_dimr_model():
     assert d.component[1].model.filepath.is_file()
 
 
+def test_dimr_validate():
+    d = DIMR(
+        coupler={
+            "name": "test",
+            "sourcecomponent": "test",
+            "targetcomponent": "test",
+            "item": [],
+        }
+    )
+    assert isinstance(d.coupler, list)
+    assert len(d.coupler) == 1
+
+
 def test_initialize_default_dimr_does_not_raise_exception():
     DIMR()
 

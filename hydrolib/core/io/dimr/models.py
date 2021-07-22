@@ -35,12 +35,8 @@ class Component(BaseModel, ABC):
     def get_model(cls) -> Type[FileModel]:
         raise NotImplementedError("Model not implemented yet.")
 
-    @validator("setting", pre=True)
+    @validator("setting", "parameter", pre=True)
     def validate_setting(cls, v):
-        return to_list(v)
-
-    @validator("parameter", pre=True)
-    def validate_parameter(cls, v):
         return to_list(v)
 
 
@@ -103,12 +99,8 @@ class StartGroup(BaseModel):
     start: List[ComponentOrCouplerRef]
     coupler: List[ComponentOrCouplerRef]
 
-    @validator("start", pre=True)
+    @validator("start", "coupler", pre=True)
     def validate_start(cls, v):
-        return to_list(v)
-
-    @validator("coupler", pre=True)
-    def validate_coupler(cls, v):
         return to_list(v)
 
 
@@ -121,10 +113,6 @@ class Control(BaseModel):
     parallel: Optional[List[Parallel]]
     start: Optional[List[ComponentOrCouplerRef]]
 
-    @validator("parallel", pre=True)
+    @validator("parallel", "start", pre=True)
     def validate_parallel(cls, v):
-        return to_list(v)
-
-    @validator("start", pre=True)
-    def validate_start(cls, v):
         return to_list(v)
