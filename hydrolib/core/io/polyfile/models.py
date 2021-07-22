@@ -55,6 +55,14 @@ class PolyObject(BaseModel):
     - The number of points should be equal to number of rows defined in the metadata
     - The data of each point should be equal to the number of columns defined in the
       metadata.
+
+    Attributes:
+        description (Optional[Description]):
+            An optional description of this PolyObject
+        metadata (Metadata):
+            The Metadata of this PolObject, describing the structure
+        points (List[Point]):
+            The points describing this PolyObject, structured according to the Metadata
     """
 
     description: Optional[Description]

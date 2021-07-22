@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple, Union
 from ..utils import test_data_dir, test_output_dir
 
+import inspect
 import pytest
 
 
@@ -153,12 +154,14 @@ class TestBlock:
             ],
         )
 
-        expected_str = """* description
-* more description
-name
-2    2
-    1.0    2.0
-    3.0    4.0"""
+        expected_str = """
+            * description
+            * more description
+            name
+            2    2
+                1.0    2.0
+                3.0    4.0"""
+        expected_str = inspect.cleandoc(expected_str)
 
         assert Serializer.serialize_poly_object(poly_object) == expected_str
 
@@ -372,18 +375,21 @@ class TestParser:
         assert Parser._convert_to_point(input, n_total_points, has_z) == expected_value
 
     def test_correct_pli_expected_result(self, recwarn):
-        input_data = """* Some header
-* with multiple
-* descriptions
-the-name
-2    3
-1.0 2.0 3.0
-4.0 5.0 6.0
-another-name
-3    2
-7.0 8.0
-9.0 10.0
-11.0 12.0"""
+        input_data = inspect.cleandoc(
+            """
+            * Some header
+            * with multiple
+            * descriptions
+            the-name
+            2    3
+                1.0 2.0 3.0
+                4.0 5.0 6.0
+            another-name
+            3    2
+                7.0   8.0
+                9.0  10.0
+               11.0  12.0"""
+        )
 
         expected_poly_objects = [
             PolyObject(
@@ -421,45 +427,63 @@ another-name
         "input,warnings_description",
         [
             (
-                """*description
-name
-1 2
-0.0 0.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1 2
+                    0.0 0.0"""
+                ),
                 [],
             ),
             (
-                """    * description
-name
-1 2
-0.0 0.0""",
+                inspect.cleandoc(
+                    """
+                        * description
+                    name
+                    1 2
+                    0.0 0.0"""
+                ),
                 [(0, 3)],
             ),
             (
-                """* description
-        name
-1 2
-0.0 0.0""",
+                inspect.cleandoc(
+                    """
+                    * description
+                            name
+                    1 2
+                    0.0 0.0"""
+                ),
                 [(1, 7)],
             ),
             (
-                """* description
-name
- 1 2
-0.0 0.0""",
+                inspect.cleandoc(
+                    """
+                    * description
+                    name
+                     1 2
+                    0.0 0.0"""
+                ),
                 [(2, 0)],
             ),
             (
-                """*description
-name
-1 2
-    0.0     0.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1 2
+                        0.0     0.0"""
+                ),
                 [],
             ),
             (
-                """    *description
-        name
-            1 2
-0.0 0.0""",
+                inspect.cleandoc(
+                    """
+                        *description
+                            name
+                                1 2
+                    0.0 0.0"""
+                ),
                 [
                     (0, 3),
                     (1, 7),
@@ -492,13 +516,18 @@ name
         "input,warnings_description",
         [
             (
-                """*description
-name
-1 2
-0.0 0.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1 2
+                    0.0 0.0"""
+                ),
                 [],
             ),
             (
+                # No cleandoc here because we explicitly want the empty line
+                # at the start
                 """
 * description
 name
@@ -507,34 +536,43 @@ name
                 [(0, 0)],
             ),
             (
-                """* description
+                inspect.cleandoc(
+                    """
+                    * description
 
-name
-1 2
-0.0 0.0""",
+                    name
+                    1 2
+                    0.0 0.0"""
+                ),
                 [(1, 1)],
             ),
             (
-                """* description
+                inspect.cleandoc(
+                    """
+                    * description
 
 
 
-name
-1 2
-0.0 0.0""",
+                    name
+                    1 2
+                    0.0 0.0"""
+                ),
                 [(1, 3)],
             ),
             (
-                """* description
+                inspect.cleandoc(
+                    """
+                    * description
 
 
 
-name
+                    name
 
-1 2
+                    1 2
 
 
-0.0 0.0""",
+                    0.0 0.0"""
+                ),
                 [(1, 3), (5, 5), (7, 8)],
             ),
         ],
@@ -572,68 +610,89 @@ name
                 [((0, 1), "EoF encountered before the block is finished.")],
             ),
             (
-                """*description
-not a name""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    not a name"""
+                ),
                 [((0, 2), "Expected a valid name or description at line 1.")],
             ),
             (
-                """*description
-name
-1     """,
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1     """
+                ),
                 [((0, 3), "Expected valid dimensions at line 2.")],
             ),
             (
-                """*description
-name
-1  5   
-1.0 2.0 3.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    1.0 2.0 3.0"""
+                ),
                 [((0, 4), "Expected a valid next point at line 3.")],
             ),
             (
-                """*description
-name
-1  5   
-1.0 2.0 3.0 4.0 5.0 6.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    1.0 2.0 3.0 4.0 5.0 6.0"""
+                ),
                 [((0, 4), "Expected a valid next point at line 3.")],
             ),
             (
-                """*description
-name
-1  5   
-1.0 2.0 3.0 4.0 5.0
-another-name
-1 3
-1.0 2.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                        1.0 2.0 3.0 4.0 5.0
+                    another-name
+                    1 3
+                        1.0 2.0"""
+                ),
                 [((4, 7), "Expected a valid next point at line 6.")],
             ),
             (
-                """*description
-name
-1  5   
-1.0 2.0 3.0 4.0 5.0
-* 
-another-name
-1 3
-1.0 2.0
-* durp
-* durp
-last-name
-1 2
-1.0 2.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    1.0 2.0 3.0 4.0 5.0
+                    * 
+                    another-name
+                    1 3
+                    1.0 2.0
+                    * durp
+                    * durp
+                    last-name
+                    1 2
+                    1.0 2.0"""
+                ),
                 [((4, 8), "Expected a valid next point at line 7.")],
             ),
             (
-                """*description
-name
-1  5   
-another-name
-1 3
-1.0 2.0 3.0
-* durp
-* durp
-last-name
-1 2
-1.0 2.0""",
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    another-name
+                    1 3
+                    1.0 2.0 3.0
+                    * durp
+                    * durp
+                    last-name
+                    1 2
+                    1.0 2.0"""
+                ),
                 [((0, 3), "Expected a valid next point at line 3.")],
             ),
         ],

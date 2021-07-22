@@ -1,7 +1,7 @@
 """parser.py defines all classes and functions related to parsing pol/pli(z) files.
 """
 
-from enum import Enum
+from enum import IntEnum
 from hydrolib.core.io.polyfile.models import (
     Description,
     Metadata,
@@ -227,7 +227,7 @@ class ErrorBuilder:
             return None
 
 
-class StateType(Enum):
+class StateType(IntEnum):
     """The types of state of a Parser."""
 
     NEW_BLOCK = 0
@@ -256,6 +256,9 @@ class Parser:
     Invalid states are encoded with INVALID_STATE. In this state the Parser
     attempts to find a new block, and thus looks for a new description or
     name.
+
+    Unexpected whitespace before comments, names, and dimensions, as well as
+    empty lines will generate a warning, and will be ignored by the parser.
     """
 
     def __init__(self, file_path: Path, has_z_value: bool = False) -> None:
@@ -511,12 +514,14 @@ class Parser:
 
         try:
             values = list(float(x) for x in elems)
-            return Point(
-                x=values[0],
-                y=values[1],
-                z=values[2] if has_z else None,
-                data=values[(3 if has_z else 2) :],
-            )
+
+            if has_z:
+                x, y, z, *data = values
+            else:
+                x, y, *data = values
+                z = None  # type: ignore
+
+            return Point(x=x, y=y, z=z, data=data)
 
         except ValueError:
             return None
