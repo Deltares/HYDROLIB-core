@@ -1,11 +1,9 @@
-from hydrolib.core.io.polyfile.components import (
+from hydrolib.core.io.polyfile.models import (
     Description,
     Point,
     PolyObject,
     Metadata,
 )
-
-from hydrolib.core.io.polyfile.model import PolyFile
 
 from hydrolib.core.io.polyfile.parser import (
     Block,
@@ -106,7 +104,7 @@ class TestSerializer:
 
 class TestBlock:
     def test_finalise_valid_state_returns_corresponding_poly_object(self):
-        warning_msgs = [ParseMsg(line=(0, 0), column=None, reason="")]
+        warning_msgs = [ParseMsg(line_start=0, line_end=0, column=None, reason="")]
 
         block = Block(
             start_line=0,
@@ -192,7 +190,8 @@ class TestErrorBuilder:
         msg = builder.finalize_previous_error()
 
         assert msg is not None
-        assert msg.line == line
+        assert msg.line_start == line[0]
+        assert msg.line_end == line[1]
         assert msg.reason == expected_reason
 
     def test_finalise_previous_error_after_adding_second_start(self):
@@ -209,7 +208,8 @@ class TestErrorBuilder:
         msg = builder.finalize_previous_error()
 
         assert msg is not None
-        assert msg.line == line
+        assert msg.line_start == line[0]
+        assert msg.line_end == line[1]
         assert msg.reason == expected_reason
 
 

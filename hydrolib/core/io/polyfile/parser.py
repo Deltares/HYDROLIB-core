@@ -2,7 +2,7 @@
 """
 
 from enum import Enum
-from hydrolib.core.io.polyfile.components import (
+from hydrolib.core.io.polyfile.models import (
     Description,
     Metadata,
     Point,
@@ -25,7 +25,9 @@ class ParseMsg(BaseModel):
         reason (str): A human-readable string detailing the reason of the ParseMsg.
     """
 
-    line: Tuple[int, int]
+    line_start: int
+    line_end: int
+
     column: Optional[Tuple[int, int]]
     reason: str
 
@@ -36,10 +38,10 @@ class ParseMsg(BaseModel):
             file_path (Optional[Path], optional):
                 The file path mentioned in the warning if specified. Defaults to None.
         """
-        if self.line[0] != self.line[1]:
-            block_suffix = f"\nInvalid block {self.line[0]}:{self.line[1]}"
+        if self.line_start != self.line_end:
+            block_suffix = f"\nInvalid block {self.line_start}:{self.line_end}"
         else:
-            block_suffix = f"\nInvalid line {self.line[0]}"
+            block_suffix = f"\nInvalid line {self.line_start}"
 
         col_suffix = (
             f"\nColumns {self.column[0]}:{self.column[1]}"
@@ -133,7 +135,11 @@ class Block(BaseModel):
 
     @staticmethod
     def _get_empty_line_msg(line_range: Tuple[int, int]) -> ParseMsg:
-        return ParseMsg(line=line_range, reason="Empty lines are ignored.")
+        return ParseMsg(
+            line_start=line_range[0],
+            line_end=line_range[1],
+            reason="Empty lines are ignored.",
+        )
 
 
 class InvalidBlock(BaseModel):
@@ -159,7 +165,8 @@ class InvalidBlock(BaseModel):
             ParseMsg: The ParseMsg corresponding with this InvalidBlock
         """
         return ParseMsg(
-            line=(self.start_line, self.end_line),
+            line_start=self.start_line,
+            line_end=self.end_line,
             reason=f"{self.reason} at line {self.invalid_line}.",
         )
 
@@ -352,7 +359,8 @@ class Parser:
 
     def _add_current_block_as_incomplete_error(self) -> None:
         msg = ParseMsg(
-            line=(self._current_block.start_line, self._line),
+            line_start=self._current_block.start_line,
+            line_end=self._line,
             reason="EoF encountered before the block is finished.",
         )
         self._handle_parse_msg(msg)
@@ -434,7 +442,8 @@ class Parser:
         end_column = len(line) - len(line.lstrip()) - 1
         self._current_block.ws_warnings.append(
             ParseMsg(
-                line=(self._line, self._line),
+                line_start=self._line,
+                line_end=self._line,
                 column=(0, end_column),
                 reason="White space at the start of the line is ignored.",
             )

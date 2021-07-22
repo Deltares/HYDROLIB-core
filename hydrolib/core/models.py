@@ -6,7 +6,7 @@ all known extensions.
 from typing import Callable, List, Optional, Sequence
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.io.polyfile.components import PolyObject
+from hydrolib.core.io.polyfile.models import PolyObject
 from hydrolib.core.io.polyfile.parser import read_polyfile
 from hydrolib.core.io.polyfile.serializer import write_polyfile
 from hydrolib.core.io.xyz.parser import XYZParser

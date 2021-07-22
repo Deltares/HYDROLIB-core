@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict
-from hydrolib.core.io.polyfile.components import (
+from hydrolib.core.io.polyfile.models import (
     Description,
     Metadata,
     Point,
