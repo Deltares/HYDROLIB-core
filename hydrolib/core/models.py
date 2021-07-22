@@ -7,6 +7,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, List, Optional, Union
 
+from pydantic import validator
+
 from hydrolib.core import __version__
 from hydrolib.core.dimr_parser import DIMRParser
 from hydrolib.core.io.base import DummmyParser, DummySerializer
@@ -22,6 +24,7 @@ from hydrolib.core.io.dimr.models import (
 from hydrolib.core.io.xyz.models import XYZPoint
 from hydrolib.core.io.xyz.parser import XYZParser
 from hydrolib.core.io.xyz.serializer import XYZSerializer
+from hydrolib.core.utils import to_list
 
 from .basemodel import BaseModel, FileModel
 
@@ -150,3 +153,11 @@ class DIMR(FileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         return DIMRParser.parse
+
+    @validator("component", pre=True)
+    def validate_component(cls, v):
+        return to_list(v)
+
+    @validator("coupler", pre=True)
+    def validate_coupler(cls, v):
+        return to_list(v)
