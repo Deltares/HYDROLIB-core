@@ -9,11 +9,20 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel
 
 
+class KeyValuePair(BaseModel):
+    key: str
+    value: str
+
+
 class Component(BaseModel, ABC):
     library: str
     name: str
     workingDir: Path
     inputFile: Path
+    process: Optional[int] = 0
+    setting: Optional[Union[List[KeyValuePair], KeyValuePair]]
+    parameter: Optional[Union[List[KeyValuePair], KeyValuePair]]
+    mpiCommunicator: Optional[str]
 
     model: Optional[FileModel]
 
@@ -50,9 +59,17 @@ class Documentation(BaseModel):
     creationDate: datetime = Field(default_factory=datetime.utcnow)
 
 
-class Item(BaseModel):
-    sourceName: Path
-    targetName: Path
+class GlobalSettings(BaseModel):
+    logger_ncFormat: int
+
+
+class ComponentOrCouplerRef(BaseModel):
+    name: str
+
+
+class CoupledItem(BaseModel):
+    sourceName: str
+    targetName: str
 
 
 class Logger(BaseModel):
@@ -64,28 +81,21 @@ class Coupler(BaseModel):
     name: str
     sourceComponent: str
     targetComponent: str
-    item: List[Item]
-    logger: Logger
-
-
-class Start(BaseModel):
-    name: str
-
-
-class ControlCoupler(BaseModel):
-    name: str
+    item: Union[List[CoupledItem], CoupledItem]
+    logger: Optional[Logger]
 
 
 class StartGroup(BaseModel):
     time: str
-    start: Start
-    coupler: ControlCoupler
+    start: Union[List[ComponentOrCouplerRef], ComponentOrCouplerRef]
+    coupler: Union[List[ComponentOrCouplerRef], ComponentOrCouplerRef]
 
 
 class Parallel(BaseModel):
     startGroup: StartGroup
-    start: Start
+    start: ComponentOrCouplerRef
 
 
 class Control(BaseModel):
-    parallel: Parallel
+    parallel: Optional[Union[List[Parallel], Parallel]]
+    start: Optional[Union[List[ComponentOrCouplerRef], ComponentOrCouplerRef]]

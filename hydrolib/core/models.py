@@ -16,11 +16,12 @@ from hydrolib.core.io.dimr.models import (
     Coupler,
     Documentation,
     FMComponent,
+    GlobalSettings,
     RRComponent,
 )
+from hydrolib.core.io.xyz.models import XYZPoint
 from hydrolib.core.io.xyz.parser import XYZParser
 from hydrolib.core.io.xyz.serializer import XYZSerializer
-from hydrolib.core.io.xyz.models import XYZPoint
 
 from .basemodel import BaseModel, FileModel
 
@@ -117,8 +118,10 @@ class DIMR(FileModel):
 
     component: List[Union[RRComponent, FMComponent, Component]] = []
     documentation: Documentation = Documentation()
-    coupler: Coupler
+    coupler: Optional[Union[List[Coupler], Coupler]]
     control: Control
+    waitFile: Optional[str]
+    global_settings = Optional[GlobalSettings]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
