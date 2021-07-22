@@ -119,7 +119,7 @@ class DIMR(FileModel):
     component: List[Union[RRComponent, FMComponent, Component]] = []
     documentation: Documentation = Documentation()
     coupler: Optional[Union[List[Coupler], Coupler]]
-    control: Control
+    control: Control = Control()
     waitFile: Optional[str]
     global_settings = Optional[GlobalSettings]
 

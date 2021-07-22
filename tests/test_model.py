@@ -50,6 +50,10 @@ def test_dimr_model():
     assert d.component[1].model.filepath.is_file()
 
 
+def test_initialize_default_dimr_does_not_raise_exception():
+    DIMR()
+
+
 def test_xyz_model():
     output_fn = Path(test_output_dir / "test.xyz")
     if output_fn.is_file():
