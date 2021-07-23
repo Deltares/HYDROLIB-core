@@ -476,8 +476,7 @@ class Parser:
 
     @staticmethod
     def _is_comment(line: str) -> bool:
-        stripped = line.strip()
-        return len(stripped) >= 1 and stripped[0] == "*"
+        return line.strip().startswith("*")
 
     @staticmethod
     def _convert_to_comment(line: str) -> str:
