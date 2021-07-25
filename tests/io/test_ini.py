@@ -4,6 +4,7 @@ from hydrolib.core.io.ini.models import (
     Section,
 )
 from hydrolib.core.io.ini.parser import (
+    Parser,
     _IntermediateCommentBlock,
     _IntermediateSection,
     ParserConfig,
@@ -198,3 +199,144 @@ class TestIntermediateSection:
         )
 
         assert result == expected_section
+
+
+class TestParser:
+    @pytest.mark.parametrize(
+        "line,expected_result",
+        [
+            ("", True),
+            ("     ", True),
+            ("something", False),
+            ("       also something", False),
+        ],
+    )
+    def test_is_empty_line(self, line: str, expected_result: bool):
+        parser = Parser(ParserConfig())
+        assert parser._is_empty_line(line) == expected_result
+
+    @pytest.mark.parametrize(
+        "line,config,expected_result",
+        [
+            ("# some comment", ParserConfig(), True),
+            ("       # with whitespace      ", ParserConfig(), True),
+            ("#", ParserConfig(), True),
+            ("     * yet another comment", ParserConfig(comment_delimeter="*"), True),
+            ("# not a comment", ParserConfig(comment_delimeter="*"), False),
+            ("", ParserConfig(), False),
+            ("     ", ParserConfig(), False),
+            ("something", ParserConfig(), False),
+            ("       also something", ParserConfig(), False),
+            (
+                "123 a comment with a weird delimeter ",
+                ParserConfig(comment_delimeter="123"),
+                True,
+            ),
+        ],
+    )
+    def test_is_comment(self, line: str, config: ParserConfig, expected_result: bool):
+        parser = Parser(config)
+        assert parser._is_comment(line) == expected_result
+
+    @pytest.mark.parametrize(
+        "line,expected_result",
+        [
+            ("[a-header]", True),
+            ("[ also header but with whitespace ]", True),
+            ("[ # this works, but please don't do that # ]", True),
+            ("                 [ prefixed whitespace is acceptable ]     ", True),
+            ("[ not closed", False),
+            ("  also not closed ]", False),
+            ("(not-a-header)", False),
+            ("{not-a-header}", False),
+            ("", False),
+            ("     ", False),
+            ("something", False),
+            ("       also something", False),
+            ("# some comment", False),
+        ],
+    )
+    def test_is_section_header(self, line: str, expected_result: bool):
+        parser = Parser(ParserConfig())
+        assert parser._is_section_header(line) == expected_result
+
+    @pytest.mark.parametrize(
+        "line,config,expected_result",
+        [
+            ("key=value", ParserConfig(allow_only_keywords=False), True),
+            ("    key = value   ", ParserConfig(allow_only_keywords=False), True),
+            ("key=value#Comment", ParserConfig(allow_only_keywords=False), True),
+            (
+                "    key = value # Comment",
+                ParserConfig(allow_only_keywords=False),
+                True,
+            ),
+            (
+                "    key = value with multiple # Comment",
+                ParserConfig(allow_only_keywords=False),
+                True,
+            ),
+            (
+                "    key with spaces = value # Comment",
+                ParserConfig(allow_only_keywords=False),
+                True,
+            ),
+            ("key =   ", ParserConfig(allow_only_keywords=False), True),
+            ("key", ParserConfig(allow_only_keywords=True), True),
+            ("key", ParserConfig(allow_only_keywords=False), False),
+            ("key", ParserConfig(allow_only_keywords=False), False),
+            ("key # comment", ParserConfig(allow_only_keywords=False), False),
+        ],
+    )
+    def test_is_property(self, line: str, config: ParserConfig, expected_result: bool):
+        parser = Parser(config)
+        assert parser._is_property(line) == expected_result
+
+    @pytest.mark.parametrize(
+        "line,config,expected_result",
+        [
+            (
+                "1.0 2.0 3.0 4.0",
+                ParserConfig(allow_only_keywords=False, parse_datablocks=True),
+                True,
+            ),
+            (
+                "1.0 2.0 3.0 4.0",
+                ParserConfig(allow_only_keywords=True, parse_datablocks=False),
+                False,
+            ),
+            (
+                "1.0",
+                ParserConfig(allow_only_keywords=False, parse_datablocks=True),
+                True,
+            ),
+            (
+                "1.0",
+                ParserConfig(allow_only_keywords=True, parse_datablocks=False),
+                False,
+            ),
+            (
+                "val1 val2",
+                ParserConfig(allow_only_keywords=False, parse_datablocks=True),
+                True,
+            ),
+            (
+                "val1 val2",
+                ParserConfig(allow_only_keywords=True, parse_datablocks=False),
+                False,
+            ),
+            (
+                "val",
+                ParserConfig(allow_only_keywords=False, parse_datablocks=True),
+                True,
+            ),
+            (
+                "val",
+                ParserConfig(allow_only_keywords=True, parse_datablocks=False),
+                False,
+            ),
+        ],
+    )
+    def test_is_datarow(self, line: str, config: ParserConfig, expected_result: bool):
+        parser = Parser(config)
+        assert parser._is_datarow(line) == expected_result

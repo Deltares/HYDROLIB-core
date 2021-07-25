@@ -34,19 +34,20 @@ class ParserConfig(BaseModel):
 
     @validator("parse_datablocks")
     def allow_only_keywods_and_parse_datablocks_leads_should_not_both_be_true(
-        cls, parse_data_blocks, values
+        cls, parse_datablocks, values
     ):
         # if both allow_only_keywords and parse_datablocks is true, we cannot
         # distinguish between the two, and the parsing will not recognise either
         # properly
         if (
-            parse_data_blocks
+            parse_datablocks
             and "allow_only_keywords" in values
             and values["allow_only_keywords"]
         ):
             raise ValueError(
                 "Both parse_datablocks and allow_only_keywords should not be both True."
             )
+        return parse_datablocks
 
 
 class _IntermediateCommentBlock(BaseModel):
