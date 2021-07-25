@@ -2,7 +2,7 @@ from enum import IntEnum
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.ini.models import CommentBlock, Document, Property, Section
 from pydantic import validator
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 
 class ParserConfig(BaseModel):
@@ -53,16 +53,16 @@ class _IntermediateCommentBlock(BaseModel):
     # _IntermediateCommentBlock used to construct CommentBlock objects within
     # this Parser.
     start_line: int
-    _lines: List[str] = []
+    lines: List[str] = []
 
     def add_comment_line(self, line: str) -> None:
-        self._lines.append(line)
+        self.lines.append(line)
 
     def finalize(self) -> CommentBlock:
         return CommentBlock(
             start_line=self.start_line,
-            end_line=self.start_line + len(self._lines) - 1,
-            lines=self._lines,
+            end_line=self.start_line + len(self.lines) - 1,
+            lines=self.lines,
         )
 
 
@@ -71,37 +71,39 @@ class _IntermediateSection(BaseModel):
     # this Parser.
     header: str
     start_line: int
-    _content: List[Union[Property, CommentBlock]] = []
-    _datablock: List[List[str]] = []
-    _curr_comment_block: Optional[_IntermediateCommentBlock]
+
+    content: List[Union[Property, CommentBlock]] = []
+    datablock: List[List[str]] = []
+    curr_comment_block: Optional[_IntermediateCommentBlock] = None
 
     def add_property(self, property: Property) -> None:
         self._finalize_comment_block()
-        self._content.append(property)
+        self.content.append(property)
 
     def add_comment(self, comment: str, line: int) -> None:
-        if self._curr_comment_block is None:
-            self._curr_comment_block = _IntermediateCommentBlock(start_line=line)
-        self._curr_comment_block.add_comment_line(comment)
+        if self.curr_comment_block is None:
+            self.curr_comment_block = _IntermediateCommentBlock(start_line=line)
+
+        self.curr_comment_block.add_comment_line(comment)
 
     def add_datarow(self, row: List[str]) -> None:
-        self._datablock.append(row)
+        self.datablock.append(row)
 
     def _finalize_comment_block(self) -> None:
-        if self._curr_comment_block is None:
+        if self.curr_comment_block is None:
             return
 
-        self._content.append(self._curr_comment_block.finalize())
-        self._curr_comment_block = None
+        self.content.append(self.curr_comment_block.finalize())
+        self.curr_comment_block = None
 
-    def finalize(self, end_line) -> Section:
+    def finalize(self, end_line: int) -> Section:
         self._finalize_comment_block()
         return Section(
             header=self.header,
             start_line=self.start_line,
             end_line=end_line,
-            content=self._content,
-            datablock=self._datablock if self._datablock else None,
+            content=self.content,
+            datablock=self.datablock if self.datablock else None,
         )
 
 
