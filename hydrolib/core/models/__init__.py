@@ -1,13 +1,14 @@
 """
 Implementations of the [`FileModel`][hydrolib.core.basemodel.FileModel] for
 all known extensions.
+
+TODO: For now I (Guus) places all models that where previously in models.py in this __init__.py
 """
 
 from typing import Callable, List, Optional
 
+from hydrolib.core.basemodel import BaseModel, FileModel
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-
-from .basemodel import BaseModel, FileModel
 
 
 class Edge(BaseModel):
@@ -18,9 +19,7 @@ class Edge(BaseModel):
 class Network(FileModel):
     """Network model representation."""
 
-    n_vertices: int = 100
-    edges: List[Edge] = [Edge()]
-
+    # TODO: Why make all these classmethods? And not staticmethods or just attributes?
     @classmethod
     def _ext(cls) -> str:
         return ".nc"
