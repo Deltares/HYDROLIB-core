@@ -11,7 +11,7 @@ from typing import Callable, List, Optional, Sequence
 from pydantic import validator
 
 from hydrolib.core import __version__
-from hydrolib.core.dimr_parser import DIMRParser
+from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.io.dimr.models import (
     Component,
