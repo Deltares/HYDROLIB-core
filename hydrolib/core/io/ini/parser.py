@@ -27,7 +27,7 @@ class ParserConfig(BaseModel):
             Defaults to '#'.
     """
 
-    allow_only_keywords: bool = True
+    allow_only_keywords: bool = False
     parse_datablocks: bool = False
     parse_comments: bool = True
     comment_delimeter: str = "#"
@@ -155,7 +155,7 @@ class Parser:
         }
 
         self._handle_emptyline: Dict[Parser._StateType, Callable[[], None]] = {
-            self._StateType.NO_SECTION_FOUND: self._handle_emptyline_header,
+            self._StateType.NO_SECTION_FOUND: self._finish_current_header_block,
             self._StateType.PARSING_PROPERTIES: self._noop,
             self._StateType.PARSING_DATABLOCK: self._noop,
         }
@@ -187,6 +187,7 @@ class Parser:
                 A Document describing the parsed ini file.
         """
         # TODO handle invalid block
+        self._finish_current_header_block()
         self._finalise_current_section()
         return self._document
 
@@ -202,7 +203,7 @@ class Parser:
     def _handle_new_section_header(self, line: str) -> None:
         section_header = line.strip()[1:-1].strip()
         self._current_section = _IntermediateSection(
-            header=section_header, line=self._line_index
+            header=section_header, start_line=self._line_index
         )
 
     def _finalise_current_section(self) -> None:
@@ -236,7 +237,7 @@ class Parser:
         self._state = Parser._StateType.PARSING_DATABLOCK
 
     def _handle_datarow(self, line: str) -> None:
-        self._current_section.add_datarow(line.split(" "))  # type: ignore
+        self._current_section.add_datarow(line.split())  # type: ignore
 
     def _retrieve_property_comment(self, line: str) -> Tuple[Optional[str], str]:
         if self._config.parse_comments and self._config.comment_delimeter in line:
@@ -254,10 +255,10 @@ class Parser:
             # single value
             return line, None
 
-    def _handle_emptyline_header(self) -> None:
+    def _finish_current_header_block(self) -> None:
         if self._current_header_block is not None:
             self._document.header_comment.append(self._current_header_block.finalize())
-            self._current_description_header_block = None
+            self._current_header_block = None
 
     def _noop(self, *_, **__) -> None:
         # no operation

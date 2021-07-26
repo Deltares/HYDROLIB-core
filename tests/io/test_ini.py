@@ -1,5 +1,6 @@
 from hydrolib.core.io.ini.models import (
     CommentBlock,
+    Document,
     Property,
     Section,
 )
@@ -10,8 +11,9 @@ from hydrolib.core.io.ini.parser import (
     ParserConfig,
 )
 from pydantic import ValidationError
-from typing import List, Union
+from typing import List, Tuple, Union
 
+import inspect
 import pytest
 
 
@@ -340,3 +342,450 @@ class TestParser:
     def test_is_datarow(self, line: str, config: ParserConfig, expected_result: bool):
         parser = Parser(config)
         assert parser._is_datarow(line) == expected_result
+
+    def test_feed_comment_at_the_beginning_of_the_document_gets_added_to_the_header(
+        self,
+    ):
+        parser = Parser(config=ParserConfig())
+
+        comment_content = " some comment"
+
+        parser.feed_line(f"#{comment_content}")
+        result = parser.finalize()
+
+        expected_header_comment = [
+            CommentBlock(start_line=0, end_line=0, lines=[comment_content])
+        ]
+
+        assert result.header_comment == expected_header_comment
+        assert result.sections == []
+
+    def test_feed_multiple_comment_blocks_at_the_beginning_of_the_document_gets_added_to_the_header(
+        self,
+    ):
+        parser = Parser(config=ParserConfig())
+
+        comment_blocks = list(
+            [f"first comment in block {v}", f"second comment in block {v}"]
+            for v in range(5)
+        )
+
+        for comment_block in comment_blocks:
+            for line in comment_block:
+                parser.feed_line(f"#{line}")
+
+            parser.feed_line("")
+
+        result = parser.finalize()
+
+        expected_header_comment = list(
+            CommentBlock(start_line=v * 3, end_line=v * 3 + 1, lines=comment_blocks[v])
+            for v in range(5)
+        )
+
+        assert result.header_comment == expected_header_comment
+        assert result.sections == []
+
+    def test_feed_multiple_empty_lines_adds_header_correctly(
+        self,
+    ):
+        parser = Parser(config=ParserConfig())
+
+        comment_blocks = list(
+            [f"line 1 in block {v}", f"line 2 in block {v}"] for v in range(3)
+        )
+
+        for comment_block in comment_blocks:
+            for line in comment_block:
+                parser.feed_line(f"#{line}")
+
+            parser.feed_line("")
+            parser.feed_line("")
+            parser.feed_line("")
+
+        result = parser.finalize()
+
+        expected_header_comment = list(
+            CommentBlock(start_line=v * 5, end_line=v * 5 + 1, lines=comment_blocks[v])
+            for v in range(3)
+        )
+
+        assert result.header_comment == expected_header_comment
+        assert result.sections == []
+
+    def test_feed_comment_at_the_beginning_of_the_document_with_section_gets_added_to_the_header(
+        self,
+    ):
+        parser = Parser(config=ParserConfig())
+
+        comment_content = " some comment"
+
+        parser.feed_line(f"#{comment_content}")
+        parser.feed_line(f"[header]")
+        result = parser.finalize()
+
+        expected_header_comment = [
+            CommentBlock(start_line=0, end_line=0, lines=[comment_content])
+        ]
+
+        assert result.header_comment == expected_header_comment
+        assert len(result.sections) == 1
+
+    def test_section_is_added_correctly(self):
+        parser = Parser(config=ParserConfig())
+
+        header = "header"
+        properties = list(
+            Property(
+                key=f"key-{v}", value=f"value_{v}", comment=f"comment_{v}", line=v + 2
+            )
+            for v in range(5)
+        )
+
+        parser.feed_line("")
+        parser.feed_line(f"    [{header}]")
+
+        for p in properties:
+            parser.feed_line(f"        {p.key} = {p.value} #{p.comment}")
+
+        result = parser.finalize()
+
+        expected_result = Document(
+            sections=[
+                Section(
+                    header=header,
+                    content=properties,
+                    datablock=None,
+                    start_line=1,
+                    end_line=7,
+                )
+            ]
+        )
+
+        assert result == expected_result
+
+    def test_section_with_comments_is_added_correctly(self):
+        parser = Parser(config=ParserConfig())
+
+        input_lines = inspect.cleandoc(
+            """
+            [header]
+                # some comment
+                # consisting of two lines
+                key         = value                 # with a comment
+                another-key = another-value
+                # inbetween comment
+                last-key    = last value            # inline comment
+                # last comment
+            """
+        )
+
+        for line in input_lines.splitlines():
+            parser.feed_line(line)
+        result = parser.finalize()
+
+        expected_result = Document(
+            sections=[
+                Section(
+                    header="header",
+                    content=[
+                        CommentBlock(
+                            start_line=1,
+                            end_line=2,
+                            lines=[" some comment", " consisting of two lines"],
+                        ),
+                        Property(
+                            key="key", value="value", comment=" with a comment", line=3
+                        ),
+                        Property(
+                            key="another-key",
+                            value="another-value",
+                            comment=None,
+                            line=4,
+                        ),
+                        CommentBlock(
+                            start_line=5, end_line=5, lines=[" inbetween comment"]
+                        ),
+                        Property(
+                            key="last-key",
+                            value="last value",
+                            comment=" inline comment",
+                            line=6,
+                        ),
+                        CommentBlock(start_line=7, end_line=7, lines=[" last comment"]),
+                    ],
+                    datablock=None,
+                    start_line=0,
+                    end_line=8,
+                )
+            ]
+        )
+
+        assert result == expected_result
+
+    def test_section_with_datablock_is_added_correctly(self):
+        parser = Parser(config=ParserConfig(parse_datablocks=True))
+
+        input_lines = inspect.cleandoc(
+            """
+            [header]
+                # some comment
+                # consisting of two lines
+                key         = value
+                some-key    = some-value
+                # inbetween comment
+                last-key    = last value
+                # last comment
+                     1.0  2.0  3.0
+                     4.0  5.0  6.0
+                     7.0  8.0  9.0
+                    10.0 11.0 12.0
+            """
+        )
+
+        for line in input_lines.splitlines():
+            parser.feed_line(line)
+        result = parser.finalize()
+
+        expected_result = Document(
+            sections=[
+                Section(
+                    header="header",
+                    content=[
+                        CommentBlock(
+                            start_line=1,
+                            end_line=2,
+                            lines=[" some comment", " consisting of two lines"],
+                        ),
+                        Property(key="key", value="value", comment=None, line=3),
+                        Property(
+                            key="some-key",
+                            value="some-value",
+                            comment=None,
+                            line=4,
+                        ),
+                        CommentBlock(
+                            start_line=5, end_line=5, lines=[" inbetween comment"]
+                        ),
+                        Property(
+                            key="last-key",
+                            value="last value",
+                            comment=None,
+                            line=6,
+                        ),
+                        CommentBlock(start_line=7, end_line=7, lines=[" last comment"]),
+                    ],
+                    datablock=[
+                        ["1.0", "2.0", "3.0"],
+                        ["4.0", "5.0", "6.0"],
+                        ["7.0", "8.0", "9.0"],
+                        ["10.0", "11.0", "12.0"],
+                    ],
+                    start_line=0,
+                    end_line=12,
+                )
+            ]
+        )
+
+        assert result == expected_result
+
+    def test_multiple_sections_are_added_correctly(self):
+        parser = Parser(config=ParserConfig())
+
+        input_lines = inspect.cleandoc(
+            """
+            [header]
+                # some comment
+                # consisting of two lines
+                key         = value                 # with a comment
+                another-key = another-value
+                # inbetween comment
+                last-key    = last value            # inline comment
+                # last comment
+
+
+            [different-header]
+                key1 = value1           # comment1
+                key2 = value2           # comment2
+                key3 = value3           # comment3
+            """
+        )
+
+        for line in input_lines.splitlines():
+            parser.feed_line(line)
+        result = parser.finalize()
+
+        expected_result = Document(
+            sections=[
+                Section(
+                    header="header",
+                    content=[
+                        CommentBlock(
+                            start_line=1,
+                            end_line=2,
+                            lines=[" some comment", " consisting of two lines"],
+                        ),
+                        Property(
+                            key="key", value="value", comment=" with a comment", line=3
+                        ),
+                        Property(
+                            key="another-key",
+                            value="another-value",
+                            comment=None,
+                            line=4,
+                        ),
+                        CommentBlock(
+                            start_line=5, end_line=5, lines=[" inbetween comment"]
+                        ),
+                        Property(
+                            key="last-key",
+                            value="last value",
+                            comment=" inline comment",
+                            line=6,
+                        ),
+                        CommentBlock(start_line=7, end_line=7, lines=[" last comment"]),
+                    ],
+                    datablock=None,
+                    start_line=0,
+                    end_line=10,
+                ),
+                Section(
+                    header="different-header",
+                    content=[
+                        Property(
+                            key="key1", value="value1", comment=" comment1", line=11
+                        ),
+                        Property(
+                            key="key2", value="value2", comment=" comment2", line=12
+                        ),
+                        Property(
+                            key="key3", value="value3", comment=" comment3", line=13
+                        ),
+                    ],
+                    datablock=None,
+                    start_line=10,
+                    end_line=14,
+                ),
+            ]
+        )
+
+        assert result == expected_result
+
+    def test_complex_document_is_added_correctly(self):
+        input_lines = inspect.cleandoc(
+            """
+            # this is a very contrived example
+            # with a header
+
+            # consisting of multiple blocks
+            # with datablocks
+
+
+            [header]
+                # some comment
+                # consisting of two lines
+                key         = value                 # with a comment
+                another-key = another-value
+                # inbetween comment
+                last-key    = last value            # inline comment
+                # last comment
+                     1.0  2.0  3.0
+                     4.0  5.0  6.0
+
+
+            [different-header]
+                key1 = value1           # comment1
+                key2 = value2           # comment2
+                key3 = value3           # comment3
+                # some comment1
+                # some comment2
+                     7.0  8.0  9.0
+                    10.0 11.0 12.0
+            """
+        )
+
+        parser = Parser(config=ParserConfig(parse_datablocks=True))
+        for line in input_lines.splitlines():
+            parser.feed_line(line)
+        result = parser.finalize()
+
+        expected_result = Document(
+            header_comment=[
+                CommentBlock(
+                    start_line=0,
+                    end_line=1,
+                    lines=[" this is a very contrived example", " with a header"],
+                ),
+                CommentBlock(
+                    start_line=3,
+                    end_line=4,
+                    lines=[" consisting of multiple blocks", " with datablocks"],
+                ),
+            ],
+            sections=[
+                Section(
+                    header="header",
+                    content=[
+                        CommentBlock(
+                            start_line=8,
+                            end_line=9,
+                            lines=[" some comment", " consisting of two lines"],
+                        ),
+                        Property(
+                            key="key", value="value", comment=" with a comment", line=10
+                        ),
+                        Property(
+                            key="another-key",
+                            value="another-value",
+                            comment=None,
+                            line=11,
+                        ),
+                        CommentBlock(
+                            start_line=12, end_line=12, lines=[" inbetween comment"]
+                        ),
+                        Property(
+                            key="last-key",
+                            value="last value",
+                            comment=" inline comment",
+                            line=13,
+                        ),
+                        CommentBlock(
+                            start_line=14, end_line=14, lines=[" last comment"]
+                        ),
+                    ],
+                    datablock=[
+                        ["1.0", "2.0", "3.0"],
+                        ["4.0", "5.0", "6.0"],
+                    ],
+                    start_line=7,
+                    end_line=19,
+                ),
+                Section(
+                    header="different-header",
+                    content=[
+                        Property(
+                            key="key1", value="value1", comment=" comment1", line=20
+                        ),
+                        Property(
+                            key="key2", value="value2", comment=" comment2", line=21
+                        ),
+                        Property(
+                            key="key3", value="value3", comment=" comment3", line=22
+                        ),
+                        CommentBlock(
+                            start_line=23,
+                            end_line=24,
+                            lines=[" some comment1", " some comment2"],
+                        ),
+                    ],
+                    datablock=[
+                        ["7.0", "8.0", "9.0"],
+                        ["10.0", "11.0", "12.0"],
+                    ],
+                    start_line=19,
+                    end_line=27,
+                ),
+            ],
+        )
+
+        assert result == expected_result
