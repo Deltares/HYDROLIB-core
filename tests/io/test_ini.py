@@ -418,7 +418,7 @@ class TestParser:
     ):
         parser = Parser(config=ParserConfig())
 
-        comment_content = " some comment"
+        comment_content = " header comment"
 
         parser.feed_line(f"#{comment_content}")
         parser.feed_line(f"[header]")
@@ -470,8 +470,8 @@ class TestParser:
         input_lines = inspect.cleandoc(
             """
             [header]
-                # some comment
-                # consisting of two lines
+                # comment in a section
+                # starting with two lines
                 key         = value                 # with a comment
                 another-key = another-value
                 # inbetween comment
@@ -492,7 +492,7 @@ class TestParser:
                         CommentBlock(
                             start_line=1,
                             end_line=2,
-                            lines=[" some comment", " consisting of two lines"],
+                            lines=[" comment in a section", " starting with two lines"],
                         ),
                         Property(
                             key="key", value="value", comment=" with a comment", line=3
@@ -592,79 +592,41 @@ class TestParser:
     def test_multiple_sections_are_added_correctly(self):
         parser = Parser(config=ParserConfig())
 
-        input_lines = inspect.cleandoc(
-            """
-            [header]
-                # some comment
-                # consisting of two lines
-                key         = value                 # with a comment
-                another-key = another-value
-                # inbetween comment
-                last-key    = last value            # inline comment
-                # last comment
-
-
-            [different-header]
-                key1 = value1           # comment1
-                key2 = value2           # comment2
-                key3 = value3           # comment3
-            """
+        properties = list(
+            Property(
+                key=f"key-{v}", value=f"value_{v}", comment=f"comment_{v}", line=v + 1
+            )
+            for v in range(12)
         )
 
-        for line in input_lines.splitlines():
-            parser.feed_line(line)
+        parser.feed_line(f"    [header1]")
+        for p in properties[:6]:
+            parser.feed_line(f"        {p.key} = {p.value} #{p.comment}")
+        parser.feed_line("")
+
+        parser.feed_line(f"    [header2]")
+        for p in properties[6:]:
+            parser.feed_line(f"        {p.key} = {p.value} #{p.comment}")
+            p.line += 2
+        parser.feed_line("")
+
         result = parser.finalize()
 
         expected_result = Document(
             sections=[
                 Section(
-                    header="header",
-                    content=[
-                        CommentBlock(
-                            start_line=1,
-                            end_line=2,
-                            lines=[" some comment", " consisting of two lines"],
-                        ),
-                        Property(
-                            key="key", value="value", comment=" with a comment", line=3
-                        ),
-                        Property(
-                            key="another-key",
-                            value="another-value",
-                            comment=None,
-                            line=4,
-                        ),
-                        CommentBlock(
-                            start_line=5, end_line=5, lines=[" inbetween comment"]
-                        ),
-                        Property(
-                            key="last-key",
-                            value="last value",
-                            comment=" inline comment",
-                            line=6,
-                        ),
-                        CommentBlock(start_line=7, end_line=7, lines=[" last comment"]),
-                    ],
+                    header="header1",
+                    content=properties[:6],
                     datablock=None,
                     start_line=0,
-                    end_line=10,
+                    end_line=8,
                 ),
                 Section(
-                    header="different-header",
-                    content=[
-                        Property(
-                            key="key1", value="value1", comment=" comment1", line=11
-                        ),
-                        Property(
-                            key="key2", value="value2", comment=" comment2", line=12
-                        ),
-                        Property(
-                            key="key3", value="value3", comment=" comment3", line=13
-                        ),
-                    ],
+                    header="header2",
+                    content=properties[6:],
                     datablock=None,
-                    start_line=10,
-                    end_line=14,
+                    start_line=8,
+                    end_line=16,
                 ),
             ]
         )
