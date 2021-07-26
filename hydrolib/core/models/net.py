@@ -1,4 +1,5 @@
 from __future__ import annotations
+from hydrolib.core.mesh import Links1D2D, Mesh2D
 
 from pathlib import Path
 from typing import Union
@@ -40,10 +41,10 @@ class Mesh2d:
         self._edge_types: np.ndarray = np.empty(0, dtype=np.int32)
 
     def get_mesh2d(self) -> mk.Mesh2d:
-
+        """Return mesh2d from meshkernel"""
         return self.meshkernel.mesh2d_get()
 
-    def from_file(self, file: Path) -> None:
+    def read_file(self, file: Path) -> None:
 
         ds = nc.Dataset(file)
 
@@ -152,117 +153,34 @@ class Mesh2d:
         self.meshkernel.mesh2d_refine_based_on_polygon(polygon, parameters)
 
 
-class Mesh1d:
-    """Inherits from mk.Mesh1d, but adds some additional attributes
-    from the netcdf"""
-
-    def __init__(self, meshkernel: mk.MeshKernel) -> None:
-        self.meshkernel = meshkernel
-
-    def from_file(self, file: Path, network: Network) -> Mesh1d:
-        """
-        Determine x, y locations of 1d network
-        """
-        # Check if path exists
-        if not file.exists():
-            raise OSError(f'Path "{file.resolve()}" does not exist.')
-
-        ds = nc.Dataset(file)
-        # Read coordinates from branches
-        node_x, node_y = network._coordinates.T
-        # Create 1d mesh from nodes and edges (to be read)
-        edge_nodes = ds["mesh1d_edge_nodes"][:].ravel() - 1
-        ds.close()
-        # Create 1d mesh from nodes and edges
-        mesh1d = mk.Mesh1d(node_x=node_x.copy(), node_y=node_y.copy(), edge_nodes=edge_nodes.copy())
-        # Add to meshkernel
-        self.meshkernel.mesh1d_set(mesh1d)
-
-        return mesh1d
-
-
-class Network:
-    def __init__(self, geo_branches, sch_branches, coordinates):
-        self._geo_branches = {}
-        self._geo_branches.update(geo_branches)
-        # delft3dfmpy also keeps track of the schematised branches, so not the original ones
-        # but the branch that remains after nodes have been interpolated on it.
-        # This is used for example when the coordinates of a structure need to be determined:
-        # It is defined on the geometry branch, but needs to be placed within the nodes based
-        # on the schematised branches
-        self._sch_branches = {}
-        self._sch_branches.update(sch_branches)
-
-        self._coordinates = coordinates
-
-    @classmethod
-    def from_file(cls, file: Path) -> Network:
-        """
-        Determine x, y locations of 1d network
-        """
-
-        if not file.exists():
-            raise OSError(f'Path "{file.resolve()}" does not exist.')
-
-        ds = nc.Dataset(file)
-
-        # Read network geometry nodes.
-        # TODO: Naming: call it a part or a branch?
-        branch_node_count = ds["network_part_node_count"][:].data
-        branch_id = nc.chartostring(ds["network_branch_ids"][:].data)
-
-        # Create a list of coordinates to create the branches from
-        ngeom = list(zip(ds["network_geom_x"][:], ds["network_geom_y"][:]))
-
-        # These determine the position of the nodes
-        branchids = ds["mesh1d_nodes_branch_id"][:].data
-        offsets = ds["mesh1d_nodes_branch_offset"][:].data
-
-        # Collect branches
-        geo_branches = {}
-        sch_branches = {}
-        total_crds = []
-
-        for i, (name, nnodes) in enumerate(zip(branch_id, branch_node_count)):
-
-            # Create network branch
-            geo_branch = Branch(np.array([ngeom.pop(0) for _ in range(nnodes)]))
-            geo_branches[name.strip()] = geo_branch
-
-            # Determine mesh node position on network branch
-            branchoffsets = offsets[branchids == (i + 1)]
-            meshcrds = geo_branch.interpolate(branchoffsets)
-            # Add the mesh coordinates to the total list of coordinates
-            total_crds.append(meshcrds)
-
-            # Determine if a start or end coordinate needs to be added for constructing a complete LineString
-            if not np.isclose(branchoffsets[0], 0.0):
-                meshcrds = np.insert(meshcrds, 0, geo_branch.coordinates[[0]], axis=0)
-            if not np.isclose(branchoffsets[-1], geo_branch.length):
-                meshcrds = np.append(meshcrds, geo_branch.coordinates[[-1]], axis=0)
-            sch_branches[name.strip()] = Branch(meshcrds)
-
-        ds.close()
-
-        return cls(geo_branches, sch_branches, np.vstack(total_crds))
-
-
 class Branch:
-    def __init__(self, coordinates: np.ndarray):
+
+    # geometry: np.full(0, dtype=np.double)
+    # branchoffsets: np.full(0, dtype=np.double)
+
+    def __init__(self, geometry: np.ndarray, branch_offsets: np.ndarray = None) -> None:
 
         # Check that the array has two collumns (x and y)
-        assert coordinates.shape[1] == 2
-
-        self.coordinates = coordinates
-
+        assert geometry.shape[1] == 2
         # Split in x and y
-        self._x_coordinates = coordinates[:, 0]
-        self._y_coordinates = coordinates[:, 1]
+        self.geometry = geometry
+        self._x_coordinates = geometry[:, 0]
+        self._y_coordinates = geometry[:, 1]
+
+        if self.branch_offsets is None:
+            self.branch_offsets = np.full(0, np.double)
+        else:
+            self.branch_offsets = branch_offsets
 
         # Calculate distance of coordinates along line
         segment_distances = np.hypot(np.diff(self._x_coordinates), np.diff(self._y_coordinates))
         self._distance = np.cumsum(np.concatenate([[0], segment_distances]))
         self.length = self._distance[-1]
+
+    def set_branch_offsets(self, branch_offsets: np.ndarray) -> None:
+        """Set offets for nodes on branch"""
+        self.branch_offsets.resize(len(branch_offsets), refcheck=False)
+        self.branch_offsets[:] = branch_offsets
 
     def interpolate(self, distance: Union[float, np.ndarray]) -> np.ndarray:
         """Interpolate coordinates along branch by length
@@ -281,18 +199,145 @@ class Branch:
         return intpcoords
 
 
-class Mesh:
+class Mesh1d:
+    """Inherits from mk.Mesh1d, but adds some additional attributes
+    from the netcdf"""
+
+    def __init__(self, meshkernel: mk.MeshKernel) -> None:
+        self.meshkernel = meshkernel
+        self.branches = {}
+
+    def get_mesh1d(self) -> mk.Mesh1d:
+        """Return mesh1d from meshkernel"""
+        return self.meshkernel.mesh1d_get()
+
+    def read_file(self, file: Path) -> Mesh1d:
+        """
+        Determine x, y locations of 1d network
+        """
+        # Check if path exists
+        if not file.exists():
+            raise OSError(f'Path "{file.resolve()}" does not exist.')
+
+        ds = nc.Dataset(file)
+
+        self.branches.clear()
+
+        # Read network geometry nodes.
+        branch_node_count = ds["network_part_node_count"][:].data
+        branch_id = nc.chartostring(ds["network_branch_ids"][:].data)
+
+        # Create a list of coordinates to create the branches from
+        ngeom = list(zip(ds["network_geom_x"][:], ds["network_geom_y"][:]))
+
+        # These determine the position of the nodes
+        branchids = ds["mesh1d_nodes_branch_id"][:].data
+        offsets = ds["mesh1d_nodes_branch_offset"][:].data
+
+        # Collect branches
+        total_crds = []
+
+        for i, (name, nnodes) in enumerate(zip(branch_id, branch_node_count)):
+
+            # Create network branch
+            geometry = np.array([ngeom.pop(0) for _ in range(nnodes)])
+            geo_branch = Branch(geometry)
+
+            # Determine mesh node position on network branch
+            branchoffsets = offsets[branchids == (i + 1)]
+            meshcrds = geo_branch.interpolate(branchoffsets)
+            geo_branch.set_branch_offsets(branchoffsets)
+            self.branches[name.strip()] = geo_branch
+
+            # Add the mesh coordinates to the total list of coordinates
+            total_crds.append(meshcrds)
+
+            # Determine if a start or end coordinate needs to be added for constructing a complete LineString
+            if not np.isclose(branchoffsets[0], 0.0):
+                meshcrds = np.insert(meshcrds, 0, geo_branch.coordinates[[0]], axis=0)
+            if not np.isclose(branchoffsets[-1], geo_branch.length):
+                meshcrds = np.append(meshcrds, geo_branch.coordinates[[-1]], axis=0)
+            self.sch_branches[name.strip()] = Branch(meshcrds)
+
+        # Convert list with all coordinates (except the appended ones for the schematized branches) to arrays
+        node_x, node_y = np.vstack(total_crds).T
+        # Create 1d mesh from nodes and edges (to be read)
+        edge_nodes = ds["mesh1d_edge_nodes"][:].ravel() - 1
+        ds.close()
+        # Create 1d mesh from nodes and edges
+        mesh1d = mk.Mesh1d(node_x=node_x.copy(), node_y=node_y.copy(), edge_nodes=edge_nodes.copy())
+
+        # Add to meshkernel
+        self.meshkernel.mesh1d_set(mesh1d)
+
+        return mesh1d
+
+    def get_node_mask(self, branchids=List[str]):
+        """Get node mask, give a mask with True for each node that is in the given branchid list"""
+
+        mesh1d = self.get_mesh1d()
+
+        mask = np.full(mesh1d.node_x.size, False, dtype=bool)
+
+        for branchid in branchids:
+
+            branch = self.branches[branchid]
+            # branch.
+
+            # self.
+
+
+class Links1D2D:
+    def __init__(self, meshkernel: mk.MeshKernel) -> None:
+        self.meshkernel = meshkernel
+
+        """
+        MeshKernelPy facilitaties 5 different functions to connect 1d and 2d.
+        """
+
+    def link_from_1d_to_2d(self, branchids: List[str] = None, polygon: mk.GeometryList = None):
+        """Connect 1d nodes to 2d face circumcenters. A list of branchid's can be given
+        to indicate where the connections should be made.
+
+        Args:
+            polygon (mk.GeometryList): [description]
+            branchid (str, optional): [description]. Defaults to None.
+        """
+
+        # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
+        # The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
+
+        # Get 1d node mask
+        pass
+        # if branchids is None:
+
+        # self.meshkernel.contacts_compute_single(self, node_mask, polygons)
+
+        # # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
+        # # a bounding polygon or the end points of the 1d mesh.
+        # # self._mk.contacts_compute_multiple(self, node_mask)
+
+        # # Computes Mesh1d-Mesh2d contacts, where a Mesh2d face per polygon is connected to the closest Mesh1d node.
+        # self._mk.contacts_compute_with_polygons(self, node_mask, polygons)
+
+        # # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the Mesh2d face mass centers containing the input point.
+        # self._mk.contacts_compute_with_points(self, node_mask, points)
+
+        # # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the closest Mesh2d faces at the boundary
+        # self._mk.contacts_compute_boundary(self, node_mask, polygons, search_radius)
+
+        # pass
+
+
+class Network:
     """Could be based on the Network filemodel? Or separate?"""
 
-    def __init__(self, mesh1d: Mesh1d, mesh2d: Mesh2d, network: Network) -> None:
-        self._mk = mk.MeshKernel()
+    def __init__(self) -> None:
+        self.meshkernel = mk.MeshKernel()
 
-        self.mesh1d = mesh1d
-        self.mesh2d = mesh2d
-        self.network = network
-
-        self._mk.mesh1d_set(mesh1d)
-        self._mk.mesh2d_set(mesh2d)
+        self.mesh1d = Mesh1d(meshkernel=self.meshkernel)
+        self.mesh2d = Mesh2d(meshkernel=self.meshkernel)
+        self.links1d2d = Links1d2d(meshkernel=self.meshkernel)
 
         # Spatial index (rtree)
         self.idx = index.Index()
