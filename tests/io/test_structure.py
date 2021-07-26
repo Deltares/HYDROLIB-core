@@ -26,7 +26,7 @@ def test_weir_construction_with_parser():
         type              = weir        # Structure type
         allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
-        crestWidth        = 5           # Width of weir (m)
+        crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
         """
     )
@@ -46,5 +46,5 @@ def test_weir_construction_with_parser():
     assert weir.structure_type.value == "weir"
     assert weir.allowed_flow_direction.value == FlowDirection.POSITIVE
     assert weir.crest_level.value == 10.5
-    assert weir.crest_width.value == 5
+    assert weir.crest_width.value is None
     assert weir.use_velocity_height.value == False

@@ -29,21 +29,13 @@ class PropertyField(GenericModel, Generic[TPropertyField]):
 # TODO: handle duplicate keys
 class IniBasedModel(BaseModel, ABC):
     unknown_properties: List[PropertyField[Optional[str]]]
-    order: List[str] = []
+    order: Optional[List[str]] = None
 
     @classmethod
     def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":
         if isinstance(value, Section):
             converted_content = cls._convert_section_content(value.content)
-            underlying_dict = value.dict(
-                exclude={
-                    "start_line",
-                    "end_line",
-                    "datablock",  # TODO: handle this better
-                    "content",
-                }
-            )
-
+            underlying_dict = cls._convert_section_to_dict(value)
             value = {**underlying_dict, **converted_content}
 
         return super().validate(value)
@@ -52,6 +44,17 @@ class IniBasedModel(BaseModel, ABC):
     @abstractclassmethod
     def _field_mapping(cls) -> Dict[str, str]:
         return {}
+
+    @classmethod
+    def _convert_section_to_dict(cls, value: Section) -> Dict:
+        return value.dict(
+            exclude={
+                "start_line",
+                "end_line",
+                "datablock",
+                "content",
+            }
+        )
 
     @classmethod
     def _convert_section_content(cls, content: List):
@@ -68,6 +71,18 @@ class IniBasedModel(BaseModel, ABC):
                 data["unknown_properties"].append(v)
 
         return data
+
+
+class DataBlockIniBasedModel(IniBasedModel):
+    @classmethod
+    def _convert_section_to_dict(cls, value: Section) -> Dict:
+        return value.dict(
+            exclude={
+                "start_line",
+                "end_line",
+                "content",
+            }
+        )
 
 
 class Structure(IniBasedModel):

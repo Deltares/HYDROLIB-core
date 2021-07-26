@@ -249,7 +249,7 @@ class Parser:
     def _retrieve_key_value(self, line: str) -> Tuple[str, Optional[str]]:
         if "=" in line:
             key, value = line.split("=", 1)
-            return key.strip(), value.strip()
+            return key.strip(), value if len(value := value.strip()) > 0 else None
         else:
             # if no = exists, due to the previous check we know it will just be a
             # single value
