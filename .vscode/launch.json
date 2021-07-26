@@ -8,7 +8,9 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "D:/Documents/GitHub/HYDROLIB-core/hydrolib/debug.py",
+            // "program": "D:/Documents/GitHub/HYDROLIB-core/debug.py",
+            "program": "D:/Documents/GitHub/HYDROLIB-core/tests/test_net.py",
+            // "cwd": "D:/Documents/GitHub/HYDROLIB-core",
             "console": "integratedTerminal",
             "justMyCode": false
         }
