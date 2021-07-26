@@ -32,7 +32,7 @@ class Component(BaseModel, ABC):
     name: str
     workingDir: Path
     inputFile: Path
-    process: Optional[int] = 0
+    process: Optional[int]
     setting: Optional[List[KeyValuePair]]
     parameter: Optional[List[KeyValuePair]]
     mpiCommunicator: Optional[str]
