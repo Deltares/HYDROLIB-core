@@ -29,7 +29,7 @@ class Structure(IniBasedModel):
             alias="yCoordinates",
         )
 
-    comments: Comments = Field(default_factory=Comments)
+    comments: Comments = Comments()
 
     header: Literal["Structure"] = "Structure"
 
@@ -73,7 +73,7 @@ class Weir(Structure):
             alias="useVelocityHeight",
         )
 
-    comments: Comments = Field(default_factory=Comments)
+    comments: Comments = Comments()
 
     structure_type: Literal["weir"] = Field("weir", alias="type")
     allowed_flow_direction: FlowDirection = Field(alias="allowedFlowdir")
@@ -111,7 +111,7 @@ class UniversalWeir(Structure):
             "Discharge coefficient c_e (-).", alias="dischargeCoeff"
         )
 
-    comments: Comments = Field(default_factory=Comments)
+    comments: Comments = Comments()
 
     structure_type: Literal["universalWeir"] = Field("universalWeir", alias="type")
     allowed_flow_direction: FlowDirection = Field(alias="allowedFlowdir")
