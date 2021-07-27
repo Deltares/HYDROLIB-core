@@ -8,6 +8,29 @@ from typing import List, Literal, Optional, Union
 # TODO: handle comment blocks
 # TODO: handle duplicate keys
 class Structure(IniBasedModel):
+    # TODO: would we want to load this from something externally and generate these automatically
+    class Comments(IniBasedModel.Comments):
+        id: Optional[str] = "Unique structure id (max. 256 characters)."
+        name: Optional[str] = "Given name in the user interface."
+        branch_id: Optional[str] = Field(
+            "Branch on which the structure is located.", alias="branchId"
+        )
+        chainage: Optional[str] = "Chainage on the branch (m)"
+
+        n_coordinates: Optional[str] = Field(
+            "Number of values in xCoordinates and yCoordinates", alias="numCoordinates"
+        )
+        x_coordinates: Optional[str] = Field(
+            "x-coordinates of the location of the structure. (number of values = numCoordinates)",
+            alias="xCoordinates",
+        )
+        y_coordinates: Optional[str] = Field(
+            "y-coordinates of the location of the structure. (number of values = numCoordinates)",
+            alias="yCoordinates",
+        )
+
+    comments: Comments = Field(default_factory=Comments)
+
     header: Literal["Structure"] = "Structure"
 
     id: str = Field("id", max_length=256)
@@ -30,6 +53,28 @@ class FlowDirection(str, Enum):
 
 
 class Weir(Structure):
+    class Comments(Structure.Comments):
+        structure_type: Optional[str] = Field(
+            "Structure type; must read weir", alias="type"
+        )
+        allowed_flow_direction: Optional[str] = Field(
+            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+        )
+
+        crest_level: Optional[str] = Field(
+            "Crest level of weir (m AD).", alias="crestLevel"
+        )
+        crest_width: Optional[str] = Field("Width of the weir (m).", alias="crestWidth")
+        correction_coefficient: Optional[str] = Field(
+            "Correction coefficient (-).", alias="corrCoeff"
+        )
+        use_velocity_height: Optional[str] = Field(
+            "Flag indicating whether the velocity height is to be calculated or not.",
+            alias="useVelocityHeight",
+        )
+
+    comments: Comments = Field(default_factory=Comments)
+
     structure_type: Literal["weir"] = Field("weir", alias="type")
     allowed_flow_direction: FlowDirection = Field(alias="allowedFlowdir")
 
@@ -40,6 +85,34 @@ class Weir(Structure):
 
 
 class UniversalWeir(Structure):
+    class Comments(Structure.Comments):
+        structure_type: Optional[str] = Field(
+            "Structure type; must read universalWeir", alias="type"
+        )
+        allowed_flow_direction: Optional[str] = Field(
+            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+        )
+
+        number_of_levels: Optional[str] = Field(
+            "Number of yz-Values.", alias="numLevels"
+        )
+        y_values: Optional[str] = Field(
+            "y-values of the cross section (m). (number of values = numLevels)",
+            alias="yValues",
+        )
+        z_values: Optional[str] = Field(
+            "z-values of the cross section (m). (number of values = numLevels)",
+            alias="zValues",
+        )
+        crest_level: Optional[str] = Field(
+            "Crest level of weir (m AD).", alias="crestLevel"
+        )
+        discharge_coefficient: Optional[str] = Field(
+            "Discharge coefficient c_e (-).", alias="dischargeCoeff"
+        )
+
+    comments: Comments = Field(default_factory=Comments)
+
     structure_type: Literal["universalWeir"] = Field("universalWeir", alias="type")
     allowed_flow_direction: FlowDirection = Field(alias="allowedFlowdir")
 

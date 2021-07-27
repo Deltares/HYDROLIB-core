@@ -92,12 +92,24 @@ class IniBasedModel(BaseModel, ABC):
     obtained through parsing ini documents. It further supports
     adding arbitrary fields to it, which will be written to file.
     Lastly, no arbitrary types are allowed for the defined fields.
+
+    Attributes:
+        comments (Optional[Comments]):
+            Optional Comments if defined by the user.
     """
 
     class Config:
         extra = Extra.allow
         allow_population_by_field_name = True
         arbitrary_types_allowed = False
+
+    class Comments(BaseModel, ABC):
+        class Config:
+            extra = Extra.allow
+            allow_population_by_field_name = True
+            arbitrary_types_allowed = False
+
+    comments: Optional[Comments] = None
 
     @classmethod
     def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":

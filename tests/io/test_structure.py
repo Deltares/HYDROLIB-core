@@ -13,6 +13,37 @@ class TestWrapper(GenericModel, Generic[TWrapper]):
     val: TWrapper
 
 
+def test_id_comment_has_correct_default():
+    weir = Weir(
+        id="weir_id",
+        name="W001",
+        branch_id="branch",
+        chainage=3.0,
+        allowed_flow_direction=FlowDirection.positive,
+        crest_level=10.5,
+        crest_width=None,
+        use_velocity_height=False,
+    )
+
+    assert weir.comments.id == "Unique structure id (max. 256 characters)."
+
+
+def test_add_comment_to_weir():
+    weir = Weir(
+        id="weir_id",
+        name="W001",
+        branch_id="branch",
+        chainage=3.0,
+        allowed_flow_direction=FlowDirection.positive,
+        crest_level=10.5,
+        crest_width=None,
+        use_velocity_height=False,
+    )
+
+    weir.comments.use_velocity_height = "a different value"
+    assert weir.comments.use_velocity_height == "a different value"
+
+
 def test_weir_construction_with_parser():
     parser = Parser(ParserConfig())
 
