@@ -1,7 +1,6 @@
 from abc import ABC
-from itertools import groupby
+from functools import reduce
 from pydantic.class_validators import validator
-from pydantic.error_wrappers import ValidationError
 from hydrolib.core.basemodel import BaseModel
 from pydantic.main import Extra
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type, Union
@@ -88,6 +87,23 @@ class Document(BaseModel):
     sections: List[Section] = []
 
 
+def _combine_in_dict(
+    dictionary: Dict[str, Any], key_value_pair: Tuple[str, Any]
+) -> Dict[str, Any]:
+    key, value = key_value_pair
+
+    if key in dictionary:
+        if not isinstance(dictionary[key], List):
+            dictionary[key] = [
+                dictionary[key],
+            ]
+        dictionary[key].append(value)
+    else:
+        dictionary[key] = value
+
+    return dictionary
+
+
 class IniBasedModel(BaseModel, ABC):
     """IniBasedModel defines the base model for ini models
 
@@ -115,6 +131,8 @@ class IniBasedModel(BaseModel, ABC):
         return False
 
     class Comments(BaseModel, ABC):
+        """Comments defines the comments of an IniBasedModel"""
+
         class Config:
             extra = Extra.allow
             allow_population_by_field_name = True
@@ -157,34 +175,27 @@ class IniBasedModel(BaseModel, ABC):
 
     @classmethod
     def _convert_section_content(cls, content: List) -> Dict:
-        def group_and_flatten(l):
+        def group_and_flatten(l: Iterable[Tuple[str, Any]]) -> Dict[str, Any]:
             if cls._duplicate_keys_as_list():
-                result = {}
-                for k, v in l:
-                    if k in result:
-                        if isinstance(result[k], List):
-                            result[k].append(v)
-                        else:
-                            result[k] = [result[k], v]
-                    else:
-                        result[k] = v
-
-                return result
+                return reduce(_combine_in_dict, l, {})
             else:
-                return l
+                return dict(l)
 
-        values: Dict[str, Any] = dict(
-            group_and_flatten((v.key, v.value) for v in content if isinstance(v, Property))  # type: ignore
+        values = group_and_flatten(
+            (v.key, v.value) for v in content if isinstance(v, Property)
         )
 
         if cls._supports_comments():
-            values["comments"] = dict(
-                group_and_flatten((v.key, v.comment) for v in content if isinstance(v, Property))  # type: ignore
+            values["comments"] = group_and_flatten(
+                (v.key, v.comment) for v in content if isinstance(v, Property)
             )
+
         return values
 
 
 class DataBlockIniBasedModel(IniBasedModel):
+    """DataBlockIniBasedModel defines the base model for ini models with datablocks."""
+
     @classmethod
     def _convert_section_to_dict(cls, value: Section) -> Dict:
         return value.dict(
