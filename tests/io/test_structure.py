@@ -107,15 +107,15 @@ def test_weir_comments_construction_with_parser():
     wrapper = TestWrapper[Weir].parse_obj({"val": document.sections[0]})
     weir = wrapper.val
 
-    assert weir.id == "weir_id"
-    assert weir.name == "weir"
-    assert weir.branch_id == "branch"
-    assert weir.chainage == 3.0
-    assert weir.structure_type == "weir"
-    assert weir.allowed_flow_direction == FlowDirection.positive
-    assert weir.crest_level == 10.5
-    assert weir.crest_width is None
-    assert weir.use_velocity_height == False
+    assert weir.comments.id is None
+    assert weir.comments.name is None
+    assert weir.comments.branch_id is None
+    assert weir.comments.chainage == "My own special comment 1"
+    assert weir.comments.structure_type is None
+    assert weir.comments.allowed_flow_direction is None
+    assert weir.comments.crest_level is None
+    assert weir.comments.crest_width is None
+    assert weir.comments.use_velocity_height == "My own special comment 2"
 
 
 def test_weir_with_unknown_parameters():
