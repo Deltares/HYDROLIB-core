@@ -1,10 +1,10 @@
 from abc import ABC
-
+from itertools import groupby
 from pydantic.class_validators import validator
 from pydantic.error_wrappers import ValidationError
 from hydrolib.core.basemodel import BaseModel
 from pydantic.main import Extra
-from typing import Any, Dict, List, Optional, Sequence, Type, Union
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type, Union
 
 
 class CommentBlock(BaseModel):
@@ -106,6 +106,14 @@ class IniBasedModel(BaseModel, ABC):
         allow_population_by_field_name = True
         arbitrary_types_allowed = False
 
+    @classmethod
+    def _supports_comments(cls):
+        return True
+
+    @classmethod
+    def _duplicate_keys_as_list(cls):
+        return False
+
     class Comments(BaseModel, ABC):
         class Config:
             extra = Extra.allow
@@ -114,15 +122,11 @@ class IniBasedModel(BaseModel, ABC):
 
     comments: Optional[Comments] = None
 
-    @classmethod
-    def has_comments(cls) -> bool:
-        return True
-
     @validator("comments")
     def comments_matches_has_comments(cls, v):
-        if cls.has_comments() and v is None:
+        if cls._supports_comments() and v is None:
             raise ValueError(f"{cls} should have comments.")
-        elif not cls.has_comments() and v is not None:
+        elif not cls._supports_comments() and v is not None:
             raise ValueError(f"{cls} should not have comments.")
 
         return v
@@ -130,11 +134,15 @@ class IniBasedModel(BaseModel, ABC):
     @classmethod
     def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":
         if isinstance(value, Section):
-            converted_content = cls._convert_section_content(value.content)
-            underlying_dict = cls._convert_section_to_dict(value)
-            value = {**underlying_dict, **converted_content}
+            value = cls._convert_section(value)
 
         return super().validate(value)
+
+    @classmethod
+    def _convert_section(cls, section: Section) -> Dict:
+        converted_content = cls._convert_section_content(section.content)
+        underlying_dict = cls._convert_section_to_dict(section)
+        return {**underlying_dict, **converted_content}
 
     @classmethod
     def _convert_section_to_dict(cls, value: Section) -> Dict:
@@ -149,12 +157,30 @@ class IniBasedModel(BaseModel, ABC):
 
     @classmethod
     def _convert_section_content(cls, content: List) -> Dict:
+        def group_and_flatten(l):
+            if cls._duplicate_keys_as_list():
+                result = {}
+                for k, v in l:
+                    if k in result:
+                        if isinstance(result[k], List):
+                            result[k].append(v)
+                        else:
+                            result[k] = [result[k], v]
+                    else:
+                        result[k] = v
+
+                return result
+            else:
+                return l
+
         values: Dict[str, Any] = dict(
-            (v.key, v.value) for v in content if isinstance(v, Property)
+            group_and_flatten((v.key, v.value) for v in content if isinstance(v, Property))  # type: ignore
         )
-        values["comments"] = dict(
-            (v.key, v.comment) for v in content if isinstance(v, Property)
-        )
+
+        if cls._supports_comments():
+            values["comments"] = dict(
+                group_and_flatten((v.key, v.comment) for v in content if isinstance(v, Property))  # type: ignore
+            )
         return values
 
 
