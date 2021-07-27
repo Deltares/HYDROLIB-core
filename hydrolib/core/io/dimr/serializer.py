@@ -23,7 +23,7 @@ class DIMRSerializer:
 
             DIMRSerializer._serialize_data(f, data, 2)
 
-            f.write("</dimrConfig>\n")
+            f.write("</dimrConfig>")
 
     @staticmethod
     def _serialize_data(f: TextIOWrapper, data: Dict, indent: int):
@@ -40,7 +40,12 @@ class DIMRSerializer:
     @staticmethod
     def _serialize_dict(f: TextIOWrapper, key: str, data: Dict, indent: int):
         name = data.pop("name", None)
+
         if name:
+            if len(data) == 0:
+                f.write(indent * " " + f'<{key} name="{name}" />\n')
+                return
+
             f.write(indent * " " + f'<{key} name="{name}">\n')
         else:
             f.write(indent * " " + f"<{key}>\n")
