@@ -1,5 +1,7 @@
+from abc import ABC
 from hydrolib.core.basemodel import BaseModel
-from typing import List, Optional, Sequence, Union
+from pydantic.main import Extra
+from typing import Any, Dict, List, Optional, Sequence, Type, Union
 
 
 class CommentBlock(BaseModel):
@@ -81,3 +83,55 @@ class Document(BaseModel):
 
     header_comment: List[CommentBlock] = []
     sections: List[Section] = []
+
+
+class IniBasedModel(BaseModel, ABC):
+    """IniBasedModel defines the base model for ini models
+
+    IniBasedModel instances can be created from Section instances
+    obtained through parsing ini documents. It further supports
+    adding arbitrary fields to it, which will be written to file.
+    Lastly, no arbitrary types are allowed for the defined fields.
+    """
+
+    class Config:
+        extra = Extra.allow
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = False
+
+    @classmethod
+    def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":
+        if isinstance(value, Section):
+            converted_content = cls._convert_section_content(value.content)
+            underlying_dict = cls._convert_section_to_dict(value)
+            value = {**underlying_dict, **converted_content}
+
+        return super().validate(value)
+
+    @classmethod
+    def _convert_section_to_dict(cls, value: Section) -> Dict:
+        return value.dict(
+            exclude={
+                "start_line",
+                "end_line",
+                "datablock",
+                "content",
+            }
+        )
+
+    @classmethod
+    def _convert_section_content(cls, content: List):
+        # TODO add comment here
+        return dict((v.key, v.value) for v in content if isinstance(v, Property))
+
+
+class DataBlockIniBasedModel(IniBasedModel):
+    @classmethod
+    def _convert_section_to_dict(cls, value: Section) -> Dict:
+        return value.dict(
+            exclude={
+                "start_line",
+                "end_line",
+                "content",
+            }
+        )

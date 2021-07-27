@@ -1,59 +1,12 @@
-from abc import ABC
 from enum import Enum
-from hydrolib.core.io.ini.models import Property, Section
+from hydrolib.core.io.ini.models import IniBasedModel
 from pathlib import Path
-from hydrolib.core.basemodel import BaseModel
 from pydantic import validator, Field
-from pydantic.main import Extra
-from typing import Any, Dict, List, Literal, Optional, Type, Union
+from typing import List, Literal, Optional, Union
 
 
 # TODO: handle comment blocks
 # TODO: handle duplicate keys
-class IniBasedModel(BaseModel, ABC):
-    class Config:
-        extra = Extra.allow
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = False
-
-    @classmethod
-    def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":
-        if isinstance(value, Section):
-            converted_content = cls._convert_section_content(value.content)
-            underlying_dict = cls._convert_section_to_dict(value)
-            value = {**underlying_dict, **converted_content}
-
-        return super().validate(value)
-
-    @classmethod
-    def _convert_section_to_dict(cls, value: Section) -> Dict:
-        return value.dict(
-            exclude={
-                "start_line",
-                "end_line",
-                "datablock",
-                "content",
-            }
-        )
-
-    @classmethod
-    def _convert_section_content(cls, content: List):
-        # TODO add comment here
-        return dict((v.key, v.value) for v in content if isinstance(v, Property))
-
-
-class DataBlockIniBasedModel(IniBasedModel):
-    @classmethod
-    def _convert_section_to_dict(cls, value: Section) -> Dict:
-        return value.dict(
-            exclude={
-                "start_line",
-                "end_line",
-                "content",
-            }
-        )
-
-
 class Structure(IniBasedModel):
     header: Literal["Structure"] = "Structure"
 
