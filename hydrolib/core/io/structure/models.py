@@ -15,7 +15,7 @@ class Structure(IniBasedModel):
         branch_id: Optional[str] = Field(
             "Branch on which the structure is located.", alias="branchId"
         )
-        chainage: Optional[str] = "Chainage on the branch (m)"
+        chainage: Optional[str] = "Chainage on the branch (m)."
 
         n_coordinates: Optional[str] = Field(
             "Number of values in xCoordinates and yCoordinates", alias="numCoordinates"

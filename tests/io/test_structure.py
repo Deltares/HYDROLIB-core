@@ -53,12 +53,49 @@ def test_weir_construction_with_parser():
         id                = weir_id     # Unique structure id (max. 256 characters).
         name              = weir        # Given name in the user interface.
         branchId          = branch      # (optional) Branch on which the structure is located.
-        chainage          = 3.0         # (optional)   Chanage on the branch (m)
+        chainage          = 3.0         # (optional) Chainage on the branch (m)
         type              = weir        # Structure type
         allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
         crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
+        """
+    )
+
+    for line in input_str.splitlines():
+        parser.feed_line(line)
+
+    document = parser.finalize()
+
+    wrapper = TestWrapper[Weir].parse_obj({"val": document.sections[0]})
+    weir = wrapper.val
+
+    assert weir.id == "weir_id"
+    assert weir.name == "weir"
+    assert weir.branch_id == "branch"
+    assert weir.chainage == 3.0
+    assert weir.structure_type == "weir"
+    assert weir.allowed_flow_direction == FlowDirection.positive
+    assert weir.crest_level == 10.5
+    assert weir.crest_width is None
+    assert weir.use_velocity_height == False
+
+
+def test_weir_comments_construction_with_parser():
+    parser = Parser(ParserConfig())
+
+    input_str = inspect.cleandoc(
+        """
+        [Structure]
+        id                = weir_id     
+        name              = weir        
+        branchId          = branch      
+        chainage          = 3.0         # My own special comment 1
+        type              = weir        
+        allowedFlowdir    = positive    
+        crestLevel        = 10.5        
+        crestWidth        =             
+        useVelocityHeight = false       # My own special comment 2
         """
     )
 
@@ -90,7 +127,7 @@ def test_weir_with_unknown_parameters():
         id                = weir_id     # Unique structure id (max. 256 characters).
         name              = weir        # Given name in the user interface.
         branchId          = branch      # (optional) Branch on which the structure is located.
-        chainage          = 3.0         # (optional)   Chanage on the branch (m)
+        chainage          = 3.0         # (optional) Chainage on the branch (m)
 
         # ----------------------------------------------------------------------
         unknown           = 10.0        # A deliberately added unknown property
@@ -134,7 +171,7 @@ def test_universal_construction_with_parser():
         id                = uweir_id         # Unique structure id (max. 256 characters).
         name              = W002             # Given name in the user interface.
         branchId          = branch           # (optional) Branch on which the structure is located.
-        chainage          = 6.0              # (optional)   Chanage on the branch (m)
+        chainage          = 6.0              # (optional) Chainage on the branch (m).
         type              = universalWeir    # Structure type
         allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
@@ -173,26 +210,26 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         [Structure]
         id                = weir_id     # Unique structure id (max. 256 characters).
         name              = W001        # Given name in the user interface.
-        branchId          = branch      # (optional) Branch on which the structure is located.
-        chainage          = 3.0         # (optional)   Chanage on the branch (m)
-        type              = weir        # Structure type
+        branchId          = branch      # Branch on which the structure is located.
+        chainage          = 3.0         # Chainage on the branch (m).
+        type              = weir        # Structure type; must read weir
         allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
-        crestLevel        = 10.5        # Crest level of weir (m AD)
-        crestWidth        =             # Width of weir (m)
-        useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
+        crestLevel        = 10.5        # Crest level of weir (m AD).
+        crestWidth        =             # Width of the weir (m).
+        useVelocityHeight = false       # Flag indicating whether the velocity height is to be calculated or not.
 
         [Structure]
         id                = uweir_id         # Unique structure id (max. 256 characters).
         name              = W002             # Given name in the user interface.
-        branchId          = branch           # (optional) Branch on which the structure is located.
-        chainage          = 6.0              # (optional)   Chanage on the branch (m)
-        type              = universalWeir    # Structure type
+        branchId          = branch           # Branch on which the structure is located.
+        chainage          = 6.0              # Chainage on the branch (m).
+        type              = universalWeir    # Structure type; must read universalWeir
         allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
-        yValues           = 1.0 2.0          # y-values of the cross section (m) 
+        yValues           = 1.0 2.0          # y-values of the cross section (m). (number of values = numLevels) 
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
-        crestLevel        = 10.5             # Crest level of weir (m AD)
-        dischargeCoeff    = 0.5              # Discharge coefficient c_e (-)
+        crestLevel        = 10.5             # Crest level of weir (m AD).
+        dischargeCoeff    = 0.5              # Discharge coefficient c_e (-).
         """
     )
 

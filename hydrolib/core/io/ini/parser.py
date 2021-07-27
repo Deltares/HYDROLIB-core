@@ -242,7 +242,7 @@ class Parser:
     def _retrieve_property_comment(self, line: str) -> Tuple[Optional[str], str]:
         if self._config.parse_comments and self._config.comment_delimeter in line:
             key_value, comment = line.split(self._config.comment_delimeter, 1)
-            return comment, key_value.strip()
+            return comment.strip(), key_value.strip()
         else:
             return None, line.strip()
 

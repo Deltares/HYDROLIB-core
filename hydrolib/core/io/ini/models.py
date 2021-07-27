@@ -1,4 +1,7 @@
 from abc import ABC
+
+from pydantic.class_validators import validator
+from pydantic.error_wrappers import ValidationError
 from hydrolib.core.basemodel import BaseModel
 from pydantic.main import Extra
 from typing import Any, Dict, List, Optional, Sequence, Type, Union
@@ -112,6 +115,19 @@ class IniBasedModel(BaseModel, ABC):
     comments: Optional[Comments] = None
 
     @classmethod
+    def has_comments(cls) -> bool:
+        return True
+
+    @validator("comments")
+    def comments_matches_has_comments(cls, v):
+        if cls.has_comments() and v is None:
+            raise ValueError(f"{cls} should have comments.")
+        elif not cls.has_comments() and v is not None:
+            raise ValueError(f"{cls} should not have comments.")
+
+        return v
+
+    @classmethod
     def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":
         if isinstance(value, Section):
             converted_content = cls._convert_section_content(value.content)
@@ -132,9 +148,14 @@ class IniBasedModel(BaseModel, ABC):
         )
 
     @classmethod
-    def _convert_section_content(cls, content: List):
-        # TODO add comment here
-        return dict((v.key, v.value) for v in content if isinstance(v, Property))
+    def _convert_section_content(cls, content: List) -> Dict:
+        values: Dict[str, Any] = dict(
+            (v.key, v.value) for v in content if isinstance(v, Property)
+        )
+        values["comments"] = dict(
+            (v.key, v.comment) for v in content if isinstance(v, Property)
+        )
+        return values
 
 
 class DataBlockIniBasedModel(IniBasedModel):

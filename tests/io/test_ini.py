@@ -495,7 +495,7 @@ class TestParser:
                             lines=[" comment in a section", " starting with two lines"],
                         ),
                         Property(
-                            key="key", value="value", comment=" with a comment", line=3
+                            key="key", value="value", comment="with a comment", line=3
                         ),
                         Property(
                             key="another-key",
@@ -509,7 +509,7 @@ class TestParser:
                         Property(
                             key="last-key",
                             value="last value",
-                            comment=" inline comment",
+                            comment="inline comment",
                             line=6,
                         ),
                         CommentBlock(start_line=7, end_line=7, lines=[" last comment"]),
@@ -694,7 +694,7 @@ class TestParser:
                             lines=[" some comment", " consisting of two lines"],
                         ),
                         Property(
-                            key="key", value="value", comment=" with a comment", line=10
+                            key="key", value="value", comment="with a comment", line=10
                         ),
                         Property(
                             key="another-key",
@@ -708,7 +708,7 @@ class TestParser:
                         Property(
                             key="last-key",
                             value="last value",
-                            comment=" inline comment",
+                            comment="inline comment",
                             line=13,
                         ),
                         CommentBlock(
@@ -726,13 +726,13 @@ class TestParser:
                     header="different-header",
                     content=[
                         Property(
-                            key="key1", value="value1", comment=" comment1", line=20
+                            key="key1", value="value1", comment="comment1", line=20
                         ),
                         Property(
-                            key="key2", value="value2", comment=" comment2", line=21
+                            key="key2", value="value2", comment="comment2", line=21
                         ),
                         Property(
-                            key="key3", value="value3", comment=" comment3", line=22
+                            key="key3", value="value3", comment="comment3", line=22
                         ),
                         CommentBlock(
                             start_line=23,
