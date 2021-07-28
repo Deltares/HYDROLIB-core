@@ -140,7 +140,7 @@ class IniBasedModel(BaseModel, ABC):
 
     comments: Optional[Comments] = None
 
-    @validator("comments")
+    @validator("comments", always=True)
     def comments_matches_has_comments(cls, v):
         if cls._supports_comments() and v is None:
             raise ValueError(f"{cls} should have comments.")

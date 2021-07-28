@@ -1,6 +1,7 @@
 from hydrolib.core.io.ini.models import (
     CommentBlock,
     Document,
+    IniBasedModel,
     Property,
     Section,
 )
@@ -11,7 +12,7 @@ from hydrolib.core.io.ini.parser import (
     ParserConfig,
 )
 from pydantic import ValidationError
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import inspect
 import pytest
@@ -751,3 +752,29 @@ class TestParser:
         )
 
         assert result == expected_result
+
+
+class TestIniBasedModel:
+    class MissingCommentsModel(IniBasedModel):
+        @classmethod
+        def _supports_comments(cls):
+            return True
+
+        comments: Optional[IniBasedModel.Comments] = None
+
+    def test_ini_based_model_which_supports_comments_should_have_comments(self):
+        with pytest.raises(ValidationError):
+            _ = TestIniBasedModel.MissingCommentsModel()
+
+    class UnsupportedCommentsModel(IniBasedModel):
+        @classmethod
+        def _supports_comments(cls):
+            return False
+
+        comments = IniBasedModel.Comments()
+
+    def test_ini_based_model_which_does_not_support_comments_should_not_have_comments(
+        self,
+    ):
+        with pytest.raises(ValidationError):
+            _ = TestIniBasedModel.UnsupportedCommentsModel()
