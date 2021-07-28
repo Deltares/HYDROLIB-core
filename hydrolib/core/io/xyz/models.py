@@ -1,6 +1,8 @@
 from typing import Optional
-from hydrolib.core.basemodel import BaseModel
+
 from pydantic import Field
+
+from hydrolib.core.basemodel import BaseModel
 
 
 class XYZPoint(BaseModel):

@@ -1,5 +1,5 @@
-from tests.utils import test_data_dir
 from hydrolib.core.io.xyz import parser
+from tests.utils import test_data_dir
 
 
 def test_xyz_parser():

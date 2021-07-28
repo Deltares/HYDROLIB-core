@@ -1,6 +1,6 @@
+import re
 from pathlib import Path
 from typing import Dict
-import re
 
 xyzpattern = re.compile(r"\s+")
 

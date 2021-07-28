@@ -1,10 +1,10 @@
-from hydrolib.core.io.polyfile.models import (
-    Description,
-    Point,
-    PolyObject,
-    Metadata,
-)
+import inspect
+from pathlib import Path
+from typing import Iterator, List, Optional, Tuple, Union
 
+import pytest
+
+from hydrolib.core.io.polyfile.models import Description, Metadata, Point, PolyObject
 from hydrolib.core.io.polyfile.parser import (
     Block,
     ErrorBuilder,
@@ -14,18 +14,9 @@ from hydrolib.core.io.polyfile.parser import (
     _determine_has_z_value,
     read_polyfile,
 )
+from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 
-from hydrolib.core.io.polyfile.serializer import (
-    Serializer,
-    write_polyfile,
-)
-
-from pathlib import Path
-from typing import Iterator, List, Optional, Tuple, Union
 from ..utils import test_data_dir, test_output_dir
-
-import inspect
-import pytest
 
 
 class TestSerializer:

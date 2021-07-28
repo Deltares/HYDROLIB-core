@@ -1,8 +1,9 @@
 """models.py defines all classes and functions related to representing pol/pli(z) files.
 """
 
-from hydrolib.core.basemodel import BaseModel
 from typing import List, Optional, Sequence
+
+from hydrolib.core.basemodel import BaseModel
 
 
 class Description(BaseModel):
