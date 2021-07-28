@@ -1,7 +1,8 @@
 from enum import Enum
+from hydrolib.core.io.ini.util import get_split_string_on_delimeter_validator
 from hydrolib.core.io.ini.models import IniBasedModel
 from pathlib import Path
-from pydantic import validator, Field
+from pydantic import Field
 from typing import List, Literal, Optional, Union
 
 
@@ -122,8 +123,4 @@ class UniversalWeir(Structure):
     crest_level: float = Field(alias="crestLevel")
     discharge_coefficient: float = Field(alias="dischargeCoeff")
 
-    @validator("y_values", "z_values", pre=True)
-    def split_value_lists(cls, v):
-        if isinstance(v, str):
-            v = v.split()
-        return v
+    _split_to_list = get_split_string_on_delimeter_validator("y_values", "z_values")
