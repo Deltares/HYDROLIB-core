@@ -7,8 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, List, Optional, Sequence, Union
 
-import meshkernel as mk
-from pydantic import Field, validator
+from pydantic import validator
 
 from hydrolib.core import __version__
 from hydrolib.core.dimr_parser import DIMRParser
@@ -22,7 +21,6 @@ from hydrolib.core.io.dimr.models import (
     GlobalSettings,
     RRComponent,
 )
-from hydrolib.core.io.net.models import Link1d2d, Mesh1d, Mesh2d
 from hydrolib.core.io.polyfile.models import PolyObject
 from hydrolib.core.io.polyfile.parser import read_polyfile
 from hydrolib.core.io.polyfile.serializer import write_polyfile
@@ -78,21 +76,8 @@ class XYZ(FileModel):
 class Network(FileModel):
     """Network model representation."""
 
-    meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
-
-    _mesh1d: Optional[Mesh1d] = None
-    _mesh2d: Optional[Mesh2d] = None
-    _link1d2d: Optional[Link1d2d] = None
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if self._mesh1d is None:
-            self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
-        if self._mesh2d is None:
-            self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
-        if self._link1d2d is None:
-            self._link1d2d = Link1d2d(meshkernel=self.meshkernel)
+    n_vertices: int = 100
+    edges: List[Edge] = [Edge()]
 
     @classmethod
     def _ext(cls) -> str:
