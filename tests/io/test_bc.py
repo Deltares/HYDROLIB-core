@@ -1,4 +1,9 @@
-from hydrolib.core.io.bc.models import Forcing, Function
+from hydrolib.core.io.bc.models import (
+    Forcing,
+    Function,
+    FunctionData,
+    TimeInterpolation,
+)
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from pydantic.generics import GenericModel
 from typing import TypeVar, Generic
@@ -11,6 +16,28 @@ TWrapper = TypeVar("TWrapper")
 
 class TestWrapper(GenericModel, Generic[TWrapper]):
     val: TWrapper
+
+
+def test_create_a_forcing_from_scratch():
+    forcing = Forcing(
+        name="F001",
+        function=Function.TimeSeries(
+            time_interpolation=TimeInterpolation.linear,
+            function_data=[
+                FunctionData(quantity="time", unit="s", values=[1.0, 2.0, 3.0])
+            ],
+        ),
+    )
+
+    assert forcing.name == "F001"
+    assert isinstance(forcing.function, Function.TimeSeries)
+    assert forcing.function.offset == 0.0
+    assert forcing.function.factor == 1.0
+    assert forcing.function.time_interpolation == TimeInterpolation.linear
+    assert "time" in forcing.function.function_data
+    assert forcing.function.function_data["time"].quantity == "time"
+    assert forcing.function.function_data["time"].unit == "s"
+    assert forcing.function.function_data["time"].values == [1.0, 2.0, 3.0]
 
 
 def test_read_bc_expected_result():

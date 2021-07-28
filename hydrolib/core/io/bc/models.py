@@ -1,5 +1,6 @@
 from abc import ABC
 from enum import Enum
+from pydantic.class_validators import validator
 from pydantic.fields import Field
 from pydantic.typing import NoneType
 from hydrolib.core.basemodel import BaseModel
@@ -57,6 +58,14 @@ class Function:
                 # This is a pretty huge assumption, that we might need to address?
                 cls._group_function_data(value)
             return super().validate(value)
+
+        @validator("function_data", pre=True)
+        def _convert_function_data_from_list(cls, value: Any):
+            if isinstance(value, List) and all(
+                (isinstance(v, FunctionData) for v in value)
+            ):
+                value = dict((fd.quantity, fd) for fd in value)
+            return value
 
         @classmethod
         def _group_function_data(cls, data: Dict) -> None:

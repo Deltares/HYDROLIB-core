@@ -13,6 +13,36 @@ class TestWrapper(GenericModel, Generic[TWrapper]):
     val: TWrapper
 
 
+def test_create_a_weir_from_scratch():
+    weir = Weir(
+        id="w003",
+        name="W003",
+        branch_id="B1",
+        chainage=5.0,
+        allowed_flow_direction=FlowDirection.none,
+        crest_level=0.5,
+        use_velocity_height=False,
+        comments=Weir.Comments(
+            name="W stands for weir, 003 because we expect to have at most 999 weirs"
+        ),
+    )
+
+    assert weir.id == "w003"
+    assert weir.name == "W003"
+    assert weir.branch_id == "B1"
+    assert weir.chainage == 5.0
+    assert weir.allowed_flow_direction == FlowDirection.none
+    assert weir.crest_level == 0.5
+    assert weir.crest_width == None
+    assert weir.use_velocity_height == False
+    assert (
+        weir.comments.name
+        == "W stands for weir, 003 because we expect to have at most 999 weirs"
+    )
+
+    assert weir.comments.id == "Unique structure id (max. 256 characters)."
+
+
 def test_id_comment_has_correct_default():
     weir = Weir(
         id="weir_id",
