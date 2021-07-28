@@ -1,12 +1,8 @@
 from itertools import chain
 from pathlib import Path
 from typing import Dict, Iterable, Optional
-from hydrolib.core.io.polyfile.models import (
-    Description,
-    Metadata,
-    Point,
-    PolyObject,
-)
+
+from hydrolib.core.io.polyfile.models import Description, Metadata, Point, PolyObject
 
 
 class Serializer:
