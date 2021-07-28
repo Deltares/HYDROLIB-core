@@ -1,8 +1,10 @@
 from enum import IntEnum
+from typing import Callable, Dict, List, Optional, Tuple, Union
+
+from pydantic import validator
+
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.ini.models import CommentBlock, Document, Property, Section
-from pydantic import validator
-from typing import Callable, Dict, List, Optional, Tuple, Union
 
 
 class ParserConfig(BaseModel):

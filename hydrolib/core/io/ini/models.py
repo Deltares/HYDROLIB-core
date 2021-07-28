@@ -1,9 +1,11 @@
 from abc import ABC
 from functools import reduce
-from pydantic.class_validators import validator
-from hydrolib.core.basemodel import BaseModel
-from pydantic.main import Extra
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type, Union
+
+from pydantic import Extra, Field
+from pydantic.class_validators import validator
+
+from hydrolib.core.basemodel import BaseModel
 
 
 class CommentBlock(BaseModel):
@@ -35,6 +37,12 @@ class Property(BaseModel):
     value: Optional[str]
     comment: Optional[str]
 
+    def get_item(self):
+        return {self.key: self.value}
+
+    def get_comment(self):
+        return {self.key: self.comment}
+
 
 class Section(BaseModel):
     """Section defines a deltares ini section
@@ -64,13 +72,21 @@ class Section(BaseModel):
             An optional data block associated with this Section
     """
 
-    header: str
+    header: str = Field(alias="_header")
     start_line: int
     end_line: int
     content: List[Union[Property, CommentBlock]]
 
     # these are primarily relevant for bc files
     datablock: Optional[Sequence[Sequence[str]]]
+
+    def dict(self, *args, **kwargs):
+        kwargs["by_alias"] = True
+        return super().dict(*args, **kwargs)
+
+    def flatten(self):
+        # TODO Move all flatten logic from IniBasedModel here
+        pass
 
 
 class Document(BaseModel):
@@ -117,6 +133,8 @@ class IniBasedModel(BaseModel, ABC):
             Optional Comments if defined by the user.
     """
 
+    _header: str
+
     class Config:
         extra = Extra.allow
         allow_population_by_field_name = True
@@ -152,6 +170,7 @@ class IniBasedModel(BaseModel, ABC):
     @classmethod
     def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":
         if isinstance(value, Section):
+            # value = value.flatten()  # TODO
             value = cls._convert_section(value)
 
         return super().validate(value)

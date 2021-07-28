@@ -1,16 +1,11 @@
-from hydrolib.core.io.structure.models import FlowDirection, UniversalWeir, Weir
-from hydrolib.core.io.ini.parser import Parser, ParserConfig
-from pydantic.generics import GenericModel
-from typing import Generic, List, TypeVar, Union
-
 import inspect
+from typing import List, Union
 
 
-TWrapper = TypeVar("TWrapper")
+from hydrolib.core.io.ini.parser import Parser, ParserConfig
+from hydrolib.core.io.structure.models import FlowDirection, UniversalWeir, Weir
 
-
-class TestWrapper(GenericModel, Generic[TWrapper]):
-    val: TWrapper
+from ..utils import WrapperTest
 
 
 def test_create_a_weir_from_scratch():
@@ -97,7 +92,7 @@ def test_weir_construction_with_parser():
 
     document = parser.finalize()
 
-    wrapper = TestWrapper[Weir].parse_obj({"val": document.sections[0]})
+    wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
     weir = wrapper.val
 
     assert weir.id == "weir_id"
@@ -134,7 +129,7 @@ def test_weir_comments_construction_with_parser():
 
     document = parser.finalize()
 
-    wrapper = TestWrapper[Weir].parse_obj({"val": document.sections[0]})
+    wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
     weir = wrapper.val
 
     assert weir.comments.id is None
@@ -176,7 +171,7 @@ def test_weir_with_unknown_parameters():
 
     document = parser.finalize()
 
-    wrapper = TestWrapper[Weir].parse_obj({"val": document.sections[0]})
+    wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
     weir = wrapper.val
 
     assert weir.unknown == "10.0"  # type: ignore
@@ -217,7 +212,7 @@ def test_universal_construction_with_parser():
 
     document = parser.finalize()
 
-    wrapper = TestWrapper[UniversalWeir].parse_obj({"val": document.sections[0]})
+    wrapper = WrapperTest[UniversalWeir].parse_obj({"val": document.sections[0]})
     universal_weir = wrapper.val
 
     assert universal_weir.id == "uweir_id"
@@ -268,7 +263,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
 
     document = parser.finalize()
 
-    wrapper = TestWrapper[List[Union[Weir, UniversalWeir]]].parse_obj(
+    wrapper = WrapperTest[List[Union[Weir, UniversalWeir]]].parse_obj(
         {"val": document.sections}
     )
     expected_structures = [
@@ -281,6 +276,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
             crest_level=10.5,
             crest_width=None,
             use_velocity_height=False,
+            _header="Structure",
         ),
         UniversalWeir(
             id="uweir_id",
@@ -293,6 +289,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
             z_values=[3.0, 4.0],
             crest_level=10.5,
             discharge_coefficient=0.5,
+            _header="Structure",
         ),
     ]
 

@@ -1,3 +1,9 @@
+import inspect
+from typing import List, Optional, Tuple, Union
+
+import pytest
+from pydantic import ValidationError
+
 from hydrolib.core.io.ini.models import (
     CommentBlock,
     Document,
@@ -7,15 +13,10 @@ from hydrolib.core.io.ini.models import (
 )
 from hydrolib.core.io.ini.parser import (
     Parser,
+    ParserConfig,
     _IntermediateCommentBlock,
     _IntermediateSection,
-    ParserConfig,
 )
-from pydantic import ValidationError
-from typing import List, Optional, Tuple, Union
-
-import inspect
-import pytest
 
 
 class TestParserConfig:

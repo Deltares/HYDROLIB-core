@@ -5,8 +5,7 @@ all known extensions.
 
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, List, Optional, Union
-from typing import Callable, List, Optional, Sequence
+from typing import Callable, List, Optional, Sequence, Union
 
 from pydantic import validator
 
@@ -22,10 +21,10 @@ from hydrolib.core.io.dimr.models import (
     GlobalSettings,
     RRComponent,
 )
-from hydrolib.core.io.xyz.models import XYZPoint
 from hydrolib.core.io.polyfile.models import PolyObject
 from hydrolib.core.io.polyfile.parser import read_polyfile
 from hydrolib.core.io.polyfile.serializer import write_polyfile
+from hydrolib.core.io.xyz.models import XYZPoint
 from hydrolib.core.io.xyz.parser import XYZParser
 from hydrolib.core.io.xyz.serializer import XYZSerializer
 from hydrolib.core.utils import to_list

@@ -1,17 +1,13 @@
 """parser.py defines all classes and functions related to parsing pol/pli(z) files.
 """
 
+import warnings
 from enum import IntEnum
-from hydrolib.core.io.polyfile.models import (
-    Description,
-    Metadata,
-    Point,
-    PolyObject,
-)
-from hydrolib.core.basemodel import BaseModel
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
-import warnings
+
+from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.io.polyfile.models import Description, Metadata, Point, PolyObject
 
 
 class ParseMsg(BaseModel):

@@ -1,7 +1,8 @@
 """util.py provides additional utility methods related to handling ini files.
 """
-from pydantic.class_validators import validator
 from typing import Any
+
+from pydantic.class_validators import validator
 
 
 def get_split_string_on_delimeter_validator(*field_name: str, delimiter: str = None):

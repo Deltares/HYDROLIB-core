@@ -1,3 +1,5 @@
+import inspect
+
 from hydrolib.core.io.bc.models import (
     Forcing,
     Function,
@@ -5,17 +7,7 @@ from hydrolib.core.io.bc.models import (
     TimeInterpolation,
 )
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
-from pydantic.generics import GenericModel
-from typing import TypeVar, Generic
-
-import inspect
-
-
-TWrapper = TypeVar("TWrapper")
-
-
-class TestWrapper(GenericModel, Generic[TWrapper]):
-    val: TWrapper
+from ..utils import WrapperTest
 
 
 def test_create_a_forcing_from_scratch():
@@ -63,7 +55,7 @@ def test_read_bc_expected_result():
 
     document = parser.finalize()
 
-    wrapper = TestWrapper[Forcing].parse_obj({"val": document.sections[0]})
+    wrapper = WrapperTest[Forcing].parse_obj({"val": document.sections[0]})
     forcing = wrapper.val
 
     assert forcing.name == "right01_0001"

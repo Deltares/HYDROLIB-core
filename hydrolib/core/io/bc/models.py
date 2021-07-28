@@ -1,11 +1,13 @@
 from abc import ABC
 from enum import Enum
+from typing import Any, Dict, List, Literal, Sequence, Type, Union
+
 from pydantic.class_validators import validator
 from pydantic.fields import Field
 from pydantic.typing import NoneType
+
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.ini.models import DataBlockIniBasedModel, Section
-from typing import Any, Dict, List, Literal, Sequence, Type, Union
 
 
 # TODO: This module is unfinished and should be finished as part of the bc file issue.
@@ -44,11 +46,13 @@ class Function:
     # note that we could produce actual fields out of the dictionary, but this might complicate the use case a bit
     # furthermore we could change the data to numpy arrays, but I'll leave that to the actual implementer
     class FunctionBase(BaseModel, ABC):
+
+        function: str
+        function_data: Dict[str, FunctionData]
+
         class Config:
             allow_population_by_field_name = True
             arbitrary_types_allowed = False
-
-        function_data: Dict[str, FunctionData]
 
         @classmethod
         def validate(
@@ -132,7 +136,7 @@ class Forcing(DataBlockIniBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    header: Literal["Forcing"] = "Forcing"
+    _header: Literal["Forcing"] = "Forcing"
 
     name: str
 

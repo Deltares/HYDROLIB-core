@@ -1,9 +1,11 @@
 from enum import Enum
-from hydrolib.core.io.ini.util import get_split_string_on_delimeter_validator
-from hydrolib.core.io.ini.models import IniBasedModel
 from pathlib import Path
-from pydantic import Field
 from typing import List, Literal, Optional, Union
+
+from pydantic import Field
+
+from hydrolib.core.io.ini.models import IniBasedModel
+from hydrolib.core.io.ini.util import get_split_string_on_delimeter_validator
 
 
 # TODO: handle comment blocks
@@ -32,7 +34,7 @@ class Structure(IniBasedModel):
 
     comments: Comments = Comments()
 
-    header: Literal["Structure"] = "Structure"
+    _header: Literal["Structure"] = "Structure"
 
     id: str = Field("id", max_length=256)
     name: str = Field("id")
