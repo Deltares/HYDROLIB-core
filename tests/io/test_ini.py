@@ -1,5 +1,7 @@
+from itertools import chain
+from hydrolib.core.io.ini.serializer import Serializer
 import inspect
-from typing import List, Optional, Tuple, Union
+from typing import Iterable, List, Optional, Tuple, Union
 
 import pytest
 from pydantic import ValidationError
@@ -779,3 +781,84 @@ class TestIniBasedModel:
     ):
         with pytest.raises(ValidationError):
             _ = TestIniBasedModel.UnsupportedCommentsModel()
+
+
+class TestSerializer:
+    @pytest.mark.parametrize(
+        "iterable,expected_result",
+        [
+            ([], []),
+            (
+                [
+                    "one",
+                ],
+                ["one", ""],
+            ),
+            (
+                [
+                    "one",
+                    "two",
+                    "three",
+                ],
+                [
+                    "one",
+                    "",
+                    "two",
+                    "",
+                    "three",
+                    "",
+                ],
+            ),
+        ],
+    )
+    def test_interweave_empty_lines_to_iterable_str_should_interweave_correctly(
+        self, iterable: Iterable[str], expected_result: List[str]
+    ):
+        result = list(Serializer._interweave(iterable, ""))
+
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "iterable,expected_result",
+        [
+            ([], []),
+            (
+                [
+                    ["one"],
+                ],
+                ["one", ""],
+            ),
+            (
+                [
+                    [
+                        "one",
+                        "two",
+                    ],
+                    [
+                        "three",
+                        "four",
+                    ],
+                    [
+                        "five",
+                        "six",
+                    ],
+                ],
+                [
+                    "one",
+                    "two",
+                    "",
+                    "three",
+                    "four",
+                    "",
+                    "five",
+                    "six",
+                    "",
+                ],
+            ),
+        ],
+    )
+    def test_interweave_empty_lines_to_iterable_iterable_str_should_interweave_correctly(
+        self, iterable: Iterable[Iterable[str]], expected_result: List[str]
+    ):
+        result = list(chain.from_iterable(Serializer._interweave(iterable, [""])))
+        assert result == expected_result
