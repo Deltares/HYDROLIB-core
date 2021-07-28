@@ -24,7 +24,7 @@ class ParserConfig(BaseModel):
         parse_comments (bool):
             Whether we allow parsing of comments defined with the comment_delimeter.
             Defaults to True.
-        comment_delimeter (str):
+        comment_delimiter (str):
             The character or sequence of character used to define a comment.
             Defaults to '#'.
     """
@@ -32,7 +32,7 @@ class ParserConfig(BaseModel):
     allow_only_keywords: bool = False
     parse_datablocks: bool = False
     parse_comments: bool = True
-    comment_delimeter: str = "#"
+    comment_delimiter: str = "#"
 
     @validator("parse_datablocks")
     def allow_only_keywods_and_parse_datablocks_leads_should_not_both_be_true(
@@ -242,8 +242,8 @@ class Parser:
         self._current_section.add_datarow(line.split())  # type: ignore
 
     def _retrieve_property_comment(self, line: str) -> Tuple[Optional[str], str]:
-        if self._config.parse_comments and self._config.comment_delimeter in line:
-            key_value, comment = line.split(self._config.comment_delimeter, 1)
+        if self._config.parse_comments and self._config.comment_delimiter in line:
+            key_value, comment = line.split(self._config.comment_delimiter, 1)
             return comment.strip(), key_value.strip()
         else:
             return None, line.strip()
@@ -270,7 +270,7 @@ class Parser:
         return len(line.strip()) == 0
 
     def _is_comment(self, line: str) -> bool:
-        return line.strip().startswith(self._config.comment_delimeter)
+        return line.strip().startswith(self._config.comment_delimiter)
 
     def _convert_to_comment(self, line: str) -> str:
         return line.strip()[1:]
