@@ -17,6 +17,7 @@ class KeyValuePair(BaseModel):
         key: The key.
         value: The value.
     """
+
     key: str
     value: str
 
