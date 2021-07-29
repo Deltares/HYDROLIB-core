@@ -17,15 +17,18 @@ class KeyValuePair(BaseModel):
 
 class Component(BaseModel, ABC):
     """
+    Specification of a BMI-compliant model component instance that will be executed by DIMR.
+
     Attributes:
-        library:
-        name:
-        workingDir:
-        inputFile:
-        process:
-        setting:
-        parameter:
-        mpiCommunicator:
+        library: The library name of the compoment.
+        name: The component name.
+        workingDir: The working directory.
+        inputFile: The name of the input file.
+        process: Number of subprocesses in the component.
+        setting: A list of variables that are provided to the BMI model before initialization.
+        parameter: A list of variables that are provided to the BMI model after initialization.
+        mpiCommunicator: The MPI communicator value.
+        model: The model represented by this component.
     """
 
     library: str
@@ -72,10 +75,12 @@ class RRComponent(Component):
 
 class Documentation(BaseModel):
     """
+    Information on the present DIMR configuration file.
+
     Attributes:
-        fileVersion:
-        createdBy:
-        creationDate:
+        fileVersion: The DIMR file version.
+        createdBy: Creators of the DIMR file.
+        creationDate: The creation date of the DIMR file.
     """
 
     fileVersion: str = "1.3"
@@ -85,8 +90,10 @@ class Documentation(BaseModel):
 
 class GlobalSettings(BaseModel):
     """
+    Global settings for the DIMR configuration.
+
     Attributes:
-        logger_ncFormat:
+        logger_ncFormat: NetCDF format type for logging.
     """
 
     logger_ncFormat: int
@@ -94,8 +101,10 @@ class GlobalSettings(BaseModel):
 
 class ComponentOrCouplerRef(BaseModel):
     """
+    Reference to a BMI-compliant model component instance.
+
     Attributes:
-        name:
+        name: Name of the reference to a BMI-compliant model component instance.
     """
 
     name: str
@@ -103,9 +112,11 @@ class ComponentOrCouplerRef(BaseModel):
 
 class CoupledItem(BaseModel):
     """
+    Specification of an item that has to be exchanged.
+
     Attributes:
-        sourceName:
-        targetName:
+        sourceName: Name of the item at the source component.
+        targetName: Name of the item at the target component.
     """
 
     sourceName: str
@@ -114,9 +125,11 @@ class CoupledItem(BaseModel):
 
 class Logger(BaseModel):
     """
+    Used to log values to the specified file in workingdir for each timestep
+
     Attributes:
-        workingDir:
-        outputFile:
+        workingDir: Directory where the log file is written.
+        outputFile: Name of the log file.
     """
 
     workingDir: Path
@@ -125,12 +138,14 @@ class Logger(BaseModel):
 
 class Coupler(BaseModel):
     """
+    Specification of the coupling actions to be performed between two BMI-compliant model components.
+
     Attributes:
-        name:
-        sourceComponent:
-        targetComponent:
-        item:
-        logger:
+        name: The name of the coupler.
+        sourceComponent: The component that provides the data to has to be exchanged.
+        targetComponent: The component that consumes the data to has to be exchanged.
+        item: A list of items that have to be exchanged.
+        logger: Logger for logging the values that get exchanged.
     """
 
     name: str
@@ -146,10 +161,13 @@ class Coupler(BaseModel):
 
 class StartGroup(BaseModel):
     """
+    Specification of model components and couplers to be executed with a certain frequency.
+
     Attributes:
-        time:
-        start:
-        coupler:
+        time: Time frame specification for the present group: start time, stop time and frequency.
+              Expressed in terms of the time frame of the main component.
+        start: Ordered list of components to be executed.
+        coupler: Oredered list of couplers to be executed.
     """
 
     time: str
@@ -163,9 +181,12 @@ class StartGroup(BaseModel):
 
 class Parallel(BaseModel):
     """
+    Specification of a parallel control flow: one main component and a group of related components and couplers.
+    Step wise execution order according to order in parallel control flow.
+
     Attributes:
-        startGroup
-        start:
+        startGroup: Group of components and couplers to be executed.
+        start: Main component to be executed step wise (provides start time, end time and time step).
     """
 
     startGroup: StartGroup
@@ -174,9 +195,11 @@ class Parallel(BaseModel):
 
 class Control(BaseModel):
     """
+    Control flow specification for the DIMR-execution.
+
     Attributes:
-        parallel:
-        start:
+        parallel: Specification of a control flow that has to be executed in parallel.
+        start: Reference to the component instance to be started.
     """
 
     parallel: Optional[List[Parallel]]

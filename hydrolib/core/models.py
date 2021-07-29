@@ -133,7 +133,12 @@ class DIMR(FileModel):
         return to_list(v)
 
     def dict(self, *args, **kwargs):
-        return self.to_serializable_dict(self)
+        """Converts this object recursively to a dictionary.
+
+        Returns:
+            dict: The created dictionary for this object.
+        """
+        return self._to_serializable_dict(self)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -163,7 +168,7 @@ class DIMR(FileModel):
     def _get_parser(cls) -> Callable:
         return DIMRParser.parse
 
-    def to_serializable_dict(self, obj) -> dict:
+    def _to_serializable_dict(self, obj) -> dict:
         if not hasattr(obj, "__dict__"):
             return obj
 
