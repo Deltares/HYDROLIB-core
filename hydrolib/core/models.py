@@ -186,9 +186,9 @@ class DIMR(FileModel):
             element = []
             if isinstance(val, list):
                 for item in val:
-                    element.append(self.to_serializable_dict(item))
+                    element.append(self._to_serializable_dict(item))
             else:
-                element = self.to_serializable_dict(val)
+                element = self._to_serializable_dict(val)
             result[key] = element
 
         return result
