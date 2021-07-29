@@ -64,8 +64,8 @@ def test_parse_when_file_does_not_exist_raises_exception():
 
 
 def test_serialize():
-    file = test_output_dir / "dimr" / "test_serialize.xml"
-    reference_file = test_reference_dir / "dimr" / "test_serialize.xml"
+    file = Path(test_output_dir / "dimr" / "test_serialize.xml")
+    reference_file = Path(test_reference_dir / "dimr" / "test_serialize.xml")
 
     data = {
         "documentation": {
@@ -117,12 +117,12 @@ def test_serialize():
 
     DIMRSerializer.serialize(file, data)
 
-    assert Path(file).is_file() == True
+    assert file.is_file() == True
 
-    with Path(file).open() as af:
+    with file.open() as af:
         actual_lines = af.readlines()
 
-    with Path(reference_file).open() as rf:
+    with reference_file.open() as rf:
         reference_lines = rf.readlines()
 
     assert len(actual_lines) == len(reference_lines)
