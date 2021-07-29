@@ -4,6 +4,7 @@ as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
 
 """
+import logging
 from abc import ABC, abstractclassmethod
 from contextvars import ContextVar
 from pathlib import Path
@@ -14,8 +15,6 @@ from pydantic import BaseModel as PydanticBaseModel
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import to_key
-
-import logging
 
 logger = logging.getLogger(__name__)
 

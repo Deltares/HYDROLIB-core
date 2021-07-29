@@ -1,4 +1,5 @@
-from typing import Any, List
+from types import new_class
+from typing import Any, Callable, Generator, Generic, List, TypeVar, cast
 
 
 def example(a: float, b: float = 1.0) -> float:
@@ -15,7 +16,7 @@ def example(a: float, b: float = 1.0) -> float:
 
 
 def to_key(string: str) -> str:
-    return string.lower().replace(" ", "_")
+    return string.lower().replace(" ", "_").replace("-", "")
 
 
 def to_list(item: Any) -> List[Any]:

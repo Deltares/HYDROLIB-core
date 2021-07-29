@@ -2,9 +2,25 @@ import inspect
 from typing import List, Union
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.structure.models import FlowDirection, UniversalWeir, Weir
+from hydrolib.core.io.structure.models import (
+    FlowDirection,
+    Structure,
+    UniversalWeir,
+    Weir,
+    StructureModel,
+)
 
-from ..utils import WrapperTest
+from ..utils import WrapperTest, test_data_dir
+
+
+def test_structure_model():
+    filepath = (
+        test_data_dir
+        / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/structures.ini"
+    )
+    m = StructureModel(filepath)
+    assert len(m.structure) == 12
+    assert isinstance(m.structure[-1], Structure)
 
 
 def test_create_a_weir_from_scratch():

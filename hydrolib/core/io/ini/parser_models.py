@@ -83,7 +83,7 @@ class Section(BaseModel):
         kwargs["by_alias"] = True
         return super().dict(*args, **kwargs)
 
-    def flatten(self, duplicate_key_as_list: bool, with_comments: bool) -> Dict:
+    def flatten(self, duplicate_key_as_list=True, with_comments=True) -> Dict:
         converted_content = self._convert_section_content(
             duplicate_key_as_list, with_comments
         )
@@ -95,7 +95,6 @@ class Section(BaseModel):
             exclude={
                 "start_line",
                 "end_line",
-                "datablock",
                 "content",
             }
         )
@@ -136,11 +135,11 @@ class Document(BaseModel):
     header_comment: List[CommentBlock] = []
     sections: List[Section] = []
 
-    def flatten(self):
+    def flatten(self, duplicate_key_as_list=True, with_comments=True):
         data = {}
         for v in self.sections:
             key = to_key(v.header)
-            value = v.flatten(True, True)
+            value = v.flatten(duplicate_key_as_list, with_comments)
             if key in data and not isinstance(data[key], list):
                 data[key] = [data[key], value]
             elif key in data:

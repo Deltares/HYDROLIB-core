@@ -1,3 +1,4 @@
+import logging
 from abc import ABC
 from functools import reduce
 from typing import Any, Callable, Dict, List, Literal, Optional, Type
@@ -11,6 +12,8 @@ from hydrolib.core.io.base import DummySerializer
 from .parser import Parser
 from .parser_models import Section
 from .util import make_list_validator
+
+logger = logging.getLogger(__name__)
 
 
 class IniBasedModel(BaseModel, ABC):
@@ -53,11 +56,9 @@ class IniBasedModel(BaseModel, ABC):
 
     @validator("comments", always=True, allow_reuse=True)
     def comments_matches_has_comments(cls, v):
-        # if cls._supports_comments() and v is None:
-        # raise ValueError(f"{cls} should have comments.")
         if not cls._supports_comments() and v is not None:
-            raise ValueError(f"{cls} should not have comments.")
-
+            logging.warning(f"Dropped unsupported comments from {cls.__name__} init.")
+            v = None
         return v
 
     @classmethod
@@ -87,6 +88,10 @@ class DataBlockIniBasedModel(IniBasedModel):
 class INIGeneral(IniBasedModel):
     fileVersion: str = "3.00"
     fileType: str
+
+    @classmethod
+    def _supports_comments(cls):
+        return False
 
 
 class CrossdefGeneral(INIGeneral):
@@ -134,11 +139,7 @@ class CrossDefModel(INIModel):
     general: CrossdefGeneral
     definition: List[Definition] = []
 
-    @validator("definition")
-    def split(cls, v):
-        if isinstance(v, dict):
-            v = [v]
-        return v
+    _make_list = make_list_validator("definition")
 
     @classmethod
     def _filename(cls) -> str:

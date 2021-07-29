@@ -4,7 +4,6 @@ from typing import List, Literal, Optional, Union
 
 from pydantic import Field
 
-from hydrolib.core.basemodel import BaseModel, FileModel
 from hydrolib.core.io.ini.models import IniBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimeter_validator
 

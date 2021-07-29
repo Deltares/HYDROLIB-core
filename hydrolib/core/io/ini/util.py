@@ -32,7 +32,7 @@ def make_list_validator(*field_name: str):
     """Get a validator make a list of object if a single object is passed."""
 
     def split(v: Any):
-        if isinstance(v, dict):
+        if not isinstance(v, list):
             v = [v]
         return v
 
