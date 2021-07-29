@@ -17,19 +17,25 @@ class DIMRSerializer:
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        namespaces = {
-            None: "http://schemas.deltares.nl/dimr",
-            "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-            "schemaLocation": "http://content.oss.deltares.nl/schemas/dimr-1.3.xsd",
-        }
+        xmlns = "http://schemas.deltares.nl/dimr"
+        xsi = "http://www.w3.org/2001/XMLSchema-instance"
+        schemaLocation = "http://content.oss.deltares.nl/schemas/dimr-1.3.xsd"
 
-        root = e.Element("dimrConfig", nsmap=namespaces)
+        attrib = {e.QName(xsi, "schemaLocation"): f"{xmlns} {schemaLocation}"}
+        namespaces = {None: xmlns, "xsi": xsi}
+
+        root = e.Element(
+            "dimrConfig",
+            attrib=attrib,
+            nsmap=namespaces,
+        )
         DIMRSerializer._build_tree(root, data)
 
-        xmlstr = minidom.parseString(e.tostring(root)).toprettyxml(indent="  ")
+        to_string = e.tostring(root, encoding="utf-8")
+        xml = minidom.parseString(to_string).toprettyxml(indent="  ")
 
         with path.open("w") as f:
-            f.write(xmlstr)
+            f.write(xml)
 
     @staticmethod
     def _build_tree(root, data: dict):
