@@ -31,10 +31,10 @@ class DIMRSerializer:
         )
         DIMRSerializer._build_tree(root, data)
 
-        to_string = e.tostring(root, encoding="utf-8")
-        xml = minidom.parseString(to_string).toprettyxml(indent="  ")
+        to_string = minidom.parseString(e.tostring(root))
+        xml = to_string.toprettyxml(indent="  ", encoding="utf-8", standalone=True)
 
-        with path.open("w") as f:
+        with path.open("wb") as f:
             f.write(xml)
 
     @staticmethod
