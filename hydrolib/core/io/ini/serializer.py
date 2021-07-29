@@ -46,6 +46,7 @@ class SerializerConfig(BaseModel):
 
 @dataclass
 class _Lengths:
+    # Internal data class to store the lengths of the elements in a section.
     max_key_length: int
     max_value_length: int
     max_datablock_element_length: Optional[Sequence[int]] = None
@@ -87,11 +88,21 @@ class _Lengths:
 
 
 class Serializer:
+    """Serializer serializes Document to its corresponding lines."""
+
     def __init__(self, config: SerializerConfig):
+        """Creates a new Serializer with the provided configuration.
+
+        Args:
+            config (SerializerConfig): The configuration of this Serializer.
+        """
         self._config = config
 
     @staticmethod
     def _interweave(iterable: Iterable, val: Any) -> Iterable:
+        # Interweave the provided iterable with the provided value:
+        # iterable_element, val, iterable_element, val, ...
+
         # Note that this will interweave with val without making copies
         # as such it is the same object being interweaved.
         return chain.from_iterable(zip(iterable, repeat(val)))
@@ -108,15 +119,14 @@ class Serializer:
         blocks_as_lines = (
             self._serialize_comment_block(block) for block in header_blocks
         )
+        # We separate comment blocks in the header with an empty line.
         blocks_as_lines = Serializer._interweave(blocks_as_lines, [""])  # type: ignore
 
         return chain.from_iterable(blocks_as_lines)
 
     def _serialize_section_header(self, section_header: str) -> Iterable[str]:
         indent = " " * (self._config.section_indent)
-        return [
-            f"{indent}[{section_header}]",
-        ]
+        return [f"{indent}[{section_header}]"]
 
     @staticmethod
     def _get_offset(key: Optional[str], max_length: int) -> str:
@@ -189,7 +199,14 @@ class Serializer:
         )
 
     def serialize(self, document: Document) -> Iterable[str]:
-        """Serialize the provided document into an iterable of lines."""
+        """Serialize the provided document into an iterable of lines.
+
+        Args:
+            document (Document): The Document to serialize.
+
+        Returns:
+            Iterable[str]: An iterable returning each line of the serialized Document.
+        """
         header_iterable = self._serialize_comment_header(document.header_comment)
         sections_iterable = chain.from_iterable(
             Serializer._interweave(
@@ -203,6 +220,18 @@ class Serializer:
 def write_ini(
     path: Path, document: Document, config: Optional[SerializerConfig] = None
 ) -> None:
+    """Write the provided document to the specified path
+
+    If the provided path already exists, it will be overwritten. If the parent fodels
+    do not exist, they will be created.
+
+    Args:
+        path (Path): The path to which the document should be written.
+        document (Document): The document to serialize to the specified path.
+        config (Optional[SerializerConfig], optional):
+            An optional configuration of the serializer. If none provided, it will
+            default to the standard SerializerConfig. Defaults to None.
+    """
     if config is None:
         config = SerializerConfig()
 
