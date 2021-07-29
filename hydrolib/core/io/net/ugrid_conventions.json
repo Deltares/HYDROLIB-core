@@ -56,15 +56,23 @@
         "mesh1d_edge_nodes": [
             "_edge_nodes"
         ],
-        "mesh1d_nodes_branch_id": [
+        "mesh1d_node_branch_id": [
             "_node_branch",
             "_nodes_branch_id",
             "_node_branch_id"
         ],
-        "mesh1d_nodes_branch_offset": [
+        "mesh1d_node_branch_offset": [
             "_node_offset",
             "_nodes_branch_offset",
             "_node_branch_offset"
+        ],
+        "mesh1d_edge_branch_id": [
+            "_edge_branch_id",
+            "_edge_branch"
+        ],
+        "mesh1d_edge_branch_offset": [
+            "_edge_offset",
+            "_edge_branch_offset"
         ]
     },
     "mesh2d": {

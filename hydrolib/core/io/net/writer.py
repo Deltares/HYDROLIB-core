@@ -72,7 +72,8 @@ class UgridWriter:
         ncfile.createDimension("longstrlength", self.longstrlength)
         ncfile.createDimension("mesh1d_nEdges", mesh1d.mesh1d_edge_nodes.shape[0])
         ncfile.createDimension("mesh1d_nNodes", mesh1d.mesh1d_node_id.size)
-        ncfile.createDimension("Two", 2)
+        if not "Two" in ncfile.dimensions:
+            ncfile.createDimension("Two", 2)
 
     def init_2dmesh(self, ncfile, mesh2d):
 
@@ -81,6 +82,8 @@ class UgridWriter:
         ncfile.createDimension("mesh2d_nEdges", mesh2d.mesh2d_edge_nodes.shape[0])
         ncfile.createDimension("mesh2d_nFaces", mesh2d.mesh2d_face_nodes.shape[0])
         ncfile.createDimension("mesh2d_nNodes", mesh2d.mesh2d_node_x.size)
+        if not "Two" in ncfile.dimensions:
+            ncfile.createDimension("Two", 2)
 
     def init_1d2dlinks(self, ncfile, link1d2d):
         # Dimensions
@@ -192,7 +195,7 @@ class UgridWriter:
         nc_mesh1d.coordinate_space = "network1d"
         nc_mesh1d.edge_dimension = "mesh1d_nEdges"
         nc_mesh1d.edge_node_connectivity = "mesh1d_edge_nodes"
-        nc_mesh1d.edge_coordinates = "mesh1d_edge_branch mesh1d_edge_offset mesh1d_edge_x mesh1d_edge_y"
+        nc_mesh1d.edge_coordinates = "mesh1d_edge_branch mesh1d_edge_offset"
         nc_mesh1d.node_coordinates = "mesh1d_node_branch mesh1d_node_offset"
         nc_mesh1d.node_dimension = "mesh1d_nNodes"
         nc_mesh1d.node_id = "mesh1d_node_id"
@@ -213,37 +216,37 @@ class UgridWriter:
         mesh1d_edge_node.start_index = 1
         mesh1d_edge_node[:] = mesh1d.mesh1d_edge_nodes + mesh1d_edge_node.start_index
 
-        # mesh1d_edge_branch = ncfile.createVariable("mesh1d_edge_branch", "i4", "mesh1d_nEdges")
-        # mesh1d_edge_branch.long_name = "Index of branch on which mesh edges are located"
-        # mesh1d_edge_branch.start_index = 1
-        # mesh1d_edge_branch[:] = np.ravel(mesh1d.edge_branchidx) + mesh1d_edge_branch.start_index
+        mesh1d_edge_branch = ncfile.createVariable("mesh1d_edge_branch", "i4", "mesh1d_nEdges")
+        mesh1d_edge_branch.long_name = "Index of branch on which mesh edges are located"
+        mesh1d_edge_branch.start_index = 1
+        mesh1d_edge_branch[:] = mesh1d.mesh1d_edge_branch_id + mesh1d_edge_branch.start_index
 
-        # mesh1d_edge_offset = ncfile.createVariable("mesh1d_edge_offset", np.float64, "mesh1d_nEdges")
-        # mesh1d_edge_offset.long_name = "Offset along branch of mesh edges"
-        # mesh1d_edge_offset.units = "m"
-        # mesh1d_edge_offset[:] = np.ravel(mesh1d.edge_branchoffset)
+        mesh1d_edge_offset = ncfile.createVariable("mesh1d_edge_offset", np.float64, "mesh1d_nEdges")
+        mesh1d_edge_offset.long_name = "Offset along branch of mesh edges"
+        mesh1d_edge_offset.units = "m"
+        mesh1d_edge_offset[:] = mesh1d.mesh1d_edge_branch_offset
 
         # mesh1d_edge_x = ncfile.createVariable("mesh1d_edge_x", np.float64, "mesh1d_nEdges")
         # mesh1d_edge_x.long_name = "x-coordinate of mesh edges"
         # mesh1d_edge_x.units = "m"
-        # mesh1d_edge_x[:] = np.ravel(mesh1d.edge_x)
+        # mesh1d_edge_x[:] = mesh1d.mesh1d_edge_x
 
         # mesh1d_edge_y = ncfile.createVariable("mesh1d_edge_y", np.float64, "mesh1d_nEdges")
         # mesh1d_edge_y.long_name = "y-coordinate of mesh edges"
         # mesh1d_edge_y.units = "m"
-        # mesh1d_edge_y[:] = np.ravel(mesh1d.edge_y)
+        # mesh1d_edge_y[:] = mesh1d.mesh1d_edge_y
 
         mesh1d_node_branch = ncfile.createVariable("mesh1d_node_branch", "i4", "mesh1d_nNodes")
         mesh1d_node_branch.long_name = "Index of branch on which mesh nodes are located"
         mesh1d_node_branch.start_index = 1
-        mesh1d_node_branch[:] = mesh1d.mesh1d_nodes_branch_id + mesh1d_node_branch.start_index
+        mesh1d_node_branch[:] = mesh1d.mesh1d_node_branch_id + mesh1d_node_branch.start_index
 
         mesh1d_node_offset = ncfile.createVariable(
             "mesh1d_node_offset", np.float64, "mesh1d_nNodes", fill_value=np.nan
         )
         mesh1d_node_offset.long_name = "Offset along branch of mesh nodes"
         mesh1d_node_offset.units = "m"
-        mesh1d_node_offset[:] = mesh1d.mesh1d_nodes_branch_offset
+        mesh1d_node_offset[:] = mesh1d.mesh1d_node_branch_offset
 
     # set 2d mesh data to netcdf file
     def set_2dmesh(self, ncfile, mesh2d):
@@ -264,25 +267,25 @@ class UgridWriter:
         nc_mesh2d.face_coordinates = "mesh2d_face_x mesh2d_face_y"
 
         # Nodes:
-        mesh2d_x = ncfile.createVariable("mesh2d_node_x", np.float64, nc_mesh2d.node_dimension)
-        mesh2d_y = ncfile.createVariable("mesh2d_node_y", np.float64, nc_mesh2d.node_dimension)
-        mesh2d_z = ncfile.createVariable("mesh2d_node_z", np.float64, nc_mesh2d.node_dimension, fill_value=np.nan)
+        mesh2d_node_x = ncfile.createVariable("mesh2d_node_x", np.float64, nc_mesh2d.node_dimension)
+        mesh2d_node_y = ncfile.createVariable("mesh2d_node_y", np.float64, nc_mesh2d.node_dimension)
+        mesh2d_node_z = ncfile.createVariable("mesh2d_node_z", np.float64, nc_mesh2d.node_dimension, fill_value=np.nan)
 
-        mesh2d_x.standard_name = "projection_x_coordinate"
-        mesh2d_y.standard_name = "projection_y_coordinate"
-        mesh2d_z.standard_name = "altitude"
+        mesh2d_node_x.standard_name = "projection_x_coordinate"
+        mesh2d_node_y.standard_name = "projection_y_coordinate"
+        mesh2d_node_z.standard_name = "altitude"
 
-        for var, dim in zip([mesh2d_x, mesh2d_y, mesh2d_z], list("xyz")):
+        for var, dim in zip([mesh2d_node_x, mesh2d_node_y, mesh2d_node_z], list("xyz")):
             setattr(var, "units", "m")
             setattr(var, "mesh", "mesh2d")
             setattr(var, "location", "node")
             setattr(var, "long_name", f"{dim}-coordinate of mesh nodes")
 
-        mesh2d_z.coordinates = "mesh2d_node_x mesh2d_node_y"
-        mesh2d_z.grid_mapping = ""
+        mesh2d_node_z.coordinates = "mesh2d_node_x mesh2d_node_y"
+        mesh2d_node_z.grid_mapping = ""
 
-        mesh2d_x[:] = mesh2d.mesh2d_node_x
-        mesh2d_y[:] = mesh2d.mesh2d_node_y
+        mesh2d_node_x[:] = mesh2d.mesh2d_node_x
+        mesh2d_node_y[:] = mesh2d.mesh2d_node_y
 
         # Edges:
         # mesh2d_xu = ncfile.createVariable("mesh2d_edge_x", np.float64,  "nmesh2d_edges")
@@ -353,16 +356,17 @@ class UgridWriter:
             mesh2d_face_z[:] = mesh2d.mesh2d_face_z
         # Assign to nodes
         if mesh2d.mesh2d_node_z.size > 0:
-            mesh2d_z[:] = mesh2d.mesh2d_node_z
-        # Raise error if none of both is allocated
-        if mesh2d.mesh2d_face_z.size == 0 and mesh2d.mesh2d_face_z.size == 0:
-            raise ValueError("Assign altitude values either to nodes or faces.")
+            mesh2d_node_z[:] = mesh2d.mesh2d_node_z
 
     def set_1d2dlinks(self, ncfile, link1d2d):
 
         nlinks = link1d2d.link1d2d.shape[0]
 
-        nc_link1d2d = ncfile.createVariable("link1d2d", "i4", ("nLink1D2D_edge", "Two"))
+        nc_link1d2d = ncfile.createVariable(
+            "link1d2d",
+            "i4",
+            ("nLink1D2D_edge", "Two"),
+        )
         nc_link1d2d.cf_role = "mesh_topology_contact"
         nc_link1d2d.contact = "mesh1d:node mesh2d:face"
         nc_link1d2d.contact_type = "link1d2d_contact_type"

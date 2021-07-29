@@ -10,15 +10,99 @@ from meshkernel import GeometryList, MeshKernel
 import os
 import json
 
-from hydrolib.core.io.net.models import Mesh2d, Mesh1d, Network
+from hydrolib.core.io.net.models import Mesh2d, Mesh1d, Network, Branch
+
+
+def plot_network(network):
+    fig, ax = plt.subplots()
+    ax.set_aspect(1.0)
+    network.plot(ax=ax)
+    ax.autoscale()
+    plt.show()
 
 
 def test_create_1d_by_branch():
-    pass
+
+    # Define line
+    x = np.linspace(0, 4 * np.pi, 1000)
+    y = np.sin(x)
+
+    # Create branch
+    branch = Branch(geometry=np.stack([x, y], axis=1))
+    # Generate nodes on branch
+    branch.generate_nodes(mesh1d_edge_length=1)
+    # Create Mesh1d
+    network = Network()
+    network.mesh1d_add_branch(branch)
+
+    # Add second
+    branch = Branch(geometry=np.array([[-4.0, 3.0], [0.0, 0.0]]))
+    branch.generate_nodes(mesh1d_edge_length=1.0)
+    network.mesh1d_add_branch(branch, name="my_branch")
+
+    # And third, reversed
+    branch = Branch(geometry=np.array([[0.0, 0.0], [-5.0, 0.0]]))
+    branch.generate_nodes(mesh1d_edge_length=1.0)
+    network.mesh1d_add_branch(branch)
+
+    # And fourth, but this one manually
+    branch = Branch(
+        geometry=np.array([[-4.0, -3.0], [0.0, 0.0]]),
+        branch_offsets=np.arange(6, dtype=float),
+        mask=np.array([False, False, False, False, False, True]),
+    )
+    network.mesh1d_add_branch(branch)
+
+    plot_network(network)
+
+    # Write to file
+    network.to_file(Path("test_net.nc"))
+
+
+def get_circle_gl(r, detail=100):
+
+    t = np.r_[np.linspace(0, 2 * np.pi, detail), 0]
+    polygon = GeometryList(np.cos(t) * r, np.sin(t) * r)
+    return polygon
 
 
 def test_create_1d_2d_1d2d():
-    pass
+
+    # Define line (spiral)
+    theta = np.arange(0.1, 20, 0.01)
+
+    y = np.sin(theta) * theta
+    x = np.cos(theta) * theta
+
+    dists = np.r_[0.0, np.cumsum(np.hypot(np.diff(x), np.diff(y)))]
+    dists = dists[np.arange(0, len(dists), 20)]
+    # print(dists.max())
+
+    # Create branch
+    branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
+
+    # Create Mesh1d
+    network = Network()
+    network.mesh1d_add_branch(branch, name="branch1")
+
+    branch = Branch(geometry=np.array([[-25.0, 0.0], [x[0], y[0]]]))
+    branch.generate_nodes(mesh1d_edge_length=2.5)
+    network.mesh1d_add_branch(branch, name="branch2")
+
+    # Add Mesh2d
+    network.mesh2d_create_rectilinear_within_bounds(extent=(-22, -22, 22, 22), dx=2, dy=2)
+    network.mesh2d_clip_mesh(polygon=get_circle_gl(22))
+
+    network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
+    network.mesh2d_refine_mesh(polygon=get_circle_gl(3), level=1)
+
+    # Add links
+    network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
+
+    # Write to file
+    network.to_file(Path("test_net.nc"))
+
+    plot_network(network)
 
 
 def test_create_2d():
@@ -74,18 +158,14 @@ def test_create_refine_2d():
     mesh2d_output.node_x.size == 114
     mesh2d_output.edge_nodes.size == 426
 
-    # fig, ax = plt.subplots()
-    # ax.set_aspect(1.0)
-    # mesh2d_output.plot_edges(ax=ax)
-    # ax.plot(polygon.x_coordinates, polygon.y_coordinates)
-    # plt.show()
+    # plot_network(network)
 
 
 currentdir = Path(__file__).parent
 cases = [
     currentdir.joinpath("data/input/e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc"),
-    currentdir.joinpath("data/input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_net.nc"),
-    Path(r"d:\Documents\4390.10 TKI Hydrolib\data\FlowFM_net.nc"),
+    # currentdir.joinpath("data/input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_net.nc"),
+    # Path(r"d:\Documents\4390.10 TKI Hydrolib\data\FlowFM_net.nc"),
 ]
 
 
@@ -100,12 +180,6 @@ def test_read_net_nc(filepath):
 
     # Create network model
     network = Network.from_file(filepath)
-
-    # fig, ax = plt.subplots()
-    # ax.set_aspect(1.0)
-    # network.plot(ax=ax)
-    # ax.autoscale()
-    # plt.show()
 
 
 def test_load_ugrid_json():
@@ -139,7 +213,7 @@ def test_read_write_read_compare(filepath):
     network1 = Network.from_file(filepath)
 
     # Save to temporary location
-    tmppath = Path("test.nc")
+    tmppath = Path("test_net.nc")
     tmppath.unlink()
     network1.to_file(tmppath)
 

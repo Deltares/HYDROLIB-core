@@ -33,14 +33,9 @@ class UgridReader:
             setattr(mesh1d, meshkey, self._read_nc_attribute(ds[nckey]))
 
         # Process network
-        mesh1d.process_network1d()
-        # self.network.mesh1d.add_from_other(mesh1d)
+        mesh1d._process_network1d()
 
-        # Add branches
-        # for idx, geometry in branches.items():
-        #     self.network.branches.at[idx, "geometry"] = geometry
-        # for idx, geometry in schematised.items():
-        #     self.network.schematised.at[idx, "geometry"] = geometry
+        # self.network.mesh1d.add_from_other(mesh1d)
 
         ds.close()
 
@@ -193,15 +188,3 @@ class NCExplorer:
 
             # Update the dictionary from a list to a single string
             dct[key] = values[0]
-
-
-def read_links(ncfile):
-    """
-    Function to read 1d 2d links
-    """
-    var = "link1d2d"
-
-    if var not in ncfile.variables.keys():
-        return [[], []]
-    else:
-        return ncfile.variables[var][:, :].T.tolist()
