@@ -6,6 +6,7 @@ from lxml import etree as e
 
 
 class DIMRSerializer:
+    @staticmethod
     def serialize(path: Path, data: dict):
         """
         Serializes the DIMR data to the file at the specified path.
@@ -19,9 +20,9 @@ class DIMRSerializer:
 
         xmlns = "http://schemas.deltares.nl/dimr"
         xsi = "http://www.w3.org/2001/XMLSchema-instance"
-        schemaLocation = "http://content.oss.deltares.nl/schemas/dimr-1.3.xsd"
+        schema_location = "http://content.oss.deltares.nl/schemas/dimr-1.3.xsd"
 
-        attrib = {e.QName(xsi, "schemaLocation"): f"{xmlns} {schemaLocation}"}
+        attrib = {e.QName(xsi, "schemaLocation"): f"{xmlns} {schema_location}"}
         namespaces = {None: xmlns, "xsi": xsi}
 
         root = e.Element(
