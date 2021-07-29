@@ -36,8 +36,8 @@ class Component(BaseModel, ABC):
     workingDir: Path
     inputFile: Path
     process: Optional[int]
-    setting: Optional[List[KeyValuePair]]
-    parameter: Optional[List[KeyValuePair]]
+    setting: Optional[List[KeyValuePair]] = []
+    parameter: Optional[List[KeyValuePair]] = []
     mpiCommunicator: Optional[str]
 
     model: Optional[FileModel]
@@ -151,7 +151,7 @@ class Coupler(BaseModel):
     name: str
     sourceComponent: str
     targetComponent: str
-    item: List[CoupledItem]
+    item: List[CoupledItem] = []
     logger: Optional[Logger]
 
     @validator("item", pre=True)
@@ -171,8 +171,8 @@ class StartGroup(BaseModel):
     """
 
     time: str
-    start: List[ComponentOrCouplerRef]
-    coupler: List[ComponentOrCouplerRef]
+    start: List[ComponentOrCouplerRef] = []
+    coupler: List[ComponentOrCouplerRef] = []
 
     @validator("start", "coupler", pre=True)
     def validate_start(cls, v):
@@ -202,8 +202,8 @@ class Control(BaseModel):
         start: Reference to the component instance to be started.
     """
 
-    parallel: Optional[List[Parallel]]
-    start: Optional[List[ComponentOrCouplerRef]]
+    parallel: Optional[List[Parallel]] = []
+    start: Optional[List[ComponentOrCouplerRef]] = []
 
     @validator("parallel", "start", pre=True)
     def validate_parallel(cls, v):
