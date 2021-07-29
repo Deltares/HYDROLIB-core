@@ -68,10 +68,14 @@ class _Lengths:
             prop for prop in section.content if isinstance(prop, Property)
         )
 
-        max_key_length = max(len(prop.key) for prop in properties)
-        max_value_length = max(
-            len(prop.value) if prop.value is not None else 0 for prop in properties
-        )
+        if len(properties) > 0:
+            max_key_length = max(len(prop.key) for prop in properties)
+            max_value_length = max(
+                len(prop.value) if prop.value is not None else 0 for prop in properties
+            )
+        else:
+            max_key_length = 0
+            max_value_length = 0
 
         return cls(
             max_key_length=max_key_length,
@@ -109,8 +113,9 @@ class Serializer:
         return chain.from_iterable(blocks_as_lines)
 
     def _serialize_section_header(self, section_header: str) -> Iterable[str]:
+        indent = " " * (self._config.section_indent)
         return [
-            f"{self._config.section_indent}[{section_header}]",
+            f"{indent}[{section_header}]",
         ]
 
     @staticmethod
@@ -123,11 +128,18 @@ class Serializer:
     ) -> Iterable[str]:
         indent = " " * (self._config.total_property_indent)
         key_offset = Serializer._get_offset(property.key, lengths.max_key_length)
-        value_offset = Serializer._get_offset(property.value, lengths.max_key_length)
+        key = f"{property.key}{key_offset} = "
 
-        return [
-            f"{indent}{property.key}{key_offset} = {property.value}{value_offset} # {property.comment}"
-        ]
+        value_offset = Serializer._get_offset(property.value, lengths.max_value_length)
+        value = (
+            f"{property.value}{value_offset}"
+            if property.value is not None
+            else value_offset
+        )
+
+        comment = f" # {property.comment}" if property.comment is not None else ""
+
+        return [f"{indent}{key}{value}{comment}".rstrip()]
 
     def _serialize_content(
         self, content: Iterable[Union[Property, CommentBlock]], lengths: _Lengths
@@ -155,8 +167,11 @@ class Serializer:
         indent = " " * self._config.total_datablock_indent
 
         def serialize_row(row: Sequence[str]) -> str:
-            return indent + (" " * self._config.datablock_spacing).join(
-                (serialize_row_element(elem, i)) for elem, i in zip(row, count())
+            return (
+                indent
+                + (" " * self._config.datablock_spacing)
+                .join((serialize_row_element(elem, i)) for elem, i in zip(row, count()))
+                .rstrip()
             )
 
         return (serialize_row(row) for row in datablock)
@@ -177,9 +192,11 @@ class Serializer:
         """Serialize the provided document into an iterable of lines."""
         header_iterable = self._serialize_comment_header(document.header_comment)
         sections_iterable = chain.from_iterable(
-            (self._serialize_section(section) for section in document.sections)
+            Serializer._interweave(
+                (self._serialize_section(section) for section in document.sections),
+                [""],
+            )
         )
-        sections_iterable = Serializer._interweave(sections_iterable, [""])  # type: ignore
         return chain(header_iterable, sections_iterable)
 
 

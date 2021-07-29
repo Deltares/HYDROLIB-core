@@ -273,7 +273,7 @@ class Parser:
         return line.strip().startswith(self._config.comment_delimiter)
 
     def _convert_to_comment(self, line: str) -> str:
-        return line.strip()[1:]
+        return line.strip()[1:].strip()
 
     def _is_section_header(self, line: str) -> bool:
         # a header is defined as "[ any-value ]"
