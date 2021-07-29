@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.io.dimr.parser import DIMRParser
-from tests.utils import test_data_dir
+from hydrolib.core.io.dimr.serializer import DIMRSerializer
+from tests.utils import test_data_dir, test_output_dir, test_reference_dir
 
 
 def test_parse_returns_correct_data():
@@ -60,3 +61,71 @@ def test_parse_returns_correct_data():
 def test_parse_when_file_does_not_exist_raises_exception():
     with pytest.warns(UserWarning):
         DIMRParser.parse(Path("does/not/exist.xml"))
+
+
+def test_serialize():
+    file = test_output_dir / "dimr" / "test_serialize.xml"
+    reference_file = test_reference_dir / "dimr" / "test_serialize.xml"
+
+    data = {
+        "documentation": {
+            "fileVersion": "1.3",
+            "createdBy": "hydrolib-core 0.1.0",
+            "creationDate": "2020-03-17T10:02:49.4520672Z",
+        },
+        "control": {
+            "parallel": {
+                "startGroup": {
+                    "time": "0 60 7200",
+                    "start": {"name": "Rainfall Runoff"},
+                    "coupler": {"name": "rr_to_flow"},
+                },
+                "start": {"name": "FlowFM"},
+            }
+        },
+        "component": [
+            {
+                "name": "Rainfall Runoff",
+                "library": "rr_dll",
+                "workingDir": "rr",
+                "inputFile": "Sobek_3b.fnm",
+            },
+            {
+                "name": "FlowFM",
+                "library": "dflowfm",
+                "workingDir": "dflowfm",
+                "inputFile": "FlowFM.mdu",
+            },
+        ],
+        "coupler": {
+            "name": "rr_to_flow",
+            "sourceComponent": "Rainfall Runoff",
+            "targetComponent": "FlowFM",
+            "item": [
+                {
+                    "sourceName": "catchments/10634/water_discharge",
+                    "targetName": "laterals/10634/water_discharge",
+                },
+                {
+                    "sourceName": "catchments/10635/water_discharge",
+                    "targetName": "laterals/10635/water_discharge",
+                },
+            ],
+            "logger": {"workingDir": ".", "outputFile": "rr_to_flow.nc"},
+        },
+    }
+
+    DIMRSerializer.serialize(file, data)
+
+    assert Path(file).is_file() == True
+
+    with Path(file).open() as af:
+        actual_lines = af.readlines()
+
+    with Path(reference_file).open() as rf:
+        reference_lines = rf.readlines()
+
+    assert len(actual_lines) == len(reference_lines)
+
+    for i in range(len(reference_lines)):
+        assert actual_lines[i] == reference_lines[i]
