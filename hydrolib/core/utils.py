@@ -15,6 +15,14 @@ def example(a: float, b: float = 1.0) -> float:
 
 
 def to_lowercase(string: str) -> str:
+    """Coverts the specified string to a lowercase string.
+
+    Attributes:
+        string: The string to be lowered.
+
+    Returns:
+        str: The lowered string.
+    """
     return string.lower()
 
 
