@@ -1707,3 +1707,103 @@ class TestSerializer:
         result = "\n".join(serializer.serialize(document))
 
         assert result == input_str
+
+
+def test_serialize_deserialize_should_give_the_same_result():
+    document = Document(
+        header_comment=[
+            CommentBlock(
+                lines=["HYDROLIB-Core serialize | deserialize test", "extra crisp"],
+            )
+        ],
+        sections=[
+            Section(
+                header="header1",
+                content=[
+                    Property(key="key1", value="value1", comment=None),
+                    Property(key="key2", value=None, comment=None),
+                    Property(key="key3", value=None, comment="comment"),
+                    CommentBlock(lines=["comment 1", "comment 2"]),
+                    Property(key="key4", value="1.34", comment="comment"),
+                    CommentBlock(lines=["comment 3", "comment 4"]),
+                ],
+                datablock=[
+                    ["a", "b", "c"],
+                    ["1", "2", "3"],
+                    ["hydro", "lib", "core"],
+                ],
+            ),
+            Section(
+                header="header2",
+                content=[
+                    Property(
+                        key="key6",
+                        value="value2",
+                        comment=None,
+                    ),
+                    Property(
+                        key="key7",
+                        value=None,
+                        comment=None,
+                    ),
+                    Property(
+                        key="key8",
+                        value=None,
+                        comment="comment",
+                    ),
+                    CommentBlock(lines=["comment 5", "comment 6"]),
+                    Property(key="key9", value="1.34", comment="comment"),
+                    CommentBlock(lines=["comment 7", "comment 8"]),
+                ],
+                datablock=None,
+            ),
+            Section(
+                header="header3",
+                content=[
+                    Property(
+                        key="key10",
+                        value="value10",
+                        comment=None,
+                    ),
+                    Property(
+                        key="key20",
+                        value=None,
+                        comment=None,
+                    ),
+                    Property(
+                        key="key30",
+                        value=None,
+                        comment="comment",
+                    ),
+                    CommentBlock(
+                        lines=["comment 10", "comment 20"],
+                    ),
+                    Property(
+                        key="key40",
+                        value="34.5",
+                        comment="comment",
+                    ),
+                    CommentBlock(
+                        lines=["comment 30", "comment 40"],
+                    ),
+                ],
+                datablock=[
+                    ["ab", "bc", "cd"],
+                    ["111", "222", "333"],
+                    ["hydro", "lib", "core"],
+                ],
+            ),
+        ],
+    )
+
+    path = test_output_dir / "tmp" / "test.pliz"
+    write_ini(path, document)
+
+    parser = Parser(config=ParserConfig(parse_datablocks=True))
+    with path.open("r") as f:
+        for line in f:
+            parser.feed_line(line)
+
+    result = parser.finalize()
+
+    assert result == document
