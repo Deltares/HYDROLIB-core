@@ -11,6 +11,12 @@ from hydrolib.core.utils import to_list
 
 
 class KeyValuePair(BaseModel):
+    """Key value pair to specify settings and parameters.
+
+    Attributes:
+        key: The key.
+        value: The value.
+    """
     key: str
     value: str
 

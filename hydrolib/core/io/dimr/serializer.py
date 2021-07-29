@@ -6,6 +6,8 @@ from lxml import etree as e
 
 
 class DIMRSerializer:
+    """A serializer for DIMR files."""
+
     @staticmethod
     def serialize(path: Path, data: dict):
         """
