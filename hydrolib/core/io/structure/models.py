@@ -4,7 +4,8 @@ from typing import List, Literal, Optional, Union
 
 from pydantic import Field
 
-from hydrolib.core.io.ini.models import IniBasedModel
+from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.io.ini.models import IniBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimeter_validator
 
 
@@ -126,3 +127,8 @@ class UniversalWeir(Structure):
     discharge_coefficient: float = Field(alias="dischargeCoeff")
 
     _split_to_list = get_split_string_on_delimeter_validator("y_values", "z_values")
+
+
+class StructureModel(INIModel):
+    general: INIGeneral
+    structure: List[Structure]

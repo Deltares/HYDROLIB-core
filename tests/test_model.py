@@ -1,30 +1,13 @@
 from pathlib import Path
 
 import pytest
+from devtools import debug
 
-from hydrolib.core.io.dimr.models import FMComponent, RRComponent
-from hydrolib.core.models import DIMR, XYZ, FMModel, Network
+from hydrolib.core.io.dimr.models import DIMR, FMComponent, RRComponent
+from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.xyz.models import XYZ
 
 from .utils import test_data_dir, test_output_dir
-
-
-def test_filemodel_recursive_load():
-    # If we give a non existing path, it will throw a warning
-    d = FMModel(filepath=Path(test_data_dir / "test.mdu"))
-    assert isinstance(d.filepath, Path)
-    assert isinstance(d.network, Network)
-
-
-def test_filemodel_recursive_serialize():
-    d = FMModel(filepath=Path(test_data_dir / "test.mdu"))
-    d.save(folder=test_output_dir / "tmp")
-    assert d.filepath.is_file()
-    assert d.network.filepath.is_file()
-
-
-def test_warn_on_non_existing_path():
-    with pytest.warns(UserWarning):
-        FMModel(filepath=Path("a"))
 
 
 def test_dimr_model():
@@ -79,5 +62,27 @@ def test_xyz_model():
     # Confirm saving to new file
     model.filepath = output_fn
     assert not model.filepath.is_file()
+    model.save()
+    assert model.filepath.is_file()
+
+
+def test_mdu_model():
+    output_fn = Path(test_output_dir / "test.mdu")
+    if output_fn.is_file():
+        output_fn.unlink()
+
+    model = FMModel(
+        filepath=Path(
+            test_data_dir
+            / "input"
+            / "e02"
+            / "c11_korte-woerden-1d"
+            / "dimr_model"
+            / "dflowfm"
+            / "FlowFM.mdu"
+        )
+    )
+    debug(model)
+    model.filepath = output_fn
     model.save()
     assert model.filepath.is_file()

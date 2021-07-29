@@ -1,13 +1,17 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
 from pathlib import Path
-from typing import List, Literal, Optional, Type
+from typing import Callable, List, Literal, Optional, Type, Union
 
 from pydantic import Field, validator
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.io.base import DummySerializer
+from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.utils import to_list
+
+from .parser import DIMRParser
 
 
 class KeyValuePair(BaseModel):
@@ -57,8 +61,6 @@ class FMComponent(Component):
 
     @classmethod
     def get_model(cls):
-        from hydrolib.core.models import FMModel  # prevent circular import
-
         return FMModel
 
 
@@ -185,3 +187,46 @@ class Control(BaseModel):
     @validator("parallel", "start", pre=True)
     def validate_parallel(cls, v):
         return to_list(v)
+
+
+class DIMR(FileModel):
+    """DIMR model representation."""
+
+    component: List[Union[RRComponent, FMComponent, Component]] = []
+    documentation: Documentation = Documentation()
+    coupler: Optional[List[Coupler]]
+    control: Control = Control()
+    waitFile: Optional[str]
+    global_settings = Optional[GlobalSettings]
+
+    @validator("component", "coupler", pre=True)
+    def validate_component(cls, v):
+        return to_list(v)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # After initilization, try to load all component models
+        if self.filepath:
+            for comp in self.component:
+                fn = self.filepath.parent / comp.filepath
+                try:
+                    comp.model = comp.get_model()(filepath=fn)
+                except NotImplementedError:
+                    continue
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".xml"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "dimrconfig"
+
+    @classmethod
+    def _get_serializer(cls) -> Callable:
+        return DummySerializer.serialize
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return DIMRParser.parse

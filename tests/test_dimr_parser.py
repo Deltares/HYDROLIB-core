@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.dimr_parser import DIMRParser
+from hydrolib.core.io.dimr.parser import DIMRParser
 from tests.utils import test_data_dir
 
 

@@ -159,7 +159,9 @@ class Forcing(DataBlockIniBasedModel):
 
     @classmethod
     def _convert_section(cls, section: Section) -> Dict:
-        result = super()._convert_section(section)
+        result = section.flatten(
+            cls._duplicate_keys_as_list(), cls._supports_comments()
+        )
         transfer_keyvalue(result, result["function"], "datablock")
         return result
 

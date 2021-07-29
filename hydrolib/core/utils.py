@@ -14,8 +14,8 @@ def example(a: float, b: float = 1.0) -> float:
     return a * b
 
 
-def to_lowercase(string: str) -> str:
-    return string.lower()
+def to_key(string: str) -> str:
+    return string.lower().replace(" ", "_")
 
 
 def to_list(item: Any) -> List[Any]:

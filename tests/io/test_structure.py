@@ -1,7 +1,6 @@
 import inspect
 from typing import List, Union
 
-
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import FlowDirection, UniversalWeir, Weir
 

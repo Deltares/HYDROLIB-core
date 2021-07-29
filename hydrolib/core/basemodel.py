@@ -5,6 +5,7 @@ also represents a file on disk.
 
 """
 from abc import ABC, abstractclassmethod
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Type
 from warnings import warn
@@ -12,7 +13,16 @@ from warnings import warn
 from pydantic import BaseModel as PydanticBaseModel
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.utils import to_lowercase
+from hydrolib.core.utils import to_key
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+# We use ContextVars to keep a reference to the folder
+# we're currently parsing files in. In the future
+# we could move to https://github.com/samuelcolvin/pydantic/issues/1549
+context_dir: ContextVar[Path] = ContextVar("folder")
 
 
 class BaseModel(PydanticBaseModel):
@@ -22,7 +32,7 @@ class BaseModel(PydanticBaseModel):
         use_enum_values = True
         extra = "forbid"  # will throw errors so we can fix our models
         allow_population_by_field_name = True
-        alias_generator = to_lowercase
+        alias_generator = to_key
 
 
 class FileModel(BaseModel, ABC):
@@ -38,22 +48,42 @@ class FileModel(BaseModel, ABC):
 
     filepath: Optional[Path] = None
 
-    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs) -> None:
+    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
         """Initialize a model.
 
         The model is empty (with defaults) if no `filepath` is given,
         otherwise the file at `filepath` will be parsed."""
         # Parse the file if path is given
+        token = None
         if filepath:
-            data = self._load(Path(filepath))  # so we also accept strings
+            filepath = Path(filepath)  # so we also accept strings
+
+            # If a context is set, use it
+            folder = context_dir.get(None)
+            if folder and not filepath.is_absolute():
+                logger.info(f"Used context to get {folder} for {filepath}")
+                filepath = folder / filepath
+            # Otherwise we're the root filepath
+            # and should set the context
+            else:
+                logger.info(f"Set context to {filepath.parent}")
+                token = context_dir.set(filepath.parent)
+
+            data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
         super().__init__(*args, **kwargs)
 
+        # Once the model has been completely initialized
+        # reset the context
+        if token:
+            logger.info(f"Reset context.")
+            context_dir.reset(token)
+
     @classmethod
-    def validate(cls: Type["FileModel"], value: Any) -> "FileModel":
+    def validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
-        if isinstance(value, Path):
+        if isinstance(value, (Path, str)):
             # Pydantic Model init requires a dict
             value = {"filepath": value}
         return super().validate(value)

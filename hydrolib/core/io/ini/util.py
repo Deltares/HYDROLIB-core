@@ -26,3 +26,14 @@ def get_split_string_on_delimeter_validator(*field_name: str, delimiter: str = N
         return v
 
     return validator(*field_name, allow_reuse=True, pre=True)(split)
+
+
+def make_list_validator(*field_name: str):
+    """Get a validator make a list of object if a single object is passed."""
+
+    def split(v: Any):
+        if isinstance(v, dict):
+            v = [v]
+        return v
+
+    return validator(*field_name, allow_reuse=True, pre=True)(split)
