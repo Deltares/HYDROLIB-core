@@ -129,7 +129,6 @@ class TestIntermediateSection:
         # Setup values
         header = "some-header"
         start_line = 50
-        end_line = 74
 
         properties = list(
             Property(key=f"key{i}", value=f"value{i}", comment=None) for i in range(10)
