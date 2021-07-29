@@ -63,8 +63,6 @@ class _IntermediateCommentBlock(BaseModel):
 
     def finalize(self) -> CommentBlock:
         return CommentBlock(
-            start_line=self.start_line,
-            end_line=self.start_line + len(self.lines) - 1,
             lines=self.lines,
         )
 
@@ -99,12 +97,10 @@ class _IntermediateSection(BaseModel):
         self.content.append(self.curr_comment_block.finalize())
         self.curr_comment_block = None
 
-    def finalize(self, end_line: int) -> Section:
+    def finalize(self) -> Section:
         self._finalize_comment_block()
         return Section(
             header=self.header,
-            start_line=self.start_line,
-            end_line=end_line,
             content=self.content,
             datablock=self.datablock if self.datablock else None,
         )
@@ -210,9 +206,7 @@ class Parser:
 
     def _finalise_current_section(self) -> None:
         if self._current_section is not None:
-            self._document.sections.append(
-                self._current_section.finalize(self._line_index)
-            )
+            self._document.sections.append(self._current_section.finalize())
 
     def _handle_header_comment(self, line: str) -> None:
         if self._current_header_block is None:
@@ -231,7 +225,7 @@ class Parser:
         comment, line = self._retrieve_property_comment(line.strip())
         key, value = self._retrieve_key_value(line)
 
-        prop = Property(key=key, value=value, comment=comment, line=self._line_index)
+        prop = Property(key=key, value=value, comment=comment)
         self._current_section.add_property(prop)  # type: ignore
 
     def _handle_new_datarow(self, line: str) -> None:

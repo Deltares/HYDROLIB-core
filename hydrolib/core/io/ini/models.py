@@ -12,13 +12,9 @@ class CommentBlock(BaseModel):
     """CommentBlock defines a comment block within a deltares ini file.
 
     Attributes:
-        start_line (int): The start line index of the CommentBlock within the file
-        end_line (int): The end line index of the CommentBlock within the file
         lines (List[str]): The actual lines of the CommentBlock
     """
 
-    start_line: int
-    end_line: int
     lines: List[str]
 
 
@@ -26,13 +22,11 @@ class Property(BaseModel):
     """Property defines a deltares ini property
 
     Attributes:
-        line (int): The line index on which this Property is defined
         key (str): The key of this Property
         value (Optional[str]): The value associated with this Property
         comment (Optional[str]): The comment associated with this Property
     """
 
-    line: int
     key: str
     value: Optional[str]
     comment: Optional[str]
@@ -64,8 +58,6 @@ class Section(BaseModel):
 
     Attributes:
         header (str): The header (without brackets) of this Section
-        start_line (int): The starting line index of this Section block
-        end_line (int): The end line index of this Section block
         content (List[Union[Property, CommentBlock]]):
             The ordered list of Property and CommentBlock objects
         datablock (Optional[Sequence[Sequence[str]]]):
@@ -73,8 +65,6 @@ class Section(BaseModel):
     """
 
     header: str = Field(alias="_header")
-    start_line: int
-    end_line: int
     content: List[Union[Property, CommentBlock]]
 
     # these are primarily relevant for bc files
@@ -185,8 +175,6 @@ class IniBasedModel(BaseModel, ABC):
     def _convert_section_to_dict(cls, value: Section) -> Dict:
         return value.dict(
             exclude={
-                "start_line",
-                "end_line",
                 "datablock",
                 "content",
             }
@@ -219,8 +207,6 @@ class DataBlockIniBasedModel(IniBasedModel):
     def _convert_section_to_dict(cls, value: Section) -> Dict:
         return value.dict(
             exclude={
-                "start_line",
-                "end_line",
                 "content",
             }
         )

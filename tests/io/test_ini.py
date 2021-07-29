@@ -1,10 +1,10 @@
 from itertools import chain
-from hydrolib.core.io.ini.serializer import Serializer, SerializerConfig, _Lengths
-import inspect
-from typing import Iterable, List, Optional, Sequence, Tuple, Union
-
-import pytest
 from pydantic import ValidationError
+from typing import Iterable, List, Optional, Sequence, Tuple, Union
+from ..utils import test_output_dir
+
+import inspect
+import pytest
 
 from hydrolib.core.io.ini.models import (
     CommentBlock,
@@ -18,6 +18,12 @@ from hydrolib.core.io.ini.parser import (
     ParserConfig,
     _IntermediateCommentBlock,
     _IntermediateSection,
+)
+from hydrolib.core.io.ini.serializer import (
+    Serializer,
+    SerializerConfig,
+    _Lengths,
+    write_ini,
 )
 
 
@@ -41,8 +47,6 @@ class TestIntermediateCommentBlock:
 
         result = intermediate_comment_block.finalize()
         expected_comment_block = CommentBlock(
-            start_line=start_line,
-            end_line=start_line + len(comment_lines) - 1,
             lines=comment_lines,
         )
 
@@ -58,20 +62,16 @@ class TestIntermediateSection:
         )
 
         properties = list(
-            Property(line=50 + i, key=f"key{i}", value=f"value{i}", comment=None)
-            for i in range(5)
+            Property(key=f"key{i}", value=f"value{i}", comment=None) for i in range(5)
         )
 
         for prop in properties:
             intermediate_section.add_property(prop)
 
-        end_line = 54
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
             content=properties,
             datablock=None,
         )
@@ -90,18 +90,11 @@ class TestIntermediateSection:
         for comment, line in comments:
             intermediate_section.add_comment(comment, line)
 
-        end_line = 54
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
-            content=[
-                CommentBlock(
-                    start_line=50, end_line=54, lines=list(x[0] for x in comments)
-                )
-            ],
+            content=[CommentBlock(lines=list(x[0] for x in comments))],
             datablock=None,
         )
 
@@ -122,13 +115,10 @@ class TestIntermediateSection:
         for row in data_rows:
             intermediate_section.add_datarow(row)
 
-        end_line = 54
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
             content=[],
             datablock=data_rows,
         )
@@ -142,14 +132,13 @@ class TestIntermediateSection:
         end_line = 74
 
         properties = list(
-            Property(line=50 + i, key=f"key{i}", value=f"value{i}", comment=None)
-            for i in range(10)
+            Property(key=f"key{i}", value=f"value{i}", comment=None) for i in range(10)
         )
 
         comment_blocks = [
-            CommentBlock(start_line=50, end_line=51, lines=["a", "b"]),
-            CommentBlock(start_line=57, end_line=59, lines=["c", "d", "e"]),
-            CommentBlock(start_line=65, end_line=68, lines=["1", "3", "4", "6"]),
+            CommentBlock(lines=["a", "b"]),
+            CommentBlock(lines=["c", "d", "e"]),
+            CommentBlock(lines=["1", "3", "4", "6"]),
         ]
 
         datarows = list(
@@ -165,9 +154,7 @@ class TestIntermediateSection:
         for comment, line in zip(
             comment_blocks[0].lines, range(len(comment_blocks[0].lines))
         ):
-            intermediate_section.add_comment(
-                comment, line + comment_blocks[0].start_line
-            )
+            intermediate_section.add_comment(comment, line + 50)  # type: ignore
 
         for prop in properties[:5]:
             intermediate_section.add_property(prop)
@@ -175,9 +162,7 @@ class TestIntermediateSection:
         for comment, line in zip(
             comment_blocks[1].lines, range(len(comment_blocks[1].lines))
         ):
-            intermediate_section.add_comment(
-                comment, line + comment_blocks[1].start_line
-            )
+            intermediate_section.add_comment(comment, line + 57)  # type: ignore
 
         for prop in properties[5:]:
             intermediate_section.add_property(prop)
@@ -185,21 +170,17 @@ class TestIntermediateSection:
         for comment, line in zip(
             comment_blocks[2].lines, range(len(comment_blocks[2].lines))
         ):
-            intermediate_section.add_comment(
-                comment, line + comment_blocks[2].start_line
-            )
+            intermediate_section.add_comment(comment, line + 65)  # type: ignore
 
         for row in datarows:
             intermediate_section.add_datarow(row)
 
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_content: List[Union[CommentBlock, Property]] = [comment_blocks[0]] + properties[:5] + [comment_blocks[1]] + properties[5:] + [comment_blocks[2]]  # type: ignore
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
             content=expected_content,
             datablock=datarows,
         )
@@ -357,9 +338,7 @@ class TestParser:
         parser.feed_line(f"# {comment_content}")
         result = parser.finalize()
 
-        expected_header_comment = [
-            CommentBlock(start_line=0, end_line=0, lines=[comment_content])
-        ]
+        expected_header_comment = [CommentBlock(lines=[comment_content])]
 
         assert result.header_comment == expected_header_comment
         assert result.sections == []
@@ -383,8 +362,7 @@ class TestParser:
         result = parser.finalize()
 
         expected_header_comment = list(
-            CommentBlock(start_line=v * 3, end_line=v * 3 + 1, lines=comment_blocks[v])
-            for v in range(5)
+            CommentBlock(lines=comment_blocks[v]) for v in range(5)
         )
 
         assert result.header_comment == expected_header_comment
@@ -410,8 +388,7 @@ class TestParser:
         result = parser.finalize()
 
         expected_header_comment = list(
-            CommentBlock(start_line=v * 5, end_line=v * 5 + 1, lines=comment_blocks[v])
-            for v in range(3)
+            CommentBlock(lines=comment_blocks[v]) for v in range(3)
         )
 
         assert result.header_comment == expected_header_comment
@@ -428,9 +405,7 @@ class TestParser:
         parser.feed_line(f"[header]")
         result = parser.finalize()
 
-        expected_header_comment = [
-            CommentBlock(start_line=0, end_line=0, lines=[comment_content])
-        ]
+        expected_header_comment = [CommentBlock(lines=[comment_content])]
 
         assert result.header_comment == expected_header_comment
         assert len(result.sections) == 1
@@ -441,7 +416,9 @@ class TestParser:
         header = "header"
         properties = list(
             Property(
-                key=f"key-{v}", value=f"value_{v}", comment=f"comment_{v}", line=v + 2
+                key=f"key-{v}",
+                value=f"value_{v}",
+                comment=f"comment_{v}",
             )
             for v in range(5)
         )
@@ -460,8 +437,6 @@ class TestParser:
                     header=header,
                     content=properties,
                     datablock=None,
-                    start_line=1,
-                    end_line=7,
                 )
             ]
         )
@@ -494,33 +469,27 @@ class TestParser:
                     header="header",
                     content=[
                         CommentBlock(
-                            start_line=1,
-                            end_line=2,
                             lines=["comment in a section", "starting with two lines"],
                         ),
                         Property(
-                            key="key", value="value", comment="with a comment", line=3
+                            key="key",
+                            value="value",
+                            comment="with a comment",
                         ),
                         Property(
                             key="another-key",
                             value="another-value",
                             comment=None,
-                            line=4,
                         ),
-                        CommentBlock(
-                            start_line=5, end_line=5, lines=["inbetween comment"]
-                        ),
+                        CommentBlock(lines=["inbetween comment"]),
                         Property(
                             key="last-key",
                             value="last value",
                             comment="inline comment",
-                            line=6,
                         ),
-                        CommentBlock(start_line=7, end_line=7, lines=["last comment"]),
+                        CommentBlock(lines=["last comment"]),
                     ],
                     datablock=None,
-                    start_line=0,
-                    end_line=8,
                 )
             ]
         )
@@ -557,27 +526,21 @@ class TestParser:
                     header="header",
                     content=[
                         CommentBlock(
-                            start_line=1,
-                            end_line=2,
                             lines=["some comment", "consisting of two lines"],
                         ),
-                        Property(key="key", value="value", comment=None, line=3),
+                        Property(key="key", value="value", comment=None),
                         Property(
                             key="some-key",
                             value="some-value",
                             comment=None,
-                            line=4,
                         ),
-                        CommentBlock(
-                            start_line=5, end_line=5, lines=["inbetween comment"]
-                        ),
+                        CommentBlock(lines=["inbetween comment"]),
                         Property(
                             key="last-key",
                             value="last value",
                             comment=None,
-                            line=6,
                         ),
-                        CommentBlock(start_line=7, end_line=7, lines=["last comment"]),
+                        CommentBlock(lines=["last comment"]),
                     ],
                     datablock=[
                         ["1.0", "2.0", "3.0"],
@@ -585,8 +548,6 @@ class TestParser:
                         ["7.0", "8.0", "9.0"],
                         ["10.0", "11.0", "12.0"],
                     ],
-                    start_line=0,
-                    end_line=12,
                 )
             ]
         )
@@ -598,7 +559,9 @@ class TestParser:
 
         properties = list(
             Property(
-                key=f"key-{v}", value=f"value_{v}", comment=f"comment_{v}", line=v + 1
+                key=f"key-{v}",
+                value=f"value_{v}",
+                comment=f"comment_{v}",
             )
             for v in range(12)
         )
@@ -611,7 +574,6 @@ class TestParser:
         parser.feed_line(f"    [header2]")
         for p in properties[6:]:
             parser.feed_line(f"        {p.key} = {p.value} #{p.comment}")
-            p.line += 2
         parser.feed_line("")
 
         result = parser.finalize()
@@ -622,15 +584,11 @@ class TestParser:
                     header="header1",
                     content=properties[:6],
                     datablock=None,
-                    start_line=0,
-                    end_line=8,
                 ),
                 Section(
                     header="header2",
                     content=properties[6:],
                     datablock=None,
-                    start_line=8,
-                    end_line=16,
                 ),
             ]
         )
@@ -678,13 +636,9 @@ class TestParser:
         expected_result = Document(
             header_comment=[
                 CommentBlock(
-                    start_line=0,
-                    end_line=1,
                     lines=["this is a very contrived example", "with a header"],
                 ),
                 CommentBlock(
-                    start_line=3,
-                    end_line=4,
                     lines=["consisting of multiple blocks", "with datablocks"],
                 ),
             ],
@@ -693,54 +647,50 @@ class TestParser:
                     header="header",
                     content=[
                         CommentBlock(
-                            start_line=8,
-                            end_line=9,
                             lines=["some comment", "consisting of two lines"],
                         ),
                         Property(
-                            key="key", value="value", comment="with a comment", line=10
+                            key="key",
+                            value="value",
+                            comment="with a comment",
                         ),
                         Property(
                             key="another-key",
                             value="another-value",
                             comment=None,
-                            line=11,
                         ),
-                        CommentBlock(
-                            start_line=12, end_line=12, lines=["inbetween comment"]
-                        ),
+                        CommentBlock(lines=["inbetween comment"]),
                         Property(
                             key="last-key",
                             value="last value",
                             comment="inline comment",
-                            line=13,
                         ),
-                        CommentBlock(
-                            start_line=14, end_line=14, lines=["last comment"]
-                        ),
+                        CommentBlock(lines=["last comment"]),
                     ],
                     datablock=[
                         ["1.0", "2.0", "3.0"],
                         ["4.0", "5.0", "6.0"],
                     ],
-                    start_line=7,
-                    end_line=19,
                 ),
                 Section(
                     header="different-header",
                     content=[
                         Property(
-                            key="key1", value="value1", comment="comment1", line=20
+                            key="key1",
+                            value="value1",
+                            comment="comment1",
                         ),
                         Property(
-                            key="key2", value="value2", comment="comment2", line=21
+                            key="key2",
+                            value="value2",
+                            comment="comment2",
                         ),
                         Property(
-                            key="key3", value="value3", comment="comment3", line=22
+                            key="key3",
+                            value="value3",
+                            comment="comment3",
                         ),
                         CommentBlock(
-                            start_line=23,
-                            end_line=24,
                             lines=["some comment1", "some comment2"],
                         ),
                     ],
@@ -748,8 +698,6 @@ class TestParser:
                         ["7.0", "8.0", "9.0"],
                         ["10.0", "11.0", "12.0"],
                     ],
-                    start_line=19,
-                    end_line=27,
                 ),
             ],
         )
@@ -800,8 +748,6 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[],
                     datablock=None,
                 ),
@@ -814,10 +760,8 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        CommentBlock(start_line=-1, end_line=-1, lines=[]),
+                        CommentBlock(lines=[]),
                     ],
                     datablock=None,
                 ),
@@ -830,12 +774,8 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
                         CommentBlock(
-                            start_line=-1,
-                            end_line=-1,
                             lines=["one", "two", "three", "four"],
                         ),
                     ],
@@ -850,10 +790,8 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="key", value="value", comment="comment"),
+                        Property(key="key", value="value", comment="comment"),
                     ],
                     datablock=None,
                 ),
@@ -866,11 +804,9 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="key", value="value", comment="comment"),
-                        Property(line=-1, key="123", value="12345", comment="comment"),
+                        Property(key="key", value="value", comment="comment"),
+                        Property(key="123", value="12345", comment="comment"),
                     ],
                     datablock=None,
                 ),
@@ -883,13 +819,9 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="key", value="value", comment="comment"),
-                        Property(
-                            line=-1, key="long-key", value="value", comment="comment"
-                        ),
+                        Property(key="key", value="value", comment="comment"),
+                        Property(key="long-key", value="value", comment="comment"),
                     ],
                     datablock=None,
                 ),
@@ -902,13 +834,9 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(
-                            line=-1, key="key", value="long-value", comment="comment"
-                        ),
-                        Property(line=-1, key="key", value="value", comment="comment"),
+                        Property(key="key", value="long-value", comment="comment"),
+                        Property(key="key", value="value", comment="comment"),
                     ],
                     datablock=None,
                 ),
@@ -921,18 +849,12 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
                         CommentBlock(
-                            start_line=-1,
-                            end_line=-1,
                             lines=["one", "two", "three", "four"],
                         ),
-                        Property(line=-1, key="key", value="value", comment="comment"),
+                        Property(key="key", value="value", comment="comment"),
                         CommentBlock(
-                            start_line=-1,
-                            end_line=-1,
                             lines=["five", "six", "seven", "eight"],
                         ),
                     ],
@@ -947,11 +869,9 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="key", value="value", comment="comment"),
-                        Property(line=-1, key="long-key", value="value", comment=None),
+                        Property(key="key", value="value", comment="comment"),
+                        Property(key="long-key", value="value", comment=None),
                     ],
                     datablock=None,
                 ),
@@ -964,10 +884,8 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="long-key", value="value", comment=None),
+                        Property(key="long-key", value="value", comment=None),
                     ],
                     datablock=None,
                 ),
@@ -980,10 +898,8 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="long-key", value=None, comment=None),
+                        Property(key="long-key", value=None, comment=None),
                     ],
                     datablock=None,
                 ),
@@ -996,8 +912,6 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[],
                     datablock=[["1.23"]],
                 ),
@@ -1010,8 +924,6 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[],
                     datablock=[["1.23", "1.2345", "1.234567"]],
                 ),
@@ -1024,8 +936,6 @@ class TestLengths:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[],
                     datablock=[
                         ["1.23", "1.0", "1.234567"],
@@ -1132,31 +1042,31 @@ class TestSerializer:
         "comment_block,offset,config,expected_result",
         [
             (
-                CommentBlock(start_line=-1, end_line=-1, lines=[]),
+                CommentBlock(lines=[]),
                 0,
                 SerializerConfig(),
                 [],
             ),
             (
-                CommentBlock(start_line=-1, end_line=-1, lines=["angry badger noises"]),
+                CommentBlock(lines=["angry badger noises"]),
                 0,
                 SerializerConfig(),
                 ["# angry badger noises"],
             ),
             (
-                CommentBlock(start_line=-1, end_line=-1, lines=["comment"]),
+                CommentBlock(lines=["comment"]),
                 4,
                 SerializerConfig(),
                 ["    # comment"],
             ),
             (
-                CommentBlock(start_line=-1, end_line=-1, lines=["one", "two", "three"]),
+                CommentBlock(lines=["one", "two", "three"]),
                 4,
                 SerializerConfig(),
                 ["    # one", "    # two", "    # three"],
             ),
             (
-                CommentBlock(start_line=-1, end_line=-1, lines=["comment"]),
+                CommentBlock(lines=["comment"]),
                 6,
                 SerializerConfig(comment_delimiter="*"),
                 ["      * comment"],
@@ -1184,41 +1094,29 @@ class TestSerializer:
                 [],
             ),
             (
-                [CommentBlock(start_line=-1, end_line=-1, lines=[])],
+                [CommentBlock(lines=[])],
                 SerializerConfig(),
                 [""],
             ),
             (
-                [
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["angry badger noises"]
-                    )
-                ],
+                [CommentBlock(lines=["angry badger noises"])],
                 SerializerConfig(),
                 ["# angry badger noises", ""],
             ),
             (
-                [
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["one", "two", "three"]
-                    )
-                ],
+                [CommentBlock(lines=["one", "two", "three"])],
                 SerializerConfig(),
                 ["# one", "# two", "# three", ""],
             ),
             (
-                [CommentBlock(start_line=-1, end_line=-1, lines=["comment"])],
+                [CommentBlock(lines=["comment"])],
                 SerializerConfig(comment_delimiter="*"),
                 ["* comment", ""],
             ),
             (
                 [
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["one", "two", "three"]
-                    ),
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["four", "five", "six"]
-                    ),
+                    CommentBlock(lines=["one", "two", "three"]),
+                    CommentBlock(lines=["four", "five", "six"]),
                 ],
                 SerializerConfig(),
                 [
@@ -1265,61 +1163,61 @@ class TestSerializer:
         "property,lengths,config,expected_result",
         [
             (
-                Property(line=-1, key="key", value="value", comment="comment"),
+                Property(key="key", value="value", comment="comment"),
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key = value # comment",
             ),
             (
-                Property(line=-1, key="key", value="value", comment="comment"),
+                Property(key="key", value="value", comment="comment"),
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=4),
                 "    key = value # comment",
             ),
             (
-                Property(line=-1, key="key", value="value", comment="comment"),
+                Property(key="key", value="value", comment="comment"),
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=4, property_indent=0),
                 "    key = value # comment",
             ),
             (
-                Property(line=-1, key="key", value="value", comment="comment"),
+                Property(key="key", value="value", comment="comment"),
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=4, property_indent=4),
                 "        key = value # comment",
             ),
             (
-                Property(line=-1, key="key", value="value", comment=None),
+                Property(key="key", value="value", comment=None),
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key = value",
             ),
             (
-                Property(line=-1, key="key", value=None, comment=None),
+                Property(key="key", value=None, comment=None),
                 _Lengths(max_key_length=3, max_value_length=0),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key =",
             ),
             (
-                Property(line=-1, key="key", value=None, comment="comment"),
+                Property(key="key", value=None, comment="comment"),
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key =       # comment",
             ),
             (
-                Property(line=-1, key="key", value="value", comment="comment"),
+                Property(key="key", value="value", comment="comment"),
                 _Lengths(max_key_length=6, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key    = value # comment",
             ),
             (
-                Property(line=-1, key="key", value="value", comment="comment"),
+                Property(key="key", value="value", comment="comment"),
                 _Lengths(max_key_length=6, max_value_length=12),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key    = value        # comment",
             ),
             (
-                Property(line=-1, key="key", value="value", comment="comment"),
+                Property(key="key", value="value", comment="comment"),
                 _Lengths(max_key_length=6, max_value_length=12),
                 SerializerConfig(section_indent=2, property_indent=4),
                 "      key    = value        # comment",
@@ -1348,46 +1246,33 @@ class TestSerializer:
                 [],
             ),
             (
-                [Property(line=-1, key="key", value="value", comment="comment")],
+                [Property(key="key", value="value", comment="comment")],
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 ["key = value # comment"],
             ),
             (
-                [
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["angry badger noises"]
-                    )
-                ],
+                [CommentBlock(lines=["angry badger noises"])],
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 ["# angry badger noises"],
             ),
             (
-                [
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["comment 1", "comment 2"]
-                    )
-                ],
+                [CommentBlock(lines=["comment 1", "comment 2"])],
                 _Lengths(max_key_length=3, max_value_length=5),
                 SerializerConfig(section_indent=0, property_indent=4),
                 ["    # comment 1", "    # comment 2"],
             ),
             (
                 [
-                    Property(line=-1, key="key", value="value", comment="comment"),
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["comment 1", "comment 2"]
-                    ),
+                    Property(key="key", value="value", comment="comment"),
+                    CommentBlock(lines=["comment 1", "comment 2"]),
                     Property(
-                        line=-1,
                         key="long-key",
                         value="long-value",
                         comment="long-comment",
                     ),
-                    CommentBlock(
-                        start_line=-1, end_line=-1, lines=["comment 3", "comment 4"]
-                    ),
+                    CommentBlock(lines=["comment 3", "comment 4"]),
                 ],
                 _Lengths(max_key_length=12, max_value_length=15),
                 SerializerConfig(section_indent=4, property_indent=4),
@@ -1491,8 +1376,6 @@ class TestSerializer:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[],
                     datablock=None,
                 ),
@@ -1502,13 +1385,7 @@ class TestSerializer:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
-                    content=[
-                        CommentBlock(
-                            start_line=-1, end_line=-1, lines=["angry badger noises"]
-                        )
-                    ],
+                    content=[CommentBlock(lines=["angry badger noises"])],
                     datablock=None,
                 ),
                 SerializerConfig(section_indent=0, property_indent=0),
@@ -1517,10 +1394,8 @@ class TestSerializer:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="key", value="value", comment="comment"),
+                        Property(key="key", value="value", comment="comment"),
                     ],
                 ),
                 SerializerConfig(section_indent=2, property_indent=4),
@@ -1532,22 +1407,15 @@ class TestSerializer:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="key", value="value", comment="comment"),
-                        CommentBlock(
-                            start_line=-1, end_line=-1, lines=["comment 1", "comment 2"]
-                        ),
+                        Property(key="key", value="value", comment="comment"),
+                        CommentBlock(lines=["comment 1", "comment 2"]),
                         Property(
-                            line=-1,
                             key="long-key",
                             value="long-value",
                             comment="long-comment",
                         ),
-                        CommentBlock(
-                            start_line=-1, end_line=-1, lines=["comment 3", "comment 4"]
-                        ),
+                        CommentBlock(lines=["comment 3", "comment 4"]),
                     ],
                 ),
                 SerializerConfig(section_indent=2, property_indent=4),
@@ -1564,8 +1432,6 @@ class TestSerializer:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[],
                     datablock=[
                         [
@@ -1604,22 +1470,15 @@ class TestSerializer:
             (
                 Section(
                     header="header",
-                    start_line=-1,
-                    end_line=-1,
                     content=[
-                        Property(line=-1, key="key", value="value", comment="comment"),
-                        CommentBlock(
-                            start_line=-1, end_line=-1, lines=["comment 1", "comment 2"]
-                        ),
+                        Property(key="key", value="value", comment="comment"),
+                        CommentBlock(lines=["comment 1", "comment 2"]),
                         Property(
-                            line=-1,
                             key="long-key",
                             value="long-value",
                             comment="long-comment",
                         ),
-                        CommentBlock(
-                            start_line=-1, end_line=-1, lines=["comment 3", "comment 4"]
-                        ),
+                        CommentBlock(lines=["comment 3", "comment 4"]),
                     ],
                     datablock=[
                         [
