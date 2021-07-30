@@ -33,7 +33,6 @@ class IniBasedModel(BaseModel, ABC):
 
     class Config:
         extra = Extra.allow
-        allow_population_by_field_name = True
         arbitrary_types_allowed = False
 
     @classmethod
@@ -49,7 +48,6 @@ class IniBasedModel(BaseModel, ABC):
 
         class Config:
             extra = Extra.allow
-            allow_population_by_field_name = True
             arbitrary_types_allowed = False
 
     comments: Optional[Comments] = None

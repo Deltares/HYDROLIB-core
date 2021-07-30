@@ -5,7 +5,7 @@ from devtools import debug
 
 from hydrolib.core.io.dimr.models import DIMR, FMComponent, RRComponent
 from hydrolib.core.io.mdu.models import FMModel
-from hydrolib.core.io.xyz.models import XYZ
+from hydrolib.core.io.xyz.models import XYZModel
 
 from .utils import test_data_dir, test_output_dir
 
@@ -56,7 +56,7 @@ def test_xyz_model():
         output_fn.unlink()
 
     # Confirm succesfull parse and initialization
-    model = XYZ(filepath=Path(test_data_dir / "input/test.xyz"))
+    model = XYZModel(filepath=Path(test_data_dir / "input/test.xyz"))
     assert len(model.points) == 7, model
 
     # Confirm saving to new file

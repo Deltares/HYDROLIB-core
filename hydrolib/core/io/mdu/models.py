@@ -1,5 +1,8 @@
+from hydrolib.core.io.xyz.models import XYZModel
+from hydrolib.core.io.polyfile.models import PolyFile
+from hydrolib.core.io.bc.models import ForcingModel
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Literal, Union
 
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.base import DummySerializer
@@ -9,6 +12,7 @@ from hydrolib.core.io.ini.models import (
     FrictionModel,
     IniBasedModel,
     INIModel,
+    INIGeneral,
 )
 from hydrolib.core.io.ini.parser import Parser
 from hydrolib.core.io.ini.util import (
@@ -144,7 +148,7 @@ class Restart(IniBasedModel):
 class Boundary(IniBasedModel):
     quantity: str
     nodeId: str
-    forcingfile: Optional[Path] = "FlowFM_boundaryconditions1d.bc"
+    forcingfile: Optional[ForcingModel] = "FlowFM_boundaryconditions1d.bc"
     bndWidth1D: float
 
 
@@ -155,8 +159,13 @@ class Lateral(IniBasedModel):
     discharge: str
 
 
+class ExtGeneral(INIGeneral):
+    fileVersion: str = "2.01"
+    fileType: Literal["extForce"] = "extForce"
+
+
 class ExtModel(INIModel):
-    general: General
+    general: ExtGeneral
     boundary: List[Boundary]
     lateral: List[Lateral]
 
@@ -276,16 +285,19 @@ class Output(IniBasedModel):
 class Geometry(IniBasedModel):
 
     NetFile: Optional[Path]
-    BathymetryFile: Optional[Path] = None
-    DryPointsFile: Optional[List[Path]] = None
+    BathymetryFile: Optional[XYZModel] = None
+    DryPointsFile: Optional[
+        List[Union[XYZModel, PolyFile]]
+    ] = None  # TODO This will always try XYZ first
     GridEnclosureFile: Optional[List[Path]] = None
     WaterLevIniFile: Optional[Path] = None
     LandBoundaryFile: Optional[List[Path]] = None
-    ThinDamFile: Optional[List[Path]] = None
-    FixedWeirFile: Optional[List[Path]] = None
-    PillarFile: Optional[List[Path]] = None
+    ThinDamFile: Optional[List[PolyFile]] = None
+    FixedWeirFile: Optional[List[PolyFile]] = None
+    PillarFile: Optional[List[PolyFile]] = None
+    UseCaching: bool = False
     StructureFile: Optional[List[StructureModel]]
-    VertplizFile: Optional[Path] = None
+    VertplizFile: Optional[PolyFile] = None
     CrossDefFile: Optional[CrossDefModel] = None
     CrossLocFile: Optional[CrossLocModel] = None
     FrictFile: Optional[List[FrictionModel]]

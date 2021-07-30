@@ -29,7 +29,7 @@ class Structure(IniBasedModel):
     class Comments(IniBasedModel.Comments):
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
-        branch_id: Optional[str] = Field(
+        branchid: Optional[str] = Field(
             "Branch on which the structure is located.", alias="branchId"
         )
         chainage: Optional[str] = "Chainage on the branch (m)."
@@ -54,15 +54,12 @@ class Structure(IniBasedModel):
     name: str = Field("id")
     structure_type: str = Field(alias="type")
 
-    branch_id: Optional[str] = Field(None, alias="branchId")
+    branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = None
 
     n_coordinates: Optional[int] = Field(None, alias="numCoordinates")
     x_coordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     y_coordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
-
-    class Config:
-        allow_population_by_field_name = True
 
     @root_validator
     def check_location(cls, values):
@@ -71,8 +68,8 @@ class Structure(IniBasedModel):
             and "x_coordinates" in values
             and "y_coordinates" in values
         ) or (
-            "branch_id" in values and "chainage" in values
-        ), "Specify location either by setting `branch_id` and `chainage` or `*_coordinates` fields."
+            "branchid" in values and "chainage" in values
+        ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
         return values
 
     @classmethod
@@ -105,18 +102,18 @@ class Weir(Structure):
         structure_type: Optional[str] = Field(
             "Structure type; must read weir", alias="type"
         )
-        allowed_flow_direction: Optional[str] = Field(
+        allowedflowdir: Optional[str] = Field(
             "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
         )
 
-        crest_level: Optional[str] = Field(
+        crestlevel: Optional[str] = Field(
             "Crest level of weir (m AD).", alias="crestLevel"
         )
-        crest_width: Optional[str] = Field("Width of the weir (m).", alias="crestWidth")
-        correction_coefficient: Optional[str] = Field(
+        crestwidth: Optional[str] = Field("Width of the weir (m).", alias="crestWidth")
+        corrcoeff: Optional[str] = Field(
             "Correction coefficient (-).", alias="corrCoeff"
         )
-        use_velocity_height: Optional[str] = Field(
+        usevelocityheight: Optional[str] = Field(
             "Flag indicating whether the velocity height is to be calculated or not.",
             alias="useVelocityHeight",
         )
@@ -137,25 +134,23 @@ class UniversalWeir(Structure):
         structure_type: Optional[str] = Field(
             "Structure type; must read universalWeir", alias="type"
         )
-        allowed_flow_direction: Optional[str] = Field(
+        allowedflowdir: Optional[str] = Field(
             "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
         )
 
-        number_of_levels: Optional[str] = Field(
-            "Number of yz-Values.", alias="numLevels"
-        )
-        y_values: Optional[str] = Field(
+        numlevels: Optional[str] = Field("Number of yz-Values.", alias="numLevels")
+        yvalues: Optional[str] = Field(
             "y-values of the cross section (m). (number of values = numLevels)",
             alias="yValues",
         )
-        z_values: Optional[str] = Field(
+        zvalues: Optional[str] = Field(
             "z-values of the cross section (m). (number of values = numLevels)",
             alias="zValues",
         )
-        crest_level: Optional[str] = Field(
+        crestlevel: Optional[str] = Field(
             "Crest level of weir (m AD).", alias="crestLevel"
         )
-        discharge_coefficient: Optional[str] = Field(
+        dischargecoeff: Optional[str] = Field(
             "Discharge coefficient c_e (-).", alias="dischargeCoeff"
         )
 

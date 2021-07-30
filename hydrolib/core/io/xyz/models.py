@@ -26,7 +26,7 @@ class XYZPoint(BaseModel):
     )
 
 
-class XYZ(FileModel):
+class XYZModel(FileModel):
     """Sample or forcing file.
 
     Attributes:
