@@ -367,8 +367,6 @@ class Geometry(IniBasedModel):
 class FMModel(FileModel):
     """FM Model representation."""
 
-    # name: str = "Dummy"
-    # network: Optional[Network] = Network()
     general: General
     geometry: Geometry
     numerics: Numerics

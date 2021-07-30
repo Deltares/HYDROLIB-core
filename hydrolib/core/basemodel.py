@@ -39,7 +39,7 @@ class BaseModel(PydanticBaseModel):
 
     def is_intermediate_link(self) -> bool:
         """Generic attribute for models that have children fields that could contain files."""
-        return False or self.is_file_link()
+        return self.is_file_link()
 
     def show_tree(self, indent=0):
         """Recursive print function for showing a tree of a model."""
@@ -55,12 +55,11 @@ class BaseModel(PydanticBaseModel):
             if not isinstance(value, list):
                 value = [value]
             for v in value:
-                if hasattr(v, "is_intermediate_link"):
-                    if v.is_intermediate_link():
-                        # If the field is only an intermediate, print the name only
-                        if not v.is_file_link():
-                            print(" " * (indent * 2 + 2), angle, v.__class__.__name__)
-                        v.show_tree(indent + 1)
+                if hasattr(v, "is_intermediate_link") and v.is_intermediate_link():
+                    # If the field is only an intermediate, print the name only
+                    if not v.is_file_link():
+                        print(" " * (indent * 2 + 2), angle, v.__class__.__name__)
+                    v.show_tree(indent + 1)
 
 
 class FileModel(BaseModel, ABC):
