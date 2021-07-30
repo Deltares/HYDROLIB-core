@@ -1,12 +1,26 @@
+"""
+TODO Implement the following structures
+- Bridge
+- Generalstructure
+- Long culvert
+- Gate
+- Dambreak
+
+Add comments for these structures. Maybe link them to descriptions of `Field`s?
+"""
+
 from enum import Enum
 from pathlib import Path
 from typing import List, Literal, Optional, Union
 
 from pydantic import Field
+from pydantic.class_validators import root_validator
 
 from hydrolib.core.io.ini.models import IniBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimeter_validator
+import logging
 
+logger = logging.getLogger(__name__)
 
 # TODO: handle comment blocks
 # TODO: handle duplicate keys
@@ -38,14 +52,45 @@ class Structure(IniBasedModel):
 
     id: str = Field("id", max_length=256)
     name: str = Field("id")
+    structure_type: str = Field(alias="type")
 
-    # TODO: Note that either branch_id and chainage needs to be defined, or the coordinates. This shoud be either validated or refactored.
     branch_id: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = None
 
     n_coordinates: Optional[int] = Field(None, alias="numCoordinates")
     x_coordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     y_coordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+
+    class Config:
+        allow_population_by_field_name = True
+
+    @root_validator
+    def check_location(cls, values):
+        assert (
+            "n_coordinates" in values
+            and "x_coordinates" in values
+            and "y_coordinates" in values
+        ) or (
+            "branch_id" in values and "chainage" in values
+        ), "Specify location either by setting `branch_id` and `chainage` or `*_coordinates` fields."
+        return values
+
+    @classmethod
+    def validate(cls, v):
+        """Try to iniatialize subclass based on function field."""
+        # should be replaced by discriminated unions once merged
+        # https://github.com/samuelcolvin/pydantic/pull/2336
+        if isinstance(v, dict):
+            for c in cls.__subclasses__():
+                if (
+                    c.__fields__.get("structure_type").default
+                    == v.get("type", "").lower()
+                ):
+                    v = c(**v)
+                    break
+            else:
+                logger.warning(f"Couldn't derive specific type of {cls.__name__}")
+        return super().validate(v)
 
 
 class FlowDirection(str, Enum):
@@ -79,12 +124,12 @@ class Weir(Structure):
     comments: Comments = Comments()
 
     structure_type: Literal["weir"] = Field("weir", alias="type")
-    allowed_flow_direction: FlowDirection = Field(alias="allowedFlowdir")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
 
-    crest_level: Union[float, Path] = Field(alias="crestLevel")
-    crest_width: Optional[float] = Field(None, alias="crestWidth")
-    correction_coefficient: float = Field(1.0, alias="corrCoeff")
-    use_velocity_height: bool = Field(True, alias="useVelocityHeight")
+    crestlevel: Union[float, Path] = Field(alias="crestLevel")
+    crestwidth: Optional[float] = Field(None, alias="crestWidth")
+    corrcoeff: float = Field(1.0, alias="corrCoeff")
+    usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
 
 class UniversalWeir(Structure):
@@ -117,17 +162,116 @@ class UniversalWeir(Structure):
     comments: Comments = Comments()
 
     structure_type: Literal["universalWeir"] = Field("universalWeir", alias="type")
-    allowed_flow_direction: FlowDirection = Field(alias="allowedFlowdir")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
 
-    number_of_levels: int = Field(alias="numLevels")
-    y_values: List[float] = Field(alias="yValues")
-    z_values: List[float] = Field(alias="zValues")
-    crest_level: float = Field(alias="crestLevel")
-    discharge_coefficient: float = Field(alias="dischargeCoeff")
+    numlevels: int = Field(alias="numLevels")
+    yvalues: List[float] = Field(alias="yValues")
+    zvalues: List[float] = Field(alias="zValues")
+    crestlevel: float = Field(alias="crestLevel")
+    dischargecoeff: float = Field(alias="dischargeCoeff")
 
-    _split_to_list = get_split_string_on_delimeter_validator("y_values", "z_values")
+    _split_to_list = get_split_string_on_delimeter_validator("yvalues", "zvalues")
+
+
+class CulvertSubType(str, Enum):
+    culvert = "culvert"
+    invertedSiphon = "invertedSiphon"
+
+
+class Culvert(Structure):
+
+    structure_type: Literal["culvert"] = Field("culvert", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+
+    leftlevel: float = Field(alias="leftLevel")
+    rightlevel: float = Field(alias="rightLevel")
+    csdefid: str = Field(alias="csDefId")
+    length: float = Field(alias="length")
+    inletlosscoeff: float = Field(alias="inletlossCoeff")
+    outletlosscoeff: float = Field(alias="outletLossCoeff")
+    valveonoff: bool = Field(alias="valveOnOff")
+    valveopeningheight: Union[float, Path] = Field(alias="valveOpeningHeight")
+    numlosscoeff: int = Field(alias="numLossCoeff")
+    relopening: List[float] = Field(alias="relOpening")
+    losscoeff: List[float] = Field(alias="lossCoeff")
+    bedfrictiontype: str = Field(alias="bedFrictionType")
+    bedfriction: float = Field(alias="bedFriction")
+    subtype: CulvertSubType = Field(alias="subType")
+    bendlosscoeff: float = Field(alias="bendLossCoeff")
+
+    _split_to_list = get_split_string_on_delimeter_validator("relopening", "losscoeff")
+
+
+class Pump(Structure):
+
+    structure_type: Literal["pump"] = Field("pump", alias="type")
+
+    orientation: str
+    controlside: str = Field(alias="controlSide")  # TODO Enum
+    numstages: int = Field(0, alias="numStages")
+    capacity: Union[float, Path]
+
+    startlevelsuctionside: List[float] = Field(alias="startLevelSuctionSide")
+    stoplevelsuctionside: List[float] = Field(alias="stopLevelSuctionSide")
+    startleveldeliveryside: List[float] = Field(alias="startLevelDeliverySide")
+    stopleveldeliveryside: List[float] = Field(alias="stopLevelDeliverySide")
+    numreductionlevels: int = Field(0, alias="numReductionLevels")
+    head: List[float]
+    reductionfactor: List[float] = Field(alias="reductionFactor")
+
+    _split_to_list = get_split_string_on_delimeter_validator(
+        "startlevelsuctionside",
+        "stoplevelsuctionside",
+        "startleveldeliveryside",
+        "stopleveldeliveryside",
+        "head",
+        "reductionfactor",
+    )
+
+
+class Compound(Structure):
+
+    structure_type: Literal["compound"] = Field("compound", alias="type")
+    numstructures: int = Field(alias="numStructures")
+    structureids: List[str] = Field(alias="structureIds")
+
+    _split_to_list = get_split_string_on_delimeter_validator(
+        "structureids", delimiter=";"
+    )
+
+
+class Orifice(Structure):
+
+    structure_type: Literal["orifice"] = Field("orifice", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+
+    crestlevel: Union[float, Path] = Field(alias="crestLevel")
+    crestwidth: Optional[float] = Field(None, alias="crestWidth")
+    gateloweredgelevel: Union[float, Path] = Field(alias="gateLowerEdgeLevel")
+    corrcoeff: float = Field(1.0, alias="corrCoeff")
+    usevelocityheight: bool = Field(True, alias="useVelocityHeight")
+
+    # TODO Use a validator here to check the optionals related to the bool field
+    uselimitflowpos: bool = Field(False, alias="useLimitFlowPos")
+    limitflowpos: Optional[float] = Field(alias="limitFlowPos")
+
+    uselimitflowneg: bool = Field(False, alias="useLimitflowNeg")
+    limitflowneg: Optional[float] = Field(alias="limitFlowneg")
+
+
+class StuctureGeneral(INIGeneral):
+    fileVersion: str = "3.00"
+    fileType: Literal["structure"]
 
 
 class StructureModel(INIModel):
-    general: INIGeneral
+    general: StuctureGeneral
     structure: List[Structure]
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".ini"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "structures"

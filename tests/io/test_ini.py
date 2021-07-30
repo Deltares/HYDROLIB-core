@@ -748,29 +748,3 @@ class TestParser:
         )
 
         assert result == expected_result
-
-
-class TestIniBasedModel:
-    class MissingCommentsModel(IniBasedModel):
-        @classmethod
-        def _supports_comments(cls):
-            return True
-
-        comments: Optional[IniBasedModel.Comments] = None
-
-    def test_ini_based_model_which_supports_comments_should_have_comments(self):
-        with pytest.raises(ValidationError):
-            _ = TestIniBasedModel.MissingCommentsModel()
-
-    class UnsupportedCommentsModel(IniBasedModel):
-        @classmethod
-        def _supports_comments(cls):
-            return False
-
-        comments = IniBasedModel.Comments()
-
-    def test_ini_based_model_which_does_not_support_comments_should_not_have_comments(
-        self,
-    ):
-        with pytest.raises(ValidationError):
-            _ = TestIniBasedModel.UnsupportedCommentsModel()

@@ -3,7 +3,10 @@ from typing import List, Union
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
+    Compound,
     FlowDirection,
+    Orifice,
+    Pump,
     Structure,
     UniversalWeir,
     Weir,
@@ -20,7 +23,10 @@ def test_structure_model():
     )
     m = StructureModel(filepath)
     assert len(m.structure) == 12
-    assert isinstance(m.structure[-1], Structure)
+    assert isinstance(m.structure[-1], Compound)
+    assert isinstance(m.structure[0], Orifice)
+    assert isinstance(m.structure[2], Weir)
+    assert isinstance(m.structure[5], Pump)
 
 
 def test_create_a_weir_from_scratch():
