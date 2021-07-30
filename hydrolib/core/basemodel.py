@@ -8,7 +8,7 @@ import logging
 from abc import ABC, abstractclassmethod
 from contextvars import ContextVar
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Type
+from typing import Any, Callable, Dict, Generator, Optional, Type
 from warnings import warn
 
 from pydantic import BaseModel as PydanticBaseModel
@@ -32,6 +32,35 @@ class BaseModel(PydanticBaseModel):
         extra = "forbid"  # will throw errors so we can fix our models
         allow_population_by_field_name = True
         alias_generator = to_key
+
+    def is_file_link(self) -> bool:
+        """Generic attribute for models backed by a file."""
+        return False
+
+    def is_intermediate_link(self) -> bool:
+        """Generic attribute for models that have children fields that could contain files."""
+        return False or self.is_file_link()
+
+    def show_tree(self, indent=0):
+        """Recursive print function for showing a tree of a model."""
+        angle = "∟" if indent > 0 else ""
+
+        # Only print if we're backed by a file
+        if self.is_file_link():
+            print(" " * indent * 2, angle, self)
+
+        # Otherwise we recurse through the fields of a model
+        for _, value in self:
+            # Handle lists of items
+            if not isinstance(value, list):
+                value = [value]
+            for v in value:
+                if hasattr(v, "is_intermediate_link"):
+                    if v.is_intermediate_link():
+                        # If the field is only an intermediate, print the name only
+                        if not v.is_file_link():
+                            print(" " * (indent * 2 + 2), angle, v.__class__.__name__)
+                        v.show_tree(indent + 1)
 
 
 class FileModel(BaseModel, ABC):
@@ -78,6 +107,9 @@ class FileModel(BaseModel, ABC):
         if token:
             logger.info(f"Reset context.")
             context_dir.reset(token)
+
+    def is_file_link(self) -> bool:
+        return True
 
     @classmethod
     def validate(cls: Type["FileModel"], value: Any):
@@ -164,3 +196,6 @@ class FileModel(BaseModel, ABC):
     @abstractclassmethod
     def _get_parser(cls) -> Callable:
         return DummmyParser.parse
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__} represented by {self.filepath}."

@@ -55,6 +55,9 @@ class Component(BaseModel, ABC):
     def validate_setting(cls, v):
         return to_list(v)
 
+    def is_intermediate_link(self) -> bool:
+        return True
+
 
 class FMComponent(Component):
     library: Literal["dflowfm"]
@@ -113,6 +116,10 @@ class CoupledItem(BaseModel):
     sourceName: str
     targetName: str
 
+    def is_intermediate_link(self) -> bool:
+        # TODO set to True once we replace Paths with FileModels
+        return False
+
 
 class Logger(BaseModel):
     """
@@ -144,6 +151,10 @@ class Coupler(BaseModel):
     @validator("item", pre=True)
     def validate_item(cls, v):
         return to_list(v)
+
+    def is_intermediate_link(self) -> bool:
+        # TODO set to True once we replace Paths with FileModels
+        return False
 
 
 class StartGroup(BaseModel):
@@ -187,6 +198,10 @@ class Control(BaseModel):
     @validator("parallel", "start", pre=True)
     def validate_parallel(cls, v):
         return to_list(v)
+
+    def is_intermediate_link(self) -> bool:
+        # TODO set to True once we replace Paths with FileModels
+        return False
 
 
 class DIMR(FileModel):

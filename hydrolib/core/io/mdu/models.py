@@ -151,6 +151,9 @@ class Boundary(IniBasedModel):
     forcingfile: Optional[ForcingModel] = "FlowFM_boundaryconditions1d.bc"
     bndWidth1D: float
 
+    def is_intermediate_link(self) -> bool:
+        return True
+
 
 class Lateral(IniBasedModel):
     id: str
@@ -183,6 +186,9 @@ class ExtModel(INIModel):
 class ExternalForcing(IniBasedModel):
     ExtForceFile: Optional[Path] = None
     ExtForceFileNew: Optional[ExtModel] = "FlowFM_bnd.ext"
+
+    def is_intermediate_link(self) -> bool:
+        return True
 
 
 class Trachytopes(IniBasedModel):
@@ -281,6 +287,10 @@ class Output(IniBasedModel):
     TimingsInterval: Optional[int] = None
     Richardsononoutput = 1
 
+    def is_intermediate_link(self) -> bool:
+        # TODO set to True once we replace Paths with FileModels
+        return False
+
 
 class Geometry(IniBasedModel):
 
@@ -349,6 +359,9 @@ class Geometry(IniBasedModel):
         "FrictFile",
         delimiter=";",
     )
+
+    def is_intermediate_link(self) -> bool:
+        return True
 
 
 class FMModel(FileModel):
