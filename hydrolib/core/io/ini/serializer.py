@@ -242,5 +242,4 @@ def write_ini(
     with path.open("w") as f:
 
         for line in serializer.serialize(document):
-            f.write(line)
-            f.write("\n")
+            f.write(line + "\n")
