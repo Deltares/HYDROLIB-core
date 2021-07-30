@@ -90,7 +90,9 @@ def test_create_1d_2d_1d2d():
     network.mesh1d_add_branch(branch, name="branch2")
 
     # Add Mesh2d
-    network.mesh2d_create_rectilinear_within_bounds(extent=(-22, -22, 22, 22), dx=2, dy=2)
+    network.mesh2d_create_rectilinear_within_bounds(
+        extent=(-22, -22, 22, 22), dx=2, dy=2
+    )
     network.mesh2d_clip_mesh(polygon=get_circle_gl(22))
 
     network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
@@ -163,7 +165,9 @@ def test_create_refine_2d():
 
 currentdir = Path(__file__).parent
 cases = [
-    currentdir.joinpath("data/input/e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc"),
+    currentdir.joinpath(
+        "data/input/e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc"
+    ),
     # currentdir.joinpath("data/input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_net.nc"),
     # Path(r"d:\Documents\4390.10 TKI Hydrolib\data\FlowFM_net.nc"),
 ]
@@ -184,7 +188,9 @@ def test_read_net_nc(filepath):
 
 def test_load_ugrid_json():
 
-    path = Path(__file__).parent.parent.joinpath("hydrolib/core/io/net/ugrid_conventions.json")
+    path = Path(__file__).parent.parent.joinpath(
+        "hydrolib/core/io/net/ugrid_conventions.json"
+    )
     assert path.exists()
 
     # Read the key conventions from json, based on nc version number
@@ -221,7 +227,9 @@ def test_read_write_read_compare(filepath):
     network2 = Network.from_file(tmppath)
 
     # Read keys from convention
-    path = Path(__file__).parent.parent.joinpath("hydrolib/core/io/net/ugrid_conventions.json")
+    path = Path(__file__).parent.parent.joinpath(
+        "hydrolib/core/io/net/ugrid_conventions.json"
+    )
     with open(path, "r") as f:
         conventions = json.load(f)
 

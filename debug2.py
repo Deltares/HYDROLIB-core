@@ -53,7 +53,9 @@ if __name__ == "__main__":
     mesh2d.clip_by_polygon(polygon=geometrylist)
 
     # Refine parts
-    refinement = gpd.read_file(r"d:\Documents\4362.10 Windanalyses ECMWF\Data\GIS\verfijnen.shp")
+    refinement = gpd.read_file(
+        r"d:\Documents\4362.10 Windanalyses ECMWF\Data\GIS\verfijnen.shp"
+    )
 
     last_level = 0
     for row in refinement.itertuples():
@@ -66,7 +68,9 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
     edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
-    edge_coords = np.dstack([mesh2d_output.node_x[edge_nodes], mesh2d_output.node_y[edge_nodes]])
+    edge_coords = np.dstack(
+        [mesh2d_output.node_x[edge_nodes], mesh2d_output.node_y[edge_nodes]]
+    )
     lc = LineCollection(edge_coords)
     ax.add_collection(lc)
     ax.autoscale_view()

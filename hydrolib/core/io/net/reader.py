@@ -123,8 +123,14 @@ class NCExplorer:
         for var_key, ncdata in self.ds.variables.items():
             attributes = ncdata.ncattrs()
             if (
-                (("cf_role" in attributes) and (ncdata.getncattr("cf_role") == "mesh_topology"))
-                and (("topology_dimension" in attributes) and (ncdata.getncattr("topology_dimension") == 1))
+                (
+                    ("cf_role" in attributes)
+                    and (ncdata.getncattr("cf_role") == "mesh_topology")
+                )
+                and (
+                    ("topology_dimension" in attributes)
+                    and (ncdata.getncattr("topology_dimension") == 1)
+                )
                 and ("coordinate_space" in attributes)
             ):
                 self.mesh1d_key = var_key
@@ -134,8 +140,12 @@ class NCExplorer:
     def _get_mesh2d_key(self) -> None:
         for var_key, ncdata in self.ds.variables.items():
             attributes = ncdata.ncattrs()
-            if (("cf_role" in attributes) and (ncdata.getncattr("cf_role") == "mesh_topology")) and (
-                ("topology_dimension" in attributes) and (ncdata.getncattr("topology_dimension") == 2)
+            if (
+                ("cf_role" in attributes)
+                and (ncdata.getncattr("cf_role") == "mesh_topology")
+            ) and (
+                ("topology_dimension" in attributes)
+                and (ncdata.getncattr("topology_dimension") == 2)
             ):
                 self.mesh2d_key = var_key
                 break
@@ -143,7 +153,9 @@ class NCExplorer:
     def _get_link1d2d_key(self) -> None:
         for var_key, ncdata in self.ds.variables.items():
             attributes = ncdata.ncattrs()
-            if ("cf_role" in attributes) and (ncdata.getncattr("cf_role") == "mesh_topology_contact"):
+            if ("cf_role" in attributes) and (
+                ncdata.getncattr("cf_role") == "mesh_topology_contact"
+            ):
                 self.link1d2d_key = var_key
                 break
 
@@ -153,21 +165,29 @@ class NCExplorer:
         # Add deduced keys to dictionary
         if self.network1d_key is not None:
             self.network1d_var_dict = {
-                k: [self.network1d_key + v for v in vs] for k, vs in self.network1d_var_dict.items()
+                k: [self.network1d_key + v for v in vs]
+                for k, vs in self.network1d_var_dict.items()
             }
             self._check_existance(self.network1d_var_dict)
 
         if self.mesh1d_key is not None:
-            self.mesh1d_var_dict = {k: [self.mesh1d_key + v for v in vs] for k, vs in self.mesh1d_var_dict.items()}
+            self.mesh1d_var_dict = {
+                k: [self.mesh1d_key + v for v in vs]
+                for k, vs in self.mesh1d_var_dict.items()
+            }
             self._check_existance(self.mesh1d_var_dict)
 
         if self.mesh2d_key is not None:
-            self.mesh2d_var_dict = {k: [self.mesh2d_key + v for v in vs] for k, vs in self.mesh2d_var_dict.items()}
+            self.mesh2d_var_dict = {
+                k: [self.mesh2d_key + v for v in vs]
+                for k, vs in self.mesh2d_var_dict.items()
+            }
             self._check_existance(self.mesh2d_var_dict)
 
         if self.link1d2d_key is not None:
             self.link1d2d_var_dict = {
-                k: [self.link1d2d_key + v for v in vs] for k, vs in self.link1d2d_var_dict.items()
+                k: [self.link1d2d_key + v for v in vs]
+                for k, vs in self.link1d2d_var_dict.items()
             }
             self._check_existance(self.link1d2d_var_dict)
 
@@ -182,9 +202,13 @@ class NCExplorer:
                     values.remove(v)
             # One variable should remain
             if len(values) == 0:
-                raise KeyError(f'An attribute for "{key}" was not found in nc file. Expected "{"/".join(original)}"')
+                raise KeyError(
+                    f'An attribute for "{key}" was not found in nc file. Expected "{"/".join(original)}"'
+                )
             elif len(values) > 1:
-                raise KeyError(f'Multiple attributes for "{key}" were found in nc file. Got "{" and ".join(values)}"')
+                raise KeyError(
+                    f'Multiple attributes for "{key}" were found in nc file. Got "{" and ".join(values)}"'
+                )
 
             # Update the dictionary from a list to a single string
             dct[key] = values[0]

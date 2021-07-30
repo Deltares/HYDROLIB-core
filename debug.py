@@ -16,7 +16,9 @@ gl = GeometryList(
 
 # m._mk.contacts_compute_multiple(node_mask=np.full(m.mesh1d.node_x.size, True))
 
-m._mk.contacts_compute_single(node_mask=np.full(m.mesh1d.node_x.size, True), polygons=gl)
+m._mk.contacts_compute_single(
+    node_mask=np.full(m.mesh1d.node_x.size, True), polygons=gl
+)
 
 fig, ax = plt.subplots(figsize=(10, 10))
 
@@ -24,7 +26,12 @@ mesh1d_kwargs = dict(lw=0.75, color="red")
 mesh2d_kwargs = dict(lw=0.75, color="blue")
 links1d2d_kwargs = dict(lw=0.75, color="black", zorder=3)
 
-m.plot(ax, mesh1d_kwargs=mesh1d_kwargs, mesh2d_kwargs=mesh2d_kwargs, links1d2d_kwargs=links1d2d_kwargs)
+m.plot(
+    ax,
+    mesh1d_kwargs=mesh1d_kwargs,
+    mesh2d_kwargs=mesh2d_kwargs,
+    links1d2d_kwargs=links1d2d_kwargs,
+)
 
 ax.autoscale()
 ax.set_aspect(1.0)
