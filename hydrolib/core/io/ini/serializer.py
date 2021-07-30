@@ -26,7 +26,7 @@ class SerializerConfig(BaseModel):
             The number of spaces between datablock columns. Note that there might be
             additional offset to ensure . is lined out. Defaults to 4.
         comment_delimiter (str):
-            The character used to delimit comments.
+            The character used to delimit comments. Defaults to '#'.
     """
 
     section_indent: int = 0

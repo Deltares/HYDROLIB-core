@@ -61,7 +61,9 @@ class Section(BaseModel):
         content (List[Union[Property, CommentBlock]]):
             The ordered list of Property and CommentBlock objects
         datablock (Optional[Sequence[Sequence[str]]]):
-            An optional data block associated with this Section
+            An optional data block associated with this Section. The datablock is
+            structured as a sequence of rows, i.e. datablock[2][1] refers to the third
+            row, second column.
     """
 
     header: str = Field(alias="_header")
