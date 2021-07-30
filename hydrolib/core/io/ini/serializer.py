@@ -222,7 +222,7 @@ def write_ini(
 ) -> None:
     """Write the provided document to the specified path
 
-    If the provided path already exists, it will be overwritten. If the parent fodels
+    If the provided path already exists, it will be overwritten. If the parent folder
     do not exist, they will be created.
 
     Args:
