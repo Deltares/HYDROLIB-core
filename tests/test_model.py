@@ -82,8 +82,6 @@ def test_mdu_model():
             / "FlowFM.mdu"
         )
     )
-    model.show_tree()
-    0 / 0
     model.filepath = output_fn
     model.save()
     assert model.filepath.is_file()
