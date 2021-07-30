@@ -3,14 +3,11 @@ Implementations of the [`FileModel`][hydrolib.core.basemodel.FileModel] for
 all known extensions.
 """
 
-from datetime import datetime
-from pathlib import Path
 from typing import Callable, List, Optional, Sequence, Union
 
 from pydantic import validator
 
 from hydrolib.core import __version__
-from hydrolib.core.dimr_parser import DIMRParser
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.io.dimr.models import (
     Component,
@@ -21,6 +18,8 @@ from hydrolib.core.io.dimr.models import (
     GlobalSettings,
     RRComponent,
 )
+from hydrolib.core.io.dimr.parser import DIMRParser
+from hydrolib.core.io.dimr.serializer import DIMRSerializer
 from hydrolib.core.io.polyfile.models import PolyObject
 from hydrolib.core.io.polyfile.parser import read_polyfile
 from hydrolib.core.io.polyfile.serializer import write_polyfile
@@ -122,16 +121,24 @@ class FMModel(FileModel):
 class DIMR(FileModel):
     """DIMR model representation."""
 
-    component: List[Union[RRComponent, FMComponent, Component]] = []
     documentation: Documentation = Documentation()
-    coupler: Optional[List[Coupler]]
     control: Control = Control()
+    component: List[Union[RRComponent, FMComponent, Component]] = []
+    coupler: Optional[List[Coupler]] = []
     waitFile: Optional[str]
-    global_settings = Optional[GlobalSettings]
+    global_settings: Optional[GlobalSettings]
 
     @validator("component", "coupler", pre=True)
     def validate_component(cls, v):
         return to_list(v)
+
+    def dict(self, *args, **kwargs):
+        """Converts this object recursively to a dictionary.
+
+        Returns:
+            dict: The created dictionary for this object.
+        """
+        return self._to_serializable_dict(self)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -155,11 +162,36 @@ class DIMR(FileModel):
 
     @classmethod
     def _get_serializer(cls) -> Callable:
-        return DummySerializer.serialize
+        return DIMRSerializer.serialize
 
     @classmethod
     def _get_parser(cls) -> Callable:
         return DIMRParser.parse
+
+    def _to_serializable_dict(self, obj) -> dict:
+        if not hasattr(obj, "__dict__"):
+            return obj
+
+        result = {}
+
+        for key, val in obj.__dict__.items():
+            if (
+                key.startswith("_")
+                or key == "filepath"
+                or isinstance(val, FileModel)
+                or val is None
+            ):
+                continue
+
+            element = []
+            if isinstance(val, list):
+                for item in val:
+                    element.append(self._to_serializable_dict(item))
+            else:
+                element = self._to_serializable_dict(val)
+            result[key] = element
+
+        return result
 
 
 class PolyFile(FileModel):
