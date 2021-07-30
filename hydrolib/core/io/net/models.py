@@ -341,29 +341,48 @@ class Link1d2d(BaseModel):
         reader = UgridReader(file=file)
         reader.read_link1d2d(self)
 
+    def clear(self) -> None:
+        """Remove all saved links from the links administration"""
+        self.link1d2d_id = np.empty(0, object)
+        self.link1d2d_long_name = np.empty(0, object)
+        self.link1d2d_contact_type = np.empty(0, np.int32)
+        self.link1d2d = np.empty((0, 2), np.int32)
+
     def _process(self) -> None:
-
+        """
+        Get links from meshkernel and add to the array with link administration
+        """
         contacts = self.meshkernel.contacts_get()
-        nlinks = contacts.mesh1d_indices.size
 
-        self.link1d2d = np.stack(
-            [contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1
+        self.link1d2d = np.append(
+            self.link1d2d,
+            np.stack([contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1),
+            axis=0,
         )
-        self.link1d2d_contact_type = np.full(nlinks, 3)
-        self.link1d2d_id = np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d])
-        self.link1d2d_long_name = np.array(
-            [f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]
+        self.link1d2d_contact_type = np.append(
+            self.link1d2d_contact_type, np.full(contacts.mesh1d_indices.size, 3)
+        )
+        self.link1d2d_id = np.append(
+            self.link1d2d_id,
+            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
+        )
+        self.link1d2d_long_name = np.append(
+            self.link1d2d_long_name,
+            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
         )
 
-    def link_from_1d_to_2d(
+    def _link_from_1d_to_2d(
         self, node_mask: np.ndarray, polygon: mk.GeometryList = None
     ):
         """Connect 1d nodes to 2d face circumcenters. A list of branchid's can be given
-        to indicate where the connections should be made.
+        to indicate where the 1d-side of the connections should be made. A polygon can
+        be given to indicate where the 2d-side of the connections should be made.
+
+        Note that the links are added to the already existing links. To remove these, use the method "clear".
 
         Args:
-            polygon (mk.GeometryList): [description]
-            branchid (str, optional): [description]. Defaults to None.
+            node_mask (np.ndarray): Array indicating what 1d nodes should be connected. Defaults to None.
+            polygon (mk.GeometryList): Coordinates of the area within which the 2d side of the links are connected.
         """
 
         # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
@@ -375,10 +394,10 @@ class Link1d2d(BaseModel):
         # a bounding polygon or the end points of the 1d mesh.
         # self._mk.contacts_compute_multiple(self, node_mask)
 
-    def link_from_2d_to_1d_intersecting(self):
+    def _link_from_2d_to_1d_intersecting(self):
         raise NotImplementedError()
 
-    def link_from_2d_to_1d_lateral(self):
+    def _link_from_2d_to_1d_lateral(self):
         raise NotImplementedError()
 
         # # Computes Mesh1d-Mesh2d contacts, where a Mesh2d face per polygon is connected to the closest Mesh1d node.
@@ -424,7 +443,7 @@ class Mesh1d(BaseModel):
     mesh1d_edge_branch_id: np.ndarray = np.empty(0, np.int32)
     mesh1d_edge_branch_offset: np.ndarray = np.empty(0, np.double)
 
-    def empty(self):
+    def empty(self) -> bool:
         return self.mesh1d_node_x.size == 0
 
     def _get_mesh1d(self) -> mk.Mesh1d:
@@ -435,13 +454,13 @@ class Mesh1d(BaseModel):
     def _set_mesh1d(self) -> None:
         self.meshkernel.mesh1d_set(
             mk.Mesh1d(
-                node_x=self.mesh1d_node_x,
-                node_y=self.mesh1d_node_y,
-                edge_nodes=self.mesh1d_edge_nodes.ravel(),
+                node_x=self.mesh1d_node_x.astype(np.float64),
+                node_y=self.mesh1d_node_y.astype(np.float64),
+                edge_nodes=self.mesh1d_edge_nodes.ravel().astype(np.int32),
             )
         )
 
-    def _process_network1d(self):
+    def _process_network1d(self) -> None:
         """
         Determine x, y locations of mesh1d nodes based on the network1d
         """
@@ -500,21 +519,54 @@ class Mesh1d(BaseModel):
         self.mesh1d_edge_x = edge_x
         self.mesh1d_edge_y = edge_y
 
-    def _network1d_node_position(self, x: float, y: float):
+    def _network1d_node_position(self, x: float, y: float) -> Union[np.int32, None]:
+        """Determine the position (index) of a x, y coordinate in the network nodes
+
+        Args:
+            x (float): x-coordinate
+            y (float): y-coordinate
+
+        Returns:
+            Union[np.int32, None]: The index of the coordinate. None if not found
+        """
         return self._node_position(self.network1d_node_x, self.network1d_node_y, x, y)
 
-    def _mesh1d_node_position(self, x: float, y: float):
+    def _mesh1d_node_position(self, x: float, y: float) -> Union[np.int32, None]:
+        """Determine the position (index) of a x, y coordinate in the mesh nodes
+
+        Args:
+            x (float): x-coordinate
+            y (float): y-coordinate
+
+        Returns:
+            Union[np.int32, None]: The index of the coordinate. None if not found
+        """
         return self._node_position(self.mesh1d_node_x, self.mesh1d_node_y, x, y)
 
-    def _node_position(self, arrx: np.ndarray, arry: np.ndarray, x: float, y: float):
+    def _node_position(
+        self, arrx: np.ndarray, arry: np.ndarray, x: float, y: float
+    ) -> Union[np.int32, None]:
+        """Determine the position (index) of a x, y coordinate in a given x and y array
+
+        Args:
+            arrx (np.ndarray): x-coordinates in which the position is sought
+            arry (np.ndarray): y-coordiantes in which the position is sought
+            x (float): x-coordinate to be sought
+            y (float): y-coordinate to be sought
+
+        Raises:
+            ValueError: If multiple positions are found for the coordinate
+
+        Returns:
+            Union[np.int32, None]: The index of the coordinate. None if not found
+        """
         pos = np.where(np.isclose(arrx, x) & np.isclose(arry, y))[0]
         if pos.size == 0:
             return None
         elif pos.size == 1:
-            return pos[0]
+            return np.int32(pos[0])
         else:
             raise ValueError("Multiple nodes were found at the given position.")
-        return pos
 
     def _add_branch(
         self,
@@ -619,7 +671,9 @@ class Mesh1d(BaseModel):
             )
 
         self.network1d_edge_nodes = np.append(
-            self.network1d_edge_nodes, np.array([[i_from, i_to]]), axis=0
+            self.network1d_edge_nodes,
+            np.array([[i_from, i_to]], dtype=np.int32),
+            axis=0,
         )
 
         # Mesh1d edge node administration
@@ -632,7 +686,8 @@ class Mesh1d(BaseModel):
             start_index -= 1
         new_edge_nodes = (
             np.stack([np.arange(nlinks), np.arange(nlinks) + 1], axis=1) + start_index
-        )
+        ).astype(np.int32)
+
         # If the first node is present, change the first point of the first edge to the existing point
         if first_present:
             new_edge_nodes[0, 0] = self._mesh1d_node_position(*first_point)
@@ -765,12 +820,17 @@ class Network:
         return network
 
     def to_file(self, file: Path) -> None:
+        """Write network to file
+
+        Args:
+            file (Path): File where _net.nc is written to.
+        """
         writer = UgridWriter()
         writer.write(self, file)
 
     def link1d2d_from_1d_to_2d(
         self, branchids: List[str] = None, polygon: GeometryList = None
-    ):
+    ) -> None:
         self._mesh1d._set_mesh1d()
         self._mesh2d._set_mesh2d()
 
@@ -778,7 +838,7 @@ class Network:
         if polygon is None:
             polygon = self.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
 
-        self._link1d2d.link_from_1d_to_2d(node_mask, polygon=polygon)
+        self._link1d2d._link_from_1d_to_2d(node_mask, polygon=polygon)
 
     def mesh2d_create_rectilinear_within_bounds(
         self, extent: tuple, dx: float, dy: float
@@ -802,7 +862,7 @@ class Network:
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
-    ):
+    ) -> None:
         self._mesh1d._add_branch(
             branch=branch, name=name, branch_order=branch_order, long_name=long_name
         )
