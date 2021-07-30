@@ -36,11 +36,11 @@ class SerializerConfig(BaseModel):
     comment_delimiter: str = "#"
 
     @property
-    def total_property_indent(self):
+    def total_property_indent(self) -> int:
         return self.section_indent + self.property_indent
 
     @property
-    def total_datablock_indent(self):
+    def total_datablock_indent(self) -> int:
         return self.section_indent + self.datablock_indent
 
 
@@ -126,7 +126,7 @@ class Serializer:
 
     def _serialize_section_header(self, section_header: str) -> Iterable[str]:
         indent = " " * (self._config.section_indent)
-        return [f"{indent}[{section_header}]"]
+        yield f"{indent}[{section_header}]"
 
     @staticmethod
     def _get_offset(key: Optional[str], max_length: int) -> str:
@@ -149,7 +149,7 @@ class Serializer:
 
         comment = f" # {property.comment}" if property.comment is not None else ""
 
-        return [f"{indent}{key}{value}{comment}".rstrip()]
+        yield f"{indent}{key}{value}{comment}".rstrip()
 
     def _serialize_content(
         self, content: Iterable[Union[Property, CommentBlock]], lengths: _Lengths
