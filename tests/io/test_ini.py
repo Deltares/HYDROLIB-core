@@ -8,6 +8,8 @@ import pytest
 
 from hydrolib.core.io.ini.models import (
     CommentBlock,
+    ContentElement,
+    Datablock,
     Document,
     IniBasedModel,
     Property,
@@ -20,9 +22,11 @@ from hydrolib.core.io.ini.parser import (
     _IntermediateSection,
 )
 from hydrolib.core.io.ini.serializer import (
+    _serialize_comment_block,
+    MaxLengths,
+    SectionSerializer,
     Serializer,
     SerializerConfig,
-    _Lengths,
     write_ini,
 )
 
@@ -750,10 +754,10 @@ class TestLengths:
                     content=[],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
                 ),
             ),
             (
@@ -764,10 +768,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
                 ),
             ),
             (
@@ -780,10 +784,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
                 ),
             ),
             (
@@ -794,10 +798,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=3,
-                    max_value_length=5,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=3,
+                    value=5,
+                    datablock=None,
                 ),
             ),
             (
@@ -809,10 +813,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=3,
-                    max_value_length=5,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=3,
+                    value=5,
+                    datablock=None,
                 ),
             ),
             (
@@ -824,10 +828,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=8,
-                    max_value_length=5,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=8,
+                    value=5,
+                    datablock=None,
                 ),
             ),
             (
@@ -839,10 +843,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=3,
-                    max_value_length=10,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=3,
+                    value=10,
+                    datablock=None,
                 ),
             ),
             (
@@ -859,10 +863,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=3,
-                    max_value_length=5,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=3,
+                    value=5,
+                    datablock=None,
                 ),
             ),
             (
@@ -874,10 +878,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=8,
-                    max_value_length=5,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=8,
+                    value=5,
+                    datablock=None,
                 ),
             ),
             (
@@ -888,10 +892,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=8,
-                    max_value_length=5,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=8,
+                    value=5,
+                    datablock=None,
                 ),
             ),
             (
@@ -902,10 +906,10 @@ class TestLengths:
                     ],
                     datablock=None,
                 ),
-                _Lengths(
-                    max_key_length=8,
-                    max_value_length=0,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=8,
+                    value=0,
+                    datablock=None,
                 ),
             ),
             (
@@ -914,10 +918,10 @@ class TestLengths:
                     content=[],
                     datablock=[["1.23"]],
                 ),
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=(4,),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=(4,),
                 ),
             ),
             (
@@ -926,10 +930,10 @@ class TestLengths:
                     content=[],
                     datablock=[["1.23", "1.2345", "1.234567"]],
                 ),
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=(4, 6, 8),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=(4, 6, 8),
                 ),
             ),
             (
@@ -942,18 +946,18 @@ class TestLengths:
                         ["0.0", "0.0", "0.0"],
                     ],
                 ),
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=(4, 6, 10),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=(4, 6, 10),
                 ),
             ),
         ],
     )
     def test_from_section_expected_results(
-        self, section: Section, expected_result: _Lengths
+        self, section: Section, expected_result: MaxLengths
     ):
-        result = _Lengths.from_section(section)
+        result = MaxLengths.from_section(section)
         assert result == expected_result
 
 
@@ -1038,36 +1042,36 @@ class TestSerializer:
         assert result == expected_result
 
     @pytest.mark.parametrize(
-        "comment_block,offset,config,expected_result",
+        "comment_block,delimiter,offset,expected_result",
         [
             (
                 CommentBlock(lines=[]),
+                "#",
                 0,
-                SerializerConfig(),
                 [],
             ),
             (
                 CommentBlock(lines=["angry badger noises"]),
+                "#",
                 0,
-                SerializerConfig(),
                 ["# angry badger noises"],
             ),
             (
                 CommentBlock(lines=["comment"]),
+                "#",
                 4,
-                SerializerConfig(),
                 ["    # comment"],
             ),
             (
                 CommentBlock(lines=["one", "two", "three"]),
+                "#",
                 4,
-                SerializerConfig(),
                 ["    # one", "    # two", "    # three"],
             ),
             (
                 CommentBlock(lines=["comment"]),
+                "*",
                 6,
-                SerializerConfig(comment_delimiter="*"),
                 ["      * comment"],
             ),
         ],
@@ -1075,13 +1079,11 @@ class TestSerializer:
     def test_serialize_comment_block(
         self,
         comment_block: CommentBlock,
+        delimiter: str,
         offset: int,
-        config: SerializerConfig,
         expected_result: List[str],
     ):
-        serializer = Serializer(config=config)
-
-        result = list(serializer._serialize_comment_block(comment_block, offset))
+        result = list(_serialize_comment_block(comment_block, delimiter, offset))
         assert result == expected_result
 
     @pytest.mark.parametrize(
@@ -1139,7 +1141,7 @@ class TestSerializer:
     ):
         serializer = Serializer(config=config)
 
-        result = list(serializer._serialize_comment_header(comment_header))
+        result = list(serializer._serialize_document_header(comment_header))
         assert result == expected_result
 
     @pytest.mark.parametrize(
@@ -1151,9 +1153,13 @@ class TestSerializer:
         ],
     )
     def test_serialize_section_header(
-        self, header: str, config: SerializerConfig, expected_result: str
+        self,
+        header: str,
+        config: SerializerConfig,
+        expected_result: str,
     ):
-        serializer = Serializer(config=config)
+        lengths = MaxLengths(key=0, value=0, datablock=None)
+        serializer = SectionSerializer(config=config, max_length=lengths)
 
         result = list(serializer._serialize_section_header(header))
         assert result == [expected_result]
@@ -1163,61 +1169,61 @@ class TestSerializer:
         [
             (
                 Property(key="key", value="value", comment="comment"),
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=0, property_indent=4),
                 "    key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=4, property_indent=0),
                 "    key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=4, property_indent=4),
                 "        key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment=None),
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key = value",
             ),
             (
                 Property(key="key", value=None, comment=None),
-                _Lengths(max_key_length=3, max_value_length=0),
+                MaxLengths(key=3, value=0),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key =",
             ),
             (
                 Property(key="key", value=None, comment="comment"),
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key =       # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
-                _Lengths(max_key_length=6, max_value_length=5),
+                MaxLengths(key=6, value=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key    = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
-                _Lengths(max_key_length=6, max_value_length=12),
+                MaxLengths(key=6, value=12),
                 SerializerConfig(section_indent=0, property_indent=0),
                 "key    = value        # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
-                _Lengths(max_key_length=6, max_value_length=12),
+                MaxLengths(key=6, value=12),
                 SerializerConfig(section_indent=2, property_indent=4),
                 "      key    = value        # comment",
             ),
@@ -1226,13 +1232,13 @@ class TestSerializer:
     def test_serialize_property(
         self,
         property: Property,
-        lengths: _Lengths,
+        lengths: MaxLengths,
         config: SerializerConfig,
         expected_result: str,
     ):
-        serializer = Serializer(config=config)
+        serializer = SectionSerializer(config=config, max_length=lengths)
 
-        result = list(serializer._serialize_property(property, lengths))
+        result = list(serializer._serialize_property(property))
         assert result == [expected_result]
 
     @pytest.mark.parametrize(
@@ -1240,25 +1246,25 @@ class TestSerializer:
         [
             (
                 [],
-                _Lengths(max_key_length=0, max_value_length=0),
+                MaxLengths(key=0, value=0),
                 SerializerConfig(section_indent=0, property_indent=0),
                 [],
             ),
             (
                 [Property(key="key", value="value", comment="comment")],
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 ["key = value # comment"],
             ),
             (
                 [CommentBlock(lines=["angry badger noises"])],
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=0, property_indent=0),
                 ["# angry badger noises"],
             ),
             (
                 [CommentBlock(lines=["comment 1", "comment 2"])],
-                _Lengths(max_key_length=3, max_value_length=5),
+                MaxLengths(key=3, value=5),
                 SerializerConfig(section_indent=0, property_indent=4),
                 ["    # comment 1", "    # comment 2"],
             ),
@@ -1273,7 +1279,7 @@ class TestSerializer:
                     ),
                     CommentBlock(lines=["comment 3", "comment 4"]),
                 ],
-                _Lengths(max_key_length=12, max_value_length=15),
+                MaxLengths(key=12, value=15),
                 SerializerConfig(section_indent=4, property_indent=4),
                 [
                     "        key          = value           # comment",
@@ -1288,14 +1294,14 @@ class TestSerializer:
     )
     def test_serialize_content(
         self,
-        content: Iterable[Union[Property, CommentBlock]],
-        lengths: _Lengths,
+        content: Iterable[ContentElement],
+        lengths: MaxLengths,
         config: SerializerConfig,
         expected_result: List[str],
     ):
-        serializer = Serializer(config=config)
+        serializer = SectionSerializer(config=config, max_length=lengths)
 
-        result = list(serializer._serialize_content(content, lengths))
+        result = list(serializer._serialize_content(content))
         assert result == expected_result
 
     @pytest.mark.parametrize(
@@ -1303,16 +1309,16 @@ class TestSerializer:
         [
             (
                 None,
-                _Lengths(max_key_length=0, max_value_length=0),
+                MaxLengths(key=0, value=0),
                 SerializerConfig(),
                 [],
             ),
             (
                 [["1.0", "2.0", "3.0"]],
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=[3, 4, 5],
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=[3, 4, 5],
                 ),
                 SerializerConfig(datablock_indent=2, datablock_spacing=4),
                 ["  1.0    2.0     3.0"],
@@ -1322,10 +1328,10 @@ class TestSerializer:
                     ["1.0", "2.0", "3.0"],
                     ["4.0", "10.0", "200.0"],
                 ],
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=[3, 4, 5],
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=[3, 4, 5],
                 ),
                 SerializerConfig(datablock_indent=2, datablock_spacing=4),
                 [
@@ -1335,22 +1341,20 @@ class TestSerializer:
             ),
             (
                 [["1.0"]],
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=[
-                        3,
-                    ],
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=[3],
                 ),
                 SerializerConfig(datablock_indent=2, datablock_spacing=4),
                 ["  1.0"],
             ),
             (
                 [["1.0"]],
-                _Lengths(
-                    max_key_length=0,
-                    max_value_length=0,
-                    max_datablock_element_length=None,
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
                 ),
                 SerializerConfig(datablock_indent=2, datablock_spacing=4),
                 [],
@@ -1359,14 +1363,14 @@ class TestSerializer:
     )
     def test_serialize_datablock(
         self,
-        datablock: Optional[Iterable[Sequence[str]]],
-        lengths: _Lengths,
+        datablock: Optional[Datablock],
+        lengths: MaxLengths,
         config: SerializerConfig,
         expected_result: List[str],
     ):
-        serializer = Serializer(config=config)
+        serializer = SectionSerializer(config=config, max_length=lengths)
 
-        result = list(serializer._serialize_datablock(datablock, lengths))
+        result = list(serializer._serialize_datablock(datablock))
         assert result == expected_result
 
     @pytest.mark.parametrize(
@@ -1522,11 +1526,12 @@ class TestSerializer:
         ],
     )
     def test_serialize_section(
-        self, section: Section, config: SerializerConfig, expected_result: List[str]
+        self,
+        section: Section,
+        config: SerializerConfig,
+        expected_result: List[str],
     ):
-        serializer = Serializer(config=config)
-
-        result = list(serializer._serialize_section(section))
+        result = list(SectionSerializer.serialize(section, config))
         assert result == expected_result
 
     def test_deserialize_serialize_should_give_the_same_result(self):

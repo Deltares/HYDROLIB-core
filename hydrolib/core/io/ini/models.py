@@ -38,6 +38,11 @@ class Property(BaseModel):
         return {self.key: self.comment}
 
 
+ContentElement = Union[Property, CommentBlock]
+DatablockRow = Sequence[str]
+Datablock = Sequence[DatablockRow]
+
+
 class Section(BaseModel):
     """Section defines a deltares ini section
 
@@ -58,19 +63,19 @@ class Section(BaseModel):
 
     Attributes:
         header (str): The header (without brackets) of this Section
-        content (List[Union[Property, CommentBlock]]):
+        content (List[ContentElement]):
             The ordered list of Property and CommentBlock objects
-        datablock (Optional[Sequence[Sequence[str]]]):
+        datablock (Optional[Datablock]):
             An optional data block associated with this Section. The datablock is
             structured as a sequence of rows, i.e. datablock[2][1] refers to the third
             row, second column.
     """
 
     header: str = Field(alias="_header")
-    content: List[Union[Property, CommentBlock]]
+    content: List[ContentElement]
 
     # these are primarily relevant for bc files
-    datablock: Optional[Sequence[Sequence[str]]]
+    datablock: Optional[Datablock]
 
     def dict(self, *args, **kwargs):
         kwargs["by_alias"] = True

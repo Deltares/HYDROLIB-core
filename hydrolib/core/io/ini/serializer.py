@@ -1,10 +1,16 @@
-from dataclasses import dataclass
-from functools import reduce
-from hydrolib.core.io.ini.models import CommentBlock, Document, Property, Section
+from hydrolib.core.io.ini.models import (
+    CommentBlock,
+    ContentElement,
+    Datablock,
+    DatablockRow,
+    Document,
+    Property,
+    Section,
+)
 from hydrolib.core.basemodel import BaseModel
 from itertools import chain, count, repeat
 from pathlib import Path
-from typing import Any, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Iterable, Optional, Sequence
 
 
 class SerializerConfig(BaseModel):
@@ -44,47 +50,179 @@ class SerializerConfig(BaseModel):
         return self.section_indent + self.datablock_indent
 
 
-@dataclass
-class _Lengths:
-    # Internal data class to store the lengths of the elements in a section.
-    max_key_length: int
-    max_value_length: int
-    max_datablock_element_length: Optional[Sequence[int]] = None
+class MaxLengths(BaseModel):
+    """MaxLengths defines the maxmimum lengths of the parts of a section
+
+    Attributes:
+        key (int):
+            The maximum length of all the keys of the properties within a section.
+            If no properties are present it should be 0.
+        value (int):
+            The maximum length of all the non None values of the properties within a
+            section. If no properties are present, or all values are None, it should
+            be 0.
+        datablock (Optional[Sequence[int]]):
+            The maximum length of the values of each column of the Datablock.
+            If no datablock is present it defaults to None.
+    """
+
+    key: int
+    value: int
+    datablock: Optional[Sequence[int]] = None
 
     @staticmethod
-    def _calculate_max_length_datablock(
-        datablock: Optional[Sequence[Sequence[str]]],
-    ) -> Optional[Sequence[int]]:
+    def _of_datablock(datablock: Optional[Datablock]) -> Optional[Sequence[int]]:
         if datablock is None or len(datablock) < 1:
             return None
 
-        def folder(acc: Tuple, row: Sequence[str]) -> Tuple:
-            return tuple(max(curr_max, len(elem)) for curr_max, elem in zip(acc, row))
+        datablock_columns = map(list, zip(*datablock))
+        datablock_column_lengths = (map(len, column) for column in datablock_columns)  # type: ignore
+        max_lengths = (max(column) for column in datablock_column_lengths)
 
-        return reduce(folder, datablock, (0,) * len(datablock[0]))
+        return tuple(max_lengths)
 
     @classmethod
-    def from_section(cls, section: Section):
-        properties = list(
-            prop for prop in section.content if isinstance(prop, Property)
-        )
+    def from_section(cls, section: Section) -> "MaxLengths":
+        """Generate a MaxLengths instance from the given Section
 
-        if len(properties) > 0:
-            max_key_length = max(len(prop.key) for prop in properties)
-            max_value_length = max(
-                len(prop.value) if prop.value is not None else 0 for prop in properties
-            )
-        else:
-            max_key_length = 0
-            max_value_length = 0
+        Args:
+            section (Section): The section of which the MaxLengths are calculated
+
+        Returns:
+            MaxLengths: The MaxLengths corresponding with the provided section
+        """
+
+        properties = list(p for p in section.content if isinstance(p, Property))
+
+        keys = (prop.key for prop in properties)
+        values = (prop.value for prop in properties if prop.value is not None)
+
+        max_key_length = max((len(k) for k in keys), default=0)
+        max_value_length = max((len(v) for v in values), default=0)
+        max_datablock_lengths = MaxLengths._of_datablock(section.datablock)
 
         return cls(
-            max_key_length=max_key_length,
-            max_value_length=max_value_length,
-            max_datablock_element_length=_Lengths._calculate_max_length_datablock(
-                section.datablock
-            ),
+            key=max_key_length,
+            value=max_value_length,
+            datablock=max_datablock_lengths,
         )
+
+
+Lines = Iterable[str]
+
+
+def _serialize_comment_block(
+    block: CommentBlock,
+    delimiter: str = "#",
+    indent_size: int = 0,
+) -> Lines:
+    indent = " " * indent_size
+    return (f"{indent}{delimiter} {l}" for l in block.lines)
+
+
+def _get_offset_whitespace(key: Optional[str], max_length: int) -> str:
+    key_length = len(key) if key is not None else 0
+    return " " * max(max_length - key_length, 0)
+
+
+class SectionSerializer:
+    """SectionSerializer provides the serialize method to serialize a Section
+
+    The entrypoint of this method is the serialize method, which will construct
+    an actual instance and serializes the Section with it.
+    """
+
+    def __init__(self, config: SerializerConfig, max_length: MaxLengths):
+        """Create a new SectionSerializer
+
+        Args:
+            config (SerializerConfig): The config describing the serialization options
+            max_length (MaxLengths): The max lengths of the section being serialized
+        """
+
+        self._config = config
+        self._max_length = max_length
+
+    @classmethod
+    def serialize(cls, section: Section, config: SerializerConfig) -> Lines:
+        """Serialize the provided section with the given config
+
+        Args:
+            section (Section): The section to serialize
+            config (SerializerConfig): The config describing the serialization options
+
+        Returns:
+            Lines: The iterable lines of the serialized section
+        """
+        serializer = cls(config, MaxLengths.from_section(section))
+        return serializer._serialize_section(section)
+
+    @property
+    def config(self) -> SerializerConfig:
+        """The SerializerConfig used while serializing the section."""
+        return self._config
+
+    @property
+    def max_length(self) -> MaxLengths:
+        """The MaxLengths of the Section being serialized by this SectionSerializer."""
+        return self._max_length
+
+    def _serialize_section(self, section: Section) -> Lines:
+        header_iterable = self._serialize_section_header(section.header)
+        properties = self._serialize_content(section.content)
+        datablock = self._serialize_datablock(section.datablock)
+
+        return chain(header_iterable, properties, datablock)
+
+    def _serialize_section_header(self, section_header: str) -> Lines:
+        indent = " " * (self.config.section_indent)
+        yield f"{indent}[{section_header}]"
+
+    def _serialize_content(self, content: Iterable[ContentElement]) -> Lines:
+        elements = (self._serialize_element(elem) for elem in content)
+        return chain.from_iterable(elements)
+
+    def _serialize_element(self, elem: ContentElement) -> Lines:
+        if isinstance(elem, Property):
+            return self._serialize_property(elem)
+        else:
+            indent = self.config.total_property_indent
+            delimiter = self.config.comment_delimiter
+            return _serialize_comment_block(elem, delimiter, indent)
+
+    def _serialize_property(self, property: Property) -> Lines:
+        indent = " " * (self._config.total_property_indent)
+        key_offset = _get_offset_whitespace(property.key, self.max_length.key)
+        key = f"{property.key}{key_offset} = "
+
+        value_offset = _get_offset_whitespace(property.value, self.max_length.value)
+
+        if property.value is not None:
+            value = f"{property.value}{value_offset}"
+        else:
+            value = value_offset
+
+        comment = f" # {property.comment}" if property.comment is not None else ""
+
+        yield f"{indent}{key}{value}{comment}".rstrip()
+
+    def _serialize_datablock(self, datablock: Optional[Datablock]) -> Lines:
+        if datablock is None or self.max_length.datablock is None:
+            return []
+
+        indent = " " * self._config.total_datablock_indent
+        return (self._serialize_row(row, indent) for row in datablock)
+
+    def _serialize_row(self, row: DatablockRow, indent: str) -> str:
+        elem_spacing = " " * self.config.datablock_spacing
+        elems = (self._serialize_row_element(elem, i) for elem, i in zip(row, count()))
+
+        return indent + elem_spacing.join(elems).rstrip()
+
+    def _serialize_row_element(self, elem: str, index: int) -> str:
+        max_length = self.max_length.datablock[index]  # type: ignore
+        offset = _get_offset_whitespace(elem, max_length)
+        return elem + offset
 
 
 class Serializer:
@@ -98,6 +236,32 @@ class Serializer:
         """
         self._config = config
 
+    def serialize(self, document: Document) -> Lines:
+        """Serialize the provided document into an iterable of lines.
+
+        Args:
+            document (Document): The Document to serialize.
+
+        Returns:
+            Lines: An iterable returning each line of the serialized Document.
+        """
+        header_iterable = self._serialize_document_header(document.header_comment)
+
+        serialize_section = lambda s: SectionSerializer.serialize(s, self._config)
+        sections = (serialize_section(section) for section in document.sections)
+        sections_with_spacing = Serializer._interweave(sections, [""])
+        sections_iterable = chain.from_iterable(sections_with_spacing)
+
+        return chain(header_iterable, sections_iterable)
+
+    def _serialize_document_header(self, header: Iterable[CommentBlock]) -> Lines:
+        delimiter = self._config.comment_delimiter
+        serialize = lambda cb: _serialize_comment_block(cb, delimiter)
+        blocks = (serialize(block) for block in header)
+        blocks_with_spacing = Serializer._interweave(blocks, [""])
+
+        return chain.from_iterable(blocks_with_spacing)
+
     @staticmethod
     def _interweave(iterable: Iterable, val: Any) -> Iterable:
         # Interweave the provided iterable with the provided value:
@@ -107,118 +271,11 @@ class Serializer:
         # as such it is the same object being interweaved.
         return chain.from_iterable(zip(iterable, repeat(val)))
 
-    def _serialize_comment_block(
-        self, block: CommentBlock, indent_size: int = 0
-    ) -> Iterable[str]:
-        indent = " " * indent_size
-        return (f"{indent}{self._config.comment_delimiter} {l}" for l in block.lines)
-
-    def _serialize_comment_header(
-        self, header_blocks: Iterable[CommentBlock]
-    ) -> Iterable[str]:
-        blocks_as_lines = (
-            self._serialize_comment_block(block) for block in header_blocks
-        )
-        # We separate comment blocks in the header with an empty line.
-        blocks_as_lines = Serializer._interweave(blocks_as_lines, [""])  # type: ignore
-
-        return chain.from_iterable(blocks_as_lines)
-
-    def _serialize_section_header(self, section_header: str) -> Iterable[str]:
-        indent = " " * (self._config.section_indent)
-        yield f"{indent}[{section_header}]"
-
-    @staticmethod
-    def _get_offset(key: Optional[str], max_length: int) -> str:
-        key_length = len(key) if key is not None else 0
-        return " " * max(max_length - key_length, 0)
-
-    def _serialize_property(
-        self, property: Property, lengths: _Lengths
-    ) -> Iterable[str]:
-        indent = " " * (self._config.total_property_indent)
-        key_offset = Serializer._get_offset(property.key, lengths.max_key_length)
-        key = f"{property.key}{key_offset} = "
-
-        value_offset = Serializer._get_offset(property.value, lengths.max_value_length)
-        value = (
-            f"{property.value}{value_offset}"
-            if property.value is not None
-            else value_offset
-        )
-
-        comment = f" # {property.comment}" if property.comment is not None else ""
-
-        yield f"{indent}{key}{value}{comment}".rstrip()
-
-    def _serialize_content(
-        self, content: Iterable[Union[Property, CommentBlock]], lengths: _Lengths
-    ) -> Iterable[str]:
-        def serialize_element(elem: Union[Property, CommentBlock]) -> Iterable[str]:
-            if isinstance(elem, Property):
-                return self._serialize_property(elem, lengths)
-            else:
-                return self._serialize_comment_block(
-                    elem, self._config.total_property_indent
-                )
-
-        return chain.from_iterable((serialize_element(elem) for elem in content))
-
-    def _serialize_datablock(
-        self, datablock: Optional[Iterable[Sequence[str]]], lengths: _Lengths
-    ) -> Iterable[str]:
-        if datablock is None or lengths.max_datablock_element_length is None:
-            return []
-
-        def serialize_row_element(elem: str, index: int) -> str:
-            offset = Serializer._get_offset(elem, lengths.max_datablock_element_length[index])  # type: ignore
-            return elem + offset
-
-        indent = " " * self._config.total_datablock_indent
-
-        def serialize_row(row: Sequence[str]) -> str:
-            return (
-                indent
-                + (" " * self._config.datablock_spacing)
-                .join((serialize_row_element(elem, i)) for elem, i in zip(row, count()))
-                .rstrip()
-            )
-
-        return (serialize_row(row) for row in datablock)
-
-    def _serialize_section(self, section: Section) -> Iterable[str]:
-        lengths = _Lengths.from_section(section)
-        header_iterable = self._serialize_section_header(section.header)
-        properties = self._serialize_content(section.content, lengths)
-        datablock = self._serialize_datablock(section.datablock, lengths)
-
-        return chain(
-            header_iterable,
-            properties,
-            datablock,
-        )
-
-    def serialize(self, document: Document) -> Iterable[str]:
-        """Serialize the provided document into an iterable of lines.
-
-        Args:
-            document (Document): The Document to serialize.
-
-        Returns:
-            Iterable[str]: An iterable returning each line of the serialized Document.
-        """
-        header_iterable = self._serialize_comment_header(document.header_comment)
-        sections_iterable = chain.from_iterable(
-            Serializer._interweave(
-                (self._serialize_section(section) for section in document.sections),
-                [""],
-            )
-        )
-        return chain(header_iterable, sections_iterable)
-
 
 def write_ini(
-    path: Path, document: Document, config: Optional[SerializerConfig] = None
+    path: Path,
+    document: Document,
+    config: Optional[SerializerConfig] = None,
 ) -> None:
     """Write the provided document to the specified path
 
