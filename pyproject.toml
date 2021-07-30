@@ -11,6 +11,7 @@ numpy = "^1.21.0"
 pydantic = {extras = ["dotenv"], version = "^1.8.2"}
 lxml = "^4.6.3"
 meshkernel = "^1.0.0"
+netCDF4 = "^1.5.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
