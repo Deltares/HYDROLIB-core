@@ -43,10 +43,12 @@ class SerializerConfig(BaseModel):
 
     @property
     def total_property_indent(self) -> int:
+        """The combined property indentation, i.e. section_indent + property_indent"""
         return self.section_indent + self.property_indent
 
     @property
     def total_datablock_indent(self) -> int:
+        """The combined datablock indentation, i.e. section_indent + datablock_indent"""
         return self.section_indent + self.datablock_indent
 
 
@@ -91,7 +93,6 @@ class MaxLengths(BaseModel):
         Returns:
             MaxLengths: The MaxLengths corresponding with the provided section
         """
-
         properties = list(p for p in section.content if isinstance(p, Property))
 
         keys = (prop.key for prop in properties)
@@ -139,7 +140,6 @@ class SectionSerializer:
             config (SerializerConfig): The config describing the serialization options
             max_length (MaxLengths): The max lengths of the section being serialized
         """
-
         self._config = config
         self._max_length = max_length
 
@@ -179,10 +179,10 @@ class SectionSerializer:
         yield f"{indent}[{section_header}]"
 
     def _serialize_content(self, content: Iterable[ContentElement]) -> Lines:
-        elements = (self._serialize_element(elem) for elem in content)
+        elements = (self._serialize_content_element(elem) for elem in content)
         return chain.from_iterable(elements)
 
-    def _serialize_element(self, elem: ContentElement) -> Lines:
+    def _serialize_content_element(self, elem: ContentElement) -> Lines:
         if isinstance(elem, Property):
             return self._serialize_property(elem)
         else:
@@ -192,15 +192,15 @@ class SectionSerializer:
 
     def _serialize_property(self, property: Property) -> Lines:
         indent = " " * (self._config.total_property_indent)
-        key_offset = _get_offset_whitespace(property.key, self.max_length.key)
-        key = f"{property.key}{key_offset} = "
+        key_ws = _get_offset_whitespace(property.key, self.max_length.key)
+        key = f"{property.key}{key_ws} = "
 
-        value_offset = _get_offset_whitespace(property.value, self.max_length.value)
+        value_ws = _get_offset_whitespace(property.value, self.max_length.value)
 
         if property.value is not None:
-            value = f"{property.value}{value_offset}"
+            value = f"{property.value}{value_ws}"
         else:
-            value = value_offset
+            value = value_ws
 
         comment = f" # {property.comment}" if property.comment is not None else ""
 
@@ -221,8 +221,8 @@ class SectionSerializer:
 
     def _serialize_row_element(self, elem: str, index: int) -> str:
         max_length = self.max_length.datablock[index]  # type: ignore
-        offset = _get_offset_whitespace(elem, max_length)
-        return elem + offset
+        whitespace = _get_offset_whitespace(elem, max_length)
+        return elem + whitespace
 
 
 class Serializer:
