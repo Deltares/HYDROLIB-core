@@ -72,17 +72,6 @@ class MaxLengths(BaseModel):
     value: int
     datablock: Optional[Sequence[int]] = None
 
-    @staticmethod
-    def _of_datablock(datablock: Optional[Datablock]) -> Optional[Sequence[int]]:
-        if datablock is None or len(datablock) < 1:
-            return None
-
-        datablock_columns = map(list, zip(*datablock))
-        datablock_column_lengths = (map(len, column) for column in datablock_columns)  # type: ignore
-        max_lengths = (max(column) for column in datablock_column_lengths)
-
-        return tuple(max_lengths)
-
     @classmethod
     def from_section(cls, section: Section) -> "MaxLengths":
         """Generate a MaxLengths instance from the given Section
@@ -107,6 +96,17 @@ class MaxLengths(BaseModel):
             value=max_value_length,
             datablock=max_datablock_lengths,
         )
+
+    @staticmethod
+    def _of_datablock(datablock: Optional[Datablock]) -> Optional[Sequence[int]]:
+        if datablock is None or len(datablock) < 1:
+            return None
+
+        datablock_columns = map(list, zip(*datablock))
+        datablock_column_lengths = (map(len, column) for column in datablock_columns)  # type: ignore
+        max_lengths = (max(column) for column in datablock_column_lengths)
+
+        return tuple(max_lengths)
 
 
 Lines = Iterable[str]
