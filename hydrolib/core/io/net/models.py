@@ -56,7 +56,7 @@ class Mesh2d(BaseModel):
         from hydrolib.core.io.net.reader import UgridReader
 
         reader = UgridReader(file_path)
-        reader.read_2d(self)
+        reader.read_mesh2d(self)
 
     def _set_mesh2d(self):
         mesh2d = mk.Mesh2d(
