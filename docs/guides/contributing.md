@@ -12,4 +12,20 @@ We use `isort` as an autoformatter.
 We use `commitizen` to automatically bump the version number.
 If you use [conventional commit messages](https://www.conventionalcommits.org/en/v1.0.0/#summary), the [`changelog.md`](../changelog.md) is generated automatically.
 
+## Development
 
+### Branches
+For each issue or feature, a separate branch should be created from the main. To keep the branches organized a feature branch should be created with the `feature/` prefix. 
+When starting development on a branch, a pull request should be created for reviews and continous integration. During continuous integration, the checks will be run with python 3.8 and 3.9 on Windows, Ubuntu and MacOS. The checks consist of running the tests, checking the code formatting and running SonarCloud. 
+We advise to use a draft pull request, to prevent the branch to be merged back before developement is finished. When the branch is ready for review, you can update the status of the pull request to "ready for review".
+
+### Reviews
+When an issue is ready for review, it should be moved to the "Ready for review" column on the GitHub board for visibility. 
+
+### Merging
+Merging a branch can only happen when a pull request is accepted through review. When a pull request is accepted the changes should be merged back with the "squash and merge" option.
+
+### Coding guidelines
+* If there is code that needs to be tested, there should be tests written for it.
+* If there are any additions or changes to the public API, the documentation should be updated. 
+* Files should be added to the appropriate folder to keep modules and objects within the correct scope.  
