@@ -1,19 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime
 from pathlib import Path
-from platform import uname
 from typing import List, Optional, Union, Dict
-from _pytest.mark import structures
 
 import meshkernel as mk
 from meshkernel.py_structures import GeometryList
 import netCDF4 as nc
 import numpy as np
-from numpy.lib import poly
 from pydantic import Field
-from pydantic.types import PyObject
-from pydantic.utils import ValueItems
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel

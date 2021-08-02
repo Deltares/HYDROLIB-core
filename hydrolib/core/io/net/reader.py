@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 
-import meshkernel as mk
 import netCDF4 as nc
 import numpy as np
 

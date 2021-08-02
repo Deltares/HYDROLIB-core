@@ -5,8 +5,7 @@ all known extensions.
 
 from typing import Callable, List, Optional, Sequence, Union
 
-import meshkernel as mk
-from pydantic import Field, validator
+from pydantic import validator
 
 from hydrolib.core import __version__
 from hydrolib.core.io.base import DummmyParser, DummySerializer
@@ -19,7 +18,6 @@ from hydrolib.core.io.dimr.models import (
     GlobalSettings,
     RRComponent,
 )
-from hydrolib.core.io.net.models import Link1d2d, Mesh1d, Mesh2d
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
 from hydrolib.core.io.polyfile.models import PolyObject
