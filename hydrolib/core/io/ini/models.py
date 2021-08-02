@@ -103,7 +103,7 @@ class CrosslockGeneral(INIGeneral):
 
 
 class INIModel(FileModel):
-    """FM Model representation."""
+    """INI Model representation."""
 
     general: INIGeneral
 

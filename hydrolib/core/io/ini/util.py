@@ -5,7 +5,7 @@ from typing import Any
 from pydantic.class_validators import validator
 
 
-def get_split_string_on_delimeter_validator(*field_name: str, delimiter: str = None):
+def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
     """Get a validator to split strings passed to the specified field_name.
 
     Strings are split based on the provided delimeter. The validator splits

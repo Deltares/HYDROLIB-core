@@ -16,7 +16,7 @@ from hydrolib.core.io.ini.models import (
 )
 from hydrolib.core.io.ini.parser import Parser
 from hydrolib.core.io.ini.util import (
-    get_split_string_on_delimeter_validator,
+    get_split_string_on_delimiter_validator,
     make_list_validator,
 )
 from hydrolib.core.io.structure.models import StructureModel
@@ -27,7 +27,6 @@ class General(IniBasedModel):
     Version: str = "1.2.94.66079M"
     fileType: str = "modelDef"
     fileVersion: str = "1.09"
-    GuiVersion: str = "1.5.0.49132"
     AutoStart: bool = False
     PathsRelativeToParent: bool = False
 
@@ -115,7 +114,7 @@ class Wind(IniBasedModel):
     PavBnd = 0
     PavIni = 0
 
-    _split_to_list = get_split_string_on_delimeter_validator(
+    _split_to_list = get_split_string_on_delimiter_validator(
         "Cdbreakpoints", "Windspeedbreakpoints", delimiter=" "
     )
 
@@ -346,7 +345,7 @@ class Geometry(IniBasedModel):
     AllowBndAtBifurcation = 0
     dxDoubleAt1DEndNodes = 0
 
-    _split_to_list = get_split_string_on_delimeter_validator(
+    _split_to_list = get_split_string_on_delimiter_validator(
         "FrictFile",
         "StructureFile",
         "DryPointsFile",

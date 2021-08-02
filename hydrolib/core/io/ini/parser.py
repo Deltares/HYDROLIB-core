@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Optional, Tuple, Union
 from pydantic import validator
 
 from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.ini.parser_models import CommentBlock, Document, Property, Section
+from hydrolib.core.io.ini.io_models import CommentBlock, Document, Property, Section
 
 
 class ParserConfig(BaseModel):
@@ -292,8 +292,10 @@ class Parser:
         return self._config.parse_datablocks
 
     @classmethod
-    def parse(cls, filepath: Path):
-        parser = cls(ParserConfig())
+    def parse(cls, filepath: Path, config: ParserConfig = None):
+        if not config:
+            config = ParserConfig()
+        parser = cls(config)
 
         with filepath.open() as f:
             for line in f:

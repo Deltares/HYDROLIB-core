@@ -17,7 +17,7 @@ from pydantic import Field
 from pydantic.class_validators import root_validator
 
 from hydrolib.core.io.ini.models import IniBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import get_split_string_on_delimeter_validator
+from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
 import logging
 
 logger = logging.getLogger(__name__)
@@ -165,7 +165,7 @@ class UniversalWeir(Structure):
     crestlevel: float = Field(alias="crestLevel")
     dischargecoeff: float = Field(alias="dischargeCoeff")
 
-    _split_to_list = get_split_string_on_delimeter_validator("yvalues", "zvalues")
+    _split_to_list = get_split_string_on_delimiter_validator("yvalues", "zvalues")
 
 
 class CulvertSubType(str, Enum):
@@ -194,7 +194,7 @@ class Culvert(Structure):
     subtype: CulvertSubType = Field(alias="subType")
     bendlosscoeff: float = Field(alias="bendLossCoeff")
 
-    _split_to_list = get_split_string_on_delimeter_validator("relopening", "losscoeff")
+    _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
 
 
 class Pump(Structure):
@@ -214,7 +214,7 @@ class Pump(Structure):
     head: List[float]
     reductionfactor: List[float] = Field(alias="reductionFactor")
 
-    _split_to_list = get_split_string_on_delimeter_validator(
+    _split_to_list = get_split_string_on_delimiter_validator(
         "startlevelsuctionside",
         "stoplevelsuctionside",
         "startleveldeliveryside",
@@ -230,7 +230,7 @@ class Compound(Structure):
     numstructures: int = Field(alias="numStructures")
     structureids: List[str] = Field(alias="structureIds")
 
-    _split_to_list = get_split_string_on_delimeter_validator(
+    _split_to_list = get_split_string_on_delimiter_validator(
         "structureids", delimiter=";"
     )
 

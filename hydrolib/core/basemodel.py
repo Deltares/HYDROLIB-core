@@ -24,6 +24,14 @@ logger = logging.getLogger(__name__)
 context_dir: ContextVar[Path] = ContextVar("folder")
 
 
+def _reset_context_dir(token):
+    # Once the model has been completely initialized
+    # reset the context
+    if token:
+        logger.info("Reset context.")
+        context_dir.reset(token)
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed = True
@@ -81,31 +89,26 @@ class FileModel(BaseModel, ABC):
         The model is empty (with defaults) if no `filepath` is given,
         otherwise the file at `filepath` will be parsed."""
         # Parse the file if path is given
-        token = None
+        context_dir_reset_token = None
         if filepath:
             filepath = Path(filepath)  # so we also accept strings
 
             # If a context is set, use it
-            folder = context_dir.get(None)
-            if folder and not filepath.is_absolute():
+            if (folder := context_dir.get(None)) and not filepath.is_absolute():
                 logger.info(f"Used context to get {folder} for {filepath}")
                 filepath = folder / filepath
             # Otherwise we're the root filepath
             # and should set the context
             else:
                 logger.info(f"Set context to {filepath.parent}")
-                token = context_dir.set(filepath.parent)
+                context_dir_reset_token = context_dir.set(filepath.parent)
 
             data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
         super().__init__(*args, **kwargs)
 
-        # Once the model has been completely initialized
-        # reset the context
-        if token:
-            logger.info(f"Reset context.")
-            context_dir.reset(token)
+        _reset_context_dir(context_dir_reset_token)
 
     def is_file_link(self) -> bool:
         return True

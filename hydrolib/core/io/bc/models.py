@@ -50,14 +50,6 @@ class ForcingBase(DataBlockIniBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    def _convert_section_to_dict(self) -> Dict:
-        return self.dict(
-            exclude={
-                "start_line",
-                "end_line",
-            }
-        )
-
     @classmethod
     def validate(cls, v):
         """Try to iniatialize subclass based on function field."""
