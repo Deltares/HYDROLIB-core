@@ -12,7 +12,6 @@ from pydantic import Field
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.net.reader import UgridReader
-from hydrolib.core.io.net.writer import UgridWriter
 
 import matplotlib
 from matplotlib.collections import LineCollection
@@ -36,7 +35,6 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
 
 
 class Mesh2d(BaseModel):
-
     meshkernel: Optional[mk.MeshKernel] = Field(default_factory=mk.MeshKernel)
 
     mesh2d_node_x: np.ndarray = np.empty(0, dtype=np.double)
@@ -819,6 +817,8 @@ class Network:
         Args:
             file (Path): File where _net.nc is written to.
         """
+        from hydrolib.core.io.net.writer import UgridWriter
+
         writer = UgridWriter()
         writer.write(self, file)
 

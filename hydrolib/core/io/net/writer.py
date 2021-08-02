@@ -1,4 +1,5 @@
 from datetime import datetime
+from hydrolib.core.io.net.models import Link1d2d, Mesh1d, Mesh2d
 from pathlib import Path
 
 import netCDF4 as nc
@@ -8,7 +9,7 @@ from hydrolib.core import __version__
 
 
 class UgridWriter:
-    """Writer for FM files"""
+    """Writer for netCDF files with UGrid convention"""
 
     def __init__(self):
         self.idstrlength = 40
@@ -21,27 +22,36 @@ class UgridWriter:
         dfm_version: str = "",
         dimr_version: str = "",
         suite_version: str = "",
-    ):  # write ugrid file from GWSW model
+    ):
+        """write ugrid file from GWSW model"""
 
         ncfile = self.create_netcdf(path, dfm_version, dimr_version, suite_version)
-
-        # Write the 1d mesh
-        if not network._mesh1d.is_empty():
-            self.init_1dnetwork(ncfile, network._mesh1d)
-            self.set_1dmesh(ncfile, network._mesh1d)
-            self.set_1dnetwork(ncfile, network._mesh1d)
-
-        # Write the 2d mesh
-        if not network._mesh2d.is_empty():
-            self.init_2dmesh(ncfile, network._mesh2d)
-            self.set_2dmesh(ncfile, network._mesh2d)
-
-        # Write the 1d 2d links
-        if not network._link1d2d.is_empty():
-            self.init_1d2dlinks(ncfile, network._link1d2d)
-            self.set_1d2dlinks(ncfile, network._link1d2d)
-
+        self._write_mesh1d_to(network._mesh1d, ncfile)
+        self._write_mesh2d_to(network._mesh2d, ncfile)
+        self._write_1d2dlinks_to(network._link1d2d, ncfile)
         ncfile.close()
+
+    def _write_mesh1d_to(self, mesh1d: Mesh1d, ncfile) -> None:
+        if mesh1d.is_empty():
+            return
+
+        self.init_1dnetwork(ncfile, mesh1d)
+        self.set_1dmesh(ncfile, mesh1d)
+        self.set_1dnetwork(ncfile, mesh1d)
+
+    def _write_mesh2d_to(self, mesh2d: Mesh2d, ncfile) -> None:
+        if mesh2d.is_empty():
+            return
+
+        self.init_2dmesh(ncfile, mesh2d)
+        self.set_2dmesh(ncfile, mesh2d)
+
+    def _write_1d2dlinks_to(self, link1d2d: Link1d2d, ncfile) -> None:
+        if link1d2d.is_empty():
+            return
+
+        self.init_1d2dlinks(ncfile, link1d2d)
+        self.set_1d2dlinks(ncfile, link1d2d)
 
     @staticmethod
     def to_char_list(lst, size):
@@ -52,23 +62,25 @@ class UgridWriter:
         self, path: Path, dfm_version: str, dimr_version: str, suite_version: str
     ):
 
-        # File format:
-        outformat = "NETCDF3_CLASSIC"  # "NETCDF4"
-        # File where we going to write
-        ncfile = nc.Dataset(path, "w", format=outformat)
+        file_format = "NETCDF3_CLASSIC"  # "NETCDF4"
+        ncfile = nc.Dataset(path, "w", format=file_format)
 
         # global attributes
-        ncfile.Conventions = "CF-1.8 UGRID-1.0"
-        ncfile.title = "Delft3D-FM 1D2D network for model " + str(path.name).rstrip(
-            "_net.nc"
-        )
-        ncfile.source = f"HYDROLIB-core v.{__version__}, D-HyDAMO, model {str(path.name).rstrip('_net.nc')}"
-        ncfile.history = f"Created on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} by {Path(__file__).name}."
-        ncfile.institution = "Deltares/HKV"
-        ncfile.references = "https://github.com/openearth/delft3dfmpy/; https://www.deltares.nl; https://www.hkv.nl"
+        UgridWriter._set_global_attributes(ncfile, path)
         ncfile.comment = f"Tested and compatible with D-Flow FM {dfm_version}, DIMRset {dimr_version} and D-HYDRO suite 1D2D {suite_version}"
 
         return ncfile
+
+    @staticmethod
+    def _set_global_attributes(ncfile: nc.Dataset, path: Path) -> None:
+        ncfile.Conventions = "CF-1.8 UGRID-1.0"
+        ncfile.title = "Delft3D-FM 1D2D network for model " + path.name.rstrip(
+            "_net.nc"
+        )
+        ncfile.source = f"HYDROLIB-core v.{__version__}, D-HyDAMO, model {path.name.rstrip('_net.nc')}"
+        ncfile.history = f"Created on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} by {Path(__file__).name}."
+        ncfile.institution = "Deltares/HKV"
+        ncfile.references = "https://github.com/openearth/delft3dfmpy/; https://www.deltares.nl; https://www.hkv.nl"
 
     def init_1dnetwork(self, ncfile, mesh1d):
 
