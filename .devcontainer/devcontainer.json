@@ -1,0 +1,24 @@
+// Common devcontainer for HYDROLIB-Core.
+//   A guide how to utilise dev containers within HYDROLIB can be found here:
+//       https://deltares.github.io/HYDROLIB-core/guides/devcontainers/
+//
+//   For additional information about this file: 
+//       https://aka.ms/devcontainer.json.
+{
+	"name": "Existing Dockerfile",
+	"context": "..",
+	"dockerFile": "../Dockerfile",
+	"settings": {},
+	// Some common Python extensions which are loaded within this dev container
+	// Additional extensions can be added here according to personal taste.
+	"extensions": [
+		"ms-python.python",
+		"littlefoxteam.vscode-python-test-adapter",
+		"oderwat.indent-rainbow",
+		"njpwerner.autodocstring",
+		"njqdev.vscode-python-typehint"
+	],
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+	],
+}
