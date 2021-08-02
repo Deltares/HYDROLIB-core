@@ -16,7 +16,7 @@ from hydrolib.core.io.polyfile.parser import (
 )
 from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 
-from ..utils import test_data_dir, test_output_dir
+from ..utils import test_output_dir
 
 
 class TestSerializer:

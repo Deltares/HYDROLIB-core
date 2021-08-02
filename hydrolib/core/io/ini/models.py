@@ -12,13 +12,9 @@ class CommentBlock(BaseModel):
     """CommentBlock defines a comment block within a deltares ini file.
 
     Attributes:
-        start_line (int): The start line index of the CommentBlock within the file
-        end_line (int): The end line index of the CommentBlock within the file
         lines (List[str]): The actual lines of the CommentBlock
     """
 
-    start_line: int
-    end_line: int
     lines: List[str]
 
 
@@ -26,13 +22,11 @@ class Property(BaseModel):
     """Property defines a deltares ini property
 
     Attributes:
-        line (int): The line index on which this Property is defined
         key (str): The key of this Property
         value (Optional[str]): The value associated with this Property
         comment (Optional[str]): The comment associated with this Property
     """
 
-    line: int
     key: str
     value: Optional[str]
     comment: Optional[str]
@@ -42,6 +36,11 @@ class Property(BaseModel):
 
     def get_comment(self):
         return {self.key: self.comment}
+
+
+ContentElement = Union[Property, CommentBlock]
+DatablockRow = Sequence[str]
+Datablock = Sequence[DatablockRow]
 
 
 class Section(BaseModel):
@@ -64,21 +63,19 @@ class Section(BaseModel):
 
     Attributes:
         header (str): The header (without brackets) of this Section
-        start_line (int): The starting line index of this Section block
-        end_line (int): The end line index of this Section block
-        content (List[Union[Property, CommentBlock]]):
+        content (List[ContentElement]):
             The ordered list of Property and CommentBlock objects
-        datablock (Optional[Sequence[Sequence[str]]]):
-            An optional data block associated with this Section
+        datablock (Optional[Datablock]):
+            An optional data block associated with this Section. The datablock is
+            structured as a sequence of rows, i.e. datablock[2][1] refers to the third
+            row, second column.
     """
 
     header: str = Field(alias="_header")
-    start_line: int
-    end_line: int
-    content: List[Union[Property, CommentBlock]]
+    content: List[ContentElement]
 
     # these are primarily relevant for bc files
-    datablock: Optional[Sequence[Sequence[str]]]
+    datablock: Optional[Datablock]
 
     def dict(self, *args, **kwargs):
         kwargs["by_alias"] = True
@@ -185,8 +182,6 @@ class IniBasedModel(BaseModel, ABC):
     def _convert_section_to_dict(cls, value: Section) -> Dict:
         return value.dict(
             exclude={
-                "start_line",
-                "end_line",
                 "datablock",
                 "content",
             }
@@ -219,8 +214,6 @@ class DataBlockIniBasedModel(IniBasedModel):
     def _convert_section_to_dict(cls, value: Section) -> Dict:
         return value.dict(
             exclude={
-                "start_line",
-                "end_line",
                 "content",
             }
         )

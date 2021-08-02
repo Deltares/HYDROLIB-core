@@ -1,11 +1,15 @@
-import inspect
-from typing import List, Optional, Tuple, Union
-
-import pytest
+from itertools import chain
 from pydantic import ValidationError
+from typing import Iterable, List, Optional, Sequence, Tuple, Union
+from ..utils import test_output_dir
+
+import inspect
+import pytest
 
 from hydrolib.core.io.ini.models import (
     CommentBlock,
+    ContentElement,
+    Datablock,
     Document,
     IniBasedModel,
     Property,
@@ -16,6 +20,14 @@ from hydrolib.core.io.ini.parser import (
     ParserConfig,
     _IntermediateCommentBlock,
     _IntermediateSection,
+)
+from hydrolib.core.io.ini.serializer import (
+    _serialize_comment_block,
+    MaxLengths,
+    SectionSerializer,
+    Serializer,
+    SerializerConfig,
+    write_ini,
 )
 
 
@@ -39,8 +51,6 @@ class TestIntermediateCommentBlock:
 
         result = intermediate_comment_block.finalize()
         expected_comment_block = CommentBlock(
-            start_line=start_line,
-            end_line=start_line + len(comment_lines) - 1,
             lines=comment_lines,
         )
 
@@ -56,20 +66,16 @@ class TestIntermediateSection:
         )
 
         properties = list(
-            Property(line=50 + i, key=f"key{i}", value=f"value{i}", comment=None)
-            for i in range(5)
+            Property(key=f"key{i}", value=f"value{i}", comment=None) for i in range(5)
         )
 
         for prop in properties:
             intermediate_section.add_property(prop)
 
-        end_line = 54
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
             content=properties,
             datablock=None,
         )
@@ -88,18 +94,11 @@ class TestIntermediateSection:
         for comment, line in comments:
             intermediate_section.add_comment(comment, line)
 
-        end_line = 54
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
-            content=[
-                CommentBlock(
-                    start_line=50, end_line=54, lines=list(x[0] for x in comments)
-                )
-            ],
+            content=[CommentBlock(lines=list(x[0] for x in comments))],
             datablock=None,
         )
 
@@ -120,13 +119,10 @@ class TestIntermediateSection:
         for row in data_rows:
             intermediate_section.add_datarow(row)
 
-        end_line = 54
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
             content=[],
             datablock=data_rows,
         )
@@ -137,17 +133,15 @@ class TestIntermediateSection:
         # Setup values
         header = "some-header"
         start_line = 50
-        end_line = 74
 
         properties = list(
-            Property(line=50 + i, key=f"key{i}", value=f"value{i}", comment=None)
-            for i in range(10)
+            Property(key=f"key{i}", value=f"value{i}", comment=None) for i in range(10)
         )
 
         comment_blocks = [
-            CommentBlock(start_line=50, end_line=51, lines=["a", "b"]),
-            CommentBlock(start_line=57, end_line=59, lines=["c", "d", "e"]),
-            CommentBlock(start_line=65, end_line=68, lines=["1", "3", "4", "6"]),
+            CommentBlock(lines=["a", "b"]),
+            CommentBlock(lines=["c", "d", "e"]),
+            CommentBlock(lines=["1", "3", "4", "6"]),
         ]
 
         datarows = list(
@@ -163,9 +157,7 @@ class TestIntermediateSection:
         for comment, line in zip(
             comment_blocks[0].lines, range(len(comment_blocks[0].lines))
         ):
-            intermediate_section.add_comment(
-                comment, line + comment_blocks[0].start_line
-            )
+            intermediate_section.add_comment(comment, line + 50)  # type: ignore
 
         for prop in properties[:5]:
             intermediate_section.add_property(prop)
@@ -173,9 +165,7 @@ class TestIntermediateSection:
         for comment, line in zip(
             comment_blocks[1].lines, range(len(comment_blocks[1].lines))
         ):
-            intermediate_section.add_comment(
-                comment, line + comment_blocks[1].start_line
-            )
+            intermediate_section.add_comment(comment, line + 57)  # type: ignore
 
         for prop in properties[5:]:
             intermediate_section.add_property(prop)
@@ -183,21 +173,17 @@ class TestIntermediateSection:
         for comment, line in zip(
             comment_blocks[2].lines, range(len(comment_blocks[2].lines))
         ):
-            intermediate_section.add_comment(
-                comment, line + comment_blocks[2].start_line
-            )
+            intermediate_section.add_comment(comment, line + 65)  # type: ignore
 
         for row in datarows:
             intermediate_section.add_datarow(row)
 
-        result = intermediate_section.finalize(end_line)
+        result = intermediate_section.finalize()
 
         expected_content: List[Union[CommentBlock, Property]] = [comment_blocks[0]] + properties[:5] + [comment_blocks[1]] + properties[5:] + [comment_blocks[2]]  # type: ignore
 
         expected_section = Section(
             header=header,
-            start_line=start_line,
-            end_line=end_line,
             content=expected_content,
             datablock=datarows,
         )
@@ -225,15 +211,15 @@ class TestParser:
             ("# some comment", ParserConfig(), True),
             ("       # with whitespace      ", ParserConfig(), True),
             ("#", ParserConfig(), True),
-            ("     * yet another comment", ParserConfig(comment_delimeter="*"), True),
-            ("# not a comment", ParserConfig(comment_delimeter="*"), False),
+            ("     * yet another comment", ParserConfig(comment_delimiter="*"), True),
+            ("# not a comment", ParserConfig(comment_delimiter="*"), False),
             ("", ParserConfig(), False),
             ("     ", ParserConfig(), False),
             ("something", ParserConfig(), False),
             ("       also something", ParserConfig(), False),
             (
-                "123 a comment with a weird delimeter ",
-                ParserConfig(comment_delimeter="123"),
+                "123 a comment with a weird delimiter ",
+                ParserConfig(comment_delimiter="123"),
                 True,
             ),
         ],
@@ -350,14 +336,12 @@ class TestParser:
     ):
         parser = Parser(config=ParserConfig())
 
-        comment_content = " some comment"
+        comment_content = "some comment"
 
-        parser.feed_line(f"#{comment_content}")
+        parser.feed_line(f"# {comment_content}")
         result = parser.finalize()
 
-        expected_header_comment = [
-            CommentBlock(start_line=0, end_line=0, lines=[comment_content])
-        ]
+        expected_header_comment = [CommentBlock(lines=[comment_content])]
 
         assert result.header_comment == expected_header_comment
         assert result.sections == []
@@ -381,8 +365,7 @@ class TestParser:
         result = parser.finalize()
 
         expected_header_comment = list(
-            CommentBlock(start_line=v * 3, end_line=v * 3 + 1, lines=comment_blocks[v])
-            for v in range(5)
+            CommentBlock(lines=comment_blocks[v]) for v in range(5)
         )
 
         assert result.header_comment == expected_header_comment
@@ -408,8 +391,7 @@ class TestParser:
         result = parser.finalize()
 
         expected_header_comment = list(
-            CommentBlock(start_line=v * 5, end_line=v * 5 + 1, lines=comment_blocks[v])
-            for v in range(3)
+            CommentBlock(lines=comment_blocks[v]) for v in range(3)
         )
 
         assert result.header_comment == expected_header_comment
@@ -420,15 +402,13 @@ class TestParser:
     ):
         parser = Parser(config=ParserConfig())
 
-        comment_content = " header comment"
+        comment_content = "header comment"
 
-        parser.feed_line(f"#{comment_content}")
+        parser.feed_line(f"# {comment_content}")
         parser.feed_line(f"[header]")
         result = parser.finalize()
 
-        expected_header_comment = [
-            CommentBlock(start_line=0, end_line=0, lines=[comment_content])
-        ]
+        expected_header_comment = [CommentBlock(lines=[comment_content])]
 
         assert result.header_comment == expected_header_comment
         assert len(result.sections) == 1
@@ -439,7 +419,9 @@ class TestParser:
         header = "header"
         properties = list(
             Property(
-                key=f"key-{v}", value=f"value_{v}", comment=f"comment_{v}", line=v + 2
+                key=f"key-{v}",
+                value=f"value_{v}",
+                comment=f"comment_{v}",
             )
             for v in range(5)
         )
@@ -458,8 +440,6 @@ class TestParser:
                     header=header,
                     content=properties,
                     datablock=None,
-                    start_line=1,
-                    end_line=7,
                 )
             ]
         )
@@ -492,33 +472,27 @@ class TestParser:
                     header="header",
                     content=[
                         CommentBlock(
-                            start_line=1,
-                            end_line=2,
-                            lines=[" comment in a section", " starting with two lines"],
+                            lines=["comment in a section", "starting with two lines"],
                         ),
                         Property(
-                            key="key", value="value", comment="with a comment", line=3
+                            key="key",
+                            value="value",
+                            comment="with a comment",
                         ),
                         Property(
                             key="another-key",
                             value="another-value",
                             comment=None,
-                            line=4,
                         ),
-                        CommentBlock(
-                            start_line=5, end_line=5, lines=[" inbetween comment"]
-                        ),
+                        CommentBlock(lines=["inbetween comment"]),
                         Property(
                             key="last-key",
                             value="last value",
                             comment="inline comment",
-                            line=6,
                         ),
-                        CommentBlock(start_line=7, end_line=7, lines=[" last comment"]),
+                        CommentBlock(lines=["last comment"]),
                     ],
                     datablock=None,
-                    start_line=0,
-                    end_line=8,
                 )
             ]
         )
@@ -555,27 +529,21 @@ class TestParser:
                     header="header",
                     content=[
                         CommentBlock(
-                            start_line=1,
-                            end_line=2,
-                            lines=[" some comment", " consisting of two lines"],
+                            lines=["some comment", "consisting of two lines"],
                         ),
-                        Property(key="key", value="value", comment=None, line=3),
+                        Property(key="key", value="value", comment=None),
                         Property(
                             key="some-key",
                             value="some-value",
                             comment=None,
-                            line=4,
                         ),
-                        CommentBlock(
-                            start_line=5, end_line=5, lines=[" inbetween comment"]
-                        ),
+                        CommentBlock(lines=["inbetween comment"]),
                         Property(
                             key="last-key",
                             value="last value",
                             comment=None,
-                            line=6,
                         ),
-                        CommentBlock(start_line=7, end_line=7, lines=[" last comment"]),
+                        CommentBlock(lines=["last comment"]),
                     ],
                     datablock=[
                         ["1.0", "2.0", "3.0"],
@@ -583,8 +551,6 @@ class TestParser:
                         ["7.0", "8.0", "9.0"],
                         ["10.0", "11.0", "12.0"],
                     ],
-                    start_line=0,
-                    end_line=12,
                 )
             ]
         )
@@ -596,7 +562,9 @@ class TestParser:
 
         properties = list(
             Property(
-                key=f"key-{v}", value=f"value_{v}", comment=f"comment_{v}", line=v + 1
+                key=f"key-{v}",
+                value=f"value_{v}",
+                comment=f"comment_{v}",
             )
             for v in range(12)
         )
@@ -609,7 +577,6 @@ class TestParser:
         parser.feed_line(f"    [header2]")
         for p in properties[6:]:
             parser.feed_line(f"        {p.key} = {p.value} #{p.comment}")
-            p.line += 2
         parser.feed_line("")
 
         result = parser.finalize()
@@ -620,15 +587,11 @@ class TestParser:
                     header="header1",
                     content=properties[:6],
                     datablock=None,
-                    start_line=0,
-                    end_line=8,
                 ),
                 Section(
                     header="header2",
                     content=properties[6:],
                     datablock=None,
-                    start_line=8,
-                    end_line=16,
                 ),
             ]
         )
@@ -676,14 +639,10 @@ class TestParser:
         expected_result = Document(
             header_comment=[
                 CommentBlock(
-                    start_line=0,
-                    end_line=1,
-                    lines=[" this is a very contrived example", " with a header"],
+                    lines=["this is a very contrived example", "with a header"],
                 ),
                 CommentBlock(
-                    start_line=3,
-                    end_line=4,
-                    lines=[" consisting of multiple blocks", " with datablocks"],
+                    lines=["consisting of multiple blocks", "with datablocks"],
                 ),
             ],
             sections=[
@@ -691,63 +650,57 @@ class TestParser:
                     header="header",
                     content=[
                         CommentBlock(
-                            start_line=8,
-                            end_line=9,
-                            lines=[" some comment", " consisting of two lines"],
+                            lines=["some comment", "consisting of two lines"],
                         ),
                         Property(
-                            key="key", value="value", comment="with a comment", line=10
+                            key="key",
+                            value="value",
+                            comment="with a comment",
                         ),
                         Property(
                             key="another-key",
                             value="another-value",
                             comment=None,
-                            line=11,
                         ),
-                        CommentBlock(
-                            start_line=12, end_line=12, lines=[" inbetween comment"]
-                        ),
+                        CommentBlock(lines=["inbetween comment"]),
                         Property(
                             key="last-key",
                             value="last value",
                             comment="inline comment",
-                            line=13,
                         ),
-                        CommentBlock(
-                            start_line=14, end_line=14, lines=[" last comment"]
-                        ),
+                        CommentBlock(lines=["last comment"]),
                     ],
                     datablock=[
                         ["1.0", "2.0", "3.0"],
                         ["4.0", "5.0", "6.0"],
                     ],
-                    start_line=7,
-                    end_line=19,
                 ),
                 Section(
                     header="different-header",
                     content=[
                         Property(
-                            key="key1", value="value1", comment="comment1", line=20
+                            key="key1",
+                            value="value1",
+                            comment="comment1",
                         ),
                         Property(
-                            key="key2", value="value2", comment="comment2", line=21
+                            key="key2",
+                            value="value2",
+                            comment="comment2",
                         ),
                         Property(
-                            key="key3", value="value3", comment="comment3", line=22
+                            key="key3",
+                            value="value3",
+                            comment="comment3",
                         ),
                         CommentBlock(
-                            start_line=23,
-                            end_line=24,
-                            lines=[" some comment1", " some comment2"],
+                            lines=["some comment1", "some comment2"],
                         ),
                     ],
                     datablock=[
                         ["7.0", "8.0", "9.0"],
                         ["10.0", "11.0", "12.0"],
                     ],
-                    start_line=19,
-                    end_line=27,
                 ),
             ],
         )
@@ -779,3 +732,941 @@ class TestIniBasedModel:
     ):
         with pytest.raises(ValidationError):
             _ = TestIniBasedModel.UnsupportedCommentsModel()
+
+
+class TestSerializerConfig:
+    def test_total_property_indent_expected_result(self):
+        config = SerializerConfig(section_indent=5, property_indent=3)
+        assert config.total_property_indent == 8
+
+    def test_total_datablock_indent_expected_result(self):
+        config = SerializerConfig(section_indent=3, datablock_indent=10)
+        assert config.total_datablock_indent == 13
+
+
+class TestLengths:
+    @pytest.mark.parametrize(
+        "section,expected_result",
+        [
+            (
+                Section(
+                    header="header",
+                    content=[],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        CommentBlock(lines=[]),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        CommentBlock(
+                            lines=["one", "two", "three", "four"],
+                        ),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="value", comment="comment"),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=3,
+                    value=5,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="value", comment="comment"),
+                        Property(key="123", value="12345", comment="comment"),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=3,
+                    value=5,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="value", comment="comment"),
+                        Property(key="long-key", value="value", comment="comment"),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=8,
+                    value=5,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="long-value", comment="comment"),
+                        Property(key="key", value="value", comment="comment"),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=3,
+                    value=10,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        CommentBlock(
+                            lines=["one", "two", "three", "four"],
+                        ),
+                        Property(key="key", value="value", comment="comment"),
+                        CommentBlock(
+                            lines=["five", "six", "seven", "eight"],
+                        ),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=3,
+                    value=5,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="value", comment="comment"),
+                        Property(key="long-key", value="value", comment=None),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=8,
+                    value=5,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="long-key", value="value", comment=None),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=8,
+                    value=5,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="long-key", value=None, comment=None),
+                    ],
+                    datablock=None,
+                ),
+                MaxLengths(
+                    key=8,
+                    value=0,
+                    datablock=None,
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[],
+                    datablock=[["1.23"]],
+                ),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=(4,),
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[],
+                    datablock=[["1.23", "1.2345", "1.234567"]],
+                ),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=(4, 6, 8),
+                ),
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[],
+                    datablock=[
+                        ["1.23", "1.0", "1.234567"],
+                        ["0.0", "1.2345", "1.23456789"],
+                        ["0.0", "0.0", "0.0"],
+                    ],
+                ),
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=(4, 6, 10),
+                ),
+            ),
+        ],
+    )
+    def test_from_section_expected_results(
+        self, section: Section, expected_result: MaxLengths
+    ):
+        result = MaxLengths.from_section(section)
+        assert result == expected_result
+
+
+class TestSerializer:
+    @pytest.mark.parametrize(
+        "iterable,expected_result",
+        [
+            ([], []),
+            (
+                [
+                    "one",
+                ],
+                ["one", ""],
+            ),
+            (
+                [
+                    "one",
+                    "two",
+                    "three",
+                ],
+                [
+                    "one",
+                    "",
+                    "two",
+                    "",
+                    "three",
+                    "",
+                ],
+            ),
+        ],
+    )
+    def test_interweave_empty_lines_to_iterable_str_should_interweave_correctly(
+        self, iterable: Iterable[str], expected_result: List[str]
+    ):
+        result = list(Serializer._interweave(iterable, ""))
+
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "iterable,expected_result",
+        [
+            ([], []),
+            (
+                [
+                    ["one"],
+                ],
+                ["one", ""],
+            ),
+            (
+                [
+                    [
+                        "one",
+                        "two",
+                    ],
+                    [
+                        "three",
+                        "four",
+                    ],
+                    [
+                        "five",
+                        "six",
+                    ],
+                ],
+                [
+                    "one",
+                    "two",
+                    "",
+                    "three",
+                    "four",
+                    "",
+                    "five",
+                    "six",
+                    "",
+                ],
+            ),
+        ],
+    )
+    def test_interweave_empty_lines_to_iterable_iterable_str_should_interweave_correctly(
+        self, iterable: Iterable[Iterable[str]], expected_result: List[str]
+    ):
+        result = list(chain.from_iterable(Serializer._interweave(iterable, [""])))
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "comment_block,delimiter,offset,expected_result",
+        [
+            (
+                CommentBlock(lines=[]),
+                "#",
+                0,
+                [],
+            ),
+            (
+                CommentBlock(lines=["angry badger noises"]),
+                "#",
+                0,
+                ["# angry badger noises"],
+            ),
+            (
+                CommentBlock(lines=["comment"]),
+                "#",
+                4,
+                ["    # comment"],
+            ),
+            (
+                CommentBlock(lines=["one", "two", "three"]),
+                "#",
+                4,
+                ["    # one", "    # two", "    # three"],
+            ),
+            (
+                CommentBlock(lines=["comment"]),
+                "*",
+                6,
+                ["      * comment"],
+            ),
+        ],
+    )
+    def test_serialize_comment_block(
+        self,
+        comment_block: CommentBlock,
+        delimiter: str,
+        offset: int,
+        expected_result: List[str],
+    ):
+        result = list(_serialize_comment_block(comment_block, delimiter, offset))
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "comment_header,config,expected_result",
+        [
+            (
+                [],
+                SerializerConfig(),
+                [],
+            ),
+            (
+                [CommentBlock(lines=[])],
+                SerializerConfig(),
+                [""],
+            ),
+            (
+                [CommentBlock(lines=["angry badger noises"])],
+                SerializerConfig(),
+                ["# angry badger noises", ""],
+            ),
+            (
+                [CommentBlock(lines=["one", "two", "three"])],
+                SerializerConfig(),
+                ["# one", "# two", "# three", ""],
+            ),
+            (
+                [CommentBlock(lines=["comment"])],
+                SerializerConfig(comment_delimiter="*"),
+                ["* comment", ""],
+            ),
+            (
+                [
+                    CommentBlock(lines=["one", "two", "three"]),
+                    CommentBlock(lines=["four", "five", "six"]),
+                ],
+                SerializerConfig(),
+                [
+                    "# one",
+                    "# two",
+                    "# three",
+                    "",
+                    "# four",
+                    "# five",
+                    "# six",
+                    "",
+                ],
+            ),
+        ],
+    )
+    def test_serialize_comment_header(
+        self,
+        comment_header: List[CommentBlock],
+        config: SerializerConfig,
+        expected_result: List[str],
+    ):
+        serializer = Serializer(config=config)
+
+        result = list(serializer._serialize_document_header(comment_header))
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "header,config,expected_result",
+        [
+            ("header", SerializerConfig(section_indent=0), "[header]"),
+            ("header", SerializerConfig(section_indent=4), "    [header]"),
+            ("with spaces", SerializerConfig(section_indent=0), "[with spaces]"),
+        ],
+    )
+    def test_serialize_section_header(
+        self,
+        header: str,
+        config: SerializerConfig,
+        expected_result: str,
+    ):
+        lengths = MaxLengths(key=0, value=0, datablock=None)
+        serializer = SectionSerializer(config=config, max_length=lengths)
+
+        result = list(serializer._serialize_section_header(header))
+        assert result == [expected_result]
+
+    @pytest.mark.parametrize(
+        "property,lengths,config,expected_result",
+        [
+            (
+                Property(key="key", value="value", comment="comment"),
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=0, property_indent=0),
+                "key = value # comment",
+            ),
+            (
+                Property(key="key", value="value", comment="comment"),
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=0, property_indent=4),
+                "    key = value # comment",
+            ),
+            (
+                Property(key="key", value="value", comment="comment"),
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=4, property_indent=0),
+                "    key = value # comment",
+            ),
+            (
+                Property(key="key", value="value", comment="comment"),
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=4, property_indent=4),
+                "        key = value # comment",
+            ),
+            (
+                Property(key="key", value="value", comment=None),
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=0, property_indent=0),
+                "key = value",
+            ),
+            (
+                Property(key="key", value=None, comment=None),
+                MaxLengths(key=3, value=0),
+                SerializerConfig(section_indent=0, property_indent=0),
+                "key =",
+            ),
+            (
+                Property(key="key", value=None, comment="comment"),
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=0, property_indent=0),
+                "key =       # comment",
+            ),
+            (
+                Property(key="key", value="value", comment="comment"),
+                MaxLengths(key=6, value=5),
+                SerializerConfig(section_indent=0, property_indent=0),
+                "key    = value # comment",
+            ),
+            (
+                Property(key="key", value="value", comment="comment"),
+                MaxLengths(key=6, value=12),
+                SerializerConfig(section_indent=0, property_indent=0),
+                "key    = value        # comment",
+            ),
+            (
+                Property(key="key", value="value", comment="comment"),
+                MaxLengths(key=6, value=12),
+                SerializerConfig(section_indent=2, property_indent=4),
+                "      key    = value        # comment",
+            ),
+        ],
+    )
+    def test_serialize_property(
+        self,
+        property: Property,
+        lengths: MaxLengths,
+        config: SerializerConfig,
+        expected_result: str,
+    ):
+        serializer = SectionSerializer(config=config, max_length=lengths)
+
+        result = list(serializer._serialize_property(property))
+        assert result == [expected_result]
+
+    @pytest.mark.parametrize(
+        "content,lengths,config,expected_result",
+        [
+            (
+                [],
+                MaxLengths(key=0, value=0),
+                SerializerConfig(section_indent=0, property_indent=0),
+                [],
+            ),
+            (
+                [Property(key="key", value="value", comment="comment")],
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=0, property_indent=0),
+                ["key = value # comment"],
+            ),
+            (
+                [CommentBlock(lines=["angry badger noises"])],
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=0, property_indent=0),
+                ["# angry badger noises"],
+            ),
+            (
+                [CommentBlock(lines=["comment 1", "comment 2"])],
+                MaxLengths(key=3, value=5),
+                SerializerConfig(section_indent=0, property_indent=4),
+                ["    # comment 1", "    # comment 2"],
+            ),
+            (
+                [
+                    Property(key="key", value="value", comment="comment"),
+                    CommentBlock(lines=["comment 1", "comment 2"]),
+                    Property(
+                        key="long-key",
+                        value="long-value",
+                        comment="long-comment",
+                    ),
+                    CommentBlock(lines=["comment 3", "comment 4"]),
+                ],
+                MaxLengths(key=12, value=15),
+                SerializerConfig(section_indent=4, property_indent=4),
+                [
+                    "        key          = value           # comment",
+                    "        # comment 1",
+                    "        # comment 2",
+                    "        long-key     = long-value      # long-comment",
+                    "        # comment 3",
+                    "        # comment 4",
+                ],
+            ),
+        ],
+    )
+    def test_serialize_content(
+        self,
+        content: Iterable[ContentElement],
+        lengths: MaxLengths,
+        config: SerializerConfig,
+        expected_result: List[str],
+    ):
+        serializer = SectionSerializer(config=config, max_length=lengths)
+
+        result = list(serializer._serialize_content(content))
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "datablock,lengths,config,expected_result",
+        [
+            (
+                None,
+                MaxLengths(key=0, value=0),
+                SerializerConfig(),
+                [],
+            ),
+            (
+                [["1.0", "2.0", "3.0"]],
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=[3, 4, 5],
+                ),
+                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                ["  1.0    2.0     3.0"],
+            ),
+            (
+                [
+                    ["1.0", "2.0", "3.0"],
+                    ["4.0", "10.0", "200.0"],
+                ],
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=[3, 4, 5],
+                ),
+                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                [
+                    "  1.0    2.0     3.0",
+                    "  4.0    10.0    200.0",
+                ],
+            ),
+            (
+                [["1.0"]],
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=[3],
+                ),
+                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                ["  1.0"],
+            ),
+            (
+                [["1.0"]],
+                MaxLengths(
+                    key=0,
+                    value=0,
+                    datablock=None,
+                ),
+                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                [],
+            ),
+        ],
+    )
+    def test_serialize_datablock(
+        self,
+        datablock: Optional[Datablock],
+        lengths: MaxLengths,
+        config: SerializerConfig,
+        expected_result: List[str],
+    ):
+        serializer = SectionSerializer(config=config, max_length=lengths)
+
+        result = list(serializer._serialize_datablock(datablock))
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "section,config,expected_result",
+        [
+            (
+                Section(
+                    header="header",
+                    content=[],
+                    datablock=None,
+                ),
+                SerializerConfig(section_indent=0, property_indent=0),
+                ["[header]"],
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[CommentBlock(lines=["angry badger noises"])],
+                    datablock=None,
+                ),
+                SerializerConfig(section_indent=0, property_indent=0),
+                ["[header]", "# angry badger noises"],
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="value", comment="comment"),
+                    ],
+                ),
+                SerializerConfig(section_indent=2, property_indent=4),
+                [
+                    "  [header]",
+                    "      key = value # comment",
+                ],
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="value", comment="comment"),
+                        CommentBlock(lines=["comment 1", "comment 2"]),
+                        Property(
+                            key="long-key",
+                            value="long-value",
+                            comment="long-comment",
+                        ),
+                        CommentBlock(lines=["comment 3", "comment 4"]),
+                    ],
+                ),
+                SerializerConfig(section_indent=2, property_indent=4),
+                [
+                    "  [header]",
+                    "      key      = value      # comment",
+                    "      # comment 1",
+                    "      # comment 2",
+                    "      long-key = long-value # long-comment",
+                    "      # comment 3",
+                    "      # comment 4",
+                ],
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[],
+                    datablock=[
+                        [
+                            "1.0",
+                            "2.0",
+                            "3.0",
+                            "4.0",
+                        ],
+                        [
+                            "-1.0",
+                            "4.0",
+                            "9.0",
+                            "16.0",
+                        ],
+                        [
+                            "1.0",
+                            "16.0",
+                            "81.0",
+                            "256.0",
+                        ],
+                    ],
+                ),
+                SerializerConfig(
+                    section_indent=0,
+                    property_indent=4,
+                    datablock_indent=6,
+                    datablock_spacing=4,
+                ),
+                [
+                    "[header]",
+                    "      1.0     2.0     3.0     4.0",
+                    "      -1.0    4.0     9.0     16.0",
+                    "      1.0     16.0    81.0    256.0",
+                ],
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key", value="value", comment="comment"),
+                        CommentBlock(lines=["comment 1", "comment 2"]),
+                        Property(
+                            key="long-key",
+                            value="long-value",
+                            comment="long-comment",
+                        ),
+                        CommentBlock(lines=["comment 3", "comment 4"]),
+                    ],
+                    datablock=[
+                        [
+                            "1.0",
+                            "2.0",
+                            "3.0",
+                            "4.0",
+                        ],
+                        [
+                            "-1.0",
+                            "4.0",
+                            "9.0",
+                            "16.0",
+                        ],
+                        [
+                            "1.0",
+                            "16.0",
+                            "81.0",
+                            "256.0",
+                        ],
+                    ],
+                ),
+                SerializerConfig(
+                    section_indent=0,
+                    property_indent=4,
+                    datablock_indent=6,
+                    datablock_spacing=4,
+                ),
+                [
+                    "[header]",
+                    "    key      = value      # comment",
+                    "    # comment 1",
+                    "    # comment 2",
+                    "    long-key = long-value # long-comment",
+                    "    # comment 3",
+                    "    # comment 4",
+                    "      1.0     2.0     3.0     4.0",
+                    "      -1.0    4.0     9.0     16.0",
+                    "      1.0     16.0    81.0    256.0",
+                ],
+            ),
+        ],
+    )
+    def test_serialize_section(
+        self,
+        section: Section,
+        config: SerializerConfig,
+        expected_result: List[str],
+    ):
+        result = list(SectionSerializer.serialize(section, config))
+        assert result == expected_result
+
+    def test_deserialize_serialize_should_give_the_same_result(self):
+        input_str = (
+            inspect.cleandoc(
+                """
+            # deserialize - serialize test
+
+            # initial header
+            # with two lines
+
+            [header1]
+                key1       = value1       # some comment
+                longer_key = longer_value # longer comment
+                k          =              # c
+                key2       = value2       # some comment
+
+            [header2]
+                key3          = value3          # some comment
+                very_long_key = very_long_value # longer comment
+                k             =                 # c
+                key4          = value4          # some comment
+            """
+            )
+            + "\n"
+        )
+
+        parser = Parser(config=ParserConfig())
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        serializer = Serializer(config=SerializerConfig())
+        result = "\n".join(serializer.serialize(document))
+
+        assert result == input_str
+
+
+def test_serialize_deserialize_should_give_the_same_result():
+    document = Document(
+        header_comment=[
+            CommentBlock(
+                lines=["HYDROLIB-Core serialize | deserialize test", "extra crisp"],
+            )
+        ],
+        sections=[
+            Section(
+                header="header1",
+                content=[
+                    Property(key="key1", value="value1", comment=None),
+                    Property(key="key2", value=None, comment=None),
+                    Property(key="key3", value=None, comment="comment"),
+                    CommentBlock(lines=["comment 1", "comment 2"]),
+                    Property(key="key4", value="1.34", comment="comment"),
+                    CommentBlock(lines=["comment 3", "comment 4"]),
+                ],
+                datablock=[
+                    ["a", "b", "c"],
+                    ["1", "2", "3"],
+                    ["hydro", "lib", "core"],
+                ],
+            ),
+            Section(
+                header="header2",
+                content=[
+                    Property(
+                        key="key6",
+                        value="value2",
+                        comment=None,
+                    ),
+                    Property(
+                        key="key7",
+                        value=None,
+                        comment=None,
+                    ),
+                    Property(
+                        key="key8",
+                        value=None,
+                        comment="comment",
+                    ),
+                    CommentBlock(lines=["comment 5", "comment 6"]),
+                    Property(key="key9", value="1.34", comment="comment"),
+                    CommentBlock(lines=["comment 7", "comment 8"]),
+                ],
+                datablock=None,
+            ),
+            Section(
+                header="header3",
+                content=[
+                    Property(
+                        key="key10",
+                        value="value10",
+                        comment=None,
+                    ),
+                    Property(
+                        key="key20",
+                        value=None,
+                        comment=None,
+                    ),
+                    Property(
+                        key="key30",
+                        value=None,
+                        comment="comment",
+                    ),
+                    CommentBlock(
+                        lines=["comment 10", "comment 20"],
+                    ),
+                    Property(
+                        key="key40",
+                        value="34.5",
+                        comment="comment",
+                    ),
+                    CommentBlock(
+                        lines=["comment 30", "comment 40"],
+                    ),
+                ],
+                datablock=[
+                    ["ab", "bc", "cd"],
+                    ["111", "222", "333"],
+                    ["hydro", "lib", "core"],
+                ],
+            ),
+        ],
+    )
+
+    path = test_output_dir / "tmp" / "test.pliz"
+    write_ini(path, document)
+
+    parser = Parser(config=ParserConfig(parse_datablocks=True))
+    with path.open("r") as f:
+        for line in f:
+            parser.feed_line(line)
+
+    result = parser.finalize()
+
+    assert result == document
