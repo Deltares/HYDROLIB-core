@@ -11,7 +11,6 @@ from pydantic import Field
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.net.reader import UgridReader
 
 import matplotlib
 from matplotlib.collections import LineCollection
@@ -54,10 +53,10 @@ class Mesh2d(BaseModel):
     def is_empty(self) -> bool:
         return self.mesh2d_node_x.size == 0
 
-    def read_file(self, file: Path) -> None:
+    def read_file(self, file_path: Path) -> None:
+        from hydrolib.core.io.net.reader import UgridReader
 
-        # Create reader and read 2d
-        reader = UgridReader(file=file)
+        reader = UgridReader(file_path)
         reader.read_2d(self)
 
     def _set_mesh2d(self):
@@ -327,10 +326,10 @@ class Link1d2d(BaseModel):
     def is_empty(self) -> bool:
         return self.link1d2d.size == 0
 
-    def read_file(self, file: Path) -> None:
+    def read_file(self, file_path: Path) -> None:
+        from hydrolib.core.io.net.reader import UgridReader
 
-        # Create reader and read 2d
-        reader = UgridReader(file=file)
+        reader = UgridReader(file_path)
         reader.read_link1d2d(self)
 
     def clear(self) -> None:
@@ -782,7 +781,7 @@ class Network:
         # self._idx = index.Index()
 
     @classmethod
-    def from_file(cls, file: Path) -> Network:
+    def from_file(cls, file_path: Path) -> Network:
         """Read network from file. This classmethod checks what mesh components (mesh1d & network1d, mesh2d, link1d2d) are
         present, and loads them one by one.
 
@@ -792,11 +791,12 @@ class Network:
         Returns:
             Network: The instance of the class itself that is returned
         """
+        from hydrolib.core.io.net.reader import UgridReader
 
         network = cls()
-        ds = nc.Dataset(file)
+        ds = nc.Dataset(file_path)  # type: ignore[import]
 
-        reader = UgridReader(file)
+        reader = UgridReader(file_path)
 
         if reader._explorer.mesh1d_key is not None:
             reader.read_mesh1d_network1d(network._mesh1d)

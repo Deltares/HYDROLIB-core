@@ -1,3 +1,5 @@
+from typing import Dict
+from hydrolib.core.io.net.models import Link1d2d, Mesh1d, Mesh2d
 import json
 from pathlib import Path
 
@@ -6,22 +8,20 @@ import numpy as np
 
 
 class UgridReader:
-    def __init__(self, file: Path) -> None:
+    def __init__(self, file_path: Path) -> None:
+        self._ncfile_path = file_path
 
-        self.ncfile = file
-        if not file.exists():
-            raise OSError(f'File "{file}" not found.')
+        if not self._ncfile_path.exists():
+            raise OSError(f'File "{self._ncfile_path}" not found.')
 
-        self._explorer = NCExplorer(file)
+        self._explorer = NCExplorer(self._ncfile_path)
 
-    def read_mesh1d_network1d(self, mesh1d) -> None:
-        # TODO How do refer to type without circular imports?
-
+    def read_mesh1d_network1d(self, mesh1d: Mesh1d) -> None:
         """
         Read Ugrid from netcdf and return dflowfm cstructure with grid
         """
         # If the mesh is not given (default), use the networks one
-        ds = nc.Dataset(self.ncfile)
+        ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
         for meshkey, nckey in self._explorer.mesh1d_var_dict.items():
@@ -38,9 +38,9 @@ class UgridReader:
 
         ds.close()
 
-    def read_mesh2d(self, mesh2d) -> None:
+    def read_mesh2d(self, mesh2d: Mesh2d) -> None:
 
-        ds = nc.Dataset(self.ncfile)
+        ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
         for meshkey, nckey in self._explorer.mesh2d_var_dict.items():
@@ -48,9 +48,8 @@ class UgridReader:
 
         ds.close()
 
-    def read_link1d2d(self, link1d2d) -> None:
-
-        ds = nc.Dataset(self.ncfile)
+    def read_link1d2d(self, link1d2d: Link1d2d) -> None:
+        ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
         for meshkey, nckey in self._explorer.link1d2d_var_dict.items():
@@ -73,7 +72,7 @@ class UgridReader:
         values = attr[:]
         if values.dtype == "S1":
             # Convert to strings
-            arr = np.array(list(map(str.strip, nc.chartostring(values.data))))
+            arr = np.array(list(map(str.strip, nc.chartostring(values.data))))  # type: ignore[import]
 
         else:
             # Get data from masked array
@@ -89,12 +88,9 @@ class UgridReader:
 
 
 class NCExplorer:
-    def __init__(self, file: Path):
+    def __init__(self, file_path: Path):
 
-        self.ds = nc.Dataset(file)
-
-        # Get the ugrid version
-        ugrid_version = float(self.ds.Conventions.split("-")[-1])
+        self.ds = nc.Dataset(file_path)  # type: ignore[import]
 
         # Read the key conventions from json, based on nc version number
         with open(Path(__file__).parent.joinpath("ugrid_conventions.json"), "r") as f:
@@ -167,30 +163,30 @@ class NCExplorer:
                 k: [self.network1d_key + v for v in vs]
                 for k, vs in self.network1d_var_dict.items()
             }
-            self._check_existance(self.network1d_var_dict)
+            self._check_existence(self.network1d_var_dict)
 
         if self.mesh1d_key is not None:
             self.mesh1d_var_dict = {
                 k: [self.mesh1d_key + v for v in vs]
                 for k, vs in self.mesh1d_var_dict.items()
             }
-            self._check_existance(self.mesh1d_var_dict)
+            self._check_existence(self.mesh1d_var_dict)
 
         if self.mesh2d_key is not None:
             self.mesh2d_var_dict = {
                 k: [self.mesh2d_key + v for v in vs]
                 for k, vs in self.mesh2d_var_dict.items()
             }
-            self._check_existance(self.mesh2d_var_dict)
+            self._check_existence(self.mesh2d_var_dict)
 
         if self.link1d2d_key is not None:
             self.link1d2d_var_dict = {
                 k: [self.link1d2d_key + v for v in vs]
                 for k, vs in self.link1d2d_var_dict.items()
             }
-            self._check_existance(self.link1d2d_var_dict)
+            self._check_existence(self.link1d2d_var_dict)
 
-    def _check_existance(self, dct: dict) -> None:
+    def _check_existence(self, dct: Dict) -> None:
         ncvariables = list(self.ds.variables.keys())
         for key, values in dct.items():
             # Save origional for error message
