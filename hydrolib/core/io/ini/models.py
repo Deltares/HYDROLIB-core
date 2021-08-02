@@ -1,6 +1,5 @@
 import logging
 from abc import ABC
-from functools import reduce
 from typing import Any, Callable, Dict, List, Literal, Optional, Type
 
 from pydantic import Extra
@@ -8,9 +7,24 @@ from pydantic.class_validators import validator
 
 from hydrolib.core.basemodel import BaseModel, FileModel
 from hydrolib.core.io.base import DummySerializer
+from abc import ABC
+from functools import reduce
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type, Union
 
+from pydantic import Extra, Field
+from pydantic.class_validators import validator
+
+from hydrolib.core.basemodel import BaseModel
 from .parser import Parser
-from .parser_models import Section
+from .io_models import (
+    Section,
+    Property,
+    CommentBlock,
+    Document,
+    ContentElement,
+    DatablockRow,
+    Datablock,
+)
 from .util import make_list_validator
 
 logger = logging.getLogger(__name__)
@@ -76,8 +90,6 @@ class DataBlockIniBasedModel(IniBasedModel):
     def _convert_section_to_dict(cls, value: Section) -> Dict:
         return value.dict(
             exclude={
-                "start_line",
-                "end_line",
                 "content",
             }
         )
@@ -122,6 +134,14 @@ class INIModel(FileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         return Parser.parse
+
+    @classmethod
+    def _convert_section_to_dict(cls, value: Section) -> Dict:
+        return value.dict(
+            exclude={
+                "content",
+            }
+        )
 
 
 class Definition(IniBasedModel):

@@ -9,3 +9,7 @@ The ini module provides the generic logic for parsing Deltares ini based files, 
 ### Parser
 
 ::: hydrolib.core.io.ini.parser
+
+### Serializer
+
+::: hydrolib.core.io.ini.serializer
