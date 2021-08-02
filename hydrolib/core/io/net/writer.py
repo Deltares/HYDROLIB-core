@@ -1,5 +1,6 @@
 from datetime import datetime
-from hydrolib.core.io.net.models import Link1d2d, Mesh1d, Mesh2d
+from typing import List
+from hydrolib.core.io.net.models import Link1d2d, Mesh1d, Mesh2d, Network
 from pathlib import Path
 
 import netCDF4 as nc
@@ -17,62 +18,61 @@ class UgridWriter:
 
     def write(
         self,
-        network,
+        network: Network,
         path: Path,
         dfm_version: str = "",
         dimr_version: str = "",
         suite_version: str = "",
-    ):
+    ) -> None:
         """write ugrid file from GWSW model"""
 
-        ncfile = self.create_netcdf(path, dfm_version, dimr_version, suite_version)
+        ncfile = self._create_netcdf(path, dfm_version, dimr_version, suite_version)
         self._write_mesh1d_to(network._mesh1d, ncfile)
         self._write_mesh2d_to(network._mesh2d, ncfile)
         self._write_1d2dlinks_to(network._link1d2d, ncfile)
         ncfile.close()
 
-    def _write_mesh1d_to(self, mesh1d: Mesh1d, ncfile) -> None:
+    def _write_mesh1d_to(self, mesh1d: Mesh1d, ncfile: nc.Dataset) -> None:  # type: ignore[import]
         if mesh1d.is_empty():
             return
 
-        self.init_1dnetwork(ncfile, mesh1d)
-        self.set_1dmesh(ncfile, mesh1d)
-        self.set_1dnetwork(ncfile, mesh1d)
+        self._init_1dnetwork(ncfile, mesh1d)
+        self._set_1dmesh(ncfile, mesh1d)
+        self._set_1dnetwork(ncfile, mesh1d)
 
     def _write_mesh2d_to(self, mesh2d: Mesh2d, ncfile) -> None:
         if mesh2d.is_empty():
             return
 
-        self.init_2dmesh(ncfile, mesh2d)
-        self.set_2dmesh(ncfile, mesh2d)
+        self._init_2dmesh(ncfile, mesh2d)
+        self._set_2dmesh(ncfile, mesh2d)
 
     def _write_1d2dlinks_to(self, link1d2d: Link1d2d, ncfile) -> None:
         if link1d2d.is_empty():
             return
 
-        self.init_1d2dlinks(ncfile, link1d2d)
-        self.set_1d2dlinks(ncfile, link1d2d)
+        self._init_1d2dlinks(ncfile, link1d2d)
+        self._set_1d2dlinks(ncfile, link1d2d)
 
     @staticmethod
-    def to_char_list(lst, size):
+    def to_char_list(lst: List[str], size: int) -> List[str]:
         """Convert list of strings to list of stings with a fixed number of characters"""
         return [item.ljust(size)[:size] for item in lst]
 
-    def create_netcdf(
+    def _create_netcdf(
         self, path: Path, dfm_version: str, dimr_version: str, suite_version: str
-    ):
+    ) -> nc.Dataset:  # type: ignore[import]
 
         file_format = "NETCDF3_CLASSIC"  # "NETCDF4"
-        ncfile = nc.Dataset(path, "w", format=file_format)
+        ncfile = nc.Dataset(path, "w", format=file_format)  # type: ignore[import]
 
-        # global attributes
         UgridWriter._set_global_attributes(ncfile, path)
         ncfile.comment = f"Tested and compatible with D-Flow FM {dfm_version}, DIMRset {dimr_version} and D-HYDRO suite 1D2D {suite_version}"
 
         return ncfile
 
     @staticmethod
-    def _set_global_attributes(ncfile: nc.Dataset, path: Path) -> None:
+    def _set_global_attributes(ncfile: nc.Dataset, path: Path) -> None:  # type: ignore[import]
         ncfile.Conventions = "CF-1.8 UGRID-1.0"
         ncfile.title = "Delft3D-FM 1D2D network for model " + path.name.rstrip(
             "_net.nc"
@@ -82,8 +82,7 @@ class UgridWriter:
         ncfile.institution = "Deltares/HKV"
         ncfile.references = "https://github.com/openearth/delft3dfmpy/; https://www.deltares.nl; https://www.hkv.nl"
 
-    def init_1dnetwork(self, ncfile, mesh1d):
-
+    def _init_1dnetwork(self, ncfile: nc.Dataset, mesh1d: Mesh1d) -> None:  # type: ignore[import]
         # dimensions of the network
         ncfile.createDimension("time", None)
         ncfile.createDimension("network1d_nEdges", mesh1d.network1d_edge_nodes.shape[0])
@@ -96,9 +95,7 @@ class UgridWriter:
         if not "Two" in ncfile.dimensions:
             ncfile.createDimension("Two", 2)
 
-    def init_2dmesh(self, ncfile, mesh2d):
-
-        # Create dimensions
+    def _init_2dmesh(self, ncfile: nc.Dataset, mesh2d: Mesh2d) -> None:  # type: ignore[import]
         ncfile.createDimension(
             "max_nmesh2d_face_nodes", mesh2d.mesh2d_face_nodes.shape[1]
         )
@@ -108,8 +105,7 @@ class UgridWriter:
         if not "Two" in ncfile.dimensions:
             ncfile.createDimension("Two", 2)
 
-    def init_1d2dlinks(self, ncfile, link1d2d):
-        # Dimensions
+    def _init_1d2dlinks(self, ncfile: nc.Dataset, link1d2d: Link1d2d) -> None:  # type: ignore[import]
         ncfile.createDimension("nLink1D2D_edge", link1d2d.link1d2d.shape[0])
 
         cm = ncfile.createVariable("composite_mesh", "i4", ())
@@ -117,8 +113,7 @@ class UgridWriter:
         cm.meshes = "mesh1d mesh2d"
         cm.mesh_contact = "link1d2d"
 
-    def set_1dnetwork(self, ncfile, mesh1d):
-
+    def _set_1dnetwork(self, ncfile: nc.Dataset, mesh1d: Mesh1d) -> None:  # type: ignore[import]
         #  network topology
         ntw = ncfile.createVariable("network1d", "i4", ())
         ntw.cf_role = "mesh_topology"
@@ -236,7 +231,7 @@ class UgridWriter:
         ntw_geom_y.units = "m"
         ntw_geom_y[:] = mesh1d.network1d_geom_y
 
-    def set_1dmesh(self, ncfile, mesh1d):
+    def _set_1dmesh(self, ncfile: nc.Dataset, mesh1d: Mesh1d) -> None:  # type: ignore[import]
 
         nc_mesh1d = ncfile.createVariable("mesh1d", "i4", ())
         nc_mesh1d.cf_role = "mesh_topology"
@@ -315,8 +310,7 @@ class UgridWriter:
         mesh1d_node_offset.units = "m"
         mesh1d_node_offset[:] = mesh1d.mesh1d_node_branch_offset
 
-    # set 2d mesh data to netcdf file
-    def set_2dmesh(self, ncfile, mesh2d):
+    def _set_2dmesh(self, ncfile: nc.Dataset, mesh2d: Mesh2d) -> None:  # type: ignore[import]
 
         nc_mesh2d = ncfile.createVariable("mesh2d", "i4", ())
         nc_mesh2d.long_name = "Topology data of 2D network"
@@ -444,10 +438,7 @@ class UgridWriter:
         if mesh2d.mesh2d_node_z.size > 0:
             mesh2d_node_z[:] = mesh2d.mesh2d_node_z
 
-    def set_1d2dlinks(self, ncfile, link1d2d):
-
-        nlinks = link1d2d.link1d2d.shape[0]
-
+    def _set_1d2dlinks(self, ncfile: nc.Dataset, link1d2d: Link1d2d) -> None:  # type: ignore[import]
         nc_link1d2d = ncfile.createVariable(
             "link1d2d",
             "i4",
@@ -485,5 +476,3 @@ class UgridWriter:
 
     def str2chars(self, string, size):
         return string.ljust(size)[:size]
-
-    # def add_bounds(self, ncfile):
