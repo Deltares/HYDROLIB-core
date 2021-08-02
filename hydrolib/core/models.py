@@ -75,23 +75,6 @@ class XYZ(FileModel):
 class Network(FileModel):
     """Network model representation."""
 
-    # TODO: This should be fixed as part of #37
-    # meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
-
-    # _mesh1d: Optional[Mesh1d] = None
-    # _mesh2d: Optional[Mesh2d] = None
-    # _link1d2d: Optional[Link1d2d] = None
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-
-    #     if self._mesh1d is None:
-    #         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
-    #     if self._mesh2d is None:
-    #         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
-    #     if self._link1d2d is None:
-    #         self._link1d2d = Link1d2d(meshkernel=self.meshkernel)
-
     @classmethod
     def _ext(cls) -> str:
         return ".nc"

@@ -18,7 +18,6 @@ from matplotlib.collections import LineCollection
 
 def split_by(gl: mk.GeometryList, by: float) -> list:
     """Function to split mk.GeometryList by seperator."""
-    splitidx = np.full(len(gl.x_coordinates), False)
     x, y = gl.x_coordinates.copy(), gl.y_coordinates.copy()
     idx = np.where(x == by)[0]
 
@@ -60,7 +59,6 @@ class Mesh2d(BaseModel):
         reader.read_2d(self)
 
     def _set_mesh2d(self):
-        # Initiate 2d mesh with mandatory variables
         mesh2d = mk.Mesh2d(
             node_x=self.mesh2d_node_x,
             node_y=self.mesh2d_node_y,
@@ -72,10 +70,6 @@ class Mesh2d(BaseModel):
     def get_mesh2d(self) -> mk.Mesh2d:
         """Return mesh2d from meshkernel"""
         return self.meshkernel.mesh2d_get()
-
-    # def create_triangular(self, polygon: mk.GeometryList, mesh2d_triangular_options: IntEnum) -> None:
-    #     """Creates a 2d mesh within a polygon."""
-    #     pass
 
     def create_rectilinear(self, extent: tuple, dx: float, dy: float) -> None:
         """Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds
@@ -236,9 +230,12 @@ class Branch:
         self.length = segment_distances.sum()
 
         # Check if mask and branch offsets (if both given) have same shape
-        if (mask is not None) and (branch_offsets is not None):
-            if branch_offsets.shape != mask.shape:
-                raise ValueError("Mask and branch offset have different shape.")
+        if (
+            mask is not None
+            and branch_offsets is not None
+            and branch_offsets.shape != mask.shape
+        ):
+            raise ValueError("Mask and branch offset have different shape.")
 
         # Set branch offsets
         self.branch_offsets = branch_offsets
