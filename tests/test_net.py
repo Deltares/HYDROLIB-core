@@ -1,26 +1,25 @@
 from pathlib import Path
 
-import netCDF4 as nc
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.lib.arraysetops import isin
 import pytest
 from meshkernel import GeometryList, MeshKernel
 
-import os
 import json
 
 from hydrolib.core.io.net.models import Mesh2d, Mesh1d, Network, Branch
+from .utils import test_output_dir, test_input_dir
 
 
 def plot_network(network):
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     ax.set_aspect(1.0)
     network.plot(ax=ax)
     ax.autoscale()
     plt.show()
 
 
+@pytest.mark.manualtest
 def test_create_1d_by_branch():
 
     # Define line
@@ -56,7 +55,7 @@ def test_create_1d_by_branch():
     plot_network(network)
 
     # Write to file
-    network.to_file(Path("test_net.nc"))
+    network.to_file(test_output_dir / "test_net.nc")
 
 
 def get_circle_gl(r, detail=100):
@@ -66,6 +65,7 @@ def get_circle_gl(r, detail=100):
     return polygon
 
 
+@pytest.mark.manualtest
 def test_create_1d_2d_1d2d():
 
     # Define line (spiral)
@@ -76,7 +76,6 @@ def test_create_1d_2d_1d2d():
 
     dists = np.r_[0.0, np.cumsum(np.hypot(np.diff(x), np.diff(y)))]
     dists = dists[np.arange(0, len(dists), 20)]
-    # print(dists.max())
 
     # Create branch
     branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
@@ -102,7 +101,7 @@ def test_create_1d_2d_1d2d():
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
 
     # Write to file
-    network.to_file(Path("test_net.nc"))
+    network.to_file(test_output_dir / "test_net.nc")
 
     plot_network(network)
 
@@ -157,19 +156,13 @@ def test_create_refine_2d():
 
     mesh2d_output = mesh2d.get_mesh2d()
 
-    mesh2d_output.node_x.size == 114
-    mesh2d_output.edge_nodes.size == 426
-
-    # plot_network(network)
+    assert mesh2d_output.node_x.size == 114
+    assert mesh2d_output.edge_nodes.size == 426
 
 
-currentdir = Path(__file__).parent
 cases = [
-    currentdir.joinpath(
-        "data/input/e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc"
-    ),
-    # currentdir.joinpath("data/input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_net.nc"),
-    # Path(r"d:\Documents\4390.10 TKI Hydrolib\data\FlowFM_net.nc"),
+    test_input_dir / "e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc",
+    test_input_dir / "e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_net.nc",
 ]
 
 
@@ -204,10 +197,7 @@ def test_load_ugrid_json():
             assert isinstance(values, list)
 
 
-@pytest.mark.parametrize(
-    "filepath",
-    cases,
-)
+@pytest.mark.parametrize("filepath", cases)
 def test_read_write_read_compare(filepath):
 
     # TODO: Running these test multiple times does not always work. Maybe write to memory?
@@ -219,7 +209,7 @@ def test_read_write_read_compare(filepath):
     network1 = Network.from_file(filepath)
 
     # Save to temporary location
-    tmppath = Path("test_net.nc")
+    tmppath = test_output_dir / "test_net.nc"
     tmppath.unlink()
     network1.to_file(tmppath)
 
@@ -248,17 +238,3 @@ def test_read_write_read_compare(filepath):
 
         for key in dct.keys():
             np.testing.assert_array_equal(getattr(part1, key), getattr(part2, key))
-
-
-# def test_create_1d2d_net():
-
-#     # Create 2D mesh
-
-
-#     # Create 1D branch
-
-
-#     # Discretize branch
-
-
-#     pass
