@@ -26,18 +26,18 @@ class UgridWriter:
         ncfile = self.create_netcdf(path, dfm_version, dimr_version, suite_version)
 
         # Write the 1d mesh
-        if not network._mesh1d.empty():
+        if not network._mesh1d.is_empty():
             self.init_1dnetwork(ncfile, network._mesh1d)
             self.set_1dmesh(ncfile, network._mesh1d)
             self.set_1dnetwork(ncfile, network._mesh1d)
 
         # Write the 2d mesh
-        if not network._mesh2d.empty():
+        if not network._mesh2d.is_empty():
             self.init_2dmesh(ncfile, network._mesh2d)
             self.set_2dmesh(ncfile, network._mesh2d)
 
         # Write the 1d 2d links
-        if not network._link1d2d.empty():
+        if not network._link1d2d.is_empty():
             self.init_1d2dlinks(ncfile, network._link1d2d)
             self.set_1d2dlinks(ncfile, network._link1d2d)
 

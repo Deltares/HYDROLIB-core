@@ -53,7 +53,7 @@ class Mesh2d(BaseModel):
     mesh2d_face_z: np.ndarray = np.empty(0, dtype=np.double)
     mesh2d_face_nodes: np.ndarray = np.empty((0, 0), dtype=np.int32)
 
-    def empty(self):
+    def is_empty(self) -> bool:
         return self.mesh2d_node_x.size == 0
 
     def read_file(self, file: Path) -> None:
@@ -326,7 +326,7 @@ class Link1d2d(BaseModel):
     link1d2d_contact_type: np.ndarray = np.empty(0, np.int32)
     link1d2d: np.ndarray = np.empty((0, 2), np.int32)
 
-    def empty(self):
+    def is_empty(self) -> bool:
         return self.link1d2d.size == 0
 
     def read_file(self, file: Path) -> None:
@@ -437,7 +437,7 @@ class Mesh1d(BaseModel):
     mesh1d_edge_branch_id: np.ndarray = np.empty(0, np.int32)
     mesh1d_edge_branch_offset: np.ndarray = np.empty(0, np.double)
 
-    def empty(self) -> bool:
+    def is_empty(self) -> bool:
         return self.mesh1d_node_x.size == 0
 
     def _get_mesh1d(self) -> mk.Mesh1d:
@@ -877,7 +877,7 @@ class Network:
             links1d2d_kwargs = {"color": "k", "lw": 1.0}
 
         # Mesh 1d
-        if not self._mesh1d.empty():
+        if not self._mesh1d.is_empty():
             nodes1d = np.stack(
                 [self._mesh1d.mesh1d_node_x, self._mesh1d.mesh1d_node_y], axis=1
             )
@@ -886,7 +886,7 @@ class Network:
             ax.add_collection(lc_mesh1d)
 
         # Mesh 2d
-        if not self._mesh2d.empty():
+        if not self._mesh2d.is_empty():
             nodes2d = np.stack(
                 [self._mesh2d.mesh2d_node_x, self._mesh2d.mesh2d_node_y], axis=1
             )
@@ -895,7 +895,7 @@ class Network:
             ax.add_collection(lc_mesh2d)
 
         # Links
-        if not self._link1d2d.empty():
+        if not self._link1d2d.is_empty():
             faces2d = np.stack(
                 [self._mesh2d.mesh2d_face_x, self._mesh2d.mesh2d_face_y], axis=1
             )
