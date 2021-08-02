@@ -19,7 +19,7 @@ def plot_network(network):
     plt.show()
 
 
-@pytest.mark.manualtest
+@pytest.mark.plots
 def test_create_1d_by_branch():
 
     # Define line
@@ -65,7 +65,7 @@ def get_circle_gl(r, detail=100):
     return polygon
 
 
-@pytest.mark.manualtest
+@pytest.mark.plots
 def test_create_1d_2d_1d2d():
 
     # Define line (spiral)
