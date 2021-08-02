@@ -210,7 +210,7 @@ def test_read_write_read_compare(filepath):
 
     # Save to temporary location
     tmppath = test_output_dir / "test_net.nc"
-    tmppath.unlink()
+    tmppath.unlink(missing_ok=True)
     network1.to_file(tmppath)
 
     # Read a second network from thiWs location
