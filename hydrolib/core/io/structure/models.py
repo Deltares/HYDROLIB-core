@@ -92,11 +92,11 @@ class Structure(INIBasedModel):
     def _exclude_fields(self) -> Set:
         # exclude the unset props like coordinates or branches
         if self.branchid is not None:
-            set = {"n_coordinates", "x_coordinates", "y_coordinates"}
+            exclude_set = {"n_coordinates", "x_coordinates", "y_coordinates"}
         else:
-            set = {"branchid", "chainage"}
-        set = super()._exclude_fields().union(set)
-        return set
+            exclude_set = {"branchid", "chainage"}
+        exclude_set = super()._exclude_fields().union(exclude_set)
+        return exclude_set
 
 
 class FlowDirection(str, Enum):
