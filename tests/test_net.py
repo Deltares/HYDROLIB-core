@@ -235,21 +235,3 @@ def test_read_write_read_compare(filepath):
 
         for key in dct.keys():
             np.testing.assert_array_equal(getattr(part1, key), getattr(part2, key))
-
-
-class TestLink1d2d:
-    @pytest.mark.parametrize("file_path", cases)
-    def test_read_file(self, file_path: Path):
-        link = Link1d2d()
-        link.read_file(file_path)
-
-        assert True
-
-
-class TestMesh2d:
-    @pytest.mark.parametrize("file_path", cases)
-    def test_read_file(self, file_path: Path):
-        mesh = Mesh2d()
-        mesh.read_file(file_path)
-
-        assert True
