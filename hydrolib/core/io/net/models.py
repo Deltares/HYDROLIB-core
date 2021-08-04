@@ -12,9 +12,6 @@ from pydantic import Field
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel
 
-import matplotlib
-from matplotlib.collections import LineCollection
-
 
 def split_by(gl: mk.GeometryList, by: float) -> list:
     """Function to split mk.GeometryList by seperator."""
@@ -857,51 +854,3 @@ class Network:
         self._mesh1d._add_branch(
             branch=branch, name=name, branch_order=branch_order, long_name=long_name
         )
-
-    def plot(
-        self,
-        ax: matplotlib.axes._subplots.AxesSubplot,
-        mesh1d_kwargs: dict = None,
-        mesh2d_kwargs: dict = None,
-        links1d2d_kwargs: dict = None,
-    ) -> None:
-
-        if mesh1d_kwargs is None:
-            mesh1d_kwargs = {"color": "C3", "lw": 1.0}
-        if mesh2d_kwargs is None:
-            mesh2d_kwargs = {"color": "C0", "lw": 0.5}
-        if links1d2d_kwargs is None:
-            links1d2d_kwargs = {"color": "k", "lw": 1.0}
-
-        # Mesh 1d
-        if not self._mesh1d.is_empty():
-            nodes1d = np.stack(
-                [self._mesh1d.mesh1d_node_x, self._mesh1d.mesh1d_node_y], axis=1
-            )
-            edge_nodes = self._mesh1d.mesh1d_edge_nodes
-            lc_mesh1d = LineCollection(nodes1d[edge_nodes], **mesh1d_kwargs)
-            ax.add_collection(lc_mesh1d)
-
-        # Mesh 2d
-        if not self._mesh2d.is_empty():
-            nodes2d = np.stack(
-                [self._mesh2d.mesh2d_node_x, self._mesh2d.mesh2d_node_y], axis=1
-            )
-            edge_nodes = self._mesh2d.mesh2d_edge_nodes
-            lc_mesh2d = LineCollection(nodes2d[edge_nodes], **mesh2d_kwargs)
-            ax.add_collection(lc_mesh2d)
-
-        # Links
-        if not self._link1d2d.is_empty():
-            faces2d = np.stack(
-                [self._mesh2d.mesh2d_face_x, self._mesh2d.mesh2d_face_y], axis=1
-            )
-            link_coords = np.stack(
-                [
-                    nodes1d[self._link1d2d.link1d2d[:, 0]],
-                    faces2d[self._link1d2d.link1d2d[:, 1]],
-                ],
-                axis=1,
-            )
-            lc_link1d2d = LineCollection(link_coords, **links1d2d_kwargs)
-            ax.add_collection(lc_link1d2d)

@@ -7,7 +7,7 @@ from meshkernel import GeometryList, MeshKernel
 
 import json
 
-from hydrolib.core.io.net.models import Mesh2d, Mesh1d, Network, Branch
+from hydrolib.core.io.net.models import Link1d2d, Mesh2d, Network, Branch
 from .utils import test_output_dir, test_input_dir
 
 
@@ -199,9 +199,6 @@ def test_load_ugrid_json():
 
 @pytest.mark.parametrize("filepath", cases)
 def test_read_write_read_compare(filepath):
-
-    # TODO: Running these test multiple times does not always work. Maybe write to memory?
-
     # Get nc file path
     assert filepath.exists()
 
@@ -238,3 +235,21 @@ def test_read_write_read_compare(filepath):
 
         for key in dct.keys():
             np.testing.assert_array_equal(getattr(part1, key), getattr(part2, key))
+
+
+class TestLink1d2d:
+    @pytest.mark.parametrize("file_path", cases)
+    def test_read_file(self, file_path: Path):
+        link = Link1d2d()
+        link.read_file(file_path)
+
+        assert True
+
+
+class TestMesh2d:
+    @pytest.mark.parametrize("file_path", cases)
+    def test_read_file(self, file_path: Path):
+        mesh = Mesh2d()
+        mesh.read_file(file_path)
+
+        assert True
