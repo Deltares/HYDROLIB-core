@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.io.dimr.parser import DIMRParser
-from tests.utils import test_data_dir
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
 from tests.utils import test_data_dir, test_output_dir, test_reference_dir
 

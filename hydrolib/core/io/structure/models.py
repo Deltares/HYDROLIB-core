@@ -9,24 +9,24 @@ TODO Implement the following structures
 Add comments for these structures. Maybe link them to descriptions of `Field`s?
 """
 
+import logging
 from enum import Enum
 from pathlib import Path
-from typing import List, Literal, Optional, Union
+from typing import List, Literal, Optional, Set, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator
 
-from hydrolib.core.io.ini.models import IniBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
-import logging
 
 logger = logging.getLogger(__name__)
 
 # TODO: handle comment blocks
 # TODO: handle duplicate keys
-class Structure(IniBasedModel):
+class Structure(INIBasedModel):
     # TODO: would we want to load this from something externally and generate these automatically
-    class Comments(IniBasedModel.Comments):
+    class Comments(INIBasedModel.Comments):
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
         branchid: Optional[str] = Field(
@@ -88,6 +88,15 @@ class Structure(IniBasedModel):
             else:
                 logger.warning(f"Couldn't derive specific type of {cls.__name__}")
         return super().validate(v)
+
+    def _exclude_fields(self) -> Set:
+        # exclude the unset props like coordinates or branches
+        if self.branchid is not None:
+            set = {"n_coordinates", "x_coordinates", "y_coordinates"}
+        else:
+            set = {"branchid", "chainage"}
+        set = super()._exclude_fields().union(set)
+        return set
 
 
 class FlowDirection(str, Enum):

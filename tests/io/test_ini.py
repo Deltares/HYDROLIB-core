@@ -1,12 +1,10 @@
-from itertools import chain
-from pydantic import ValidationError
-from typing import Iterable, List, Optional, Sequence, Tuple, Union
-from ..utils import test_output_dir
-
 import inspect
-import pytest
+from itertools import chain
+from typing import Iterable, List, Optional, Sequence, Tuple, Union
 
-from hydrolib.core.io.ini.models import IniBasedModel
+import pytest
+from pydantic import ValidationError
+
 from hydrolib.core.io.ini.io_models import (
     CommentBlock,
     ContentElement,
@@ -15,6 +13,7 @@ from hydrolib.core.io.ini.io_models import (
     Property,
     Section,
 )
+from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.ini.parser import (
     Parser,
     ParserConfig,
@@ -22,13 +21,15 @@ from hydrolib.core.io.ini.parser import (
     _IntermediateSection,
 )
 from hydrolib.core.io.ini.serializer import (
-    _serialize_comment_block,
     MaxLengths,
     SectionSerializer,
     Serializer,
     SerializerConfig,
+    _serialize_comment_block,
     write_ini,
 )
+
+from ..utils import test_output_dir
 
 
 class TestParserConfig:

@@ -5,12 +5,9 @@ from typing import Callable, Dict, List, Literal
 
 from pydantic.fields import Field
 
-from hydrolib.core.io.ini.models import (
-    DataBlockIniBasedModel,
-    INIGeneral,
-    INIModel,
-)
+from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
+from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import make_list_validator
 
 
@@ -31,16 +28,15 @@ class TimeInterpolation(str, Enum):
     block_to = "blockTo"
 
 
-class ForcingBase(DataBlockIniBasedModel):
+class ForcingBase(DataBlockINIBasedModel):
 
     _header: Literal["forcing"] = "forcing"
     name: str
     function: str
     quantity: List[str]
     unit: List[str]
-    datablock: List[List[float]] = []
 
-    _make_lists = make_list_validator("quantity", "unit", "datablock")
+    _make_lists = make_list_validator("quantity", "unit")
 
     @classmethod
     def _supports_comments(cls):
@@ -146,3 +142,8 @@ class ForcingModel(INIModel):
                 parser.feed_line(line)
 
         return parser.finalize().flatten(True, False)
+
+    def _serialize(self, _: dict) -> None:
+        # We skip the passed dict for a better one.
+        config = SerializerConfig(section_indent=0, property_indent=4)
+        write_ini(self.filepath, self._to_document(), config=config)

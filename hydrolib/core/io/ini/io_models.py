@@ -1,7 +1,8 @@
 from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from xmlrpc.client import Boolean
 
-from pydantic import Field
+from pydantic import Field, validator
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.utils import to_key

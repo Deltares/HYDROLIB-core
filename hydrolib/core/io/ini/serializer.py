@@ -1,4 +1,9 @@
-from hydrolib.core.io.ini.models import (
+from itertools import chain, count, repeat
+from pathlib import Path
+from typing import Any, Iterable, Optional, Sequence
+
+from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.io.ini.io_models import (
     CommentBlock,
     ContentElement,
     Datablock,
@@ -7,10 +12,6 @@ from hydrolib.core.io.ini.models import (
     Property,
     Section,
 )
-from hydrolib.core.basemodel import BaseModel
-from itertools import chain, count, repeat
-from pathlib import Path
-from typing import Any, Iterable, Optional, Sequence
 
 
 class SerializerConfig(BaseModel):

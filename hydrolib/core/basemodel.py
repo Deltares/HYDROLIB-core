@@ -8,7 +8,7 @@ import logging
 from abc import ABC, abstractclassmethod
 from contextvars import ContextVar
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, Optional, Type
+from typing import Any, Callable, Dict, Optional, Type
 from warnings import warn
 
 from pydantic import BaseModel as PydanticBaseModel
@@ -68,6 +68,23 @@ class BaseModel(PydanticBaseModel):
                     if not v.is_file_link():
                         print(" " * (indent * 2 + 2), angle, v.__class__.__name__)
                     v.show_tree(indent + 1)
+
+    def _apply_recurse(self, f, *args, **kwargs):
+        # TODO Could we use this function for `show_tree`?
+        for _, value in self:
+            # Handle lists of items
+            if not isinstance(value, list):
+                value = [value]
+            for v in value:
+                if hasattr(v, "is_intermediate_link") and v.is_intermediate_link():
+                    if not v.is_file_link():
+                        v._apply_recurse(f, *args, **kwargs)
+                    else:
+                        getattr(v, f)(*args, **kwargs)
+
+        # Run self as last, so we can make use of the nested updates
+        if self.is_file_link():
+            getattr(self, f)(*args, **kwargs)
 
 
 class FileModel(BaseModel, ABC):
@@ -146,30 +163,17 @@ class FileModel(BaseModel, ABC):
                 "Either set the `filepath` on the model or pass a `folder` when saving."
             )
 
-        if folder:
-            filename = (
-                Path(self.filepath.name) if self.filepath else self._generate_name()
-            )
-            self.filepath = folder / filename
+        if not folder:
+            folder = self.filepath.absolute().parent
 
-        # Convert child FileModels first
-        exclude = {"filepath"}
-        filemodel_fields = {}
-        for name, value in self:
-            if isinstance(value, FileModel):
-                filepath = value.save(folder)
-                filemodel_fields[name] = filepath
-                exclude.add(name)
-
-        # Convert other values to dict
-        data = self.dict(
-            exclude=exclude,
-        )
-        data.update(filemodel_fields)
-
-        self._serialize(data)
-
+        self._apply_recurse("_save", folder)
         return self.filepath.absolute()
+
+    def _save(self, folder):
+        filename = Path(self.filepath.name) if self.filepath else self._generate_name()
+        self.filepath = folder / filename
+
+        self._serialize(self.dict())
 
     def _serialize(self, data: dict) -> None:
         self._get_serializer()(self.filepath, data)
@@ -200,4 +204,4 @@ class FileModel(BaseModel, ABC):
         return DummmyParser.parse
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__} represented by {self.filepath}."
+        return str(self.filepath if self.filepath else "")

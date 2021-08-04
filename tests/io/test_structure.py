@@ -8,9 +8,9 @@ from hydrolib.core.io.structure.models import (
     Orifice,
     Pump,
     Structure,
+    StructureModel,
     UniversalWeir,
     Weir,
-    StructureModel,
 )
 
 from ..utils import WrapperTest, test_data_dir

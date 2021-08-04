@@ -5,10 +5,8 @@ from pathlib import Path
 import pytest
 from devtools import debug
 
-from hydrolib.core.io.dimr.models import DIMR, FMComponent, RRComponent
-from hydrolib.core.io.mdu.models import FMModel
-from hydrolib.core.io.xyz.models import XYZModel
 from hydrolib.core.io.dimr.models import (
+    DIMR,
     ComponentOrCouplerRef,
     Control,
     CoupledItem,
@@ -19,6 +17,8 @@ from hydrolib.core.io.dimr.models import (
     RRComponent,
     StartGroup,
 )
+from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.xyz.models import XYZModel
 
 from .utils import test_data_dir, test_output_dir, test_reference_dir
 
@@ -169,6 +169,18 @@ def test_mdu_model():
             / "FlowFM.mdu"
         )
     )
+    assert model.geometry.comments.uniformwidth1d == "test"
+
     model.filepath = output_fn
     model.save()
+
     assert model.filepath.is_file()
+    assert model.geometry.frictfile[0].filepath.is_file()
+    assert model.geometry.structurefile[0].filepath.is_file()
+
+
+def test_mdu_from_scratch():
+    output_fn = Path(test_output_dir / "scratch.mdu")
+    model = FMModel()
+    model.filepath = output_fn
+    model.save()
