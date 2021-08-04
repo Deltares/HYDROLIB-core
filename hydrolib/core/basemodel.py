@@ -4,7 +4,9 @@ as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
 
 """
+import logging
 from abc import ABC, abstractclassmethod
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Type
 from warnings import warn
@@ -12,7 +14,22 @@ from warnings import warn
 from pydantic import BaseModel as PydanticBaseModel
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.utils import to_lowercase
+from hydrolib.core.utils import to_key
+
+logger = logging.getLogger(__name__)
+
+# We use ContextVars to keep a reference to the folder
+# we're currently parsing files in. In the future
+# we could move to https://github.com/samuelcolvin/pydantic/issues/1549
+context_dir: ContextVar[Path] = ContextVar("folder")
+
+
+def _reset_context_dir(token):
+    # Once the model has been completely initialized
+    # reset the context
+    if token:
+        logger.info("Reset context.")
+        context_dir.reset(token)
 
 
 class BaseModel(PydanticBaseModel):
@@ -22,7 +39,52 @@ class BaseModel(PydanticBaseModel):
         use_enum_values = True
         extra = "forbid"  # will throw errors so we can fix our models
         allow_population_by_field_name = True
-        alias_generator = to_lowercase
+        alias_generator = to_key
+
+    def is_file_link(self) -> bool:
+        """Generic attribute for models backed by a file."""
+        return False
+
+    def is_intermediate_link(self) -> bool:
+        """Generic attribute for models that have children fields that could contain files."""
+        return self.is_file_link()
+
+    def show_tree(self, indent=0):
+        """Recursive print function for showing a tree of a model."""
+        angle = "∟" if indent > 0 else ""
+
+        # Only print if we're backed by a file
+        if self.is_file_link():
+            print(" " * indent * 2, angle, self)
+
+        # Otherwise we recurse through the fields of a model
+        for _, value in self:
+            # Handle lists of items
+            if not isinstance(value, list):
+                value = [value]
+            for v in value:
+                if hasattr(v, "is_intermediate_link") and v.is_intermediate_link():
+                    # If the field is only an intermediate, print the name only
+                    if not v.is_file_link():
+                        print(" " * (indent * 2 + 2), angle, v.__class__.__name__)
+                    v.show_tree(indent + 1)
+
+    def _apply_recurse(self, f, *args, **kwargs):
+        # TODO Could we use this function for `show_tree`?
+        for _, value in self:
+            # Handle lists of items
+            if not isinstance(value, list):
+                value = [value]
+            for v in value:
+                if hasattr(v, "is_intermediate_link") and v.is_intermediate_link():
+                    if not v.is_file_link():
+                        v._apply_recurse(f, *args, **kwargs)
+                    else:
+                        getattr(v, f)(*args, **kwargs)
+
+        # Run self as last, so we can make use of the nested updates
+        if self.is_file_link():
+            getattr(self, f)(*args, **kwargs)
 
 
 class FileModel(BaseModel, ABC):
@@ -38,22 +100,40 @@ class FileModel(BaseModel, ABC):
 
     filepath: Optional[Path] = None
 
-    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs) -> None:
+    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
         """Initialize a model.
 
         The model is empty (with defaults) if no `filepath` is given,
         otherwise the file at `filepath` will be parsed."""
         # Parse the file if path is given
+        context_dir_reset_token = None
         if filepath:
-            data = self._load(Path(filepath))  # so we also accept strings
+            filepath = Path(filepath)  # so we also accept strings
+
+            # If a context is set, use it
+            if (folder := context_dir.get(None)) and not filepath.is_absolute():
+                logger.info(f"Used context to get {folder} for {filepath}")
+                filepath = folder / filepath
+            # Otherwise we're the root filepath
+            # and should set the context
+            else:
+                logger.info(f"Set context to {filepath.parent}")
+                context_dir_reset_token = context_dir.set(filepath.parent)
+
+            data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
         super().__init__(*args, **kwargs)
 
+        _reset_context_dir(context_dir_reset_token)
+
+    def is_file_link(self) -> bool:
+        return True
+
     @classmethod
-    def validate(cls: Type["FileModel"], value: Any) -> "FileModel":
+    def validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
-        if isinstance(value, Path):
+        if isinstance(value, (Path, str)):
             # Pydantic Model init requires a dict
             value = {"filepath": value}
         return super().validate(value)
@@ -83,30 +163,17 @@ class FileModel(BaseModel, ABC):
                 "Either set the `filepath` on the model or pass a `folder` when saving."
             )
 
-        if folder:
-            filename = (
-                Path(self.filepath.name) if self.filepath else self._generate_name()
-            )
-            self.filepath = folder / filename
+        if not folder:
+            folder = self.filepath.absolute().parent
 
-        # Convert child FileModels first
-        exclude = {"filepath"}
-        filemodel_fields = {}
-        for name, value in self:
-            if isinstance(value, FileModel):
-                filepath = value.save(folder)
-                filemodel_fields[name] = filepath
-                exclude.add(name)
-
-        # Convert other values to dict
-        data = self.dict(
-            exclude=exclude,
-        )
-        data.update(filemodel_fields)
-
-        self._serialize(data)
-
+        self._apply_recurse("_save", folder)
         return self.filepath.absolute()
+
+    def _save(self, folder):
+        filename = Path(self.filepath.name) if self.filepath else self._generate_name()
+        self.filepath = folder / filename
+
+        self._serialize(self.dict())
 
     def _serialize(self, data: dict) -> None:
         self._get_serializer()(self.filepath, data)
@@ -135,3 +202,6 @@ class FileModel(BaseModel, ABC):
     @abstractclassmethod
     def _get_parser(cls) -> Callable:
         return DummmyParser.parse
+
+    def __str__(self) -> str:
+        return str(self.filepath if self.filepath else "")

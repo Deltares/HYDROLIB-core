@@ -1,20 +1,19 @@
-from itertools import chain
-from pydantic import ValidationError
-from typing import Iterable, List, Optional, Sequence, Tuple, Union
-from ..utils import test_output_dir
-
 import inspect
-import pytest
+from itertools import chain
+from typing import Iterable, List, Optional, Sequence, Tuple, Union
 
-from hydrolib.core.io.ini.models import (
+import pytest
+from pydantic import ValidationError
+
+from hydrolib.core.io.ini.io_models import (
     CommentBlock,
     ContentElement,
     Datablock,
     Document,
-    IniBasedModel,
     Property,
     Section,
 )
+from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.ini.parser import (
     Parser,
     ParserConfig,
@@ -22,13 +21,15 @@ from hydrolib.core.io.ini.parser import (
     _IntermediateSection,
 )
 from hydrolib.core.io.ini.serializer import (
-    _serialize_comment_block,
     MaxLengths,
     SectionSerializer,
     Serializer,
     SerializerConfig,
+    _serialize_comment_block,
     write_ini,
 )
+
+from ..utils import test_output_dir
 
 
 class TestParserConfig:
@@ -706,32 +707,6 @@ class TestParser:
         )
 
         assert result == expected_result
-
-
-class TestIniBasedModel:
-    class MissingCommentsModel(IniBasedModel):
-        @classmethod
-        def _supports_comments(cls):
-            return True
-
-        comments: Optional[IniBasedModel.Comments] = None
-
-    def test_ini_based_model_which_supports_comments_should_have_comments(self):
-        with pytest.raises(ValidationError):
-            _ = TestIniBasedModel.MissingCommentsModel()
-
-    class UnsupportedCommentsModel(IniBasedModel):
-        @classmethod
-        def _supports_comments(cls):
-            return False
-
-        comments = IniBasedModel.Comments()
-
-    def test_ini_based_model_which_does_not_support_comments_should_not_have_comments(
-        self,
-    ):
-        with pytest.raises(ValidationError):
-            _ = TestIniBasedModel.UnsupportedCommentsModel()
 
 
 class TestSerializerConfig:

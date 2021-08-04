@@ -1,10 +1,11 @@
 from enum import IntEnum
+from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from pydantic import validator
 
 from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.ini.models import CommentBlock, Document, Property, Section
+from hydrolib.core.io.ini.io_models import CommentBlock, Document, Property, Section
 
 
 class ParserConfig(BaseModel):
@@ -283,3 +284,15 @@ class Parser:
         # we assume that we already checked whether it is either a comment,
         # section header or a property
         return self._config.parse_datablocks
+
+    @classmethod
+    def parse(cls, filepath: Path, config: ParserConfig = None):
+        if not config:
+            config = ParserConfig()
+        parser = cls(config)
+
+        with filepath.open() as f:
+            for line in f:
+                parser.feed_line(line)
+
+        return parser.finalize().flatten()

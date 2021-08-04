@@ -1,4 +1,5 @@
-from typing import Any, List
+from types import new_class
+from typing import Any, Callable, Generator, Generic, List, TypeVar, cast
 
 
 def example(a: float, b: float = 1.0) -> float:
@@ -14,16 +15,8 @@ def example(a: float, b: float = 1.0) -> float:
     return a * b
 
 
-def to_lowercase(string: str) -> str:
-    """Coverts the specified string to a lowercase string.
-
-    Attributes:
-        string: The string to be lowered.
-
-    Returns:
-        str: The lowered string.
-    """
-    return string.lower()
+def to_key(string: str) -> str:
+    return string.lower().replace(" ", "_").replace("-", "")
 
 
 def to_list(item: Any) -> List[Any]:

@@ -1,12 +1,15 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
 from pathlib import Path
-from typing import List, Literal, Optional, Type
+from typing import Callable, List, Literal, Optional, Type, Union
 
 from pydantic import Field, validator
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.io.dimr.parser import DIMRParser
+from hydrolib.core.io.dimr.serializer import DIMRSerializer
+from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.utils import to_list
 
 
@@ -61,14 +64,15 @@ class Component(BaseModel, ABC):
     def validate_setting(cls, v):
         return to_list(v)
 
+    def is_intermediate_link(self) -> bool:
+        return True
+
 
 class FMComponent(Component):
     library: Literal["dflowfm"]
 
     @classmethod
     def get_model(cls):
-        from hydrolib.core.models import FMModel  # prevent circular import
-
         return FMModel
 
 
@@ -129,6 +133,10 @@ class CoupledItem(BaseModel):
     sourceName: str
     targetName: str
 
+    def is_intermediate_link(self) -> bool:
+        # TODO set to True once we replace Paths with FileModels
+        return False
+
 
 class Logger(BaseModel):
     """
@@ -164,6 +172,10 @@ class Coupler(BaseModel):
     @validator("item", pre=True)
     def validate_item(cls, v):
         return to_list(v)
+
+    def is_intermediate_link(self) -> bool:
+        # TODO set to True once we replace Paths with FileModels
+        return False
 
 
 class StartGroup(BaseModel):
@@ -215,3 +227,83 @@ class Control(BaseModel):
     @validator("parallel", "start", pre=True)
     def validate_parallel(cls, v):
         return to_list(v)
+
+    def is_intermediate_link(self) -> bool:
+        # TODO set to True once we replace Paths with FileModels
+        return False
+
+
+class DIMR(FileModel):
+    """DIMR model representation."""
+
+    documentation: Documentation = Documentation()
+    control: Control = Control()
+    component: List[Union[RRComponent, FMComponent, Component]] = []
+    coupler: Optional[List[Coupler]] = []
+    waitFile: Optional[str]
+    global_settings: Optional[GlobalSettings]
+
+    @validator("component", "coupler", pre=True)
+    def validate_component(cls, v):
+        return to_list(v)
+
+    def dict(self, *args, **kwargs):
+        """Converts this object recursively to a dictionary.
+
+        Returns:
+            dict: The created dictionary for this object.
+        """
+        return self._to_serializable_dict(self)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # After initilization, try to load all component models
+        if self.filepath:
+            for comp in self.component:
+                fn = self.filepath.parent / comp.filepath
+                try:
+                    comp.model = comp.get_model()(filepath=fn)
+                except NotImplementedError:
+                    continue
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".xml"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "dimrconfig"
+
+    @classmethod
+    def _get_serializer(cls) -> Callable:
+        return DIMRSerializer.serialize
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return DIMRParser.parse
+
+    def _to_serializable_dict(self, obj) -> dict:
+        if not hasattr(obj, "__dict__"):
+            return obj
+
+        result = {}
+
+        for key, val in obj.__dict__.items():
+            if (
+                key.startswith("_")
+                or key == "filepath"
+                or isinstance(val, FileModel)
+                or val is None
+            ):
+                continue
+
+            element = []
+            if isinstance(val, list):
+                for item in val:
+                    element.append(self._to_serializable_dict(item))
+            else:
+                element = self._to_serializable_dict(val)
+            result[key] = element
+
+        return result
