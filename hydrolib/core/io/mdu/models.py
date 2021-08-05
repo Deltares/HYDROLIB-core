@@ -363,7 +363,9 @@ class Output(INIBasedModel):
 class Geometry(INIBasedModel):
 
     _header: Literal["geometry"] = "geometry"
-    netfile: Optional[NetworkModel] = Field(None, alias="NetFile")
+    netfile: Optional[NetworkModel] = Field(
+        default_factory=NetworkModel, alias="NetFile"
+    )
     bathymetryfile: Optional[XYZModel] = Field(None, alias="BathymetryFile")
     drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
         None, alias="DryPointsFile"
@@ -431,19 +433,19 @@ class Geometry(INIBasedModel):
 class FMModel(INIModel):
     """FM Model representation."""
 
-    general: General = General()
-    geometry: Geometry = Geometry()
-    volumetables: VolumeTables = VolumeTables()
-    numerics: Numerics = Numerics()
-    physics: Physics = Physics()
-    wind: Wind = Wind()
+    general: General = Field(default_factory=General)
+    geometry: Geometry = Field(default_factory=Geometry)
+    volumetables: VolumeTables = Field(default_factory=VolumeTables)
+    numerics: Numerics = Field(default_factory=Numerics)
+    physics: Physics = Field(default_factory=Physics)
+    wind: Wind = Field(default_factory=Wind)
     waves: Optional[Waves] = None
-    time: Time = Time()
-    restart: Restart = Restart()
-    external_forcing: ExternalForcing = ExternalForcing()
-    hydrology: Hydrology = Hydrology()
-    trachytopes: Trachytopes = Trachytopes()
-    output: Output = Output()
+    time: Time = Field(default_factory=Time)
+    restart: Restart = Field(default_factory=Restart)
+    external_forcing: ExternalForcing = Field(default_factory=ExternalForcing)
+    hydrology: Hydrology = Field(default_factory=Hydrology)
+    trachytopes: Trachytopes = Field(default_factory=Trachytopes)
+    output: Output = Field(default_factory=Output)
 
     @classmethod
     def _ext(cls) -> str:

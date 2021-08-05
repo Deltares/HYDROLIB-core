@@ -77,7 +77,7 @@ class INIBasedModel(BaseModel, ABC):
             extra = Extra.allow
             arbitrary_types_allowed = False
 
-    comments: Optional[Comments] = None
+    comments: Optional[Comments] = Comments()
 
     @root_validator(pre=True)
     def _skip_nones(cls, values):

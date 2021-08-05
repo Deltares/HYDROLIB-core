@@ -77,10 +77,7 @@ class BaseModel(PydanticBaseModel):
                 value = [value]
             for v in value:
                 if hasattr(v, "is_intermediate_link") and v.is_intermediate_link():
-                    if not v.is_file_link():
-                        v._apply_recurse(f, *args, **kwargs)
-                    else:
-                        getattr(v, f)(*args, **kwargs)
+                    v._apply_recurse(f, *args, **kwargs)
 
         # Run self as last, so we can make use of the nested updates
         if self.is_file_link():

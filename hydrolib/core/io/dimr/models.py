@@ -69,7 +69,7 @@ class Component(BaseModel, ABC):
 
 
 class FMComponent(Component):
-    library: Literal["dflowfm"]
+    library: Literal["dflowfm"] = "dflowfm"
 
     @classmethod
     def get_model(cls):
@@ -77,7 +77,7 @@ class FMComponent(Component):
 
 
 class RRComponent(Component):
-    library: Literal["rr_dll"]
+    library: Literal["rr_dll"] = "rr_dll"
 
     @classmethod
     def get_model(cls):

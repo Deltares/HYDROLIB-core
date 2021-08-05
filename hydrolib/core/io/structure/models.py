@@ -263,14 +263,15 @@ class Orifice(Structure):
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
 
 
-class StuctureGeneral(INIGeneral):
+class StructureGeneral(INIGeneral):
+    _header: Literal["General"] = "General"
     fileVersion: str = "3.00"
-    fileType: Literal["structure"]
+    fileType: Literal["structure"] = "structure"
 
 
 class StructureModel(INIModel):
-    general: StuctureGeneral
-    structure: List[Structure]
+    general: StructureGeneral = StructureGeneral()
+    structure: List[Structure] = []
 
     @classmethod
     def _ext(cls) -> str:

@@ -11,6 +11,8 @@ from pydantic import Field
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.io.net.writer import UgridWriter
+from hydrolib.core.io.net.reader import UgridReader
 
 
 def split_by(gl: mk.GeometryList, by: float) -> list:
@@ -50,7 +52,6 @@ class Mesh2d(BaseModel):
         return self.mesh2d_node_x.size == 0
 
     def read_file(self, file_path: Path) -> None:
-        from hydrolib.core.io.net.reader import UgridReader
 
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
@@ -321,7 +322,6 @@ class Link1d2d(BaseModel):
         return self.link1d2d.size == 0
 
     def read_file(self, file_path: Path) -> None:
-        from hydrolib.core.io.net.reader import UgridReader
 
         reader = UgridReader(file_path)
         reader.read_link1d2d(self)
@@ -761,9 +761,6 @@ class Mesh1d(BaseModel):
 
 
 class Network:
-
-    """"""
-
     def __init__(self) -> None:
         self.meshkernel = mk.MeshKernel()
 
@@ -785,7 +782,6 @@ class Network:
         Returns:
             Network: The instance of the class itself that is returned
         """
-        from hydrolib.core.io.net.reader import UgridReader
 
         network = cls()
         ds = nc.Dataset(file_path)  # type: ignore[import]
@@ -811,7 +807,6 @@ class Network:
         Args:
             file (Path): File where _net.nc is written to.
         """
-        from hydrolib.core.io.net.writer import UgridWriter
 
         writer = UgridWriter()
         writer.write(self, file)
@@ -859,17 +854,13 @@ class Network:
 class NetworkModel(FileModel):
     """Network model representation."""
 
-    class Config:
-        extra = "allow"
+    network: Network = Field(default_factory=Network)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # We're keeping the `Network` class completely outside Pydantic
         if self.filepath and self.filepath.is_file():
             self.network = Network.from_file(self.filepath)
-        else:
-            self.network = Network()
 
     @property
     def _mesh1d(self):
