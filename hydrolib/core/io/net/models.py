@@ -882,7 +882,7 @@ class NetworkModel(FileModel):
     def _filename(cls) -> str:
         return "network"
 
-    def _save(self, folder):
+    def _save(self, folder: Path):
         filename = Path(self.filepath.name) if self.filepath else self._generate_name()
         self.filepath = folder / filename
         folder.mkdir(parents=True, exist_ok=True)
