@@ -867,21 +867,21 @@ class NetworkModel(FileModel):
 
         # We're keeping the `Network` class completely outside Pydantic
         if self.filepath and self.filepath.is_file():
-            self._network = Network.from_file(self.filepath)
+            self.network = Network.from_file(self.filepath)
         else:
-            self._network = Network()
+            self.network = Network()
 
     @property
     def _mesh1d(self):
-        return self._network._mesh1d
+        return self.network._mesh1d
 
     @property
     def _mesh2d(self):
-        return self._network._mesh2d
+        return self.network._mesh2d
 
     @property
     def _link1d2d(self):
-        return self._network._link1d2d
+        return self.network._link1d2d
 
     @classmethod
     def _ext(cls) -> str:
@@ -894,15 +894,17 @@ class NetworkModel(FileModel):
     def _save(self, folder):
         filename = Path(self.filepath.name) if self.filepath else self._generate_name()
         self.filepath = folder / filename
-        self._network.to_file(self.filepath)
+        self.network.to_file(self.filepath)
 
     def _parse(self, _):
         return {}
 
     @classmethod
     def _get_serializer(cls):
+        # Unused, but requires abstract implementation
         pass
 
     @classmethod
     def _get_parser(cls):
+        # Unused, but requires abstract implementation
         pass

@@ -177,6 +177,8 @@ def test_read_net_nc(filepath):
 
     # Create network model
     network = NetworkModel(filepath=filepath)
+    assert not network._mesh1d.is_empty()
+    assert network._mesh2d.is_empty()
 
 
 def test_load_ugrid_json():
