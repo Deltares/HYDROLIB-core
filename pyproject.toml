@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -33,17 +33,13 @@ matplotlib = "^3.4"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
+version = "0.1.1"
 tag_format = "$version"
 version_files = [
     "hydrolib/core/__init__.py",
     "pyproject.toml:version"
 ]
 changelog_file = "docs/changelog.md"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 88
@@ -76,3 +72,7 @@ addopts = "-m \"not plots\""
 markers = [
     "plots"
 ]
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
