@@ -10,7 +10,7 @@ import numpy as np
 from pydantic import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.basemodel import BaseModel, FileModel
 
 
 def split_by(gl: mk.GeometryList, by: float) -> list:
@@ -854,3 +854,55 @@ class Network:
         self._mesh1d._add_branch(
             branch=branch, name=name, branch_order=branch_order, long_name=long_name
         )
+
+
+class NetworkModel(FileModel):
+    """Network model representation."""
+
+    class Config:
+        extra = "allow"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # We're keeping the `Network` class completely outside Pydantic
+        if self.filepath and self.filepath.is_file():
+            self._network = Network.from_file(self.filepath)
+        else:
+            self._network = Network()
+
+    @property
+    def _mesh1d(self):
+        return self._network._mesh1d
+
+    @property
+    def _mesh2d(self):
+        return self._network._mesh2d
+
+    @property
+    def _link1d2d(self):
+        return self._network._link1d2d
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".nc"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "network"
+
+    def _save(self, folder):
+        filename = Path(self.filepath.name) if self.filepath else self._generate_name()
+        self.filepath = folder / filename
+        self._network.to_file(self.filepath)
+
+    def _parse(self, _):
+        return {}
+
+    @classmethod
+    def _get_serializer(cls):
+        pass
+
+    @classmethod
+    def _get_parser(cls):
+        pass

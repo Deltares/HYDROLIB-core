@@ -1,19 +1,14 @@
 from abc import ABC
 from enum import Enum
-from typing import Any, Dict, List, Literal, Sequence, Type, Union
+from pathlib import Path
+from typing import Callable, Dict, List, Literal
 
-from pydantic.class_validators import validator
 from pydantic.fields import Field
-from pydantic.typing import NoneType
 
-from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.ini.models import DataBlockIniBasedModel, Section
-
-
-# TODO: This module is unfinished and should be finished as part of the bc file issue.
-def transfer_keyvalue(src: Dict, target: Dict, key: str) -> None:
-    if key in src:
-        target[key] = src.pop(key)
+from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.ini.parser import Parser, ParserConfig
+from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.ini.util import make_list_validator
 
 
 class VerticalInterpolation(str, Enum):
@@ -33,101 +28,16 @@ class TimeInterpolation(str, Enum):
     block_to = "blockTo"
 
 
-# Note that this currently does not support the astronomic string arrays
-# these need to be handled, however for the sake of validating whether
-# the ini files work this has been skipped
-class FunctionData(BaseModel):
-    quantity: str
-    unit: str
-    values: Sequence[float]
+class ForcingBase(DataBlockINIBasedModel):
 
+    _header: Literal["forcing"] = "forcing"
+    name: str
+    function: str
+    quantity: List[str]
+    unit: List[str]
 
-class Function:
-    # note that we could produce actual fields out of the dictionary, but this might complicate the use case a bit
-    # furthermore we could change the data to numpy arrays, but I'll leave that to the actual implementer
-    class FunctionBase(BaseModel, ABC):
+    _make_lists = make_list_validator("quantity", "unit")
 
-        function: str
-        function_data: Dict[str, FunctionData]
-
-        class Config:
-            allow_population_by_field_name = True
-            arbitrary_types_allowed = False
-
-        @classmethod
-        def validate(
-            cls: Type["Function.FunctionBase"], value: Any
-        ) -> "Function.FunctionBase":
-            if isinstance(value, Dict) and "function_data" not in value:
-                # This is a pretty huge assumption, that we might need to address?
-                cls._group_function_data(value)
-            return super().validate(value)
-
-        @validator("function_data", pre=True)
-        def _convert_function_data_from_list(cls, value: Any):
-            if isinstance(value, List) and all(
-                (isinstance(v, FunctionData) for v in value)
-            ):
-                value = dict((fd.quantity, fd) for fd in value)
-            return value
-
-        @classmethod
-        def _group_function_data(cls, data: Dict) -> None:
-            function_data: Dict[str, FunctionData] = dict(
-                (q, FunctionData(quantity=q, unit=u, values=vs))
-                for q, u, vs in zip(
-                    data.pop("quantity"), data.pop("unit"), data.pop("datablock")
-                )
-            )
-            data["function_data"] = function_data
-
-    class TimeSeries(FunctionBase):
-        function: Literal["timeSeries"] = "timeSeries"
-
-        time_interpolation: TimeInterpolation = Field(alias="timeInterpolation")
-
-        offset: float = 0.0
-        factor: float = 1.0
-
-    class Harmonic(FunctionBase):
-        function: Literal["harmonic"] = "harmonic"
-        factor: float = 1.0
-
-    class Astronomic(FunctionBase):
-        function: Literal["astronomic"] = "astronomic"
-        factor: float = 1.0
-
-    class HarmonicCorrection(FunctionBase):
-        function: Literal["harmonicCorrection"] = "harmonicCorrection"
-
-    class AstronomicCorrection(FunctionBase):
-        function: Literal["astronomicCorrection"] = "astronomicCorrection"
-
-    class T3D(FunctionBase):
-        function: Literal["t3D"] = "t3D"
-
-        offset: float = 0.0
-        factor: float = 1.0
-
-        vertical_positions: List[float] = Field(alias="verticalPositions")
-        vertical_interpolation: VerticalInterpolation = Field(
-            alias="verticalInterpolation"
-        )
-        vertical_position_type: VerticalPositionType = Field(
-            alias="verticalPositionType"
-        )
-
-    class QHTable(FunctionBase):
-        function: Literal["QHTable"] = "QHTable"
-
-    class Constant(FunctionBase):
-        function: Literal["constant"] = "constant"
-
-        offset: float = 0.0
-        factor: float = 1.0
-
-
-class Forcing(DataBlockIniBasedModel):
     @classmethod
     def _supports_comments(cls):
         return False
@@ -136,50 +46,104 @@ class Forcing(DataBlockIniBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    _header: Literal["Forcing"] = "Forcing"
+    @classmethod
+    def validate(cls, v):
+        """Try to iniatialize subclass based on function field."""
+        # should be replaced by discriminated unions once merged
+        # https://github.com/samuelcolvin/pydantic/pull/2336
+        if isinstance(v, dict):
+            for c in cls.__subclasses__():
+                if (
+                    c.__fields__.get("function").default
+                    == v.get("function", "").lower()
+                ):
+                    v = c(**v)
+                    break
+        return v
 
-    name: str
 
-    function: Union[
-        Function.TimeSeries,
-        Function.Harmonic,
-        Function.Astronomic,
-        Function.HarmonicCorrection,
-        Function.AstronomicCorrection,
-        Function.T3D,
-        Function.QHTable,
-        Function.Constant,
-    ]
+class TimeSeries(ForcingBase):
+    function: Literal["timeseries"] = "timeseries"
+    timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
+    offset: float = 0.0
+    factor: float = 1.0
+
+
+class Harmonic(ForcingBase):
+    function: Literal["harmonic"] = "harmonic"
+    factor: float = 1.0
+
+
+class Astronomic(ForcingBase):
+    function: Literal["astronomic"] = "astronomic"
+    factor: float = 1.0
+
+
+class HarmonicCorrection(ForcingBase):
+    function: Literal["harmoniccorrection"] = "harmoniccorrection"
+
+
+class AstronomicCorrection(ForcingBase):
+    function: Literal["astronomiccorrection"] = "astronomiccorrection"
+
+
+class T3D(ForcingBase):
+    function: Literal["t3d"] = "t3d"
+
+    offset: float = 0.0
+    factor: float = 1.0
+
+    vertical_positions: List[float] = Field(alias="verticalPositions")
+    vertical_interpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
+    vertical_position_type: VerticalPositionType = Field(alias="verticalPositionType")
+
+
+class QHTable(ForcingBase):
+    function: Literal["qhtable"] = "qhtable"
+
+
+class Constant(ForcingBase):
+    function: Literal["constant"] = "constant"
+
+    offset: float = 0.0
+    factor: float = 1.0
+
+
+class ForcingGeneral(INIGeneral):
+    fileVersion: str = "1.01"
+    fileType: Literal["boundConds"] = "boundConds"
+
+
+class ForcingModel(INIModel):
+    general: ForcingGeneral
+    forcing: List[ForcingBase]
 
     @classmethod
-    def _convert_section_content(cls, content: List) -> Dict:
-        content_dict = super()._convert_section_content(content)
-        cls._group_function_data(content_dict)
-        return content_dict
+    def _ext(cls) -> str:
+        return ".bc"
 
     @classmethod
-    def _convert_section(cls, section: Section) -> Dict:
-        result = super()._convert_section(section)
-        transfer_keyvalue(result, result["function"], "datablock")
-        return result
+    def _filename(cls) -> str:
+        return "forcing"
 
     @classmethod
-    def _group_function_data(cls, data: Dict) -> None:
-        function_data = {"function": data["function"]}
+    def _get_parser(cls) -> Callable:
+        return cls.parse
 
-        keys_to_transfer = [
-            "offset",
-            "factor",
-            "verticalPositions",
-            "verticalInterpolation",
-            "verticalPositionType",
-            "timeInterpolation",
-            "quantity",
-            "unit",
-            "verticalPositionIndex",
-        ]
+    @classmethod
+    def parse(cls, filepath: Path):
+        # It's odd to have to disable parsing something as comments
+        # but also need to pass it to the *flattener*.
+        # This method now only supports per model settings, not per section.
+        parser = Parser(ParserConfig(parse_datablocks=True, parse_comments=False))
 
-        for key in keys_to_transfer:
-            transfer_keyvalue(data, function_data, key)
+        with filepath.open() as f:
+            for line in f:
+                parser.feed_line(line)
 
-        data["function"] = function_data
+        return parser.finalize().flatten(True, False)
+
+    def _serialize(self, _: dict) -> None:
+        # We skip the passed dict for a better one.
+        config = SerializerConfig(section_indent=0, property_indent=4)
+        write_ini(self.filepath, self._to_document(), config=config)

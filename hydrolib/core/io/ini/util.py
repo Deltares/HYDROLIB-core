@@ -5,7 +5,7 @@ from typing import Any
 from pydantic.class_validators import validator
 
 
-def get_split_string_on_delimeter_validator(*field_name: str, delimiter: str = None):
+def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
     """Get a validator to split strings passed to the specified field_name.
 
     Strings are split based on the provided delimeter. The validator splits
@@ -23,6 +23,17 @@ def get_split_string_on_delimeter_validator(*field_name: str, delimiter: str = N
     def split(v: Any):
         if isinstance(v, str):
             v = v.split(delimiter)
+        return v
+
+    return validator(*field_name, allow_reuse=True, pre=True)(split)
+
+
+def make_list_validator(*field_name: str):
+    """Get a validator make a list of object if a single object is passed."""
+
+    def split(v: Any):
+        if not isinstance(v, list):
+            v = [v]
         return v
 
     return validator(*field_name, allow_reuse=True, pre=True)(split)

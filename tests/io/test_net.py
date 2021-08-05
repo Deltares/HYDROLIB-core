@@ -7,8 +7,8 @@ from meshkernel import GeometryList, MeshKernel
 
 import json
 
-from hydrolib.core.io.net.models import Link1d2d, Mesh2d, Network, Branch
-from .utils import test_output_dir, test_input_dir
+from hydrolib.core.io.net.models import Link1d2d, Mesh2d, NetworkModel, Branch
+from ..utils import test_output_dir, test_input_dir
 
 
 def plot_network(network):
@@ -31,7 +31,7 @@ def test_create_1d_by_branch():
     # Generate nodes on branch
     branch.generate_nodes(mesh1d_edge_length=1)
     # Create Mesh1d
-    network = Network()
+    network = NetworkModel()
     network.mesh1d_add_branch(branch)
 
     # Add second
@@ -55,7 +55,7 @@ def test_create_1d_by_branch():
     plot_network(network)
 
     # Write to file
-    network.to_file(test_output_dir / "test_net.nc")
+    network.save(test_output_dir / "test_net.nc")
 
 
 def get_circle_gl(r, detail=100):
@@ -81,7 +81,7 @@ def test_create_1d_2d_1d2d():
     branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
 
     # Create Mesh1d
-    network = Network()
+    network = NetworkModel()
     network.mesh1d_add_branch(branch, name="branch1")
 
     branch = Branch(geometry=np.array([[-25.0, 0.0], [x[0], y[0]]]))
@@ -101,7 +101,7 @@ def test_create_1d_2d_1d2d():
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
 
     # Write to file
-    network.to_file(test_output_dir / "test_net.nc")
+    network.save(test_output_dir / "test_net.nc")
 
     plot_network(network)
 
@@ -176,12 +176,12 @@ def test_read_net_nc(filepath):
         raise FileNotFoundError(f'File "{filepath.resolve()}" not found.')
 
     # Create network model
-    network = Network.from_file(filepath)
+    network = NetworkModel(filepath=filepath)
 
 
 def test_load_ugrid_json():
 
-    path = Path(__file__).parent.parent.joinpath(
+    path = Path(__file__).parent.parent.parent.joinpath(
         "hydrolib/core/io/net/ugrid_conventions.json"
     )
     assert path.exists()
@@ -203,18 +203,17 @@ def test_read_write_read_compare(filepath):
     assert filepath.exists()
 
     # Create network model
-    network1 = Network.from_file(filepath)
+    network1 = NetworkModel(filepath=filepath)
 
     # Save to temporary location
-    tmppath = test_output_dir / "test_net.nc"
-    tmppath.unlink(missing_ok=True)
-    network1.to_file(tmppath)
+    tmppath = test_output_dir
+    network1.save(tmppath)
 
-    # Read a second network from thiWs location
-    network2 = Network.from_file(tmppath)
+    # Read a second network from this location
+    network2 = NetworkModel(filepath=network1.filepath)
 
     # Read keys from convention
-    path = Path(__file__).parent.parent.joinpath(
+    path = Path(__file__).parent.parent.parent.joinpath(
         "hydrolib/core/io/net/ugrid_conventions.json"
     )
     with open(path, "r") as f:

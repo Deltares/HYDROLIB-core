@@ -1,22 +1,43 @@
 import inspect
 from typing import List, Union
 
-
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.structure.models import FlowDirection, UniversalWeir, Weir
+from hydrolib.core.io.structure.models import (
+    Compound,
+    FlowDirection,
+    Orifice,
+    Pump,
+    Structure,
+    StructureModel,
+    UniversalWeir,
+    Weir,
+)
 
-from ..utils import WrapperTest
+from ..utils import WrapperTest, test_data_dir
+
+
+def test_structure_model():
+    filepath = (
+        test_data_dir
+        / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/structures.ini"
+    )
+    m = StructureModel(filepath)
+    assert len(m.structure) == 12
+    assert isinstance(m.structure[-1], Compound)
+    assert isinstance(m.structure[0], Orifice)
+    assert isinstance(m.structure[2], Weir)
+    assert isinstance(m.structure[5], Pump)
 
 
 def test_create_a_weir_from_scratch():
     weir = Weir(
         id="w003",
         name="W003",
-        branch_id="B1",
+        branchid="B1",
         chainage=5.0,
-        allowed_flow_direction=FlowDirection.none,
-        crest_level=0.5,
-        use_velocity_height=False,
+        allowedflowdir=FlowDirection.none,
+        crestlevel=0.5,
+        usevelocityheight=False,
         comments=Weir.Comments(
             name="W stands for weir, 003 because we expect to have at most 999 weirs"
         ),
@@ -24,12 +45,12 @@ def test_create_a_weir_from_scratch():
 
     assert weir.id == "w003"
     assert weir.name == "W003"
-    assert weir.branch_id == "B1"
+    assert weir.branchid == "B1"
     assert weir.chainage == 5.0
-    assert weir.allowed_flow_direction == FlowDirection.none
-    assert weir.crest_level == 0.5
-    assert weir.crest_width == None
-    assert weir.use_velocity_height == False
+    assert weir.allowedflowdir == FlowDirection.none
+    assert weir.crestlevel == 0.5
+    assert weir.crestwidth == None
+    assert weir.usevelocityheight == False
     assert (
         weir.comments.name
         == "W stands for weir, 003 because we expect to have at most 999 weirs"
@@ -42,12 +63,12 @@ def test_id_comment_has_correct_default():
     weir = Weir(
         id="weir_id",
         name="W001",
-        branch_id="branch",
+        branchid="branch",
         chainage=3.0,
-        allowed_flow_direction=FlowDirection.positive,
-        crest_level=10.5,
-        crest_width=None,
-        use_velocity_height=False,
+        allowedflowdir=FlowDirection.positive,
+        crestlevel=10.5,
+        crestwidth=None,
+        usevelocityheight=False,
     )
 
     assert weir.comments.id == "Unique structure id (max. 256 characters)."
@@ -57,16 +78,16 @@ def test_add_comment_to_weir():
     weir = Weir(
         id="weir_id",
         name="W001",
-        branch_id="branch",
+        branchid="branch",
         chainage=3.0,
-        allowed_flow_direction=FlowDirection.positive,
-        crest_level=10.5,
-        crest_width=None,
-        use_velocity_height=False,
+        allowedflowdir=FlowDirection.positive,
+        crestlevel=10.5,
+        crestwidth=None,
+        usevelocityheight=False,
     )
 
-    weir.comments.use_velocity_height = "a different value"
-    assert weir.comments.use_velocity_height == "a different value"
+    weir.comments.usevelocityheight = "a different value"
+    assert weir.comments.usevelocityheight == "a different value"
 
 
 def test_weir_construction_with_parser():
@@ -97,13 +118,13 @@ def test_weir_construction_with_parser():
 
     assert weir.id == "weir_id"
     assert weir.name == "weir"
-    assert weir.branch_id == "branch"
+    assert weir.branchid == "branch"
     assert weir.chainage == 3.0
     assert weir.structure_type == "weir"
-    assert weir.allowed_flow_direction == FlowDirection.positive
-    assert weir.crest_level == 10.5
-    assert weir.crest_width is None
-    assert weir.use_velocity_height == False
+    assert weir.allowedflowdir == FlowDirection.positive
+    assert weir.crestlevel == 10.5
+    assert weir.crestwidth is None
+    assert weir.usevelocityheight == False
 
 
 def test_weir_comments_construction_with_parser():
@@ -134,13 +155,13 @@ def test_weir_comments_construction_with_parser():
 
     assert weir.comments.id is None
     assert weir.comments.name is None
-    assert weir.comments.branch_id is None
+    assert weir.comments.branchid is None
     assert weir.comments.chainage == "My own special comment 1"
     assert weir.comments.structure_type is None
-    assert weir.comments.allowed_flow_direction is None
-    assert weir.comments.crest_level is None
-    assert weir.comments.crest_width is None
-    assert weir.comments.use_velocity_height == "My own special comment 2"
+    assert weir.comments.allowedflowdir is None
+    assert weir.comments.crestlevel is None
+    assert weir.comments.crestwidth is None
+    assert weir.comments.usevelocityheight == "My own special comment 2"
 
 
 def test_weir_with_unknown_parameters():
@@ -178,13 +199,13 @@ def test_weir_with_unknown_parameters():
 
     assert weir.id == "weir_id"
     assert weir.name == "weir"
-    assert weir.branch_id == "branch"
+    assert weir.branchid == "branch"
     assert weir.chainage == 3.0
     assert weir.structure_type == "weir"
-    assert weir.allowed_flow_direction == FlowDirection.positive
-    assert weir.crest_level == 10.5
-    assert weir.crest_width is None
-    assert weir.use_velocity_height == False
+    assert weir.allowedflowdir == FlowDirection.positive
+    assert weir.crestlevel == 10.5
+    assert weir.crestwidth is None
+    assert weir.usevelocityheight == False
 
 
 def test_universal_construction_with_parser():
@@ -217,14 +238,14 @@ def test_universal_construction_with_parser():
 
     assert universal_weir.id == "uweir_id"
     assert universal_weir.name == "W002"
-    assert universal_weir.branch_id == "branch"
+    assert universal_weir.branchid == "branch"
     assert universal_weir.chainage == 6.0
-    assert universal_weir.allowed_flow_direction == FlowDirection.positive
-    assert universal_weir.number_of_levels == 2
-    assert universal_weir.y_values == [1.0, 2.0]
-    assert universal_weir.z_values == [3.0, 4.0]
-    assert universal_weir.crest_level == 10.5
-    assert universal_weir.discharge_coefficient == 0.5
+    assert universal_weir.allowedflowdir == FlowDirection.positive
+    assert universal_weir.numlevels == 2
+    assert universal_weir.yvalues == [1.0, 2.0]
+    assert universal_weir.zvalues == [3.0, 4.0]
+    assert universal_weir.crestlevel == 10.5
+    assert universal_weir.dischargecoeff == 0.5
 
 
 def test_weir_and_universal_weir_resolve_from_parsed_document():
@@ -270,27 +291,29 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         Weir(
             id="weir_id",
             name="W001",
-            branch_id="branch",
+            branchid="branch",
             chainage=3.0,
-            allowed_flow_direction=FlowDirection.positive,
-            crest_level=10.5,
-            crest_width=None,
-            use_velocity_height=False,
+            allowedflowdir=FlowDirection.positive,
+            crestlevel=10.5,
+            crestwidth=None,
+            usevelocityheight=False,
             _header="Structure",
         ),
         UniversalWeir(
             id="uweir_id",
             name="W002",
-            branch_id="branch",
+            branchid="branch",
             chainage=6.0,
-            allowed_flow_direction=FlowDirection.positive,
-            number_of_levels=2,
-            y_values=[1.0, 2.0],
-            z_values=[3.0, 4.0],
-            crest_level=10.5,
-            discharge_coefficient=0.5,
+            allowedflowdir=FlowDirection.positive,
+            numlevels=2,
+            yvalues=[1.0, 2.0],
+            zvalues=[3.0, 4.0],
+            crestlevel=10.5,
+            dischargecoeff=0.5,
             _header="Structure",
         ),
     ]
 
-    assert wrapper.val == expected_structures
+    for val, expected in zip(wrapper.val, expected_structures):
+        # TODO Make sure datablock never ends up in these structures!
+        assert val.dict(exclude={"datablock"}) == expected.dict()

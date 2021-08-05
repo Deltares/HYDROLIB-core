@@ -1,5 +1,4 @@
 from typing import Dict
-from hydrolib.core.io.net.models import Link1d2d, Mesh1d, Mesh2d
 import json
 from pathlib import Path
 
@@ -16,7 +15,7 @@ class UgridReader:
 
         self._explorer = NCExplorer(self._ncfile_path)
 
-    def read_mesh1d_network1d(self, mesh1d: Mesh1d) -> None:
+    def read_mesh1d_network1d(self, mesh1d: "Mesh1d") -> None:
         """
         Read Ugrid from netcdf and return dflowfm cstructure with grid
         """
@@ -38,7 +37,7 @@ class UgridReader:
 
         ds.close()
 
-    def read_mesh2d(self, mesh2d: Mesh2d) -> None:
+    def read_mesh2d(self, mesh2d: "Mesh2d") -> None:
 
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
@@ -48,7 +47,7 @@ class UgridReader:
 
         ds.close()
 
-    def read_link1d2d(self, link1d2d: Link1d2d) -> None:
+    def read_link1d2d(self, link1d2d: "Link1d2d") -> None:
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d

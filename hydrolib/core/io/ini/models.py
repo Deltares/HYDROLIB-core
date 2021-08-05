@@ -1,126 +1,48 @@
+import logging
 from abc import ABC
 from functools import reduce
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
-from pydantic import Extra, Field
+from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core import __version__ as version
+from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.io.base import DummySerializer
+
+from .io_models import (
+    CommentBlock,
+    ContentElement,
+    Datablock,
+    DatablockRow,
+    Document,
+    Property,
+    Section,
+)
+from .parser import Parser
+from .serializer import Serializer, SerializerConfig, write_ini
+from .util import make_list_validator
+
+logger = logging.getLogger(__name__)
 
 
-class CommentBlock(BaseModel):
-    """CommentBlock defines a comment block within a deltares ini file.
+class INIBasedModel(BaseModel, ABC):
+    """INIBasedModel defines the base model for ini models
 
-    Attributes:
-        lines (List[str]): The actual lines of the CommentBlock
-    """
-
-    lines: List[str]
-
-
-class Property(BaseModel):
-    """Property defines a deltares ini property
-
-    Attributes:
-        key (str): The key of this Property
-        value (Optional[str]): The value associated with this Property
-        comment (Optional[str]): The comment associated with this Property
-    """
-
-    key: str
-    value: Optional[str]
-    comment: Optional[str]
-
-    def get_item(self):
-        return {self.key: self.value}
-
-    def get_comment(self):
-        return {self.key: self.comment}
-
-
-ContentElement = Union[Property, CommentBlock]
-DatablockRow = Sequence[str]
-Datablock = Sequence[DatablockRow]
-
-
-class Section(BaseModel):
-    """Section defines a deltares ini section
-
-    A deltares ini section consists of a header and an ordered list of
-    properties and comments.
-
-    For example:
-
-    ```
-    [header-title]
-    a=1
-    b=2
-    # and a comment
-    c=4
-    ```
-
-    An optional datablock can be defined (used in for example .bc files).
-
-    Attributes:
-        header (str): The header (without brackets) of this Section
-        content (List[ContentElement]):
-            The ordered list of Property and CommentBlock objects
-        datablock (Optional[Datablock]):
-            An optional data block associated with this Section. The datablock is
-            structured as a sequence of rows, i.e. datablock[2][1] refers to the third
-            row, second column.
-    """
-
-    header: str = Field(alias="_header")
-    content: List[ContentElement]
-
-    # these are primarily relevant for bc files
-    datablock: Optional[Datablock]
-
-    def dict(self, *args, **kwargs):
-        kwargs["by_alias"] = True
-        return super().dict(*args, **kwargs)
-
-    def flatten(self):
-        # TODO Move all flatten logic from IniBasedModel here
-        pass
-
-
-class Document(BaseModel):
-    """Document defines a Deltares ini document
-
-    Attributes:
-        header_comment (List[CommentBlock]):
-            An ordered list of comment blocks defined in the header of the Document
-        sections (List[Section]):
-            An ordered list of sections defined in this Document
-    """
-
-    header_comment: List[CommentBlock] = []
-    sections: List[Section] = []
-
-
-def _combine_in_dict(
-    dictionary: Dict[str, Any], key_value_pair: Tuple[str, Any]
-) -> Dict[str, Any]:
-    key, value = key_value_pair
-
-    if key in dictionary:
-        if not isinstance(dictionary[key], List):
-            dictionary[key] = [
-                dictionary[key],
-            ]
-        dictionary[key].append(value)
-    else:
-        dictionary[key] = value
-
-    return dictionary
-
-
-class IniBasedModel(BaseModel, ABC):
-    """IniBasedModel defines the base model for ini models
-
-    IniBasedModel instances can be created from Section instances
+    INIBasedModel instances can be created from Section instances
     obtained through parsing ini documents. It further supports
     adding arbitrary fields to it, which will be written to file.
     Lastly, no arbitrary types are allowed for the defined fields.
@@ -134,7 +56,6 @@ class IniBasedModel(BaseModel, ABC):
 
     class Config:
         extra = Extra.allow
-        allow_population_by_field_name = True
         arbitrary_types_allowed = False
 
     @classmethod
@@ -145,75 +66,194 @@ class IniBasedModel(BaseModel, ABC):
     def _duplicate_keys_as_list(cls):
         return False
 
+    @classmethod
+    def list_delimiter(cls) -> str:
+        return ";"
+
     class Comments(BaseModel, ABC):
-        """Comments defines the comments of an IniBasedModel"""
+        """Comments defines the comments of an INIBasedModel"""
 
         class Config:
             extra = Extra.allow
-            allow_population_by_field_name = True
             arbitrary_types_allowed = False
 
     comments: Optional[Comments] = None
 
-    @validator("comments", always=True)
-    def comments_matches_has_comments(cls, v):
-        if cls._supports_comments() and v is None:
-            raise ValueError(f"{cls} should have comments.")
-        elif not cls._supports_comments() and v is not None:
-            raise ValueError(f"{cls} should not have comments.")
+    @root_validator(pre=True)
+    def _skip_nones(cls, values):
+        """Drop None fields for known fields."""
+        dropkeys = []
+        for k, v in values.items():
+            if v is None and k in cls.__fields__.keys():
+                dropkeys.append(k)
 
+        logger.info(f"Dropped unset keys: {dropkeys}")
+        for k in dropkeys:
+            values.pop(k)
+
+        return values
+
+    @validator("comments", always=True, allow_reuse=True)
+    def comments_matches_has_comments(cls, v):
+        if not cls._supports_comments() and v is not None:
+            logging.warning(f"Dropped unsupported comments from {cls.__name__} init.")
+            v = None
         return v
 
     @classmethod
-    def validate(cls: Type["IniBasedModel"], value: Any) -> "IniBasedModel":
+    def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
         if isinstance(value, Section):
-            # value = value.flatten()  # TODO
-            value = cls._convert_section(value)
+            value = value.flatten(
+                cls._duplicate_keys_as_list(), cls._supports_comments()
+            )
 
         return super().validate(value)
 
     @classmethod
-    def _convert_section(cls, section: Section) -> Dict:
-        converted_content = cls._convert_section_content(section.content)
-        underlying_dict = cls._convert_section_to_dict(section)
-        return {**underlying_dict, **converted_content}
+    def _exclude_fields(cls) -> Set:
+        return {"comments", "datablock", "_header"}
 
-    @classmethod
-    def _convert_section_to_dict(cls, value: Section) -> Dict:
-        return value.dict(
-            exclude={
-                "datablock",
-                "content",
-            }
-        )
+    @staticmethod
+    def _convert_value(v: Any) -> str:
+        if isinstance(v, bool):
+            return str(int(v))
+        elif isinstance(v, list):
+            return ";".join([str(x) for x in v])
+        elif v is None:
+            return ""
+        else:
+            return str(v)
 
-    @classmethod
-    def _convert_section_content(cls, content: List) -> Dict:
-        def group_and_flatten(l: Iterable[Tuple[str, Any]]) -> Dict[str, Any]:
-            if cls._duplicate_keys_as_list():
-                return reduce(_combine_in_dict, l, {})
-            else:
-                return dict(l)
-
-        values = group_and_flatten(
-            (v.key, v.value) for v in content if isinstance(v, Property)
-        )
-
-        if cls._supports_comments():
-            values["comments"] = group_and_flatten(
-                (v.key, v.comment) for v in content if isinstance(v, Property)
+    def _to_section(self) -> Section:
+        props = []
+        for key, value in self:
+            if key in self._exclude_fields():
+                continue
+            prop = Property(
+                key=key,
+                value=INIBasedModel._convert_value(value),
+                comment=getattr(self.comments, key, None),
             )
+            props.append(prop)
+        return Section(header=self._header, content=props)
 
-        return values
+
+class DataBlockINIBasedModel(INIBasedModel):
+    """DataBlockINIBasedModel defines the base model for ini models with datablocks."""
+
+    datablock: List[List[float]] = []
+
+    _make_lists = make_list_validator("datablock")
+
+    def _to_section(self) -> Section:
+        section = super()._to_section()
+        section.datablock = self.datablock
+        return section
 
 
-class DataBlockIniBasedModel(IniBasedModel):
-    """DataBlockIniBasedModel defines the base model for ini models with datablocks."""
+class INIGeneral(INIBasedModel):
+    fileVersion: str = "3.00"
+    fileType: str
 
     @classmethod
-    def _convert_section_to_dict(cls, value: Section) -> Dict:
-        return value.dict(
-            exclude={
-                "content",
-            }
-        )
+    def _supports_comments(cls):
+        return False
+
+
+class CrossdefGeneral(INIGeneral):
+    fileVersion: str = "3.00"
+    fileType: Literal["crossDef"] = "crossDef"
+
+
+class CrosslockGeneral(INIGeneral):
+    fileVersion: str = "3.00"
+    fileType: Literal["crossLoc"] = "crossLoc"
+
+
+class INIModel(FileModel):
+    """INI Model representation."""
+
+    general: INIGeneral
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".ini"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "fm"
+
+    @classmethod
+    def _get_serializer(cls):
+        pass  # unused in favor of direct _serialize
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return Parser.parse
+
+    def _to_document(self) -> Document:
+        header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
+        sections = []
+        for _, value in self:
+            if _ == "filepath" or value is None:
+                continue
+            if isinstance(value, list):
+                for v in value:
+                    sections.append(v._to_section())
+            else:
+                sections.append(value._to_section())
+        return Document(header_comment=[header], sections=sections)
+
+    def _serialize(self, _: dict) -> None:
+        # We skip the passed dict for a better one.
+        config = SerializerConfig(section_indent=0, property_indent=4)
+        write_ini(self.filepath, self._to_document(), config=config)
+
+
+class Definition(INIBasedModel):
+    id: str
+    type: str
+
+    @classmethod
+    def _duplicate_keys_as_list(cls):
+        return True
+
+
+class CrossDefModel(INIModel):
+    general: CrossdefGeneral
+    definition: List[Definition] = []
+
+    _make_list = make_list_validator("definition")
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "crsdef"
+
+
+class CrossSection(INIBasedModel):
+    id: str
+    branchid: str
+
+
+class CrossLocModel(INIModel):
+    general: CrosslockGeneral
+    crosssection: List[CrossSection] = []
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "crsloc"
+
+
+class Global(INIBasedModel):
+    frictionId: str
+    frictionType: str
+    frictionValue: float
+
+
+class FrictionModel(INIModel):
+    general: INIGeneral
+    global_: List[Global] = Field([], alias="global")  # to circumvent built-in kw
+
+    _split_to_list = make_list_validator(
+        "global_",
+    )

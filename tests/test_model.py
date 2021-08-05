@@ -3,8 +3,10 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+from devtools import debug
 
 from hydrolib.core.io.dimr.models import (
+    DIMR,
     ComponentOrCouplerRef,
     Control,
     CoupledItem,
@@ -15,28 +17,10 @@ from hydrolib.core.io.dimr.models import (
     RRComponent,
     StartGroup,
 )
-from hydrolib.core.models import DIMR, XYZ, FMModel, Network
+from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.xyz.models import XYZModel
 
 from .utils import test_data_dir, test_output_dir, test_reference_dir
-
-
-def test_filemodel_recursive_load():
-    # If we give a non existing path, it will throw a warning
-    d = FMModel(filepath=Path(test_data_dir / "test.mdu"))
-    assert isinstance(d.filepath, Path)
-    assert isinstance(d.network, Network)
-
-
-def test_filemodel_recursive_serialize():
-    d = FMModel(filepath=Path(test_data_dir / "test.mdu"))
-    d.save(folder=test_output_dir / "tmp")
-    assert d.filepath.is_file()
-    assert d.network.filepath.is_file()
-
-
-def test_warn_on_non_existing_path():
-    with pytest.warns(UserWarning):
-        FMModel(filepath=Path("a"))
 
 
 def test_dimr_model():
@@ -159,7 +143,7 @@ def test_xyz_model():
         output_fn.unlink()
 
     # Confirm succesfull parse and initialization
-    model = XYZ(filepath=Path(test_data_dir / "input/test.xyz"))
+    model = XYZModel(filepath=Path(test_data_dir / "input/test.xyz"))
     assert len(model.points) == 7, model
 
     # Confirm saving to new file
@@ -167,3 +151,36 @@ def test_xyz_model():
     assert not model.filepath.is_file()
     model.save()
     assert model.filepath.is_file()
+
+
+def test_mdu_model():
+    output_fn = Path(test_output_dir / "test.mdu")
+    if output_fn.is_file():
+        output_fn.unlink()
+
+    model = FMModel(
+        filepath=Path(
+            test_data_dir
+            / "input"
+            / "e02"
+            / "c11_korte-woerden-1d"
+            / "dimr_model"
+            / "dflowfm"
+            / "FlowFM.mdu"
+        )
+    )
+    assert model.geometry.comments.uniformwidth1d == "test"
+
+    model.filepath = output_fn
+    model.save()
+
+    assert model.filepath.is_file()
+    assert model.geometry.frictfile[0].filepath.is_file()
+    assert model.geometry.structurefile[0].filepath.is_file()
+
+
+def test_mdu_from_scratch():
+    output_fn = Path(test_output_dir / "scratch.mdu")
+    model = FMModel()
+    model.filepath = output_fn
+    model.save()
