@@ -1,0 +1,122 @@
+{
+    "network1d": {
+        "network1d_node_id": [
+            "_node_id",
+            "_node_ids"
+        ],
+        "network1d_node_long_name": [
+            "_node_long_name",
+            "_node_long_names"
+        ],
+        "network1d_node_x": [
+            "_node_x"
+        ],
+        "network1d_node_y": [
+            "_node_y"
+        ],
+        "network1d_branch_id": [
+            "_branch_id",
+            "_branch_ids"
+        ],
+        "network1d_branch_long_name": [
+            "_branch_long_name",
+            "_branch_long_names"
+        ],
+        "network1d_branch_length": [
+            "_edge_length",
+            "_branch_length",
+            "_branch_lengths"
+        ],
+        "network1d_branch_order": [
+            "_branch_order"
+        ],
+        "network1d_edge_nodes": [
+            "_edge_nodes"
+        ],
+        "network1d_geom_x": [
+            "_geom_x"
+        ],
+        "network1d_geom_y": [
+            "_geom_y"
+        ],
+        "network1d_part_node_count": [
+            "_geom_node_count",
+            "_part_node_count"
+        ]
+    },
+    "mesh1d": {
+        "mesh1d_node_id": [
+            "_node_id",
+            "_node_ids"
+        ],
+        "mesh1d_node_long_name": [
+            "_node_long_name",
+            "_node_long_names"
+        ],
+        "mesh1d_edge_nodes": [
+            "_edge_nodes"
+        ],
+        "mesh1d_node_branch_id": [
+            "_node_branch",
+            "_nodes_branch_id",
+            "_node_branch_id"
+        ],
+        "mesh1d_node_branch_offset": [
+            "_node_offset",
+            "_nodes_branch_offset",
+            "_node_branch_offset"
+        ],
+        "mesh1d_edge_branch_id": [
+            "_edge_branch_id",
+            "_edge_branch"
+        ],
+        "mesh1d_edge_branch_offset": [
+            "_edge_offset",
+            "_edge_branch_offset"
+        ]
+    },
+    "mesh2d": {
+        "mesh2d_node_x": [
+            "_node_x"
+        ],
+        "mesh2d_node_y": [
+            "_node_y"
+        ],
+        "mesh2d_node_z": [
+            "_node_z"
+        ],
+        "mesh2d_edge_nodes": [
+            "_edge_nodes"
+        ],
+        "mesh2d_face_x": [
+            "_face_x"
+        ],
+        "mesh2d_face_y": [
+            "_face_y"
+        ],
+        "mesh2d_face_z": [
+            "_face_z"
+        ],
+        "mesh2d_face_nodes": [
+            "_face_nodes"
+        ]
+    },
+    "link1d2d": {
+        "link1d2d_id": [
+            "_id",
+            "_ids",
+            "_contact_id"
+        ],
+        "link1d2d_long_name": [
+            "_long_name",
+            "_long_names",
+            "_contact_long_name"
+        ],
+        "link1d2d_contact_type": [
+            "_contact_type"
+        ],
+        "link1d2d": [
+            ""
+        ]
+    }
+}

@@ -9,6 +9,8 @@ packages = [
 ]
 [tool.poetry.dependencies]
 python = "^3.8"
+meshkernel = "^1.0"
+netCDF4 = "^1.5.7"
 numpy = "^1.21"
 pydantic = {extras = ["dotenv"], version = "^1.8"}
 lxml = "^4.6"
@@ -27,6 +29,7 @@ commitizen = "^2.17"
 flake8 = "^3.9.2"
 mypy = "^0.910"
 devtools = "^0.6.1"
+matplotlib = "^3.4"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -67,3 +70,9 @@ exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
+
+[tool.pytest.ini_options]
+addopts = "-m \"not plots\""
+markers = [
+    "plots"
+]

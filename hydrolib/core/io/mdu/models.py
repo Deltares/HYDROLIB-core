@@ -1,3 +1,4 @@
+from hydrolib.core.io.net.models import NetworkModel
 from pathlib import Path
 from typing import Callable, List, Literal, Optional, Union
 from pydantic import Field
@@ -362,7 +363,7 @@ class Output(INIBasedModel):
 class Geometry(INIBasedModel):
 
     _header: Literal["geometry"] = "geometry"
-    netfile: Optional[Path] = Field(None, alias="NetFile")
+    netfile: Optional[NetworkModel] = Field(None, alias="NetFile")
     bathymetryfile: Optional[XYZModel] = Field(None, alias="BathymetryFile")
     drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
         None, alias="DryPointsFile"
