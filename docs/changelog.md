@@ -1,3 +1,9 @@
+## 0.1.3 (2021-08-05)
+
+### Fix
+
+- netcdf serialization path.
+
 ## 0.1.2 (2021-08-05)
 
 ### Fix
