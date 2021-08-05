@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from hydrolib.core import __version__
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
 from tests.utils import test_data_dir, test_output_dir, test_reference_dir
@@ -70,7 +71,7 @@ def test_serialize():
     data = {
         "documentation": {
             "fileVersion": "1.3",
-            "createdBy": "hydrolib-core 0.1.0",
+            "createdBy": f"hydrolib-core {__version__}",
             "creationDate": "2020-03-17T10:02:49.4520672Z",
         },
         "control": {
@@ -117,7 +118,7 @@ def test_serialize():
 
     DIMRSerializer.serialize(file, data)
 
-    assert file.is_file() == True
+    assert file.is_file()
 
     with file.open() as af:
         actual_lines = af.readlines()

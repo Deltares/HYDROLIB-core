@@ -885,6 +885,7 @@ class NetworkModel(FileModel):
     def _save(self, folder):
         filename = Path(self.filepath.name) if self.filepath else self._generate_name()
         self.filepath = folder / filename
+        folder.mkdir(parents=True, exist_ok=True)
         self.network.to_file(self.filepath)
 
     def _parse(self, _):
