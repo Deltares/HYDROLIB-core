@@ -5,9 +5,21 @@ from pathlib import Path
 import netCDF4 as nc
 import numpy as np
 
+from .models import Link1d2d, Mesh1d, Mesh2d
+
 
 class UgridReader:
+    """UgridReader provides the logic to read a specified UGRID file."""
+
     def __init__(self, file_path: Path) -> None:
+        """Creates a new UgridReader, reading the specified path.
+
+        Args:
+            file_path (Path): The path to read from.
+
+        Raises:
+            OSError: Thrown when file_path does not exist.
+        """
         self._ncfile_path = file_path
 
         if not self._ncfile_path.exists():
@@ -15,9 +27,13 @@ class UgridReader:
 
         self._explorer = NCExplorer(self._ncfile_path)
 
-    def read_mesh1d_network1d(self, mesh1d: "Mesh1d") -> None:
+    def read_mesh1d_network1d(self, mesh1d: Mesh1d) -> None:
         """
-        Read Ugrid from netcdf and return dflowfm cstructure with grid
+        Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the
+        specified mesh1d.
+
+        Args:
+            mesh1d (Mesh1d): The object to which the read network1d is added.
         """
         # If the mesh is not given (default), use the networks one
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
@@ -33,11 +49,16 @@ class UgridReader:
         # Process network
         mesh1d._process_network1d()
 
-        # self.network.mesh1d.add_from_other(mesh1d)
-
         ds.close()
 
-    def read_mesh2d(self, mesh2d: "Mesh2d") -> None:
+    def read_mesh2d(self, mesh2d: Mesh2d) -> None:
+        """
+        Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the
+        specified mesh2d.
+
+        Args:
+            mesh2d (Mesh2d): The object to which the read network1d is added.
+        """
 
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
@@ -47,7 +68,12 @@ class UgridReader:
 
         ds.close()
 
-    def read_link1d2d(self, link1d2d: "Link1d2d") -> None:
+    def read_link1d2d(self, link1d2d: Link1d2d) -> None:
+        """Read the Link1d2d from the wrapped netCDF file of this UgridReader.
+
+        Args:
+            link1d2d (Link1d2d): The Link1d2d to which the data is added.
+        """
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
