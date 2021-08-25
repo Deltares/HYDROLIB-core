@@ -32,7 +32,7 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
 
 
 class Mesh2d(BaseModel):
-    meshkernel: Optional[mk.MeshKernel] = Field(default_factory=mk.MeshKernel)
+    meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
     mesh2d_node_x: np.ndarray = np.empty(0, dtype=np.double)
     mesh2d_node_y: np.ndarray = np.empty(0, dtype=np.double)
@@ -325,7 +325,7 @@ class Link1d2d(BaseModel):
             The underlying data object of this Link1d2d
     """
 
-    meshkernel: Optional[mk.MeshKernel] = Field(default_factory=mk.MeshKernel)
+    meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
     link1d2d_id: np.ndarray = np.empty(0, object)
     link1d2d_long_name: np.ndarray = np.empty(0, object)
