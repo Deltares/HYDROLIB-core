@@ -17,7 +17,15 @@ from hydrolib.core.io.net.reader import UgridReader
 
 
 def split_by(gl: mk.GeometryList, by: float) -> list:
-    """Function to split mk.GeometryList by seperator."""
+    """Function to split mk.GeometryList by seperator.
+
+    Args:
+        gl (mk.GeometryList): The geometry list to split.
+        by (float): The value by which to split the gl.
+
+    Returns:
+        list: The split lists.
+    """
     x, y = gl.x_coordinates.copy(), gl.y_coordinates.copy()
     idx = np.where(x == by)[0]
 
@@ -83,7 +91,11 @@ class Mesh2d(BaseModel):
     mesh2d_face_nodes: np.ndarray = np.empty((0, 0), dtype=np.int32)
 
     def is_empty(self) -> bool:
-        """ "(bool): Whether this Mesh2d is empty."""
+        """Determine whether this Mesh2d is empty.
+
+        Returns:
+            (bool): Whether this Mesh2d is empty.
+        """
         return self.mesh2d_node_x.size == 0
 
     def read_file(self, file_path: Path) -> None:
@@ -95,7 +107,7 @@ class Mesh2d(BaseModel):
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
 
-    def _set_mesh2d(self):
+    def _set_mesh2d(self) -> None:
         mesh2d = mk.Mesh2d(
             node_x=self.mesh2d_node_x,
             node_y=self.mesh2d_node_y,
@@ -105,7 +117,11 @@ class Mesh2d(BaseModel):
         self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
-        """Return mesh2d from meshkernel"""
+        """Get the mesh2d as represented in the MeshKernel
+
+        Returns:
+            (mk.Mesh2d): The mesh2d as represented in the MeshKernel
+        """
         return self.meshkernel.mesh2d_get()
 
     def create_rectilinear(self, extent: tuple, dx: float, dy: float) -> None:
@@ -137,7 +153,7 @@ class Mesh2d(BaseModel):
         # Process
         self._process(mesh2d_input)
 
-    def _process(self, mesh2d_input):
+    def _process(self, mesh2d_input) -> None:
         # Add input
         self.meshkernel.mesh2d_set(mesh2d_input)
         # Get output
@@ -161,7 +177,7 @@ class Mesh2d(BaseModel):
         ) < npf[:, None]
         self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
 
-    def clip(self, polygon: mk.GeometryList, deletemeshoption: int = 1):
+    def clip(self, polygon: mk.GeometryList, deletemeshoption: int = 1) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
 
         Args:
