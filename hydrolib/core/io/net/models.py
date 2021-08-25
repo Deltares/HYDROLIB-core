@@ -310,6 +310,20 @@ class Branch:
 
 
 class Link1d2d(BaseModel):
+    """Link1d2d defines the 1D2D Links of a model network.
+
+    Attributes:
+        meshkernel (Optional[mk.MeshKernel]):
+            The MeshKernel used to interact with this Link1d2d
+        link1d2d_id (np.ndarray):
+            The id of this Link1d2d
+        link1d2d_long_name (np.ndarray):
+            The long name of this Link1d2d
+        link1d2d_contact_type (np.ndarray):
+            The contact type of this Link1d2d
+        link1d2d (np.ndarray):
+            The underlying data object of this Link1d2d
+    """
 
     meshkernel: Optional[mk.MeshKernel] = Field(default_factory=mk.MeshKernel)
 
@@ -319,9 +333,19 @@ class Link1d2d(BaseModel):
     link1d2d: np.ndarray = np.empty((0, 2), np.int32)
 
     def is_empty(self) -> bool:
+        """Whether this Link1d2d is currently empty.
+
+        Returns:
+            bool: True if the Link1d2d is currently empty; False otherwise.
+        """
         return self.link1d2d.size == 0
 
     def read_file(self, file_path: Path) -> None:
+        """Read the Link1d2d data from the specified netCDF file at file_path into this
+
+        Args:
+            file_path (Path): Path to the netCDF file.
+        """
 
         reader = UgridReader(file_path)
         reader.read_link1d2d(self)
