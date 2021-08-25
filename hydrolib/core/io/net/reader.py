@@ -1,11 +1,15 @@
-from typing import Dict
+from __future__ import annotations
+
+from typing import Dict, TYPE_CHECKING
+
 import json
 from pathlib import Path
 
 import netCDF4 as nc
 import numpy as np
 
-from .models import Link1d2d, Mesh1d, Mesh2d
+if TYPE_CHECKING:
+    from .models import Link1d2d, Mesh1d, Mesh2d
 
 
 class UgridReader:
