@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Optional, Union, Dict
+from typing import List, Union, Dict
 
 import meshkernel as mk
 from meshkernel.py_structures import GeometryList
 import netCDF4 as nc
 import numpy as np
+import numpy.typing as npt
 from pydantic import Field
 
 from hydrolib.core import __version__
@@ -32,6 +33,39 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
 
 
 class Mesh2d(BaseModel):
+    """Mesh2d defines a single two dimensional grid.
+
+    Attributes:
+        meshkernel (mk.MeshKernel):
+            The meshkernel used to manimpulate this Mesh2d.
+        mesh2d_node_x (np.ndarray):
+            The node positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_node_y (np.ndarray):
+            The node positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_node_z (np.ndarray):
+            The node positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_x (np.ndarray):
+            The edge positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_y (np.ndarray):
+            The edge positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_z (np.ndarray):
+            The edge positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_nodes (np.ndarray):
+            The mapping of edges to node indices. Defaults to
+            np.empty((0, 2), dtype=np.int32).
+
+
+        mesh2d_face_x (np.ndarray):
+            The face positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_face_y (np.ndarray):
+            The face positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_face_z (np.ndarray):
+            The face positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_face_nodes (np.ndarray):
+            The mapping of faces to node indices. Defaults to
+            np.empty((0, 0), dtype=np.int32)
+    """
+
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
     mesh2d_node_x: np.ndarray = np.empty(0, dtype=np.double)
@@ -49,10 +83,15 @@ class Mesh2d(BaseModel):
     mesh2d_face_nodes: np.ndarray = np.empty((0, 0), dtype=np.int32)
 
     def is_empty(self) -> bool:
+        """ "(bool): Whether this Mesh2d is empty."""
         return self.mesh2d_node_x.size == 0
 
     def read_file(self, file_path: Path) -> None:
+        """Read the Mesh2d from the file at file_path.
 
+        Args:
+            file_path (Path): Path to the file to be read.
+        """
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
 
@@ -292,11 +331,11 @@ class Branch:
 
         return np.asarray(offsets)
 
-    def interpolate(self, distance: Union[float, np.ndarray]) -> np.ndarray:
+    def interpolate(self, distance: npt.ArrayLike) -> np.ndarray:
         """Interpolate coordinates along branch by length
-        #TODO: How to handle these kind of union datatypes? The array should also consist of floats
+
         Args:
-            distance (Union[float, np.ndarray]): Length
+            distance (npt.ArrayLike): Length
         """
         intpcoords = np.stack(
             [
