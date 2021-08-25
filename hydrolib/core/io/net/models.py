@@ -851,14 +851,9 @@ class Network:
 
         reader = UgridReader(file_path)
 
-        if reader._explorer.mesh1d_key is not None:
-            reader.read_mesh1d_network1d(network._mesh1d)
-
-        if reader._explorer.mesh2d_key is not None:
-            reader.read_mesh2d(network._mesh2d)
-
-        if reader._explorer.link1d2d_key is not None:
-            reader.read_link1d2d(network._link1d2d)
+        reader.read_mesh1d_network1d(network._mesh1d)
+        reader.read_mesh2d(network._mesh2d)
+        reader.read_link1d2d(network._link1d2d)
 
         ds.close()
 
