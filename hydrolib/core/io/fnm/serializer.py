@@ -1,18 +1,13 @@
 """serializer.py defines the write method for the RainfallRunoffModel."""
 
-from typing import List, Optional
-from .models import RainfallRunoffModel
+from typing import Dict, Iterable, Optional
 from pathlib import Path
 
 import inspect
 
 
-def _model_to_values(model: RainfallRunoffModel) -> List[Optional[Path]]:
-    return model.dict().values()  # type: ignore
-
-
-def _calculate_max_value_length(model: RainfallRunoffModel) -> int:
-    sizes = (len(str(v)) for v in _model_to_values(model) if v is not None)
+def _calculate_max_value_length(data: Iterable[Optional[Path]]) -> int:
+    sizes = (len(str(v)) for v in data if v is not None)
     return max(sizes)
 
 
@@ -25,7 +20,7 @@ def _get_formatted_value(path_value: Optional[Path], max_len: int) -> str:
     return f"'{value}'{_calculate_offset(value, max_len)}"
 
 
-def serialize(model: RainfallRunoffModel) -> str:
+def serialize(data: Dict) -> str:
     """Serialize the specified model.
 
     Args:
@@ -34,8 +29,11 @@ def serialize(model: RainfallRunoffModel) -> str:
     Returns:
         str: The serialized RainfallRunoffModel in .fnm format.
     """
-    max_len = _calculate_max_value_length(model)
-    values = (_get_formatted_value(v, max_len) for v in _model_to_values(model))
+    if "filepath" in data:
+        del data["filepath"]
+
+    max_len = _calculate_max_value_length(data.values())
+    values = (_get_formatted_value(v, max_len) for v in data.values())
 
     # fmt: off
     return inspect.cleandoc("""
@@ -182,7 +180,7 @@ def serialize(model: RainfallRunoffModel) -> str:
     # fmt: on
 
 
-def write(model: RainfallRunoffModel, path: Path) -> None:
+def write(path: Path, data: Dict) -> None:
     """Write the specified model to the specified path.
 
     If the parent of the path does not exist, it will be created.
@@ -193,4 +191,4 @@ def write(model: RainfallRunoffModel, path: Path) -> None:
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:
-        f.write(serialize(model))
+        f.write(serialize(data))

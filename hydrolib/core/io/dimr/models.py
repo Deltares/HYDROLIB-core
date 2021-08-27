@@ -1,5 +1,6 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
+from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from pathlib import Path
 from typing import Callable, List, Literal, Optional, Type, Union
 
@@ -81,7 +82,7 @@ class RRComponent(Component):
 
     @classmethod
     def get_model(cls):
-        raise NotImplementedError("Model not implemented yet.")
+        return RainfallRunoffModel
 
 
 class Documentation(BaseModel):

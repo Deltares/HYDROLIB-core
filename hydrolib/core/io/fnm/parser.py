@@ -1,7 +1,6 @@
 """parser.py defines the read method for the RainfallRunoffModel."""
 
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from typing import Iterable, Optional
+from typing import Dict, Iterable, Optional
 
 from pydantic.types import FilePath
 
@@ -31,30 +30,29 @@ def _to_values(lines: Iterable[str]) -> Iterable[Optional[str]]:
     return (_to_path(v) for v in _strip(lines) if not (_is_empty(v) or _is_comment(v)))
 
 
-def parse(lines: Iterable[str]) -> RainfallRunoffModel:
+def parse(keys: Iterable[str], lines: Iterable[str]) -> Dict:
     """Parse the set of lines to its corresponding RainfallRunoffModel.
 
     Args:
+        keys (Iterable[str]): The property keys of the RainfallRunoffModel.
         lines (Iterable[str]): The content of a file in .fnm format.
 
     Returns:
         RainfallRunoffModel: The corresponding RainfallRunoffModel.
     """
-    keys = RainfallRunoffModel.property_keys()
     values = _to_values(lines)
-    data = dict(zip(keys, values))
-
-    return RainfallRunoffModel.parse_obj(data)
+    return dict(zip(keys, values))
 
 
-def read(path: FilePath) -> RainfallRunoffModel:
+def read(keys: Iterable[str], path: FilePath) -> Dict:
     """Parse the file at the specified path into a RainfallRunoffModel
 
     Args:
+        keys (Iterable[str]): The property keys of the RainfallRunoffModel.
         path (FilePath): The path to the Rainfall Runoff definition file
 
     Returns:
         RainfallRunoffModel: The RainfallRunoffModel corresponding with the file.
     """
     with path.open("r") as f:
-        return parse(f)
+        return parse(keys, f)

@@ -1,11 +1,16 @@
 """models.py defines the RainfallRunoffModel and supporting structures."""
 
 from pathlib import Path
-from typing import Iterable, Literal, Optional
-from hydrolib.core.basemodel import BaseModel
+from typing import Callable, Dict, Iterable, Literal, Optional
+
+from pydantic.types import FilePath
+from hydrolib.core.basemodel import FileModel
+
+from .parser import read
+from .serializer import write
 
 
-class RainfallRunoffModel(BaseModel):
+class RainfallRunoffModel(FileModel):
     """The RainfallRunoffModel contains all paths and sub-models related to the
     Rainfall Runoff model.
     """
@@ -206,4 +211,21 @@ class RainfallRunoffModel(BaseModel):
 
     @classmethod
     def property_keys(cls) -> Iterable[str]:
-        return cls.schema()["properties"].keys()
+        # Skip first element corresponding with file_path introduced by the FileModel.
+        return list(cls.schema()["properties"].keys())[1:]
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".fnm"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "rr"
+
+    @classmethod
+    def _get_parser(cls) -> Callable[[FilePath], Dict]:
+        return lambda path: read(cls.property_keys(), path)
+
+    @classmethod
+    def _get_serializer(cls) -> Callable[[Path, Dict], None]:
+        return write
