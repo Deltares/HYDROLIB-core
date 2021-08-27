@@ -192,7 +192,5 @@ def write(model: RainfallRunoffModel, path: Path) -> None:
         path (Path): The file path to write to.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    text = serialize(model)
-
     with path.open("w") as f:
-        f.write(text)
+        f.write(serialize(model))

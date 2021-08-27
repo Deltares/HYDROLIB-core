@@ -31,6 +31,22 @@ def _to_values(lines: Iterable[str]) -> Iterable[Optional[str]]:
     return (_to_path(v) for v in _strip(lines) if not (_is_empty(v) or _is_comment(v)))
 
 
+def parse(lines: Iterable[str]) -> RainfallRunoffModel:
+    """Parse the set of lines to its corresponding RainfallRunoffModel.
+
+    Args:
+        lines (Iterable[str]): The content of a file in .fnm format.
+
+    Returns:
+        RainfallRunoffModel: The corresponding RainfallRunoffModel.
+    """
+    keys = RainfallRunoffModel.property_keys()
+    values = _to_values(lines)
+    data = dict(zip(keys, values))
+
+    return RainfallRunoffModel.parse_obj(data)
+
+
 def read(path: FilePath) -> RainfallRunoffModel:
     """Parse the file at the specified path into a RainfallRunoffModel
 
@@ -41,8 +57,4 @@ def read(path: FilePath) -> RainfallRunoffModel:
         RainfallRunoffModel: The RainfallRunoffModel corresponding with the file.
     """
     with path.open("r") as f:
-        keys = RainfallRunoffModel.property_keys()
-        values = _to_values(f)
-        data = dict(zip(keys, values))
-
-    return RainfallRunoffModel.parse_obj(data)
+        return parse(f)
