@@ -1,3 +1,4 @@
+from hydrolib.core.io.dimr.models import DIMR
 from pathlib import Path
 
 import pytest
@@ -5,19 +6,18 @@ import pytest
 from hydrolib.core import __version__
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
-from tests.utils import test_data_dir, test_output_dir, test_reference_dir
+from tests.utils import test_input_dir, test_output_dir, test_reference_dir
 
 
 def test_parse_returns_correct_data():
     test_file = (
-        test_data_dir
-        / "input"
+        test_input_dir
         / "e02"
         / "c11_korte-woerden-1d"
         / "dimr_model"
         / "dimr_config.xml"
     )
-    result = DIMRParser.parse(Path(test_file))
+    result = DIMRParser.parse(test_file)
 
     documentation = result["documentation"]
     assert documentation["fileVersion"] == "1.2"

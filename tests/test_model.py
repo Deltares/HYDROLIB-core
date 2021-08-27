@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from pathlib import Path
 
 import pytest
@@ -20,7 +21,7 @@ from hydrolib.core.io.dimr.models import (
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
-from .utils import test_data_dir, test_output_dir, test_reference_dir
+from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
 
 
 def test_dimr_model():
@@ -44,6 +45,21 @@ def test_dimr_model():
     d.save(folder=test_output_dir / "tmp")
     assert d.filepath.is_file()
     assert d.component[1].model.filepath.is_file()
+
+
+def test_parse_rr_model_returns_correct_model():
+    test_file = test_input_dir / "rr_sample_trimmed" / "dimr_config.xml"
+    result = DIMR(filepath=test_file)
+
+    assert len(result.component) == 1
+
+    model = result.component[0].model
+    assert isinstance(model, RainfallRunoffModel)
+
+    # verify some non-default names altered in the source file.
+    assert model.control_file == Path("not-delft_3b.ini")
+    assert model.bui_file == Path("not-default.bui")
+    assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
 
 
 def test_dimr_validate():
