@@ -78,6 +78,9 @@ class RainfallRunoffModel(FileModel):
     wwtp_tables: Path = Path("wwtp.tbl")
     industry_general: Path = Path("industry.3b")
 
+    # Mappix paths should not change and always hold the defined values.
+    # As such these values have been implemented as Literal values with
+    # corresponding path properties, to expose them as paths.
     mappix_paved_area_sewage_storage_name: Literal["pvstordt.his"] = "pvstordt.his"
     mappix_paved_area_flow_rates_name: Literal["pvflowdt.his"] = "pvflowdt.his"
     mappix_unpaved_area_flow_rates_name: Literal["upflowdt.his"] = "upflowdt.his"
