@@ -165,9 +165,11 @@ class Restart(INIBasedModel):
 class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
     quantity: str
-    nodeId: str
-    forcingfile: Optional[ForcingModel] = "FlowFM_boundaryconditions1d.bc"
-    bndWidth1D: float
+    nodeId: Optional[str]
+    forcingfile: Optional[
+        ForcingModel
+    ] = "FlowFM_boundaryconditions1d.bc"  # TODO or None?
+    bndWidth1D: Optional[float]
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -176,8 +178,10 @@ class Boundary(INIBasedModel):
 class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
     id: str
-    name: str
-    nodeId: str
+    name: str = ""
+    nodeId: Optional[str]
+    branchId: Optional[str]
+    chainage: Optional[float]
     discharge: str
 
 

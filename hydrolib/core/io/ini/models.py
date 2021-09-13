@@ -152,12 +152,19 @@ class DataBlockINIBasedModel(INIBasedModel):
 
 
 class INIGeneral(INIBasedModel):
+    _header: Literal["general"] = "general"
     fileVersion: str = "3.00"
     fileType: str
 
     @classmethod
     def _supports_comments(cls):
         return False
+
+
+class FrictGeneral(INIGeneral):
+    # TODO This is a dummy, check actual file!
+    fileVersion: str = "1.00"
+    fileType: Literal["frict"] = "frict"
 
 
 class CrossdefGeneral(INIGeneral):
@@ -220,7 +227,7 @@ class Definition(INIBasedModel):
 
 
 class CrossDefModel(INIModel):
-    general: CrossdefGeneral
+    general: CrossdefGeneral = CrossdefGeneral()
     definition: List[Definition] = []
 
     _make_list = make_list_validator("definition")
@@ -236,7 +243,7 @@ class CrossSection(INIBasedModel):
 
 
 class CrossLocModel(INIModel):
-    general: CrosslockGeneral
+    general: CrosslockGeneral = CrosslockGeneral()
     crosssection: List[CrossSection] = []
 
     @classmethod
@@ -251,7 +258,7 @@ class Global(INIBasedModel):
 
 
 class FrictionModel(INIModel):
-    general: INIGeneral
+    general: FrictGeneral = FrictGeneral()
     global_: List[Global] = Field([], alias="global")  # to circumvent built-in kw
 
     _split_to_list = make_list_validator(

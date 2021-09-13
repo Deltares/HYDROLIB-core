@@ -115,8 +115,8 @@ class ForcingGeneral(INIGeneral):
 
 
 class ForcingModel(INIModel):
-    general: ForcingGeneral
-    forcing: List[ForcingBase]
+    general: ForcingGeneral = ForcingGeneral()
+    forcing: List[ForcingBase] = []
 
     @classmethod
     def _ext(cls) -> str:
