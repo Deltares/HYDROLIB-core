@@ -164,7 +164,7 @@ class INIGeneral(INIBasedModel):
 class FrictGeneral(INIGeneral):
     # TODO This is a dummy, check actual file!
     fileVersion: str = "1.00"
-    fileType: Literal["frict"] = "frict"
+    fileType: Literal["roughness"] = "roughness"
 
 
 class CrossdefGeneral(INIGeneral):
