@@ -135,7 +135,7 @@ Temperature       = 0
 
 [wind]
 ICdtyp            = 2
-Cdbreakpoints     = 0.00063 0.00723
+Cdbreakpoints     = 0.00063 7.23d-003
 Windspeedbreakpoints= 0 100
 Rhoair            = 1.205
 PavBnd            = 0
