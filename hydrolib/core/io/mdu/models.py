@@ -166,9 +166,7 @@ class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
     quantity: str
     nodeId: Optional[str]
-    forcingfile: Optional[
-        ForcingModel
-    ] = "FlowFM_boundaryconditions1d.bc"  # TODO or None?
+    forcingfile: Optional[ForcingModel] = None
     bndWidth1D: Optional[float]
 
     def is_intermediate_link(self) -> bool:

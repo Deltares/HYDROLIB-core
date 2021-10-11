@@ -124,7 +124,7 @@ class ForcingModel(INIModel):
 
     @classmethod
     def _filename(cls) -> str:
-        return "forcing"
+        return "boundaryconditions"
 
     @classmethod
     def _get_parser(cls) -> Callable:
