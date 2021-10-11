@@ -1,57 +1,107 @@
-from typing import Dict
+from __future__ import annotations
+import logging
+
+from hydrolib.core.basemodel import BaseModel
+
+from collections import namedtuple
+from typing import Any, Dict, TYPE_CHECKING, Optional, Tuple
+
 import json
 from pathlib import Path
 
 import netCDF4 as nc
 import numpy as np
 
+if TYPE_CHECKING:
+    from .models import Link1d2d, Mesh1d, Mesh2d
+
 
 class UgridReader:
+    """UgridReader provides the logic to read a specified UGRID file."""
+
     def __init__(self, file_path: Path) -> None:
+        """Creates a new UgridReader, reading the specified path.
+
+        Args:
+            file_path (Path): The path to read from.
+
+        Raises:
+            OSError: Thrown when file_path does not exist.
+        """
         self._ncfile_path = file_path
 
         if not self._ncfile_path.exists():
             raise OSError(f'File "{self._ncfile_path}" not found.')
 
-        self._explorer = NCExplorer(self._ncfile_path)
+        self._explorer = NCExplorer.from_file_path(self._ncfile_path)
 
-    def read_mesh1d_network1d(self, mesh1d: "Mesh1d") -> None:
+    def read_mesh1d_network1d(self, mesh1d: Mesh1d) -> None:
         """
-        Read Ugrid from netcdf and return dflowfm cstructure with grid
+        Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the
+        specified mesh1d.
+
+        Args:
+            mesh1d (Mesh1d): The object to which the read network1d is added.
         """
+        if (
+            self._explorer.mesh1d_var_name_mapping is None
+            or self._explorer.network1d_var_name_mapping is None
+        ):
+            logging.debug(
+                "Mesh1d and Network are not found in the dataset, reading is skipped."
+            )
+            return
+
         # If the mesh is not given (default), use the networks one
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
-        for meshkey, nckey in self._explorer.mesh1d_var_dict.items():
+        for meshkey, nckey in self._explorer.mesh1d_var_name_mapping.items():
             setattr(mesh1d, meshkey, self._read_nc_attribute(ds[nckey]))
 
         # Read network variables
-        for meshkey, nckey in self._explorer.network1d_var_dict.items():
+        for meshkey, nckey in self._explorer.network1d_var_name_mapping.items():
             setattr(mesh1d, meshkey, self._read_nc_attribute(ds[nckey]))
 
         # Process network
         mesh1d._process_network1d()
 
-        # self.network.mesh1d.add_from_other(mesh1d)
-
         ds.close()
 
-    def read_mesh2d(self, mesh2d: "Mesh2d") -> None:
+    def read_mesh2d(self, mesh2d: Mesh2d) -> None:
+        """
+        Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the
+        specified mesh2d.
+
+        Args:
+            mesh2d (Mesh2d): The object to which the read network1d is added.
+        """
+        if self._explorer.mesh2d_var_name_mapping is None:
+            logging.debug("Mesh2d is not found in the dataset, reading is skipped.")
+            return
 
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
-        for meshkey, nckey in self._explorer.mesh2d_var_dict.items():
+        for meshkey, nckey in self._explorer.mesh2d_var_name_mapping.items():
             setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
 
         ds.close()
 
-    def read_link1d2d(self, link1d2d: "Link1d2d") -> None:
+    def read_link1d2d(self, link1d2d: Link1d2d) -> None:
+        """Read the Link1d2d from the wrapped netCDF file of this UgridReader.
+
+        Args:
+            link1d2d (Link1d2d): The Link1d2d to which the data is added.
+        """
+        if self._explorer.link1d2d_var_name_mapping is None:
+            logging.debug("Link1d2d is not found in the dataset, reading is skipped.")
+            return
+
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
-        for meshkey, nckey in self._explorer.link1d2d_var_dict.items():
+        for meshkey, nckey in self._explorer.link1d2d_var_name_mapping.items():
             setattr(link1d2d, meshkey, self._read_nc_attribute(ds[nckey]))
 
         ds.close()
@@ -86,123 +136,166 @@ class UgridReader:
         return arr
 
 
-class NCExplorer:
-    def __init__(self, file_path: Path):
+class NCExplorer(BaseModel):
+    """NCExplorer provides the mapping of the UGRID variable names as used within
+    HYDROLIB models to the actual values used within the netCDF file.
 
-        self.ds = nc.Dataset(file_path)  # type: ignore[import]
+    If a component is not present, the corresponding mapping is set to None.
+    A NCExplorer can be constructed from a file by using the `from_file_path`
+    class method.
 
-        # Read the key conventions from json, based on nc version number
+    Attributes:
+        network1d_var_name_mapping (Optional[Dict[str, str]]):
+            The mapping of Network variable names.
+        mesh1d_var_name_mapping (Optional[Dict[str, str]]):
+            The mapping of Mesh1d variable names.
+        mesh2d_var_name_mapping (Optional[Dict[str, str]]):
+            The mapping of Mesh2d variable names.
+        link1d2d_var_name_mapping (Optional[Dict[str, str]]):
+            The mapping of Link1d2d variable names.
+    """
+
+    Keys = namedtuple("Keys", ["network1d", "mesh1d", "mesh2d", "link1d2d"])
+
+    network1d_var_name_mapping: Optional[Dict[str, str]]
+    mesh1d_var_name_mapping: Optional[Dict[str, str]]
+    mesh2d_var_name_mapping: Optional[Dict[str, str]]
+    link1d2d_var_name_mapping: Optional[Dict[str, str]]
+
+    @classmethod
+    def from_file_path(cls, file_path: Path) -> "NCExplorer":
+        """Create a new NCExplorer from the specified file_path.
+
+        Args:
+            file_path (Path): The path to the net.nc file.
+
+        Returns:
+            NCExplorer: A newly initialized NCExplorer.
+        """
+        conventions = NCExplorer._read_ugrid_conventions()
+        dataset = nc.Dataset(file_path)  # type: ignore[import]
+
+        keys = NCExplorer._determine_keys(dataset)
+        network1d_mapping = NCExplorer._retrieve_variable_names_mapping(
+            keys.network1d, dataset, conventions["network1d"]
+        )
+        mesh1d_mapping = NCExplorer._retrieve_variable_names_mapping(
+            keys.mesh1d, dataset, conventions["mesh1d"]
+        )
+        mesh2d_mapping = NCExplorer._retrieve_variable_names_mapping(
+            keys.mesh2d, dataset, conventions["mesh2d"]
+        )
+        link1d2d_mapping = NCExplorer._retrieve_variable_names_mapping(
+            keys.link1d2d, dataset, conventions["link1d2d"]
+        )
+
+        dataset.close()
+
+        return cls(
+            network1d_var_name_mapping=network1d_mapping,
+            mesh1d_var_name_mapping=mesh1d_mapping,
+            mesh2d_var_name_mapping=mesh2d_mapping,
+            link1d2d_var_name_mapping=link1d2d_mapping,
+        )
+
+    @staticmethod
+    def _read_ugrid_conventions() -> Dict:
         with open(Path(__file__).parent.joinpath("ugrid_conventions.json"), "r") as f:
-            variable_names = json.load(f)
+            return json.load(f)
 
-        self.network1d_var_dict = variable_names["network1d"]
-        self.mesh1d_var_dict = variable_names["mesh1d"]
-        self.mesh2d_var_dict = variable_names["mesh2d"]
-        self.link1d2d_var_dict = variable_names["link1d2d"]
+    @staticmethod
+    def _determine_keys(dataset: nc.Dataset) -> NCExplorer.Keys:  # type: ignore[import]
+        keys1d = NCExplorer._retrieve_1d_keys(dataset)
 
-        self.network1d_key = None
-        self.mesh1d_key = None
-        self.mesh2d_key = None
-        self.link1d2d_key = None
+        mesh1d = keys1d[0] if keys1d is not None else None
+        network1d = keys1d[1] if keys1d is not None else None
 
-        self._get_mesh1d_network1d_key()
-        self._get_mesh2d_key()
-        self._get_link1d2d_key()
+        mesh2d = NCExplorer._retrieve_2d_key(dataset)
+        link1d2d = NCExplorer._retrieve_1d2d_key(dataset)
 
-        self._update_dicts()
+        return NCExplorer.Keys(network1d, mesh1d, mesh2d, link1d2d)
 
-        self.ds.close()
+    @staticmethod
+    def _retrieve_1d_keys(dataset) -> Optional[Tuple[str, str]]:
+        def is_mesh1d(ncdata) -> bool:
+            return (
+                NCExplorer._has_cf_role(ncdata, "mesh_topology")
+                and NCExplorer._has_n_topology_dimension(ncdata, 1)
+                and NCExplorer._has_attribute(ncdata, "coordinate_space")
+            )
 
-    def _get_mesh1d_network1d_key(self) -> None:
-        for var_key, ncdata in self.ds.variables.items():
-            attributes = ncdata.ncattrs()
-            if (
-                (
-                    ("cf_role" in attributes)
-                    and (ncdata.getncattr("cf_role") == "mesh_topology")
-                )
-                and (
-                    ("topology_dimension" in attributes)
-                    and (ncdata.getncattr("topology_dimension") == 1)
-                )
-                and ("coordinate_space" in attributes)
-            ):
-                self.mesh1d_key = var_key
-                self.network1d_key = ncdata.getncattr("coordinate_space")
-                break
+        for var_key, ncdata in dataset.variables.items():
+            if is_mesh1d(ncdata):
+                return var_key, ncdata.getncattr("coordinate_space")
+        return None
 
-    def _get_mesh2d_key(self) -> None:
-        for var_key, ncdata in self.ds.variables.items():
-            attributes = ncdata.ncattrs()
-            if (
-                ("cf_role" in attributes)
-                and (ncdata.getncattr("cf_role") == "mesh_topology")
-            ) and (
-                ("topology_dimension" in attributes)
-                and (ncdata.getncattr("topology_dimension") == 2)
-            ):
-                self.mesh2d_key = var_key
-                break
+    @staticmethod
+    def _retrieve_2d_key(dataset) -> Optional[str]:
+        def is_mesh2d(ncdata) -> bool:
+            return NCExplorer._has_cf_role(
+                ncdata, "mesh_topology"
+            ) and NCExplorer._has_n_topology_dimension(ncdata, 2)
 
-    def _get_link1d2d_key(self) -> None:
-        for var_key, ncdata in self.ds.variables.items():
-            attributes = ncdata.ncattrs()
-            if ("cf_role" in attributes) and (
-                ncdata.getncattr("cf_role") == "mesh_topology_contact"
-            ):
-                self.link1d2d_key = var_key
-                break
+        for var_key, ncdata in dataset.variables.items():
+            if is_mesh2d(ncdata):
+                return var_key
+        return None
 
-    def _update_dicts(self):
-        """Prepend the key to each dictionary value
-        Check existance of values from dictionary in netcdf"""
-        # Add deduced keys to dictionary
-        if self.network1d_key is not None:
-            self.network1d_var_dict = {
-                k: [self.network1d_key + v for v in vs]
-                for k, vs in self.network1d_var_dict.items()
-            }
-            self._check_existence(self.network1d_var_dict)
+    @staticmethod
+    def _retrieve_1d2d_key(dataset) -> Optional[str]:
+        def is_link1d2d(ncdata) -> bool:
+            return NCExplorer._has_cf_role(ncdata, "mesh_topology_contact")
 
-        if self.mesh1d_key is not None:
-            self.mesh1d_var_dict = {
-                k: [self.mesh1d_key + v for v in vs]
-                for k, vs in self.mesh1d_var_dict.items()
-            }
-            self._check_existence(self.mesh1d_var_dict)
+        for var_key, ncdata in dataset.variables.items():
+            if is_link1d2d(ncdata):
+                return var_key
+        return None
 
-        if self.mesh2d_key is not None:
-            self.mesh2d_var_dict = {
-                k: [self.mesh2d_key + v for v in vs]
-                for k, vs in self.mesh2d_var_dict.items()
-            }
-            self._check_existence(self.mesh2d_var_dict)
+    @staticmethod
+    def _has_cf_role(ncdata, cf_role_value: str) -> bool:
+        return NCExplorer._has_attribute(ncdata, "cf_role", cf_role_value)
 
-        if self.link1d2d_key is not None:
-            self.link1d2d_var_dict = {
-                k: [self.link1d2d_key + v for v in vs]
-                for k, vs in self.link1d2d_var_dict.items()
-            }
-            self._check_existence(self.link1d2d_var_dict)
+    @staticmethod
+    def _has_n_topology_dimension(ncdata, n: int) -> bool:
+        return NCExplorer._has_attribute(ncdata, "topology_dimension", n)
 
-    def _check_existence(self, dct: Dict) -> None:
-        ncvariables = list(self.ds.variables.keys())
-        for key, values in dct.items():
-            # Save origional for error message
-            original = values[:]
-            # Remove all values that are not in the netcdf
-            for v in reversed(values):
-                if v not in ncvariables:
-                    values.remove(v)
-            # One variable should remain
-            if len(values) == 0:
+    @staticmethod
+    def _has_attribute(ncdata, name: str, value: Any = None):
+        attributes = ncdata.ncattrs()
+        return name in attributes and (value is None or ncdata.getncattr(name) == value)
+
+    @staticmethod
+    def _retrieve_variable_names_mapping(
+        variable_key: Optional[str], dataset, conventions: Dict
+    ) -> Optional[Dict]:
+        if variable_key is None:
+            # particular key does not exist, as such there are no variables either.
+            return None
+
+        nc_variables_set = set(dataset.variables.keys())
+
+        result = {}
+
+        for key, value in conventions.items():
+            nc_vars = set(variable_key + suffix for suffix in value["suffices"])
+            in_dataset = nc_vars & nc_variables_set
+
+            len_in_data_set = len(in_dataset)
+
+            if len_in_data_set == 1:
+                result[key] = in_dataset.pop()
+            elif len_in_data_set > 1:
                 raise KeyError(
-                    f'An attribute for "{key}" was not found in nc file. Expected "{"/".join(original)}"'
+                    f'Multiple attributes for "{key}" were found in nc file. Got "{" and ".join(in_dataset)}"'
                 )
-            elif len(values) > 1:
+            elif "is_optional" in value and value["is_optional"]:
+                logging.info(
+                    "Optional variable '%s' is not present in the nc_file and is skipped",
+                    key,
+                )
+            else:
                 raise KeyError(
-                    f'Multiple attributes for "{key}" were found in nc file. Got "{" and ".join(values)}"'
+                    f'An attribute for "{key}" was not found in nc file. Expected "{"/".join(nc_vars)}"'
                 )
 
-            # Update the dictionary from a list to a single string
-            dct[key] = values[0]
+        return result

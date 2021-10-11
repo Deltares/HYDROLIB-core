@@ -1,3 +1,5 @@
+from typing import Dict, List, Optional
+from hydrolib.core.io.net.reader import NCExplorer
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -7,7 +9,7 @@ from meshkernel import GeometryList, MeshKernel
 
 import json
 
-from hydrolib.core.io.net.models import Link1d2d, Mesh2d, NetworkModel, Branch
+from hydrolib.core.io.net.models import Mesh2d, NetworkModel, Branch
 from ..utils import test_output_dir, test_input_dir
 
 
@@ -181,24 +183,6 @@ def test_read_net_nc(filepath):
     assert network._mesh2d.is_empty()
 
 
-def test_load_ugrid_json():
-
-    path = Path(__file__).parent.parent.parent.joinpath(
-        "hydrolib/core/io/net/ugrid_conventions.json"
-    )
-    assert path.exists()
-
-    # Read the key conventions from json, based on nc version number
-    with open(path, "r") as f:
-        conventions = json.load(f)
-
-    # Check if the format is as expected
-    for _, dct in conventions.items():
-        assert isinstance(dct, dict)
-        for _, values in dct.items():
-            assert isinstance(values, list)
-
-
 @pytest.mark.parametrize("filepath", cases)
 def test_read_write_read_compare(filepath):
     # Get nc file path
@@ -236,3 +220,231 @@ def test_read_write_read_compare(filepath):
 
         for key in dct.keys():
             np.testing.assert_array_equal(getattr(part1, key), getattr(part2, key))
+
+
+class TestMesh2d:
+    test_file = test_input_dir / "ugrid_files" / "mesh2d_net.nc"
+
+    def test_read_file_expected_results(self):
+        mesh = Mesh2d()
+        mesh.read_file(self.test_file)
+
+        # fmt: off
+        mesh2d_node_x=np.asarray([ 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 300.0, 300.0, 300.0, 300.0, 300.0, 300.0, 400.0, 400.0, 400.0, 400.0, 400.0, 400.0, 500.0, 500.0, 500.0, 500.0, ]),
+        mesh2d_node_y=np.asarray([ 200.0,300.0, 400.0, 500.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 200.0, 300.0, 400.0, 500.0,]),
+        mesh2d_node_z=np.asarray([-999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, ]),
+        mesh2d_edge_x=np.ndarray([], dtype=np.float64),
+        mesh2d_edge_y=np.ndarray([], dtype=np.float64),
+        mesh2d_edge_z=np.ndarray([], dtype=np.float64),
+        mesh2d_edge_nodes=np.array([
+            [ 0,  5],
+            [ 5,  6],
+            [ 6,  1],
+            [ 1,  0],
+            [ 6,  7],
+            [ 7,  2],
+            [ 2,  1],
+            [ 7,  8],
+            [ 8,  3],
+            [ 3,  2],
+            [ 4, 10],
+            [10, 11],
+            [11,  5],
+            [ 5,  4],
+            [11, 12],
+            [12,  6],
+            [12, 13],
+            [13,  7],
+            [13, 14],
+            [14,  8],
+            [14, 15],
+            [15,  9],
+            [ 9,  8],
+            [10, 16],
+            [16, 17],
+            [17, 11],
+            [17, 18],
+            [18, 12],
+            [18, 19],
+            [19, 13],
+            [19, 20],
+            [20, 14],
+            [20, 21],
+            [21, 15],
+            [16, 22],
+            [22, 23],
+            [23, 17],
+            [23, 24],
+            [24, 18],
+            [24, 25],
+            [25, 19],
+            [25, 26],
+            [26, 20],
+            [26, 27],
+            [27, 21],
+            [23, 28],
+            [28, 29],
+            [29, 24],
+            [29, 30],
+            [30, 25],
+            [30, 31],
+            [31, 26]], dtype=np.int32),
+        mesh2d_face_x=np.asarray([ 50.0, 50.0, 50.0, 150.0, 150.0, 150.0, 150.0, 150.0, 250.0, 250.0, 250.0, 250.0, 250.0, 350.0, 350.0, 350.0, 350.0, 350.0, 450.0, 450.0, 450.0, ]),
+        mesh2d_face_y=np.asarray([250.0, 350.0, 450.0, 150.0, 250.0, 350.0, 450.0, 550.0, 150.0, 250.0, 350.0, 450.0, 550.0, 150.0, 250.0, 350.0, 450.0, 550.0, 250.0, 350.0, 450.0, ]),
+        mesh2d_face_z=np.asarray([], dtype=np.float64),
+        mesh2d_face_nodes=np.asarray(
+            [
+                [0, 5, 6, 1],
+                [1, 6, 7, 2],
+                [2, 7, 8, 3],
+                [4, 10, 11, 5],
+                [5, 11, 12, 6],
+                [6, 12, 13, 7],
+                [7, 13, 14, 8],
+                [8, 14, 15, 9],
+                [10, 16, 17, 11],
+                [11, 17, 18, 12],
+                [12, 18, 19, 13],
+                [13, 19, 20, 14],
+                [14, 20, 21, 15],
+                [16, 22, 23, 17],
+                [17, 23, 24, 18],
+                [18, 24, 25, 19],
+                [19, 25, 26, 20],
+                [20, 26, 27, 21],
+                [23, 28, 29, 24],
+                [24, 29, 30, 25],
+                [25, 30, 31, 26],
+            ],
+            dtype=np.int32,
+        ),
+        # fmt: on
+
+        assert np.array_equiv(mesh.mesh2d_node_x, mesh2d_node_x)
+        assert np.array_equiv(mesh.mesh2d_node_y, mesh2d_node_y)
+        assert np.array_equiv(mesh.mesh2d_node_z, mesh2d_node_z)
+
+        assert np.array_equiv(mesh.mesh2d_edge_x, mesh2d_edge_x)
+        assert np.array_equiv(mesh.mesh2d_edge_y, mesh2d_edge_y)
+        assert np.array_equiv(mesh.mesh2d_edge_z, mesh2d_edge_z)
+        assert np.array_equiv(mesh.mesh2d_edge_nodes, mesh2d_edge_nodes)
+
+        assert np.array_equiv(mesh.mesh2d_face_x, mesh2d_face_x)
+        assert np.array_equiv(mesh.mesh2d_face_y, mesh2d_face_y)
+        assert np.array_equiv(mesh.mesh2d_face_z, mesh2d_face_z)
+        assert np.array_equiv(mesh.mesh2d_face_nodes, mesh2d_face_nodes)
+
+
+class TestNCExplorer:
+    mesh2d_file = test_input_dir / "ugrid_files" / "mesh2d_net.nc"
+
+    def test_load_ugrid_json(self):
+        path = Path(__file__).parent.parent.parent.joinpath(
+            "hydrolib/core/io/net/ugrid_conventions.json"
+        )
+        assert path.exists()
+
+        with path.open() as f:
+            conventions = json.load(f)
+
+        # Check if the format is as expected
+        for _, dct in conventions.items():
+            assert isinstance(dct, dict)
+
+            for _, values in dct.items():
+                assert isinstance(values, dict)
+                assert "suffices" in values
+                assert isinstance(values["suffices"], List)
+
+    @pytest.mark.parametrize(
+        "file_path,network1d_dict,mesh1d_dict,mesh2d_dict,link1d2d_dict",
+        [
+            (
+                test_input_dir / "ugrid_files" / "mesh2d_net.nc",
+                None,
+                None,
+                {
+                    "mesh2d_node_x": "mesh2d_node_x",
+                    "mesh2d_node_y": "mesh2d_node_y",
+                    "mesh2d_node_z": "mesh2d_node_z",
+                    "mesh2d_edge_nodes": "mesh2d_edge_nodes",
+                    "mesh2d_face_x": "mesh2d_face_x",
+                    "mesh2d_face_y": "mesh2d_face_y",
+                    "mesh2d_face_nodes": "mesh2d_face_nodes",
+                },
+                None,
+            ),
+            (
+                test_input_dir
+                / "e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc",
+                {
+                    "network1d_node_id": "network1d_node_ids",
+                    "network1d_node_long_name": "network1d_node_long_names",
+                    "network1d_node_x": "network1d_node_x",
+                    "network1d_node_y": "network1d_node_y",
+                    "network1d_branch_id": "network1d_branch_ids",
+                    "network1d_branch_long_name": "network1d_branch_long_names",
+                    "network1d_branch_length": "network1d_edge_length",
+                    "network1d_branch_order": "network1d_branch_order",
+                    "network1d_edge_nodes": "network1d_edge_nodes",
+                    "network1d_geom_x": "network1d_geom_x",
+                    "network1d_geom_y": "network1d_geom_y",
+                    "network1d_part_node_count": "network1d_geom_node_count",
+                },
+                {
+                    "mesh1d_node_id": "mesh1d_node_ids",
+                    "mesh1d_node_long_name": "mesh1d_node_long_names",
+                    "mesh1d_edge_nodes": "mesh1d_edge_nodes",
+                    "mesh1d_node_branch_id": "mesh1d_node_branch_id",
+                    "mesh1d_node_branch_offset": "mesh1d_node_branch_offset",
+                    "mesh1d_edge_branch_id": "mesh1d_edge_branch_id",
+                    "mesh1d_edge_branch_offset": "mesh1d_edge_branch_offset",
+                },
+                None,
+                None,
+            ),
+            (
+                test_input_dir
+                / "e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_net.nc",
+                {
+                    "network1d_node_id": "network_node_id",
+                    "network1d_node_long_name": "network_node_long_name",
+                    "network1d_node_x": "network_node_x",
+                    "network1d_node_y": "network_node_y",
+                    "network1d_branch_id": "network_branch_id",
+                    "network1d_branch_long_name": "network_branch_long_name",
+                    "network1d_branch_length": "network_edge_length",
+                    "network1d_branch_order": "network_branch_order",
+                    "network1d_edge_nodes": "network_edge_nodes",
+                    "network1d_geom_x": "network_geom_x",
+                    "network1d_geom_y": "network_geom_y",
+                    "network1d_part_node_count": "network_geom_node_count",
+                },
+                {
+                    "mesh1d_node_id": "mesh1d_node_id",
+                    "mesh1d_node_long_name": "mesh1d_node_long_name",
+                    "mesh1d_edge_nodes": "mesh1d_edge_nodes",
+                    "mesh1d_node_branch_id": "mesh1d_node_branch",
+                    "mesh1d_node_branch_offset": "mesh1d_node_offset",
+                    "mesh1d_edge_branch_id": "mesh1d_edge_branch",
+                    "mesh1d_edge_branch_offset": "mesh1d_edge_offset",
+                },
+                None,
+                None,
+            ),
+        ],
+    )
+    def test_from_file_expected_results(
+        self,
+        file_path: Path,
+        network1d_dict: Optional[Dict[str, str]],
+        mesh1d_dict: Optional[Dict[str, str]],
+        mesh2d_dict: Optional[Dict[str, str]],
+        link1d2d_dict: Optional[Dict[str, str]],
+    ):
+        explorer = NCExplorer.from_file_path(file_path)
+
+        assert explorer.network1d_var_name_mapping == network1d_dict
+        assert explorer.mesh1d_var_name_mapping == mesh1d_dict
+        assert explorer.mesh2d_var_name_mapping == mesh2d_dict
+        assert explorer.link1d2d_var_name_mapping == link1d2d_dict

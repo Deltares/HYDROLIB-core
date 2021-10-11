@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Optional, Union, Dict
+from typing import List, Union, Dict
 
 import meshkernel as mk
 from meshkernel.py_structures import GeometryList
 import netCDF4 as nc
 import numpy as np
+import numpy.typing as npt
 from pydantic import Field
 
 from hydrolib.core import __version__
@@ -16,7 +17,15 @@ from hydrolib.core.io.net.reader import UgridReader
 
 
 def split_by(gl: mk.GeometryList, by: float) -> list:
-    """Function to split mk.GeometryList by seperator."""
+    """Function to split mk.GeometryList by seperator.
+
+    Args:
+        gl (mk.GeometryList): The geometry list to split.
+        by (float): The value by which to split the gl.
+
+    Returns:
+        list: The split lists.
+    """
     x, y = gl.x_coordinates.copy(), gl.y_coordinates.copy()
     idx = np.where(x == by)[0]
 
@@ -32,7 +41,40 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
 
 
 class Mesh2d(BaseModel):
-    meshkernel: Optional[mk.MeshKernel] = Field(default_factory=mk.MeshKernel)
+    """Mesh2d defines a single two dimensional grid.
+
+    Attributes:
+        meshkernel (mk.MeshKernel):
+            The meshkernel used to manimpulate this Mesh2d.
+        mesh2d_node_x (np.ndarray):
+            The node positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_node_y (np.ndarray):
+            The node positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_node_z (np.ndarray):
+            The node positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_x (np.ndarray):
+            The edge positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_y (np.ndarray):
+            The edge positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_z (np.ndarray):
+            The edge positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_edge_nodes (np.ndarray):
+            The mapping of edges to node indices. Defaults to
+            np.empty((0, 2), dtype=np.int32).
+
+
+        mesh2d_face_x (np.ndarray):
+            The face positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_face_y (np.ndarray):
+            The face positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_face_z (np.ndarray):
+            The face positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
+        mesh2d_face_nodes (np.ndarray):
+            The mapping of faces to node indices. Defaults to
+            np.empty((0, 0), dtype=np.int32)
+    """
+
+    meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
     mesh2d_node_x: np.ndarray = np.empty(0, dtype=np.double)
     mesh2d_node_y: np.ndarray = np.empty(0, dtype=np.double)
@@ -49,14 +91,23 @@ class Mesh2d(BaseModel):
     mesh2d_face_nodes: np.ndarray = np.empty((0, 0), dtype=np.int32)
 
     def is_empty(self) -> bool:
+        """Determine whether this Mesh2d is empty.
+
+        Returns:
+            (bool): Whether this Mesh2d is empty.
+        """
         return self.mesh2d_node_x.size == 0
 
     def read_file(self, file_path: Path) -> None:
+        """Read the Mesh2d from the file at file_path.
 
+        Args:
+            file_path (Path): Path to the file to be read.
+        """
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
 
-    def _set_mesh2d(self):
+    def _set_mesh2d(self) -> None:
         mesh2d = mk.Mesh2d(
             node_x=self.mesh2d_node_x,
             node_y=self.mesh2d_node_y,
@@ -66,7 +117,11 @@ class Mesh2d(BaseModel):
         self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
-        """Return mesh2d from meshkernel"""
+        """Get the mesh2d as represented in the MeshKernel
+
+        Returns:
+            (mk.Mesh2d): The mesh2d as represented in the MeshKernel
+        """
         return self.meshkernel.mesh2d_get()
 
     def create_rectilinear(self, extent: tuple, dx: float, dy: float) -> None:
@@ -98,7 +153,7 @@ class Mesh2d(BaseModel):
         # Process
         self._process(mesh2d_input)
 
-    def _process(self, mesh2d_input):
+    def _process(self, mesh2d_input) -> None:
         # Add input
         self.meshkernel.mesh2d_set(mesh2d_input)
         # Get output
@@ -122,7 +177,7 @@ class Mesh2d(BaseModel):
         ) < npf[:, None]
         self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
 
-    def clip(self, polygon: mk.GeometryList, deletemeshoption: int = 1):
+    def clip(self, polygon: mk.GeometryList, deletemeshoption: int = 1) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
 
         Args:
@@ -292,11 +347,11 @@ class Branch:
 
         return np.asarray(offsets)
 
-    def interpolate(self, distance: Union[float, np.ndarray]) -> np.ndarray:
+    def interpolate(self, distance: npt.ArrayLike) -> np.ndarray:
         """Interpolate coordinates along branch by length
-        #TODO: How to handle these kind of union datatypes? The array should also consist of floats
+
         Args:
-            distance (Union[float, np.ndarray]): Length
+            distance (npt.ArrayLike): Length
         """
         intpcoords = np.stack(
             [
@@ -310,8 +365,22 @@ class Branch:
 
 
 class Link1d2d(BaseModel):
+    """Link1d2d defines the 1D2D Links of a model network.
 
-    meshkernel: Optional[mk.MeshKernel] = Field(default_factory=mk.MeshKernel)
+    Attributes:
+        meshkernel (Optional[mk.MeshKernel]):
+            The MeshKernel used to interact with this Link1d2d
+        link1d2d_id (np.ndarray):
+            The id of this Link1d2d
+        link1d2d_long_name (np.ndarray):
+            The long name of this Link1d2d
+        link1d2d_contact_type (np.ndarray):
+            The contact type of this Link1d2d
+        link1d2d (np.ndarray):
+            The underlying data object of this Link1d2d
+    """
+
+    meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
     link1d2d_id: np.ndarray = np.empty(0, object)
     link1d2d_long_name: np.ndarray = np.empty(0, object)
@@ -319,9 +388,19 @@ class Link1d2d(BaseModel):
     link1d2d: np.ndarray = np.empty((0, 2), np.int32)
 
     def is_empty(self) -> bool:
+        """Whether this Link1d2d is currently empty.
+
+        Returns:
+            bool: True if the Link1d2d is currently empty; False otherwise.
+        """
         return self.link1d2d.size == 0
 
     def read_file(self, file_path: Path) -> None:
+        """Read the Link1d2d data from the specified netCDF file at file_path into this
+
+        Args:
+            file_path (Path): Path to the netCDF file.
+        """
 
         reader = UgridReader(file_path)
         reader.read_link1d2d(self)
@@ -788,14 +867,9 @@ class Network:
 
         reader = UgridReader(file_path)
 
-        if reader._explorer.mesh1d_key is not None:
-            reader.read_mesh1d_network1d(network._mesh1d)
-
-        if reader._explorer.mesh2d_key is not None:
-            reader.read_mesh2d(network._mesh2d)
-
-        if reader._explorer.link1d2d_key is not None:
-            reader.read_link1d2d(network._link1d2d)
+        reader.read_mesh1d_network1d(network._mesh1d)
+        reader.read_mesh2d(network._mesh2d)
+        reader.read_link1d2d(network._link1d2d)
 
         ds.close()
 
