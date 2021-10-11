@@ -1,3 +1,4 @@
+import re
 from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
@@ -293,6 +294,9 @@ class Parser:
 
         with filepath.open() as f:
             for line in f:
+                # Replace Fortran scientific notation for doubles
+                # Match number d/D +/- number (e.g. 1d-05 or 1.23D+01)
+                line = re.sub(r"(\d+)([dD])([+\-]\d+)", r"\1e\3", line)
                 parser.feed_line(line)
 
         return parser.finalize().flatten()

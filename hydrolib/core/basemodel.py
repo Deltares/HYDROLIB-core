@@ -120,9 +120,10 @@ class FileModel(BaseModel, ABC):
             data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
-        super().__init__(*args, **kwargs)
-
-        _reset_context_dir(context_dir_reset_token)
+        try:
+            super().__init__(*args, **kwargs)
+        finally:
+            _reset_context_dir(context_dir_reset_token)
 
     def is_file_link(self) -> bool:
         return True

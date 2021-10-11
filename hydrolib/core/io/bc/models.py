@@ -115,8 +115,8 @@ class ForcingGeneral(INIGeneral):
 
 
 class ForcingModel(INIModel):
-    general: ForcingGeneral
-    forcing: List[ForcingBase]
+    general: ForcingGeneral = ForcingGeneral()
+    forcing: List[ForcingBase] = []
 
     @classmethod
     def _ext(cls) -> str:
@@ -124,7 +124,7 @@ class ForcingModel(INIModel):
 
     @classmethod
     def _filename(cls) -> str:
-        return "forcing"
+        return "boundaryconditions"
 
     @classmethod
     def _get_parser(cls) -> Callable:

@@ -165,9 +165,9 @@ class Restart(INIBasedModel):
 class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
     quantity: str
-    nodeId: str
-    forcingfile: Optional[ForcingModel] = "FlowFM_boundaryconditions1d.bc"
-    bndWidth1D: float
+    nodeId: Optional[str]
+    forcingfile: Optional[ForcingModel] = None
+    bndWidth1D: Optional[float]
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -176,8 +176,10 @@ class Boundary(INIBasedModel):
 class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
     id: str
-    name: str
-    nodeId: str
+    name: str = ""
+    nodeId: Optional[str]
+    branchId: Optional[str]
+    chainage: Optional[float]
     discharge: str
 
 
@@ -188,9 +190,9 @@ class ExtGeneral(INIGeneral):
 
 
 class ExtModel(INIModel):
-    general: ExtGeneral
-    boundary: List[Boundary]
-    lateral: List[Lateral]
+    general: ExtGeneral = ExtGeneral()
+    boundary: List[Boundary] = []
+    lateral: List[Lateral] = []
 
     _split_to_list = make_list_validator("boundary", "lateral")
 
@@ -253,11 +255,11 @@ class Output(INIBasedModel):
     obsfile: Optional[List[Path]] = Field(None, alias="ObsFile")
     crsfile: Optional[List[Path]] = Field(None, alias="CrsFile")
     hisfile: Optional[Path] = Field(None, alias="HisFile")
-    hisinterval: float = Field(300, alias="HisInterval")
-    xlsinterval: float = Field(0.0, alias="XLSInterval")
+    hisinterval: List[float] = Field([300], alias="HisInterval")
+    xlsinterval: List[float] = Field([0.0], alias="XLSInterval")
     mapfile: Optional[Path] = Field(None, alias="MapFile")
-    mapinterval: float = Field(1200.0, alias="MapInterval")
-    rstinterval: float = Field(0.0, alias="RstInterval")
+    mapinterval: List[float] = Field([1200.0], alias="MapInterval")
+    rstinterval: List[float] = Field([0.0], alias="RstInterval")
     mapformat: int = Field(4, alias="MapFormat")
     ncformat: int = Field(3, alias="NcFormat")
     ncnounlimited: bool = Field(False, alias="NcNoUnlimited")
@@ -342,17 +344,28 @@ class Output(INIBasedModel):
     classmapfile: Optional[Path] = Field(None, alias="ClassMapFile")
     waterlevelclasses: List[float] = Field([0.0], alias="WaterlevelClasses")
     waterdepthclasses: List[float] = Field([0.0], alias="WaterdepthClasses")
-    classmapinterval: float = Field(0.0, alias="ClassMapInterval")
-    waqinterval: float = Field(0.0, alias="WaqInterval")
-    statsinterval: float = Field(0.0, alias="StatsInterval")
+    classmapinterval: List[float] = Field([0.0], alias="ClassMapInterval")
+    waqinterval: List[float] = Field([0.0], alias="WaqInterval")
+    statsinterval: List[float] = Field([0.0], alias="StatsInterval")
     writebalancefile: bool = Field(False, alias="Writebalancefile")
-    timingsinterval: float = Field(0.0, alias="TimingsInterval")
+    timingsinterval: List[float] = Field([0.0], alias="TimingsInterval")
     richardsononoutput: bool = Field(True, alias="Richardsononoutput")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
         "waterdepthclasses",
         delimiter=";",
+    )
+    _split_to_list2 = get_split_string_on_delimiter_validator(
+        "hisinterval",
+        "xlsinterval",
+        "mapinterval",
+        "rstinterval",
+        "classmapinterval",
+        "waqinterval",
+        "statsinterval",
+        "timingsinterval",
+        delimiter=" ",
     )
 
     def is_intermediate_link(self) -> bool:
