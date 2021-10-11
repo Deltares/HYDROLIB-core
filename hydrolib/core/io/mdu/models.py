@@ -354,6 +354,8 @@ class Output(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
         "waterdepthclasses",
+        "crsfile",
+        "obsfile",
         delimiter=";",
     )
     _split_to_list2 = get_split_string_on_delimiter_validator(

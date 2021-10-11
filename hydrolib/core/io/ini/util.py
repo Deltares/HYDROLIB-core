@@ -23,6 +23,7 @@ def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = N
     def split(v: Any):
         if isinstance(v, str):
             v = v.split(delimiter)
+            v = [item.strip() for item in v if item != ""]
         return v
 
     return validator(*field_name, allow_reuse=True, pre=True)(split)
