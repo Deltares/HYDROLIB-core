@@ -31,14 +31,17 @@ class BuiParser:
         def get_station_ids(line: str) -> List[str]:
             return [s_id for s_id in line.split(",")]
 
-        bui_lines = [line for line in filepath.read_text(encoding="utf8").splitlines() if not line.startswith("*")]
+        bui_lines = [
+            line
+            for line in filepath.read_text(encoding="utf8").splitlines()
+            if not line.startswith("*")]
         n_events_and_timestep = bui_lines[3].split()
         return dict(
             default_dataset=bui_lines[0],
             number_of_stations=bui_lines[1],
             name_of_stations=get_station_ids(bui_lines[2]),
             number_of_events=n_events_and_timestep[0],
-            observation_timestep=n_events_and_timestep[1],
+            seconds_per_timestep=n_events_and_timestep[1],
             first_recorded_event=bui_lines[4],
             precipitation_per_timestep=bui_lines[5:]
         )
