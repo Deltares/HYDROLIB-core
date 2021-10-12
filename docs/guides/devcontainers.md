@@ -53,10 +53,10 @@ the python interpreter, or the python test framework. Once this is done all test
 ##  Dockerfile configures python, poetry and other dependencies
 
 The Dockerfile which specifies our specific devcontainer can be found [here in the repository](https://github.com/Deltares/HYDROLIB-core/blob/main/Dockerfile).
-Currently, it extends the python 3.9 slim buster image provided by the Python foundation. It then does 
+Currently, it extends the python 3.9 buster image provided by the Python foundation. It then does 
 the following:
 
-* Installs Poetry 1.1.7 and configure the necessary paths
+* Installs Poetry 1.1.11 and configure the necessary paths
 * Copies the poetry.lock and pyproject.toml and installs the project
 * Installs git within the container
 
