@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 # we could move to https://github.com/samuelcolvin/pydantic/issues/1549
 context_dir: ContextVar[Path] = ContextVar("folder")
 
+# Use ContextVars to keep track of file paths with their respective parsed data.
+context_file_models: ContextVar[dict] = ContextVar("file_models", default={})
+
 
 def _reset_context_dir(token):
     # Once the model has been completely initialized
@@ -117,7 +120,15 @@ class FileModel(BaseModel, ABC):
                 logger.info(f"Set context to {filepath.parent}")
                 context_dir_reset_token = context_dir.set(filepath.parent)
 
-            data = self._load(filepath)
+            file_models = context_file_models.get()
+
+            # If file has already been read
+            if filepath in file_models.keys():
+                data = file_models[filepath]
+            else:
+                data = self._load(filepath)
+                file_models[filepath] = data
+
             data["filepath"] = filepath
             kwargs.update(data)
         try:
