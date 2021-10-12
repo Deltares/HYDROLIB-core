@@ -100,11 +100,7 @@ class FileModel(BaseModel, ABC):
 
     filepath: Optional[Path] = None
 
-    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
-        """Initialize a model.
-
-        The model is empty (with defaults) if no `filepath` is given,
-        otherwise the file at `filepath` will be parsed."""
+    def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
         # Parse the file if path is given
         context_dir_reset_token = None
         if filepath:
@@ -124,17 +120,26 @@ class FileModel(BaseModel, ABC):
 
             # If file has already been read
             if filepath in file_models.keys():
-                data = file_models[filepath]
+                return file_models[filepath]
             else:
-                data = self._load(filepath)
-                file_models[filepath] = data
+                try:
+                    return super().__new__(cls)
+                finally:
+                    _reset_context_dir(context_dir_reset_token)
 
+    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+        """Initialize a model.
+
+        The model is empty (with defaults) if no `filepath` is given,
+        otherwise the file at `filepath` will be parsed."""
+
+        if filepath:
+            filepath = Path(filepath)  # so we also accept strings
+            data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
-        try:
-            super().__init__(*args, **kwargs)
-        finally:
-            _reset_context_dir(context_dir_reset_token)
+
+        super().__init__(*args, **kwargs)
 
     def is_file_link(self) -> bool:
         return True
