@@ -11,7 +11,7 @@ class BuiModel(FileModel):
     number_of_events: int
     observation_timestep: int
     first_recorded_event: datetime
-    precipitation_per_timestep: List[float]
+    precipitation_per_timestep: List[List[float]]
 
     @classmethod
     def _ext(cls) -> str:
