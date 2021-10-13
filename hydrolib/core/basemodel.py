@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 context_dir: ContextVar[Path] = ContextVar("folder")
 
 # Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
-file_models_cache: WeakValueDictionary = WeakValueDictionary()
+file_models_cache: ContextVar[dict] = ContextVar("file_models_cache", default={})
 
 
 def _reset_context_dir(token):
@@ -102,29 +102,26 @@ class FileModel(BaseModel, ABC):
     filepath: Optional[Path] = None
 
     def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
-        # Parse the file if path is given
-        context_dir_reset_token = None
+        """Creates a new model.
+        If the file at the provided file path was already parsed, this instance is returned.
+
+        Args:
+            filepath (Optional[Path], optional): The absolute file path to the file. Defaults to None.
+
+        Returns:
+            FileModel: A file model.
+        """
+
         if filepath:
             filepath = Path(filepath)  # so we also accept strings
 
-            # If a context is set, use it
-            if (folder := context_dir.get(None)) and not filepath.is_absolute():
-                logger.info(f"Used context to get {folder} for {filepath}")
-                filepath = folder / filepath
-            # Otherwise we're the root filepath
-            # and should set the context
-            else:
-                logger.info(f"Set context to {filepath.parent}")
-                context_dir_reset_token = context_dir.set(filepath.parent)
+            file_models = file_models_cache.get()
+            if filepath not in file_models.keys():
+                file_models[filepath] = super().__new__(cls)
 
-            # If file has already been read
-            if filepath in file_models_cache.keys():
-                return file_models_cache[filepath]
-            else:
-                try:
-                    return super().__new__(cls)
-                finally:
-                    _reset_context_dir(context_dir_reset_token)
+            return file_models[filepath]
+
+        return super().__new__(cls)
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
         """Initialize a model.
@@ -132,13 +129,22 @@ class FileModel(BaseModel, ABC):
         The model is empty (with defaults) if no `filepath` is given,
         otherwise the file at `filepath` will be parsed."""
 
+        context_dir_reset_token = None
         if filepath:
             filepath = Path(filepath)  # so we also accept strings
+
+            if not context_dir.get(None):
+                logger.info(f"Set context to {filepath.parent}")
+                context_dir_reset_token = context_dir.set(filepath.parent)
+
             data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
 
-        super().__init__(*args, **kwargs)
+        try:
+            super().__init__(*args, **kwargs)
+        finally:
+            _reset_context_dir(context_dir_reset_token)
 
     def is_file_link(self) -> bool:
         return True
@@ -147,8 +153,15 @@ class FileModel(BaseModel, ABC):
     def validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
+
+            filepath = Path(value)
+
+            folder = context_dir.get(None)
+            logger.info(f"Used context to get {folder} for {filepath}")
+            filepath = folder / filepath
+
             # Pydantic Model init requires a dict
-            value = {"filepath": value}
+            value = {"filepath": filepath}
         return super().validate(value)
 
     def _load(self, filepath: Path) -> Dict:
