@@ -41,6 +41,9 @@ class BuiSerializer:
         bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
             bui_data["name_of_stations"]
         )
+        bui_data["first_recorded_event"] = BuiSerializer.serialize_first_recorded_event(
+            bui_data["first_recorded_event"]
+        )
         return BuiSerializer.bui_template.format(**bui_data)
 
     @staticmethod
@@ -57,6 +60,20 @@ class BuiSerializer:
         return str.join(" ", data_to_serialize)
 
     @staticmethod
+    def serialize_first_recorded_event(data_to_serialize: datetime) -> str:
+        """
+        Serializes a datetime into the expected .bui format.
+
+        Args:
+            data_to_serialize (datetime): Datetime representing reference time.
+
+        Returns:
+            str: Converted datetime into string.
+        """
+        # Still not clear what the last three items represent.
+        return data_to_serialize.strftime("%Y %m %d %H %M %S %H %M %S")
+
+    @staticmethod
     def serialize_precipitation_per_timestep(data_to_serialize: List[List[str]]) -> str:
         """
         Serialized the data containing all the precipitations per timestep (and station)
@@ -68,7 +85,7 @@ class BuiSerializer:
         Returns:
             str: Serialized string in .bui format.
         """
-        serialized_data = str.join("\n", [str.join(" ", listed_data) for listed_data in data_to_serialize])
+        serialized_data = str.join("\n", [str.join(" ", map(str,listed_data)) for listed_data in data_to_serialize])
         return serialized_data
 
 

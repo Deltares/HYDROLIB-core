@@ -36,6 +36,7 @@ class BuiParser:
             return [prec for prec in line.split()]
 
         def get_first_recorded_event(line: str) -> datetime:
+            # Still not clear what the last three items represent.
             first_recorded = line.split()
             return datetime.strptime("-".join(first_recorded[:6]), "%Y-%m-%d-%H-%M-%S")
 

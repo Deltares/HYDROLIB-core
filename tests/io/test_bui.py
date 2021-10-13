@@ -1,23 +1,35 @@
 from datetime import datetime
 import inspect
-from tests.utils import test_input_dir
+from tests.utils import test_input_dir, test_output_dir
 from hydrolib.core.io.bui.parser import BuiParser
 from hydrolib.core.io.bui.serializer import BuiSerializer
 from hydrolib.core.io.bui.models import BuiModel
 
 default_bui_model = BuiModel(
+    filepath=test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui",
     default_dataset = "1",
     number_of_stations= "1",
     name_of_stations= ["’Station1’"],
     number_of_events= "1",
-    seconds_per_timestep = "10800",
+    seconds_per_timestep = 10800,
     first_recorded_event = datetime(1996, 1, 1), # "1996 1 1 0 0 0 1 3 0 0"
     precipitation_per_timestep= [[0.2]]*9,
 )
 
 class TestModel:
-    def test_load_rmm_file_loads_bui(self):
-        pass
+    def test_given_filepath_all_properties_loaded(self):
+        model = BuiModel(filepath=test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui")
+        assert model == default_bui_model
+
+    def test_save_default_and_load_returns_same_model(self):
+        save_path = default_bui_model.save(test_output_dir)
+        assert save_path.is_file()
+        new_model = BuiModel(save_path)
+        assert default_bui_model == new_model
+
+        def filtered_dict(input_dict: dict) -> dict:
+            return {k:v for k,v in input_dict.items() if k != "filepath"}
+        assert filtered_dict(default_bui_model.dict()) == filtered_dict(new_model.dict())
 
 class TestParser:
     def test_BuiParser_given_valid_file_parses_values(self):
@@ -36,7 +48,6 @@ class TestParser:
 
 class TestSerializer:
     def test_BuiSerializer_given_dict_serialize_into_text(self):
-        
         # 1. Define test data.
         dict_values = dict(
             file_path="my/custom/path",
@@ -49,7 +60,7 @@ class TestSerializer:
             precipitation_per_timestep= [["0.2"],["0.2"],["0.2"],["0.2"],])
         # Define expected datetime (it could fail by a second in a rare occasion)
         expected_datetime = datetime.now().strftime("%d-%m-%y %H:%M:%S")
-                
+
         # 2. Do test.
         serialized_text = BuiSerializer.serialize(dict_values)
 
@@ -79,8 +90,14 @@ class TestSerializer:
         stations_ids = ["Hello", "World", "’Station1’"]
         serialized_text = BuiSerializer.serialize_stations_ids(stations_ids)
         assert serialized_text == "Hello World ’Station1’"
-    
+
     def test_BuiSerializer_given_precipitation_serialize_into_text(self):
         precipitation_per_timestep= [["0.2"],["0.2"],["0.2"],["0.2"]]
         serialized_text = BuiSerializer.serialize_precipitation_per_timestep(precipitation_per_timestep)
         assert serialized_text == "0.2\n0.2\n0.2\n0.2"
+
+    def test_BuiSerializer_given_first_recorded_event_serialize_into_text(self):
+        first_event = datetime(2021, 12, 20, 0, 42, 24)
+        expected_string = "2021 12 20 00 42 24 00 42 24"
+        serialized_text = BuiSerializer.serialize_first_recorded_event(first_event)
+        assert serialized_text == expected_string
