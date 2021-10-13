@@ -115,11 +115,15 @@ class FileModel(BaseModel, ABC):
         if filepath:
             filepath = Path(filepath)
 
-            if filepath not in FileModel._file_models_cache.keys():
-                model = super().__new__(cls)
-                FileModel._file_models_cache[filepath] = model
+            if filepath in FileModel._file_models_cache:
+                logger.info(
+                    f"Returning existing FileModel from cache, because {filepath} was already parsed"
+                )
+                return FileModel._file_models_cache[filepath]
 
-            return FileModel._file_models_cache[filepath]
+            model = super().__new__(cls)
+            FileModel._file_models_cache[filepath] = model
+            return model
 
         return super().__new__(cls)
 
@@ -137,6 +141,7 @@ class FileModel(BaseModel, ABC):
                 logger.info(f"Set context to {filepath.parent}")
                 context_dir_reset_token = context_dir.set(filepath.parent)
 
+            logger.info(f"Loading data from {filepath}")
             data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
@@ -153,12 +158,12 @@ class FileModel(BaseModel, ABC):
     def validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
-
             filepath = Path(value)
 
-            folder = context_dir.get(None)
-            logger.info(f"Used context to get {folder} for {filepath}")
-            filepath = folder / filepath
+            if not filepath.is_absolute():
+                folder = context_dir.get(None)
+                logger.info(f"Used context to get {folder} for {filepath}")
+                filepath = folder / filepath
 
             # Pydantic Model init requires a dict
             value = {"filepath": filepath}
