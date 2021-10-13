@@ -2,7 +2,7 @@ from datetime import datetime
 import inspect
 from tests.utils import test_input_dir, test_output_dir
 from hydrolib.core.io.bui.parser import BuiParser
-from hydrolib.core.io.bui.serializer import BuiSerializer
+from hydrolib.core.io.bui.serializer import BuiSerializer, write_bui_file
 from hydrolib.core.io.bui.models import BuiModel
 
 default_bui_model = BuiModel(
@@ -18,8 +18,10 @@ default_bui_model = BuiModel(
 
 class TestModel:
     def test_given_filepath_all_properties_loaded(self):
-        model = BuiModel(filepath=test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui")
+        test_file = test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui"
+        model = BuiModel(filepath=test_file)
         assert model == default_bui_model
+        assert model.filepath == test_file
 
     def test_save_default_and_load_returns_same_model(self):
         save_path = default_bui_model.save(test_output_dir)
@@ -101,3 +103,12 @@ class TestSerializer:
         expected_string = "2021 12 20 00 42 24 00 42 24"
         serialized_text = BuiSerializer.serialize_first_recorded_event(first_event)
         assert serialized_text == expected_string
+
+    def test_write_bui_file_given_valid_file(self):
+        new_path = test_output_dir / "new_path.bui"
+        write_bui_file(new_path, default_bui_model.dict())
+        assert new_path.is_file()
+        written_text = new_path.read_text(encoding="utf8")
+        assert str(new_path) in written_text
+        assert str(default_bui_model.filepath) not in written_text
+        new_path.unlink()

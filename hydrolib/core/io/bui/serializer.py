@@ -9,7 +9,7 @@ class BuiSerializer:
     """
 
     bui_template =  inspect.cleandoc("""
-        *Name of this file: {file_path}
+        *Name of this file: {filepath}
         *Date and time of construction: {datetime_now}
         *Comments are following an * (asterisk) and written above variables
         {default_dataset}
@@ -97,7 +97,7 @@ def write_bui_file(path: Path, data: Dict) -> None:
         path (Path): Path where to output the text.
         data (Dict): Data to serialize into the file.
     """
-    data["file_path"] = path
+    data["filepath"] = path # This is redundant as already exists in the data.
     serialized_bui_data = BuiSerializer.serialize(data)
 
     path.parent.mkdir(parents=True, exist_ok=True)
