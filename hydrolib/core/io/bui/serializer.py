@@ -1,27 +1,29 @@
 from pathlib import Path
 from typing import Dict, List
 from datetime import datetime
+import inspect
 
 class BuiSerializer:
     """
     Serializer class to transform an object into a .bui file text format.
     """
 
-    bui_template = """*Name of this file: {file_path}
-*Date and time of construction: {datetime_now}
-*Comments are following an * (asterisk) and written above variables
-{default_dataset}
-*Number of stations
-{number_of_stations}
-*Station Name
-{name_of_stations}
-*Number_of_events seconds_per_timestamp
-{number_of_events} {seconds_per_timestep}
-*Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
-*Observations per timestamp (row) and per station (column)
-{first_recorded_event}
-{time_specs}
-"""
+    bui_template =  inspect.cleandoc("""
+        *Name of this file: {file_path}
+        *Date and time of construction: {datetime_now}
+        *Comments are following an * (asterisk) and written above variables
+        {default_dataset}
+        *Number of stations
+        {number_of_stations}
+        *Station Name
+        {name_of_stations}
+        *Number_of_events seconds_per_timestamp
+        {number_of_events} {seconds_per_timestep}
+        *Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
+        *Observations per timestamp (row) and per station (column)
+        {first_recorded_event}
+        {time_specs}
+        """)
 
     @staticmethod
     def serialize(bui_data: Dict) -> str:

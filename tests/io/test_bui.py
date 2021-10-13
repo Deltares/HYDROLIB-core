@@ -1,4 +1,5 @@
 from datetime import datetime
+import inspect
 from tests.utils import test_input_dir
 from hydrolib.core.io.bui.parser import BuiParser
 from hydrolib.core.io.bui.serializer import BuiSerializer
@@ -53,24 +54,25 @@ class TestSerializer:
         serialized_text = BuiSerializer.serialize(dict_values)
 
         # 3. Verify expectations.
-        expected_serialized = f"""*Name of this file: my/custom/path
-*Date and time of construction: {expected_datetime}
-*Comments are following an * (asterisk) and written above variables
-1
-*Number of stations
-1
-*Station Name
-’Station1’
-*Number_of_events seconds_per_timestamp
-1 10800
-*Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
-*Observations per timestamp (row) and per station (column)
-1996 1 1 0 0 0 1 3 0 0
-0.2
-0.2
-0.2
-0.2
-"""
+        expected_serialized =  inspect.cleandoc("""
+            *Name of this file: my/custom/path
+            *Date and time of construction: {}
+            *Comments are following an * (asterisk) and written above variables
+            1
+            *Number of stations
+            1
+            *Station Name
+            ’Station1’
+            *Number_of_events seconds_per_timestamp
+            1 10800
+            *Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
+            *Observations per timestamp (row) and per station (column)
+            1996 1 1 0 0 0 1 3 0 0
+            0.2
+            0.2
+            0.2
+            0.2
+            """.format(expected_datetime))
         assert serialized_text == expected_serialized
 
     def test_BuiSerializer_given_station_ids_serialize_into_text(self):
