@@ -5,6 +5,7 @@ from typing import Callable, Dict, Iterable, Literal, Optional
 
 from pydantic.types import FilePath
 from hydrolib.core.basemodel import FileModel
+from hydrolib.core.io.bui.models import BuiModel
 
 from .parser import read
 from .serializer import write
@@ -211,6 +212,10 @@ class RainfallRunoffModel(FileModel):
     meteo_input_file_rainfall: Optional[Path] = None
     meteo_input_file_evaporation: Optional[Path] = None
     meteo_input_file_temperature: Optional[Path] = None
+
+    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+        super().__init__(filepath=filepath, *args, **kwargs)
+        self.bui_model = BuiModel(filepath=self.filepath.parent / self.bui_file)
 
     @classmethod
     def property_keys(cls) -> Iterable[str]:

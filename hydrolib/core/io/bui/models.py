@@ -24,6 +24,10 @@ class BuiModel(FileModel):
     precipitation_per_timestep: List[List[float]]
 
     @classmethod
+    def _filename(cls):
+        return "bui_file"
+
+    @classmethod
     def _ext(cls) -> str:
         return ".bui"
 

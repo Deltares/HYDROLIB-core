@@ -4,7 +4,8 @@ from hydrolib.core.io.bui.parser import BuiParser
 from hydrolib.core.io.bui.serializer import BuiSerializer
 
 class TestModel:
-    pass
+    def test_load_rmm_file_loads_bui(self):
+        pass
 
 class TestParser:
     def test_BuiParser_given_valid_file_parses_values(self):
