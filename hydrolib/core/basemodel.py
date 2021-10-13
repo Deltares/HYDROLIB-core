@@ -10,6 +10,7 @@ from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Type
 from warnings import warn
+from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
 
@@ -23,8 +24,8 @@ logger = logging.getLogger(__name__)
 # we could move to https://github.com/samuelcolvin/pydantic/issues/1549
 context_dir: ContextVar[Path] = ContextVar("folder")
 
-# Use ContextVars to keep track of file paths with their respective parsed data.
-context_file_models: ContextVar[dict] = ContextVar("file_models", default={})
+# Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
+file_models_cache: WeakValueDictionary = WeakValueDictionary()
 
 
 def _reset_context_dir(token):
@@ -116,11 +117,9 @@ class FileModel(BaseModel, ABC):
                 logger.info(f"Set context to {filepath.parent}")
                 context_dir_reset_token = context_dir.set(filepath.parent)
 
-            file_models = context_file_models.get()
-
             # If file has already been read
-            if filepath in file_models.keys():
-                return file_models[filepath]
+            if filepath in file_models_cache.keys():
+                return file_models_cache[filepath]
             else:
                 try:
                     return super().__new__(cls)
