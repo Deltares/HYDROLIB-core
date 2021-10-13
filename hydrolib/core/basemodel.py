@@ -121,10 +121,6 @@ class FileModel(BaseModel, ABC):
                 )
                 return FileModel._file_models_cache[filepath]
 
-            model = super().__new__(cls)
-            FileModel._file_models_cache[filepath] = model
-            return model
-
         return super().__new__(cls)
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
@@ -140,6 +136,11 @@ class FileModel(BaseModel, ABC):
             if not context_dir.get(None):
                 logger.info(f"Set context to {filepath.parent}")
                 context_dir_reset_token = context_dir.set(filepath.parent)
+
+            if filepath in FileModel._file_models_cache:
+                return
+
+            FileModel._file_models_cache[filepath] = self
 
             logger.info(f"Loading data from {filepath}")
             data = self._load(filepath)
