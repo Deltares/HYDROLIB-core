@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
+from datetime import datetime
 
 class BuiParser:
     """
@@ -31,6 +32,13 @@ class BuiParser:
         def get_station_ids(line: str) -> List[str]:
             return [s_id for s_id in line.split(",")]
 
+        def get_precipitations_per_ts(line: str) -> List[str]:
+            return [prec for prec in line.split()]
+
+        def get_first_recorded_event(line: str) -> datetime:
+            first_recorded = line.split()
+            return datetime.strptime("-".join(first_recorded[:6]), "%Y-%m-%d-%H-%M-%S")
+
         bui_lines = [
             line
             for line in filepath.read_text(encoding="utf8").splitlines()
@@ -42,6 +50,6 @@ class BuiParser:
             name_of_stations=get_station_ids(bui_lines[2]),
             number_of_events=n_events_and_timestep[0],
             seconds_per_timestep=n_events_and_timestep[1],
-            first_recorded_event=bui_lines[4],
-            precipitation_per_timestep=bui_lines[5:]
+            first_recorded_event=get_first_recorded_event(bui_lines[4]),
+            precipitation_per_timestep=list(map(get_precipitations_per_ts, bui_lines[5:]))
         )

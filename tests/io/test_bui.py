@@ -2,6 +2,17 @@ from datetime import datetime
 from tests.utils import test_input_dir
 from hydrolib.core.io.bui.parser import BuiParser
 from hydrolib.core.io.bui.serializer import BuiSerializer
+from hydrolib.core.io.bui.models import BuiModel
+
+default_bui_model = BuiModel(
+    default_dataset = "1",
+    number_of_stations= "1",
+    name_of_stations= ["’Station1’"],
+    number_of_events= "1",
+    seconds_per_timestep = "10800",
+    first_recorded_event = datetime(1996, 1, 1), # "1996 1 1 0 0 0 1 3 0 0"
+    precipitation_per_timestep= [[0.2]]*9,
+)
 
 class TestModel:
     def test_load_rmm_file_loads_bui(self):
@@ -13,13 +24,13 @@ class TestParser:
         assert test_file.is_file(), "Test File not found."
         dict_values = BuiParser.parse(test_file)
         assert dict_values is not None
-        assert dict_values["default_dataset"] == "1"
-        assert dict_values["number_of_stations"] == "1"
-        assert dict_values["name_of_stations"] == ["’Station1’"]
-        assert dict_values["number_of_events"] == "1"
-        assert dict_values["seconds_per_timestep"] == "10800"
-        assert dict_values["first_recorded_event"] == "1996 1 1 0 0 0 1 3 0 0"
-        assert dict_values["precipitation_per_timestep"] == ["0.2","0.2","0.2","0.2","0.2","0.2","0.2","0.2","0.2",]
+        assert dict_values["default_dataset"] == str(default_bui_model.default_dataset)
+        assert dict_values["number_of_stations"] == str(default_bui_model.number_of_stations)
+        assert dict_values["name_of_stations"] == default_bui_model.name_of_stations
+        assert dict_values["number_of_events"] == str(default_bui_model.number_of_events)
+        assert dict_values["seconds_per_timestep"] == str(default_bui_model.seconds_per_timestep)
+        assert dict_values["first_recorded_event"] == default_bui_model.first_recorded_event
+        assert dict_values["precipitation_per_timestep"] == [list(map(str, v)) for v in default_bui_model.precipitation_per_timestep]
 
 
 class TestSerializer:

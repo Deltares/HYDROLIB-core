@@ -29,7 +29,7 @@ class RainfallRunoffModel(FileModel):
     pluvius: Path = Path("pluvius.3b")
     pluvius_general: Path = Path("pluvius.alg")
     kasklasse: Path = Path("kasklass")
-    bui_file: Path = Path("default.bui")
+    bui_file: Optional[BuiModel] = None
     verdampings_file: Path = Path("default.evp")
     unpaved_area_general: Path = Path("unpaved.3b")
     unpaved_area_storage: Path = Path("unpaved.sto")
@@ -213,9 +213,8 @@ class RainfallRunoffModel(FileModel):
     meteo_input_file_evaporation: Optional[Path] = None
     meteo_input_file_temperature: Optional[Path] = None
 
-    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
-        super().__init__(filepath=filepath, *args, **kwargs)
-        self.bui_model = BuiModel(filepath=self.filepath.parent / self.bui_file)
+    # def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+    #     super().__init__(filepath=filepath, *args, **kwargs)
 
     @classmethod
     def property_keys(cls) -> Iterable[str]:
