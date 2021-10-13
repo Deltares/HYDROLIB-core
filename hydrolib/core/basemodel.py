@@ -24,9 +24,6 @@ logger = logging.getLogger(__name__)
 # we could move to https://github.com/samuelcolvin/pydantic/issues/1549
 context_dir: ContextVar[Path] = ContextVar("folder")
 
-# Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
-file_models_cache: ContextVar[dict] = ContextVar("file_models_cache", default={})
-
 
 def _reset_context_dir(token):
     # Once the model has been completely initialized
@@ -99,6 +96,9 @@ class FileModel(BaseModel, ABC):
     it doesn't error, but actually initializes the `FileModel`.
     """
 
+    __slots__ = ["__weakref__"]
+    # Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
+    _file_models_cache: WeakValueDictionary = WeakValueDictionary()
     filepath: Optional[Path] = None
 
     def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
@@ -113,13 +113,13 @@ class FileModel(BaseModel, ABC):
         """
 
         if filepath:
-            filepath = Path(filepath)  # so we also accept strings
+            filepath = Path(filepath)
 
-            file_models = file_models_cache.get()
-            if filepath not in file_models.keys():
-                file_models[filepath] = super().__new__(cls)
+            if filepath not in FileModel._file_models_cache.keys():
+                model = super().__new__(cls)
+                FileModel._file_models_cache[filepath] = model
 
-            return file_models[filepath]
+            return FileModel._file_models_cache[filepath]
 
         return super().__new__(cls)
 
