@@ -11,10 +11,11 @@ class BuiEventParser:
     PrecipitationPerTimestep
     Example given:
     2021 12 20 0 0 0 1 0 4 20
-    4.2
-    4.2
-    4.2
+    4.2 2.4
+    4.2 2.4
+    4.2 2.4
     (it should match the timeseries length based on the seconds per timstep.)
+    Each column of the last three lines represents a station.
     """
 
     @staticmethod
