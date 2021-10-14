@@ -1,8 +1,16 @@
-from typing import List, Callable
+from typing import List, Callable, Any
 from datetime import datetime, timedelta
-from hydrolib.core.basemodel import FileModel
+from hydrolib.core.basemodel import BaseModel, FileModel
 from .parser import BuiParser
 from .serializer import write_bui_file
+
+class BuiPrecipitationEvent(BaseModel):
+    start_time: datetime
+    timeseries_length: timedelta
+    precipitation_per_timestep: List[List[float]]
+
+class BuiPrecipitationEventList(BaseModel):
+    precipitation_event_list: List[BuiPrecipitationEvent]
 
 class BuiModel(FileModel):
     """
@@ -20,9 +28,10 @@ class BuiModel(FileModel):
     name_of_stations: List[str]
     number_of_events: int
     seconds_per_timestep: int
-    start_time: datetime
-    timeseries_length: timedelta
-    precipitation_per_timestep: List[List[float]]
+    precipitation_events: BuiPrecipitationEventList
+    # start_time: datetime
+    # timeseries_length: timedelta
+    # precipitation_per_timestep: List[List[float]]
 
     @classmethod
     def _filename(cls):

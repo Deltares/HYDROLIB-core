@@ -1,30 +1,45 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 import inspect
 from tests.utils import test_input_dir, test_output_dir
-from hydrolib.core.io.bui.parser import BuiParser
+from hydrolib.core.io.bui.parser import BuiParser, BuiEventParser
 from hydrolib.core.io.bui.serializer import BuiSerializer, write_bui_file
-from hydrolib.core.io.bui.models import BuiModel
+from hydrolib.core.io.bui.models import BuiModel, BuiPrecipitationEvent, BuiPrecipitationEventList
 
-default_bui_model = BuiModel(
-    filepath=test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui",
-    default_dataset = "1",
-    number_of_stations= "1",
-    name_of_stations= ["’Station1’"],
-    number_of_events= "1",
-    seconds_per_timestep = 10800,
-    start_time = datetime(1996, 1, 1), # "1996 1 1 0 0 0 1 3 0 0"
-    timeseries_length= timedelta(1, 10800),
-    precipitation_per_timestep= [[0.2]]*9,
-)
+def get_default_bui_model() -> BuiModel:   
+    """
+    Gets a well-tested basic BuiModel. 
+    Wrapped in a method to avoid pytest failing to discover tests
+    in case some code has been changed.
+
+    Returns:
+        BuiModel: Default bui model.
+    """
+    event_list = [BuiPrecipitationEvent(
+        start_time = datetime(1996, 1, 1), # "1996 1 1 0 0 0 1 3 0 0"
+        timeseries_length= timedelta(1, 10800),
+        precipitation_per_timestep= [[0.2]]*9,
+    )]
+    precipitation_list = BuiPrecipitationEventList(
+        precipitation_event_list=event_list
+    )
+    return BuiModel(
+        filepath=test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui",
+        default_dataset = "1",
+        number_of_stations= "1",
+        name_of_stations= ["’Station1’"],
+        number_of_events= "1",
+        seconds_per_timestep = 10800,
+        precipitation_events = precipitation_list)
 
 class TestModel:
     def test_given_filepath_all_properties_loaded(self):
         test_file = test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui"
         model = BuiModel(filepath=test_file)
-        assert model == default_bui_model
+        assert model == get_default_bui_model()
         assert model.filepath == test_file
 
     def test_save_default_and_load_returns_same_model(self):
+        default_bui_model = get_default_bui_model()
         save_path = default_bui_model.save(test_output_dir)
         assert save_path.is_file()
         new_model = BuiModel(save_path)
@@ -35,10 +50,17 @@ class TestModel:
         assert filtered_dict(default_bui_model.dict()) == filtered_dict(new_model.dict())
 
 class TestParser:
+
     def test_BuiParser_given_valid_file_parses_values(self):
+        # 1. Define initial data.
         test_file = test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui"
         assert test_file.is_file(), "Test File not found."
+
+        # 2. Run test.
         dict_values = BuiParser.parse(test_file)
+
+        # 3. Verify final expectations.
+        default_bui_model = get_default_bui_model()
         assert dict_values is not None
         assert dict_values["default_dataset"] == str(default_bui_model.default_dataset)
         assert dict_values["number_of_stations"] == str(default_bui_model.number_of_stations)
@@ -47,6 +69,17 @@ class TestParser:
         assert dict_values["seconds_per_timestep"] == str(default_bui_model.seconds_per_timestep)
         assert dict_values["start_time"] == default_bui_model.start_time
         assert dict_values["precipitation_per_timestep"] == [list(map(str, v)) for v in default_bui_model.precipitation_per_timestep]
+
+    def test_BuPrecipitationEventParser_given_valid_text(self):
+        raw_text = inspect.cleandoc("""
+            2021 12 20 0 0 0 1 0 4 20
+            4.2
+            4.2
+        """)
+        parsed_dict = BuiEventParser.parse(raw_text)
+        assert parsed_dict["start_time"] == datetime(2021, 12, 20)
+        assert parsed_dict["timeseries_length"] == timedelta(days=1, minutes=4, seconds=20)
+        assert parsed_dict["precipitation_per_timestep"] == [["4.2"], ["4.2"]]
 
 
 class TestSerializer:
@@ -113,6 +146,7 @@ class TestSerializer:
         assert serialized_text == expected_string
 
     def test_write_bui_file_given_valid_file(self):
+        default_bui_model = get_default_bui_model()
         new_path = test_output_dir / "new_path.bui"
         write_bui_file(new_path, default_bui_model.dict())
         assert new_path.is_file()
