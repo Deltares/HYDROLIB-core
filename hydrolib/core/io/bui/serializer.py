@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
-from datetime import datetime
+from datetime import datetime, timedelta
 import inspect
 
 class BuiSerializer:
@@ -21,7 +21,7 @@ class BuiSerializer:
         {number_of_events} {seconds_per_timestep}
         *Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
         *Observations per timestamp (row) and per station (column)
-        {first_recorded_event}
+        {start_time} {timeseries_length}
         {time_specs}
         """)
 
@@ -41,8 +41,11 @@ class BuiSerializer:
         bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
             bui_data["name_of_stations"]
         )
-        bui_data["first_recorded_event"] = BuiSerializer.serialize_first_recorded_event(
-            bui_data["first_recorded_event"]
+        bui_data["start_time"] = BuiSerializer.serialize_start_time(
+            bui_data["start_time"]
+        )
+        bui_data["timeseries_length"] = BuiSerializer.serialize_timeseries_length(
+            bui_data["timeseries_length"]
         )
         return BuiSerializer.bui_template.format(**bui_data)
 
@@ -60,7 +63,7 @@ class BuiSerializer:
         return str.join(" ", data_to_serialize)
 
     @staticmethod
-    def serialize_first_recorded_event(data_to_serialize: datetime) -> str:
+    def serialize_start_time(data_to_serialize: datetime) -> str:
         """
         Serializes a datetime into the expected .bui format.
 
@@ -70,8 +73,27 @@ class BuiSerializer:
         Returns:
             str: Converted datetime into string.
         """
-        # Still not clear what the last three items represent.
-        return data_to_serialize.strftime("%Y %m %d %H %M %S %H %M %S")
+        # Not using the following format because we only want one digit instead of 
+        # double (day 1 -> 1, instead of 01).
+        # data_to_serialize.strftime("%Y %m %d %H %M %S")
+        dt = data_to_serialize
+        return f"{dt.year} {dt.month} {dt.day} {dt.hour} {dt.minute} {dt.second}"
+
+    @staticmethod
+    def serialize_timeseries_length(data_to_serialize: timedelta) -> str:
+        """
+        Serializes a given timedelta into the .bui format.
+
+        Args:
+            data_to_serialize (timedelta): Reference timespan to serialize.
+
+        Returns:
+            str: Converted timedelta in string.
+        """
+        total_hours = int(data_to_serialize.seconds / (60 * 60))
+        total_minutes = int((data_to_serialize.seconds / 60) - (total_hours * 60 ))
+        total_seconds = int(data_to_serialize.seconds - ((total_hours * 60 + total_minutes) * 60))
+        return f"{data_to_serialize.days} {total_hours} {total_minutes} {total_seconds}"
 
     @staticmethod
     def serialize_precipitation_per_timestep(data_to_serialize: List[List[str]]) -> str:

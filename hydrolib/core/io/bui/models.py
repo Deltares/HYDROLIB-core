@@ -1,5 +1,5 @@
 from typing import List, Callable
-from datetime import datetime
+from datetime import datetime, timedelta
 from hydrolib.core.basemodel import FileModel
 from .parser import BuiParser
 from .serializer import write_bui_file
@@ -20,7 +20,8 @@ class BuiModel(FileModel):
     name_of_stations: List[str]
     number_of_events: int
     seconds_per_timestep: int
-    first_recorded_event: datetime
+    start_time: datetime
+    timeseries_length: timedelta
     precipitation_per_timestep: List[List[float]]
 
     @classmethod

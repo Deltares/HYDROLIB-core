@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time, timedelta
 import inspect
 from tests.utils import test_input_dir, test_output_dir
 from hydrolib.core.io.bui.parser import BuiParser
@@ -12,7 +12,8 @@ default_bui_model = BuiModel(
     name_of_stations= ["’Station1’"],
     number_of_events= "1",
     seconds_per_timestep = 10800,
-    first_recorded_event = datetime(1996, 1, 1), # "1996 1 1 0 0 0 1 3 0 0"
+    start_time = datetime(1996, 1, 1), # "1996 1 1 0 0 0 1 3 0 0"
+    timeseries_length= timedelta(1, 10800),
     precipitation_per_timestep= [[0.2]]*9,
 )
 
@@ -44,7 +45,7 @@ class TestParser:
         assert dict_values["name_of_stations"] == default_bui_model.name_of_stations
         assert dict_values["number_of_events"] == str(default_bui_model.number_of_events)
         assert dict_values["seconds_per_timestep"] == str(default_bui_model.seconds_per_timestep)
-        assert dict_values["first_recorded_event"] == default_bui_model.first_recorded_event
+        assert dict_values["start_time"] == default_bui_model.start_time
         assert dict_values["precipitation_per_timestep"] == [list(map(str, v)) for v in default_bui_model.precipitation_per_timestep]
 
 
@@ -52,13 +53,14 @@ class TestSerializer:
     def test_BuiSerializer_given_dict_serialize_into_text(self):
         # 1. Define test data.
         dict_values = dict(
-            file_path="my/custom/path",
+            filepath="my/custom/path",
             default_dataset = "1",
             number_of_stations= "1",
             name_of_stations= ["’Station1’"],
             number_of_events= "1",
-            seconds_per_timestep= "10800",
-            first_recorded_event= "1996 1 1 0 0 0 1 3 0 0",
+            seconds_per_timestep= 10800,
+            start_time= datetime(1996, 1, 1),
+            timeseries_length=timedelta(1, 10800),
             precipitation_per_timestep= [["0.2"],["0.2"],["0.2"],["0.2"],])
         # Define expected datetime (it could fail by a second in a rare occasion)
         expected_datetime = datetime.now().strftime("%d-%m-%y %H:%M:%S")
@@ -98,10 +100,16 @@ class TestSerializer:
         serialized_text = BuiSerializer.serialize_precipitation_per_timestep(precipitation_per_timestep)
         assert serialized_text == "0.2\n0.2\n0.2\n0.2"
 
-    def test_BuiSerializer_given_first_recorded_event_serialize_into_text(self):
+    def test_BuiSerializer_given_start_time_serialize_into_text(self):
         first_event = datetime(2021, 12, 20, 0, 42, 24)
-        expected_string = "2021 12 20 00 42 24 00 42 24"
-        serialized_text = BuiSerializer.serialize_first_recorded_event(first_event)
+        expected_string = "2021 12 20 0 42 24"
+        serialized_text = BuiSerializer.serialize_start_time(first_event)
+        assert serialized_text == expected_string
+
+    def test_BuiSerializer_given_timeseries_length_serialize_into_text(self):
+        timeseries_length = timedelta(4, 2000)
+        expected_string = "4 0 33 20"
+        serialized_text = BuiSerializer.serialize_timeseries_length(timeseries_length)
         assert serialized_text == expected_string
 
     def test_write_bui_file_given_valid_file(self):
