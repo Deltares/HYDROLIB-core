@@ -3,64 +3,36 @@ from typing import Dict, List
 from datetime import datetime, timedelta
 import inspect
 
-class BuiSerializer:
+class BuiEventSerializer:
     """
-    Serializer class to transform an object into a .bui file text format.
+    Serializer class to transform a bui event into a text block.
     """
-
-    bui_template =  inspect.cleandoc("""
-        *Name of this file: {filepath}
-        *Date and time of construction: {datetime_now}
-        *Comments are following an * (asterisk) and written above variables
-        {default_dataset}
-        *Number of stations
-        {number_of_stations}
-        *Station Name
-        {name_of_stations}
-        *Number_of_events seconds_per_timestamp
-        {number_of_events} {seconds_per_timestep}
-        *Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
-        *Observations per timestamp (row) and per station (column)
+    bui_event_template = inspect.cleandoc("""
         {start_time} {timeseries_length}
-        {time_specs}
-        """)
+        {precipitation_per_timestep}
+    """)
 
     @staticmethod
-    def serialize(bui_data: Dict) -> str:
+    def serialize(event_data: Dict) -> str:
         """
-        Formats the bui_template with the content of the given data.
-        NOTE: It requires that caller injects file_path into bui_data prior to this call.
-        Otherwise it will crash.
+        Serializes a dictionary representing an event into a text block.
 
         Args:
-            bui_data (Dict): Data to serialize.
-        """
-        bui_data["datetime_now"] = datetime.now().strftime("%d-%m-%y %H:%M:%S")
-        bui_data["time_specs"] = BuiSerializer.serialize_precipitation_per_timestep(
-            bui_data["precipitation_per_timestep"])
-        bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
-            bui_data["name_of_stations"]
-        )
-        bui_data["start_time"] = BuiSerializer.serialize_start_time(
-            bui_data["start_time"]
-        )
-        bui_data["timeseries_length"] = BuiSerializer.serialize_timeseries_length(
-            bui_data["timeseries_length"]
-        )
-        return BuiSerializer.bui_template.format(**bui_data)
-
-    @staticmethod
-    def serialize_stations_ids(data_to_serialize: List[str]) -> str:
-        """
-        Serializes the stations ids into a single string as expected in a .bui file.
-
-        Args:
-            data_to_serialize (List[str]): List of station ids.
+            event_data (Dict): Dictionary representing precipitation event.
 
         Returns:
-            str: Serialized string.
+            str: Formatted string.
         """
-        return str.join(" ", data_to_serialize)
+        event_data["start_time"] = BuiEventSerializer.serialize_start_time(
+            event_data["start_time"]
+        )
+        event_data["timeseries_length"] = BuiEventSerializer.serialize_timeseries_length(
+            event_data["timeseries_length"]
+        )
+        event_data["precipitation_per_timestep"] = BuiEventSerializer.serialize_precipitation_per_timestep(
+            event_data["precipitation_per_timestep"])
+        return BuiEventSerializer.bui_event_template.format(
+            **event_data)
 
     @staticmethod
     def serialize_start_time(data_to_serialize: datetime) -> str:
@@ -109,6 +81,78 @@ class BuiSerializer:
         """
         serialized_data = str.join("\n", [str.join(" ", map(str,listed_data)) for listed_data in data_to_serialize])
         return serialized_data
+
+
+class BuiEventListSerializer:
+    """
+    Serializer class to transform a list of bui events into a text block.
+    """
+    @staticmethod
+    def serialize(event_list_data: Dict) -> str:
+        """
+        Serializes a event list dictionary into a single text block.
+
+        Args:
+            event_list_data (Dict): Dictionary containing list of events.
+
+        Returns:
+            str: Text block representing all precipitation events.
+        """
+        serialized_list = \
+            list(map(BuiEventSerializer.serialize, event_list_data["precipitation_event_list"]))
+        return "\n".join(serialized_list)
+
+
+class BuiSerializer:
+    """
+    Serializer class to transform an object into a .bui file text format.
+    """
+
+    bui_template = inspect.cleandoc("""
+        *Name of this file: {filepath}
+        *Date and time of construction: {datetime_now}
+        *Comments are following an * (asterisk) and written above variables
+        {default_dataset}
+        *Number of stations
+        {number_of_stations}
+        *Station Name
+        {name_of_stations}
+        *Number_of_events seconds_per_timestamp
+        {number_of_events} {seconds_per_timestep}
+        *Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
+        *Observations per timestamp (row) and per station (column)
+        {precipitation_events}
+        """)
+
+    @staticmethod
+    def serialize(bui_data: Dict) -> str:
+        """
+        Formats the bui_template with the content of the given data.
+        NOTE: It requires that caller injects file_path into bui_data prior to this call.
+        Otherwise it will crash.
+
+        Args:
+            bui_data (Dict): Data to serialize.
+        """
+        bui_data["datetime_now"] = datetime.now().strftime("%d-%m-%y %H:%M:%S")
+        bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
+            bui_data["name_of_stations"]
+        )
+        bui_data["precipitation_events"] = BuiEventListSerializer.serialize(bui_data["precipitation_events"])
+        return BuiSerializer.bui_template.format(**bui_data)
+
+    @staticmethod
+    def serialize_stations_ids(data_to_serialize: List[str]) -> str:
+        """
+        Serializes the stations ids into a single string as expected in a .bui file.
+
+        Args:
+            data_to_serialize (List[str]): List of station ids.
+
+        Returns:
+            str: Serialized string.
+        """
+        return str.join(" ", data_to_serialize)
 
 
 def write_bui_file(path: Path, data: Dict) -> None:

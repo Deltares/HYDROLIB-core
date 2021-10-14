@@ -54,6 +54,22 @@ class BuiEventParser:
 
 
 class BuiEventListParser:
+    """
+    A parser for .bui events which are like this:
+    StartTime (YYYY mm dd HH MM SS) TimeSeriesLength (dd HH MM SS)
+    PrecipitationPerTimestep
+    StartTime (YYYY mm dd HH MM SS) TimeSeriesLength (dd HH MM SS)
+    PrecipitationPerTimestep
+    Example given:
+    2021 12 20 0 0 0 1 0 4 20
+    4.2
+    4.2
+    4.2
+    2021 12 21 0 0 0 1 0 4 20
+    2.4
+    2.4
+    2.4
+    """
     @staticmethod
     def parse(raw_text: str) -> Dict:
         """
