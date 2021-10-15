@@ -134,13 +134,13 @@ class FileModel(BaseModel, ABC):
         if filepath:
             filepath = Path(filepath)  # so we also accept strings
 
+            if filepath in FileModel._file_models_cache:
+                return None
+
             # If not set, this is the root file path
             if not context_dir.get(None):
                 logger.info(f"Set context to {filepath.parent}")
                 context_dir_reset_token = context_dir.set(filepath.parent)
-
-            if filepath in FileModel._file_models_cache:
-                return None
 
             FileModel._file_models_cache[filepath] = self
 
@@ -165,7 +165,8 @@ class FileModel(BaseModel, ABC):
 
             # Use the context if needed to resolve the absolute file path
             if not filepath.is_absolute():
-                folder = context_dir.get(None)
+                # The context_dir has been set within the initializer of the root FileModel
+                folder = context_dir.get()
                 logger.info(f"Used context to get {folder} for {filepath}")
                 filepath = folder / filepath
 
