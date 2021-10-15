@@ -8,6 +8,10 @@ class BuiEventSerializer:
     Serializer class to transform a bui event into a text block.
     """
     bui_event_template = inspect.cleandoc("""
+        * Event {event_idx} duration days:{d_days} hours:{d_hours} minutes:{d_minutes} seconds:{d_seconds}
+        * Start date and time of the event: yyyy mm dd hh mm ss
+        * Duration of the event           : dd hh mm ss
+        * Rainfall value per time step [mm/time step]
         {start_time} {timeseries_length}
         {precipitation_per_timestep}
     """)
@@ -26,13 +30,40 @@ class BuiEventSerializer:
         event_data["start_time"] = BuiEventSerializer.serialize_start_time(
             event_data["start_time"]
         )
+        ts_duration = event_data["timeseries_length"]
+        event_data = {**event_data, **BuiEventSerializer.get_timedelta_fields(ts_duration)}
         event_data["timeseries_length"] = BuiEventSerializer.serialize_timeseries_length(
             event_data["timeseries_length"]
         )
         event_data["precipitation_per_timestep"] = BuiEventSerializer.serialize_precipitation_per_timestep(
             event_data["precipitation_per_timestep"])
+        if "event_idx" not in event_data.keys():
+            event_data["event_idx"] = 1
         return BuiEventSerializer.bui_event_template.format(
             **event_data)
+
+    @staticmethod
+    def get_timedelta_fields(duration: timedelta) -> Dict:
+        """
+        Gets a dictionary containing the time delta in days, hours, minutes and seconds.
+        This means that the seconds field does not contain the accumulative value of days
+        hours and minutes.
+
+        Args:
+            timestamp (timedelta): Timedelta to convert.
+
+        Returns:
+            Dict: Dictionary containing all fields.
+        """
+        total_hours = int(duration.seconds / (60 * 60))
+        total_minutes = int((duration.seconds / 60) - (total_hours * 60 ))
+        total_seconds = int(duration.seconds - ((total_hours * 60 + total_minutes) * 60))
+        return dict(
+            d_seconds=total_seconds,
+            d_minutes=total_minutes,
+            d_hours=total_hours,
+            d_days=duration.days
+        )
 
     @staticmethod
     def serialize_start_time(data_to_serialize: datetime) -> str:
@@ -62,9 +93,10 @@ class BuiEventSerializer:
         Returns:
             str: Converted timedelta in string.
         """
-        total_hours = int(data_to_serialize.seconds / (60 * 60))
-        total_minutes = int((data_to_serialize.seconds / 60) - (total_hours * 60 ))
-        total_seconds = int(data_to_serialize.seconds - ((total_hours * 60 + total_minutes) * 60))
+        fields_dict = BuiEventSerializer.get_timedelta_fields(data_to_serialize)
+        total_hours = fields_dict["d_hours"]
+        total_minutes = fields_dict["d_minutes"]
+        total_seconds = fields_dict["d_seconds"]
         return f"{data_to_serialize.days} {total_hours} {total_minutes} {total_seconds}"
 
     @staticmethod
@@ -119,8 +151,6 @@ class BuiSerializer:
         {name_of_stations}
         *Number_of_events seconds_per_timestamp
         {number_of_events} {seconds_per_timestep}
-        *Start datetime and number of timestamps in the format: yyyy#m#d:#h#m#s:#d#h#m#s
-        *Observations per timestamp (row) and per station (column)
         {precipitation_events}
         """)
 
