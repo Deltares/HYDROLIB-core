@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
 import inspect
+import pytest
+from datetime import datetime, timedelta
 from tests.utils import test_input_dir, test_output_dir
 from hydrolib.core.io.bui.parser import BuiEventListParser, BuiParser, BuiEventParser
 from hydrolib.core.io.bui.serializer import BuiEventSerializer, BuiSerializer, write_bui_file
@@ -37,22 +38,62 @@ class TestModel:
     all its classes and methods.
     """
 
-    def test_given_filepath_all_properties_loaded(self):
-        test_file = test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui"
-        model = BuiModel(filepath=test_file)
-        assert model == get_default_bui_model()
-        assert model.filepath == test_file
+    class TestBuiModel:
+        """
+        Test class pointing to hydrolib.core.io.bui.models to test
+        all the methods in the BuiModel class.
+        """
 
-    def test_save_default_and_load_returns_same_model(self):
-        default_bui_model = get_default_bui_model()
-        save_path = default_bui_model.save(test_output_dir)
-        assert save_path.is_file()
-        new_model = BuiModel(save_path)
-        assert default_bui_model == new_model
+        def test_given_filepath_all_properties_loaded(self):
+            test_file = test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui"
+            model = BuiModel(filepath=test_file)
+            assert model == get_default_bui_model()
+            assert model.filepath == test_file
 
-        def filtered_dict(input_dict: dict) -> dict:
-            return {k:v for k,v in input_dict.items() if k != "filepath"}
-        assert filtered_dict(default_bui_model.dict()) == filtered_dict(new_model.dict())
+        def test_save_default_and_load_returns_same_model(self):
+            default_bui_model = get_default_bui_model()
+            save_path = default_bui_model.save(test_output_dir)
+            assert save_path.is_file()
+            new_model = BuiModel(save_path)
+            assert default_bui_model == new_model
+
+            def filtered_dict(input_dict: dict) -> dict:
+                return {k:v for k,v in input_dict.items() if k != "filepath"}
+            assert filtered_dict(default_bui_model.dict()) == filtered_dict(new_model.dict())
+
+        def test_get_station_events_given_valid_station(self):
+            default_bui_model = get_default_bui_model()
+            station_name = "’Station1’"
+            station_events = default_bui_model.get_station_events(station_name)
+            assert len(station_events.items()) == 1
+            event_found = station_events[0]
+            assert event_found["start_time"] == datetime(1996, 1, 1)
+            assert event_found["precipitations"] == [0.2] * 9
+        
+        def test_get_station_events_given_invalid_station_raises(self):
+            station_name = "Not a Station"
+            with pytest.raises(ValueError) as exc:
+                get_default_bui_model().get_station_events(station_name)
+            assert str(exc.value) == f"Station {station_name} not found BuiModel."
+
+    class TestBuiPrecipitationEvent:
+        """
+        Test class pointing to hydrolib.core.io.bui.models to test
+        all the methods in the BuiPrecipitationEvent class.
+        """
+        def test_get_station_precipitations_given_valid_station(self):
+            default_bui_model = get_default_bui_model()
+            precipitation_event = default_bui_model.precipitation_events.precipitation_event_list[0]
+            start_time, precipitations = precipitation_event.get_station_precipitations(0)
+            assert start_time == datetime(1996, 1, 1)
+            assert precipitations == [0.2] * 9
+        
+        def test_get_station_precipitations_given_invalid_station_raises(self):
+            default_bui_model = get_default_bui_model()
+            precipitation_event = default_bui_model.precipitation_events.precipitation_event_list[0]
+            with pytest.raises(ValueError) as exc:
+                precipitation_event.get_station_precipitations(42)
+            assert str(exc.value) == "Station index not found, number of stations: 1"
 
 class TestParser:
     """
