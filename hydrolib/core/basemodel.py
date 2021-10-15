@@ -10,6 +10,7 @@ from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Type
 from warnings import warn
+from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
 
@@ -95,7 +96,33 @@ class FileModel(BaseModel, ABC):
     it doesn't error, but actually initializes the `FileModel`.
     """
 
+    __slots__ = ["__weakref__"]
+    # Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
+    _file_models_cache: WeakValueDictionary = WeakValueDictionary()
     filepath: Optional[Path] = None
+
+    def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
+        """Creates a new model.
+        If the file at the provided file path was already parsed, this instance is returned.
+
+        Args:
+            filepath (Optional[Path], optional): The absolute file path to the file. Defaults to None.
+
+        Returns:
+            FileModel: A file model.
+        """
+
+        if filepath:
+            filepath = Path(filepath)
+
+            if filepath in FileModel._file_models_cache:
+                filemodel = FileModel._file_models_cache[filepath]
+                logger.info(
+                    f"Returning existing {type(filemodel).__name__} from cache, because {filepath} was already parsed."
+                )
+                return filemodel
+
+        return super().__new__(cls)
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
         """Initialize a model.
@@ -107,19 +134,21 @@ class FileModel(BaseModel, ABC):
         if filepath:
             filepath = Path(filepath)  # so we also accept strings
 
-            # If a context is set, use it
-            if (folder := context_dir.get(None)) and not filepath.is_absolute():
-                logger.info(f"Used context to get {folder} for {filepath}")
-                filepath = folder / filepath
-            # Otherwise we're the root filepath
-            # and should set the context
-            else:
+            if filepath in FileModel._file_models_cache:
+                return None
+
+            # If not set, this is the root file path
+            if not context_dir.get(None):
                 logger.info(f"Set context to {filepath.parent}")
                 context_dir_reset_token = context_dir.set(filepath.parent)
 
+            FileModel._file_models_cache[filepath] = self
+
+            logger.info(f"Loading data from {filepath}")
             data = self._load(filepath)
             data["filepath"] = filepath
             kwargs.update(data)
+
         try:
             super().__init__(*args, **kwargs)
         finally:
@@ -132,8 +161,17 @@ class FileModel(BaseModel, ABC):
     def validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
+            filepath = Path(value)
+
+            # Use the context if needed to resolve the absolute file path
+            if not filepath.is_absolute():
+                # The context_dir has been set within the initializer of the root FileModel
+                folder = context_dir.get()
+                logger.info(f"Used context to get {folder} for {filepath}")
+                filepath = folder / filepath
+
             # Pydantic Model init requires a dict
-            value = {"filepath": value}
+            value = {"filepath": filepath}
         return super().validate(value)
 
     def _load(self, filepath: Path) -> Dict:
