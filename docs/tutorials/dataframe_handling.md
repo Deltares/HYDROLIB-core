@@ -11,7 +11,8 @@ Examples of such `FileModel`s with their `List` fields are:
 - ExtModel.boundary
 - ExtModel.lateral
 
-Say we load in .bc file and want the resulting forcing in a dataframe 
+Say we load in a .bc file and want the resulting forcing in a dataframe.
+
 ```python
 from hydrolib.core.io.bc.models import ForcingModel
 
@@ -58,11 +59,11 @@ df = pd.DataFrame([f.__dict__ for f in m.forcing])
 
 [13 rows x 10 columns]
 ```
-Note that because there are several types of forcings, with different fields, some values has become `NaN`.
+Note that because there are several types of forcings, with different fields, some values have become NaN.
+
 
 We can also convert this DataFrame back to a `ForcingModel`.
 ```python
-from hydrolib.core.io.bc.models import ForcingBase
 fm = ForcingModel(forcing=df.to_dict('records'))
 fm.forcing == m.forcing
 
