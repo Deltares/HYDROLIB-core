@@ -82,6 +82,50 @@ class TestModel:
             assert model == get_default_bui_model()
             assert model.filepath == test_file
 
+        def test_save_default_verify_expected_text(self):
+            # 1. Define test data.
+            default_bui_model = get_default_bui_model()
+            expected_text = inspect.cleandoc("""
+                *Name of this file: {}
+                *Date and time of construction: 15-10-21 14:48:13
+                *Comments are following an * (asterisk) and written above variables
+                1
+                *Number of stations
+                1
+                *Station Name
+                ’Station1’
+                *Number_of_events seconds_per_timestamp
+                1 10800
+                * Event 1 duration days:1 hours:3 minutes:0 seconds:0
+                * Start date and time of the event: yyyy mm dd hh mm ss
+                * Duration of the event           : dd hh mm ss
+                * Rainfall value per time step [mm/time step]
+                1996 1 1 0 0 0 1 3 0 0
+                0.2
+                0.2
+                0.2
+                0.2
+                0.2
+                0.2
+                0.2
+                0.2
+                0.2
+            """)
+            # 2. Save file and read its content.
+            save_path = default_bui_model.save(test_output_dir)
+            assert save_path.is_file()
+            text_read = save_path.read_text(encoding="utf8")
+
+            # 3. Verify texts are equal.
+            lines_read = text_read.splitlines()
+            expected_lines = expected_text.format(save_path).splitlines()
+            # Remove the second line of the text as the datetime might differ (even by seconds)
+            build_datetime_line = lines_read.pop(1)
+            expected_lines.pop(1)
+            # But still verify they start the same way.
+            assert build_datetime_line.startswith("*Date and time of construction: ")
+            assert lines_read == expected_lines
+
         def test_save_default_and_load_returns_same_model(self):
             default_bui_model = get_default_bui_model()
             save_path = default_bui_model.save(test_output_dir)
