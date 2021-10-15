@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from pathlib import Path
 
 import pytest
 from devtools import debug
 
+from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -18,7 +18,8 @@ from hydrolib.core.io.dimr.models import (
     RRComponent,
     StartGroup,
 )
-from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.fnm.models import RainfallRunoffModel
+from hydrolib.core.io.mdu.models import Boundary, FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
@@ -200,3 +201,41 @@ def test_mdu_from_scratch():
     model = FMModel()
     model.filepath = output_fn
     model.save()
+
+
+def test_boundary_with_forcingfile_returns_forcing():
+    forcing1 = _create_forcing("bnd1", "qnt1")
+    forcing2 = _create_forcing("bnd2", "qnt2")
+    forcing3 = _create_forcing("bnd3", "qnt3")
+
+    forcingfile = ForcingModel(forcing=[forcing1, forcing2, forcing3])
+
+    boundary1 = Boundary(nodeId="bnd1", quantity="qnt1", forcingfile=forcingfile)
+    boundary2 = Boundary(nodeId="bnd2", quantity="qnt2", forcingfile=forcingfile)
+    boundary3 = Boundary(nodeId="bnd3", quantity="qnt3", forcingfile=forcingfile)
+
+    assert boundary1.forcing is forcing1
+    assert boundary2.forcing is forcing2
+    assert boundary3.forcing is forcing3
+
+
+def test_boundary_without_forcingfile_returns_none():
+    boundary = Boundary(nodeId="boundary", quantity="quantity")
+
+    assert boundary.forcingfile is None
+    assert boundary.forcing is None
+
+
+def test_boundary_with_forcingfile_without_match_returns_none():
+    forcing1 = _create_forcing("bnd1", "qnt1")
+    forcing2 = _create_forcing("bnd2", "qnt2")
+
+    forcingfile = ForcingModel(forcing=[forcing1, forcing2])
+
+    boundary = Boundary(nodeId="bnd3", quantity="qnt3", forcingfile=forcingfile)
+
+    assert boundary.forcing is None
+
+
+def _create_forcing(name: str, quantity: str) -> ForcingBase:
+    return ForcingBase(name=name, quantity=[quantity], function="", unit=[])

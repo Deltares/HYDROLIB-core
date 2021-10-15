@@ -1,10 +1,11 @@
-from hydrolib.core.io.net.models import NetworkModel
 from pathlib import Path
 from typing import Callable, List, Literal, Optional, Union
+
 from pydantic import Field
+
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.base import DummySerializer
-from hydrolib.core.io.bc.models import ForcingModel
+from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.ini.models import (
     CrossDefModel,
     CrossLocModel,
@@ -19,6 +20,7 @@ from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
+from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
@@ -171,6 +173,23 @@ class Boundary(INIBasedModel):
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @property
+    def forcing(self) -> ForcingBase:
+        """Retrieves the corresponding forcing data for this boundary.
+
+        Returns:
+            ForcingBase: The corresponding forcing data. None when this boundary does not have a forcing file or when the data cannot be found.
+        """
+
+        if self.forcingfile is None:
+            return None
+
+        for item in self.forcingfile.forcing:
+            if self.nodeId == item.name and self.quantity in item.quantity:
+                return item
+
+        return None
 
 
 class Lateral(INIBasedModel):
