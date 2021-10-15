@@ -116,10 +116,11 @@ class FileModel(BaseModel, ABC):
             filepath = Path(filepath)
 
             if filepath in FileModel._file_models_cache:
+                filemodel = FileModel._file_models_cache[filepath]
                 logger.info(
-                    f"Returning existing FileModel from cache, because {filepath} was already parsed"
+                    f"Returning existing {type(filemodel).__name__} from cache, because {filepath} was already parsed."
                 )
-                return FileModel._file_models_cache[filepath]
+                return filemodel
 
         return super().__new__(cls)
 
@@ -128,17 +129,18 @@ class FileModel(BaseModel, ABC):
 
         The model is empty (with defaults) if no `filepath` is given,
         otherwise the file at `filepath` will be parsed."""
-
+        # Parse the file if path is given
         context_dir_reset_token = None
         if filepath:
             filepath = Path(filepath)  # so we also accept strings
 
+            # If not set, this is the root file path
             if not context_dir.get(None):
                 logger.info(f"Set context to {filepath.parent}")
                 context_dir_reset_token = context_dir.set(filepath.parent)
 
             if filepath in FileModel._file_models_cache:
-                return
+                return None
 
             FileModel._file_models_cache[filepath] = self
 
@@ -161,6 +163,7 @@ class FileModel(BaseModel, ABC):
         if isinstance(value, (Path, str)):
             filepath = Path(value)
 
+            # Use the context if needed to resolve the absolute file path
             if not filepath.is_absolute():
                 folder = context_dir.get(None)
                 logger.info(f"Used context to get {folder} for {filepath}")
