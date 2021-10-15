@@ -115,28 +115,6 @@ class BuiEventSerializer:
         return serialized_data
 
 
-class BuiEventListSerializer:
-    """
-    Serializer class to transform a list of bui events into a text block.
-    """
-    @staticmethod
-    def serialize(event_list_data: Dict) -> str:
-        """
-        Serializes a event list dictionary into a single text block.
-
-        Args:
-            event_list_data (Dict): Dictionary containing list of events.
-
-        Returns:
-            str: Text block representing all precipitation events.
-        """
-        serialized_list = []
-        for n_event, event in enumerate(event_list_data["precipitation_event_list"]):
-            event["event_idx"] = n_event + 1
-            serialized_list.append(BuiEventSerializer.serialize(event))
-        return "\n".join(serialized_list)
-
-
 class BuiSerializer:
     """
     Serializer class to transform an object into a .bui file text format.
@@ -170,8 +148,25 @@ class BuiSerializer:
         bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
             bui_data["name_of_stations"]
         )
-        bui_data["precipitation_events"] = BuiEventListSerializer.serialize(bui_data["precipitation_events"])
+        bui_data["precipitation_events"] = BuiSerializer.serialize_event_list(bui_data["precipitation_events"])
         return BuiSerializer.bui_template.format(**bui_data)
+
+    @staticmethod
+    def serialize_event_list(data_to_serialize: List[Dict]) -> str:
+        """
+        Serializes a event list dictionary into a single text block.
+
+        Args:
+            event_list_data (Dict): Dictionary containing list of events.
+
+        Returns:
+            str: Text block representing all precipitation events.
+        """
+        serialized_list = []
+        for n_event, event in enumerate(data_to_serialize):
+            event["event_idx"] = n_event + 1
+            serialized_list.append(BuiEventSerializer.serialize(event))
+        return "\n".join(serialized_list)
 
     @staticmethod
     def serialize_stations_ids(data_to_serialize: List[str]) -> str:

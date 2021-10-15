@@ -34,9 +34,6 @@ class BuiPrecipitationEvent(BaseModel):
         )
 
 
-class BuiPrecipitationEventList(BaseModel):
-    precipitation_event_list: List[BuiPrecipitationEvent]
-
 class BuiModel(FileModel):
     """
     Model that represents the file structure of a .bui file.
@@ -53,7 +50,7 @@ class BuiModel(FileModel):
     name_of_stations: List[str]
     number_of_events: int
     seconds_per_timestep: int
-    precipitation_events: BuiPrecipitationEventList
+    precipitation_events: List[BuiPrecipitationEvent]
 
     @classmethod
     def _filename(cls):
@@ -88,7 +85,7 @@ class BuiModel(FileModel):
             raise ValueError("Station {} not found BuiModel.".format(station))
         station_idx = self.name_of_stations.index(station)
         station_events = {}
-        for event in self.precipitation_events.precipitation_event_list:
+        for event in self.precipitation_events:
             start_time, precipitations = event.get_station_precipitations(station_idx)
             station_events[start_time] = precipitations
         return station_events

@@ -3,8 +3,8 @@ import pytest
 from datetime import datetime, timedelta
 from tests.utils import test_input_dir, test_output_dir
 from hydrolib.core.io.bui.parser import BuiEventListParser, BuiParser, BuiEventParser
-from hydrolib.core.io.bui.serializer import BuiEventListSerializer, BuiEventSerializer, BuiSerializer, write_bui_file
-from hydrolib.core.io.bui.models import BuiModel, BuiPrecipitationEvent, BuiPrecipitationEventList
+from hydrolib.core.io.bui.serializer import BuiEventSerializer, BuiSerializer, write_bui_file
+from hydrolib.core.io.bui.models import BuiModel, BuiPrecipitationEvent
 
 def get_default_bui_model() -> BuiModel:
     """
@@ -20,9 +20,7 @@ def get_default_bui_model() -> BuiModel:
         timeseries_length= timedelta(1, 10800),
         precipitation_per_timestep= [[0.2]]*9,
     )]
-    precipitation_list = BuiPrecipitationEventList(
-        precipitation_event_list=event_list
-    )
+
     return BuiModel(
         filepath=test_input_dir / "rr_sample_trimmed" / "rr" / "default.bui",
         default_dataset = "1",
@@ -30,7 +28,7 @@ def get_default_bui_model() -> BuiModel:
         name_of_stations= ["’Station1’"],
         number_of_events= 1,
         seconds_per_timestep = 10800,
-        precipitation_events = precipitation_list)
+        precipitation_events = event_list)
 
 class TestModel:
     """
@@ -48,7 +46,7 @@ class TestModel:
             test_file = test_input_dir / "rr_bui_rks" / "nwrw.RKS"
             assert test_file.is_file()
             model = BuiModel(filepath=test_file)
-            event_list = model.precipitation_events.precipitation_event_list
+            event_list = model.precipitation_events
             assert len(event_list) == 404
             station_events = model.get_station_events("'De Bilt'")
             first_event = station_events[datetime(1955, 1, 15, 16, 45)]
@@ -62,7 +60,7 @@ class TestModel:
             test_file = test_input_dir / "rr_bui_rks" / "T_SEWER.RKS"
             assert test_file.is_file()
             model = BuiModel(filepath=test_file)
-            event_list = model.precipitation_events.precipitation_event_list
+            event_list = model.precipitation_events
             assert len(event_list) == 10
             station_events = model.get_station_events("'De Bilt'")
             first_event = station_events[datetime(2000, 1, 10)]
@@ -117,14 +115,14 @@ class TestModel:
         """
         def test_get_station_precipitations_given_valid_station(self):
             default_bui_model = get_default_bui_model()
-            precipitation_event = default_bui_model.precipitation_events.precipitation_event_list[0]
+            precipitation_event = default_bui_model.precipitation_events[0]
             start_time, precipitations = precipitation_event.get_station_precipitations(0)
             assert start_time == datetime(1996, 1, 1)
             assert precipitations == [0.2] * 9
         
         def test_get_station_precipitations_given_invalid_station_raises(self):
             default_bui_model = get_default_bui_model()
-            precipitation_event = default_bui_model.precipitation_events.precipitation_event_list[0]
+            precipitation_event = default_bui_model.precipitation_events[0]
             with pytest.raises(ValueError) as exc:
                 precipitation_event.get_station_precipitations(42)
             assert str(exc.value) == "Station index not found, number of stations: 1"
@@ -157,8 +155,8 @@ class TestParser:
             assert dict_values["name_of_stations"] == default_bui_model.name_of_stations
             assert dict_values["number_of_events"] == default_bui_model.number_of_events
             assert dict_values["seconds_per_timestep"] == default_bui_model.seconds_per_timestep
-            precipitation_event = dict_values["precipitation_events"]["precipitation_event_list"][0]
-            default_event = default_bui_model.precipitation_events.precipitation_event_list[0]
+            precipitation_event = dict_values["precipitation_events"][0]
+            default_event = default_bui_model.precipitation_events[0]
             assert precipitation_event["start_time"] == default_event.start_time
             assert precipitation_event["timeseries_length"] == default_event.timeseries_length
             assert precipitation_event["precipitation_per_timestep"] == [list(map(str, v)) for v in default_event.precipitation_per_timestep]
@@ -209,9 +207,9 @@ class TestParser:
                 4.2
                 4.2
             """)
-            parsed_dict = BuiEventListParser.parse(raw_text, 1, 60)
-            assert len(parsed_dict["precipitation_event_list"]) == 1
-            parsed_event = parsed_dict["precipitation_event_list"][0]
+            parsed_list = BuiEventListParser.parse(raw_text, 1, 60)
+            assert len(parsed_list) == 1
+            parsed_event = parsed_list[0]
             assert parsed_event["start_time"] == datetime(2021, 12, 20)
             assert parsed_event["timeseries_length"] == timedelta(seconds=120)
             assert parsed_event["precipitation_per_timestep"] == [["4.2"], ["4.2"]]
@@ -236,18 +234,18 @@ class TestParser:
                 {second_event_text}""")
 
             # 2. Run test.
-            parsed_dict = BuiEventListParser.parse(raw_text, number_of_events, timestep)
+            parsed_list = BuiEventListParser.parse(raw_text, number_of_events, timestep)
 
             # 3. Verify final expectations.
-            assert len(parsed_dict["precipitation_event_list"]) == 2
+            assert len(parsed_list) == 2
 
             # Evaluate first event.
-            first_event = parsed_dict["precipitation_event_list"][0]
+            first_event = parsed_list[0]
             assert first_event["start_time"] == datetime(2021, 12, 20)
             assert first_event["timeseries_length"] == timedelta(minutes=2)
             assert first_event["precipitation_per_timestep"] == [["4.2"], ["4.2"]]
             # Evaluate second event.
-            second_event = parsed_dict["precipitation_event_list"][1]
+            second_event = parsed_list[1]
             assert second_event["start_time"] == datetime(2021, 12, 20)
             assert second_event["timeseries_length"] == timedelta(minutes=3)
             assert second_event["precipitation_per_timestep"] == [["2.4"], ["2.4"], ["2.4"]]
@@ -273,15 +271,13 @@ class TestSerializer:
                 name_of_stations= ["’Station1’"],
                 number_of_events= "1",
                 seconds_per_timestep= 10800,
-                precipitation_events=dict(
-                    precipitation_event_list=[
-                        dict(
-                            start_time= datetime(1996, 1, 1),
-                            timeseries_length=timedelta(1, 10800),
-                            precipitation_per_timestep= [[0.2],[0.2],[0.2],[0.2],]
-                            )
-                        ]
-                    )
+                precipitation_events=[
+                    dict(
+                        start_time= datetime(1996, 1, 1),
+                        timeseries_length=timedelta(1, 10800),
+                        precipitation_per_timestep= [[0.2],[0.2],[0.2],[0.2],]
+                        )
+                    ]
                 )
             # Define expected datetime (it could fail by a second in a rare occasion)
             expected_datetime = datetime.now().strftime("%d-%m-%y %H:%M:%S")
@@ -335,15 +331,9 @@ class TestSerializer:
             serialized_text = BuiEventSerializer.serialize_timeseries_length(timeseries_length)
             assert serialized_text == expected_string
 
-    class TestBuiEventListSerializer:
-        """
-        Test class pointing to hydrolib.core.io.bui.serializer to test
-        all the methods in the BuiEventListSerializer class.
-        """
-
-        def test_given_multiple_events_serialize_into_text(self):
+        def test_given_multiple_events_serialize_event_list_into_text(self):
             # 1. Define test data.
-            precipitation_event_list=[
+            event_list_data=[
                 dict(
                     start_time= datetime(1996, 1, 1),
                     timeseries_length=timedelta(seconds=120),
@@ -352,10 +342,9 @@ class TestSerializer:
                     start_time= datetime(1996, 1, 1),
                     timeseries_length=timedelta(seconds=180),
                     precipitation_per_timestep=  [[0.42]]*3)]
-            event_list_data = dict(precipitation_event_list=precipitation_event_list)
 
             # 2. Do test.
-            serialized_text = BuiEventListSerializer.serialize(event_list_data)
+            serialized_text = BuiSerializer.serialize_event_list(event_list_data)
 
             # 3. Verify final expectations.
             expected_string = inspect.cleandoc("""
@@ -376,6 +365,7 @@ class TestSerializer:
                 0.42
             """)
             assert serialized_text == expected_string
+
 
     class TestBuiEventSerializer:
         """

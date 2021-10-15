@@ -88,7 +88,7 @@ class BuiEventListParser:
     2.4
     """
     @staticmethod
-    def parse(raw_text: str, n_events: int, timestep: int ) -> Dict:
+    def parse(raw_text: str, n_events: int, timestep: int ) -> List[Dict]:
         """
         Parses a given raw text containing 0 to many text blocks representing a precipitation event.
 
@@ -98,7 +98,7 @@ class BuiEventListParser:
             timestep (int): Number of seconds conforming a timestep.
 
         Returns:
-            Dict: resulting mapping ready to be parsed into BuiPrecipitationEventList.
+            List[Dict]: List containing all the events represented as dictionaries.
         """
         def get_event_timestep_length(raw_line: str) -> int:
             timereference = BuiEventParser.parse_event_time_reference(raw_line)
@@ -121,7 +121,7 @@ class BuiEventListParser:
             raw_lines = raw_text.splitlines(keepends=False)
             event_list = list(get_multiple_events(raw_lines))
 
-        return dict(precipitation_event_list=event_list)
+        return event_list
 
 
 class BuiParser:
