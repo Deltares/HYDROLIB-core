@@ -38,6 +38,40 @@ class TestModel:
     all its classes and methods.
     """
 
+    class TestRksModel:
+        """
+        Acceptance tests to verify we can load .rks files, which contain
+        more than one precipitation event.
+        """
+
+        def test_given_nwrw_file_loads_model(self):
+            test_file = test_input_dir / "rr_bui_rks" / "nwrw.RKS"
+            assert test_file.is_file()
+            model = BuiModel(filepath=test_file)
+            event_list = model.precipitation_events.precipitation_event_list
+            assert len(event_list) == 404
+            station_events = model.get_station_events("'De Bilt'")
+            first_event = station_events[datetime(1955, 1, 15, 16, 45)]
+            assert first_event[0] == 0.30
+            assert first_event[-1] == 0
+            last_event = station_events[datetime(1979, 12, 29, 7)]
+            assert last_event[0] == 0.14
+            assert last_event[-1] == 0.03
+
+        def test_given_t_sewer_file_loads_model(self):
+            test_file = test_input_dir / "rr_bui_rks" / "T_SEWER.RKS"
+            assert test_file.is_file()
+            model = BuiModel(filepath=test_file)
+            event_list = model.precipitation_events.precipitation_event_list
+            assert len(event_list) == 10
+            station_events = model.get_station_events("'De Bilt'")
+            first_event = station_events[datetime(2000, 1, 10)]
+            assert first_event[0] == 0.30
+            assert first_event[-1] == 0
+            last_event = station_events[datetime(2000, 12, 9)]
+            assert last_event[0] == 0.15
+            assert last_event[-1] == 0
+
     class TestBuiModel:
         """
         Test class pointing to hydrolib.core.io.bui.models to test
