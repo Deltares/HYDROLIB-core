@@ -4,12 +4,15 @@ from hydrolib.core.basemodel import BaseModel, FileModel
 from .parser import BuiParser
 from .serializer import write_bui_file
 
+
 class BuiPrecipitationEvent(BaseModel):
     start_time: datetime
     timeseries_length: timedelta
     precipitation_per_timestep: List[List[float]]
 
-    def get_station_precipitations(self, station_idx: int) -> Tuple[datetime, List[float]]:
+    def get_station_precipitations(
+        self, station_idx: int
+    ) -> Tuple[datetime, List[float]]:
         """
         Returns all the precipitations related to the given station index (column).
 
@@ -26,11 +29,15 @@ class BuiPrecipitationEvent(BaseModel):
         if station_idx >= number_of_stations:
             raise ValueError(
                 "Station index not found, number of stations: {}".format(
-                    number_of_stations))
+                    number_of_stations
+                )
+            )
         return (
             self.start_time,
-            [ts_precipitations[station_idx]
-            for ts_precipitations in self.precipitation_per_timestep]
+            [
+                ts_precipitations[station_idx]
+                for ts_precipitations in self.precipitation_per_timestep
+            ],
         )
 
 
@@ -45,7 +52,7 @@ class BuiModel(FileModel):
         BuiModel: New object containing data representing the .bui file.
     """
 
-    default_dataset: int = 1 # Default value (always)
+    default_dataset: int = 1  # Default value (always)
     number_of_stations: int
     name_of_stations: List[str]
     number_of_events: int

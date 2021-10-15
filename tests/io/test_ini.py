@@ -235,7 +235,9 @@ class TestParser:
             pytest.param("[a-header]", True),
             pytest.param("[ also header but with whitespace ]", True),
             pytest.param("[ # this works, but please don't do that # ]", True),
-            pytest.param("                 [ prefixed whitespace is acceptable ]     ", True),
+            pytest.param(
+                "                 [ prefixed whitespace is acceptable ]     ", True
+            ),
             pytest.param("[ not closed", False, id="Header not closed (end)"),
             pytest.param("  also not closed ]", False, id="Header not closed (begin)"),
             pytest.param("(not-a-header)", False),

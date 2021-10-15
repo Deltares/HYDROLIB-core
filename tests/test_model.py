@@ -24,6 +24,7 @@ from hydrolib.core.io.xyz.models import XYZModel
 from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
 from .io.test_bui import get_default_bui_model
 
+
 def test_dimr_model():
     test_file = (
         test_data_dir

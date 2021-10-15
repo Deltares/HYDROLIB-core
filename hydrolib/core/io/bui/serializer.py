@@ -3,18 +3,22 @@ from typing import Dict, List
 from datetime import datetime, timedelta
 import inspect
 
+
 class BuiEventSerializer:
     """
     Serializer class to transform a bui event into a text block.
     """
-    bui_event_template = inspect.cleandoc("""
+
+    bui_event_template = inspect.cleandoc(
+        """
         * Event {event_idx} duration days:{d_days} hours:{d_hours} minutes:{d_minutes} seconds:{d_seconds}
         * Start date and time of the event: yyyy mm dd hh mm ss
         * Duration of the event           : dd hh mm ss
         * Rainfall value per time step [mm/time step]
         {start_time} {timeseries_length}
         {precipitation_per_timestep}
-    """)
+    """
+    )
 
     @staticmethod
     def serialize(event_data: Dict) -> str:
@@ -31,16 +35,23 @@ class BuiEventSerializer:
             event_data["start_time"]
         )
         ts_duration = event_data["timeseries_length"]
-        event_data = {**event_data, **BuiEventSerializer.get_timedelta_fields(ts_duration)}
-        event_data["timeseries_length"] = BuiEventSerializer.serialize_timeseries_length(
+        event_data = {
+            **event_data,
+            **BuiEventSerializer.get_timedelta_fields(ts_duration),
+        }
+        event_data[
+            "timeseries_length"
+        ] = BuiEventSerializer.serialize_timeseries_length(
             event_data["timeseries_length"]
         )
-        event_data["precipitation_per_timestep"] = BuiEventSerializer.serialize_precipitation_per_timestep(
-            event_data["precipitation_per_timestep"])
+        event_data[
+            "precipitation_per_timestep"
+        ] = BuiEventSerializer.serialize_precipitation_per_timestep(
+            event_data["precipitation_per_timestep"]
+        )
         if "event_idx" not in event_data.keys():
             event_data["event_idx"] = 1
-        return BuiEventSerializer.bui_event_template.format(
-            **event_data)
+        return BuiEventSerializer.bui_event_template.format(**event_data)
 
     @staticmethod
     def get_timedelta_fields(duration: timedelta) -> Dict:
@@ -56,13 +67,15 @@ class BuiEventSerializer:
             Dict: Dictionary containing all fields.
         """
         total_hours = int(duration.seconds / (60 * 60))
-        total_minutes = int((duration.seconds / 60) - (total_hours * 60 ))
-        total_seconds = int(duration.seconds - ((total_hours * 60 + total_minutes) * 60))
+        total_minutes = int((duration.seconds / 60) - (total_hours * 60))
+        total_seconds = int(
+            duration.seconds - ((total_hours * 60 + total_minutes) * 60)
+        )
         return dict(
             d_seconds=total_seconds,
             d_minutes=total_minutes,
             d_hours=total_hours,
-            d_days=duration.days
+            d_days=duration.days,
         )
 
     @staticmethod
@@ -76,7 +89,7 @@ class BuiEventSerializer:
         Returns:
             str: Converted datetime into string.
         """
-        # Not using the following format because we only want one digit instead of 
+        # Not using the following format because we only want one digit instead of
         # double (day 1 -> 1, instead of 01).
         # data_to_serialize.strftime("%Y %m %d %H %M %S")
         dt = data_to_serialize
@@ -111,7 +124,10 @@ class BuiEventSerializer:
         Returns:
             str: Serialized string in .bui format.
         """
-        serialized_data = str.join("\n", [str.join(" ", map(str,listed_data)) for listed_data in data_to_serialize])
+        serialized_data = str.join(
+            "\n",
+            [str.join(" ", map(str, listed_data)) for listed_data in data_to_serialize],
+        )
         return serialized_data
 
 
@@ -120,7 +136,8 @@ class BuiSerializer:
     Serializer class to transform an object into a .bui file text format.
     """
 
-    bui_template = inspect.cleandoc("""
+    bui_template = inspect.cleandoc(
+        """
         *Name of this file: {filepath}
         *Date and time of construction: {datetime_now}
         *Comments are following an * (asterisk) and written above variables
@@ -132,7 +149,8 @@ class BuiSerializer:
         *Number_of_events seconds_per_timestamp
         {number_of_events} {seconds_per_timestep}
         {precipitation_events}
-        """)
+        """
+    )
 
     @staticmethod
     def serialize(bui_data: Dict) -> str:
@@ -148,7 +166,9 @@ class BuiSerializer:
         bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
             bui_data["name_of_stations"]
         )
-        bui_data["precipitation_events"] = BuiSerializer.serialize_event_list(bui_data["precipitation_events"])
+        bui_data["precipitation_events"] = BuiSerializer.serialize_event_list(
+            bui_data["precipitation_events"]
+        )
         return BuiSerializer.bui_template.format(**bui_data)
 
     @staticmethod
@@ -190,7 +210,7 @@ def write_bui_file(path: Path, data: Dict) -> None:
         path (Path): Path where to output the text.
         data (Dict): Data to serialize into the file.
     """
-    data["filepath"] = path # This is redundant as already exists in the data.
+    data["filepath"] = path  # This is redundant as already exists in the data.
     serialized_bui_data = BuiSerializer.serialize(data)
 
     path.parent.mkdir(parents=True, exist_ok=True)

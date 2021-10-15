@@ -29,6 +29,7 @@ class BuiEventParser:
         Returns:
             Dict: Mapped contents of the text.
         """
+
         def get_precipitations_per_ts(line: str) -> List[str]:
             return [prec for prec in line.split()]
 
@@ -37,11 +38,13 @@ class BuiEventParser:
         return dict(
             start_time=time_reference["start_time"],
             timeseries_length=time_reference["timeseries_length"],
-            precipitation_per_timestep=list(map(get_precipitations_per_ts, event_lines[1:]))
+            precipitation_per_timestep=list(
+                map(get_precipitations_per_ts, event_lines[1:])
+            ),
         )
 
     @staticmethod
-    def parse_event_time_reference(raw_text: str)-> Dict:
+    def parse_event_time_reference(raw_text: str) -> Dict:
         """
         Parses a single event time reference line containing both the start time
         and the timeseries length into a dictionary.
@@ -52,6 +55,7 @@ class BuiEventParser:
         Returns:
             Dict: Resulting dictionary with keys start_time and timeseries_length.
         """
+
         def get_start_time(line: str) -> datetime:
             return datetime.strptime(line, "%Y %m %d %H %M %S")
 
@@ -61,12 +65,13 @@ class BuiEventParser:
                 days=int(time_fields[0]),
                 hours=int(time_fields[1]),
                 minutes=int(time_fields[2]),
-                seconds=int(time_fields[3]))
+                seconds=int(time_fields[3]),
+            )
 
         timeref = raw_text.split()
         return dict(
             start_time=get_start_time(" ".join(timeref[:6])),
-            timeseries_length=get_timeseries_length(" ".join(timeref[6:]))
+            timeseries_length=get_timeseries_length(" ".join(timeref[6:])),
         )
 
 
@@ -87,8 +92,9 @@ class BuiEventListParser:
     2.4
     2.4
     """
+
     @staticmethod
-    def parse(raw_text: str, n_events: int, timestep: int ) -> List[Dict]:
+    def parse(raw_text: str, n_events: int, timestep: int) -> List[Dict]:
         """
         Parses a given raw text containing 0 to many text blocks representing a precipitation event.
 
@@ -100,6 +106,7 @@ class BuiEventListParser:
         Returns:
             List[Dict]: List containing all the events represented as dictionaries.
         """
+
         def get_event_timestep_length(raw_line: str) -> int:
             timereference = BuiEventParser.parse_event_time_reference(raw_line)
             ts_length: timedelta = timereference["timeseries_length"]
@@ -110,8 +117,7 @@ class BuiEventListParser:
             while n_line < len(raw_lines):
                 ts_seconds = get_event_timestep_length(raw_lines[n_line])
                 event_lines = int(ts_seconds / timestep) + 1
-                yield BuiEventParser.parse(
-                    "\n".join(raw_lines[n_line:][:event_lines]))
+                yield BuiEventParser.parse("\n".join(raw_lines[n_line:][:event_lines]))
                 n_line += event_lines
 
         event_list = []
@@ -139,6 +145,7 @@ class BuiParser:
     First datetime reference.
     Precipitation per timestep per station.
     """
+
     @staticmethod
     def parse(filepath: Path) -> Dict:
         """
@@ -151,6 +158,7 @@ class BuiParser:
         Returns:
             Dict: Parsed values.
         """
+
         def get_station_ids(line: str) -> List[str]:
             return [s_id for s_id in line.split(",")]
 
@@ -161,7 +169,8 @@ class BuiParser:
         bui_lines = [
             line
             for line in filepath.read_text(encoding="utf8").splitlines()
-            if not line.startswith("*")]
+            if not line.startswith("*")
+        ]
 
         n_events, timestep = parse_events_and_timestep(bui_lines[3])
 
@@ -172,5 +181,6 @@ class BuiParser:
             number_of_events=n_events,
             seconds_per_timestep=timestep,
             precipitation_events=BuiEventListParser.parse(
-                "\n".join(bui_lines[4:]), n_events, timestep)
+                "\n".join(bui_lines[4:]), n_events, timestep
+            ),
         )
