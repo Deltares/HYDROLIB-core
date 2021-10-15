@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Literal
 
 from pydantic.fields import Field
+from pydantic import Extra
 
 from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
@@ -60,6 +61,9 @@ class ForcingBase(DataBlockINIBasedModel):
                     v = c(**v)
                     break
         return v
+
+    class Config:
+        extra = Extra.ignore
 
 
 class TimeSeries(ForcingBase):
