@@ -3,7 +3,7 @@ import pytest
 from datetime import datetime, timedelta
 from tests.utils import test_input_dir, test_output_dir
 from hydrolib.core.io.bui.parser import BuiEventListParser, BuiParser, BuiEventParser
-from hydrolib.core.io.bui.serializer import BuiEventSerializer, BuiSerializer, write_bui_file
+from hydrolib.core.io.bui.serializer import BuiEventListSerializer, BuiEventSerializer, BuiSerializer, write_bui_file
 from hydrolib.core.io.bui.models import BuiModel, BuiPrecipitationEvent, BuiPrecipitationEventList
 
 def get_default_bui_model() -> BuiModel:
@@ -301,11 +301,54 @@ class TestSerializer:
             serialized_text = BuiEventSerializer.serialize_timeseries_length(timeseries_length)
             assert serialized_text == expected_string
 
+    class TestBuiEventListSerializer:
+        """
+        Test class pointing to hydrolib.core.io.bui.serializer to test
+        all the methods in the BuiEventListSerializer class.
+        """
+
+        def test_given_multiple_events_serialize_into_text(self):
+            # 1. Define test data.
+            precipitation_event_list=[
+                dict(
+                    start_time= datetime(1996, 1, 1),
+                    timeseries_length=timedelta(seconds=120),
+                    precipitation_per_timestep= [[0.24]]*2),
+                dict(
+                    start_time= datetime(1996, 1, 1),
+                    timeseries_length=timedelta(seconds=180),
+                    precipitation_per_timestep=  [[0.42]]*3)]
+            event_list_data = dict(precipitation_event_list=precipitation_event_list)
+
+            # 2. Do test.
+            serialized_text = BuiEventListSerializer.serialize(event_list_data)
+
+            # 3. Verify final expectations.
+            expected_string = inspect.cleandoc("""
+                * Event 1 duration days:0 hours:0 minutes:2 seconds:0
+                * Start date and time of the event: yyyy mm dd hh mm ss
+                * Duration of the event           : dd hh mm ss
+                * Rainfall value per time step [mm/time step]
+                1996 1 1 0 0 0 0 0 2 0
+                0.24
+                0.24
+                * Event 2 duration days:0 hours:0 minutes:3 seconds:0
+                * Start date and time of the event: yyyy mm dd hh mm ss
+                * Duration of the event           : dd hh mm ss
+                * Rainfall value per time step [mm/time step]
+                1996 1 1 0 0 0 0 0 3 0
+                0.42
+                0.42
+                0.42
+            """)
+            assert serialized_text == expected_string
+
     class TestBuiEventSerializer:
         """
         Test class pointing to hydrolib.core.io.bui.serializer to test
         all the methods in the BuiEventSerializer class.
         """
+
         def test_given_dict_serialize_into_text(self):
             precipitation_event_list=dict(
                 start_time= datetime(1996, 1, 1),
@@ -325,6 +368,33 @@ class TestSerializer:
                 0.2
             """)
             assert serialized_text == expected_string
+
+        def test_given_duration_get_timedelta_fields(self):
+            duration = timedelta(days=4, hours=2, minutes=2, seconds=4)
+            dict_duration = BuiEventSerializer.get_timedelta_fields(duration)
+            assert dict_duration["d_seconds"] == 4
+            assert dict_duration["d_minutes"] == 2
+            assert dict_duration["d_hours"] == 2
+            assert dict_duration["d_days"] == 4
+
+        def test_given_datetime_serialize_start_time(self):
+            starttime = datetime(2021, 12, 20, 4, 2, 24)
+            serialized_st = BuiEventSerializer.serialize_start_time(starttime)
+            expected_string = "2021 12 20 4 2 24"
+            assert serialized_st == expected_string
+
+        def test_given_timedelta_serialize_timeseries_length(self):
+            duration = timedelta(days=4, hours=2, minutes=2, seconds=4)
+            serialized_td = BuiEventSerializer.serialize_timeseries_length(duration)
+            expected_string = "4 2 2 4"
+            assert serialized_td == expected_string
+
+        def test_given_precipitationlist_serialize_precipitation_per_timestep(self):
+            precipitation_list = [["2.4"]] *4
+            serialzied_pl = BuiEventSerializer.serialize_precipitation_per_timestep(precipitation_list)
+            expected_string = "2.4\n2.4\n2.4\n2.4"
+            assert serialzied_pl == expected_string
+
 
     def test_write_bui_file_given_valid_file(self):
         default_bui_model = get_default_bui_model()

@@ -130,8 +130,10 @@ class BuiEventListSerializer:
         Returns:
             str: Text block representing all precipitation events.
         """
-        serialized_list = \
-            list(map(BuiEventSerializer.serialize, event_list_data["precipitation_event_list"]))
+        serialized_list = []
+        for n_event, event in enumerate(event_list_data["precipitation_event_list"]):
+            event["event_idx"] = n_event + 1
+            serialized_list.append(BuiEventSerializer.serialize(event))
         return "\n".join(serialized_list)
 
 
