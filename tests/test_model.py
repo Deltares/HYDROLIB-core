@@ -204,15 +204,15 @@ def test_mdu_from_scratch():
 
 
 def test_boundary_with_forcingfile_returns_forcing():
-    forcing1 = _create_forcing("bnd1", "qnt1")
-    forcing2 = _create_forcing("bnd2", "qnt2")
-    forcing3 = _create_forcing("bnd3", "qnt3")
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
+    forcing3 = _create_forcing("bnd3", "qhbnd discharge")
 
     forcingfile = ForcingModel(forcing=[forcing1, forcing2, forcing3])
 
-    boundary1 = Boundary(nodeId="bnd1", quantity="qnt1", forcingfile=forcingfile)
-    boundary2 = Boundary(nodeId="bnd2", quantity="qnt2", forcingfile=forcingfile)
-    boundary3 = Boundary(nodeId="bnd3", quantity="qnt3", forcingfile=forcingfile)
+    boundary1 = Boundary(nodeId="bnd1", quantity="waterlevelbnd", forcingfile=forcingfile)
+    boundary2 = Boundary(nodeId="bnd2", quantity="dischargebnd", forcingfile=forcingfile)
+    boundary3 = Boundary(nodeId="bnd3", quantity="qhbnd", forcingfile=forcingfile)
 
     assert boundary1.forcing is forcing1
     assert boundary2.forcing is forcing2
@@ -220,19 +220,19 @@ def test_boundary_with_forcingfile_returns_forcing():
 
 
 def test_boundary_without_forcingfile_returns_none():
-    boundary = Boundary(nodeId="boundary", quantity="quantity")
+    boundary = Boundary(nodeId="boundary", quantity="waterlevelbnd")
 
     assert boundary.forcingfile is None
     assert boundary.forcing is None
 
 
 def test_boundary_with_forcingfile_without_match_returns_none():
-    forcing1 = _create_forcing("bnd1", "qnt1")
-    forcing2 = _create_forcing("bnd2", "qnt2")
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
 
     forcingfile = ForcingModel(forcing=[forcing1, forcing2])
 
-    boundary = Boundary(nodeId="bnd3", quantity="qnt3", forcingfile=forcingfile)
+    boundary = Boundary(nodeId="bnd3", quantity="qhbnd", forcingfile=forcingfile)
 
     assert boundary.forcing is None
 

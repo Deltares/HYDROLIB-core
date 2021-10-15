@@ -185,9 +185,14 @@ class Boundary(INIBasedModel):
         if self.forcingfile is None:
             return None
 
-        for item in self.forcingfile.forcing:
-            if self.nodeId == item.name and self.quantity in item.quantity:
-                return item
+        for forcing in self.forcingfile.forcing:
+
+            if self.nodeId != forcing.name:
+                continue
+
+            for quantity in forcing.quantity:
+                if quantity.startswith(self.quantity):
+                    return forcing
 
         return None
 
