@@ -62,6 +62,9 @@ class ForcingBase(DataBlockINIBasedModel):
                     break
         return v
 
+    def _get_identifier(self, data: dict) -> str:
+        return data["name"] if "name" in data else None
+
     class Config:
         extra = Extra.ignore
 

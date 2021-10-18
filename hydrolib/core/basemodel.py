@@ -268,3 +268,6 @@ class FileModel(BaseModel, ABC):
 
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
+
+    def _get_identifier(self, data: dict) -> str:
+        return data["filepath"].name

@@ -172,6 +172,9 @@ class Boundary(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
+    def _get_identifier(self, data: dict) -> str:
+        return data["nodeid"] if "nodeid" in data else None
+
 
 class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
@@ -181,6 +184,9 @@ class Lateral(INIBasedModel):
     branchId: Optional[str]
     chainage: Optional[float]
     discharge: str
+
+    def _get_identifier(self, data: dict) -> str:
+        return data["id"] if "id" in data else None
 
 
 class ExtGeneral(INIGeneral):

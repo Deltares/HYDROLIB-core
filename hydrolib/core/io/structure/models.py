@@ -98,6 +98,9 @@ class Structure(INIBasedModel):
         exclude_set = super()._exclude_fields().union(exclude_set)
         return exclude_set
 
+    def _get_identifier(self, data: dict) -> str:
+        return data["id"]
+
 
 class FlowDirection(str, Enum):
     none = "none"
