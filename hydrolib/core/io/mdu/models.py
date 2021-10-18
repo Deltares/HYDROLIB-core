@@ -1,7 +1,8 @@
-from hydrolib.core.io.net.models import NetworkModel
 from pathlib import Path
 from typing import Callable, List, Literal, Optional, Union
+
 from pydantic import Field
+
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.bc.models import ForcingModel
@@ -19,6 +20,7 @@ from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
+from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
