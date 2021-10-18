@@ -1,0 +1,17 @@
+[General]
+fileVersion = 1.00
+fileType    = ExtForceFileNew
+
+[boundary]
+quantity    = waterlevelbnd
+nodeId      = Boundary1
+forcingfile = BoundaryConditions.bc
+
+[boundary]
+nodeId      = Boundary2
+forcingfile = BoundaryConditions.bc
+
+[boundary]
+quantity    = waterlevelbnd
+nodeId      = Boundary3
+forcingfile = BoundaryConditions.bc
