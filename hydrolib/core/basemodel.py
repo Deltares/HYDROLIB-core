@@ -13,6 +13,7 @@ from warnings import warn
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic.error_wrappers import ErrorWrapper, ValidationError
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import to_key
@@ -41,6 +42,21 @@ class BaseModel(PydanticBaseModel):
         extra = "forbid"  # will throw errors so we can fix our models
         allow_population_by_field_name = True
         alias_generator = to_key
+
+    def __init__(self, **data: Any) -> None:
+        """Initializes a BaseModel with the provided data.
+
+        Raises:
+            ValidationError: A validation error when the data is invalid.
+        """
+        try:
+            super().__init__(**data)
+        except ValidationError as e:
+            id = self._get_identifier(data)
+            if id is None:
+                raise e
+            else:
+                raise ValidationError([ErrorWrapper(e, loc=id)], self.__class__)
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
@@ -83,6 +99,17 @@ class BaseModel(PydanticBaseModel):
         # Run self as last, so we can make use of the nested updates
         if self.is_file_link():
             getattr(self, f)(*args, **kwargs)
+
+    def _get_identifier(self, data: dict) -> str:
+        """Gets the identifier for this model.
+
+        Args:
+            data (dict): The data from which to retrieve the identifier
+
+        Returns:
+            str: The identifier or None.
+        """
+        return None
 
 
 class FileModel(BaseModel, ABC):
