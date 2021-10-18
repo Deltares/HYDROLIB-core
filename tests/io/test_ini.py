@@ -232,19 +232,21 @@ class TestParser:
     @pytest.mark.parametrize(
         "line,expected_result",
         [
-            ("[a-header]", True),
-            ("[ also header but with whitespace ]", True),
-            ("[ # this works, but please don't do that # ]", True),
-            ("                 [ prefixed whitespace is acceptable ]     ", True),
-            ("[ not closed", False),
-            ("  also not closed ]", False),
-            ("(not-a-header)", False),
-            ("{not-a-header}", False),
-            ("", False),
-            ("     ", False),
-            ("something", False),
-            ("       also something", False),
-            ("# some comment", False),
+            pytest.param("[a-header]", True),
+            pytest.param("[ also header but with whitespace ]", True),
+            pytest.param("[ # this works, but please don't do that # ]", True),
+            pytest.param(
+                "                 [ prefixed whitespace is acceptable ]     ", True
+            ),
+            pytest.param("[ not closed", False, id="Header not closed (end)"),
+            pytest.param("  also not closed ]", False, id="Header not closed (begin)"),
+            pytest.param("(not-a-header)", False),
+            pytest.param("{not-a-header}", False),
+            pytest.param("", False),
+            pytest.param("     ", False),
+            pytest.param("something", False),
+            pytest.param("       also something", False),
+            pytest.param("# some comment", False),
         ],
     )
     def test_is_section_header(self, line: str, expected_result: bool):
