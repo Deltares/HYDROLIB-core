@@ -1,6 +1,5 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from pathlib import Path
 from typing import Callable, List, Literal, Optional, Type, Union
 
@@ -10,6 +9,7 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
+from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.utils import to_list
 

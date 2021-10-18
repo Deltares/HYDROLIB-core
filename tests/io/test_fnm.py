@@ -1,11 +1,12 @@
 import inspect
 from pathlib import Path
 from typing import Callable
-from hydrolib.core.io.fnm.parser import parse
-from hydrolib.core.io.fnm.serializer import serialize
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
 
 import pytest
+
+from hydrolib.core.io.fnm.models import RainfallRunoffModel
+from hydrolib.core.io.fnm.parser import parse
+from hydrolib.core.io.fnm.serializer import serialize
 
 
 class TestRainFallRunoffModel:

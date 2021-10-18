@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, Literal, Optional
 
 from pydantic.types import FilePath
+
 from hydrolib.core.basemodel import FileModel
 
 from .parser import read
