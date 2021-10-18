@@ -134,6 +134,7 @@ class ForcingModel(INIModel):
     def _get_parser(cls) -> Callable:
         return cls.parse
 
+
     @classmethod
     def parse(cls, filepath: Path):
         # It's odd to have to disable parsing something as comments
