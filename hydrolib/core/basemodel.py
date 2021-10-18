@@ -56,7 +56,7 @@ class BaseModel(PydanticBaseModel):
             if id is None:
                 raise e
             else:
-                # If there is an identifier, include this in the ValidationError messages. 
+                # If there is an identifier, include this in the ValidationError messages.
                 raise ValidationError([ErrorWrapper(e, loc=id)], self.__class__)
 
     def is_file_link(self) -> bool:
