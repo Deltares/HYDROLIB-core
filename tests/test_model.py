@@ -22,7 +22,7 @@ from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
-from .io.test_bui import get_default_bui_model
+from .io.test_bui import BuiTestData
 
 
 def test_dimr_model():
@@ -59,7 +59,7 @@ def test_parse_rr_model_returns_correct_model():
 
     # verify some non-default names altered in the source file.
     assert model.control_file == Path("not-delft_3b.ini")
-    assert model.bui_file == get_default_bui_model()
+    assert model.bui_file == BuiTestData.bui_model()
     assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
 
 

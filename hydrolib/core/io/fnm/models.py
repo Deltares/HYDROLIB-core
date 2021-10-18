@@ -213,9 +213,6 @@ class RainfallRunoffModel(FileModel):
     meteo_input_file_evaporation: Optional[Path] = None
     meteo_input_file_temperature: Optional[Path] = None
 
-    # def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
-    #     super().__init__(filepath=filepath, *args, **kwargs)
-
     @classmethod
     def property_keys(cls) -> Iterable[str]:
         # Skip first element corresponding with file_path introduced by the FileModel.
