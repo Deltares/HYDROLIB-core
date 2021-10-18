@@ -66,7 +66,7 @@ class TestModel:
             assert last_event[-1] == 0.03
 
         def test_given_t_sewer_file_loads_model(self):
-            test_file = test_input_dir / "rr_bui_rks" / "T_SEWER.RKS"
+            test_file = test_input_dir / "rr_bui_rks" / "T_SEWER.rks"
             assert test_file.is_file()
             model = BuiModel(filepath=test_file)
             event_list = model.precipitation_events
