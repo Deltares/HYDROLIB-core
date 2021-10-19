@@ -184,8 +184,8 @@ class Lateral(INIBasedModel):
     numCoordinates: Optional[int]
     xCoordinates: Optional[List[int]]
     yCoordinates: Optional[List[int]]
-    discharge: str
     locationType: Optional[str]  # Left as the last argument to be the last to validate.
+    discharge: str
 
     @validator("xCoordinates", "yCoordinates")
     @classmethod
@@ -207,9 +207,11 @@ class Lateral(INIBasedModel):
                 "numCoordinates should be given when providing x or y coordinates."
             )
         assert num_coords == len(field_value)
+        return field_value
 
     @validator("locationType")
-    def validate_locationType(cls, field_value: str, values: Dict):
+    @classmethod
+    def validate_location_type(cls, field_value: str, values: Dict):
         possible_values = ["1d", "2d", "all"]
         x_coords = values.get("xCoordinates", None)
         y_coords = values.get("yCoordinates", None)
@@ -223,6 +225,15 @@ class Lateral(INIBasedModel):
                     field_value, ", ".join(possible_values)
                 )
             )
+
+        if "1d" == field_value.lower():
+            branch_id: str = values.get("branchId", None)
+            chainage: float = values.get("chainage", None)
+            if branch_id is None or branch_id.isspace() or chainage is None:
+                raise ValueError(
+                    "Fields branch_id and chainage should contain valid values for locationType 1d."
+                )
+        return field_value
 
 
 class ExtGeneral(INIGeneral):

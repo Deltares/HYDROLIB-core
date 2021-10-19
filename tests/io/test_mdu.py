@@ -89,13 +89,67 @@ class TestModels:
             expected_error_mssg = f"Value given ({location_type}) not accepted, should be one of: 1d, 2d, all"
             assert expected_error_mssg in str(exc_mssg.value)
 
-        def test_given_valid_args_validates_locationType(self):
+        @pytest.mark.parametrize(
+            "branch_id, chainage",
+            [
+                pytest.param(None, None, id="Both None."),
+                pytest.param(None, "", id="No branchId, empty chainageId."),
+                pytest.param("", None, id="Empty branchId, no chainageId."),
+                pytest.param("  ", "  ", id="Both empty."),
+                pytest.param("aBranchid", None, id="ChainageId is None."),
+                pytest.param("aBranchid", "  ", id="ChainageId is empty."),
+                pytest.param(None, "aChainageId", id="BranchId is None."),
+                pytest.param("  ", "aChainageId", id="BranchId is empty."),
+            ],
+        )
+        def test_given_locationType_1d_with_missing_args_raises(
+            self, branch_id: str, chainage: str
+        ):
+            with pytest.raises(ValidationError) as exc_mssg:
+                Lateral(
+                    id="42",
+                    discharge="A discharge",
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                    locationType="1d",
+                    branchId=branch_id,
+                    chainage=chainage,
+                )
+            expected_error_mssg = "Fields branch_id and chainage should contain valid values for locationType 1d."
+            assert expected_error_mssg in str(exc_mssg.value)
+
+        @pytest.mark.parametrize(
+            "location_type",
+            [pytest.param("1d"), pytest.param("2d"), pytest.param("all")],
+        )
+        def test_given_valid_args_validates_locationType(self, location_type: str):
+            # 1. Define test data.
+            x_coords = [42, 24]
+            y_coords = [24, 42]
+            discharge = "A discharge"
+            id_value = "42"
+            branch_id = "aBranchId"
+            chainage = 4.2
+
+            # 2. Run test.
             lateral_cls = Lateral(
-                id="42",
-                discharge="A discharge",
+                id=id_value,
+                discharge=discharge,
                 numCoordinates=2,
-                locationType="loremIpsum",
-                xCoordinates=[42, 24],
-                yCoordinates=[24, 42],
+                locationType=location_type,
+                xCoordinates=x_coords,
+                yCoordinates=y_coords,
+                branchId=branch_id,
+                chainage=chainage,
             )
+
+            # 3. Validate expectations.
             assert isinstance(lateral_cls, INIBasedModel)
+            assert lateral_cls.id == id_value
+            assert lateral_cls.discharge == discharge
+            assert lateral_cls.locationType == location_type
+            assert lateral_cls.xCoordinates == x_coords
+            assert lateral_cls.yCoordinates == y_coords
+            assert lateral_cls.branchId == branch_id
+            assert lateral_cls.chainage == chainage
