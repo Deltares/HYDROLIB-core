@@ -1,9 +1,10 @@
+from pathlib import Path
+from typing import Callable, Dict, List, Literal, Optional, Union
+
+from pydantic import Field, validator
 from pydantic.class_validators import root_validator
 from pydantic.error_wrappers import ValidationError
-from hydrolib.core.io.net.models import NetworkModel
-from pathlib import Path
-from typing import Callable, List, Literal, Optional, Union, Dict
-from pydantic import Field, validator
+
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.bc.models import ForcingModel
@@ -21,6 +22,7 @@ from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
+from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
