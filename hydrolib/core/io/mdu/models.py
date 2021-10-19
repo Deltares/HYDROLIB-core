@@ -1,3 +1,4 @@
+from pydantic.class_validators import root_validator
 from pydantic.error_wrappers import ValidationError
 from hydrolib.core.io.net.models import NetworkModel
 from pathlib import Path
@@ -23,6 +24,7 @@ from hydrolib.core.io.ini.util import (
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
+from hydrolib.core.utils import str_is_empty_or_none
 
 
 class General(INIBasedModel):
@@ -178,13 +180,13 @@ class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
     id: str
     name: str = ""
+    locationType: Optional[str]
     nodeId: Optional[str]
     branchId: Optional[str]
     chainage: Optional[float]
     numCoordinates: Optional[int]
     xCoordinates: Optional[List[int]]
     yCoordinates: Optional[List[int]]
-    locationType: Optional[str]  # Left as the last argument to be the last to validate.
     discharge: str
 
     @validator("xCoordinates", "yCoordinates")
@@ -214,51 +216,79 @@ class Lateral(INIBasedModel):
 
     @validator("locationType")
     @classmethod
-    def validate_location_type(cls, field_value: str, values: Dict) -> str:
+    def validate_location_type(cls, v: str) -> str:
         """
-        Method to validate whether the specified location type matches the rest of the
-        given data.
+        Method to validate whether the specified location type is correct.
 
         Args:
-            field_value (str): Given value for the locationType field.
-            values (Dict): Set of values already validated for the Lateral object.
+            v (str): Given value for the locationType field.
 
         Raises:
-            ValueError: When either xCoordinates or yCoordinates do not contain valid values.
             ValueError: When the value given for locationType is unknown.
-            ValueError: When the values given for a 1d locationType are not valid.
 
         Returns:
             str: Validated locationType string.
         """
         possible_values = ["1d", "2d", "all"]
-        x_coords = values.get("xCoordinates", None)
-        y_coords = values.get("yCoordinates", None)
-        if x_coords is None or y_coords is None:
-            raise ValueError(
-                "Both xCoordinates and yCoordinates should contain valid values."
-            )
-        if field_value.lower() not in possible_values:
+        if v.lower() not in possible_values:
             raise ValueError(
                 "Value given ({}) not accepted, should be one of: {}".format(
-                    field_value, ", ".join(possible_values)
+                    v, ", ".join(possible_values)
                 )
             )
+        return v
 
-        def valid_str_field(str_field: str) -> bool:
-            return str_field is not None and not str_field.isspace()
+    @root_validator
+    @classmethod
+    def validate_location_dependencies(cls, values: Dict) -> Dict:
+        """
+        Once all the fields have been evaluated, we verify whether the location
+        given for this Lateral matches the expectations.
 
-        if field_value.lower() == "1d":
-            node_id: str = values.get("nodeId", None)
-            if valid_str_field(node_id):
-                return field_value
-            branch_id: str = values.get("branchId", None)
-            chainage: float = values.get("chainage", None)
-            if not valid_str_field(branch_id) or chainage is None:
+        Args:
+            values (Dict): Dictionary of Laterals validated fields.
+
+        Raises:
+            ValueError: When neither nodeId, branchId or coordinates have been given.
+            ValueError: When either x or y coordinates were expected but not given.
+            ValueError: When locationType should be 1d but other was specified.
+
+        Returns:
+            Dict: Validated dictionary of Lateral fields.
+        """
+
+        def validate_coordinates(coord_name: str) -> None:
+            if values.get(coord_name, None) is None:
+                raise ValueError("{} should be given.".format(coord_name))
+
+        # If nodeId or branchId and Chainage are present
+        node_id: str = values.get("nodeId", None)
+        branch_id: str = values.get("branchId", None)
+        n_coords: int = values.get("numCoordinates", 0)
+        chainage: float = values.get("chainage", None)
+
+        # First validation - at least one of the following should be specified.
+        if str_is_empty_or_none(node_id) and (str_is_empty_or_none(branch_id)):
+            if n_coords == 0:
                 raise ValueError(
-                    "Field nodeId (or branch_id and chainage) should contain valid values for locationType 1d."
+                    "Either nodeId, branchId (with chainage) or numCoordinates (with x, y coordinates) are required."
                 )
-        return field_value
+            else:
+                # Second validation, coordinates should be valid.
+                validate_coordinates("xCoordinates")
+                validate_coordinates("yCoordinates")
+            return values
+        else:
+            # Third validation, chainage should be given with branchId
+            if not str_is_empty_or_none(branch_id) and chainage is None:
+                raise ValueError("Chainage should be provided when branchId specified.")
+            # Fourth validation, when nodeId, or branchId specified, expected 1d.
+            location_type = values.get("locationType", "")
+            if not location_type or location_type.lower() != "1d":
+                raise ValueError(
+                    "LocationType should be 1d when nodeId (or branchId and chainage) specified."
+                )
+        return values
 
 
 class ExtGeneral(INIGeneral):

@@ -20,6 +20,198 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.io.mdu.models.Lateral class"""
 
+        class Test_validate_coordinates:
+            """
+            Class to test the paradigms for validate_coordinates.
+            """
+
+            def test_given_no_numCoordinates_raises_ValueError(self):
+                with pytest.raises(ValueError) as exc_mssg:
+                    Lateral.validate_coordinates(
+                        field_value=[42, 24], values=dict(numCoordinates=None)
+                    )
+                assert (
+                    str(exc_mssg.value)
+                    == "numCoordinates should be given when providing x or y coordinates."
+                )
+
+            def test_given_wrong_numCoordinates_raises_AssertionError(self):
+                with pytest.raises(AssertionError):
+                    Lateral.validate_coordinates(
+                        field_value=[42, 24], values=dict(numCoordinates=1)
+                    )
+
+            def test_given_correct_numCoordinates(self):
+                return_value = Lateral.validate_coordinates(
+                    field_value=[42, 24], values=dict(numCoordinates=2)
+                )
+                assert return_value == [42, 24]
+
+        class Test_validate_location_type:
+            """
+            Class to test the paradigms for validate_location_type
+            """
+
+            @pytest.mark.parametrize(
+                "value",
+                [
+                    pytest.param(""),
+                    pytest.param("  "),
+                    pytest.param("notAValidType"),
+                ],
+            )
+            def test_given_wrong_location_type_raises_ValueError(self, value: str):
+                with pytest.raises(ValueError) as exc_mssg:
+                    Lateral.validate_location_type(value)
+                assert (
+                    str(exc_mssg.value)
+                    == f"Value given ({value}) not accepted, should be one of: 1d, 2d, all"
+                )
+
+            @pytest.mark.parametrize(
+                "location_type",
+                [
+                    pytest.param("1d"),
+                    pytest.param("1D"),
+                    pytest.param("2d"),
+                    pytest.param("2D"),
+                    pytest.param("all"),
+                    pytest.param("All"),
+                    pytest.param("ALL"),
+                ],
+            )
+            def test_given_correct_locationType(self, location_type: str):
+                return_value = Lateral.validate_location_type(location_type)
+                assert return_value == location_type
+
+        class Test_validate_location_dependencies:
+            """
+            Class to test the paradigms of validate_location_dependencies
+            """
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(
+                        dict(
+                            node_id=None, branch_id=None, n_coords=None, chainage=None
+                        ),
+                        id="All None",
+                    ),
+                    pytest.param(
+                        dict(node_id="", branch_id="", n_coords=0, chainage=None),
+                        id="All Empty",
+                    ),
+                ],
+            )
+            def test_given_no_values_raises_ValueError(self, dict_values: dict):
+                with pytest.raises(ValueError) as exc_err:
+                    Lateral.validate_location_dependencies(values=dict_values)
+                assert (
+                    str(exc_err.value)
+                    == "Either nodeId, branchId (with chainage) or numCoordinates (with x, y coordinates) are required."
+                )
+
+            @pytest.mark.parametrize(
+                "missing_coordinates", [("xCoordinates"), ("yCoordinates")]
+            )
+            def test_given_numCoords_but_missing_coordinates(
+                self, missing_coordinates: str
+            ):
+                test_dict = dict(
+                    nodeId=None,
+                    branchId=None,
+                    chainage=None,
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                )
+                test_dict[missing_coordinates] = None
+                with pytest.raises(ValueError) as exc_error:
+                    Lateral.validate_location_dependencies(test_dict)
+                assert str(exc_error.value) == f"{missing_coordinates} should be given."
+
+            def test_given_numCoordinates_and_valid_coordinates(self):
+                test_dict = dict(
+                    nodeId=None,
+                    branchId=None,
+                    chainage=None,
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                )
+                return_value = Lateral.validate_location_dependencies(test_dict)
+                assert return_value == test_dict
+
+            def test_given_branchId_and_no_chainage_raises_ValueError(self):
+                with pytest.raises(ValueError) as exc_err:
+                    Lateral.validate_location_dependencies(
+                        dict(
+                            nodeId=None,
+                            branchId="aBranchId",
+                            chainage=None,
+                        )
+                    )
+                assert (
+                    str(exc_err.value)
+                    == "Chainage should be provided when branchId specified."
+                )
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeId="42"), id="Given nodeId"),
+                    pytest.param(
+                        dict(branchId="aBranchId", chainage=4.2),
+                        id="Given branchId and chainage",
+                    ),
+                ],
+            )
+            @pytest.mark.parametrize(
+                "location_type",
+                [
+                    pytest.param(None, id="None type"),
+                    pytest.param("wrongType", id="1d type"),
+                ],
+            )
+            def test_given_1d_args_and_location_type_other_then_raises_ValueError(
+                self, dict_values: dict, location_type: str
+            ):
+                test_values = dict(
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                    locationType=location_type,
+                )
+                test_dict = {**dict_values, **test_values}
+                with pytest.raises(ValueError) as exc_err:
+                    Lateral.validate_location_dependencies(test_dict)
+                assert (
+                    str(exc_err.value)
+                    == "LocationType should be 1d when nodeId (or branchId and chainage) specified."
+                )
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeId="24"), id="Given nodeId"),
+                    pytest.param(
+                        dict(branchId="aBranchId", chainage=4.2),
+                        id="Given branchId and chainage.",
+                    ),
+                ],
+            )
+            def test_given_1d_args_and_1d_location_type(self, dict_values: dict):
+                test_values = dict(
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                    locationType="1d",
+                )
+                test_dict = {**dict_values, **test_values}
+                return_value = Lateral.validate_location_dependencies(test_dict)
+                assert return_value == test_dict
+
         @pytest.mark.parametrize("x_coord, y_coord", coordinate_test_cases())
         def test_given_coordinates_but_no_numCoordinates_raises(
             self, x_coord: Optional[List[int]], y_coord: Optional[List[int]]
