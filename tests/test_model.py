@@ -19,7 +19,7 @@ from hydrolib.core.io.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.mdu.models import Boundary, FMModel
+from hydrolib.core.io.mdu.models import Boundary, ExtModel, FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
@@ -194,6 +194,29 @@ def test_mdu_model():
     assert model.filepath.is_file()
     assert model.geometry.frictfile[0].filepath.is_file()
     assert model.geometry.structurefile[0].filepath.is_file()
+
+
+def test_model_with_duplicate_file_references_use_same_instances():
+    model = ExtModel(
+        filepath=Path(
+            test_data_dir
+            / "input"
+            / "e02"
+            / "c11_korte-woerden-1d"
+            / "dimr_model"
+            / "dflowfm"
+            / "FlowFM_bnd.ext"
+        )
+    )
+
+    boundary1 = model.boundary[0]
+    boundary2 = model.boundary[1]
+
+    # Set a field for first boundary
+    boundary1.forcingfile.forcing[0].name = "some_new_value"
+
+    # Field for second boundary is also updated (same instance)
+    assert boundary2.forcingfile.forcing[0].name == "some_new_value"
 
 
 def test_mdu_from_scratch():
