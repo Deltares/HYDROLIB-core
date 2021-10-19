@@ -185,15 +185,44 @@ class Lateral(INIBasedModel):
     xCoordinates: Optional[List[int]]
     yCoordinates: Optional[List[int]]
     discharge: str
+    locationType: Optional[str]  # Left as the last argument to be the last to validate.
 
     @validator("xCoordinates", "yCoordinates")
+    @classmethod
     def validate_coordinates(cls, field_value: List[int], values: Dict):
+        """
+        Method to validate whether the given coordinates match in number
+        to the expected value given for numCoordinates.
+
+        Args:
+            field_value (List[int]): Coordinates list (x or y)
+            values (Dict): Properties already 'validated' for Lateral class.
+
+        Raises:
+            ValueError: When the number of coordinates does not match expectations.
+        """
         num_coords = values.get("numCoordinates", None)
         if num_coords is None:
             raise ValueError(
                 "numCoordinates should be given when providing x or y coordinates."
             )
         assert num_coords == len(field_value)
+
+    @validator("locationType")
+    def validate_locationType(cls, field_value: str, values: Dict):
+        possible_values = ["1d", "2d", "all"]
+        x_coords = values.get("xCoordinates", None)
+        y_coords = values.get("yCoordinates", None)
+        if x_coords is None or y_coords is None:
+            raise ValueError(
+                "Both xCoordinates and yCoordinates should contain valid values."
+            )
+        if field_value.lower() not in possible_values:
+            raise ValueError(
+                "Value given ({}) not accepted, should be one of: {}".format(
+                    field_value, ", ".join(possible_values)
+                )
+            )
 
 
 class ExtGeneral(INIGeneral):
