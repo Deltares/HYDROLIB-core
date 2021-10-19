@@ -44,4 +44,4 @@ def str_is_empty_or_none(str_field: str) -> bool:
     Returns:
         bool: Evaluation result.
     """
-    return str_field is None or str_field.isspace()
+    return str_field is None or not str_field or str_field.isspace()

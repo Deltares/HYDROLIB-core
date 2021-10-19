@@ -160,21 +160,14 @@ class TestModels:
                     ),
                 ],
             )
-            @pytest.mark.parametrize(
-                "location_type",
-                [
-                    pytest.param(None, id="None type"),
-                    pytest.param("wrongType", id="1d type"),
-                ],
-            )
             def test_given_1d_args_and_location_type_other_then_raises_ValueError(
-                self, dict_values: dict, location_type: str
+                self, dict_values: dict
             ):
                 test_values = dict(
                     numCoordinates=2,
                     xCoordinates=[42, 24],
                     yCoordinates=[24, 42],
-                    locationType=location_type,
+                    locationType="wrongType",
                 )
                 test_dict = {**dict_values, **test_values}
                 with pytest.raises(ValueError) as exc_err:
@@ -204,6 +197,30 @@ class TestModels:
                 test_dict = {**dict_values, **test_values}
                 return_value = Lateral.validate_location_dependencies(test_dict)
                 assert return_value == test_dict
+
+            @pytest.mark.parametrize(
+                "test_dict",
+                [
+                    pytest.param(dict(nodeId="aNodeId"), id="With NodeId"),
+                    pytest.param(
+                        dict(branchId="aBranchId", chainage=42),
+                        id="Witch branchId and chainage",
+                    ),
+                ],
+            )
+            @pytest.mark.parametrize(
+                "location_type",
+                [
+                    pytest.param("", id="Empty string"),
+                    pytest.param(None, id="None string"),
+                ],
+            )
+            def test_given_1d_args_but_no_locationType_then_sets_value(
+                self, test_dict: dict, location_type: str
+            ):
+                test_dict["locationType"] = location_type
+                return_value = Lateral.validate_location_dependencies(test_dict)
+                assert return_value["locationType"] == "1d"
 
         class Test_validate_from_ctor:
             @pytest.mark.parametrize(

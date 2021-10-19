@@ -283,11 +283,14 @@ class Lateral(INIBasedModel):
             if not str_is_empty_or_none(branch_id) and chainage is None:
                 raise ValueError("Chainage should be provided when branchId specified.")
             # Fourth validation, when nodeId, or branchId specified, expected 1d.
-            location_type = values.get("locationType", "")
-            if not location_type or location_type.lower() != "1d":
+            location_type = values.get("locationType", None)
+            if str_is_empty_or_none(location_type):
+                values["locationType"] = "1d"
+            elif location_type.lower() != "1d":
                 raise ValueError(
                     "LocationType should be 1d when nodeId (or branchId and chainage) specified."
                 )
+
         return values
 
 
