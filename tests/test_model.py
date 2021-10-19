@@ -210,17 +210,11 @@ def test_boundary_with_forcingfile_returns_forcing():
 
     forcingfile = ForcingModel(forcing=[forcing1, forcing2, forcing3])
 
-    boundary1 = Boundary(
-        nodeId="bnd1", quantity="waterlevelbnd", forcingfile=forcingfile
-    )
     boundary2 = Boundary(
         nodeId="bnd2", quantity="dischargebnd", forcingfile=forcingfile
     )
-    boundary3 = Boundary(nodeId="bnd3", quantity="qhbnd", forcingfile=forcingfile)
 
-    assert boundary1.forcing is forcing1
     assert boundary2.forcing is forcing2
-    assert boundary3.forcing is forcing3
 
 
 def test_boundary_without_forcingfile_returns_none():
