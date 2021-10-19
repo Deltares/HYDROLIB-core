@@ -1,9 +1,8 @@
 """serializer.py defines the write method for the RainfallRunoffModel."""
 
-from typing import Dict, Iterable, Optional
-from pathlib import Path
-
 import inspect
+from pathlib import Path
+from typing import Dict, Iterable, Optional
 
 
 def _calculate_max_value_length(data: Iterable[Optional[Path]]) -> int:

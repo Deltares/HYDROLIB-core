@@ -1,6 +1,8 @@
-import pytest
 from typing import List, Optional
+
+import pytest
 from pydantic import ValidationError
+
 from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.mdu.models import Lateral
 

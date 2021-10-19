@@ -1,16 +1,15 @@
 from __future__ import annotations
-import logging
-
-from hydrolib.core.basemodel import BaseModel
-
-from collections import namedtuple
-from typing import Any, Dict, TYPE_CHECKING, Optional, Tuple
 
 import json
+import logging
+from collections import namedtuple
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
 import netCDF4 as nc
 import numpy as np
+
+from hydrolib.core.basemodel import BaseModel
 
 if TYPE_CHECKING:
     from .models import Link1d2d, Mesh1d, Mesh2d

@@ -1,19 +1,19 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Union, Dict
+from typing import Dict, List, Union
 
 import meshkernel as mk
-from meshkernel.py_structures import GeometryList
 import netCDF4 as nc
 import numpy as np
 import numpy.typing as npt
+from meshkernel.py_structures import GeometryList
 from pydantic import Field
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel
-from hydrolib.core.io.net.writer import UgridWriter
 from hydrolib.core.io.net.reader import UgridReader
+from hydrolib.core.io.net.writer import UgridWriter
 
 
 def split_by(gl: mk.GeometryList, by: float) -> list:

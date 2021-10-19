@@ -1,16 +1,16 @@
-from typing import Dict, List, Optional
-from hydrolib.core.io.net.reader import NCExplorer
+import json
 from pathlib import Path
+from typing import Dict, List, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from meshkernel import GeometryList, MeshKernel
 
-import json
+from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
+from hydrolib.core.io.net.reader import NCExplorer
 
-from hydrolib.core.io.net.models import Mesh2d, NetworkModel, Branch
-from ..utils import test_output_dir, test_input_dir
+from ..utils import test_input_dir, test_output_dir
 
 
 def plot_network(network):
