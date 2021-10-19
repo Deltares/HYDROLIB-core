@@ -2,7 +2,7 @@ import pytest
 from typing import List, Optional
 from pydantic import ValidationError
 from hydrolib.core.io.ini.models import INIBasedModel
-from hydrolib.core.io.mdu.models import Lateral
+from hydrolib.core.io.mdu.models import Boundary, Lateral
 
 
 def coordinate_test_cases():
@@ -201,3 +201,23 @@ class TestModels:
             assert lateral_cls.yCoordinates == y_coords
             assert lateral_cls.branchId == branch_id
             assert lateral_cls.chainage == chainage
+
+    class TestBoundary:
+        """Class to test all methods contained in the
+        hydrolib.core.io.mdu.models.Boundary class"""
+
+        def test_given_missing_args_boundary_raises(self, test_values: dict):
+            # 1. Define test data
+            dict_values = dict(
+                quantity="aQuantity",
+            )
+            boundary_values = {**dict_values, **test_values}
+            # 2. Run test.
+            with pytest.raises(ValueError) as exc_mssg:
+                Boundary(**boundary_values)
+
+            # 3. Verify final expectations.
+            expected_error_mssg = (
+                "Either nodeId or locationFile fields should be specified."
+            )
+            assert expected_error_mssg in str(exc_mssg.value)

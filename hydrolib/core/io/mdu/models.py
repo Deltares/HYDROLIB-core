@@ -2,7 +2,7 @@ from pydantic.error_wrappers import ValidationError
 from hydrolib.core.io.net.models import NetworkModel
 from pathlib import Path
 from typing import Callable, List, Literal, Optional, Union, Dict
-from pydantic import Field, validator
+from pydantic import Field, validator, root_validator
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.bc.models import ForcingModel
@@ -23,6 +23,7 @@ from hydrolib.core.io.ini.util import (
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
+from ...utils import str_empty_or_none
 
 
 class General(INIBasedModel):
@@ -166,12 +167,21 @@ class Restart(INIBasedModel):
 class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
     quantity: str
-    nodeId: Optional[str]
+    nodeid: Optional[str]
+    locationfile: Optional[Path]
     forcingfile: Optional[ForcingModel] = None
     bndWidth1D: Optional[float]
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @root_validator
+    def check_nodeid_or_locationfile_present(cls, values: Dict):
+        if not str_empty_or_none(values.get("nodeid", None)) or not str_empty_or_none(
+            values.get("forcingfile", None)
+        ):
+            return values
+        raise ValueError("Either nodeId or locationFile fields should be specified.")
 
 
 class Lateral(INIBasedModel):
@@ -245,16 +255,13 @@ class Lateral(INIBasedModel):
                 )
             )
 
-        def valid_str_field(str_field: str) -> bool:
-            return str_field is not None and not str_field.isspace()
-
         if field_value.lower() == "1d":
             node_id: str = values.get("nodeId", None)
-            if valid_str_field(node_id):
+            if str_empty_or_none(node_id):
                 return field_value
             branch_id: str = values.get("branchId", None)
             chainage: float = values.get("chainage", None)
-            if not valid_str_field(branch_id) or chainage is None:
+            if str_empty_or_none(branch_id) or chainage is None:
                 raise ValueError(
                     "Field nodeId (or branch_id and chainage) should contain valid values for locationType 1d."
                 )

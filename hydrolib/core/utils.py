@@ -32,3 +32,16 @@ def to_list(item: Any) -> List[Any]:
     if not isinstance(item, list):
         return [item]
     return item
+
+
+def str_empty_or_none(str_field: str) -> bool:
+    """
+    Verifies whether a given string is None or contains spaces.
+
+    Args:
+        str_field (str): String to validate.
+
+    Returns:
+        bool: result of the evaluation.
+    """
+    return str_field is None or str_field.isspace()
