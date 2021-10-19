@@ -4,31 +4,7 @@ on: [push]
 
 jobs:
 
-  format:
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [3.8]
-        os: [ubuntu-18.04]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Code Quality
-        run: poetry run black . --check
-
-      - name: Autoformat code if the check fails
-        if: failure()
-        run: |
-          poetry run isort .
-          poetry run black .
-          git config --global user.name 'autoblack'
-          git config --global user.email '$GITHUB_ACTOR@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          git checkout $GITHUB_HEAD_REF
-          git commit -am "fixup: Format Python code with isort & black"
-          git push
-
-
-  test:
+  setup:
     strategy:
       fail-fast: false
       matrix:
@@ -67,9 +43,43 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
+  format:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8]
+        os: [ubuntu-18.04]
+    runs-on: ${{ matrix.os }}
+    needs: setup
+    steps:
+
+      - name: Code Quality
+        run: poetry run black . --check
+
+      - name: Autoformat code if the check fails
+        if: failure()
+        run: |
+          poetry run isort .
+          poetry run black .
+          git config --global user.name 'autoblack'
+          git config --global user.email '$GITHUB_ACTOR@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git checkout $GITHUB_HEAD_REF
+          git commit -am "fixup: Format Python code with isort & black"
+          git push
+
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8, 3.9]
+        os: [ubuntu-18.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    needs: setup
+    steps:
       - name: Test with pytest
         run: poetry run pytest --cov . --cov-report xml:coverage-reports/coverage-hydrolib-core.xml --junitxml=xunit-reports/xunit-result-hydrolib-core.xml
-
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
