@@ -93,18 +93,27 @@ class TestModels:
             "branch_id, chainage",
             [
                 pytest.param(None, None, id="Both None."),
-                pytest.param(None, "", id="No branchId, empty chainageId."),
-                pytest.param("", None, id="Empty branchId, no chainageId."),
+                pytest.param(None, "", id="No branchId, empty chainage."),
+                pytest.param("", None, id="Empty branchId, no chainage."),
                 pytest.param("  ", "  ", id="Both empty."),
-                pytest.param("aBranchid", None, id="ChainageId is None."),
-                pytest.param("aBranchid", "  ", id="ChainageId is empty."),
-                pytest.param(None, "aChainageId", id="BranchId is None."),
-                pytest.param("  ", "aChainageId", id="BranchId is empty."),
+                pytest.param("aBranchid", None, id="chainage is None."),
+                pytest.param("aBranchid", "  ", id="chainage is empty."),
+                pytest.param(None, "achainage", id="BranchId is None."),
+                pytest.param("  ", "achainage", id="BranchId is empty."),
             ],
         )
         def test_given_locationType_1d_with_missing_args_raises(
             self, branch_id: str, chainage: str
         ):
+            """
+            Test to validate how the lateral init fails when no node_id
+            is given and the alternative parameters (branchId and chainage)
+            are missing or empty.
+
+            Args:
+                branch_id (str): Value to assign in the branch field.
+                chainage (str): Value to assign in the chainage field.
+            """
             with pytest.raises(ValidationError) as exc_mssg:
                 Lateral(
                     id="42",
@@ -116,8 +125,47 @@ class TestModels:
                     branchId=branch_id,
                     chainage=chainage,
                 )
-            expected_error_mssg = "Fields branch_id and chainage should contain valid values for locationType 1d."
+            expected_error_mssg = "Field nodeId (or branch_id and chainage) should contain valid values for locationType 1d."
             assert expected_error_mssg in str(exc_mssg.value)
+
+        @pytest.mark.parametrize(
+            "location_values",
+            [
+                pytest.param(dict(nodeId="aNodeId"), id="nodeId given."),
+                pytest.param(
+                    dict(branchId="aBranchId", chainage=42),
+                    id="branchId + chainage given.",
+                ),
+                pytest.param(
+                    dict(nodeId="aNodeId", branchId="aBranchId", chainage=42),
+                    id="all given.",
+                ),
+                pytest.param(
+                    dict(nodeId="", branchId="aBranchId", chainage=42),
+                    id="Empty nodeId.",
+                ),
+            ],
+        )
+        def test_given_valid_location_args_constructs_lateral(
+            self, location_values: dict
+        ):
+            # 1. Define test data.
+            default_values = dict(
+                id="42",
+                discharge="A discharge",
+                numCoordinates=2,
+                xCoordinates=[42, 24],
+                yCoordinates=[24, 42],
+                locationType="1d",
+            )
+            test_dict = {**default_values, **location_values}
+
+            # 2. Run test.
+            new_lateral = Lateral(**test_dict)
+
+            # 3. Validate final expectations.
+            for key, value in location_values.items():
+                assert new_lateral.dict()[key] == value
 
         @pytest.mark.parametrize(
             "location_type",

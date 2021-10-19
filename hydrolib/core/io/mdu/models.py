@@ -189,7 +189,7 @@ class Lateral(INIBasedModel):
 
     @validator("xCoordinates", "yCoordinates")
     @classmethod
-    def validate_coordinates(cls, field_value: List[int], values: Dict):
+    def validate_coordinates(cls, field_value: List[int], values: Dict) -> List[int]:
         """
         Method to validate whether the given coordinates match in number
         to the expected value given for numCoordinates.
@@ -200,6 +200,9 @@ class Lateral(INIBasedModel):
 
         Raises:
             ValueError: When the number of coordinates does not match expectations.
+
+        Returns:
+            List[int]: Validated list of coordinates.
         """
         num_coords = values.get("numCoordinates", None)
         if num_coords is None:
@@ -211,7 +214,23 @@ class Lateral(INIBasedModel):
 
     @validator("locationType")
     @classmethod
-    def validate_location_type(cls, field_value: str, values: Dict):
+    def validate_location_type(cls, field_value: str, values: Dict) -> str:
+        """
+        Method to validate whether the specified location type matches the rest of the
+        given data.
+
+        Args:
+            field_value (str): Given value for the locationType field.
+            values (Dict): Set of values already validated for the Lateral object.
+
+        Raises:
+            ValueError: When either xCoordinates or yCoordinates do not contain valid values.
+            ValueError: When the value given for locationType is unknown.
+            ValueError: When the values given for a 1d locationType are not valid.
+
+        Returns:
+            str: Validated locationType string.
+        """
         possible_values = ["1d", "2d", "all"]
         x_coords = values.get("xCoordinates", None)
         y_coords = values.get("yCoordinates", None)
@@ -226,12 +245,18 @@ class Lateral(INIBasedModel):
                 )
             )
 
-        if "1d" == field_value.lower():
+        def valid_str_field(str_field: str) -> bool:
+            return str_field is not None and not str_field.isspace()
+
+        if field_value.lower() == "1d":
+            node_id: str = values.get("nodeId", None)
+            if valid_str_field(node_id):
+                return field_value
             branch_id: str = values.get("branchId", None)
             chainage: float = values.get("chainage", None)
-            if branch_id is None or branch_id.isspace() or chainage is None:
+            if not valid_str_field(branch_id) or chainage is None:
                 raise ValueError(
-                    "Fields branch_id and chainage should contain valid values for locationType 1d."
+                    "Field nodeId (or branch_id and chainage) should contain valid values for locationType 1d."
                 )
         return field_value
 
