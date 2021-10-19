@@ -1,7 +1,8 @@
+from pydantic.error_wrappers import ValidationError
 from hydrolib.core.io.net.models import NetworkModel
 from pathlib import Path
-from typing import Callable, List, Literal, Optional, Union
-from pydantic import Field
+from typing import Callable, List, Literal, Optional, Union, Dict
+from pydantic import Field, validator
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.bc.models import ForcingModel
@@ -180,7 +181,19 @@ class Lateral(INIBasedModel):
     nodeId: Optional[str]
     branchId: Optional[str]
     chainage: Optional[float]
+    numCoordinates: Optional[int]
+    xCoordinates: Optional[List[int]]
+    yCoordinates: Optional[List[int]]
     discharge: str
+
+    @validator("xCoordinates", "yCoordinates")
+    def validate_coordinates(cls, field_value: List[int], values: Dict):
+        num_coords = values.get("numCoordinates", None)
+        if num_coords is None:
+            raise ValueError(
+                "numCoordinates should be given when providing x or y coordinates."
+            )
+        assert num_coords == len(field_value)
 
 
 class ExtGeneral(INIGeneral):
