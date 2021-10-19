@@ -10,7 +10,7 @@ jobs:
       matrix:
         python-version: [3.8]
         os: [ubuntu-18.04]
-      runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Code Quality
         run: poetry run black . --check
