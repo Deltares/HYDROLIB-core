@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Generic, TypeVar
 
-from pydantic.generics import GenericModel
-
 import pytest
+from pydantic.generics import GenericModel
 
 TWrapper = TypeVar("TWrapper")
 

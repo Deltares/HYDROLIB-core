@@ -1,8 +1,9 @@
-from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
 from devtools import debug
-from hydrolib.core.io.net.models import NetworkModel
+
 from hydrolib.core.io.dimr.models import DIMR, FMComponent
 from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.net.models import NetworkModel
+from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
 
 from ..utils import test_output_dir
 
