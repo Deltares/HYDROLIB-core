@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import List, Literal, Optional, Set, Union
 
 from pydantic import Field
-from pydantic.class_validators import root_validator
+from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
@@ -60,6 +60,10 @@ class Structure(INIBasedModel):
     ncoordinates: Optional[int] = Field(None, alias="numCoordinates")
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+
+    @validator("type", pre=True)
+    def _set_type(cls, value):
+        return cls.__fields__["type"].default
 
     @root_validator
     def check_location(cls, values):
