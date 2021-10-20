@@ -19,6 +19,7 @@ from pydantic.class_validators import root_validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.utils import str_is_empty_or_none
 
 logger = logging.getLogger(__name__)
 
@@ -63,14 +64,55 @@ class Structure(INIBasedModel):
 
     @root_validator
     @classmethod
-    def check_location(cls, values):
-        assert (
+    def check_location(cls, values: dict) -> dict:
+        """
+        Validates the location of the structure based on the given parameters.
+        For instance, if a branchId is given, then it is expected also the chainage,
+        otherwise numCoordinates x and yCoordinates shall be expected.
+
+        Args:
+            values (dict): Dictionary of values validated for the new structure.
+
+        Raises:
+            ValueError: When branchid or chainage values are not valid (empty strings).
+            ValueError: When the number of coordinates (x,y) do not match numCoordinates.
+
+        Returns:
+            dict: Dictionary of values validated for the new structure.
+        """
+        # 1. General check.
+        coordinates_in_model = (
             "n_coordinates" in values
             and "x_coordinates" in values
             and "y_coordinates" in values
-        ) or (
-            "branchid" in values and "chainage" in values
+        )
+        branch_and_chainage_in_model = "branchid" in values and "chainage" in values
+        assert (
+            coordinates_in_model or branch_and_chainage_in_model
         ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
+
+        # 2. Validate branchid + chainage.
+        if branch_and_chainage_in_model:
+            if str_is_empty_or_none(values["branchid"]) or str_is_empty_or_none(
+                values["chainage"]
+            ):
+                raise ValueError(
+                    "A valid value for branchid and chainage is required when branchid key is specified."
+                )
+
+        # 3. Validate coordinates.
+        if coordinates_in_model:
+            n_coords = values["n_coordinates"]
+            if n_coords is None:
+                raise ValueError(
+                    "A valid number should be specified for numCoordinates"
+                )
+            x_coords = values.get("x_coordinates", [])
+            y_coords = values.get("y_coordinates", [])
+            assert (
+                n_coords == len(x_coords) == len(y_coords)
+            ), f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."
+
         return values
 
     @classmethod

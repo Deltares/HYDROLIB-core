@@ -348,7 +348,7 @@ class TestStructure:
         in the Structure class
         """
 
-        def test_check_location_given_no_values(self):
+        def test_check_location_given_no_values_raises_assertion_error(self):
             with pytest.raises(AssertionError) as exc_err:
                 input_dict = dict(notAValue="Not a relevant value")
                 Structure.check_location(input_dict)
@@ -360,9 +360,78 @@ class TestStructure:
         @pytest.mark.parametrize(
             "dict_values",
             [
+                pytest.param(dict(branchid=None, chainage=None), id="None values"),
+                pytest.param(dict(branchid="", chainage=""), id="Empty values"),
+                pytest.param(
+                    dict(branchid="aBranchId", chainage=""), id="Only branchid value."
+                ),
+                pytest.param(
+                    dict(branchid="", chainage="aChainage"), id="Only chainage value."
+                ),
+            ],
+        )
+        def test_check_location_given_invalid_branchid_chainage_raises_value_error(
+            self, dict_values: dict
+        ):
+            with pytest.raises(ValueError) as exc_err:
+                Structure.check_location(dict_values)
+            assert (
+                str(exc_err.value)
+                == "A valid value for branchid and chainage is required when branchid key is specified."
+            )
+
+        def test_check_location_given_none_as_coordinates_raises_value_error(self):
+            with pytest.raises(ValueError) as exc_err:
+                Structure.check_location(
+                    dict(n_coordinates=None, x_coordinates=None, y_coordinates=None)
+                )
+            assert (
+                str(exc_err.value)
+                == "A valid number should be specified for numCoordinates"
+            )
+
+        wrong_coord_test_cases = [
+            pytest.param(
+                [],
+                id="Empty list",
+            ),
+            pytest.param(
+                [2, 4, 4, 2],
+                id="Too many coords",
+            ),
+        ]
+
+        @pytest.mark.parametrize(
+            "x_coords",
+            wrong_coord_test_cases,
+        )
+        @pytest.mark.parametrize(
+            "y_coords",
+            wrong_coord_test_cases,
+        )
+        def test_check_location_given_invalid_coordinates_raises_assertion_error(
+            self, x_coords: List[float], y_coords: List[float]
+        ):
+            n_coords = 2
+            with pytest.raises(AssertionError) as exc_err:
+                Structure.check_location(
+                    dict(
+                        n_coordinates=n_coords,
+                        x_coordinates=x_coords,
+                        y_coordinates=y_coords,
+                    )
+                )
+            assert (
+                str(exc_err.value)
+                == f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."
+            )
+
+        @pytest.mark.parametrize(
+            "dict_values",
+            [
                 pytest.param(
                     dict(
-                        n_coordinates="aN_coordinates",
+                        n_coordinates=0,
                         x_coordinates=[],
                         y_coordinates=[],
                     ),
