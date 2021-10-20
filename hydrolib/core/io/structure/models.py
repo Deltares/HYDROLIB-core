@@ -18,7 +18,10 @@ from pydantic import Field
 from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.io.ini.util import (
+    get_lower_string_validator,
+    get_split_string_on_delimiter_validator,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +147,8 @@ class Weir(Structure):
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
+    _lower = get_lower_string_validator("allowedflowdir")
+
 
 class UniversalWeir(Structure):
     class Comments(Structure.Comments):
@@ -182,6 +187,7 @@ class UniversalWeir(Structure):
     dischargecoeff: float = Field(alias="dischargeCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("yvalues", "zvalues")
+    _lower = get_lower_string_validator("allowedflowdir")
 
 
 class CulvertSubType(str, Enum):
@@ -211,6 +217,7 @@ class Culvert(Structure):
     bendlosscoeff: float = Field(alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
+    _lower = get_lower_string_validator("allowedflowdir")
 
 
 class Pump(Structure):
@@ -269,6 +276,7 @@ class Orifice(Structure):
     uselimitflowneg: bool = Field(False, alias="useLimitFlowNeg")
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
 
+    _lower = get_lower_string_validator("allowedflowdir")
 
 class StructureGeneral(INIGeneral):
     _header: Literal["General"] = "General"

@@ -91,7 +91,9 @@ class INIBasedModel(BaseModel, ABC):
         for k in dropkeys:
             values.pop(k)
 
-        values["_header"] = cls._header
+        if "_header" in values:
+            values["_header"] = cls._header
+
         return values
 
     @validator("comments", always=True, allow_reuse=True)

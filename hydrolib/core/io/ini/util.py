@@ -28,6 +28,13 @@ def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = N
 
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
+def get_lower_string_validator(*field_name: str):
+    """Gets a validator that lowers a string."""
+    
+    def lower(v: str):
+        return v.lower()
+    
+    return validator(*field_name, allow_reuse=True, pre=True)(lower)
 
 def make_list_validator(*field_name: str):
     """Get a validator make a list of object if a single object is passed."""
