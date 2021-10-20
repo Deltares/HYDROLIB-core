@@ -391,18 +391,98 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.io.mdu.models.Boundary class"""
 
-        def test_given_missing_args_boundary_raises(self, test_values: dict):
-            # 1. Define test data
-            dict_values = dict(
-                quantity="aQuantity",
-            )
-            boundary_values = {**dict_values, **test_values}
-            # 2. Run test.
-            with pytest.raises(ValueError) as exc_mssg:
-                Boundary(**boundary_values)
+        class TestValidateRootValidator:
+            """
+            Test class to validate the paradigms when evaluating
+            check_nodeid_or_locationfile_present.
+            """
 
-            # 3. Verify final expectations.
-            expected_error_mssg = (
-                "Either nodeId or locationFile fields should be specified."
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(), id="No entries."),
+                    pytest.param(
+                        dict(nodeid=None, forcingfile=None), id="Entries are None."
+                    ),
+                    pytest.param(
+                        dict(nodeid="", forcingfile=""), id="Entries are Empty."
+                    ),
+                ],
             )
-            assert expected_error_mssg in str(exc_mssg.value)
+            def test_given_no_values_raises_valueerror(self, dict_values: dict):
+                with pytest.raises(ValueError) as exc_mssg:
+                    Boundary.check_nodeid_or_locationfile_present(dict_values)
+
+                # 3. Verify final expectations.
+                expected_error_mssg = (
+                    "Either nodeId or locationFile fields should be specified."
+                )
+                assert str(exc_mssg.value) == expected_error_mssg
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
+                    pytest.param(
+                        dict(forcingfile="aForcingFile"), id="ForcingFile present."
+                    ),
+                    pytest.param(
+                        dict(nodeid="bNodeId", forcingfile="bForcingFile"),
+                        id="Both present.",
+                    ),
+                ],
+            )
+            def test_given_dict_values_doesnot_raise(self, dict_values: dict):
+                return_values = Boundary.check_nodeid_or_locationfile_present(
+                    dict_values
+                )
+                assert dict_values == return_values
+
+        class TestValidateFromCtor:
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(), id="No entries."),
+                    pytest.param(
+                        dict(nodeid=None, forcingfile=None), id="Entries are None."
+                    ),
+                    pytest.param(dict(nodeid=""), id="NodeId is empty."),
+                    pytest.param(
+                        dict(nodeid="", forcingfile=""),
+                        id="NodeId is empty.",
+                        marks=pytest.mark.skip(
+                            "ForcingModel fails to validate an empty path."
+                        ),
+                    ),
+                ],
+            )
+            def test_given_no_values_raises_valueerror(self, dict_values: dict):
+                required_values = dict(quantity="aQuantity")
+                test_values = {**dict_values, **required_values}
+                with pytest.raises(ValueError) as exc_mssg:
+                    Boundary(**test_values)
+
+                # 3. Verify final expectations.
+                expected_error_mssg = (
+                    "Either nodeId or locationFile fields should be specified."
+                )
+                assert expected_error_mssg in str(exc_mssg.value)
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
+                    pytest.param(
+                        dict(forcingfile="aForcingFile"), id="ForcingFile present."
+                    ),
+                    pytest.param(
+                        dict(nodeid="bNodeId", forcingfile="bForcingFile"),
+                        id="Both present.",
+                    ),
+                ],
+            )
+            def test_given_dict_values_doesnot_raise(self, dict_values: dict):
+                return_values = Boundary.check_nodeid_or_locationfile_present(
+                    dict_values
+                )
+                assert dict_values == return_values
