@@ -175,6 +175,9 @@ class Boundary(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
+    def _get_identifier(self, data: dict) -> str:
+        return data["nodeid"] if "nodeid" in data else None
+
     @property
     def forcing(self) -> ForcingBase:
         """Retrieves the corresponding forcing data for this boundary.
@@ -214,6 +217,9 @@ class Lateral(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "xCoordinates", "yCoordinates"
     )
+
+    def _get_identifier(self, data: dict) -> str:
+        return data["id"] if "id" in data else None
 
     @validator("xCoordinates", "yCoordinates")
     @classmethod

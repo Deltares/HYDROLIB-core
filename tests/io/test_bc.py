@@ -1,5 +1,8 @@
 import inspect
 
+import pytest
+from pydantic.error_wrappers import ValidationError
+
 from hydrolib.core.io.bc.models import (
     ForcingBase,
     ForcingModel,
@@ -75,3 +78,17 @@ def test_read_bc_expected_result():
     assert forcing.quantity[1] == "waterlevelbnd"
     assert forcing.unit[1] == "m"
     assert forcing.datablock[1] == [1440.0, 2.5]
+
+
+def test_read_bc_missing_field_raises_correct_error():
+    file = "missing_field.bc"
+    identifier = "Boundary2"
+    field = "quantity"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        ForcingModel(filepath)
+
+    expected_message = f"{file} -> forcing -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
