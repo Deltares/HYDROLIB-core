@@ -128,11 +128,12 @@ class INIBasedModel(BaseModel, ABC):
     def _to_section(self) -> Section:
         props = []
         for key, value in self:
+            if key in self._exclude_fields():
+                continue
+
             if key in self.__fields__:
                 key = self.__fields__[key].alias
 
-            if key in self._exclude_fields():
-                continue
             prop = Property(
                 key=key,
                 value=INIBasedModel._convert_value(value),
