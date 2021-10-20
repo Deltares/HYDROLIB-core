@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from devtools import debug
 
+from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -18,7 +19,7 @@ from hydrolib.core.io.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.mdu.models import ExtModel, FMModel
+from hydrolib.core.io.mdu.models import Boundary, ExtModel, FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
@@ -224,3 +225,39 @@ def test_mdu_from_scratch():
     model = FMModel()
     model.filepath = output_fn
     model.save()
+
+
+def test_boundary_with_forcingfile_returns_forcing():
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
+    forcing3 = _create_forcing("bnd3", "qhbnd discharge")
+
+    forcingfile = ForcingModel(forcing=[forcing1, forcing2, forcing3])
+
+    boundary2 = Boundary(
+        nodeId="bnd2", quantity="dischargebnd", forcingfile=forcingfile
+    )
+
+    assert boundary2.forcing is forcing2
+
+
+def test_boundary_without_forcingfile_returns_none():
+    boundary = Boundary(nodeId="boundary", quantity="waterlevelbnd")
+
+    assert boundary.forcingfile is None
+    assert boundary.forcing is None
+
+
+def test_boundary_with_forcingfile_without_match_returns_none():
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
+
+    forcingfile = ForcingModel(forcing=[forcing1, forcing2])
+
+    boundary = Boundary(nodeId="bnd3", quantity="qhbnd", forcingfile=forcingfile)
+
+    assert boundary.forcing is None
+
+
+def _create_forcing(name: str, quantity: str) -> ForcingBase:
+    return ForcingBase(name=name, quantity=[quantity], function="", unit=[])
