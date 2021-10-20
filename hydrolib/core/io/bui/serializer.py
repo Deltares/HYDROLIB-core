@@ -1,7 +1,7 @@
+import inspect
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
-from datetime import datetime, timedelta
-import inspect
 
 
 class BuiEventSerializer:
