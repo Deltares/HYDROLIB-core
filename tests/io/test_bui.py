@@ -1,15 +1,17 @@
 import inspect
-import pytest
 from datetime import datetime, timedelta
 from pathlib import Path
-from tests.utils import test_input_dir, test_output_dir
-from hydrolib.core.io.bui.parser import BuiEventListParser, BuiParser, BuiEventParser
+
+import pytest
+
+from hydrolib.core.io.bui.models import BuiModel, BuiPrecipitationEvent
+from hydrolib.core.io.bui.parser import BuiEventListParser, BuiEventParser, BuiParser
 from hydrolib.core.io.bui.serializer import (
     BuiEventSerializer,
     BuiSerializer,
     write_bui_file,
 )
-from hydrolib.core.io.bui.models import BuiModel, BuiPrecipitationEvent
+from tests.utils import test_input_dir, test_output_dir
 
 
 class BuiTestData:

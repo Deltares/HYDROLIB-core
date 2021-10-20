@@ -1,8 +1,9 @@
-from pydantic.error_wrappers import ValidationError
-from hydrolib.core.io.net.models import NetworkModel
 from pathlib import Path
-from typing import List, Literal, Optional, Union, Dict
-from pydantic import Field, validator, root_validator
+from typing import Dict, List, Literal, Optional, Union
+
+from pydantic import Field, root_validator, validator
+from pydantic.error_wrappers import ValidationError
+
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.ini.models import (
     CrossDefModel,
