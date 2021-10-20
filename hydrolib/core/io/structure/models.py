@@ -34,14 +34,14 @@ class Structure(INIBasedModel):
         )
         chainage: Optional[str] = "Chainage on the branch (m)."
 
-        n_coordinates: Optional[str] = Field(
+        ncoordinates: Optional[str] = Field(
             "Number of values in xCoordinates and yCoordinates", alias="numCoordinates"
         )
-        x_coordinates: Optional[str] = Field(
+        xcoordinates: Optional[str] = Field(
             "x-coordinates of the location of the structure. (number of values = numCoordinates)",
             alias="xCoordinates",
         )
-        y_coordinates: Optional[str] = Field(
+        ycoordinates: Optional[str] = Field(
             "y-coordinates of the location of the structure. (number of values = numCoordinates)",
             alias="yCoordinates",
         )
@@ -52,24 +52,24 @@ class Structure(INIBasedModel):
 
     id: str = Field("id", max_length=256)
     name: str = Field("id")
-    structure_type: str = Field(alias="type")
+    type: str = Field(alias="type")
 
     branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = None
 
-    n_coordinates: Optional[int] = Field(None, alias="numCoordinates")
-    x_coordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
-    y_coordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+    ncoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
     @root_validator
     def check_location(cls, values):
         assert (
-            "n_coordinates" in values
-            and "x_coordinates" in values
-            and "y_coordinates" in values
+            "ncoordinates" in values
+            and "xcoordinates" in values
+            and "ycoordinates" in values
         ) or (
             "branchid" in values and "chainage" in values
-        ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
+        ), "Specify location either by setting `branchid` and `chainage` or `*coordinates` fields."
         return values
 
     @classmethod
@@ -79,10 +79,7 @@ class Structure(INIBasedModel):
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
             for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("structure_type").default
-                    == v.get("type", "").lower()
-                ):
+                if c.__fields__.get("type").default == v.get("type", "").lower():
                     v = c(**v)
                     break
             else:
@@ -94,7 +91,7 @@ class Structure(INIBasedModel):
     def _exclude_fields(self) -> Set:
         # exclude the unset props like coordinates or branches
         if self.branchid is not None:
-            exclude_set = {"n_coordinates", "x_coordinates", "y_coordinates"}
+            exclude_set = {"ncoordinates", "xcoordinates", "ycoordinates"}
         else:
             exclude_set = {"branchid", "chainage"}
         exclude_set = super()._exclude_fields().union(exclude_set)
@@ -113,11 +110,9 @@ class FlowDirection(str, Enum):
 
 class Weir(Structure):
     class Comments(Structure.Comments):
-        structure_type: Optional[str] = Field(
-            "Structure type; must read weir", alias="type"
-        )
+        type: Optional[str] = Field("Structure type; must read weir", alias="type")
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+            "Possible values: both, positive, negative, none.", alias="allowedFlowDir"
         )
 
         crestlevel: Optional[str] = Field(
@@ -134,8 +129,8 @@ class Weir(Structure):
 
     comments: Comments = Comments()
 
-    structure_type: Literal["weir"] = Field("weir", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["weir"] = Field("weir", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
@@ -145,11 +140,11 @@ class Weir(Structure):
 
 class UniversalWeir(Structure):
     class Comments(Structure.Comments):
-        structure_type: Optional[str] = Field(
+        type: Optional[str] = Field(
             "Structure type; must read universalWeir", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+            "Possible values: both, positive, negative, none.", alias="allowedFlowDir"
         )
 
         numlevels: Optional[str] = Field("Number of yz-Values.", alias="numLevels")
@@ -170,8 +165,8 @@ class UniversalWeir(Structure):
 
     comments: Comments = Comments()
 
-    structure_type: Literal["universalWeir"] = Field("universalWeir", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["universalWeir"] = Field("universalWeir", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     numlevels: int = Field(alias="numLevels")
     yvalues: List[float] = Field(alias="yValues")
@@ -189,14 +184,14 @@ class CulvertSubType(str, Enum):
 
 class Culvert(Structure):
 
-    structure_type: Literal["culvert"] = Field("culvert", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["culvert"] = Field("culvert", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     leftlevel: float = Field(alias="leftLevel")
     rightlevel: float = Field(alias="rightLevel")
     csdefid: str = Field(alias="csDefId")
     length: float = Field(alias="length")
-    inletlosscoeff: float = Field(alias="inletlossCoeff")
+    inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
     valveopeningheight: Union[float, Path] = Field(alias="valveOpeningHeight")
@@ -213,19 +208,19 @@ class Culvert(Structure):
 
 class Pump(Structure):
 
-    structure_type: Literal["pump"] = Field("pump", alias="type")
+    type: Literal["pump"] = Field("pump", alias="type")
 
-    orientation: str
+    orientation: str = Field(alias="orientation")
     controlside: str = Field(alias="controlSide")  # TODO Enum
     numstages: int = Field(0, alias="numStages")
-    capacity: Union[float, Path]
+    capacity: Union[float, Path] = Field(alias="capacity")
 
     startlevelsuctionside: List[float] = Field(alias="startLevelSuctionSide")
     stoplevelsuctionside: List[float] = Field(alias="stopLevelSuctionSide")
     startleveldeliveryside: List[float] = Field(alias="startLevelDeliverySide")
     stopleveldeliveryside: List[float] = Field(alias="stopLevelDeliverySide")
     numreductionlevels: int = Field(0, alias="numReductionLevels")
-    head: List[float]
+    head: List[float] = Field(alias="head")
     reductionfactor: List[float] = Field(alias="reductionFactor")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -240,7 +235,7 @@ class Pump(Structure):
 
 class Compound(Structure):
 
-    structure_type: Literal["compound"] = Field("compound", alias="type")
+    type: Literal["compound"] = Field("compound", alias="type")
     numstructures: int = Field(alias="numStructures")
     structureids: List[str] = Field(alias="structureIds")
 
@@ -251,8 +246,8 @@ class Compound(Structure):
 
 class Orifice(Structure):
 
-    structure_type: Literal["orifice"] = Field("orifice", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["orifice"] = Field("orifice", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
@@ -264,14 +259,14 @@ class Orifice(Structure):
     uselimitflowpos: bool = Field(False, alias="useLimitFlowPos")
     limitflowpos: Optional[float] = Field(alias="limitFlowPos")
 
-    uselimitflowneg: bool = Field(False, alias="useLimitflowNeg")
+    uselimitflowneg: bool = Field(False, alias="useLimitFlowNeg")
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
 
 
 class StructureGeneral(INIGeneral):
     _header: Literal["General"] = "General"
-    fileVersion: str = "3.00"
-    fileType: Literal["structure"] = "structure"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
 class StructureModel(INIModel):

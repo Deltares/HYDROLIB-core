@@ -104,7 +104,7 @@ def test_weir_construction_with_parser():
         branchId          = branch      # (optional) Branch on which the structure is located.
         chainage          = 3.0         # (optional) Chainage on the branch (m)
         type              = weir        # Structure type
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
         crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
@@ -123,7 +123,7 @@ def test_weir_construction_with_parser():
     assert weir.name == "weir"
     assert weir.branchid == "branch"
     assert weir.chainage == 3.0
-    assert weir.structure_type == "weir"
+    assert weir.type == "weir"
     assert weir.allowedflowdir == FlowDirection.positive
     assert weir.crestlevel == 10.5
     assert weir.crestwidth is None
@@ -141,7 +141,7 @@ def test_weir_comments_construction_with_parser():
         branchId          = branch      
         chainage          = 3.0         # My own special comment 1
         type              = weir        
-        allowedFlowdir    = positive    
+        allowedFlowDir    = positive    
         crestLevel        = 10.5        
         crestWidth        =             
         useVelocityHeight = false       # My own special comment 2
@@ -160,7 +160,7 @@ def test_weir_comments_construction_with_parser():
     assert weir.comments.name is None
     assert weir.comments.branchid is None
     assert weir.comments.chainage == "My own special comment 1"
-    assert weir.comments.structure_type is None
+    assert weir.comments.type is None
     assert weir.comments.allowedflowdir is None
     assert weir.comments.crestlevel is None
     assert weir.comments.crestwidth is None
@@ -183,7 +183,7 @@ def test_weir_with_unknown_parameters():
         # ----------------------------------------------------------------------
 
         type              = weir        # Structure type
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
         crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
@@ -204,7 +204,7 @@ def test_weir_with_unknown_parameters():
     assert weir.name == "weir"
     assert weir.branchid == "branch"
     assert weir.chainage == 3.0
-    assert weir.structure_type == "weir"
+    assert weir.type == "weir"
     assert weir.allowedflowdir == FlowDirection.positive
     assert weir.crestlevel == 10.5
     assert weir.crestwidth is None
@@ -222,7 +222,7 @@ def test_universal_construction_with_parser():
         branchId          = branch           # (optional) Branch on which the structure is located.
         chainage          = 6.0              # (optional) Chainage on the branch (m).
         type              = universalWeir    # Structure type
-        allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
         yValues           = 1.0 2.0          # y-values of the cross section (m) 
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
@@ -262,7 +262,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         branchId          = branch      # Branch on which the structure is located.
         chainage          = 3.0         # Chainage on the branch (m).
         type              = weir        # Structure type; must read weir
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD).
         crestWidth        =             # Width of the weir (m).
         useVelocityHeight = false       # Flag indicating whether the velocity height is to be calculated or not.
@@ -273,7 +273,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         branchId          = branch           # Branch on which the structure is located.
         chainage          = 6.0              # Chainage on the branch (m).
         type              = universalWeir    # Structure type; must read universalWeir
-        allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
         yValues           = 1.0 2.0          # y-values of the cross section (m). (number of values = numLevels) 
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)

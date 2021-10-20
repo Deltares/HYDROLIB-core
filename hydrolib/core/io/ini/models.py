@@ -156,8 +156,8 @@ class DataBlockINIBasedModel(INIBasedModel):
 
 class INIGeneral(INIBasedModel):
     _header: Literal["general"] = "general"
-    fileVersion: str = "3.00"
-    fileType: str
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: str = Field(alias="fileType")
 
     @classmethod
     def _supports_comments(cls):
@@ -165,18 +165,18 @@ class INIGeneral(INIBasedModel):
 
 
 class FrictGeneral(INIGeneral):
-    fileVersion: str = "3.00"
-    fileType: Literal["roughness"] = "roughness"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["roughness"] = Field("roughness", alias="fileType")
 
 
 class CrossdefGeneral(INIGeneral):
-    fileVersion: str = "3.00"
-    fileType: Literal["crossDef"] = "crossDef"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["crossDef"] = Field("crossDef", alias="fileType")
 
 
 class CrosslockGeneral(INIGeneral):
-    fileVersion: str = "3.00"
-    fileType: Literal["crossLoc"] = "crossLoc"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["crossLoc"] = Field("crossLoc", alias="fileType")
 
 
 class INIModel(FileModel):
@@ -220,8 +220,8 @@ class INIModel(FileModel):
 
 
 class Definition(INIBasedModel):
-    id: str
-    type: str
+    id: str = Field(alias="id")
+    type: str = Field(alias="type")
 
     @classmethod
     def _duplicate_keys_as_list(cls):
@@ -240,8 +240,8 @@ class CrossDefModel(INIModel):
 
 
 class CrossSection(INIBasedModel):
-    id: str
-    branchid: str
+    id: str = Field(alias="id")
+    branchid: str = Field(alias="branchId")
 
 
 class CrossLocModel(INIModel):
@@ -254,9 +254,9 @@ class CrossLocModel(INIModel):
 
 
 class Global(INIBasedModel):
-    frictionId: str
-    frictionType: str
-    frictionValue: float
+    frictionid: str = Field(alias="frictionId")
+    frictiontype: str = Field(alias="frictionType")
+    frictionvalue: float = Field(alias="frictionValue")
 
 
 class FrictionModel(INIModel):

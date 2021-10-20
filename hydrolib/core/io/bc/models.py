@@ -35,10 +35,10 @@ class TimeInterpolation(str, Enum):
 class ForcingBase(DataBlockINIBasedModel):
 
     _header: Literal["forcing"] = "forcing"
-    name: str
-    function: str
-    quantity: List[str]
-    unit: List[str]
+    name: str = Field(alias="name")
+    function: str = Field(alias="function")
+    quantity: List[str] = Field(alias="quantity")
+    unit: List[str] = Field(alias="unit")
 
     _make_lists = make_list_validator("quantity", "unit")
 
@@ -79,18 +79,18 @@ class ForcingBase(DataBlockINIBasedModel):
 class TimeSeries(ForcingBase):
     function: Literal["timeseries"] = "timeseries"
     timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
-    offset: float = 0.0
-    factor: float = 1.0
+    offset: float = Field(0.0, alias="offset")
+    factor: float = Field(1.0, alias="factor")
 
 
 class Harmonic(ForcingBase):
     function: Literal["harmonic"] = "harmonic"
-    factor: float = 1.0
+    factor: float = Field(1.0, alias="factor")
 
 
 class Astronomic(ForcingBase):
     function: Literal["astronomic"] = "astronomic"
-    factor: float = 1.0
+    factor: float = Field(1.0, alias="factor")
 
 
 class HarmonicCorrection(ForcingBase):
@@ -104,12 +104,12 @@ class AstronomicCorrection(ForcingBase):
 class T3D(ForcingBase):
     function: Literal["t3d"] = "t3d"
 
-    offset: float = 0.0
-    factor: float = 1.0
+    offset: float = Field(0.0, alias="offset")
+    factor: float = Field(1.0, alias="factor")
 
-    vertical_positions: List[float] = Field(alias="verticalPositions")
-    vertical_interpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
-    vertical_position_type: VerticalPositionType = Field(alias="verticalPositionType")
+    verticalpositions: List[float] = Field(alias="verticalPositions")
+    verticalinterpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
+    verticalpositiontype: VerticalPositionType = Field(alias="verticalPositionType")
 
 
 class QHTable(ForcingBase):
@@ -119,13 +119,13 @@ class QHTable(ForcingBase):
 class Constant(ForcingBase):
     function: Literal["constant"] = "constant"
 
-    offset: float = 0.0
-    factor: float = 1.0
+    offset: float = Field(0.0, alias="offset")
+    factor: float = Field(1.0, alias="factor")
 
 
 class ForcingGeneral(INIGeneral):
-    fileVersion: str = "1.01"
-    fileType: Literal["boundConds"] = "boundConds"
+    fileversion: str = Field("1.01", alias="fileVersion")
+    filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
 class ForcingModel(INIModel):

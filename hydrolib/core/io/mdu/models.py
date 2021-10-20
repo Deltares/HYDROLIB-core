@@ -332,8 +332,8 @@ class Lateral(INIBasedModel):
 
 class ExtGeneral(INIGeneral):
     _header: Literal["General"] = "General"
-    fileVersion: str = Field("2.01", alias="fileVersion")
-    fileType: Literal["extForce"] = Field("extForce", alias="fileType")
+    fileversion: str = Field("2.01", alias="fileVersion")
+    filetype: Literal["extForce"] = Field("extForce", alias="fileType")
 
 
 class ExtModel(INIModel):
