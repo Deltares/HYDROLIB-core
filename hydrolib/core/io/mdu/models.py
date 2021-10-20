@@ -167,7 +167,7 @@ class Restart(INIBasedModel):
 
 class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
-    quantity: str
+    quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
     forcingfile: Optional[ForcingModel] = Field(None, alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
@@ -203,16 +203,16 @@ class Boundary(INIBasedModel):
 
 class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
-    id: str
-    name: str = ""
+    id: str = Field(alias="id")
+    name: str = Field("", alias="name")
     locationtype: Optional[str] = Field(alias="locationType")
     nodeid: Optional[str] = Field(alias="nodeId")
     branchid: Optional[str] = Field(alias="branchId")
-    chainage: Optional[float]
+    chainage: Optional[float] = Field(alias="chainage")
     numcoordinates: Optional[int] = Field(alias="numCoordinates")
     xcoordinates: Optional[List[int]] = Field(alias="xCoordinates")
     ycoordinates: Optional[List[int]] = Field(alias="yCoordinates")
-    discharge: str
+    discharge: str = Field(alias="discharge")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
