@@ -1,7 +1,9 @@
 from typing import List, Optional
 
 import pytest
+from pathlib import Path
 from pydantic import ValidationError
+from hydrolib.core.io.bc.models import ForcingModel
 
 from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.mdu.models import Boundary, Lateral
@@ -391,6 +393,23 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.io.mdu.models.Boundary class"""
 
+        def test_given_args_expected_values(self):
+            # 1. Explicit declaration of parameters (to validate keys as they are written)
+            dict_values = {
+                "quantity": "42",
+                "nodeid": "aNodeId",
+                "locationfile": Path("aLocationFile"),
+                "forcingfile": None,
+                "bndWidth1d": 4.2,
+            }
+
+            # 2. Create boundary.
+            created_boundary = Boundary(**dict_values)
+
+            # 3. Verify boundary values as expected.
+            for key, value in dict_values.items():
+                assert created_boundary.dict()[key] == value
+
         class TestValidateRootValidator:
             """
             Test class to validate the paradigms when evaluating
@@ -415,7 +434,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeId or locationFile fields should be specified."
+                    "Either nodeid or locationfile fields should be specified."
                 )
                 assert str(exc_mssg.value) == expected_error_mssg
 
@@ -424,7 +443,7 @@ class TestModels:
                 [
                     pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
                     pytest.param(
-                        dict(forcingfile="aForcingFile"), id="ForcingFile present."
+                        dict(forcingfile=ForcingModel()), id="ForcingFile present."
                     ),
                     pytest.param(
                         dict(nodeid="bNodeId", forcingfile="bForcingFile"),
@@ -447,13 +466,6 @@ class TestModels:
                         dict(nodeid=None, forcingfile=None), id="Entries are None."
                     ),
                     pytest.param(dict(nodeid=""), id="NodeId is empty."),
-                    pytest.param(
-                        dict(nodeid="", forcingfile=""),
-                        id="NodeId is empty.",
-                        marks=pytest.mark.skip(
-                            "ForcingModel fails to validate an empty path."
-                        ),
-                    ),
                 ],
             )
             def test_given_no_values_raises_valueerror(self, dict_values: dict):
@@ -464,7 +476,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeId or locationFile fields should be specified."
+                    "Either nodeid or locationfile fields should be specified."
                 )
                 assert expected_error_mssg in str(exc_mssg.value)
 
@@ -473,7 +485,7 @@ class TestModels:
                 [
                     pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
                     pytest.param(
-                        dict(forcingfile="aForcingFile"), id="ForcingFile present."
+                        dict(forcingfile=ForcingModel()), id="ForcingFile present."
                     ),
                     pytest.param(
                         dict(nodeid="bNodeId", forcingfile="bForcingFile"),

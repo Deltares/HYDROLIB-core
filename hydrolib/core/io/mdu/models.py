@@ -189,11 +189,11 @@ class Boundary(INIBasedModel):
         Returns:
             Dict: Validated dictionary of values for Boundary.
         """
-        if str_is_empty_or_none(
-            values.get("nodeid", None)
-        ) and not str_is_empty_or_none(values.get("forcingfile", None)):
+        node_id = values.get("nodeid", None)
+        forcingfile = values.get("forcingfile", None)
+        if str_is_empty_or_none(node_id) and not isinstance(forcingfile, ForcingModel):
             raise ValueError(
-                "Either nodeId or locationFile fields should be specified."
+                "Either nodeid or locationfile fields should be specified."
             )
         return values
 
@@ -210,7 +210,7 @@ class Boundary(INIBasedModel):
 
         for forcing in self.forcingfile.forcing:
 
-            if self.nodeId != forcing.name:
+            if self.nodeid != forcing.name:
                 continue
 
             for quantity in forcing.quantity:
