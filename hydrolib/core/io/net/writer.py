@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, List
 from pathlib import Path
+from typing import TYPE_CHECKING, List
 
 import netCDF4 as nc
 import numpy as np
