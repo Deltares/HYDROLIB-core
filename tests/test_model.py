@@ -22,8 +22,8 @@ from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from hydrolib.core.io.mdu.models import Boundary, ExtModel, FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
-from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
 from .io.test_bui import BuiTestData
+from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
 
 
 def test_dimr_model():
