@@ -293,14 +293,14 @@ def test_boundary_with_forcingfile_returns_forcing():
     forcingfile = ForcingModel(forcing=[forcing1, forcing2, forcing3])
 
     boundary2 = Boundary(
-        nodeId="bnd2", quantity="dischargebnd", forcingfile=forcingfile
+        nodeid="bnd2", quantity="dischargebnd", forcingfile=forcingfile
     )
 
     assert boundary2.forcing is forcing2
 
 
 def test_boundary_without_forcingfile_returns_none():
-    boundary = Boundary(nodeId="boundary", quantity="waterlevelbnd")
+    boundary = Boundary(nodeid="boundary", quantity="waterlevelbnd")
 
     assert boundary.forcingfile is None
     assert boundary.forcing is None
@@ -312,7 +312,7 @@ def test_boundary_with_forcingfile_without_match_returns_none():
 
     forcingfile = ForcingModel(forcing=[forcing1, forcing2])
 
-    boundary = Boundary(nodeId="bnd3", quantity="qhbnd", forcingfile=forcingfile)
+    boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcingfile)
 
     assert boundary.forcing is None
 
