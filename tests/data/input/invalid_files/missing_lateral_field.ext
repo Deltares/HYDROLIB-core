@@ -1,0 +1,20 @@
+[General]
+    fileVersion           = 2.01                
+    fileType              = extForce            
+
+[Lateral]
+id=Lateral1
+name=Lateral1
+nodeId=Lateral1
+discharge=realtime
+
+[Lateral]
+id=Lateral2
+name=Lateral2
+nodeId=Lateral2
+
+[Lateral]
+id=Lateral3
+name=Lateral3
+nodeId=Lateral3
+discharge=realtime

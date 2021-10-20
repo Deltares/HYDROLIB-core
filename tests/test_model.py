@@ -4,7 +4,9 @@ from pathlib import Path
 
 import pytest
 from devtools import debug
+from pydantic.error_wrappers import ValidationError
 
+from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
@@ -225,6 +227,62 @@ def test_mdu_from_scratch():
     model = FMModel()
     model.filepath = output_fn
     model.save()
+
+
+def test_read_ext_missing_boundary_field_raises_correct_error():
+    file = "missing_boundary_field.ext"
+    identifier = "Boundary2"
+    field = "quantity"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        ExtModel(filepath)
+
+    expected_message = f"{file} -> boundary -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
+
+
+def test_read_ext_missing_lateral_field_raises_correct_error():
+    file = "missing_lateral_field.ext"
+    identifier = "Lateral2"
+    field = "discharge"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        ExtModel(filepath)
+
+    expected_message = f"{file} -> lateral -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
+
+
+def test_read_dimr_missing_component_field_raises_correct_error():
+    file = "missing_dimr_component_field.xml"
+    identifier = "FlowFM"
+    field = "workingdir"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        DIMR(filepath)
+
+    expected_message = f"{file} -> component -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
+
+
+def test_read_dimr_missing_coupler_field_raises_correct_error():
+    file = "missing_dimr_coupler_field.xml"
+    identifier = "rr_to_flow"
+    field = "targetcomponent"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        DIMR(filepath)
+
+    expected_message = f"{file} -> coupler -> 0 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
 
 
 def test_boundary_with_forcingfile_returns_forcing():

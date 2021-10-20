@@ -1,6 +1,9 @@
 import inspect
 from typing import List, Union
 
+import pytest
+from pydantic.error_wrappers import ValidationError
+
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
     Compound,
@@ -317,3 +320,17 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
     for val, expected in zip(wrapper.val, expected_structures):
         # TODO Make sure datablock never ends up in these structures!
         assert val.dict(exclude={"datablock"}) == expected.dict()
+
+
+def test_read_structures_missing_structure_field_raises_correct_error():
+    file = "missing_structure_field.ini"
+    identifier = "Structure2"
+    field = "crestLevel"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        StructureModel(filepath)
+
+    expected_message = f"{file} -> structure -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)

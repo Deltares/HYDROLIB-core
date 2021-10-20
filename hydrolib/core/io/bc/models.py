@@ -1,3 +1,4 @@
+import logging
 from abc import ABC
 from enum import Enum
 from pathlib import Path
@@ -10,6 +11,8 @@ from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIM
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import make_list_validator
+
+logger = logging.getLogger(__name__)
 
 
 class VerticalInterpolation(str, Enum):
@@ -60,7 +63,14 @@ class ForcingBase(DataBlockINIBasedModel):
                 ):
                     v = c(**v)
                     break
+            else:
+                logger.warning(
+                    f"Function of {cls.__name__} with name={v.get('name', '')} and function={v.get('function', '')} is not recognized."
+                )
         return v
+
+    def _get_identifier(self, data: dict) -> str:
+        return data["name"] if "name" in data else None
 
     class Config:
         extra = Extra.ignore
