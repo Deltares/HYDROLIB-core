@@ -15,7 +15,7 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.io.mdu.models.Lateral class"""
 
-        class Test_validate_coordinates:
+        class TestValidateCoordinates:
             """
             Class to test the paradigms for validate_coordinates.
             """
@@ -46,7 +46,7 @@ class TestModels:
                 )
                 assert return_value == [42, 24]
 
-        class Test_validate_location_type:
+        class TestValidateLocationType:
             """
             Class to test the paradigms for validate_location_type
             """
@@ -83,7 +83,7 @@ class TestModels:
                 return_value = Lateral.validate_location_type(location_type)
                 assert return_value == location_type
 
-        class Test_validate_location_dependencies:
+        class TestValidateLocationTypeDependencies:
             """
             Class to test the paradigms of validate_location_dependencies
             """
@@ -228,7 +228,7 @@ class TestModels:
                 return_value = Lateral.validate_location_dependencies(test_dict)
                 assert return_value["locationType"] == "1d"
 
-        class Test_validate_from_ctor:
+        class TestValidateFromCtor:
             @pytest.mark.parametrize(
                 "x_coord, y_coord",
                 [
@@ -242,7 +242,7 @@ class TestModels:
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(
                         id="42",
-                        discharge="A discharge",
+                        discharge="aDischarge",
                         numCoordinates=None,
                         xCoordinates=x_coord,
                         yCoordinates=y_coord,
@@ -266,7 +266,7 @@ class TestModels:
                 with pytest.raises(ValidationError):
                     Lateral(
                         id="42",
-                        discharge="A discharge",
+                        discharge="bDischarge",
                         numCoordinates=2,
                         xCoordinates=x_coord,
                         yCoordinates=y_coord,
@@ -278,7 +278,7 @@ class TestModels:
             def test_given_partial_coordinates_raises(self, missing_coord: str):
                 lateral_dict = dict(
                     id="42",
-                    discharge="A discharge",
+                    discharge="cDischarge",
                     numCoordinates=2,
                     xCoordinates=[42, 24],
                     yCoordinates=[24, 42],
@@ -295,7 +295,7 @@ class TestModels:
                     location_type = "loremIpsum"
                     Lateral(
                         id="42",
-                        discharge="A discharge",
+                        discharge="dDischarge",
                         numCoordinates=2,
                         xCoordinates=[42, 24],
                         yCoordinates=[24, 42],
@@ -328,7 +328,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="A discharge",
+                    discharge="eDischarge",
                     numCoordinates=2,
                     xCoordinates=[42, 24],
                     yCoordinates=[24, 42],
@@ -375,7 +375,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="A discharge",
+                    discharge="fDischarge",
                     numCoordinates=2,
                 )
                 lateral_dict = {**default_values, **location_dict}

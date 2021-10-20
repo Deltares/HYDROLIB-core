@@ -187,6 +187,10 @@ class Lateral(INIBasedModel):
     yCoordinates: Optional[List[int]]
     discharge: str
 
+    _split_to_list = get_split_string_on_delimiter_validator(
+        "xCoordinates", "yCoordinates"
+    )
+
     @validator("xCoordinates", "yCoordinates")
     @classmethod
     def validate_coordinates(cls, field_value: List[int], values: Dict) -> List[int]:
