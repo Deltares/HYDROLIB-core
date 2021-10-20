@@ -1,12 +1,9 @@
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, validator
 from pydantic.class_validators import root_validator
-from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.basemodel import FileModel
-from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.bc.models import ForcingModel
 from hydrolib.core.io.ini.models import (
     CrossDefModel,
@@ -16,7 +13,6 @@ from hydrolib.core.io.ini.models import (
     INIGeneral,
     INIModel,
 )
-from hydrolib.core.io.ini.parser import Parser
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
@@ -213,7 +209,11 @@ class Lateral(INIBasedModel):
             raise ValueError(
                 "numCoordinates should be given when providing x or y coordinates."
             )
-        assert num_coords == len(field_value)
+        assert num_coords == len(
+            field_value
+        ), "Number of coordinates given ({}) not matching the numCoordinates value {}.".format(
+            len(field_value), num_coords
+        )
         return field_value
 
     @validator("locationType")

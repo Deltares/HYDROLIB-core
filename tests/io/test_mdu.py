@@ -31,10 +31,14 @@ class TestModels:
                 )
 
             def test_given_wrong_numCoordinates_raises_AssertionError(self):
-                with pytest.raises(AssertionError):
+                with pytest.raises(AssertionError) as exc_mssg:
                     Lateral.validate_coordinates(
                         field_value=[42, 24], values=dict(numCoordinates=1)
                     )
+                assert (
+                    str(exc_mssg.value)
+                    == "Number of coordinates given (2) not matching the numCoordinates value 1."
+                )
 
             def test_given_correct_numCoordinates(self):
                 return_value = Lateral.validate_coordinates(

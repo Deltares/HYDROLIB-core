@@ -30,3 +30,6 @@ class Test_str_is_empty_or_none:
     )
     def test_given_args_expected_result(self, input_str: str):
         assert str_is_empty_or_none(input_str)
+
+    def test_given_valid_args_returns_true(self):
+        assert str_is_empty_or_none("aValue") is False
