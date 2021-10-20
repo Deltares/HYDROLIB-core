@@ -18,7 +18,7 @@ class TestSplitString:
         assert output.obsfile == [Path("file1"), Path("file2")]
 
 
-class Test_str_is_empty_or_none:
+class TestStrIsEmptyOrNone:
     @pytest.mark.parametrize(
         "input_str",
         [

@@ -20,7 +20,7 @@ class TestModels:
             Class to test the paradigms for validate_coordinates.
             """
 
-            def test_given_no_numCoordinates_raises_ValueError(self):
+            def test_given_no_numcoordinates_raises_valueerror(self):
                 with pytest.raises(ValueError) as exc_mssg:
                     Lateral.validate_coordinates(
                         field_value=[42, 24], values=dict(numCoordinates=None)
@@ -30,7 +30,7 @@ class TestModels:
                     == "numCoordinates should be given when providing x or y coordinates."
                 )
 
-            def test_given_wrong_numCoordinates_raises_AssertionError(self):
+            def test_given_wrong_numcoordinates_raises_assertionerror(self):
                 with pytest.raises(AssertionError) as exc_mssg:
                     Lateral.validate_coordinates(
                         field_value=[42, 24], values=dict(numCoordinates=1)
@@ -40,7 +40,7 @@ class TestModels:
                     == "Number of coordinates given (2) not matching the numCoordinates value 1."
                 )
 
-            def test_given_correct_numCoordinates(self):
+            def test_given_correct_numcoordinates(self):
                 return_value = Lateral.validate_coordinates(
                     field_value=[42, 24], values=dict(numCoordinates=2)
                 )
@@ -59,7 +59,7 @@ class TestModels:
                     pytest.param("notAValidType"),
                 ],
             )
-            def test_given_wrong_location_type_raises_ValueError(self, value: str):
+            def test_given_wrong_location_type_raises_valueerror(self, value: str):
                 with pytest.raises(ValueError) as exc_mssg:
                     Lateral.validate_location_type(value)
                 assert (
@@ -79,7 +79,7 @@ class TestModels:
                     pytest.param("ALL"),
                 ],
             )
-            def test_given_correct_locationType(self, location_type: str):
+            def test_given_correct_locationtype(self, location_type: str):
                 return_value = Lateral.validate_location_type(location_type)
                 assert return_value == location_type
 
@@ -103,7 +103,7 @@ class TestModels:
                     ),
                 ],
             )
-            def test_given_no_values_raises_ValueError(self, dict_values: dict):
+            def test_given_no_values_raises_valueerror(self, dict_values: dict):
                 with pytest.raises(ValueError) as exc_err:
                     Lateral.validate_location_dependencies(values=dict_values)
                 assert (
@@ -114,7 +114,7 @@ class TestModels:
             @pytest.mark.parametrize(
                 "missing_coordinates", [("xCoordinates"), ("yCoordinates")]
             )
-            def test_given_numCoords_but_missing_coordinates(
+            def test_given_numcoords_but_missing_coordinates(
                 self, missing_coordinates: str
             ):
                 test_dict = dict(
@@ -130,7 +130,7 @@ class TestModels:
                     Lateral.validate_location_dependencies(test_dict)
                 assert str(exc_error.value) == f"{missing_coordinates} should be given."
 
-            def test_given_numCoordinates_and_valid_coordinates(self):
+            def test_given_numcoordinates_and_valid_coordinates(self):
                 test_dict = dict(
                     nodeId=None,
                     branchId=None,
@@ -142,7 +142,7 @@ class TestModels:
                 return_value = Lateral.validate_location_dependencies(test_dict)
                 assert return_value == test_dict
 
-            def test_given_branchId_and_no_chainage_raises_ValueError(self):
+            def test_given_branchid_and_no_chainage_raises_valueerror(self):
                 with pytest.raises(ValueError) as exc_err:
                     Lateral.validate_location_dependencies(
                         dict(
@@ -166,7 +166,7 @@ class TestModels:
                     ),
                 ],
             )
-            def test_given_1d_args_and_location_type_other_then_raises_ValueError(
+            def test_given_1d_args_and_location_type_other_then_raises_valueerror(
                 self, dict_values: dict
             ):
                 test_values = dict(
@@ -221,7 +221,7 @@ class TestModels:
                     pytest.param(None, id="None string"),
                 ],
             )
-            def test_given_1d_args_but_no_locationType_then_sets_value(
+            def test_given_1d_args_but_no_locationtype_then_sets_value(
                 self, test_dict: dict, location_type: str
             ):
                 test_dict["locationType"] = location_type
@@ -236,7 +236,7 @@ class TestModels:
                     pytest.param([42, 24], None, id="Only x-coord."),
                 ],
             )
-            def test_given_coordinates_but_no_numCoordinates_raises(
+            def test_given_coordinates_but_no_numcoordinates_raises(
                 self, x_coord: Optional[List[int]], y_coord: Optional[List[int]]
             ):
                 with pytest.raises(ValidationError) as exc_mssg:
@@ -260,7 +260,7 @@ class TestModels:
                     pytest.param([24], [42, 24], id="X coord not matching."),
                 ],
             )
-            def test_given_coordinates_not_matching_numCoordinates_raises(
+            def test_given_coordinates_not_matching_numcoordinates_raises(
                 self, x_coord: List[int], y_coord: List[int]
             ):
                 with pytest.raises(ValidationError):
@@ -290,7 +290,7 @@ class TestModels:
 
                 assert f"{missing_coord} should be given." in str(exc_mssg.value)
 
-            def test_given_unknown_locationType_raises(self):
+            def test_given_unknown_locationtype_raises(self):
                 with pytest.raises(ValidationError) as exc_mssg:
                     location_type = "loremIpsum"
                     Lateral(
@@ -371,7 +371,7 @@ class TestModels:
                     ),
                 ],
             )
-            def test_given_valid_args_validates_locationType(self, location_dict: str):
+            def test_given_valid_args_validates_locationtype(self, location_dict: str):
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
