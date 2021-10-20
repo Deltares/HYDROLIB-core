@@ -1,15 +1,10 @@
-import pytest
 from typing import List, Optional
+
+import pytest
 from pydantic import ValidationError
+
 from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.mdu.models import Boundary, Lateral
-
-
-def coordinate_test_cases():
-    return [
-        pytest.param(None, [42, 24], id="Only y-coord."),
-        pytest.param([42, 24], None, id="Only x-coord."),
-    ]
 
 
 class TestModels:
@@ -20,187 +15,377 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.io.mdu.models.Lateral class"""
 
-        @pytest.mark.parametrize("x_coord, y_coord", coordinate_test_cases())
-        def test_given_coordinates_but_no_numCoordinates_raises(
-            self, x_coord: Optional[List[int]], y_coord: Optional[List[int]]
-        ):
-            with pytest.raises(ValidationError) as exc_mssg:
-                Lateral(
-                    id="42",
-                    discharge="A discharge",
-                    numCoordinates=None,
-                    xCoordinates=x_coord,
-                    yCoordinates=y_coord,
+        class TestValidateCoordinates:
+            """
+            Class to test the paradigms for validate_coordinates.
+            """
+
+            def test_given_no_numcoordinates_raises_valueerror(self):
+                with pytest.raises(ValueError) as exc_mssg:
+                    Lateral.validate_coordinates(
+                        field_value=[42, 24], values=dict(numCoordinates=None)
+                    )
+                assert (
+                    str(exc_mssg.value)
+                    == "numCoordinates should be given when providing x or y coordinates."
                 )
 
-            expected_error_mssg = (
-                "numCoordinates should be given when providing x or y coordinates."
+            def test_given_wrong_numcoordinates_raises_assertionerror(self):
+                with pytest.raises(AssertionError) as exc_mssg:
+                    Lateral.validate_coordinates(
+                        field_value=[42, 24], values=dict(numCoordinates=1)
+                    )
+                assert (
+                    str(exc_mssg.value)
+                    == "Number of coordinates given (2) not matching the numCoordinates value 1."
+                )
+
+            def test_given_correct_numcoordinates(self):
+                return_value = Lateral.validate_coordinates(
+                    field_value=[42, 24], values=dict(numCoordinates=2)
+                )
+                assert return_value == [42, 24]
+
+        class TestValidateLocationType:
+            """
+            Class to test the paradigms for validate_location_type
+            """
+
+            @pytest.mark.parametrize(
+                "value",
+                [
+                    pytest.param(""),
+                    pytest.param("  "),
+                    pytest.param("notAValidType"),
+                ],
             )
-            assert expected_error_mssg in str(exc_mssg.value)
-
-        @pytest.mark.parametrize(
-            "x_coord, y_coord",
-            [
-                pytest.param([42, 24], [24], id="Y coord not matching."),
-                pytest.param([24], [42, 24], id="X coord not matching."),
-            ],
-        )
-        def test_given_coordinates_not_matching_numCoordinates_raises(
-            self, x_coord: List[int], y_coord: List[int]
-        ):
-            with pytest.raises(ValidationError):
-                Lateral(
-                    id="42",
-                    discharge="A discharge",
-                    numCoordinates=2,
-                    xCoordinates=x_coord,
-                    yCoordinates=y_coord,
+            def test_given_wrong_location_type_raises_valueerror(self, value: str):
+                with pytest.raises(ValueError) as exc_mssg:
+                    Lateral.validate_location_type(value)
+                assert (
+                    str(exc_mssg.value)
+                    == f"Value given ({value}) not accepted, should be one of: 1d, 2d, all"
                 )
 
-        @pytest.mark.parametrize("x_coord, y_coord", coordinate_test_cases())
-        def test_given_partial_coordinates_raises(
-            self, x_coord: List[int], y_coord: List[int]
-        ):
-            with pytest.raises(ValidationError) as exc_mssg:
-                Lateral(
-                    id="42",
-                    discharge="A discharge",
-                    numCoordinates=2,
-                    xCoordinates=x_coord,
-                    yCoordinates=y_coord,
-                    locationType="loremIpsum",
-                )
-            expected_error_mssg = (
-                "Both xCoordinates and yCoordinates should contain valid values."
+            @pytest.mark.parametrize(
+                "location_type",
+                [
+                    pytest.param("1d"),
+                    pytest.param("1D"),
+                    pytest.param("2d"),
+                    pytest.param("2D"),
+                    pytest.param("all"),
+                    pytest.param("All"),
+                    pytest.param("ALL"),
+                ],
             )
-            assert expected_error_mssg in str(exc_mssg.value)
+            def test_given_correct_locationtype(self, location_type: str):
+                return_value = Lateral.validate_location_type(location_type)
+                assert return_value == location_type
 
-        def test_given_unknown_locationType_raises(self):
-            with pytest.raises(ValidationError) as exc_mssg:
-                location_type = "loremIpsum"
-                Lateral(
-                    id="42",
-                    discharge="A discharge",
+        class TestValidateLocationTypeDependencies:
+            """
+            Class to test the paradigms of validate_location_dependencies
+            """
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(
+                        dict(
+                            node_id=None, branch_id=None, n_coords=None, chainage=None
+                        ),
+                        id="All None",
+                    ),
+                    pytest.param(
+                        dict(node_id="", branch_id="", n_coords=0, chainage=None),
+                        id="All Empty",
+                    ),
+                ],
+            )
+            def test_given_no_values_raises_valueerror(self, dict_values: dict):
+                with pytest.raises(ValueError) as exc_err:
+                    Lateral.validate_location_dependencies(values=dict_values)
+                assert (
+                    str(exc_err.value)
+                    == "Either nodeId, branchId (with chainage) or numCoordinates (with x, y coordinates) are required."
+                )
+
+            @pytest.mark.parametrize(
+                "missing_coordinates", [("xCoordinates"), ("yCoordinates")]
+            )
+            def test_given_numcoords_but_missing_coordinates(
+                self, missing_coordinates: str
+            ):
+                test_dict = dict(
+                    nodeId=None,
+                    branchId=None,
+                    chainage=None,
                     numCoordinates=2,
                     xCoordinates=[42, 24],
                     yCoordinates=[24, 42],
-                    locationType=location_type,
                 )
-            expected_error_mssg = f"Value given ({location_type}) not accepted, should be one of: 1d, 2d, all"
-            assert expected_error_mssg in str(exc_mssg.value)
+                test_dict[missing_coordinates] = None
+                with pytest.raises(ValueError) as exc_error:
+                    Lateral.validate_location_dependencies(test_dict)
+                assert str(exc_error.value) == f"{missing_coordinates} should be given."
 
-        @pytest.mark.parametrize(
-            "branch_id, chainage",
-            [
-                pytest.param(None, None, id="Both None."),
-                pytest.param(None, "", id="No branchId, empty chainage."),
-                pytest.param("", None, id="Empty branchId, no chainage."),
-                pytest.param("  ", "  ", id="Both empty."),
-                pytest.param("aBranchid", None, id="chainage is None."),
-                pytest.param("aBranchid", "  ", id="chainage is empty."),
-                pytest.param(None, "achainage", id="BranchId is None."),
-                pytest.param("  ", "achainage", id="BranchId is empty."),
-            ],
-        )
-        def test_given_locationType_1d_with_missing_args_raises(
-            self, branch_id: str, chainage: str
-        ):
-            """
-            Test to validate how the lateral init fails when no node_id
-            is given and the alternative parameters (branchId and chainage)
-            are missing or empty.
+            def test_given_numcoordinates_and_valid_coordinates(self):
+                test_dict = dict(
+                    nodeId=None,
+                    branchId=None,
+                    chainage=None,
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                )
+                return_value = Lateral.validate_location_dependencies(test_dict)
+                assert return_value == test_dict
 
-            Args:
-                branch_id (str): Value to assign in the branch field.
-                chainage (str): Value to assign in the chainage field.
-            """
-            with pytest.raises(ValidationError) as exc_mssg:
-                Lateral(
-                    id="42",
-                    discharge="A discharge",
+            def test_given_branchid_and_no_chainage_raises_valueerror(self):
+                with pytest.raises(ValueError) as exc_err:
+                    Lateral.validate_location_dependencies(
+                        dict(
+                            nodeId=None,
+                            branchId="aBranchId",
+                            chainage=None,
+                        )
+                    )
+                assert (
+                    str(exc_err.value)
+                    == "Chainage should be provided when branchId specified."
+                )
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeId="42"), id="Given nodeId"),
+                    pytest.param(
+                        dict(branchId="aBranchId", chainage=4.2),
+                        id="Given branchId and chainage",
+                    ),
+                ],
+            )
+            def test_given_1d_args_and_location_type_other_then_raises_valueerror(
+                self, dict_values: dict
+            ):
+                test_values = dict(
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                    locationType="wrongType",
+                )
+                test_dict = {**dict_values, **test_values}
+                with pytest.raises(ValueError) as exc_err:
+                    Lateral.validate_location_dependencies(test_dict)
+                assert (
+                    str(exc_err.value)
+                    == "LocationType should be 1d when nodeId (or branchId and chainage) specified."
+                )
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeId="24"), id="Given nodeId"),
+                    pytest.param(
+                        dict(branchId="aBranchId", chainage=4.2),
+                        id="Given branchId and chainage.",
+                    ),
+                ],
+            )
+            def test_given_1d_args_and_1d_location_type(self, dict_values: dict):
+                test_values = dict(
                     numCoordinates=2,
                     xCoordinates=[42, 24],
                     yCoordinates=[24, 42],
                     locationType="1d",
-                    branchId=branch_id,
-                    chainage=chainage,
                 )
-            expected_error_mssg = "Field nodeId (or branch_id and chainage) should contain valid values for locationType 1d."
-            assert expected_error_mssg in str(exc_mssg.value)
+                test_dict = {**dict_values, **test_values}
+                return_value = Lateral.validate_location_dependencies(test_dict)
+                assert return_value == test_dict
 
-        @pytest.mark.parametrize(
-            "location_values",
-            [
-                pytest.param(dict(nodeId="aNodeId"), id="nodeId given."),
-                pytest.param(
-                    dict(branchId="aBranchId", chainage=42),
-                    id="branchId + chainage given.",
-                ),
-                pytest.param(
-                    dict(nodeId="aNodeId", branchId="aBranchId", chainage=42),
-                    id="all given.",
-                ),
-                pytest.param(
-                    dict(nodeId="", branchId="aBranchId", chainage=42),
-                    id="Empty nodeId.",
-                ),
-            ],
-        )
-        def test_given_valid_location_args_constructs_lateral(
-            self, location_values: dict
-        ):
-            # 1. Define test data.
-            default_values = dict(
-                id="42",
-                discharge="A discharge",
-                numCoordinates=2,
-                xCoordinates=[42, 24],
-                yCoordinates=[24, 42],
-                locationType="1d",
+            @pytest.mark.parametrize(
+                "test_dict",
+                [
+                    pytest.param(dict(nodeId="aNodeId"), id="With NodeId"),
+                    pytest.param(
+                        dict(branchId="aBranchId", chainage=42),
+                        id="Witch branchId and chainage",
+                    ),
+                ],
             )
-            test_dict = {**default_values, **location_values}
-
-            # 2. Run test.
-            new_lateral = Lateral(**test_dict)
-
-            # 3. Validate final expectations.
-            for key, value in location_values.items():
-                assert new_lateral.dict()[key] == value
-
-        @pytest.mark.parametrize(
-            "location_type",
-            [pytest.param("1d"), pytest.param("2d"), pytest.param("all")],
-        )
-        def test_given_valid_args_validates_locationType(self, location_type: str):
-            # 1. Define test data.
-            x_coords = [42, 24]
-            y_coords = [24, 42]
-            discharge = "A discharge"
-            id_value = "42"
-            branch_id = "aBranchId"
-            chainage = 4.2
-
-            # 2. Run test.
-            lateral_cls = Lateral(
-                id=id_value,
-                discharge=discharge,
-                numCoordinates=2,
-                locationType=location_type,
-                xCoordinates=x_coords,
-                yCoordinates=y_coords,
-                branchId=branch_id,
-                chainage=chainage,
+            @pytest.mark.parametrize(
+                "location_type",
+                [
+                    pytest.param("", id="Empty string"),
+                    pytest.param(None, id="None string"),
+                ],
             )
+            def test_given_1d_args_but_no_locationtype_then_sets_value(
+                self, test_dict: dict, location_type: str
+            ):
+                test_dict["locationType"] = location_type
+                return_value = Lateral.validate_location_dependencies(test_dict)
+                assert return_value["locationType"] == "1d"
 
-            # 3. Validate expectations.
-            assert isinstance(lateral_cls, INIBasedModel)
-            assert lateral_cls.id == id_value
-            assert lateral_cls.discharge == discharge
-            assert lateral_cls.locationType == location_type
-            assert lateral_cls.xCoordinates == x_coords
-            assert lateral_cls.yCoordinates == y_coords
-            assert lateral_cls.branchId == branch_id
-            assert lateral_cls.chainage == chainage
+        class TestValidateFromCtor:
+            @pytest.mark.parametrize(
+                "x_coord, y_coord",
+                [
+                    pytest.param(None, [42, 24], id="Only y-coord."),
+                    pytest.param([42, 24], None, id="Only x-coord."),
+                ],
+            )
+            def test_given_coordinates_but_no_numcoordinates_raises(
+                self, x_coord: Optional[List[int]], y_coord: Optional[List[int]]
+            ):
+                with pytest.raises(ValidationError) as exc_mssg:
+                    Lateral(
+                        id="42",
+                        discharge="aDischarge",
+                        numCoordinates=None,
+                        xCoordinates=x_coord,
+                        yCoordinates=y_coord,
+                    )
+
+                expected_error_mssg = (
+                    "numCoordinates should be given when providing x or y coordinates."
+                )
+                assert expected_error_mssg in str(exc_mssg.value)
+
+            @pytest.mark.parametrize(
+                "x_coord, y_coord",
+                [
+                    pytest.param([42, 24], [24], id="Y coord not matching."),
+                    pytest.param([24], [42, 24], id="X coord not matching."),
+                ],
+            )
+            def test_given_coordinates_not_matching_numcoordinates_raises(
+                self, x_coord: List[int], y_coord: List[int]
+            ):
+                with pytest.raises(ValidationError):
+                    Lateral(
+                        id="42",
+                        discharge="bDischarge",
+                        numCoordinates=2,
+                        xCoordinates=x_coord,
+                        yCoordinates=y_coord,
+                    )
+
+            @pytest.mark.parametrize(
+                "missing_coord", [("xCoordinates"), ("yCoordinates")]
+            )
+            def test_given_partial_coordinates_raises(self, missing_coord: str):
+                lateral_dict = dict(
+                    id="42",
+                    discharge="cDischarge",
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                    locationType="all",
+                )
+                lateral_dict[missing_coord] = None
+                with pytest.raises(ValidationError) as exc_mssg:
+                    Lateral(**lateral_dict)
+
+                assert f"{missing_coord} should be given." in str(exc_mssg.value)
+
+            def test_given_unknown_locationtype_raises(self):
+                with pytest.raises(ValidationError) as exc_mssg:
+                    location_type = "loremIpsum"
+                    Lateral(
+                        id="42",
+                        discharge="dDischarge",
+                        numCoordinates=2,
+                        xCoordinates=[42, 24],
+                        yCoordinates=[24, 42],
+                        locationType=location_type,
+                    )
+                expected_error_mssg = f"Value given ({location_type}) not accepted, should be one of: 1d, 2d, all"
+                assert expected_error_mssg in str(exc_mssg.value)
+
+            @pytest.mark.parametrize(
+                "location_values",
+                [
+                    pytest.param(dict(nodeId="aNodeId"), id="nodeId given."),
+                    pytest.param(
+                        dict(branchId="aBranchId", chainage=42),
+                        id="branchId + chainage given.",
+                    ),
+                    pytest.param(
+                        dict(nodeId="aNodeId", branchId="aBranchId", chainage=42),
+                        id="all given.",
+                    ),
+                    pytest.param(
+                        dict(nodeId="", branchId="aBranchId", chainage=42),
+                        id="Empty nodeId.",
+                    ),
+                ],
+            )
+            def test_given_valid_location_args_constructs_lateral(
+                self, location_values: dict
+            ):
+                # 1. Define test data.
+                default_values = dict(
+                    id="42",
+                    discharge="eDischarge",
+                    numCoordinates=2,
+                    xCoordinates=[42, 24],
+                    yCoordinates=[24, 42],
+                    locationType="1d",
+                )
+                test_dict = {**default_values, **location_values}
+
+                # 2. Run test.
+                new_lateral = Lateral(**test_dict)
+
+                # 3. Validate final expectations.
+                for key, value in location_values.items():
+                    assert new_lateral.dict()[key] == value
+
+            @pytest.mark.parametrize(
+                "location_dict",
+                [
+                    pytest.param(
+                        dict(locationType="1d", nodeId="aNodeId"), id="1D-With NodeId"
+                    ),
+                    pytest.param(
+                        dict(locationType="1d", branchId="aBranchId", chainage=4.2),
+                        id="1D-With BranchId and Chainage",
+                    ),
+                    pytest.param(
+                        dict(
+                            locationType="2d",
+                            xCoordinates=[42, 24],
+                            yCoordinates=[24, 42],
+                        ),
+                        id="2D-With coordinates",
+                    ),
+                    pytest.param(
+                        dict(
+                            locationType="all",
+                            xCoordinates=[42, 24],
+                            yCoordinates=[24, 42],
+                        ),
+                        id="All-With coordinates",
+                    ),
+                ],
+            )
+            def test_given_valid_args_validates_locationtype(self, location_dict: str):
+                # 1. Define test data.
+                default_values = dict(
+                    id="42",
+                    discharge="fDischarge",
+                    numCoordinates=2,
+                )
+                lateral_dict = {**default_values, **location_dict}
+                # 2. Run test.
+                lateral_cls = Lateral(**lateral_dict)
+
+                # 3. Validate expectations.
+                assert isinstance(lateral_cls, INIBasedModel)
+                for key, value in lateral_dict.items():
+                    assert lateral_cls.dict()[key] == value
 
     class TestBoundary:
         """Class to test all methods contained in the

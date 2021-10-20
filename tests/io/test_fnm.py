@@ -1,11 +1,12 @@
 import inspect
 from pathlib import Path
 from typing import Callable
-from hydrolib.core.io.fnm.parser import parse
-from hydrolib.core.io.fnm.serializer import serialize
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
 
 import pytest
+
+from hydrolib.core.io.fnm.models import RainfallRunoffModel
+from hydrolib.core.io.fnm.parser import parse
+from hydrolib.core.io.fnm.serializer import serialize
 
 
 class TestRainFallRunoffModel:
@@ -99,7 +100,6 @@ def test_serialize_parse_should_return_same_result():
 
     # Scramble some values to ensure we're not just getting the default.
     model.node_data = Path("somewhere_else")
-    model.bui_file = Path("bui_file.bui")
     model.green_house_general = Path("greenhouse.general")
     model.restart_file_input = Path("aa_res.res")
     model.meteo_input_file_rainfall = Path("some_path.ini")
