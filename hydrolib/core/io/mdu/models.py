@@ -176,11 +176,25 @@ class Boundary(INIBasedModel):
     @root_validator
     @classmethod
     def check_nodeid_or_locationfile_present(cls, values: Dict):
-        if not str_is_empty_or_none(
+        """
+        Verifies that either nodeid or locationfile properties have been set.
+
+        Args:
+            values (Dict): Dictionary with values already validated.
+
+        Raises:
+            ValueError: When none of the values are present.
+
+        Returns:
+            Dict: Validated dictionary of values for Boundary.
+        """
+        if str_is_empty_or_none(
             values.get("nodeid", None)
-        ) or not str_is_empty_or_none(values.get("forcingfile", None)):
-            return values
-        raise ValueError("Either nodeId or locationFile fields should be specified.")
+        ) and not str_is_empty_or_none(values.get("forcingfile", None)):
+            raise ValueError(
+                "Either nodeId or locationFile fields should be specified."
+            )
+        return values
 
     @property
     def forcing(self) -> ForcingBase:
