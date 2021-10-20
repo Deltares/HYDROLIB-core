@@ -6,6 +6,7 @@ from typing import Callable, Dict, Iterable, Literal, Optional
 from pydantic.types import FilePath
 
 from hydrolib.core.basemodel import FileModel
+from hydrolib.core.io.bui.models import BuiModel
 
 from .parser import read
 from .serializer import write
@@ -29,7 +30,7 @@ class RainfallRunoffModel(FileModel):
     pluvius: Path = Path("pluvius.3b")
     pluvius_general: Path = Path("pluvius.alg")
     kasklasse: Path = Path("kasklass")
-    bui_file: Path = Path("default.bui")
+    bui_file: Optional[BuiModel] = None
     verdampings_file: Path = Path("default.evp")
     unpaved_area_general: Path = Path("unpaved.3b")
     unpaved_area_storage: Path = Path("unpaved.sto")
