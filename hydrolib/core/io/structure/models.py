@@ -61,7 +61,7 @@ class Structure(INIBasedModel):
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
-    @validator("type", pre=True)
+    @validator("type")
     def _set_type(cls, value):
         return cls.__fields__["type"].default
 
@@ -83,7 +83,10 @@ class Structure(INIBasedModel):
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
             for c in cls.__subclasses__():
-                if c.__fields__.get("type").default == v.get("type", "").lower():
+                if (
+                    c.__fields__.get("type").default.lower()
+                    == v.get("type", "").lower()
+                ):
                     v = c(**v)
                     break
             else:
