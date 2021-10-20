@@ -62,6 +62,7 @@ class Structure(INIBasedModel):
     y_coordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
     @root_validator
+    @classmethod
     def check_location(cls, values):
         assert (
             "n_coordinates" in values

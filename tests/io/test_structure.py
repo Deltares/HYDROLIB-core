@@ -334,3 +334,46 @@ def test_read_structures_missing_structure_field_raises_correct_error():
 
     expected_message = f"{file} -> structure -> 1 -> {identifier} -> {field}"
     assert expected_message in str(error.value)
+
+
+class TestStructure:
+    """
+    Wrapper class to test all the methods and subclasses in:
+    hydrolib.core.io.structure.models.py Structure class
+    """
+
+    class TestRootValidator:
+        """
+        Wrapper class to validate the paradigms that point to root_validators
+        in the Structure class
+        """
+
+        def test_check_location_given_no_values(self):
+            with pytest.raises(AssertionError) as exc_err:
+                input_dict = dict(notAValue="Not a relevant value")
+                Structure.check_location(input_dict)
+            assert (
+                str(exc_err.value)
+                == "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
+            )
+
+        @pytest.mark.parametrize(
+            "dict_values",
+            [
+                pytest.param(
+                    dict(
+                        n_coordinates="aN_coordinates",
+                        x_coordinates=[],
+                        y_coordinates=[],
+                    ),
+                    id="Coordinates given.",
+                ),
+                pytest.param(
+                    dict(branchid="aBranchid", chainage="aChainage"),
+                    id="branchid + chainage.",
+                ),
+            ],
+        )
+        def test_check_location_given_valid_values(self, dict_values: dict):
+            return_value = Structure.check_location(dict_values)
+            assert return_value == dict_values
