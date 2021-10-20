@@ -65,9 +65,7 @@ class ForcingBase(DataBlockINIBasedModel):
                     break
             else:
                 logger.warning(
-                    "Function of {} with name={} and function={} is not recognized.".format(
-                        cls.__name__, v.get("name", ""), v.get("function", "")
-                    )
+                    f"Function of {cls.__name__} with name={v.get('name', '')} and function={v.get('function', '')} is not recognized."
                 )
         return v
 

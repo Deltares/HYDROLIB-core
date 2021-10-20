@@ -87,9 +87,7 @@ class Structure(INIBasedModel):
                     break
             else:
                 logger.warning(
-                    "Type of {} with id={} and type={} is not recognized.".format(
-                        cls.__name__, v.get("id", ""), v.get("type", "")
-                    )
+                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
                 )
         return super().validate(v)
 
