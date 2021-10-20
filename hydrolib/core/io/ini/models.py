@@ -80,7 +80,7 @@ class INIBasedModel(BaseModel, ABC):
     comments: Optional[Comments] = Comments()
 
     @root_validator(pre=True)
-    def _skip_nones(cls, values):
+    def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields."""
         dropkeys = []
         for k, v in values.items():
@@ -91,6 +91,7 @@ class INIBasedModel(BaseModel, ABC):
         for k in dropkeys:
             values.pop(k)
 
+        values["_header"] = cls._header
         return values
 
     @validator("comments", always=True, allow_reuse=True)
@@ -155,7 +156,7 @@ class DataBlockINIBasedModel(INIBasedModel):
 
 
 class INIGeneral(INIBasedModel):
-    _header: Literal["general"] = "general"
+    _header: Literal["General"] = "General"
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: str = Field(alias="fileType")
 
@@ -220,6 +221,7 @@ class INIModel(FileModel):
 
 
 class Definition(INIBasedModel):
+    _header: Literal["Definition"] = "Definition"
     id: str = Field(alias="id")
     type: str = Field(alias="type")
 
@@ -240,6 +242,7 @@ class CrossDefModel(INIModel):
 
 
 class CrossSection(INIBasedModel):
+    _header: Literal["CrossSection"] = "CrossSection"
     id: str = Field(alias="id")
     branchid: str = Field(alias="branchId")
 
@@ -254,6 +257,7 @@ class CrossLocModel(INIModel):
 
 
 class Global(INIBasedModel):
+    _header: Literal["Global"] = "Global"
     frictionid: str = Field(alias="frictionId")
     frictiontype: str = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")

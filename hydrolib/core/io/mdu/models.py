@@ -28,7 +28,7 @@ from hydrolib.core.utils import str_is_empty_or_none
 
 
 class General(INIBasedModel):
-    _header: Literal["general"] = "general"
+    _header: Literal["General"] = "General"
     program: str = Field("D-Flow FM", alias="program")
     version: str = Field("1.2.94.66079M", alias="version")
     filetype: Literal["modelDef"] = Field("modelDef", alias="fileType")
@@ -38,7 +38,7 @@ class General(INIBasedModel):
 
 
 class Numerics(INIBasedModel):
-    _header: Literal["numerics"] = "numerics"
+    _header: Literal["Numerics"] = "Numerics"
     cflmax: float = Field(0.7, alias="cflMax")
     advectype: int = Field(33, alias="advecType")
     timesteptype: int = Field(2, alias="timeStepType")
@@ -68,14 +68,14 @@ class Numerics(INIBasedModel):
 
 
 class VolumeTables(INIBasedModel):
-    _header: Literal["volumeTables"] = "volumeTables"
+    _header: Literal["VolumeTables"] = "VolumeTables"
     usevolumetables: bool = Field(False, alias="useVolumeTables")
     increment: float = Field(0.2, alias="increment")
     usevolumetablefile: bool = Field(False, alias="useVolumeTableFile")
 
 
 class Physics(INIBasedModel):
-    _header: Literal["physics"] = "physics"
+    _header: Literal["Physics"] = "Physics"
     uniffrictcoef: float = Field(0.023, alias="unifFrictCoef")
     uniffricttype: int = Field(1, alias="unifFrictType")
     uniffrictcoef1d: float = Field(0.023, alias="unifFrictCoef1D")
@@ -116,7 +116,7 @@ class Physics(INIBasedModel):
 
 
 class Wind(INIBasedModel):
-    _header: Literal["wind"] = "wind"
+    _header: Literal["Wind"] = "Wind"
     icdtyp: int = Field(2, alias="icdTyp")
     cdbreakpoints: List[float] = Field([0.00063, 0.00723], alias="cdBreakpoints")
     windspeedbreakpoints: List[float] = Field(
@@ -139,14 +139,14 @@ class Wind(INIBasedModel):
 
 
 class Waves(INIBasedModel):
-    _header: Literal["waves"] = "waves"
+    _header: Literal["Waves"] = "Waves"
     wavemodelnr: int = Field(3, alias="waveModelNr")
     rouwav: str = Field("FR84", alias="rouWav")
     gammax: float = Field(0.5, alias="gammaX")
 
 
 class Time(INIBasedModel):
-    _header: Literal["time"] = "time"
+    _header: Literal["Time"] = "Time"
     refdate: int = Field(20200101, alias="refDate")  # TODO Convert to datetime
     tzone: float = Field(0.0, alias="tZone")
     tunit: str = Field("S", alias="tUnit")  # DHMS
@@ -160,7 +160,7 @@ class Time(INIBasedModel):
 
 
 class Restart(INIBasedModel):
-    _header: Literal["restart"] = "restart"
+    _header: Literal["Restart"] = "Restart"
     restartfile: Optional[Path] = Field(None, alias="restartFile")
     restartdatetime: Optional[str] = Field(None, alias="restartDateTime")
 
@@ -358,7 +358,7 @@ class ExtModel(INIModel):
 
 
 class ExternalForcing(INIBasedModel):
-    _header: Literal["external forcing"] = "external forcing"
+    _header: Literal["External Forcing"] = "External Forcing"
     extforcefile: Optional[Path] = Field(None, alias="extForceFile")
     extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
     rainfall: Optional[bool] = Field(None, alias="rainfall")
@@ -371,12 +371,12 @@ class ExternalForcing(INIBasedModel):
 
 
 class Hydrology(INIBasedModel):
-    _header: Literal["hydrology"] = "hydrology"
+    _header: Literal["Hydrology"] = "Hydrology"
     interceptionmodel: bool = Field(False, alias="interceptionModel")
 
 
 class Trachytopes(INIBasedModel):
-    _header: Literal["trachytopes"] = "trachytopes"
+    _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
     trtdef: Optional[int] = Field(None, alias="trtDef")  # no doc?
     trtl: Optional[int] = Field(None, alias="trtL")  # no doc?
@@ -384,7 +384,7 @@ class Trachytopes(INIBasedModel):
 
 
 class Output(INIBasedModel):
-    _header: Literal["output"] = "output"
+    _header: Literal["Output"] = "Output"
     wrishp_crs: bool = Field(False, alias="wrishp_crs")
     wrishp_weir: bool = Field(False, alias="wrishp_weir")
     wrishp_gate: bool = Field(False, alias="wrishp_gate")
@@ -524,7 +524,7 @@ class Output(INIBasedModel):
 
 class Geometry(INIBasedModel):
 
-    _header: Literal["geometry"] = "geometry"
+    _header: Literal["Geometry"] = "Geometry"
     netfile: Optional[NetworkModel] = Field(
         default_factory=NetworkModel, alias="netFile"
     )

@@ -34,7 +34,7 @@ class TimeInterpolation(str, Enum):
 
 class ForcingBase(DataBlockINIBasedModel):
 
-    _header: Literal["forcing"] = "forcing"
+    _header: Literal["Forcing"] = "Forcing"
     name: str = Field(alias="name")
     function: str = Field(alias="function")
     quantity: List[str] = Field(alias="quantity")
