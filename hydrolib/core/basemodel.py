@@ -271,4 +271,7 @@ class FileModel(BaseModel, ABC):
         return str(self.filepath if self.filepath else "")
 
     def _get_identifier(self, data: dict) -> str:
-        return data["filepath"].name
+        filepath = data.get("filepath")
+        if filepath:
+            return filepath.name
+        return None
