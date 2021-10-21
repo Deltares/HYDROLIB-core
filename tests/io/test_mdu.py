@@ -3,9 +3,9 @@ from typing import List, Optional
 import pytest
 from pathlib import Path
 from pydantic import ValidationError
-from hydrolib.core.io.bc.models import ForcingModel
 
 from hydrolib.core.io.ini.models import INIBasedModel
+from hydrolib.core.io.bc.models import ForcingModel
 from hydrolib.core.io.mdu.models import Boundary, Lateral
 
 
@@ -94,13 +94,11 @@ class TestModels:
                 "dict_values",
                 [
                     pytest.param(
-                        dict(
-                            node_id=None, branch_id=None, n_coords=None, chainage=None
-                        ),
+                        dict(nodeId=None, branch_id=None, n_coords=None, chainage=None),
                         id="All None",
                     ),
                     pytest.param(
-                        dict(node_id="", branch_id="", n_coords=0, chainage=None),
+                        dict(nodeId="", branch_id="", n_coords=0, chainage=None),
                         id="All Empty",
                     ),
                 ],
@@ -399,8 +397,8 @@ class TestModels:
                 "quantity": "42",
                 "nodeid": "aNodeId",
                 "locationfile": Path("aLocationFile"),
-                "forcingfile": None,
-                "bndWidth1d": 4.2,
+                "forcingfile": ForcingModel(),
+                "bndwidth1d": 4.2,
             }
 
             # 2. Create boundary.
@@ -409,6 +407,26 @@ class TestModels:
             # 3. Verify boundary values as expected.
             for key, value in dict_values.items():
                 assert created_boundary.dict()[key] == value
+
+        def test_given_args_as_alias_expected_values(self):
+            # 1. Explicit declaration of parameters (to validate keys as they are written)
+            dict_values = {
+                "quantity": "42",
+                "nodeId": "aNodeId",
+                "locationFile": Path("aLocationFile"),
+                "forcingFile": ForcingModel(),
+                "bndWidth1d": 4.2,
+            }
+
+            # 2. Create boundary.
+            created_boundary = Boundary(**dict_values)
+            boundary_as_dict = created_boundary.dict()
+            # 3. Verify boundary values as expected.
+            assert boundary_as_dict["quantity"] == dict_values["quantity"]
+            assert boundary_as_dict["nodeid"] == dict_values["nodeId"]
+            assert boundary_as_dict["locationfile"] == dict_values["locationFile"]
+            assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
+            assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1d"]
 
         class TestValidateRootValidator:
             """
@@ -443,7 +461,8 @@ class TestModels:
                 [
                     pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
                     pytest.param(
-                        dict(locationfile="aLocationFile"), id="LocationFile present."
+                        dict(locationfile=Path("aLocationFile")),
+                        id="LocationFile present.",
                     ),
                     pytest.param(
                         dict(nodeid="bNodeId", locationfile="bLocationFile"),
@@ -485,16 +504,20 @@ class TestModels:
                 [
                     pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
                     pytest.param(
-                        dict(locationfile="aLocationFile"), id="LocationFile present."
+                        dict(locationfile=Path("aLocationFile")),
+                        id="LocationFile present.",
                     ),
                     pytest.param(
-                        dict(nodeid="bNodeId", locationfile="bLocationFile"),
+                        dict(nodeid="bNodeId", locationfile=Path("bLocationFile")),
                         id="Both present.",
                     ),
                 ],
             )
             def test_given_dict_values_doesnot_raise(self, dict_values: dict):
-                return_values = Boundary.check_nodeid_or_locationfile_present(
-                    dict_values
-                )
-                assert dict_values == return_values
+                required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
+                test_values = {**dict_values, **required_values}
+                created_boundary = Boundary(**test_values)
+                for key, value in test_values.items():
+                    if key == "forcing_file":
+                        value = value.dict()
+                    assert created_boundary.dict()[key] == value

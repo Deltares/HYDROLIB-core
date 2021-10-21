@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator, validator
-from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.ini.models import (
@@ -166,10 +165,10 @@ class Restart(INIBasedModel):
 class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
     quantity: str
-    nodeid: Optional[str]
-    locationfile: Optional[Path]
-    forcingfile: Optional[ForcingModel] = None
-    bndWidth1D: Optional[float]
+    nodeid: Optional[str] = Field(alias="nodeId")
+    locationfile: Optional[Path] = Field(alias="locationFile")
+    forcingfile: ForcingModel = Field(alias="forcingFile")
+    bndwidth1d: Optional[float] = Field(alias="bndWidth1d")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -190,15 +189,24 @@ class Boundary(INIBasedModel):
             Dict: Validated dictionary of values for Boundary.
         """
         node_id = values.get("nodeid", None)
-        locationfile = values.get("locationfile", None)
-        if str_is_empty_or_none(node_id) and str_is_empty_or_none(locationfile):
+        location_file = values.get("locationfile", None)
+        if str_is_empty_or_none(node_id) and not isinstance(location_file, Path):
             raise ValueError(
                 "Either nodeId or locationFile fields should be specified."
             )
         return values
 
     def _get_identifier(self, data: dict) -> str:
-        return data["nodeid"] if "nodeid" in data else None
+        """
+        Retrieves the identifier for a boundary, which is the node_id (nodeId)
+
+        Args:
+            data (dict): Dictionary of values for this boundary.
+
+        Returns:
+            str: The node_id (nodeId) value or None if not found.
+        """
+        return data.get("nodeid", None)
 
     @property
     def forcing(self) -> ForcingBase:

@@ -285,36 +285,27 @@ def test_read_dimr_missing_coupler_field_raises_correct_error():
     assert expected_message in str(error.value)
 
 
-def test_boundary_with_forcingfile_returns_forcing():
+def test_boundary_with_forcing_file_returns_forcing():
     forcing1 = _create_forcing("bnd1", "waterlevelbnd")
     forcing2 = _create_forcing("bnd2", "dischargebnd")
     forcing3 = _create_forcing("bnd3", "qhbnd discharge")
 
-    forcingfile = ForcingModel(forcing=[forcing1, forcing2, forcing3])
+    forcing_file = ForcingModel(forcing=[forcing1, forcing2, forcing3])
 
     boundary2 = Boundary(
-        nodeid="bnd2", quantity="dischargebnd", forcingfile=forcingfile
+        nodeid="bnd2", quantity="dischargebnd", forcingfile=forcing_file
     )
 
     assert boundary2.forcing is forcing2
 
 
-def test_boundary_without_forcingfile_returns_none():
-    boundary = Boundary(nodeid="boundary", quantity="waterlevelbnd")
-
-    assert boundary.forcingfile is None
-    assert boundary.forcing is None
-    assert boundary.nodeid == "boundary"
-    assert boundary.quantity == "waterlevelbnd"
-
-
-def test_boundary_with_forcingfile_without_match_returns_none():
+def test_boundary_with_forcing_file_without_match_returns_none():
     forcing1 = _create_forcing("bnd1", "waterlevelbnd")
     forcing2 = _create_forcing("bnd2", "dischargebnd")
 
-    forcingfile = ForcingModel(forcing=[forcing1, forcing2])
+    forcing_file = ForcingModel(forcing=[forcing1, forcing2])
 
-    boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcingfile)
+    boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
 
     assert boundary.forcing is None
     assert boundary.nodeid == "bnd3"
