@@ -421,10 +421,10 @@ class TestModels:
                 [
                     pytest.param(dict(), id="No entries."),
                     pytest.param(
-                        dict(nodeid=None, forcingfile=None), id="Entries are None."
+                        dict(nodeid=None, locationfile=None), id="Entries are None."
                     ),
                     pytest.param(
-                        dict(nodeid="", forcingfile=""), id="Entries are Empty."
+                        dict(nodeid="", locationfile=""), id="Entries are Empty."
                     ),
                 ],
             )
@@ -434,7 +434,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeid or locationfile fields should be specified."
+                    "Either nodeId or locationFile fields should be specified."
                 )
                 assert str(exc_mssg.value) == expected_error_mssg
 
@@ -443,10 +443,10 @@ class TestModels:
                 [
                     pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
                     pytest.param(
-                        dict(forcingfile=ForcingModel()), id="ForcingFile present."
+                        dict(locationfile="aLocationFile"), id="LocationFile present."
                     ),
                     pytest.param(
-                        dict(nodeid="bNodeId", forcingfile="bForcingFile"),
+                        dict(nodeid="bNodeId", locationfile="bLocationFile"),
                         id="Both present.",
                     ),
                 ],
@@ -463,7 +463,7 @@ class TestModels:
                 [
                     pytest.param(dict(), id="No entries."),
                     pytest.param(
-                        dict(nodeid=None, forcingfile=None), id="Entries are None."
+                        dict(nodeid=None, locationfile=None), id="Entries are None."
                     ),
                     pytest.param(dict(nodeid=""), id="NodeId is empty."),
                 ],
@@ -476,7 +476,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeid or locationfile fields should be specified."
+                    "Either nodeId or locationFile fields should be specified."
                 )
                 assert expected_error_mssg in str(exc_mssg.value)
 
@@ -485,10 +485,10 @@ class TestModels:
                 [
                     pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
                     pytest.param(
-                        dict(forcingfile=ForcingModel()), id="ForcingFile present."
+                        dict(locationfile="aLocationFile"), id="LocationFile present."
                     ),
                     pytest.param(
-                        dict(nodeid="bNodeId", forcingfile="bForcingFile"),
+                        dict(nodeid="bNodeId", locationfile="bLocationFile"),
                         id="Both present.",
                     ),
                 ],
