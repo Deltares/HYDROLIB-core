@@ -237,4 +237,3 @@ class ExtModel(INIModel):
         # We skip the passed dict for a better one.
         config = SerializerConfig(section_indent=0, property_indent=0)
         write_ini(self.filepath, self._to_document(), config=config)
-
