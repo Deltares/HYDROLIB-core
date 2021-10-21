@@ -1,8 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Literal, Optional, Union
 
-from pydantic import Field, validator
-from pydantic.class_validators import root_validator
+from pydantic import Field, root_validator, validator
 
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.base import DummySerializer
