@@ -80,47 +80,95 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
-        # 0. Verify if we are under a compund type.
-        if values.get("structure_type", None) == "compound" or issubclass(
-            cls, Compound
-        ):
+        # Verify this evaluation needs to be done.
+        filtered_values = {k: v for k, v in values.items() if v is not None}
+        structure_type = filtered_values.get("structure_type", "").lower()
+        if structure_type == "compound" or issubclass(cls, Compound):
             # Compound structure does not require a location specification.
             return values
 
-        # 1. Prepare data to evaluate, not interested if they are None.
-        filtered_values = {k: v for k, v in values.items() if v is not None}
+        coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
-        # 2. General check.
-        coordinates_in_model = (
-            "n_coordinates" in filtered_values
-            and "x_coordinates" in filtered_values
-            and "y_coordinates" in filtered_values
-        )
-        branch_and_chainage_in_model = (
-            "branchid" in filtered_values and "chainage" in filtered_values
-        )
-        assert (
-            coordinates_in_model or branch_and_chainage_in_model
-        ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
-
-        # 3. Validate branchid + chainage.
-        if branch_and_chainage_in_model:
-            if str_is_empty_or_none(filtered_values["branchid"]):
-                raise ValueError(
-                    "A valid value for branchid and chainage is required when branchid key is specified."
-                )
+        # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
+        if structure_type == "longculvert":
+            assert (
+                coordinates_in_model
+            ), "Coordinate system is mandatory for a LongCulvert structure."
             return values
 
-        # 4. Validate coordinates.
-        if coordinates_in_model:
-            n_coords = filtered_values["n_coordinates"]
-            x_coords = filtered_values.get("x_coordinates", [])
-            y_coords = filtered_values.get("y_coordinates", [])
-            assert (
-                n_coords == len(x_coords) == len(y_coords)
-            ), f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."
-
+        branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
+            filtered_values
+        )
+        assert (
+            branch_and_chainage_in_model or coordinates_in_model
+        ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
         return values
+
+    @staticmethod
+    def validate_branch_and_chainage_in_model(values: dict) -> bool:
+        """
+        Static method to validate whether the given branchId and chainage values
+        match the expectation of a new structure.
+
+        Args:
+            values (dict): Dictionary of values to be used to generate a structure.
+
+        Raises:
+            ValueError: When the value for branchId or chainage are not valid.
+
+        Returns:
+            bool: Result of valid branchId / chainage in dictionary.
+        """
+        branchid = values.get("branchid", None)
+        if branchid is None:
+            return False
+
+        chainage = values.get("chainage", None)
+        if str_is_empty_or_none(branchid) or chainage is None:
+            raise ValueError(
+                "A valid value for branchid and chainage is required when branchid key is specified."
+            )
+        return True
+
+    @staticmethod
+    def validate_coordinates_in_model(values: dict) -> bool:
+        """
+        Static method to validate whether the given values match the expectations
+        of a structure to define its coordinates.
+
+        Args:
+            values (dict): Dictionary of values to be used to generate a structure.
+
+        Raises:
+            ValueError: When the given coordinates do not match in expected size.
+
+        Returns:
+            bool: Result of valid coordinates in dictionary.
+        """
+        coordinates_in_model = (
+            "n_coordinates" in values
+            and "x_coordinates" in values
+            and "y_coordinates" in values
+        )
+        if not coordinates_in_model:
+            return False
+
+        n_coords = values["n_coordinates"]
+
+        def get_coord_len(coord: str) -> int:
+            if values[coord] is None:
+                return 0
+            return len(values[coord])
+
+        len_x_coords = get_coord_len("x_coordinates")
+        len_y_coords = get_coord_len("y_coordinates")
+        if n_coords == len_x_coords == len_y_coords:
+            return True
+        raise ValueError(
+            "Expected {} coordinates, given {} for x and {} for y coordinates.".format(
+                n_coords, len_x_coords, len_y_coords
+            )
+        )
 
     @classmethod
     def validate(cls, v):
