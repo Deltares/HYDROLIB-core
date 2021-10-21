@@ -338,6 +338,155 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     assert expected_message in str(error.value)
 
 
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("WEIR", "weir"),
+        ("UniversalWeir", "universalWeir"),
+        ("Culvert", "culvert"),
+        ("Pump", "pump"),
+        ("Compound", "compound"),
+        ("Orifice", "orifice"),
+        ("DOESNOTEXIST", "DOESNOTEXIST"),
+        ("doesnotexist", "doesnotexist"),
+    ],
+)
+def test_parses_type_case_insensitive(input, expected):
+    structure = Structure(type=input, branchid="branchid", chainage="1")
+
+    assert structure.type == expected
+
+
+def _get_allowedflowdir_cases() -> List:
+    return [
+        ("None", "none"),
+        ("Positive", "positive"),
+        ("NEGATIVE", "negative"),
+        ("Both", "both"),
+    ]
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_weir_parses_flowdirection_case_insensitive(input, expected):
+    structure = Weir(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_universalweir_parses_flowdirection_case_insensitive(input, expected):
+    structure = UniversalWeir(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+        numlevels=0,
+        yvalues=[],
+        zvalues=[],
+        dischargecoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_culvert_parses_flowdirection_case_insensitive(input, expected):
+
+    structure = Culvert(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        subtype="invertedSiphon",
+        bendlosscoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_orifice_parses_flowdirection_case_insensitive(input, expected):
+    structure = Orifice(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+        corrcoeff="1",
+        gateloweredgelevel="1",
+        usevelocityheight="0",
+        uselimitflowpos="0",
+        uselimitflowneg="0",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [("Culvert", "culvert"), ("INVERTEDSiphon", "invertedSiphon")],
+)
+def test_culvert_parses_subtype_case_insensitive(input, expected):
+
+    structure = Culvert(
+        subtype=input,
+        allowedflowdir="both",
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        bendlosscoeff="1",
+    )
+
+    assert structure.subtype == expected
+
+
 class TestStructure:
     """
     Wrapper class to test all the methods and subclasses in:
@@ -632,146 +781,3 @@ class TestStructure:
                 str(exc_err.value)
                 == "Expected 1 coordinates, given 2 for x and 3 for y coordinates."
             )
-
-    class TestValidateFieldValuesCaseInsensitive:
-        @pytest.mark.parametrize(
-            "input,expected",
-            [
-                ("WEIR", "weir"),
-                ("UniversalWeir", "universalWeir"),
-                ("Culvert", "culvert"),
-                ("Pump", "pump"),
-                ("Compound", "compound"),
-                ("Orifice", "orifice"),
-                ("DOESNOTEXIST", "DOESNOTEXIST"),
-                ("doesnotexist", "doesnotexist"),
-            ],
-        )
-        def test_parses_type_case_insensitive(input, expected):
-            structure = Structure(type=input, branchid="branchid", chainage="1")
-
-            assert structure.type == expected
-
-        def _get_allowedflowdir_cases() -> List:
-            return [
-                ("None", "none"),
-                ("Positive", "positive"),
-                ("NEGATIVE", "negative"),
-                ("Both", "both"),
-            ]
-
-        @pytest.mark.parametrize(
-            "input,expected",
-            _get_allowedflowdir_cases(),
-        )
-        def test_weir_parses_flowdirection_case_insensitive(input, expected):
-            structure = Weir(
-                allowedflowdir=input,
-                id="strucid",
-                branchid="branchid",
-                chainage="1",
-                crestlevel="1",
-            )
-
-            assert structure.allowedflowdir == expected
-
-        @pytest.mark.parametrize(
-            "input,expected",
-            _get_allowedflowdir_cases(),
-        )
-        def test_universalweir_parses_flowdirection_case_insensitive(input, expected):
-            structure = UniversalWeir(
-                allowedflowdir=input,
-                id="strucid",
-                branchid="branchid",
-                chainage="1",
-                crestlevel="1",
-                numlevels=0,
-                yvalues=[],
-                zvalues=[],
-                dischargecoeff="1",
-            )
-
-            assert structure.allowedflowdir == expected
-
-        @pytest.mark.parametrize(
-            "input,expected",
-            _get_allowedflowdir_cases(),
-        )
-        def test_culvert_parses_flowdirection_case_insensitive(input, expected):
-
-            structure = Culvert(
-                allowedflowdir=input,
-                id="strucid",
-                branchid="branchid",
-                chainage="1",
-                leftlevel="1",
-                rightlevel="1",
-                csdefid="",
-                length="1",
-                inletlosscoeff="1",
-                outletlosscoeff="1",
-                inletlosvalveonoffscoeff="1",
-                valveonoff="1",
-                valveopeningheight="1",
-                numlosscoeff="1",
-                relopening=[],
-                losscoeff=[],
-                bedfrictiontype="",
-                bedfriction="1",
-                subtype="invertedSiphon",
-                bendlosscoeff="1",
-            )
-
-            assert structure.allowedflowdir == expected
-
-        @pytest.mark.parametrize(
-            "input,expected",
-            _get_allowedflowdir_cases(),
-        )
-        def test_orifice_parses_flowdirection_case_insensitive(input, expected):
-            structure = Orifice(
-                allowedflowdir=input,
-                id="strucid",
-                branchid="branchid",
-                chainage="1",
-                crestlevel="1",
-                corrcoeff="1",
-                gateloweredgelevel="1",
-                usevelocityheight="0",
-                uselimitflowpos="0",
-                uselimitflowneg="0",
-            )
-
-            assert structure.allowedflowdir == expected
-
-        @pytest.mark.parametrize(
-            "input,expected",
-            [("Culvert", "culvert"), ("INVERTEDSiphon", "invertedSiphon")],
-        )
-        def test_culvert_parses_subtype_case_insensitive(input, expected):
-
-            structure = Culvert(
-                subtype=input,
-                allowedflowdir="both",
-                id="strucid",
-                branchid="branchid",
-                chainage="1",
-                leftlevel="1",
-                rightlevel="1",
-                csdefid="",
-                length="1",
-                inletlosscoeff="1",
-                outletlosscoeff="1",
-                inletlosvalveonoffscoeff="1",
-                valveonoff="1",
-                valveopeningheight="1",
-                numlosscoeff="1",
-                relopening=[],
-                losscoeff=[],
-                bedfrictiontype="",
-                bedfriction="1",
-                bendlosscoeff="1",
-            )
-
-            assert structure.subtype == expected
