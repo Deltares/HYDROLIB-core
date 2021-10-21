@@ -7,6 +7,7 @@ from pydantic.error_wrappers import ValidationError
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
     Compound,
+    Culvert,
     FlowDirection,
     Orifice,
     Pump,
@@ -334,3 +335,137 @@ def test_read_structures_missing_structure_field_raises_correct_error():
 
     expected_message = f"{file} -> structure -> 1 -> {identifier} -> {field}"
     assert expected_message in str(error.value)
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("WEIR", "weir"),
+        ("UniversalWeir", "universalWeir"),
+        ("Culvert", "culvert"),
+        ("Pump", "pump"),
+        ("Compound", "compound"),
+        ("Orifice", "orifice"),
+        ("DOESNOTEXIST", "DOESNOTEXIST"),
+        ("doesnotexist", "doesnotexist"),
+    ],
+)
+def test_parses_type_case_insensitive(input, expected):
+    structure = Structure(type=input)
+
+    assert structure.type == expected
+
+
+def _get_allowedflowdir_cases() -> List:
+    return [
+        ("None", "none"),
+        ("Positive", "positive"),
+        ("NEGATIVE", "negative"),
+        ("Both", "both"),
+    ]
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_weir_parses_flowdirection_case_insensitive(input, expected):
+    structure = Weir(allowedflowdir=input, id="strucid", crestlevel="1")
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_universalweir_parses_flowdirection_case_insensitive(input, expected):
+    structure = UniversalWeir(
+        allowedflowdir=input,
+        id="strucid",
+        crestlevel="1",
+        numlevels=0,
+        yvalues=[],
+        zvalues=[],
+        dischargecoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_culvert_parses_flowdirection_case_insensitive(input, expected):
+
+    structure = Culvert(
+        allowedflowdir=input,
+        id="strucid",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        subtype="invertedSiphon",
+        bendlosscoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_orifice_parses_flowdirection_case_insensitive(input, expected):
+    structure = Orifice(
+        allowedflowdir=input,
+        id="strucid",
+        crestlevel="1",
+        corrcoeff="1",
+        usevelocityheight="0",
+        uselimitflowpos="0",
+        uselimitflowneg="0",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [("Culvert", "culvert"), ("INVERTEDSiphon", "invertedSiphon")],
+)
+def test_culvert_parses_subtype_case_insensitive(input, expected):
+
+    structure = Culvert(
+        subtype=input,
+        allowedflowdir="both",
+        id="strucid",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        bendlosscoeff="1",
+    )
+
+    assert structure.subtype == expected
