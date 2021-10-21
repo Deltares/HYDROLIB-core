@@ -1,9 +1,9 @@
 import inspect
+from contextlib import nullcontext as does_not_raise
 from typing import List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
-from contextlib import nullcontext as does_not_raise
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
