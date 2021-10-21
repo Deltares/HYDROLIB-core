@@ -12,9 +12,7 @@ from hydrolib.core.io.ini.models import (
     INIGeneral,
     INIModel,
 )
-from hydrolib.core.io.ini.util import (
-    get_split_string_on_delimiter_validator,
-)
+from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.structure.models import StructureModel
