@@ -1,6 +1,6 @@
 import logging
-from enum import Enum
 from abc import ABC
+from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, List, Literal
 
