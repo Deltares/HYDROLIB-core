@@ -21,7 +21,8 @@ from hydrolib.core.io.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.mdu.models import Boundary, ExtModel, FMModel
+from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.ext.models import Boundary, ExtModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 from .io.test_bui import BuiTestData

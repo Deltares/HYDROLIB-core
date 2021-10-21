@@ -9,11 +9,11 @@ from hydrolib.core.io.ext.models import Lateral
 
 class TestModels:
     """Test class to test all classes and methods contained in the
-    hydrolib.core.io.mdu.models.py module"""
+    hydrolib.core.io.ext.models.py module"""
 
     class TestLateral:
         """Class to test all methods contained in the
-        hydrolib.core.io.mdu.models.Lateral class"""
+        hydrolib.core.io.ext.models.Lateral class"""
 
         class TestValidateCoordinates:
             """
