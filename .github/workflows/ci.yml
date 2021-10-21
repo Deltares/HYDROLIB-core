@@ -51,7 +51,7 @@ jobs:
         run: poetry run black . --check
 
       - name: Autoformat code if the check fails
-        if: failure() && ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
+        if: ${{ failure() && (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
         run: |
           poetry run isort .
           poetry run black .
