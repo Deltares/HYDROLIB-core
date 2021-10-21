@@ -46,12 +46,8 @@ jobs:
       - name: Test with pytest
         run: poetry run pytest --cov . --cov-report xml:coverage-reports/coverage-hydrolib-core.xml --junitxml=xunit-reports/xunit-result-hydrolib-core.xml
 
-      - name: Code Quality
-        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
-        run: poetry run black . --check
-
       - name: Autoformat code if the check fails
-        if: ${{ failure() && (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
+        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
         run: |
           poetry run isort .
           poetry run black .
