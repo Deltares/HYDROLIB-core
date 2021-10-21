@@ -19,9 +19,9 @@ from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
-    get_default,
     get_enum_validator,
-    get_split_string_on_delimiter_validator,
+    get_from_subclass_defaults,
+    get_split_string_on_delimiter_validator
 )
 
 logger = logging.getLogger(__name__)
@@ -66,8 +66,8 @@ class Structure(INIBasedModel):
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
     @validator("type", pre=True)
-    def _set_type(cls, value):
-        return get_default(cls, "type", value)
+    def _validate_type(cls, value):
+        return get_from_subclass_defaults(Structure, "type", value)
 
     @root_validator
     def check_location(cls, values):

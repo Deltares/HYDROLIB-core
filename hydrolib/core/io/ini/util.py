@@ -58,19 +58,20 @@ def make_list_validator(*field_name: str):
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
 
-def get_default(cls: Type[BaseModel], fieldname: str, default: Any = None):
-    """Gets the default value of a model field.
+def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
+    """Gets a value that corresponds with the default field value of one of the subclasses.
 
     Args:
-        cls (Type[BaseModel]): A model
-        fieldname (str): The field name for which to get the default for.
-        default (Any, optional): Return value for when the field cannot be retrieved. Defaults to None.
+        cls (Type[BaseModel]): The parent model type.
+        fieldname (str): The field name for which retrieve the default for.
+        value (str): The value to compare with.
 
     Returns:
-        [Any]: Returns the default field value if found, otherwise `default`.
+        [type]: The field default that corresponds to the value.
     """
-    field = cls.__fields__.get(fieldname)
-    if field and field.default:
-        return field.default
+    for c in cls.__subclasses__():
+        default = c.__fields__.get(fieldname).default
+        if default.lower() == value.lower():
+            return default
 
-    return default
+    return value

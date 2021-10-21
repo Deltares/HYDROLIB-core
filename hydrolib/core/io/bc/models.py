@@ -12,8 +12,8 @@ from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIM
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
-    get_default,
     get_enum_validator,
+    get_from_subclass_defaults,
     make_list_validator,
 )
 
@@ -57,7 +57,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @validator("function", pre=True)
     def _set_function(cls, value):
-        return get_default(cls, "function", value)
+        return get_from_subclass_defaults(ForcingBase, "function", value)
 
     @classmethod
     def validate(cls, v):
