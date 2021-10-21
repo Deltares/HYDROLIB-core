@@ -219,6 +219,7 @@ class Culvert(Structure):
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+    _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
 
 
 class Pump(Structure):
