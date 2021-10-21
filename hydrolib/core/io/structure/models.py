@@ -82,7 +82,7 @@ class Structure(INIBasedModel):
         """
         # 0. Prepare data to evaluate, not interested if they are None.
         filtered_values = {k: v for k, v in values.items() if v is not None}
-        # 1. General check.        
+        # 1. General check.
         coordinates_in_model = (
             "n_coordinates" in filtered_values
             and "x_coordinates" in filtered_values
