@@ -1,5 +1,5 @@
-from abc import ABC
 import logging
+from abc import ABC
 from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, List, Literal
@@ -13,6 +13,7 @@ from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import make_list_validator
 
 logger = logging.getLogger(__name__)
+
 
 class VerticalInterpolation(str, Enum):
     linear = "linear"
@@ -63,8 +64,11 @@ class ForcingBase(DataBlockINIBasedModel):
                     v = c(**v)
                     break
             else:
-                logger.warning("Function of {} with name={} and function={} is not recognized.".format(
-                    cls.__name__, v.get("name", ""), v.get("function", "")))
+                logger.warning(
+                    "Function of {} with name={} and function={} is not recognized.".format(
+                        cls.__name__, v.get("name", ""), v.get("function", "")
+                    )
+                )
         return v
 
     def _get_identifier(self, data: dict) -> str:

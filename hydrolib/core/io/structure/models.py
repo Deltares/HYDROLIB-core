@@ -86,8 +86,11 @@ class Structure(INIBasedModel):
                     v = c(**v)
                     break
             else:
-                logger.warning("Type of {} with id={} and type={} is not recognized.".format(
-                    cls.__name__, v.get("id", ""), v.get("type", "")))
+                logger.warning(
+                    "Type of {} with id={} and type={} is not recognized.".format(
+                        cls.__name__, v.get("id", ""), v.get("type", "")
+                    )
+                )
         return super().validate(v)
 
     def _exclude_fields(self) -> Set:
