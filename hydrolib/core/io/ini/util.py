@@ -70,7 +70,7 @@ def get_default(cls: Type[BaseModel], fieldname: str, default: Any = None):
         [Any]: Returns the default field value if found, otherwise `default`.
     """
     field = cls.__fields__.get(fieldname)
-    if field:
+    if field and field.default:
         return field.default
 
     return default
