@@ -13,7 +13,7 @@ class TestModels:
 
     class TestLateral:
         """Class to test all methods contained in the
-        hydrolib.core.io.mdu.models.Lateral class"""
+        hydrolib.core.io.ext.models.Lateral class"""
 
         class TestValidateCoordinates:
             """
