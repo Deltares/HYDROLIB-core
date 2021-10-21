@@ -80,35 +80,34 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
-        # 1. General check.
+        # 0. Prepare data to evaluate, not interested if they are None.
+        filtered_values = {k: v for k, v in values.items() if v is not None}
+        # 1. General check.        
         coordinates_in_model = (
-            "n_coordinates" in values
-            and "x_coordinates" in values
-            and "y_coordinates" in values
+            "n_coordinates" in filtered_values
+            and "x_coordinates" in filtered_values
+            and "y_coordinates" in filtered_values
         )
-        branch_and_chainage_in_model = "branchid" in values and "chainage" in values
+        branch_and_chainage_in_model = (
+            "branchid" in filtered_values and "chainage" in filtered_values
+        )
         assert (
             coordinates_in_model or branch_and_chainage_in_model
         ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
 
         # 2. Validate branchid + chainage.
         if branch_and_chainage_in_model:
-            if str_is_empty_or_none(values["branchid"]) or str_is_empty_or_none(
-                values["chainage"]
-            ):
+            if str_is_empty_or_none(filtered_values["branchid"]):
                 raise ValueError(
                     "A valid value for branchid and chainage is required when branchid key is specified."
                 )
+            return values
 
         # 3. Validate coordinates.
         if coordinates_in_model:
-            n_coords = values["n_coordinates"]
-            if n_coords is None:
-                raise ValueError(
-                    "A valid number should be specified for numCoordinates"
-                )
-            x_coords = values.get("x_coordinates", [])
-            y_coords = values.get("y_coordinates", [])
+            n_coords = filtered_values["n_coordinates"]
+            x_coords = filtered_values.get("x_coordinates", [])
+            y_coords = filtered_values.get("y_coordinates", [])
             assert (
                 n_coords == len(x_coords) == len(y_coords)
             ), f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."

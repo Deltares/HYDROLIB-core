@@ -350,7 +350,14 @@ class TestStructure:
 
         def test_check_location_given_no_values_raises_assertion_error(self):
             with pytest.raises(AssertionError) as exc_err:
-                input_dict = dict(notAValue="Not a relevant value")
+                input_dict = dict(
+                    notAValue="Not a relevant value",
+                    n_coordinates=None,
+                    x_coordinates=None,
+                    y_coordinates=None,
+                    branchid=None,
+                    chainage=None,
+                )
                 Structure.check_location(input_dict)
             assert (
                 str(exc_err.value)
@@ -360,13 +367,9 @@ class TestStructure:
         @pytest.mark.parametrize(
             "dict_values",
             [
-                pytest.param(dict(branchid=None, chainage=None), id="None values"),
-                pytest.param(dict(branchid="", chainage=""), id="Empty values"),
+                pytest.param(dict(branchid="", chainage=4.2), id="Empty values"),
                 pytest.param(
-                    dict(branchid="aBranchId", chainage=""), id="Only branchid value."
-                ),
-                pytest.param(
-                    dict(branchid="", chainage="aChainage"), id="Only chainage value."
+                    dict(branchid="", chainage=2.4), id="Only chainage value."
                 ),
             ],
         )
@@ -378,16 +381,6 @@ class TestStructure:
             assert (
                 str(exc_err.value)
                 == "A valid value for branchid and chainage is required when branchid key is specified."
-            )
-
-        def test_check_location_given_none_as_coordinates_raises_value_error(self):
-            with pytest.raises(ValueError) as exc_err:
-                Structure.check_location(
-                    dict(n_coordinates=None, x_coordinates=None, y_coordinates=None)
-                )
-            assert (
-                str(exc_err.value)
-                == "A valid number should be specified for numCoordinates"
             )
 
         wrong_coord_test_cases = [
