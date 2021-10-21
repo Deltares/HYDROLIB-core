@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-  test:
+  CI:
     strategy:
       fail-fast: false
       matrix:
@@ -46,16 +46,13 @@ jobs:
       - name: Test with pytest
         run: poetry run pytest --cov . --cov-report xml:coverage-reports/coverage-hydrolib-core.xml --junitxml=xunit-reports/xunit-result-hydrolib-core.xml
 
-      - name: Code Quality
-        run: poetry run black . --check
-
       - name: Autoformat code if the check fails
-        if: failure()
+        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
         run: |
           poetry run isort .
           poetry run black .
-          git config --global user.name 'autoblack'
-          git config --global user.email 'evetion@users.noreply.github.com'
+          git config --global user.name '${{ github.actor }}'
+          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git checkout $GITHUB_HEAD_REF
           git commit -am "fixup: Format Python code with isort & black"
