@@ -7,6 +7,7 @@ from devtools import debug
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import FileModel
+from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -20,9 +21,10 @@ from hydrolib.core.io.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.mdu.models import ExtModel, FMModel
+from hydrolib.core.io.mdu.models import Boundary, ExtModel, FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
+from .io.test_bui import BuiTestData
 from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
 
 
@@ -60,7 +62,7 @@ def test_parse_rr_model_returns_correct_model():
 
     # verify some non-default names altered in the source file.
     assert model.control_file == Path("not-delft_3b.ini")
-    assert model.bui_file == Path("not-default.bui")
+    assert model.bui_file == BuiTestData.bui_model()
     assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
 
 
@@ -281,3 +283,34 @@ def test_read_dimr_missing_coupler_field_raises_correct_error():
 
     expected_message = f"{file} -> coupler -> 0 -> {identifier} -> {field}"
     assert expected_message in str(error.value)
+
+
+def test_boundary_with_forcing_file_returns_forcing():
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
+    forcing3 = _create_forcing("bnd3", "qhbnd discharge")
+
+    forcing_file = ForcingModel(forcing=[forcing1, forcing2, forcing3])
+
+    boundary2 = Boundary(
+        nodeid="bnd2", quantity="dischargebnd", forcingfile=forcing_file
+    )
+
+    assert boundary2.forcing is forcing2
+
+
+def test_boundary_with_forcing_file_without_match_returns_none():
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
+
+    forcing_file = ForcingModel(forcing=[forcing1, forcing2])
+
+    boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
+
+    assert boundary.forcing is None
+    assert boundary.nodeid == "bnd3"
+    assert boundary.quantity == "qhbnd"
+
+
+def _create_forcing(name: str, quantity: str) -> ForcingBase:
+    return ForcingBase(name=name, quantity=[quantity], function="", unit=[])
