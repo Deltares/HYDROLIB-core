@@ -49,7 +49,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @classmethod
     def _supports_comments(cls):
-        return False
+        return True
 
     @classmethod
     def _duplicate_keys_as_list(cls):
