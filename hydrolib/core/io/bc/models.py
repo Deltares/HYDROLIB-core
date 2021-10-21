@@ -18,6 +18,7 @@ class VerticalInterpolation(str, Enum):
     block = "block"
 
 
+
 class VerticalPositionType(str, Enum):
     percentage_bed = "percBed"
     z_bed = "ZBed"

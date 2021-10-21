@@ -4,9 +4,9 @@ on: [push]
 
 jobs:
 
-  setup:
+  CI:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         python-version: [3.8, 3.9]
         os: [ubuntu-18.04, macos-latest, windows-latest]
@@ -55,7 +55,7 @@ jobs:
         run: |
           poetry run isort .
           poetry run black .
-          git config --global user.name 'autoblack'
+          git config --global user.name '$GITHUB_ACTOR'
           git config --global user.email '$GITHUB_ACTOR@users.noreply.github.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git checkout $GITHUB_HEAD_REF
