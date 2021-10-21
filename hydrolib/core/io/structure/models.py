@@ -65,7 +65,7 @@ class Structure(INIBasedModel):
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
-    @validator("type")
+    @validator("type", pre=True)
     def _set_type(cls, value):
         return get_default(cls, "type", value)
 

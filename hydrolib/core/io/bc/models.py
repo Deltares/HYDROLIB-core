@@ -55,7 +55,7 @@ class ForcingBase(DataBlockINIBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    @validator("function")
+    @validator("function", pre=True)
     def _set_function(cls, value):
         return get_default(cls, "function", value)
 
@@ -67,7 +67,7 @@ class ForcingBase(DataBlockINIBasedModel):
         if isinstance(v, dict):
             for c in cls.__subclasses__():
                 if (
-                    c.__fields__.get("function").default
+                    c.__fields__.get("function").default.lower()
                     == v.get("function", "").lower()
                 ):
                     v = c(**v)
