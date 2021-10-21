@@ -37,13 +37,13 @@ def get_enum_validator(*field_name: str, enum: Type[Enum]):
         enum (Type[Enum]): The enum type for which to validate.
     """
 
-    def get_enumpje(v):
+    def get_enum(v):
         for entry in enum:
             if entry.lower() == v.lower():
                 return entry
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True)(get_enumpje)
+    return validator(*field_name, allow_reuse=True, pre=True)(get_enum)
 
 
 def make_list_validator(*field_name: str):
