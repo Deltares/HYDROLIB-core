@@ -278,6 +278,7 @@ class Orifice(Structure):
 
     _lower = get_lower_string_validator("allowedflowdir")
 
+
 class StructureGeneral(INIGeneral):
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.00", alias="fileVersion")
