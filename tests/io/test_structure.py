@@ -1,4 +1,5 @@
 import inspect
+from contextlib import nullcontext as does_not_raise
 from typing import List, Union
 
 import pytest
@@ -334,3 +335,299 @@ def test_read_structures_missing_structure_field_raises_correct_error():
 
     expected_message = f"{file} -> structure -> 1 -> {identifier} -> {field}"
     assert expected_message in str(error.value)
+
+
+class TestStructure:
+    """
+    Wrapper class to test all the methods and subclasses in:
+    hydrolib.core.io.structure.models.py Structure class
+    """
+
+    class TestRootValidator:
+        """
+        Wrapper class to validate the paradigms that point to root_validators
+        in the Structure class
+        """
+
+        long_culvert_err = (
+            "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
+        )
+        structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
+
+        @pytest.mark.parametrize(
+            "structure_type, expectation, error_mssg",
+            [
+                pytest.param(
+                    "",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="No structure raises.",
+                ),
+                pytest.param(
+                    None,
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="None structure raises.",
+                ),
+                pytest.param(
+                    "weir",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="Weir raises.",
+                ),
+                pytest.param(
+                    "universalWeir",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="UniversalWeir raises.",
+                ),
+                pytest.param(
+                    "culvert",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="Culvert raises.",
+                ),
+                pytest.param(
+                    "longCulvert",
+                    pytest.raises(AssertionError),
+                    long_culvert_err,
+                    id="LongCulvert raises.",
+                ),
+                pytest.param(
+                    "orifice",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="Orifice raises.",
+                ),
+                pytest.param(
+                    "gate",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="Gate raises.",
+                ),
+                pytest.param(
+                    "generalStructure",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="GeneralStructure raises.",
+                ),
+                pytest.param(
+                    "dambreak",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="Dambreak raises.",
+                ),
+                pytest.param(
+                    "compound", does_not_raise(), None, id="Compound DOES NOT raise."
+                ),
+            ],
+        )
+        def test_check_location_given_no_values_raises_expectation(
+            self, structure_type: str, expectation, error_mssg: str
+        ):
+            with expectation as exc_err:
+                input_dict = dict(
+                    notAValue="Not a relevant value",
+                    structure_type=structure_type,
+                    n_coordinates=None,
+                    x_coordinates=None,
+                    y_coordinates=None,
+                    branchid=None,
+                    chainage=None,
+                )
+                return_value = Structure.check_location(input_dict)
+                if not error_mssg:
+                    assert return_value == input_dict
+                    return
+            assert str(exc_err.value) == error_mssg
+
+        def test_check_location_given_compound_structure_raises_nothing(self):
+            input_dict = dict(
+                notAValue="Not a relevant value",
+                n_coordinates=None,
+                x_coordinates=None,
+                y_coordinates=None,
+                branchid=None,
+                chainage=None,
+            )
+            return_value = Compound.check_location(input_dict)
+            assert return_value == input_dict
+
+        @pytest.mark.parametrize(
+            "dict_values",
+            [
+                pytest.param(
+                    dict(branchid="", chainage=None),
+                    id="Empty branchid, Chainage is None.",
+                ),
+                pytest.param(
+                    dict(branchid="aValue", chainage=None), id="Chainage is None."
+                ),
+                pytest.param(
+                    dict(branchid="", chainage=2.4), id="Only chainage value."
+                ),
+            ],
+        )
+        def test_check_location_given_invalid_branchid_chainage_raises_value_error(
+            self, dict_values: dict
+        ):
+            with pytest.raises(ValueError) as exc_err:
+                Structure.check_location(dict_values)
+            assert (
+                str(exc_err.value)
+                == "A valid value for branchId and chainage is required when branchid key is specified."
+            )
+
+        wrong_coord_test_cases = [
+            pytest.param(
+                [],
+                id="Empty list",
+            ),
+            pytest.param(
+                [2, 4, 4, 2],
+                id="Too many coords",
+            ),
+        ]
+
+        @pytest.mark.parametrize(
+            "x_coords",
+            wrong_coord_test_cases,
+        )
+        @pytest.mark.parametrize(
+            "y_coords",
+            wrong_coord_test_cases,
+        )
+        def test_check_location_given_invalid_coordinates_raises_assertion_error(
+            self, x_coords: List[float], y_coords: List[float]
+        ):
+            n_coords = 2
+            with pytest.raises(ValueError) as exc_err:
+                Structure.check_location(
+                    dict(
+                        n_coordinates=n_coords,
+                        x_coordinates=x_coords,
+                        y_coordinates=y_coords,
+                    )
+                )
+            assert (
+                str(exc_err.value)
+                == f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."
+            )
+
+        @pytest.mark.parametrize(
+            "dict_values",
+            [
+                pytest.param(
+                    dict(
+                        n_coordinates=0,
+                        x_coordinates=[],
+                        y_coordinates=[],
+                    ),
+                    id="Coordinates given.",
+                ),
+                pytest.param(
+                    dict(branchid="aBranchid", chainage="aChainage"),
+                    id="branchid + chainage.",
+                ),
+            ],
+        )
+        def test_check_location_given_valid_values(self, dict_values: dict):
+            return_value = Structure.check_location(dict_values)
+            assert return_value == dict_values
+
+    class TestValidateBranchAndChainageInModel:
+        """
+        Class to validate the paradigms of validate_branch_and_chainage_in_model
+        """
+
+        @pytest.mark.parametrize(
+            "branch_id, chainage, expectation",
+            [
+                pytest.param(None, None, False, id="Both None"),
+                pytest.param("aValue", 42, True, id="Both Valid"),
+            ],
+        )
+        def test_given_valid_values_returns_expectation(
+            self, branch_id: str, chainage: float, expectation: bool
+        ):
+            dict_values = dict(branchid=branch_id, chainage=chainage)
+            validation = Structure.validate_branch_and_chainage_in_model(dict_values)
+            assert validation == expectation
+
+        @pytest.mark.parametrize(
+            "dict_values",
+            [
+                pytest.param(
+                    dict(branchid="aBranchId", chainage=None), id="No valid chainage"
+                ),
+                pytest.param(dict(branchid="", chainage=None), id="No valid branchId"),
+            ],
+        )
+        def test_given_invalid_values_raises_expectations(self, dict_values: dict):
+            with pytest.raises(ValueError) as exc_err:
+                Structure.validate_branch_and_chainage_in_model(dict_values)
+            assert (
+                str(exc_err.value)
+                == "A valid value for branchId and chainage is required when branchid key is specified."
+            )
+
+    class TestValidateCoordinatesInModel:
+        """
+        Class to validate the paradigms of validate_coordinates_in_model
+        """
+
+        @pytest.mark.parametrize(
+            "dict_values, expectation",
+            [
+                pytest.param(dict(), False, id="No values."),
+                pytest.param(
+                    dict(n_coordinates=None), False, id="Missing x_y_coordinates"
+                ),
+                pytest.param(
+                    dict(n_coordinates=None, y_coordinates=None),
+                    False,
+                    id="Missing x_coordinates",
+                ),
+                pytest.param(
+                    dict(n_coordinates=None, x_coordinates=None),
+                    False,
+                    id="Missing y_coordinates",
+                ),
+                pytest.param(
+                    dict(n_coordinates=0, x_coordinates=None, y_coordinates=None),
+                    True,
+                    id="None coordinates.",
+                ),
+                pytest.param(
+                    dict(n_coordinates=0, x_coordinates=[], y_coordinates=[]),
+                    True,
+                    id="Empty list coordinates.",
+                ),
+                pytest.param(
+                    dict(
+                        n_coordinates=2, x_coordinates=[42, 24], y_coordinates=[24, 42]
+                    ),
+                    True,
+                    id="With coordinates.",
+                ),
+            ],
+        )
+        def test_given_valid_values_returns_expectation(
+            self, dict_values: dict, expectation: bool
+        ):
+            validation = Structure.validate_coordinates_in_model(dict_values)
+            assert validation == expectation
+
+        def test_given_invalid_values_raises_value_error(self):
+            with pytest.raises(ValueError) as exc_err:
+                Structure.validate_coordinates_in_model(
+                    dict(
+                        n_coordinates=1,
+                        x_coordinates=[42, 24],
+                        y_coordinates=[24, 42, 66],
+                    )
+                )
+            assert (
+                str(exc_err.value)
+                == "Expected 1 coordinates, given 2 for x and 3 for y coordinates."
+            )
