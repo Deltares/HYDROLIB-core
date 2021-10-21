@@ -1,0 +1,310 @@
+*  Sobek RgFilter version 1.03.03 July 2002
+* Applied sewer filter
+*    Dry weather period [hours]                  :   6.00
+*    End dry period in simulation [hours]        :   2.00
+*    Pump capacity [mm/hour]                     :   0.50
+*    Storage [mm]                                :   5.00
+*    Critical precipitation intensity [mm/15min] :  15.00
+*
+* Geselecteerde buien uit KNMI tijd serie file
+*
+* Reading format : free format, Delft 3B
+*
+* Gebruik de default dataset voor overige invoer (altijd 1 bij bui, 0 bij reeks)
+0
+* Aantal stations
+1
+* Namen stations
+'De Bilt'
+* Number of events in series and time step size [s]
+   10   300
+* Event 1  (STNBUI01)  duration   2 [hours]
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+  2000     1    10     0     0     0     0    2    0     0
+ 0.30
+ 0.60
+ 0.90
+ 1.20
+ 1.50
+ 1.50
+ 1.05
+ 0.90
+ 0.75
+ 0.60
+ 0.45
+ 0.30
+ 0.15
+ 0.15
+ 0.15
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+*Event  2  (STNBUI07)  duration   2 [hours] total: 19.8 mm, maximum 3.3 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+  2000     7    1     0     0     0     0    2     0     0
+ 0.60
+ 1.20
+ 2.10
+ 3.30
+ 3.30
+ 2.70
+ 2.10
+ 1.50
+ 1.20
+ 0.90
+ 0.60
+ 0.30
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+*Event  3  (STNBUI05)  duration   2 [hours] total: 16.8 mm, maximum 2.7 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+  2000     8    5     0     0     0     0    0    120     0
+ 0.30
+ 0.60
+ 1.50
+ 2.70
+ 2.70
+ 2.10
+ 1.50
+ 1.20
+ 1.05
+ 0.90
+ 0.75
+ 0.60
+ 0.45
+ 0.30
+ 0.15
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+*Event  4  (STNBUI04)  duration   2 [hours] total: 14.4 mm, maximum 2.1 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+ 2000 8 29 0 0 0 0 2 0 0
+ 0.15
+ 0.30
+ 0.45
+ 0.60
+ 0.75
+ 0.90
+ 1.05
+ 1.20
+ 1.50
+ 2.10
+ 2.10
+ 1.50
+ 0.90
+ 0.60
+ 0.30
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+*Event  5  (STNBUI10)  duration   2 [hours] total: 35.7 mm, maximum 6.3 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+ 2000 9 15 0 0 0 0 2 0 0
+1.8
+3.6
+6.3
+6.3
+5.7
+4.8
+3.6
+2.4
+1.2
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+*Event  6  (STNBUI09)  duration   2 [hours] total: 29.4 mm, maximum 4.8 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+ 2000 9 22 0 0 0 0 2 0 0
+1.5
+2.7
+4.8
+4.8
+4.2
+3.3
+2.7
+2.1
+1.5
+0.9
+0.6
+0.3
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+*Event  7  (STNBUI08)  duration   2 [hours] total: 19.8 mm, maximum 3.3 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+ 2000 10 17 0 0 0 0 2 0 0
+0.3
+0.6
+0.9
+1.2
+1.5
+2.1
+2.7
+3.3
+3.3
+2.1
+1.2
+0.6
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+*Event  8  (STNBUI02)  duration   2 [hours] total: 10.5 mm, maximum 1.5 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+ 2000 10 28 0 0 0 0 2 0 0
+ 0.15
+ 0.15
+ 0.15
+ 0.30
+ 0.45
+ 0.60
+ 0.75
+ 0.90
+ 1.05
+ 1.50
+ 1.50
+ 1.20
+ 0.90
+ 0.60
+ 0.30
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+*Event  9  (STNBUI03)  duration   2 [hours] total: 14.4 mm, maximum 2.1 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+ 2000 11 5 0 0 0 0 2 0 0
+ 0.30
+ 0.60
+ 0.90
+ 1.50
+ 2.10
+ 2.10
+ 1.50
+ 1.20
+ 1.05
+ 0.90
+ 0.75
+ 0.60
+ 0.45
+ 0.30
+ 0.15
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+*Event  10 (STNBUI06)  duration   2 [hours] total: 16.8 mm, maximum 2.7 mm
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
+ 2000 12 9 0 0 0 0 2 0 0
+ 0.15
+ 0.30
+ 0.45
+ 0.60
+ 0.75
+ 0.90
+ 1.05
+ 1.20
+ 1.50
+ 2.10
+ 2.70
+ 2.70
+ 1.50
+ 0.60
+ 0.30
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00
+ 0.00

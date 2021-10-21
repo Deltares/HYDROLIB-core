@@ -68,6 +68,9 @@ class Component(BaseModel, ABC):
     def is_intermediate_link(self) -> bool:
         return True
 
+    def _get_identifier(self, data: dict) -> str:
+        return data["name"] if "name" in data else None
+
 
 class FMComponent(Component):
     library: Literal["dflowfm"] = "dflowfm"
@@ -120,6 +123,9 @@ class ComponentOrCouplerRef(BaseModel):
     """
 
     name: str
+
+    def _get_identifier(self, data: dict) -> str:
+        return data["name"] if "name" in data else None
 
 
 class CoupledItem(BaseModel):
@@ -177,6 +183,9 @@ class Coupler(BaseModel):
     def is_intermediate_link(self) -> bool:
         # TODO set to True once we replace Paths with FileModels
         return False
+
+    def _get_identifier(self, data: dict) -> str:
+        return data["name"] if "name" in data else None
 
 
 class StartGroup(BaseModel):

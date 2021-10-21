@@ -4,7 +4,10 @@ from pathlib import Path
 
 import pytest
 from devtools import debug
+from pydantic.error_wrappers import ValidationError
 
+from hydrolib.core.basemodel import FileModel
+from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -18,9 +21,10 @@ from hydrolib.core.io.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.mdu.models import ExtModel, FMModel
+from hydrolib.core.io.mdu.models import Boundary, ExtModel, FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
+from .io.test_bui import BuiTestData
 from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
 
 
@@ -58,7 +62,7 @@ def test_parse_rr_model_returns_correct_model():
 
     # verify some non-default names altered in the source file.
     assert model.control_file == Path("not-delft_3b.ini")
-    assert model.bui_file == Path("not-default.bui")
+    assert model.bui_file == BuiTestData.bui_model()
     assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
 
 
@@ -223,3 +227,95 @@ def test_mdu_from_scratch():
     model = FMModel()
     model.filepath = output_fn
     model.save()
+
+
+def test_read_ext_missing_boundary_field_raises_correct_error():
+    file = "missing_boundary_field.ext"
+    identifier = "Boundary2"
+    field = "quantity"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        ExtModel(filepath)
+
+    expected_message = f"{file} -> boundary -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
+
+
+def test_read_ext_missing_lateral_field_raises_correct_error():
+    file = "missing_lateral_field.ext"
+    identifier = "Lateral2"
+    field = "discharge"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        ExtModel(filepath)
+
+    expected_message = f"{file} -> lateral -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
+
+
+def test_read_dimr_missing_component_field_raises_correct_error():
+    file = "missing_dimr_component_field.xml"
+    identifier = "FlowFM"
+    field = "workingdir"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        DIMR(filepath)
+
+    expected_message = f"{file} -> component -> 1 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
+
+
+def test_read_dimr_missing_coupler_field_raises_correct_error():
+    file = "missing_dimr_coupler_field.xml"
+    identifier = "rr_to_flow"
+    field = "targetcomponent"
+
+    filepath = test_data_dir / "input/invalid_files" / file
+
+    with pytest.raises(ValidationError) as error:
+        DIMR(filepath)
+
+    expected_message = f"{file} -> coupler -> 0 -> {identifier} -> {field}"
+    assert expected_message in str(error.value)
+
+
+def test_boundary_with_forcingfile_returns_forcing():
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
+    forcing3 = _create_forcing("bnd3", "qhbnd discharge")
+
+    forcingfile = ForcingModel(forcing=[forcing1, forcing2, forcing3])
+
+    boundary2 = Boundary(
+        nodeId="bnd2", quantity="dischargebnd", forcingfile=forcingfile
+    )
+
+    assert boundary2.forcing is forcing2
+
+
+def test_boundary_without_forcingfile_returns_none():
+    boundary = Boundary(nodeId="boundary", quantity="waterlevelbnd")
+
+    assert boundary.forcingfile is None
+    assert boundary.forcing is None
+
+
+def test_boundary_with_forcingfile_without_match_returns_none():
+    forcing1 = _create_forcing("bnd1", "waterlevelbnd")
+    forcing2 = _create_forcing("bnd2", "dischargebnd")
+
+    forcingfile = ForcingModel(forcing=[forcing1, forcing2])
+
+    boundary = Boundary(nodeId="bnd3", quantity="qhbnd", forcingfile=forcingfile)
+
+    assert boundary.forcing is None
+
+
+def _create_forcing(name: str, quantity: str) -> ForcingBase:
+    return ForcingBase(name=name, quantity=[quantity], function="", unit=[])

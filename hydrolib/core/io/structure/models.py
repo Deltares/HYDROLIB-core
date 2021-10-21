@@ -86,7 +86,9 @@ class Structure(INIBasedModel):
                     v = c(**v)
                     break
             else:
-                logger.warning(f"Couldn't derive specific type of {cls.__name__}")
+                logger.warning(
+                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
+                )
         return super().validate(v)
 
     def _exclude_fields(self) -> Set:
@@ -97,6 +99,9 @@ class Structure(INIBasedModel):
             exclude_set = {"branchid", "chainage"}
         exclude_set = super()._exclude_fields().union(exclude_set)
         return exclude_set
+
+    def _get_identifier(self, data: dict) -> str:
+        return data["id"]
 
 
 class FlowDirection(str, Enum):
