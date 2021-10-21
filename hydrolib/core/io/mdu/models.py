@@ -169,6 +169,7 @@ class Boundary(INIBasedModel):
     locationfile: Optional[Path] = Field(alias="locationFile")
     forcingfile: ForcingModel = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1d")
+    bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 
     def is_intermediate_link(self) -> bool:
         return True

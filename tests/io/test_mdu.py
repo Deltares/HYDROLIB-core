@@ -399,6 +399,7 @@ class TestModels:
                 "locationfile": Path("aLocationFile"),
                 "forcingfile": ForcingModel(),
                 "bndwidth1d": 4.2,
+                "bndbldepth": 2.4,
             }
 
             # 2. Create boundary.
@@ -416,6 +417,7 @@ class TestModels:
                 "locationFile": Path("aLocationFile"),
                 "forcingFile": ForcingModel(),
                 "bndWidth1d": 4.2,
+                "bndBlDepth": 2.4
             }
 
             # 2. Create boundary.
@@ -427,6 +429,7 @@ class TestModels:
             assert boundary_as_dict["locationfile"] == dict_values["locationFile"]
             assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
             assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1d"]
+            assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
 
         class TestValidateRootValidator:
             """
