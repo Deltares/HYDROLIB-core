@@ -158,7 +158,7 @@ class INIGeneral(INIBasedModel):
 
     @classmethod
     def _supports_comments(cls):
-        return False
+        return True
 
 
 class FrictGeneral(INIGeneral):
