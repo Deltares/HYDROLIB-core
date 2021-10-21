@@ -19,7 +19,13 @@ def test_from_scratch_docker():
 
     # Add some structures, note this is invalid because it doesn't
     # have a branch or coordinates yet, but it will work for demo purposes
-    struc = Weir(allowedflowdir=FlowDirection.none, crestlevel=0.0)
+    # Note: either branchid + chainage or coordinates are mandatory for the structures.
+    struc = Weir(
+        allowedflowdir=FlowDirection.none,
+        crestlevel=0.0,
+        branchid="aBranchId",
+        chainage=4.2,
+    )
     struc.comments.crestlevel = "This is a comment"
     fm.geometry.structurefile = [StructureModel(structure=[struc])]
 
