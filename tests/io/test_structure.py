@@ -433,6 +433,7 @@ def test_orifice_parses_flowdirection_case_insensitive(input, expected):
         id="strucid",
         crestlevel="1",
         corrcoeff="1",
+        gateloweredgelevel="1",
         usevelocityheight="0",
         uselimitflowpos="0",
         uselimitflowneg="0",
