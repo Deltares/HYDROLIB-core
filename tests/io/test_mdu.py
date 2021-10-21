@@ -1,11 +1,11 @@
+from pathlib import Path
 from typing import List, Optional
 
 import pytest
-from pathlib import Path
 from pydantic import ValidationError
 
-from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.bc.models import ForcingModel
+from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.mdu.models import Boundary, Lateral
 
 
@@ -417,7 +417,7 @@ class TestModels:
                 "locationFile": Path("aLocationFile"),
                 "forcingFile": ForcingModel(),
                 "bndWidth1d": 4.2,
-                "bndBlDepth": 2.4
+                "bndBlDepth": 2.4,
             }
 
             # 2. Create boundary.
