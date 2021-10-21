@@ -73,3 +73,15 @@ You can see this tree structure if you call `show_tree`.
 	- Initialize `self` with the data.
 	- => **Pydantic tries to convert the data to objects, a.o. sub FileModels**:
 6) Repeat steps 3-5
+
+# Parsing and serializing `INIBasedModels`
+Parsing an INI file should be case-insensitive. To achieve this, the parsable field names of each `INIBasedModel` should be equal to the expected key in the file in lower case. 
+
+Some property values are explicitly made case-insensitive for parsing as well. This applies to enum values and values that represent a specific type of `INIBasedModel` (such as the type property of a structure). To support this, custom validators are placed to compare the given value with the available known values. 
+
+The serialization of an `INIBasedModel` to an INI file should respect certain casing rules (overriding the casing used by the user):
+- Property keys need to be "lowerCamelCase"
+- Section headers need to be "UpperCamelCase"
+
+To achieve this, each serializable field in a `INIBasedModel` has an alias. This alias will be written as property key to file. Each `INIBasedModel` that represents an INI section, has a field `_header`. The default value of this field will be written to file.
+Enum values and the values that represent a specific type of `INIBasedModel` will be serialized to file by how they are defined.
