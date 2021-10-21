@@ -10,7 +10,7 @@ from pydantic.fields import Field
 from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
-from hydrolib.core.io.ini.util import make_list_validator
+from hydrolib.core.io.ini.util import get_enum_validator, make_list_validator
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +82,10 @@ class TimeSeries(ForcingBase):
     offset: float = Field(0.0, alias="offset")
     factor: float = Field(1.0, alias="factor")
 
+    _timeinterpolation_validator = get_enum_validator(
+        "timeinterpolation", enum=TimeInterpolation
+    )
+
 
 class Harmonic(ForcingBase):
     function: Literal["harmonic"] = "harmonic"
@@ -110,6 +114,13 @@ class T3D(ForcingBase):
     verticalpositions: List[float] = Field(alias="verticalPositions")
     verticalinterpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
     verticalpositiontype: VerticalPositionType = Field(alias="verticalPositionType")
+
+    _verticalinterpolation_validator = get_enum_validator(
+        "verticalinterpolation", enum=VerticalInterpolation
+    )
+    _verticalpositiontype_validator = get_enum_validator(
+        "verticalpositiontype", enum=VerticalPositionType
+    )
 
 
 class QHTable(ForcingBase):

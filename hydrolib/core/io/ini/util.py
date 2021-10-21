@@ -1,6 +1,7 @@
 """util.py provides additional utility methods related to handling ini files.
 """
-from typing import Any
+from enum import Enum
+from typing import Any, Type
 
 from pydantic.class_validators import validator
 
@@ -29,13 +30,20 @@ def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = N
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
 
-def get_lower_string_validator(*field_name: str):
-    """Gets a validator that lowers a string."""
+def get_enum_validator(*field_name: str, enum: Type[Enum]):
+    """Get a case-insensitive enum validator that will returns the corresponding enum value.
 
-    def lower(v: str):
-        return v.lower()
+    Args:
+        enum (Type[Enum]): The enum type for which to validate.
+    """
 
-    return validator(*field_name, allow_reuse=True, pre=True)(lower)
+    def get_enumpje(v):
+        for entry in enum:
+            if entry.lower() == v.lower():
+                return entry
+        return v
+
+    return validator(*field_name, allow_reuse=True, pre=True)(get_enumpje)
 
 
 def make_list_validator(*field_name: str):
