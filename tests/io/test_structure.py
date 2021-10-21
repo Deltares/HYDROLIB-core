@@ -3,6 +3,7 @@ from typing import List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
+from contextlib import nullcontext as does_not_raise
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
@@ -348,17 +349,39 @@ class TestStructure:
         in the Structure class
         """
 
-        def test_check_location_given_no_values_raises_assertion_error(self):
-            with pytest.raises(AssertionError) as exc_err:
+        @pytest.mark.parametrize(
+            "structure_type, expectation",
+            [
+                pytest.param("", pytest.raises(AssertionError)),
+                pytest.param(None, pytest.raises(AssertionError)),
+                pytest.param("weir", pytest.raises(AssertionError)),
+                pytest.param("universalWeir", pytest.raises(AssertionError)),
+                pytest.param("culvert", pytest.raises(AssertionError)),
+                pytest.param("longCulvert", pytest.raises(AssertionError)),
+                pytest.param("orifice", pytest.raises(AssertionError)),
+                pytest.param("gate", pytest.raises(AssertionError)),
+                pytest.param("generalStructure", pytest.raises(AssertionError)),
+                pytest.param("dambreak", pytest.raises(AssertionError)),
+                pytest.param("compound", does_not_raise()),
+            ],
+        )
+        def test_check_location_given_no_values_raises_expectation(
+            self, structure_type: str, expectation
+        ):
+            with expectation as exc_err:
                 input_dict = dict(
                     notAValue="Not a relevant value",
+                    structure_type=structure_type,
                     n_coordinates=None,
                     x_coordinates=None,
                     y_coordinates=None,
                     branchid=None,
                     chainage=None,
                 )
-                Structure.check_location(input_dict)
+                return_value = Structure.check_location(input_dict)
+                if isinstance(expectation, type(does_not_raise())):
+                    assert return_value == input_dict
+                    return
             assert (
                 str(exc_err.value)
                 == "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."

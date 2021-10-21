@@ -80,9 +80,16 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
-        # 0. Prepare data to evaluate, not interested if they are None.
+        # 0. Verify if we are under a compund type.
+        if values.get("structure_type", None) == "compound" or issubclass(
+            cls, Compound
+        ):
+            # Compound structure does not require a location specification.
+            return values
+        # 1. Prepare data to evaluate, not interested if they are None.
         filtered_values = {k: v for k, v in values.items() if v is not None}
-        # 1. General check.        
+
+        # 2. General check.
         coordinates_in_model = (
             "n_coordinates" in filtered_values
             and "x_coordinates" in filtered_values
@@ -95,7 +102,7 @@ class Structure(INIBasedModel):
             coordinates_in_model or branch_and_chainage_in_model
         ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
 
-        # 2. Validate branchid + chainage.
+        # 3. Validate branchid + chainage.
         if branch_and_chainage_in_model:
             if str_is_empty_or_none(filtered_values["branchid"]):
                 raise ValueError(
@@ -103,7 +110,7 @@ class Structure(INIBasedModel):
                 )
             return values
 
-        # 3. Validate coordinates.
+        # 4. Validate coordinates.
         if coordinates_in_model:
             n_coords = filtered_values["n_coordinates"]
             x_coords = filtered_values.get("x_coordinates", [])
