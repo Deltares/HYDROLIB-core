@@ -1,10 +1,8 @@
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator, validator
 
-from hydrolib.core.basemodel import FileModel
-from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.ini.models import (
     CrossDefModel,
@@ -168,14 +166,48 @@ class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
+    locationfile: Optional[Path] = Field(alias="locationFile")
     forcingfile: Optional[ForcingModel] = Field(None, alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
+    bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 
     def is_intermediate_link(self) -> bool:
         return True
 
+    @root_validator
+    @classmethod
+    def check_nodeid_or_locationfile_present(cls, values: Dict):
+        """
+        Verifies that either nodeId or locationFile properties have been set.
+
+        Args:
+            values (Dict): Dictionary with values already validated.
+
+        Raises:
+            ValueError: When none of the values are present.
+
+        Returns:
+            Dict: Validated dictionary of values for Boundary.
+        """
+        node_id = values.get("nodeid", None)
+        location_file = values.get("locationfile", None)
+        if str_is_empty_or_none(node_id) and not isinstance(location_file, Path):
+            raise ValueError(
+                "Either nodeId or locationFile fields should be specified."
+            )
+        return values
+
     def _get_identifier(self, data: dict) -> str:
-        return data["nodeid"] if "nodeid" in data else None
+        """
+        Retrieves the identifier for a boundary, which is the node_id (nodeId)
+
+        Args:
+            data (dict): Dictionary of values for this boundary.
+
+        Returns:
+            str: The node_id (nodeId) value or None if not found.
+        """
+        return data.get("nodeid", None)
 
     @property
     def forcing(self) -> ForcingBase:
