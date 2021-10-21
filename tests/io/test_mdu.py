@@ -417,7 +417,7 @@ class TestModels:
                 "locationFile": Path("aLocationFile"),
                 "forcingFile": ForcingModel(),
                 "bndWidth1d": 4.2,
-                "bndBlDepth": 2.4
+                "bndBlDepth": 2.4,
             }
 
             # 2. Create boundary.
@@ -480,6 +480,10 @@ class TestModels:
                 assert dict_values == return_values
 
         class TestValidateFromCtor:
+            """
+            Test class to validate the validation during default object creation.
+            """
+
             @pytest.mark.parametrize(
                 "dict_values",
                 [
