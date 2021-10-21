@@ -28,8 +28,8 @@ class General(INIGeneral):
     _header: Literal["general"] = "general"
     program: str = Field("D-Flow FM", alias="Program")
     version: str = Field("1.2.94.66079M", alias="Version")
-    filetype: Literal["modelDef"] = Field("modelDef", alias="fileType")
-    fileversion: str = Field("1.09", alias="fileVersion")
+    fileType: Literal["modelDef"] = Field("modelDef", alias="fileType")
+    fileVersion: str = Field("1.09", alias="fileVersion")
     autostart: bool = Field(False, alias="AutoStart")
     pathsrelativetoparent: bool = Field(False, alias="PathsRelativeToParent")
 
