@@ -92,7 +92,7 @@ class Structure(INIBasedModel):
         if structure_type == "longculvert":
             assert (
                 coordinates_in_model
-            ), "Coordinate system is mandatory for a LongCulvert structure."
+            ), "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
             return values
 
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(

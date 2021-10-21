@@ -349,7 +349,9 @@ class TestStructure:
         in the Structure class
         """
 
-        long_culvert_err = "Coordinate system is mandatory for a LongCulvert structure."
+        long_culvert_err = (
+            "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
+        )
         structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
 
         @pytest.mark.parametrize(
@@ -454,7 +456,13 @@ class TestStructure:
         @pytest.mark.parametrize(
             "dict_values",
             [
-                pytest.param(dict(branchid="", chainage=4.2), id="Empty values"),
+                pytest.param(
+                    dict(branchid="", chainage=None),
+                    id="Empty branchid, Chainage is None.",
+                ),
+                pytest.param(
+                    dict(branchid="aValue", chainage=None), id="Chainage is None."
+                ),
                 pytest.param(
                     dict(branchid="", chainage=2.4), id="Only chainage value."
                 ),
