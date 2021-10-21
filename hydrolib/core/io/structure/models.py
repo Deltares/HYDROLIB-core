@@ -86,6 +86,7 @@ class Structure(INIBasedModel):
         ):
             # Compound structure does not require a location specification.
             return values
+
         # 1. Prepare data to evaluate, not interested if they are None.
         filtered_values = {k: v for k, v in values.items() if v is not None}
 
