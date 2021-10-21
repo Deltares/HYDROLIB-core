@@ -80,7 +80,6 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
-        # Verify this evaluation needs to be done.
         filtered_values = {k: v for k, v in values.items() if v is not None}
         structure_type = filtered_values.get("structure_type", "").lower()
         if structure_type == "compound" or issubclass(cls, Compound):
@@ -101,7 +100,7 @@ class Structure(INIBasedModel):
         )
         assert (
             branch_and_chainage_in_model or coordinates_in_model
-        ), "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
+        ), "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
         return values
 
     @staticmethod
@@ -126,7 +125,7 @@ class Structure(INIBasedModel):
         chainage = values.get("chainage", None)
         if str_is_empty_or_none(branchid) or chainage is None:
             raise ValueError(
-                "A valid value for branchid and chainage is required when branchid key is specified."
+                "A valid value for branchId and chainage is required when branchid key is specified."
             )
         return True
 
@@ -165,9 +164,7 @@ class Structure(INIBasedModel):
         if n_coords == len_x_coords == len_y_coords:
             return True
         raise ValueError(
-            "Expected {} coordinates, given {} for x and {} for y coordinates.".format(
-                n_coords, len_x_coords, len_y_coords
-            )
+            f"Expected {n_coords} coordinates, given {len_x_coords} for x and {len_y_coords} for y coordinates."
         )
 
     @classmethod

@@ -350,7 +350,7 @@ class TestStructure:
         """
 
         long_culvert_err = "Coordinate system is mandatory for a LongCulvert structure."
-        structure_err = "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
+        structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
 
         @pytest.mark.parametrize(
             "structure_type, expectation, error_mssg",
@@ -467,7 +467,7 @@ class TestStructure:
                 Structure.check_location(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchid and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchid key is specified."
             )
 
         wrong_coord_test_cases = [
@@ -560,7 +560,7 @@ class TestStructure:
                 Structure.validate_branch_and_chainage_in_model(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchid and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchid key is specified."
             )
 
     class TestValidateCoordinatesInModel:
