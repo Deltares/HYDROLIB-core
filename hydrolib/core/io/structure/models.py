@@ -39,7 +39,7 @@ class Structure(INIBasedModel):
         )
         chainage: Optional[str] = "Chainage on the branch (m)."
 
-        ncoordinates: Optional[str] = Field(
+        numcoordinates: Optional[str] = Field(
             "Number of values in xCoordinates and yCoordinates", alias="numCoordinates"
         )
         xcoordinates: Optional[str] = Field(
@@ -55,14 +55,14 @@ class Structure(INIBasedModel):
 
     _header: Literal["Structure"] = "Structure"
 
-    id: str = Field("id", max_length=256)
-    name: str = Field("id")
+    id: str = Field("id", max_length=256, alias="id")
+    name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
     branchid: Optional[str] = Field(None, alias="branchId")
-    chainage: Optional[float] = None
+    chainage: Optional[float] = Field(None, alias="chainage")
 
-    ncoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
@@ -89,15 +89,15 @@ class Structure(INIBasedModel):
             dict: Dictionary of values validated for the new structure.
         """
         filtered_values = {k: v for k, v in values.items() if v is not None}
-        structure_type = filtered_values.get("structure_type", "").lower()
-        if structure_type == "compound" or issubclass(cls, Compound):
+        type = filtered_values.get("type", "").lower()
+        if type == "compound" or issubclass(cls, Compound):
             # Compound structure does not require a location specification.
             return values
 
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
-        if structure_type == "longculvert":
+        if type == "longculvert":
             assert (
                 coordinates_in_model
             ), "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
@@ -153,22 +153,22 @@ class Structure(INIBasedModel):
             bool: Result of valid coordinates in dictionary.
         """
         coordinates_in_model = (
-            "n_coordinates" in values
-            and "x_coordinates" in values
-            and "y_coordinates" in values
+            "numcoordinates" in values
+            and "xcoordinates" in values
+            and "ycoordinates" in values
         )
         if not coordinates_in_model:
             return False
 
-        n_coords = values["n_coordinates"]
+        n_coords = values["numcoordinates"]
 
         def get_coord_len(coord: str) -> int:
             if values[coord] is None:
                 return 0
             return len(values[coord])
 
-        len_x_coords = get_coord_len("x_coordinates")
-        len_y_coords = get_coord_len("y_coordinates")
+        len_x_coords = get_coord_len("xcoordinates")
+        len_y_coords = get_coord_len("ycoordinates")
         if n_coords == len_x_coords == len_y_coords:
             return True
         raise ValueError(
@@ -197,7 +197,7 @@ class Structure(INIBasedModel):
     def _exclude_fields(self) -> Set:
         # exclude the unset props like coordinates or branches
         if self.branchid is not None:
-            exclude_set = {"ncoordinates", "xcoordinates", "ycoordinates"}
+            exclude_set = {"numcoordinates", "xcoordinates", "ycoordinates"}
         else:
             exclude_set = {"branchid", "chainage"}
         exclude_set = super()._exclude_fields().union(exclude_set)

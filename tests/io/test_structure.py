@@ -352,7 +352,7 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     ],
 )
 def test_parses_type_case_insensitive(input, expected):
-    structure = Structure(type=input)
+    structure = Structure(type=input, branchid="branchid", chainage="1")
 
     assert structure.type == expected
 
@@ -371,7 +371,13 @@ def _get_allowedflowdir_cases() -> List:
     _get_allowedflowdir_cases(),
 )
 def test_weir_parses_flowdirection_case_insensitive(input, expected):
-    structure = Weir(allowedflowdir=input, id="strucid", crestlevel="1")
+    structure = Weir(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+    )
 
     assert structure.allowedflowdir == expected
 
@@ -384,6 +390,8 @@ def test_universalweir_parses_flowdirection_case_insensitive(input, expected):
     structure = UniversalWeir(
         allowedflowdir=input,
         id="strucid",
+        branchid="branchid",
+        chainage="1",
         crestlevel="1",
         numlevels=0,
         yvalues=[],
@@ -403,6 +411,8 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
     structure = Culvert(
         allowedflowdir=input,
         id="strucid",
+        branchid="branchid",
+        chainage="1",
         leftlevel="1",
         rightlevel="1",
         csdefid="",
@@ -432,6 +442,8 @@ def test_orifice_parses_flowdirection_case_insensitive(input, expected):
     structure = Orifice(
         allowedflowdir=input,
         id="strucid",
+        branchid="branchid",
+        chainage="1",
         crestlevel="1",
         corrcoeff="1",
         gateloweredgelevel="1",
@@ -453,6 +465,8 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         subtype=input,
         allowedflowdir="both",
         id="strucid",
+        branchid="branchid",
+        chainage="1",
         leftlevel="1",
         rightlevel="1",
         csdefid="",
@@ -491,7 +505,7 @@ class TestStructure:
         structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
 
         @pytest.mark.parametrize(
-            "structure_type, expectation, error_mssg",
+            "type, expectation, error_mssg",
             [
                 pytest.param(
                     "",
@@ -559,15 +573,15 @@ class TestStructure:
             ],
         )
         def test_check_location_given_no_values_raises_expectation(
-            self, structure_type: str, expectation, error_mssg: str
+            self, type: str, expectation, error_mssg: str
         ):
             with expectation as exc_err:
                 input_dict = dict(
                     notAValue="Not a relevant value",
-                    structure_type=structure_type,
-                    n_coordinates=None,
-                    x_coordinates=None,
-                    y_coordinates=None,
+                    type=type,
+                    numcoordinates=None,
+                    xcoordinates=None,
+                    ycoordinates=None,
                     branchid=None,
                     chainage=None,
                 )
@@ -580,9 +594,9 @@ class TestStructure:
         def test_check_location_given_compound_structure_raises_nothing(self):
             input_dict = dict(
                 notAValue="Not a relevant value",
-                n_coordinates=None,
-                x_coordinates=None,
-                y_coordinates=None,
+                numcoordinates=None,
+                xcoordinates=None,
+                ycoordinates=None,
                 branchid=None,
                 chainage=None,
             )
@@ -640,9 +654,9 @@ class TestStructure:
             with pytest.raises(ValueError) as exc_err:
                 Structure.check_location(
                     dict(
-                        n_coordinates=n_coords,
-                        x_coordinates=x_coords,
-                        y_coordinates=y_coords,
+                        numcoordinates=n_coords,
+                        xcoordinates=x_coords,
+                        ycoordinates=y_coords,
                     )
                 )
             assert (
@@ -655,9 +669,9 @@ class TestStructure:
             [
                 pytest.param(
                     dict(
-                        n_coordinates=0,
-                        x_coordinates=[],
-                        y_coordinates=[],
+                        numcoordinates=0,
+                        xcoordinates=[],
+                        ycoordinates=[],
                     ),
                     id="Coordinates given.",
                 ),
@@ -717,31 +731,31 @@ class TestStructure:
             [
                 pytest.param(dict(), False, id="No values."),
                 pytest.param(
-                    dict(n_coordinates=None), False, id="Missing x_y_coordinates"
+                    dict(numcoordinates=None), False, id="Missing x_ycoordinates"
                 ),
                 pytest.param(
-                    dict(n_coordinates=None, y_coordinates=None),
+                    dict(numcoordinates=None, ycoordinates=None),
                     False,
-                    id="Missing x_coordinates",
+                    id="Missing xcoordinates",
                 ),
                 pytest.param(
-                    dict(n_coordinates=None, x_coordinates=None),
+                    dict(numcoordinates=None, xcoordinates=None),
                     False,
-                    id="Missing y_coordinates",
+                    id="Missing ycoordinates",
                 ),
                 pytest.param(
-                    dict(n_coordinates=0, x_coordinates=None, y_coordinates=None),
+                    dict(numcoordinates=0, xcoordinates=None, ycoordinates=None),
                     True,
                     id="None coordinates.",
                 ),
                 pytest.param(
-                    dict(n_coordinates=0, x_coordinates=[], y_coordinates=[]),
+                    dict(numcoordinates=0, xcoordinates=[], ycoordinates=[]),
                     True,
                     id="Empty list coordinates.",
                 ),
                 pytest.param(
                     dict(
-                        n_coordinates=2, x_coordinates=[42, 24], y_coordinates=[24, 42]
+                        numcoordinates=2, xcoordinates=[42, 24], ycoordinates=[24, 42]
                     ),
                     True,
                     id="With coordinates.",
@@ -758,9 +772,9 @@ class TestStructure:
             with pytest.raises(ValueError) as exc_err:
                 Structure.validate_coordinates_in_model(
                     dict(
-                        n_coordinates=1,
-                        x_coordinates=[42, 24],
-                        y_coordinates=[24, 42, 66],
+                        numcoordinates=1,
+                        xcoordinates=[42, 24],
+                        ycoordinates=[24, 42, 66],
                     )
                 )
             assert (
