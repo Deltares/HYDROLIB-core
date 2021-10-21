@@ -1,10 +1,12 @@
+from pathlib import Path
 from typing import List, Optional
 
 import pytest
 from pydantic import ValidationError
 
+from hydrolib.core.io.bc.models import ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel
-from hydrolib.core.io.mdu.models import Lateral
+from hydrolib.core.io.mdu.models import Boundary, Lateral
 
 
 class TestModels:
@@ -92,13 +94,11 @@ class TestModels:
                 "dict_values",
                 [
                     pytest.param(
-                        dict(
-                            node_id=None, branch_id=None, n_coords=None, chainage=None
-                        ),
+                        dict(nodeId=None, branch_id=None, n_coords=None, chainage=None),
                         id="All None",
                     ),
                     pytest.param(
-                        dict(node_id="", branch_id="", n_coords=0, chainage=None),
+                        dict(nodeId="", branch_id="", n_coords=0, chainage=None),
                         id="All Empty",
                     ),
                 ],
@@ -386,3 +386,145 @@ class TestModels:
                 assert isinstance(lateral_cls, INIBasedModel)
                 for key, value in lateral_dict.items():
                     assert lateral_cls.dict()[key] == value
+
+    class TestBoundary:
+        """Class to test all methods contained in the
+        hydrolib.core.io.mdu.models.Boundary class"""
+
+        def test_given_args_expected_values(self):
+            # 1. Explicit declaration of parameters (to validate keys as they are written)
+            dict_values = {
+                "quantity": "42",
+                "nodeid": "aNodeId",
+                "locationfile": Path("aLocationFile"),
+                "forcingfile": ForcingModel(),
+                "bndwidth1d": 4.2,
+                "bndbldepth": 2.4,
+            }
+
+            # 2. Create boundary.
+            created_boundary = Boundary(**dict_values)
+
+            # 3. Verify boundary values as expected.
+            for key, value in dict_values.items():
+                assert created_boundary.dict()[key] == value
+
+        def test_given_args_as_alias_expected_values(self):
+            # 1. Explicit declaration of parameters (to validate keys as they are written)
+            dict_values = {
+                "quantity": "42",
+                "nodeId": "aNodeId",
+                "locationFile": Path("aLocationFile"),
+                "forcingFile": ForcingModel(),
+                "bndWidth1d": 4.2,
+                "bndBlDepth": 2.4,
+            }
+
+            # 2. Create boundary.
+            created_boundary = Boundary(**dict_values)
+            boundary_as_dict = created_boundary.dict()
+            # 3. Verify boundary values as expected.
+            assert boundary_as_dict["quantity"] == dict_values["quantity"]
+            assert boundary_as_dict["nodeid"] == dict_values["nodeId"]
+            assert boundary_as_dict["locationfile"] == dict_values["locationFile"]
+            assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
+            assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1d"]
+            assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
+
+        class TestValidateRootValidator:
+            """
+            Test class to validate the paradigms when evaluating
+            check_nodeid_or_locationfile_present.
+            """
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(), id="No entries."),
+                    pytest.param(
+                        dict(nodeid=None, locationfile=None), id="Entries are None."
+                    ),
+                    pytest.param(
+                        dict(nodeid="", locationfile=""), id="Entries are Empty."
+                    ),
+                ],
+            )
+            def test_given_no_values_raises_valueerror(self, dict_values: dict):
+                with pytest.raises(ValueError) as exc_mssg:
+                    Boundary.check_nodeid_or_locationfile_present(dict_values)
+
+                # 3. Verify final expectations.
+                expected_error_mssg = (
+                    "Either nodeId or locationFile fields should be specified."
+                )
+                assert str(exc_mssg.value) == expected_error_mssg
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
+                    pytest.param(
+                        dict(locationfile=Path("aLocationFile")),
+                        id="LocationFile present.",
+                    ),
+                    pytest.param(
+                        dict(nodeid="bNodeId", locationfile="bLocationFile"),
+                        id="Both present.",
+                    ),
+                ],
+            )
+            def test_given_dict_values_doesnot_raise(self, dict_values: dict):
+                return_values = Boundary.check_nodeid_or_locationfile_present(
+                    dict_values
+                )
+                assert dict_values == return_values
+
+        class TestValidateFromCtor:
+            """
+            Test class to validate the validation during default object creation.
+            """
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(), id="No entries."),
+                    pytest.param(
+                        dict(nodeid=None, locationfile=None), id="Entries are None."
+                    ),
+                    pytest.param(dict(nodeid=""), id="NodeId is empty."),
+                ],
+            )
+            def test_given_no_values_raises_valueerror(self, dict_values: dict):
+                required_values = dict(quantity="aQuantity")
+                test_values = {**dict_values, **required_values}
+                with pytest.raises(ValueError) as exc_mssg:
+                    Boundary(**test_values)
+
+                # 3. Verify final expectations.
+                expected_error_mssg = (
+                    "Either nodeId or locationFile fields should be specified."
+                )
+                assert expected_error_mssg in str(exc_mssg.value)
+
+            @pytest.mark.parametrize(
+                "dict_values",
+                [
+                    pytest.param(dict(nodeid="aNodeId"), id="NodeId present."),
+                    pytest.param(
+                        dict(locationfile=Path("aLocationFile")),
+                        id="LocationFile present.",
+                    ),
+                    pytest.param(
+                        dict(nodeid="bNodeId", locationfile=Path("bLocationFile")),
+                        id="Both present.",
+                    ),
+                ],
+            )
+            def test_given_dict_values_doesnot_raise(self, dict_values: dict):
+                required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
+                test_values = {**dict_values, **required_values}
+                created_boundary = Boundary(**test_values)
+                for key, value in test_values.items():
+                    if key == "forcing_file":
+                        value = value.dict()
+                    assert created_boundary.dict()[key] == value
