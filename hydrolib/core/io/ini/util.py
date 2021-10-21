@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Any, Type
 
 from pydantic.class_validators import validator
+from pydantic.main import BaseModel
 
 
 def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
@@ -55,3 +56,21 @@ def make_list_validator(*field_name: str):
         return v
 
     return validator(*field_name, allow_reuse=True, pre=True)(split)
+
+
+def get_default(cls: Type[BaseModel], fieldname: str, default: Any = None):
+    """Gets the default value of a model field.
+
+    Args:
+        cls (Type[BaseModel]): A model
+        fieldname (str): The field name for which to get the default for.
+        default (Any, optional): Return value for when the field cannot be retrieved. Defaults to None.
+
+    Returns:
+        [Any]: Returns the default field value if found, otherwise `default`.
+    """
+    field = cls.__fields__.get(fieldname)
+    if field:
+        return field.default
+
+    return default

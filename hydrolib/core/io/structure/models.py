@@ -19,6 +19,7 @@ from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    get_default,
     get_enum_validator,
     get_split_string_on_delimiter_validator,
 )
@@ -66,7 +67,7 @@ class Structure(INIBasedModel):
 
     @validator("type")
     def _set_type(cls, value):
-        return cls.__fields__["type"].default
+        return get_default(cls, "type", value)
 
     @root_validator
     def check_location(cls, values):
