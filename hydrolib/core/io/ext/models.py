@@ -29,7 +29,7 @@ class Boundary(INIBasedModel):
     @classmethod
     def check_nodeid_or_locationfile_present(cls, values: Dict):
         """
-        Verifies that either nodeId or locationFile properties have been set.
+        Verifies that either nodeid or locationfile properties have been set.
 
         Args:
             values (Dict): Dictionary with values already validated.
@@ -44,19 +44,19 @@ class Boundary(INIBasedModel):
         location_file = values.get("locationfile", None)
         if str_is_empty_or_none(node_id) and not isinstance(location_file, Path):
             raise ValueError(
-                "Either nodeId or locationFile fields should be specified."
+                "Either nodeid or locationfile fields should be specified."
             )
         return values
 
     def _get_identifier(self, data: dict) -> str:
         """
-        Retrieves the identifier for a boundary, which is the node_id (nodeId)
+        Retrieves the identifier for a boundary, which is the node_id (nodeid)
 
         Args:
             data (dict): Dictionary of values for this boundary.
 
         Returns:
-            str: The node_id (nodeId) value or None if not found.
+            str: The node_id (nodeid) value or None if not found.
         """
         return data.get("nodeid", None)
 

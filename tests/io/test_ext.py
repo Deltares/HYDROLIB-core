@@ -414,7 +414,7 @@ class TestModels:
             dict_values = {
                 "quantity": "42",
                 "nodeid": "aNodeId",
-                "locationFile": Path("aLocationFile"),
+                "locationfile": Path("aLocationFile"),
                 "forcingFile": ForcingModel(),
                 "bndWidth1D": 4.2,
                 "bndBlDepth": 2.4,
@@ -426,7 +426,7 @@ class TestModels:
             # 3. Verify boundary values as expected.
             assert boundary_as_dict["quantity"] == dict_values["quantity"]
             assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
-            assert boundary_as_dict["locationfile"] == dict_values["locationFile"]
+            assert boundary_as_dict["locationfile"] == dict_values["locationfile"]
             assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
             assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1D"]
             assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
@@ -455,7 +455,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeid or locationFile fields should be specified."
+                    "Either nodeid or locationfile fields should be specified."
                 )
                 assert str(exc_mssg.value) == expected_error_mssg
 
@@ -502,7 +502,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeid or locationFile fields should be specified."
+                    "Either nodeid or locationfile fields should be specified."
                 )
                 assert expected_error_mssg in str(exc_mssg.value)
 
