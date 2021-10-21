@@ -387,6 +387,18 @@ class TestStructure:
                 == "Specify location either by setting `branchid` and `chainage` or `*_coordinates` fields."
             )
 
+        def test_check_location_given_compound_structure_raises_nothing(self):
+            input_dict = dict(
+                notAValue="Not a relevant value",
+                n_coordinates=None,
+                x_coordinates=None,
+                y_coordinates=None,
+                branchid=None,
+                chainage=None,
+            )
+            return_value = Compound.check_location(input_dict)
+            assert return_value == input_dict
+
         @pytest.mark.parametrize(
             "dict_values",
             [
