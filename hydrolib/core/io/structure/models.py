@@ -21,7 +21,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
-    get_split_string_on_delimiter_validator
+    get_split_string_on_delimiter_validator,
 )
 
 logger = logging.getLogger(__name__)
