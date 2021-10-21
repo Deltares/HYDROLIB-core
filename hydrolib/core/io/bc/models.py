@@ -147,7 +147,6 @@ class ForcingModel(INIModel):
 
         return parser.finalize().flatten(True, False)
 
-
     def _serialize(self, _: dict) -> None:
         # We skip the passed dict for a better one.
         config = SerializerConfig(section_indent=0, property_indent=4)
