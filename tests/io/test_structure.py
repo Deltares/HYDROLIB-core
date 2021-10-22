@@ -523,9 +523,9 @@ class TestStructure:
             [
                 pytest.param(
                     dict(
-                        numcoordinates=0,
-                        xcoordinates=[],
-                        ycoordinates=[],
+                        numcoordinates=2,
+                        xcoordinates=[4.2, 2.4],
+                        ycoordinates=[2.4, 4.2],
                     ),
                     id="Coordinates given.",
                 ),
@@ -580,41 +580,42 @@ class TestStructure:
         Class to validate the paradigms of validate_coordinates_in_model
         """
 
-        test_cases = [
-            pytest.param(dict(), False, id="No values."),
-            pytest.param(
-                dict(numcoordinates=None), False, id="Missing x_y_coordinates"
-            ),
-            pytest.param(
-                dict(numcoordinates=None, ycoordinates=None),
-                False,
-                id="Missing xcoordinates",
-            ),
-            pytest.param(
-                dict(numcoordinates=None, xcoordinates=None),
-                False,
-                id="Missing ycoordinates",
-            ),
-            pytest.param(
-                dict(numcoordinates=0, xcoordinates=None, ycoordinates=None),
-                True,
-                id="None coordinates.",
-            ),
-            pytest.param(
-                dict(numcoordinates=0, xcoordinates=[], ycoordinates=[]),
-                True,
-                id="Empty list coordinates.",
-            ),
-            pytest.param(
-                dict(numcoordinates=2, xcoordinates=[42, 24], ycoordinates=[24, 42]),
-                True,
-                id="With coordinates.",
-            ),
-        ]
-
         @pytest.mark.parametrize(
             "dict_values, expectation",
-            test_cases,
+            [
+                pytest.param(dict(), False, id="No values."),
+                pytest.param(
+                    dict(numcoordinates=None), False, id="Missing x_y_coordinates"
+                ),
+                pytest.param(
+                    dict(numcoordinates=None, ycoordinates=None),
+                    False,
+                    id="Missing xcoordinates",
+                ),
+                pytest.param(
+                    dict(numcoordinates=None, xcoordinates=None),
+                    False,
+                    id="Missing ycoordinates",
+                ),
+                pytest.param(
+                    dict(
+                        numcoordinates=2,
+                        xcoordinates=[4.2, 2.4],
+                        ycoordinates=[2.4, 4.2],
+                    ),
+                    True,
+                    id="With 2 coordinates.",
+                ),
+                pytest.param(
+                    dict(
+                        numcoordinates=3,
+                        xcoordinates=[4.2, 2.4, 4.4],
+                        ycoordinates=[2.4, 4.2, 2.2],
+                    ),
+                    True,
+                    id="With 3 coordinates.",
+                ),
+            ],
         )
         def test_given_valid_values_returns_expectation(
             self, dict_values: dict, expectation: bool
@@ -622,18 +623,33 @@ class TestStructure:
             validation = Structure.validate_coordinates_in_model(dict_values)
             assert validation == expectation
 
-        def test_given_invalid_values_raises_value_error(self):
+        def test_given_different_coordinate_length_values_raises_value_error(self):
             with pytest.raises(ValueError) as exc_err:
                 Structure.validate_coordinates_in_model(
                     dict(
-                        numcoordinates=1,
-                        xcoordinates=[42, 24],
-                        ycoordinates=[24, 42, 66],
+                        numcoordinates=2,
+                        xcoordinates=[10, 20, 30],
+                        ycoordinates=[10, 20, 30, 50],
                     )
                 )
             assert (
                 str(exc_err.value)
-                == "Expected 1 coordinates, given 2 for x and 3 for y coordinates."
+                == "Expected 2 coordinates, given 3 for x and 4 for y coordinates."
+            )
+
+        @pytest.mark.parametrize("n_coords", [(0), (1)])
+        def test_given_less_than_2_coordinates_raises_value_error(self, n_coords: int):
+            with pytest.raises(ValueError) as exc_err:
+                Structure.validate_coordinates_in_model(
+                    dict(
+                        numcoordinates=n_coords,
+                        xcoordinates=[10, 20, 30],
+                        ycoordinates=[10, 20, 30, 50],
+                    )
+                )
+            assert (
+                str(exc_err.value)
+                == f"Expected at least 2 coordinates, but only {n_coords} declared."
             )
 
 
@@ -655,6 +671,16 @@ class TestDambreakAlgorithm:
         self, enum_value: int, enum_description: str
     ):
         assert DambreakAlgorithm(enum_value).description == enum_description
+
+
+class DambreakTestCases:
+    """Just a wrapper so it can be referenced from other classes."""
+
+    check_location_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
+    too_few_coords = "Expected at least 2 coordinates, but only {} declared."
+    mismatch_coords = (
+        "Expected {} coordinates, given {} for x and {} for y coordinates."
+    )
 
 
 class TestDambreak:
@@ -698,28 +724,65 @@ class TestDambreak:
         return {**default_dambreak_values, **coordinates_dict}
 
     @pytest.mark.parametrize(
-        "location_dict, expectation",
-        TestStructure.TestValidateCoordinatesInModel.test_cases,
+        "location_dict, err_mssg",
+        [
+            pytest.param(
+                dict(),
+                DambreakTestCases.check_location_err,
+                id="No values.",
+            ),
+            pytest.param(
+                dict(numcoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="Missing x_y_coordinates",
+            ),
+            pytest.param(
+                dict(numcoordinates=None, ycoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="Missing xcoordinates",
+            ),
+            pytest.param(
+                dict(numcoordinates=None, xcoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="Missing ycoordinates",
+            ),
+            pytest.param(
+                dict(numcoordinates=0, xcoordinates=None, ycoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="None coordinates.",
+            ),
+            pytest.param(
+                dict(numcoordinates=0, xcoordinates=[], ycoordinates=[]),
+                DambreakTestCases.too_few_coords.format(0),
+                id="Empty list coordinates.",
+            ),
+            pytest.param(
+                dict(numcoordinates=1, xcoordinates=[], ycoordinates=[]),
+                DambreakTestCases.too_few_coords.format(1),
+                id="One coordinate.",
+            ),
+            pytest.param(
+                dict(numcoordinates=2, xcoordinates=[4.2], ycoordinates=[]),
+                DambreakTestCases.mismatch_coords.format(2, 1, 0),
+                id="Mismatch coordinates.",
+            ),
+        ],
     )
-    def test_given_invalid_location_raises_value_error(
-        self, location_dict: dict, expectation: bool, default_dambreak_values: dict
+    def test_given_invalid_location_raises_validation_error(
+        self,
+        location_dict: dict,
+        err_mssg: str,
+        default_dambreak_values: dict,
     ):
         # 1. Define test data
         test_values = {**default_dambreak_values, **location_dict}
-        test_raises = does_not_raise()
-        if not expectation or None in location_dict.values():
-            test_raises = pytest.raises(ValidationError)
 
         # 2. Run test
-        with test_raises as exc_err:
-            dambreak_as_dict = Dambreak(**test_values).dict()
-            if expectation:
-                for key, value in test_values.items():
-                    assert dambreak_as_dict[key] == value
-                return
+        with pytest.raises(ValidationError) as exc_err:
+            Dambreak(**test_values)
 
         # 3. Verify final expectations.
-        assert TestStructure.TestRootValidator.dambreak_err in str(exc_err)
+        assert err_mssg in str(exc_err.value)
 
     def test_given_valid_values_creates_dambreak(self, valid_dambreak_values: dict):
         dambreak = Dambreak(**valid_dambreak_values)
@@ -891,18 +954,40 @@ class TestDambreak:
         """
 
         @pytest.mark.parametrize(
-            "dict_values, expectation",
-            TestStructure.TestValidateCoordinatesInModel.test_cases,
+            "dict_values",
+            [
+                pytest.param(
+                    dict(numcoordinates=2, xcoordinates=[0, 1], ycoordinates=[2, 3]),
+                    id="With 2 coordinates",
+                ),
+                pytest.param(
+                    dict(
+                        numcoordinates=3, xcoordinates=[0, 1, 2], ycoordinates=[2, 3, 4]
+                    ),
+                    id="With 3 coordinates",
+                ),
+            ],
         )
-        def test_given_valid_values_returns_expectation(
-            self, dict_values: dict, expectation: bool
+        def test_given_valid_values_returns_values(self, dict_values: dict):
+            return_value = Dambreak.check_location(dict_values)
+            assert return_value == dict_values
+
+        @pytest.mark.parametrize(
+            "invalid_values, expected_err",
+            [
+                pytest.param(
+                    dict(), DambreakTestCases.check_location_err, id="Empty dict."
+                ),
+                pytest.param(
+                    dict(numcoordinates=None, xcoordinates=None, ycoordinates=None),
+                    DambreakTestCases.check_location_err,
+                    id="Dict with Nones.",
+                ),
+            ],
+        )
+        def test_given_invalid_values_raises_expectation(
+            self, invalid_values: dict, expected_err: str
         ):
-            test_raises = does_not_raise()
-            if not expectation:
-                test_raises = pytest.raises(ValueError)
-            with test_raises as exc_err:
-                return_value = Dambreak.check_location(dict_values)
-                if expectation:
-                    assert return_value == dict_values
-                    return
-            assert str(exc_err.value) == TestStructure.TestRootValidator.dambreak_err
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.check_location(invalid_values)
+            assert str(exc_err.value) == expected_err

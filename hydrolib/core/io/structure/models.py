@@ -141,20 +141,21 @@ class Structure(INIBasedModel):
             values (dict): Dictionary of values to be used to generate a structure.
 
         Raises:
+            ValueError: When the given coordinates is less than 2.
             ValueError: When the given coordinates do not match in expected size.
 
         Returns:
             bool: Result of valid coordinates in dictionary.
         """
-        coordinates_in_model = (
-            "numcoordinates" in values
-            and "xcoordinates" in values
-            and "ycoordinates" in values
-        )
-        if not coordinates_in_model:
+        searched_keys = ["numcoordinates", "xcoordinates", "ycoordinates"]
+        if any(values.get(k, None) is None for k in searched_keys):
             return False
 
         n_coords = values["numcoordinates"]
+        if n_coords < 2:
+            raise ValueError(
+                f"Expected at least 2 coordinates, but only {n_coords} declared."
+            )
 
         def get_coord_len(coord: str) -> int:
             if values[coord] is None:
