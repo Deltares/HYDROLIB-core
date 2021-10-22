@@ -363,6 +363,53 @@ class Orifice(Structure):
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
 
 
+class Bridge(Structure):
+    class Comments(Structure.Comments):
+        structure_type: Optional[str] = Field(
+            "Structure type; must read bridge", alias="type"
+        )
+        allowedflowdir: Optional[str] = Field(
+            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+        )
+
+        csdefid: Optional[str] = Field(
+            "Id of Cross-Section Definition.", alias="csDefId"
+        )
+        shift: Optional[str] = Field(
+            "Vertical shift of the cross section definition [m]. Defined positive upwards."
+        )
+        inletlosscoeff: Optional[str] = Field(
+            "Inlet loss coefficient [-], ξ_i.",
+            alias="inletLossCoeff",
+        )
+        outletlosscoeff: Optional[str] = Field(
+            "Outlet loss coefficient [-], k.",
+            alias="outletLossCoeff",
+        )
+        frictiontype: Optional[str] = Field(
+            "Friction type, possible values are: Chezy, Manning, wallLawNikuradse, WhiteColebrook, StricklerNikuradse, Strickler, deBosBijkerk.",
+            alias="frictionType",
+        )
+        friction: Optional[str] = Field(
+            "Friction value, used in friction loss.",
+            alias="friction",
+        )
+        length: Optional[str] = Field("Length [m], L.")
+
+    comments: Comments = Comments()
+
+    structure_type: Literal["bridge"] = Field("bridge", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+
+    csdefid: str = Field(alias="csDefId")
+    shift: float = Field()
+    inletlosscoeff: float = Field(alias="inletLossCoeff")
+    outletlosscoeff: float = Field(alias="outletLossCoeff")
+    frictiontype: str = Field(alias="frictionType")
+    friction: float = Field(alias="friction")
+    length: float = Field()
+
+
 class StructureGeneral(INIGeneral):
     _header: Literal["General"] = "General"
     fileVersion: str = "3.00"
