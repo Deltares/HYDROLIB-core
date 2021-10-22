@@ -388,7 +388,7 @@ class DambreakAlgorithm(int, Enum):
 
 
 class Dambreak(Structure):
-    structure_type: Literal["dambreak"] = Field("orifice", alias="type")
+    structure_type: Literal["dambreak"] = Field("dambreak", alias="type")
     startlocationx: float = Field(alias="startLocationX")
     startlocationy: float = Field(alias="startLocationY")
     algorithm: DambreakAlgorithm

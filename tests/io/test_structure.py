@@ -677,6 +677,12 @@ class TestDambreak:
             f1=22.4,
             f2=44.2,
             ucrit=44.22,
+            waterlevelupstreamlocationx=1.2,
+            waterlevelupstreamlocationy=2.3,
+            waterleveldownstreamlocationx=3.4,
+            waterleveldownstreamlocationy=4.5,
+            waterlevelupstreamnodeid="anUpstreamNodeId",
+            waterleveldownstreamnodeid="aDownstreamNodeId",
         )
 
     @pytest.fixture
@@ -715,9 +721,29 @@ class TestDambreak:
     def test_given_valid_values_creates_dambreak(self, valid_dambreak_values: dict):
         dambreak = Dambreak(**valid_dambreak_values)
         assert isinstance(dambreak, Structure), "A dambreak should be a structure."
-        as_dict = dambreak.dict()
-        for key, value in valid_dambreak_values.items():
-            assert as_dict[key] == value
+        assert dambreak.id == "anId"
+        assert dambreak.name == "aName"
+        assert dambreak.structure_type == "dambreak"
+        assert dambreak.startlocationx == 4.2
+        assert dambreak.startlocationy == 2.4
+        assert dambreak.algorithm == 1
+        assert dambreak.crestlevelini == 1
+        assert dambreak.breachwidthini == 24
+        assert dambreak.crestlevelmin == 42
+        assert dambreak.t0 == 2.2
+        assert dambreak.timetobreachtomaximumdepth == 4.4
+        assert dambreak.f1 == 22.4
+        assert dambreak.f2 == 44.2
+        assert dambreak.ucrit == 44.22
+        assert dambreak.n_coordinates == 2
+        assert dambreak.x_coordinates == [4.2, 2.4]
+        assert dambreak.y_coordinates == [2.4, 4.2]
+        assert dambreak.waterlevelupstreamlocationx == 1.2
+        assert dambreak.waterlevelupstreamlocationy == 2.3
+        assert dambreak.waterleveldownstreamlocationx == 3.4
+        assert dambreak.waterleveldownstreamlocationy == 4.5
+        assert dambreak.waterlevelupstreamnodeid == "anUpstreamNodeId"
+        assert dambreak.waterleveldownstreamnodeid == "aDownstreamNodeId"
 
     class TestValidateAlgorithm:
         """
