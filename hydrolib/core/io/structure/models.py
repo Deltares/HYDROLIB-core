@@ -396,15 +396,15 @@ class Dambreak(Structure):
     structure_type: Literal["dambreak"] = Field("dambreak", alias="type")
     startlocationx: float = Field(alias="startLocationX")
     startlocationy: float = Field(alias="startLocationY")
-    algorithm: DambreakAlgorithm
+    algorithm: DambreakAlgorithm = Field(alias="algorithm")
 
     crestlevelini: int = Field(alias="crestLevelIni")
     breachwidthini: float = Field(alias="breachWidthIni")
     crestlevelmin: float = Field(alias="crestLevelMin")
-    t0: float
+    t0: float = Field(alias="t0")
     timetobreachtomaximumdepth: float = Field(alias="timeToBreachToMaximumDepth")
-    f1: float
-    f2: float
+    f1: float = Field(alias="f1")
+    f2: float = Field(alias="f2")
     ucrit: float = Field(alias="uCrit")
     waterlevelupstreamlocationx: Optional[float] = Field(
         alias="waterLevelUpstreamLocationX"
