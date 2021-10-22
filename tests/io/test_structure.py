@@ -1,5 +1,6 @@
 import inspect
 from contextlib import nullcontext as does_not_raise
+from pathlib import Path
 from typing import Any, List, Union
 
 import pytest
@@ -578,41 +579,39 @@ class TestStructure:
         Class to validate the paradigms of validate_coordinates_in_model
         """
 
+        test_cases = [
+            pytest.param(dict(), False, id="No values."),
+            pytest.param(dict(n_coordinates=None), False, id="Missing x_y_coordinates"),
+            pytest.param(
+                dict(n_coordinates=None, y_coordinates=None),
+                False,
+                id="Missing x_coordinates",
+            ),
+            pytest.param(
+                dict(n_coordinates=None, x_coordinates=None),
+                False,
+                id="Missing y_coordinates",
+            ),
+            pytest.param(
+                dict(n_coordinates=0, x_coordinates=None, y_coordinates=None),
+                True,
+                id="None coordinates.",
+            ),
+            pytest.param(
+                dict(n_coordinates=0, x_coordinates=[], y_coordinates=[]),
+                True,
+                id="Empty list coordinates.",
+            ),
+            pytest.param(
+                dict(n_coordinates=2, x_coordinates=[42, 24], y_coordinates=[24, 42]),
+                True,
+                id="With coordinates.",
+            ),
+        ]
+
         @pytest.mark.parametrize(
             "dict_values, expectation",
-            [
-                pytest.param(dict(), False, id="No values."),
-                pytest.param(
-                    dict(n_coordinates=None), False, id="Missing x_y_coordinates"
-                ),
-                pytest.param(
-                    dict(n_coordinates=None, y_coordinates=None),
-                    False,
-                    id="Missing x_coordinates",
-                ),
-                pytest.param(
-                    dict(n_coordinates=None, x_coordinates=None),
-                    False,
-                    id="Missing y_coordinates",
-                ),
-                pytest.param(
-                    dict(n_coordinates=0, x_coordinates=None, y_coordinates=None),
-                    True,
-                    id="None coordinates.",
-                ),
-                pytest.param(
-                    dict(n_coordinates=0, x_coordinates=[], y_coordinates=[]),
-                    True,
-                    id="Empty list coordinates.",
-                ),
-                pytest.param(
-                    dict(
-                        n_coordinates=2, x_coordinates=[42, 24], y_coordinates=[24, 42]
-                    ),
-                    True,
-                    id="With coordinates.",
-                ),
-            ],
+            test_cases,
         )
         def test_given_valid_values_returns_expectation(
             self, dict_values: dict, expectation: bool
@@ -640,6 +639,15 @@ class TestDambreak:
     Wrapper class to test all the methods and sublcasses in:
     hydrolib.core.io.structure.models.py Dambreak class.
     """
+
+    def get_test_cases() -> List[pytest.param]:
+        """
+        Just a method to reach the tests from another class.
+
+        Returns:
+            List[pytest.param]: List of pytest cases.
+        """
+        return TestStructure.TestValidateCoordinatesInModel.test_cases
 
     class TestValidateAlgorithm:
         """
@@ -673,14 +681,116 @@ class TestDambreak:
         def test_given_valid_value_returns_value(self, value: int):
             assert Dambreak.validate_algorithm(value) == value
 
+    class TestValidateDambreakLevelsAndWidths:
+        """
+        Wrapper to validate all paradigms of
+        validate_dambreak_leels_and_widths
+        """
+
+        algorithm_values = [(-1), (0), (1), (2), (4)]
+
+        @pytest.mark.parametrize(
+            "algorithm_value",
+            algorithm_values,
+        )
+        @pytest.mark.parametrize(
+            "field_value",
+            [
+                pytest.param("", id="Empty string"),
+                pytest.param(Path(""), id="Empty Path"),
+                pytest.param("JustAValue", id="String value"),
+                pytest.param(Path("JustAValue"), id="Path value"),
+            ],
+        )
+        def test_given_field_value_but_no_algorithm_3_raises_value_error(
+            self, field_value: str, algorithm_value: int
+        ):
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.validate_dambreak_levels_and_widths(
+                    field_value,
+                    dict(
+                        algorithm=algorithm_value,
+                    ),
+                )
+            assert (
+                str(exc_err.value)
+                == f"Dambreak field dambreakLevelsAndWidths can only be set when algorithm = 3, current value: {algorithm_value}."
+            )
+
+        def test_given_algorithm_value_3_returns_field_value(self):
+            field_value = "justAValue"
+            return_value = Dambreak.validate_dambreak_levels_and_widths(
+                field_value, dict(algorithm=3)
+            )
+            assert return_value == field_value
+
+        @pytest.mark.parametrize("algorithm_value", algorithm_values)
+        def test_given_none_field_value_and_algorithm_value_not_3_returns_field_value(
+            self, algorithm_value: int
+        ):
+            return_value = Dambreak.validate_dambreak_levels_and_widths(
+                None, dict(algorithm=algorithm_value)
+            )
+            assert return_value is None
+
     class TestCheckLocation:
         """
         Wrapper to validate all paradigms of check_location
         """
 
-        def test_given_valid_location_returns_values(self):
-            test_values = dict(
-                n_coordinates=2, x_coordinates=[2.4, 4.2], y_coordinates=[4.2, 2.4]
+        def get_test_cases() -> List[pytest.param]:
+            return TestStructure.TestValidateCoordinatesInModel.test_cases
+
+        @pytest.mark.parametrize("dict_values, expectation", get_test_cases())
+        def test_given_valid_values_returns_expectation(
+            self, dict_values: dict, expectation: bool
+        ):
+            test_raises = does_not_raise()
+            if not expectation:
+                test_raises = pytest.raises(ValueError)
+            with test_raises as exc_err:
+                return_value = Dambreak.check_location(dict_values)
+                if expectation:
+                    assert return_value == dict_values
+                    return
+            assert (
+                str(exc_err.value)
+                == "`num/x/yCoordinates` are mandatory for a Dambreak structure."
             )
-            return_value = Dambreak.check_location(test_values)
-            assert return_value == test_values
+
+    @pytest.mark.parametrize("location_dict, expectation", get_test_cases())
+    def test_given_invalid_location_raises_value_error(
+        self, location_dict: dict, expectation: bool
+    ):
+        # 1. Define test data
+        default_values = dict(
+            id="anId",
+            name="aName",
+            startlocationx=4.2,
+            startlocationy=2.4,
+            algorithm=1,
+            crestlevelini=1,
+            breachwidthini=24,
+            crestlevelmin=42,
+            t0=2.2,
+            timetobreachtomaximumdepth=4.4,
+            f1=22.4,
+            f2=44.2,
+            ucrit=44.22,
+        )
+        test_values = {**default_values, **location_dict}
+        test_raises = does_not_raise()
+        if not expectation or None in location_dict.values():
+            test_raises = pytest.raises(ValidationError)
+
+        # 2. Run test
+        with test_raises as exc_err:
+            dambreak_as_dict = Dambreak(**test_values).dict()
+            if expectation:
+                for key, value in test_values.items():
+                    assert dambreak_as_dict[key] == value
+                return
+
+        # 3. Verify final expectations.
+        expected_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
+        assert expected_err in str(exc_err)
