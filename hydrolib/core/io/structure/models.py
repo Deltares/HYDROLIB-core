@@ -4,7 +4,6 @@ TODO Implement the following structures
 - Generalstructure
 - Long culvert
 - Gate
-- Dambreak
 
 Add comments for these structures. Maybe link them to descriptions of `Field`s?
 """
@@ -15,7 +14,7 @@ from pathlib import Path
 from typing import List, Literal, Optional, Set, Union
 
 from pydantic import Field
-from pydantic.class_validators import root_validator
+from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
@@ -89,10 +88,13 @@ class Structure(INIBasedModel):
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
-        if structure_type == "longculvert":
+        only_coordinates_structures = dict(
+            longculvert="LongCulvert", dambreak="Dambreak"
+        )
+        if structure_type in only_coordinates_structures.keys():
             assert (
                 coordinates_in_model
-            ), "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
+            ), f"`num/x/yCoordinates` are mandatory for a {only_coordinates_structures[structure_type]} structure."
             return values
 
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
@@ -361,6 +363,116 @@ class Orifice(Structure):
 
     uselimitflowneg: bool = Field(False, alias="useLimitflowNeg")
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
+
+
+class DambreakAlgorith(int, Enum):
+    van_der_knaap = 1  # "van der Knaap, 2000"
+    verheij_van_der_knaap = 2  # "Verheij-van der Knaap, 2002"
+    predefined = 3  # "Predefined time series, dambreakLevelsAndWidths."
+
+
+class Dambreak(Structure):
+    structure_type: Literal["dambreak"] = Field("orifice", alias="type")
+    startlocationx: float = Field(alias="startLocationX")
+    startlocationy: float = Field(alias="startLocationY")
+    algorithm: DambreakAlgorith
+
+    crestlevelini: int = Field(alias="crestLevelIni")
+    breachwidthini: float = Field(alias="breachWidthIni")
+    crestlevelmin: float = Field(alias="crestLevelMin")
+    t0: float
+    timetobreachtomaximumdepth: float = Field(alias="timeToBreachToMaximumDepth")
+    f1: float
+    f2: float
+    ucrit: float = Field(alias="uCrit")
+    waterlevelupstreamlocationx: Optional[float] = Field(
+        alias="waterLevelUpstreamLocationX"
+    )
+    waterlevelupstreamlocationy: Optional[float] = Field(
+        alias="waterLevelUpstreamLocationY"
+    )
+    waterleveldownstreamlocationx: Optional[float] = Field(
+        alias="waterLevelDownstreamLocationX"
+    )
+    waterleveldownstreamlocationy: Optional[float] = Field(
+        alias="waterLevelDownstreamLocationY"
+    )
+    waterlevelupstreamnodeid: Optional[str] = Field(alias="waterLevelUpstreamNodeId")
+    waterleveldownstreamnodeid: Optional[str] = Field(
+        alias="waterLevelDownstreamNodeId"
+    )
+    dambreaklevelsandwidths: Optional[Path] = Field(alias="dambreakLevelsAndWidths")
+
+    @validator("algorithm")
+    @classmethod
+    def validate_algorithm(cls, value: int) -> int:
+        """
+        Validates the algorithm parameter for the dambreak structure.
+
+        Args:
+            value (int): algorithm value read from the user's input.
+
+        Raises:
+            ValueError: When the value given is not of type int.
+            ValueError: When the value given is not in the limit [1,3]
+
+        Returns:
+            int: Validated value.
+        """
+        if not isinstance(value, int):
+            raise ValueError("Dambreak algorithm value should be of type int.")
+
+        if 0 < value <= 3:
+            return value
+        raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
+
+    @validator("dambreaklevelsandwidths")
+    @classmethod
+    def validate_dambreak_levels_and_widths(
+        cls, field_value: Optional[Path], values: dict
+    ) -> Optional[Path]:
+        """
+        Validates whether a dambreak can be created with the given dambreakLevelsAndWidths
+        property. This property should be given when the algorithm value is 3.
+
+        Args:
+            field_value (Optional[Path]): Value given for dambreakLevelsAndWidths.
+            values (dict): Dictionary of values already validated (assuming algorithm is in it).
+
+        Raises:
+            ValueError: When algorithm value is not 3 and field_value has a value.
+
+        Returns:
+            Optional[Path]: The value given for dambreakLevelsAndwidths.
+        """
+        # Retrieve the algorithm value (if not found use 0).
+        algorithm_value = values.get("algorithm", 0)
+        if field_value is not None and algorithm_value != 3:
+            # dambreakLevelsAndWidths can only be set when algorithm = 3
+            raise ValueError(
+                f"Dambreak field dambreakLevelsAndWidths can only be set when algorithm = 3, current value: {algorithm_value}."
+            )
+        return field_value
+
+    @root_validator(pre=True)
+    @classmethod
+    def check_location(cls, values: dict) -> dict:
+        """
+        Verifies whether the location for this structure contains valid values for
+        numCoordinates, xCoordinates and yCoordinates.
+
+        Args:
+            values (dict): Dictionary of validated values to create a Dambreak.
+
+        Raises:
+            ValueError: When the values dictionary does not contain valid coordinates.
+
+        Returns:
+            dict: Dictionary of validated values.
+        """
+        if Structure.validate_coordinates_in_model(values):
+            return values
+        raise ValueError("`num/x/yCoordinates` are mandatory for a Dambreak structure.")
 
 
 class StructureGeneral(INIGeneral):

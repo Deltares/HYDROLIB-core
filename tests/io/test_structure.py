@@ -1,6 +1,6 @@
 import inspect
 from contextlib import nullcontext as does_not_raise
-from typing import List, Union
+from typing import Any, List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
@@ -8,6 +8,7 @@ from pydantic.error_wrappers import ValidationError
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
     Compound,
+    Dambreak,
     FlowDirection,
     Orifice,
     Pump,
@@ -340,7 +341,7 @@ def test_read_structures_missing_structure_field_raises_correct_error():
 class TestStructure:
     """
     Wrapper class to test all the methods and subclasses in:
-    hydrolib.core.io.structure.models.py Structure class
+    hydrolib.core.io.structure.models.py Structure class.
     """
 
     class TestRootValidator:
@@ -352,6 +353,7 @@ class TestStructure:
         long_culvert_err = (
             "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
         )
+        dambreak_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
         structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
 
         @pytest.mark.parametrize(
@@ -414,7 +416,7 @@ class TestStructure:
                 pytest.param(
                     "dambreak",
                     pytest.raises(AssertionError),
-                    structure_err,
+                    dambreak_err,
                     id="Dambreak raises.",
                 ),
                 pytest.param(
@@ -631,3 +633,54 @@ class TestStructure:
                 str(exc_err.value)
                 == "Expected 1 coordinates, given 2 for x and 3 for y coordinates."
             )
+
+
+class TestDambreak:
+    """
+    Wrapper class to test all the methods and sublcasses in:
+    hydrolib.core.io.structure.models.py Dambreak class.
+    """
+
+    class TestValidateAlgorithm:
+        """
+        Wrapper to validate all paradigms of validate_algorithm
+        """
+
+        @pytest.mark.parametrize(
+            "value",
+            [pytest.param("", id="Empty string."), pytest.param(None, id="None")],
+        )
+        def test_given_not_int_raises_value_error(self, value: Any):
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.validate_algorithm(value)
+            assert (
+                str(exc_err.value) == "Dambreak algorithm value should be of type int."
+            )
+
+        @pytest.mark.parametrize(
+            "value",
+            [pytest.param(0), pytest.param(4), pytest.param(-1)],
+        )
+        def test_given_value_out_of_range_raises_value_error(self, value: int):
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.validate_algorithm(value)
+            assert str(exc_err.value) == "Dambreak algorithm value should be 1, 2 or 3."
+
+        @pytest.mark.parametrize(
+            "value",
+            [pytest.param(1), pytest.param(2), pytest.param(3)],
+        )
+        def test_given_valid_value_returns_value(self, value: int):
+            assert Dambreak.validate_algorithm(value) == value
+
+    class TestCheckLocation:
+        """
+        Wrapper to validate all paradigms of check_location
+        """
+
+        def test_given_valid_location_returns_values(self):
+            test_values = dict(
+                n_coordinates=2, x_coordinates=[2.4, 4.2], y_coordinates=[4.2, 2.4]
+            )
+            return_value = Dambreak.check_location(test_values)
+            assert return_value == test_values
