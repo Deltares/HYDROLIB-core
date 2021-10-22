@@ -1,7 +1,7 @@
 import inspect
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import Any, List, Union
+from typing import Any, Callable, List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
@@ -661,15 +661,6 @@ class TestDambreak:
     hydrolib.core.io.structure.models.py Dambreak class.
     """
 
-    def get_test_cases() -> List[pytest.param]:
-        """
-        Just a method to reach the tests from another class.
-
-        Returns:
-            List[pytest.param]: List of pytest cases.
-        """
-        return TestStructure.TestValidateCoordinatesInModel.test_cases
-
     @pytest.fixture
     def default_dambreak_values(self) -> dict:
         return dict(
@@ -697,7 +688,10 @@ class TestDambreak:
         )
         return {**default_dambreak_values, **coordinates_dict}
 
-    @pytest.mark.parametrize("location_dict, expectation", get_test_cases())
+    @pytest.mark.parametrize(
+        "location_dict, expectation",
+        TestStructure.TestValidateCoordinatesInModel.test_cases,
+    )
     def test_given_invalid_location_raises_value_error(
         self, location_dict: dict, expectation: bool, default_dambreak_values: dict
     ):
@@ -815,10 +809,10 @@ class TestDambreak:
         Wrapper to validate all paradigms of check_location
         """
 
-        def get_test_cases() -> List[pytest.param]:
-            return TestStructure.TestValidateCoordinatesInModel.test_cases
-
-        @pytest.mark.parametrize("dict_values, expectation", get_test_cases())
+        @pytest.mark.parametrize(
+            "dict_values, expectation",
+            TestStructure.TestValidateCoordinatesInModel.test_cases,
+        )
         def test_given_valid_values_returns_expectation(
             self, dict_values: dict, expectation: bool
         ):
