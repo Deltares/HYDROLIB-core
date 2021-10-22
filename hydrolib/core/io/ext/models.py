@@ -18,7 +18,7 @@ class Boundary(INIBasedModel):
     quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
     locationfile: Optional[Path] = Field(alias="locationFile")
-    forcingfile: Optional[ForcingModel] = Field(None, alias="forcingFile")
+    forcingfile: ForcingModel = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 

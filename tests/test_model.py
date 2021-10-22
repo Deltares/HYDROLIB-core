@@ -300,13 +300,6 @@ def test_boundary_with_forcing_file_returns_forcing():
     assert boundary2.forcing is forcing2
 
 
-def test_boundary_without_forcingfile_returns_none():
-    boundary = Boundary(nodeid="boundary", quantity="waterlevelbnd")
-
-    assert boundary.forcingfile is None
-    assert boundary.forcing is None
-
-
 def test_boundary_with_forcing_file_without_match_returns_none():
     forcing1 = _create_forcing("bnd1", "waterlevelbnd")
     forcing2 = _create_forcing("bnd2", "dischargebnd")
