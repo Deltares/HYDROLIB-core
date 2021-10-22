@@ -365,17 +365,33 @@ class Orifice(Structure):
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
 
 
-class DambreakAlgorith(int, Enum):
+class DambreakAlgorithm(int, Enum):
     van_der_knaap = 1  # "van der Knaap, 2000"
     verheij_van_der_knaap = 2  # "Verheij-van der Knaap, 2002"
     predefined = 3  # "Predefined time series, dambreakLevelsAndWidths."
+
+    @property
+    def description(self) -> str:
+        """
+        Property to return the description of the enums defined above.
+        Useful for comments in output files.
+
+        Returns:
+            str: Description for the current enum.
+        """
+        description_dict = dict(
+            van_der_knaap="van der Knaap, 2000",
+            verheij_van_der_knaap="Verheij-van der Knaap, 2002",
+            predefined="Predefined time series, dambreakLevelsAndWidths",
+        )
+        return description_dict[self.name]
 
 
 class Dambreak(Structure):
     structure_type: Literal["dambreak"] = Field("orifice", alias="type")
     startlocationx: float = Field(alias="startLocationX")
     startlocationy: float = Field(alias="startLocationY")
-    algorithm: DambreakAlgorith
+    algorithm: DambreakAlgorithm
 
     crestlevelini: int = Field(alias="crestLevelIni")
     breachwidthini: float = Field(alias="breachWidthIni")

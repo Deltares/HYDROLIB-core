@@ -10,6 +10,7 @@ from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
     Compound,
     Dambreak,
+    DambreakAlgorithm,
     FlowDirection,
     Orifice,
     Pump,
@@ -633,6 +634,25 @@ class TestStructure:
                 == "Expected 1 coordinates, given 2 for x and 3 for y coordinates."
             )
 
+
+class TestDambreakAlgorithm:
+    """
+    Wrapper class to test all the methods in:
+    hydrolib.core.io.structure.models.py DambreakAlgorithm enum class.
+    """
+
+    @pytest.mark.parametrize(
+        "enum_value, enum_description",
+        [
+            pytest.param(1, "van der Knaap, 2000"),
+            pytest.param(2, "Verheij-van der Knaap, 2002"),
+            pytest.param(3, "Predefined time series, dambreakLevelsAndWidths"),
+        ],
+    )
+    def test_get_enum_as_str_returns_description(
+        self, enum_value: int, enum_description: str
+    ):
+        assert DambreakAlgorithm(enum_value).description == enum_description
 
 class TestDambreak:
     """
