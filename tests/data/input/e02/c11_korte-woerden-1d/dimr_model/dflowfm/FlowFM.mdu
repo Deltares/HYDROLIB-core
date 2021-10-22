@@ -61,7 +61,7 @@ AllowBndAtBifurcation= 0
 dxDoubleAt1DEndNodes = 0
 
 [numerics]
-CFLMax            = 0.7
+CFLMax            = 0.7d0
 AdvecType         = 0
 TimeStepType      = 2
 Limtyphu          = 0
@@ -94,7 +94,7 @@ Turbulenceadvection= 3
 AntiCreep         = 0
 Maxwaterleveldiff = 0
 Maxvelocitydiff   = 0
-Epshu             = 0.0001
+Epshu             = 1.D-4
 
 [physics]
 UnifFrictCoef     = 0.023
