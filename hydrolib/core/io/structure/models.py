@@ -34,14 +34,14 @@ class Structure(INIBasedModel):
         )
         chainage: Optional[str] = "Chainage on the branch (m)."
 
-        n_coordinates: Optional[str] = Field(
+        numcoordinates: Optional[str] = Field(
             "Number of values in xCoordinates and yCoordinates", alias="numCoordinates"
         )
-        x_coordinates: Optional[str] = Field(
+        xcoordinates: Optional[str] = Field(
             "x-coordinates of the location of the structure. (number of values = numCoordinates)",
             alias="xCoordinates",
         )
-        y_coordinates: Optional[str] = Field(
+        ycoordinates: Optional[str] = Field(
             "y-coordinates of the location of the structure. (number of values = numCoordinates)",
             alias="yCoordinates",
         )
@@ -57,9 +57,9 @@ class Structure(INIBasedModel):
     branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = None
 
-    n_coordinates: Optional[int] = Field(None, alias="numCoordinates")
-    x_coordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
-    y_coordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
     @root_validator
     @classmethod
@@ -147,22 +147,22 @@ class Structure(INIBasedModel):
             bool: Result of valid coordinates in dictionary.
         """
         coordinates_in_model = (
-            "n_coordinates" in values
-            and "x_coordinates" in values
-            and "y_coordinates" in values
+            "numcoordinates" in values
+            and "xcoordinates" in values
+            and "ycoordinates" in values
         )
         if not coordinates_in_model:
             return False
 
-        n_coords = values["n_coordinates"]
+        n_coords = values["numcoordinates"]
 
         def get_coord_len(coord: str) -> int:
             if values[coord] is None:
                 return 0
             return len(values[coord])
 
-        len_x_coords = get_coord_len("x_coordinates")
-        len_y_coords = get_coord_len("y_coordinates")
+        len_x_coords = get_coord_len("xcoordinates")
+        len_y_coords = get_coord_len("ycoordinates")
         if n_coords == len_x_coords == len_y_coords:
             return True
         raise ValueError(
@@ -191,7 +191,7 @@ class Structure(INIBasedModel):
     def _exclude_fields(self) -> Set:
         # exclude the unset props like coordinates or branches
         if self.branchid is not None:
-            exclude_set = {"n_coordinates", "x_coordinates", "y_coordinates"}
+            exclude_set = {"numcoordinates", "xcoordinates", "ycoordinates"}
         else:
             exclude_set = {"branchid", "chainage"}
         exclude_set = super()._exclude_fields().union(exclude_set)
@@ -470,7 +470,7 @@ class Dambreak(Structure):
             )
         return field_value
 
-    @root_validator(pre=True)
+    @root_validator
     @classmethod
     def check_location(cls, values: dict) -> dict:
         """

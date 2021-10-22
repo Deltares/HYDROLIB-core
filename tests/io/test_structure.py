@@ -433,9 +433,9 @@ class TestStructure:
                 input_dict = dict(
                     notAValue="Not a relevant value",
                     structure_type=structure_type,
-                    n_coordinates=None,
-                    x_coordinates=None,
-                    y_coordinates=None,
+                    numcoordinates=None,
+                    xcoordinates=None,
+                    ycoordinates=None,
                     branchid=None,
                     chainage=None,
                 )
@@ -448,9 +448,9 @@ class TestStructure:
         def test_check_location_given_compound_structure_raises_nothing(self):
             input_dict = dict(
                 notAValue="Not a relevant value",
-                n_coordinates=None,
-                x_coordinates=None,
-                y_coordinates=None,
+                numcoordinates=None,
+                xcoordinates=None,
+                ycoordinates=None,
                 branchid=None,
                 chainage=None,
             )
@@ -508,9 +508,9 @@ class TestStructure:
             with pytest.raises(ValueError) as exc_err:
                 Structure.check_location(
                     dict(
-                        n_coordinates=n_coords,
-                        x_coordinates=x_coords,
-                        y_coordinates=y_coords,
+                        numcoordinates=n_coords,
+                        xcoordinates=x_coords,
+                        ycoordinates=y_coords,
                     )
                 )
             assert (
@@ -523,9 +523,9 @@ class TestStructure:
             [
                 pytest.param(
                     dict(
-                        n_coordinates=0,
-                        x_coordinates=[],
-                        y_coordinates=[],
+                        numcoordinates=0,
+                        xcoordinates=[],
+                        ycoordinates=[],
                     ),
                     id="Coordinates given.",
                 ),
@@ -582,29 +582,31 @@ class TestStructure:
 
         test_cases = [
             pytest.param(dict(), False, id="No values."),
-            pytest.param(dict(n_coordinates=None), False, id="Missing x_y_coordinates"),
             pytest.param(
-                dict(n_coordinates=None, y_coordinates=None),
-                False,
-                id="Missing x_coordinates",
+                dict(numcoordinates=None), False, id="Missing x_y_coordinates"
             ),
             pytest.param(
-                dict(n_coordinates=None, x_coordinates=None),
+                dict(numcoordinates=None, ycoordinates=None),
                 False,
-                id="Missing y_coordinates",
+                id="Missing xcoordinates",
             ),
             pytest.param(
-                dict(n_coordinates=0, x_coordinates=None, y_coordinates=None),
+                dict(numcoordinates=None, xcoordinates=None),
+                False,
+                id="Missing ycoordinates",
+            ),
+            pytest.param(
+                dict(numcoordinates=0, xcoordinates=None, ycoordinates=None),
                 True,
                 id="None coordinates.",
             ),
             pytest.param(
-                dict(n_coordinates=0, x_coordinates=[], y_coordinates=[]),
+                dict(numcoordinates=0, xcoordinates=[], ycoordinates=[]),
                 True,
                 id="Empty list coordinates.",
             ),
             pytest.param(
-                dict(n_coordinates=2, x_coordinates=[42, 24], y_coordinates=[24, 42]),
+                dict(numcoordinates=2, xcoordinates=[42, 24], ycoordinates=[24, 42]),
                 True,
                 id="With coordinates.",
             ),
@@ -624,9 +626,9 @@ class TestStructure:
             with pytest.raises(ValueError) as exc_err:
                 Structure.validate_coordinates_in_model(
                     dict(
-                        n_coordinates=1,
-                        x_coordinates=[42, 24],
-                        y_coordinates=[24, 42, 66],
+                        numcoordinates=1,
+                        xcoordinates=[42, 24],
+                        ycoordinates=[24, 42, 66],
                     )
                 )
             assert (
@@ -664,8 +666,9 @@ class TestDambreak:
     @pytest.fixture
     def default_dambreak_values(self) -> dict:
         return dict(
-            id="anId",
-            name="aName",
+            id="NLNJ-2021",
+            name="NederlandNaranjito2021",
+            type="dambreak",
             startlocationx=4.2,
             startlocationy=2.4,
             algorithm=1,
@@ -688,9 +691,9 @@ class TestDambreak:
     @pytest.fixture
     def valid_dambreak_values(self, default_dambreak_values: dict) -> dict:
         coordinates_dict = dict(
-            n_coordinates=2,
-            x_coordinates=[4.2, 2.4],
-            y_coordinates=[2.4, 4.2],
+            numcoordinates=2,
+            xcoordinates=[4.2, 2.4],
+            ycoordinates=[2.4, 4.2],
         )
         return {**default_dambreak_values, **coordinates_dict}
 
@@ -720,9 +723,62 @@ class TestDambreak:
 
     def test_given_valid_values_creates_dambreak(self, valid_dambreak_values: dict):
         dambreak = Dambreak(**valid_dambreak_values)
+        self.validate_valid_default_dambreak(dambreak)
+
+    def test_given_text_parses_structure(self):
+        # 1. Prepare test data.
+        structure_text = inspect.cleandoc(
+            """
+            [Structure]
+            type = dambreak                 # Structure type; must read dambreak
+            id = NLNJ-2021                  # Unique structure id (max. 256 characters).
+            name = NederlandNaranjito2021   # Given name in the user interface.
+            numCoordinates = 2              # Number of values in xCoordinates and yCoordinates. This value should be greater or equal 2.
+            xCoordinates = 4.2, 2.4         # x-coordinates of the link selection polygon.
+            yCoordinates = 2.4, 4.2         # y-coordinates of the link selection polygon.
+            startLocationX = 4.2            # x-coordinate of breach starting point.
+            startLocationY = 2.4            # y-coordinate of breach starting point.
+            algorithm = 1                   # Breach growth algorithm.
+
+            crestLevelIni = 1               # Initial breach level.
+            breachWidthIni = 24             # Initial breach width.
+            crestLevelMin = 42              # Minimal breach level.
+            t0 = 2.2                        # Breach start time.
+            timeToBreachToMaximumDepth = 4.4    # tphase 1.
+            f1 = 22.4                       # Factor f1.
+            f2 = 44.2                       # Factor f2.
+            uCrit = 44.22                   # Critical flow velocity uc for erosion [m/s].
+            waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
+            waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
+            waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
+            waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
+            waterLevelUpstreamNodeId = anUpstreamNodeId # Node Id of custom upstream water level point.
+            waterLevelDownstreamNodeId = aDownstreamNodeId # Node Id of custom downstream water level point.
+            """
+        )
+
+        # 2. Parse data.
+        parser = Parser(ParserConfig())
+        for line in structure_text.splitlines():
+            parser.feed_line(line)
+        document = parser.finalize()
+
+        dambreak_obj = (
+            WrapperTest[Dambreak].parse_obj({"val": document.sections[0]}).val
+        )
+        assert dambreak_obj
+
+    def validate_valid_default_dambreak(self, dambreak: Dambreak):
+        """
+        Method to validate the default (valid) test case for a Dambreak.
+
+        Args:
+            dambreak (Dambreak): Instance that needs to be verified for its expected values.
+        """
+
         assert isinstance(dambreak, Structure), "A dambreak should be a structure."
-        assert dambreak.id == "anId"
-        assert dambreak.name == "aName"
+        assert dambreak.id == "NLNJ-2021"
+        assert dambreak.name == "NederlandNaranjito2021"
         assert dambreak.structure_type == "dambreak"
         assert dambreak.startlocationx == 4.2
         assert dambreak.startlocationy == 2.4
@@ -735,9 +791,9 @@ class TestDambreak:
         assert dambreak.f1 == 22.4
         assert dambreak.f2 == 44.2
         assert dambreak.ucrit == 44.22
-        assert dambreak.n_coordinates == 2
-        assert dambreak.x_coordinates == [4.2, 2.4]
-        assert dambreak.y_coordinates == [2.4, 4.2]
+        assert dambreak.numcoordinates == 2
+        assert dambreak.xcoordinates == [4.2, 2.4]
+        assert dambreak.ycoordinates == [2.4, 4.2]
         assert dambreak.waterlevelupstreamlocationx == 1.2
         assert dambreak.waterlevelupstreamlocationy == 2.3
         assert dambreak.waterleveldownstreamlocationx == 3.4
