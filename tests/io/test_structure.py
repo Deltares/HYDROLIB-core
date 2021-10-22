@@ -357,6 +357,8 @@ def test_create_a_bridge_from_scratch():
         ),
     )
 
+    assert isinstance(bridge, Structure), "Bridge should also be an instance of a Structure"
+
     assert bridge.id == "b003"
     assert bridge.name == "B003"
     assert bridge.branchid == "B1"
