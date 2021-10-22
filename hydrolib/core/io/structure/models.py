@@ -61,6 +61,10 @@ class Structure(INIBasedModel):
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
+    _split_to_list = get_split_string_on_delimiter_validator(
+        "xcoordinates", "ycoordinates"
+    )
+
     @root_validator
     @classmethod
     def check_location(cls, values: dict) -> dict:
@@ -420,9 +424,9 @@ class Dambreak(Structure):
     )
     dambreaklevelsandwidths: Optional[Path] = Field(alias="dambreakLevelsAndWidths")
 
-    @validator("algorithm")
+    @validator("algorithm", pre=True)
     @classmethod
-    def validate_algorithm(cls, value: int) -> int:
+    def validate_algorithm(cls, value: str) -> DambreakAlgorithm:
         """
         Validates the algorithm parameter for the dambreak structure.
 
@@ -436,11 +440,13 @@ class Dambreak(Structure):
         Returns:
             int: Validated value.
         """
-        if not isinstance(value, int):
+        int_value = -1
+        try:
+            int_value = int(value)
+        except Exception:
             raise ValueError("Dambreak algorithm value should be of type int.")
-
-        if 0 < value <= 3:
-            return value
+        if 0 < int_value <= 3:
+            return DambreakAlgorithm(int_value)
         raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
 
     @validator("dambreaklevelsandwidths")

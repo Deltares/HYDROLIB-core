@@ -797,8 +797,8 @@ class TestDambreak:
             id = NLNJ-2021                  # Unique structure id (max. 256 characters).
             name = NederlandNaranjito2021   # Given name in the user interface.
             numCoordinates = 2              # Number of values in xCoordinates and yCoordinates. This value should be greater or equal 2.
-            xCoordinates = 4.2, 2.4         # x-coordinates of the link selection polygon.
-            yCoordinates = 2.4, 4.2         # y-coordinates of the link selection polygon.
+            xCoordinates = 4.2 2.4       # x-coordinates of the link selection polygon.
+            yCoordinates = 2.4 4.2       # y-coordinates of the link selection polygon.
             startLocationX = 4.2            # x-coordinate of breach starting point.
             startLocationY = 2.4            # y-coordinate of breach starting point.
             algorithm = 1                   # Breach growth algorithm.
