@@ -403,12 +403,12 @@ class Bridge(Structure):
     allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
 
     csdefid: str = Field(alias="csDefId")
-    shift: float = Field()
+    shift: float = Field(alias="shift")
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     frictiontype: str = Field(alias="frictionType")
     friction: float = Field(alias="friction")
-    length: float = Field()
+    length: float = Field(alias="length")
 
 
 class StructureGeneral(INIGeneral):
