@@ -75,15 +75,15 @@ class Structure(INIBasedModel):
     def check_location(cls, values: dict) -> dict:
         """
         Validates the location of the structure based on the given parameters.
-        For instance, if a branchId is given, then it is expected also the chainage,
-        otherwise numCoordinates x and yCoordinates shall be expected.
+        For instance, if a branchid is given, then it is expected also the chainage,
+        otherwise numcoordinates xcoordinates and ycoordinates shall be expected.
 
         Args:
             values (dict): Dictionary of values validated for the new structure.
 
         Raises:
             ValueError: When branchid or chainage values are not valid (empty strings).
-            ValueError: When the number of coordinates (x,y) do not match numCoordinates.
+            ValueError: When the number of xcoordinates and ycoordinates do not match numcoordinates.
 
         Returns:
             dict: Dictionary of values validated for the new structure.
@@ -114,17 +114,17 @@ class Structure(INIBasedModel):
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:
         """
-        Static method to validate whether the given branchId and chainage values
+        Static method to validate whether the given branchid and chainage values
         match the expectation of a new structure.
 
         Args:
             values (dict): Dictionary of values to be used to generate a structure.
 
         Raises:
-            ValueError: When the value for branchId or chainage are not valid.
+            ValueError: When the value for branchid or chainage are not valid.
 
         Returns:
-            bool: Result of valid branchId / chainage in dictionary.
+            bool: Result of valid branchid / chainage in dictionary.
         """
         branchid = values.get("branchid", None)
         if branchid is None:
@@ -133,7 +133,7 @@ class Structure(INIBasedModel):
         chainage = values.get("chainage", None)
         if str_is_empty_or_none(branchid) or chainage is None:
             raise ValueError(
-                "A valid value for branchId and chainage is required when branchid key is specified."
+                "A valid value for branchId and chainage is required when branchId key is specified."
             )
         return True
 
@@ -172,7 +172,7 @@ class Structure(INIBasedModel):
         if n_coords == len_x_coords == len_y_coords:
             return True
         raise ValueError(
-            f"Expected {n_coords} coordinates, given {len_x_coords} for x and {len_y_coords} for y coordinates."
+            f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
     @classmethod

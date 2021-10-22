@@ -29,7 +29,7 @@ class TestModels:
                     )
                 assert (
                     str(exc_mssg.value)
-                    == "numcoordinates should be given when providing x or y coordinates."
+                    == "numCoordinates should be given when providing xCoordinates or yCoordinates."
                 )
 
             def test_given_wrong_numcoordinates_raises_assertionerror(self):
@@ -39,7 +39,7 @@ class TestModels:
                     )
                 assert (
                     str(exc_mssg.value)
-                    == "Number of coordinates given (2) not matching the numcoordinates value 1."
+                    == "Number of coordinates given (2) not matching the numCoordinates value 1."
                 )
 
             def test_given_correct_numcoordinates(self):
@@ -108,11 +108,11 @@ class TestModels:
                     Lateral.validate_location_dependencies(values=dict_values)
                 assert (
                     str(exc_err.value)
-                    == "Either nodeid, branchid (with chainage) or numcoordinates (with x, y coordinates) are required."
+                    == "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
                 )
 
             @pytest.mark.parametrize(
-                "missing_coordinates", [("xcoordinates"), ("ycoordinates")]
+                "missing_coordinates", [("xCoordinates"), ("yCoordinates")]
             )
             def test_given_numcoords_but_missing_coordinates(
                 self, missing_coordinates: str
@@ -125,7 +125,7 @@ class TestModels:
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
                 )
-                test_dict[missing_coordinates] = None
+                test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
                     Lateral.validate_location_dependencies(test_dict)
                 assert str(exc_error.value) == f"{missing_coordinates} should be given."
@@ -153,7 +153,7 @@ class TestModels:
                     )
                 assert (
                     str(exc_err.value)
-                    == "Chainage should be provided when branchid specified."
+                    == "Chainage should be provided when branchId is specified."
                 )
 
             @pytest.mark.parametrize(
@@ -180,7 +180,7 @@ class TestModels:
                     Lateral.validate_location_dependencies(test_dict)
                 assert (
                     str(exc_err.value)
-                    == "LocationType should be 1d when nodeid (or branchid and chainage) specified."
+                    == "LocationType should be 1d when nodeId (or branchId and chainage) is specified."
                 )
 
             @pytest.mark.parametrize(
@@ -248,9 +248,7 @@ class TestModels:
                         ycoordinates=y_coord,
                     )
 
-                expected_error_mssg = (
-                    "numcoordinates should be given when providing x or y coordinates."
-                )
+                expected_error_mssg = "numCoordinates should be given when providing xCoordinates or yCoordinates."
                 assert expected_error_mssg in str(exc_mssg.value)
 
             @pytest.mark.parametrize(
@@ -273,7 +271,7 @@ class TestModels:
                     )
 
             @pytest.mark.parametrize(
-                "missing_coord", [("xcoordinates"), ("ycoordinates")]
+                "missing_coord", [("xCoordinates"), ("yCoordinates")]
             )
             def test_given_partial_coordinates_raises(self, missing_coord: str):
                 lateral_dict = dict(
@@ -284,7 +282,7 @@ class TestModels:
                     ycoordinates=[24, 42],
                     locationtype="all",
                 )
-                lateral_dict[missing_coord] = None
+                lateral_dict[missing_coord.lower()] = None
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(**lateral_dict)
 
@@ -455,7 +453,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeid or locationfile fields should be specified."
+                    "Either nodeId or locationFile fields should be specified."
                 )
                 assert str(exc_mssg.value) == expected_error_mssg
 
@@ -502,7 +500,7 @@ class TestModels:
 
                 # 3. Verify final expectations.
                 expected_error_mssg = (
-                    "Either nodeid or locationfile fields should be specified."
+                    "Either nodeId or locationFile fields should be specified."
                 )
                 assert expected_error_mssg in str(exc_mssg.value)
 

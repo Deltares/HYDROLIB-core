@@ -44,19 +44,19 @@ class Boundary(INIBasedModel):
         location_file = values.get("locationfile", None)
         if str_is_empty_or_none(node_id) and not isinstance(location_file, Path):
             raise ValueError(
-                "Either nodeid or locationfile fields should be specified."
+                "Either nodeId or locationFile fields should be specified."
             )
         return values
 
     def _get_identifier(self, data: dict) -> str:
         """
-        Retrieves the identifier for a boundary, which is the node_id (nodeid)
+        Retrieves the identifier for a boundary, which is the nodeid
 
         Args:
             data (dict): Dictionary of values for this boundary.
 
         Returns:
-            str: The node_id (nodeid) value or None if not found.
+            str: The nodeid value or None if not found.
         """
         return data.get("nodeid", None)
 
@@ -108,7 +108,7 @@ class Lateral(INIBasedModel):
     def validate_coordinates(cls, field_value: List[int], values: Dict) -> List[int]:
         """
         Method to validate whether the given coordinates match in number
-        to the expected value given for numCoordinates.
+        to the expected value given for numcoordinates.
 
         Args:
             field_value (List[int]): Coordinates list (x or y)
@@ -123,11 +123,11 @@ class Lateral(INIBasedModel):
         num_coords = values.get("numcoordinates", None)
         if num_coords is None:
             raise ValueError(
-                "numcoordinates should be given when providing x or y coordinates."
+                "numCoordinates should be given when providing xCoordinates or yCoordinates."
             )
         assert num_coords == len(
             field_value
-        ), "Number of coordinates given ({}) not matching the numcoordinates value {}.".format(
+        ), "Number of coordinates given ({}) not matching the numCoordinates value {}.".format(
             len(field_value), num_coords
         )
         return field_value
@@ -176,7 +176,7 @@ class Lateral(INIBasedModel):
         """
 
         def validate_coordinates(coord_name: str) -> None:
-            if values.get(coord_name, None) is None:
+            if values.get(coord_name.lower(), None) is None:
                 raise ValueError("{} should be given.".format(coord_name))
 
         # If nodeid or branchid and Chainage are present
@@ -189,24 +189,24 @@ class Lateral(INIBasedModel):
         if str_is_empty_or_none(node_id) and (str_is_empty_or_none(branch_id)):
             if n_coords == 0:
                 raise ValueError(
-                    "Either nodeid, branchid (with chainage) or numcoordinates (with x, y coordinates) are required."
+                    "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
                 )
             else:
                 # Second validation, coordinates should be valid.
-                validate_coordinates("xcoordinates")
-                validate_coordinates("ycoordinates")
+                validate_coordinates("xCoordinates")
+                validate_coordinates("yCoordinates")
             return values
         else:
             # Third validation, chainage should be given with branchid
             if not str_is_empty_or_none(branch_id) and chainage is None:
-                raise ValueError("Chainage should be provided when branchid specified.")
+                raise ValueError("Chainage should be provided when branchId is specified.")
             # Fourth validation, when nodeid, or branchid specified, expected 1d.
             location_type = values.get("locationtype", None)
             if str_is_empty_or_none(location_type):
                 values["locationtype"] = "1d"
             elif location_type.lower() != "1d":
                 raise ValueError(
-                    "LocationType should be 1d when nodeid (or branchid and chainage) specified."
+                    "LocationType should be 1d when nodeId (or branchId and chainage) is specified."
                 )
 
         return values

@@ -625,7 +625,7 @@ class TestStructure:
                 Structure.check_location(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchId key is specified."
             )
 
         wrong_coord_test_cases = [
@@ -661,7 +661,7 @@ class TestStructure:
                 )
             assert (
                 str(exc_err.value)
-                == f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."
+                == f"Expected {n_coords} coordinates, given {len(x_coords)} for xCoordinates and {len(y_coords)} for yCoordinates."
             )
 
         @pytest.mark.parametrize(
@@ -718,7 +718,7 @@ class TestStructure:
                 Structure.validate_branch_and_chainage_in_model(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchId key is specified."
             )
 
     class TestValidateCoordinatesInModel:
@@ -779,5 +779,5 @@ class TestStructure:
                 )
             assert (
                 str(exc_err.value)
-                == "Expected 1 coordinates, given 2 for x and 3 for y coordinates."
+                == "Expected 1 coordinates, given 2 for xCoordinates and 3 for yCoordinates."
             )
