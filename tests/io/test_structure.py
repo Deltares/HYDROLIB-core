@@ -710,8 +710,7 @@ class TestDambreak:
                 return
 
         # 3. Verify final expectations.
-        expected_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
-        assert expected_err in str(exc_err)
+        assert TestStructure.TestRootValidator.dambreak_err in str(exc_err)
 
     def test_given_valid_values_creates_dambreak(self, valid_dambreak_values: dict):
         dambreak = Dambreak(**valid_dambreak_values)
@@ -824,7 +823,4 @@ class TestDambreak:
                 if expectation:
                     assert return_value == dict_values
                     return
-            assert (
-                str(exc_err.value)
-                == "`num/x/yCoordinates` are mandatory for a Dambreak structure."
-            )
+            assert str(exc_err.value) == TestStructure.TestRootValidator.dambreak_err
