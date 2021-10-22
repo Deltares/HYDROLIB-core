@@ -204,6 +204,7 @@ class FlowDirection(str, Enum):
     positive = "positive"
     negative = "negative"
     both = "both"
+    allowedvaluestext = "Possible values: both, positive, negative, none."
 
 
 class Weir(Structure):
@@ -212,7 +213,7 @@ class Weir(Structure):
             "Structure type; must read weir", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
 
         crestlevel: Optional[str] = Field(
@@ -244,7 +245,7 @@ class UniversalWeir(Structure):
             "Structure type; must read universalWeir", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
 
         numlevels: Optional[str] = Field("Number of yz-Values.", alias="numLevels")
@@ -369,7 +370,7 @@ class Bridge(Structure):
             "Structure type; must read bridge", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
 
         csdefid: Optional[str] = Field(
