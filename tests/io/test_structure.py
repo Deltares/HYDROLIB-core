@@ -649,6 +649,62 @@ class TestDambreak:
         """
         return TestStructure.TestValidateCoordinatesInModel.test_cases
 
+    @pytest.fixture
+    def default_dambreak_values(self) -> dict:
+        return dict(
+            id="anId",
+            name="aName",
+            startlocationx=4.2,
+            startlocationy=2.4,
+            algorithm=1,
+            crestlevelini=1,
+            breachwidthini=24,
+            crestlevelmin=42,
+            t0=2.2,
+            timetobreachtomaximumdepth=4.4,
+            f1=22.4,
+            f2=44.2,
+            ucrit=44.22,
+        )
+
+    @pytest.fixture
+    def valid_dambreak_values(self, default_dambreak_values: dict) -> dict:
+        coordinates_dict = dict(
+            n_coordinates=2,
+            x_coordinates=[4.2, 2.4],
+            y_coordinates=[2.4, 4.2],
+        )
+        return {**default_dambreak_values, **coordinates_dict}
+
+    @pytest.mark.parametrize("location_dict, expectation", get_test_cases())
+    def test_given_invalid_location_raises_value_error(
+        self, location_dict: dict, expectation: bool, default_dambreak_values: dict
+    ):
+        # 1. Define test data
+        test_values = {**default_dambreak_values, **location_dict}
+        test_raises = does_not_raise()
+        if not expectation or None in location_dict.values():
+            test_raises = pytest.raises(ValidationError)
+
+        # 2. Run test
+        with test_raises as exc_err:
+            dambreak_as_dict = Dambreak(**test_values).dict()
+            if expectation:
+                for key, value in test_values.items():
+                    assert dambreak_as_dict[key] == value
+                return
+
+        # 3. Verify final expectations.
+        expected_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
+        assert expected_err in str(exc_err)
+
+    def test_given_valid_values_creates_dambreak(self, valid_dambreak_values: dict):
+        dambreak = Dambreak(**valid_dambreak_values)
+        assert isinstance(dambreak, Structure), "A dambreak should be a structure."
+        as_dict = dambreak.dict()
+        for key, value in valid_dambreak_values.items():
+            assert as_dict[key] == value
+
     class TestValidateAlgorithm:
         """
         Wrapper to validate all paradigms of validate_algorithm
@@ -757,40 +813,3 @@ class TestDambreak:
                 str(exc_err.value)
                 == "`num/x/yCoordinates` are mandatory for a Dambreak structure."
             )
-
-    @pytest.mark.parametrize("location_dict, expectation", get_test_cases())
-    def test_given_invalid_location_raises_value_error(
-        self, location_dict: dict, expectation: bool
-    ):
-        # 1. Define test data
-        default_values = dict(
-            id="anId",
-            name="aName",
-            startlocationx=4.2,
-            startlocationy=2.4,
-            algorithm=1,
-            crestlevelini=1,
-            breachwidthini=24,
-            crestlevelmin=42,
-            t0=2.2,
-            timetobreachtomaximumdepth=4.4,
-            f1=22.4,
-            f2=44.2,
-            ucrit=44.22,
-        )
-        test_values = {**default_values, **location_dict}
-        test_raises = does_not_raise()
-        if not expectation or None in location_dict.values():
-            test_raises = pytest.raises(ValidationError)
-
-        # 2. Run test
-        with test_raises as exc_err:
-            dambreak_as_dict = Dambreak(**test_values).dict()
-            if expectation:
-                for key, value in test_values.items():
-                    assert dambreak_as_dict[key] == value
-                return
-
-        # 3. Verify final expectations.
-        expected_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
-        assert expected_err in str(exc_err)
