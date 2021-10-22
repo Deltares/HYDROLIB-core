@@ -654,6 +654,7 @@ class TestDambreakAlgorithm:
     ):
         assert DambreakAlgorithm(enum_value).description == enum_description
 
+
 class TestDambreak:
     """
     Wrapper class to test all the methods and sublcasses in:
