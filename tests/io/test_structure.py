@@ -834,7 +834,7 @@ class TestDambreak:
             polylinefile               = dambreak2ddrybreach.pli
             startLocationX             = 1.2 
             startLocationY             = 4.0
-            algorithm                  = 2             # 1 VdKnaap ,2 Verheij-vdKnaap
+            algorithm                  = 3             # 1 VdKnaap ,2 Verheij-vdKnaap
             crestLevelIni              = 0.4
             breachWidthIni             = 1
             crestLevelMin              = 0.2
@@ -843,7 +843,7 @@ class TestDambreak:
             f2                         = 1
             ucrit                      = 0.001
             t0                         = 0.0001        # make it a boolean
-            dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 1             
+            dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 3            
             materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
             """
         )
@@ -856,7 +856,7 @@ class TestDambreak:
         assert dambreak_obj.id == "dambreak"
         assert dambreak_obj.startlocationx == 1.2
         assert dambreak_obj.startlocationy == 4.0
-        assert dambreak_obj.algorithm == 2
+        assert dambreak_obj.algorithm == 3
         assert dambreak_obj.crestlevelini == 0.4
         assert dambreak_obj.breachwidthini == 1
         assert dambreak_obj.crestlevelmin == 0.2
@@ -866,7 +866,7 @@ class TestDambreak:
         assert dambreak_obj.ucrit == 0.001
         assert dambreak_obj.t0 == 0.0001
         assert dambreak_obj.dambreaklevelsandwidths == Path("dambreak.tim")
-        assert dambreak_obj["material_type"] == 1
+        assert dambreak_obj.dict()["materialtype"] == "1"
 
     def parse_dambreak_from_text(self, structure_text: str) -> Dambreak:
         """
