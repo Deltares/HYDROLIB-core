@@ -380,7 +380,7 @@ class Orifice(Structure):
 class DambreakAlgorithm(int, Enum):
     van_der_knaap = 1  # "van der Knaap, 2000"
     verheij_van_der_knaap = 2  # "Verheij-van der Knaap, 2002"
-    predefined = 3  # "Predefined time series, dambreakLevelsAndWidths."
+    timeseries = 3  # "Predefined time series, dambreakLevelsAndWidths."
 
     @property
     def description(self) -> str:
@@ -394,12 +394,74 @@ class DambreakAlgorithm(int, Enum):
         description_dict = dict(
             van_der_knaap="van der Knaap, 2000",
             verheij_van_der_knaap="Verheij-van der Knaap, 2002",
-            predefined="Predefined time series, dambreakLevelsAndWidths",
+            timeseries="Predefined time series, dambreakLevelsAndWidths",
         )
         return description_dict[self.name]
 
 
 class Dambreak(Structure):
+    class Comments(Structure.Comments):
+        structure_type: Optional[str] = Field(
+            "Structure type; must read dambreak", alias="type"
+        )
+        startlocationx: Optional[str] = Field(
+            "x-coordinate of breach starting point.", alias="startLocationX"
+        )
+        startlocationy: Optional[str] = Field(
+            "y-coordinate of breach starting point.", alias="startLocationY"
+        )
+        algorithm: Optional[str] = Field(
+            "Breach growth algorithm. Possible values are: 1 (van der Knaap (2000)), 2 (Verheij–van der Knaap (2002)), 3: Predefined time series, see dambreakLevelsAndWidths",
+            alias="algorithm",
+        )
+        crestlevelini: Optional[str] = Field(
+            "Initial breach level zcrest level [m AD].", alias="crestLevelIni"
+        )
+        breachwidthini: Optional[str] = Field(
+            "Initial breach width B0 [m].", alias="breachWidthIni"
+        )
+        crestlevelmin: Optional[str] = Field(
+            "Minimal breach level zmin [m AD].", alias="crestLevelMin"
+        )
+        t0: Optional[str] = Field("Breach start time Tstart [s].", alias="t0")
+        timetobreachtomaximumdepth: Optional[str] = Field(
+            "tPhase 1 [s].", alias="timeToBreachToMaximumDepth"
+        )
+        f1: Optional[str] = Field("f1", alias="Factor f1 [-]")
+        f2: Optional[str] = Field("f2", alias="Factor f2 [-]")
+        ucrit: Optional[str] = Field(
+            "uCrit", alias="Critical flow velocity uc for erosion [m/s]."
+        )
+        waterlevelupstreamlocationx: Optional[str] = Field(
+            "(optional) x-coordinate of custom upstream water level point.",
+            alias="waterLevelUpstreamLocationX",
+        )
+        waterlevelupstreamlocationy: Optional[str] = Field(
+            "(optional) y-coordinate of custom upstream water level point.",
+            alias="waterLevelUpstreamLocationY",
+        )
+        waterleveldownstreamlocationx: Optional[str] = Field(
+            "(optional) x-coordinate of custom downstream water level point.",
+            alias="waterLevelDownstreamLocationX",
+        )
+        waterleveldownstreamlocationy: Optional[str] = Field(
+            "(optional) y-coordinate of custom downstream water level point.",
+            alias="waterLevelDownstreamLocationY",
+        )
+        waterlevelupstreamnodeid: Optional[str] = Field(
+            "(optional) Node Id of custom upstream water level point.",
+            alias="waterLevelUpstreamNodeId",
+        )
+        waterleveldownstreamnodeid: Optional[str] = Field(
+            "(optional) Node Id of custom downstream water level point.",
+            alias="waterLevelDownstreamNodeId",
+        )
+        dambreaklevelsandwidths: Optional[str] = Field(
+            "dambreakLevelsAndWidths",
+            alias="(only when algorithm=3) Filename of <*.tim> file (Section C.4) containing the breach levels and widths.",
+        )
+
+    comments: Comments = Comments()
     structure_type: Literal["dambreak"] = Field("dambreak", alias="type")
     startlocationx: float = Field(alias="startLocationX")
     startlocationy: float = Field(alias="startLocationY")
@@ -442,7 +504,7 @@ class Dambreak(Structure):
 
         Raises:
             ValueError: When the value given is not of type int.
-            ValueError: When the value given is not in the limit [1,3]
+            ValueError: When the value given is not in the range [1,3]
 
         Returns:
             int: Validated value.
