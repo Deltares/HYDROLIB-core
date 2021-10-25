@@ -788,8 +788,8 @@ class TestDambreak:
         dambreak = Dambreak(**valid_dambreak_values)
         self.validate_valid_default_dambreak(dambreak)
 
-    def test_given_text_parses_structure(self):
-        # 1. Prepare test data.
+    def test_given_structure_text_with_num_x_y_coordinates_parses_structure(self):
+        # 1. Define structure text.
         structure_text = inspect.cleandoc(
             """
             [Structure]
@@ -819,17 +819,72 @@ class TestDambreak:
             waterLevelDownstreamNodeId = aDownstreamNodeId # Node Id of custom downstream water level point.
             """
         )
+        # 2. Parse data.
+        dambreak_obj = self.parse_dambreak_from_text(structure_text)
+        self.validate_valid_default_dambreak(dambreak_obj)
+
+    def test_given_structure_text_with_polylinefile_parses_structure(self):
+        structure_text = inspect.cleandoc(
+            """
+            [structure]
+            type                       = dambreak  
+            id                         = dambreak  
+            polylinefile               = dambreak2ddrybreach.pli
+            startLocationX             = 1.2 
+            startLocationY             = 4.0
+            algorithm                  = 2             # 1 VdKnaap ,2 Verheij-vdKnaap
+            crestLevelIni              = 0.4
+            breachWidthIni             = 1
+            crestLevelMin              = 0.2
+            timeToBreachToMaximumDepth = 0.1           #in seconds 
+            f1                         = 1
+            f2                         = 1
+            ucrit                      = 0.001
+            t0                         = 0.0001        # make it a boolean
+            dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 1 
+            materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
+            """
+        )
 
         # 2. Parse data.
+        dambreak_obj = self.parse_dambreak_from_text(structure_text)
+        assert dambreak_obj
+        assert isinstance(dambreak_obj, Structure)
+        assert dambreak_obj.structure_type == "dambreak"
+        assert dambreak_obj.id == "dambreak"
+        assert dambreak_obj.startlocationx == 1.2
+        assert dambreak_obj.startlocationy == 4.0
+        assert dambreak_obj.algorithm == 2
+        assert dambreak_obj.crestlevelini == 0.4
+        assert dambreak_obj.breachwidthini == 1
+        assert dambreak_obj.crestlevelmin == 0.2
+        assert dambreak_obj.timetobreachtomaximumdepth == 0.1
+        assert dambreak_obj.f1 == 1
+        assert dambreak_obj.f2 == 1
+        assert dambreak_obj.ucrit == 0.001
+        assert dambreak_obj.t0 == 0.0001
+        assert dambreak_obj.dambreaklevelsandwidths == Path("dambreak.tim")
+        assert dambreak_obj["material_type"] == 1
+
+    def parse_dambreak_from_text(self, structure_text: str) -> Dambreak:
+        """
+        Method just to simplify how the tests can parse a dambreak without having to
+        repeat the same code for each test.
+
+        Args:
+            structure_text (str): Text containing Dambreak structure.
+
+        Returns:
+            Dambreak: Parsed object.
+        """
+        # 1. Parse data.
         parser = Parser(ParserConfig())
         for line in structure_text.splitlines():
             parser.feed_line(line)
         document = parser.finalize()
 
-        dambreak_obj = (
-            WrapperTest[Dambreak].parse_obj({"val": document.sections[0]}).val
-        )
-        assert dambreak_obj
+        # 2. Parse object
+        return WrapperTest[Dambreak].parse_obj({"val": document.sections[0]}).val
 
     def validate_valid_default_dambreak(self, dambreak: Dambreak):
         """
