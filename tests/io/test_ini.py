@@ -334,6 +334,28 @@ class TestParser:
         parser = Parser(config)
         assert parser._is_datarow(line) == expected_result
 
+    @pytest.mark.parametrize(
+        "line,expected_key,expected_value",
+        [
+            ("someParam = 1.0 # comment text", "someparam", "1.0"),
+            ("someParam = 1.0", "someparam", "1.0"),
+            ("someParam = 1d0 # comment text", "someparam", "1e0"),
+            ("someParam = 1d-2", "someparam", "1e-2"),
+            ("someParam = 1d+2", "someparam", "1e+2"),
+            ("someParam = 1.d+2", "someparam", "1.e+2"),
+            ("someParam = -1.d-2", "someparam", "-1.e-2"),
+            ("someParam1D2D = -1.d-2", "someparam1d2d", "-1.e-2"),
+        ],
+    )
+    def test_float_values(
+        self, tmp_path, line: str, expected_key: str, expected_value: str
+    ):
+        parser = Parser(ParserConfig())
+        p = tmp_path / "test.ini"
+        p.write_text("[sectionA]\n" + line)
+        result = Parser.parse(p)
+        assert result["sectiona"][expected_key] == expected_value
+
     def test_feed_comment_at_the_beginning_of_the_document_gets_added_to_the_header(
         self,
     ):
