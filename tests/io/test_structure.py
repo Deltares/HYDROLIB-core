@@ -843,7 +843,7 @@ class TestDambreak:
             f2                         = 1
             ucrit                      = 0.001
             t0                         = 0.0001        # make it a boolean
-            
+            dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 1             
             materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
             """
         )
