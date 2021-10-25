@@ -428,10 +428,10 @@ class Dambreak(Structure):
         timetobreachtomaximumdepth: Optional[str] = Field(
             "tPhase 1 [s].", alias="timeToBreachToMaximumDepth"
         )
-        f1: Optional[str] = Field("f1", alias="Factor f1 [-]")
-        f2: Optional[str] = Field("f2", alias="Factor f2 [-]")
+        f1: Optional[str] = Field("Factor f1 [-]", alias="f1")
+        f2: Optional[str] = Field("Factor f2 [-]", alias="f2")
         ucrit: Optional[str] = Field(
-            "uCrit", alias="Critical flow velocity uc for erosion [m/s]."
+            "Critical flow velocity uc for erosion [m/s].", alias="uCrit"
         )
         waterlevelupstreamlocationx: Optional[str] = Field(
             "(optional) x-coordinate of custom upstream water level point.",
@@ -458,8 +458,8 @@ class Dambreak(Structure):
             alias="waterLevelDownstreamNodeId",
         )
         dambreaklevelsandwidths: Optional[str] = Field(
-            "dambreakLevelsAndWidths",
-            alias="(only when algorithm=3) Filename of <*.tim> file (Section C.4) containing the breach levels and widths.",
+            "(only when algorithm=3) Filename of <*.tim> file (Section C.4) containing the breach levels and widths.",
+            alias="dambreakLevelsAndWidths",
         )
 
     comments: Comments = Comments()
