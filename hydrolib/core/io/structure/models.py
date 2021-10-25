@@ -291,7 +291,7 @@ class Culvert(Structure):
     leftlevel: float = Field(alias="leftLevel")
     rightlevel: float = Field(alias="rightLevel")
     csdefid: str = Field(alias="csDefId")
-    length: float = Field(alias="length")
+    length: float
     inletlosscoeff: float = Field(alias="inletlossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
@@ -403,12 +403,12 @@ class Bridge(Structure):
     allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
 
     csdefid: str = Field(alias="csDefId")
-    shift: float = Field(alias="shift")
+    shift: float
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     frictiontype: str = Field(alias="frictionType")
-    friction: float = Field(alias="friction")
-    length: float = Field(alias="length")
+    friction: float
+    length: float
 
 
 class StructureGeneral(INIGeneral):
