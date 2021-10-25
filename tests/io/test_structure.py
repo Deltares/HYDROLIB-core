@@ -7,6 +7,7 @@ from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
+    Bridge,
     Compound,
     FlowDirection,
     Orifice,
@@ -337,6 +338,189 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     assert expected_message in str(error.value)
 
 
+class TestBridge:
+    """
+    Wrapper class to test all the methods and subclasses in:
+    hydrolib.core.io.structure.models.py Bridge class
+    """
+
+    def test_create_a_bridge_from_scratch(self):
+        bridge = Bridge(
+            id="b003",
+            name="B003",
+            branchid="B1",
+            chainage=5.0,
+            allowedflowdir=FlowDirection.both,
+            csdefid="W_980.1S_0",
+            shift=-1.23,
+            inletlosscoeff=1,
+            outletlosscoeff=1,
+            frictiontype="Strickler",
+            friction=70,
+            length=100,
+            comments=Bridge.Comments(
+                name="B stands for Bridge, 003 because we expect to have at most 999 weirs"
+            ),
+        )
+
+        assert isinstance(
+            bridge, Structure
+        ), "Bridge should also be an instance of a Structure"
+
+        assert bridge.id == "b003"
+        assert bridge.name == "B003"
+        assert bridge.branchid == "B1"
+        assert bridge.chainage == 5.0
+        assert bridge.allowedflowdir == FlowDirection.both
+        assert bridge.csdefid == "W_980.1S_0"
+        assert bridge.shift == -1.23
+        assert bridge.inletlosscoeff == 1
+        assert bridge.outletlosscoeff == 1
+        assert bridge.frictiontype == "Strickler"
+        assert bridge.friction == 70
+        assert bridge.length == 100
+        assert (
+            bridge.comments.name
+            == "B stands for Bridge, 003 because we expect to have at most 999 weirs"
+        )
+
+        assert bridge.comments.id == "Unique structure id (max. 256 characters)."
+
+    def test_bridge_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            type = bridge                   # Structure type; must read bridge
+            id = RS1-KBR31                  # Unique structure id (max. 256 characters).
+            name = RS1-KBR31name            # Given name in the user interface.
+            branchid = riv_RS1_264          # (optional) Branch on which the structure is located.
+            chainage = 104.184              # (optional) Chainage on the branch (m)
+            allowedFlowDir = both           # Possible values: both, positive, negative, none.
+            csDefId = W_980.1S_0            # Id of Cross-Section Definition.
+            shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
+            inletLossCoeff = 1              # Inlet loss coefficient [-], ?_i.
+            outletLossCoeff = 1
+            frictionType = Strickler        # Friction type
+            friction = 70
+            length = 9.75
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+        bridge = wrapper.val
+
+        assert isinstance(
+            bridge, Structure
+        ), "Bridge should also be an instance of a Structure"
+
+        assert bridge.id == "RS1-KBR31"
+        assert bridge.name == "RS1-KBR31name"
+        assert bridge.branchid == "riv_RS1_264"
+        assert bridge.chainage == 104.184
+        assert bridge.structure_type == "bridge"
+        assert bridge.allowedflowdir == FlowDirection.both
+        assert bridge.csdefid == "W_980.1S_0"
+        assert bridge.shift == 0.0
+        assert bridge.inletlosscoeff == 1
+        assert bridge.outletlosscoeff == 1
+        assert bridge.frictiontype == "Strickler"
+        assert bridge.friction == 70
+        assert bridge.length == 9.75
+
+    def test_bridge_with_unknown_parameters(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            type = bridge                   # Structure type; must read bridge
+            id = RS1-KBR31                  # Unique structure id (max. 256 characters).
+            name = RS1-KBR31name            # Given name in the user interface.
+            branchid = riv_RS1_264          # (optional) Branch on which the structure is located.
+            chainage = 104.184              # (optional) Chainage on the branch (m)
+            allowedFlowDir = both           # Possible values: both, positive, negative, none.
+            csDefId = W_980.1S_0            # Id of Cross-Section Definition.
+
+            # ----------------------------------------------------------------------
+            bedLevel           = 10.0        # A deliberately added unknown (in fact: old, unsupported) property
+            # ----------------------------------------------------------------------
+
+            shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
+            inletLossCoeff = 1              # Inlet loss coefficient [-], ?_i.
+            outletLossCoeff = 1
+            frictionType = Strickler        # Friction type
+            friction = 70
+            length = 9.75
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+        bridge = wrapper.val
+
+        assert bridge.bedlevel == "10.0"  # type: ignore (note: deliberately lowercase key here)
+
+        assert bridge.id == "RS1-KBR31"
+        assert bridge.name == "RS1-KBR31name"
+        assert bridge.branchid == "riv_RS1_264"
+        assert bridge.chainage == 104.184
+        assert bridge.structure_type == "bridge"
+        assert bridge.allowedflowdir == FlowDirection.both
+        assert bridge.csdefid == "W_980.1S_0"
+        assert bridge.shift == 0.0
+        assert bridge.inletlosscoeff == 1
+        assert bridge.outletlosscoeff == 1
+        assert bridge.frictiontype == "Strickler"
+        assert bridge.friction == 70
+        assert bridge.length == 9.75
+
+    def test_bridge_with_missing_required_parameters(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            type = bridge                   # Structure type; must read bridge
+            id = RS1-KBR31                  # Unique structure id (max. 256 characters).
+            name = RS1-KBR31name            # Given name in the user interface.
+            branchid = riv_RS1_264          # (optional) Branch on which the structure is located.
+            chainage = 104.184              # (optional) Chainage on the branch (m)
+            allowedFlowDir = both           # Possible values: both, positive, negative, none.
+            # csDefId = W_980.1S_0            # Id of Cross-Section Definition.
+            # shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
+            # inletLossCoeff = 1              # Inlet loss coefficient [-], ?_i.
+            # outletLossCoeff = 1
+            # frictionType = Strickler        # Friction type
+            # friction = 70
+            # length = 9.75
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        expected_message = "7 validation errors for WrapperTest[Bridge]"
+        with pytest.raises(ValueError) as exc_err:
+            wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+            bridge = wrapper.val
+        assert expected_message in str(exc_err.value)
+
+        assert "bridge" not in locals()  # Bridge structure should not have been created
+
+
 class TestStructure:
     """
     Wrapper class to test all the methods and subclasses in:
@@ -398,6 +582,12 @@ class TestStructure:
                     pytest.raises(AssertionError),
                     structure_err,
                     id="Orifice raises.",
+                ),
+                pytest.param(
+                    "bridge",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="Bridge raises.",
                 ),
                 pytest.param(
                     "gate",

@@ -204,6 +204,7 @@ class FlowDirection(str, Enum):
     positive = "positive"
     negative = "negative"
     both = "both"
+    allowedvaluestext = "Possible values: both, positive, negative, none."
 
 
 class Weir(Structure):
@@ -212,7 +213,7 @@ class Weir(Structure):
             "Structure type; must read weir", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
 
         crestlevel: Optional[str] = Field(
@@ -244,7 +245,7 @@ class UniversalWeir(Structure):
             "Structure type; must read universalWeir", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowdir"
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
 
         numlevels: Optional[str] = Field("Number of yz-Values.", alias="numLevels")
@@ -290,7 +291,7 @@ class Culvert(Structure):
     leftlevel: float = Field(alias="leftLevel")
     rightlevel: float = Field(alias="rightLevel")
     csdefid: str = Field(alias="csDefId")
-    length: float = Field(alias="length")
+    length: float
     inletlosscoeff: float = Field(alias="inletlossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
@@ -361,6 +362,53 @@ class Orifice(Structure):
 
     uselimitflowneg: bool = Field(False, alias="useLimitflowNeg")
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
+
+
+class Bridge(Structure):
+    class Comments(Structure.Comments):
+        structure_type: Optional[str] = Field(
+            "Structure type; must read bridge", alias="type"
+        )
+        allowedflowdir: Optional[str] = Field(
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
+        )
+
+        csdefid: Optional[str] = Field(
+            "Id of Cross-Section Definition.", alias="csDefId"
+        )
+        shift: Optional[str] = Field(
+            "Vertical shift of the cross section definition [m]. Defined positive upwards."
+        )
+        inletlosscoeff: Optional[str] = Field(
+            "Inlet loss coefficient [-], ξ_i.",
+            alias="inletLossCoeff",
+        )
+        outletlosscoeff: Optional[str] = Field(
+            "Outlet loss coefficient [-], k.",
+            alias="outletLossCoeff",
+        )
+        frictiontype: Optional[str] = Field(
+            "Friction type, possible values are: Chezy, Manning, wallLawNikuradse, WhiteColebrook, StricklerNikuradse, Strickler, deBosBijkerk.",
+            alias="frictionType",
+        )
+        friction: Optional[str] = Field(
+            "Friction value, used in friction loss.",
+            alias="friction",
+        )
+        length: Optional[str] = Field("Length [m], L.")
+
+    comments: Comments = Comments()
+
+    structure_type: Literal["bridge"] = Field("bridge", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+
+    csdefid: str = Field(alias="csDefId")
+    shift: float
+    inletlosscoeff: float = Field(alias="inletLossCoeff")
+    outletlosscoeff: float = Field(alias="outletLossCoeff")
+    frictiontype: str = Field(alias="frictionType")
+    friction: float
+    length: float
 
 
 class StructureGeneral(INIGeneral):
