@@ -89,6 +89,13 @@ class Structure(INIBasedModel):
             # Compound structure does not require a location specification.
             return values
 
+        # Apparently the overriding functionality does not seem to work in pydantic,
+        # therefore we need to do this.
+        if issubclass(cls, Dambreak):
+            # The check on only_coordinates_structures remains as that handles the case
+            # where a 'flat structure' is created giving the type string name "dambreak".
+            return values
+
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
@@ -398,7 +405,7 @@ class Dambreak(Structure):
     startlocationy: float = Field(alias="startLocationY")
     algorithm: DambreakAlgorithm = Field(alias="algorithm")
 
-    crestlevelini: int = Field(alias="crestLevelIni")
+    crestlevelini: float = Field(alias="crestLevelIni")
     breachwidthini: float = Field(alias="breachWidthIni")
     crestlevelmin: float = Field(alias="crestLevelMin")
     t0: float = Field(alias="t0")

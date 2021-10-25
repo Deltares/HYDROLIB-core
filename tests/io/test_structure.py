@@ -843,7 +843,7 @@ class TestDambreak:
             f2                         = 1
             ucrit                      = 0.001
             t0                         = 0.0001        # make it a boolean
-            dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 1 
+            
             materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
             """
         )
@@ -1040,7 +1040,12 @@ class TestDambreak:
                     dict(), DambreakTestCases.check_location_err, id="Empty dict."
                 ),
                 pytest.param(
-                    dict(numcoordinates=None, xcoordinates=None, ycoordinates=None, polylinefile=None),
+                    dict(
+                        numcoordinates=None,
+                        xcoordinates=None,
+                        ycoordinates=None,
+                        polylinefile=None,
+                    ),
                     DambreakTestCases.check_location_err,
                     id="Dict with Nones.",
                 ),
