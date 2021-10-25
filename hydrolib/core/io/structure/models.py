@@ -482,20 +482,26 @@ class Dambreak(Structure):
     def check_location(cls, values: dict) -> dict:
         """
         Verifies whether the location for this structure contains valid values for
-        numCoordinates, xCoordinates and yCoordinates.
+        numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
 
         Args:
             values (dict): Dictionary of validated values to create a Dambreak.
 
         Raises:
-            ValueError: When the values dictionary does not contain valid coordinates.
+            ValueError: When the values dictionary does not contain valid coordinates or polyline file..
 
         Returns:
             dict: Dictionary of validated values.
         """
-        if Structure.validate_coordinates_in_model(values):
+        if (
+            Structure.validate_coordinates_in_model(values)
+            or values.get("polylinefile", None) is not None
+        ):
             return values
-        raise ValueError("`num/x/yCoordinates` are mandatory for a Dambreak structure.")
+
+        raise ValueError(
+            "`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure."
+        )
 
 
 class StructureGeneral(INIGeneral):

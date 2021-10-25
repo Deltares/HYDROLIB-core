@@ -676,7 +676,9 @@ class TestDambreakAlgorithm:
 class DambreakTestCases:
     """Just a wrapper so it can be referenced from other classes."""
 
-    check_location_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
+    check_location_err = (
+        "`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure."
+    )
     too_few_coords = "Expected at least 2 coordinates, but only {} declared."
     mismatch_coords = (
         "Expected {} coordinates, given {} for x and {} for y coordinates."
@@ -1021,6 +1023,10 @@ class TestDambreak:
                     ),
                     id="With 3 coordinates",
                 ),
+                pytest.param(dict(polylinefile=Path()), id="Empty path"),
+                pytest.param(
+                    dict(polylinefile=Path("aFilePath")), id="Path with file name"
+                ),
             ],
         )
         def test_given_valid_values_returns_values(self, dict_values: dict):
@@ -1034,7 +1040,7 @@ class TestDambreak:
                     dict(), DambreakTestCases.check_location_err, id="Empty dict."
                 ),
                 pytest.param(
-                    dict(numcoordinates=None, xcoordinates=None, ycoordinates=None),
+                    dict(numcoordinates=None, xcoordinates=None, ycoordinates=None, polylinefile=None),
                     DambreakTestCases.check_location_err,
                     id="Dict with Nones.",
                 ),
