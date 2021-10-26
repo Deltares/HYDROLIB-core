@@ -6,11 +6,12 @@ for example if you intend to contribute to the code.
 
 ## Clone the GitHub repo
 Use your own preferred way of cloning the GitHub repository of hydrolib-core.
+In the examples below it is placed in `C:\checkouts\HYDROLIB-core_git`.
 
 ## Use Poetry to install hydrolib-core
 We use `poetry` to manage our package and its dependencies.
 
-1. Download + installation instructions for Poetry are [here](https://python-poetry.org/). In the examples below it is placed in `C:\checkouts\HYDROLIB-core_git`.
+1. Download + installation instructions for Poetry are [here](https://python-poetry.org/).
 2. After installation of Poetry itself, now use it to install your local clone of the hydrolib-core package, as follows.
    Make sure Poetry is available on your `PATH` and run `poetry install` in the hydrolib-core directory in your shell of choice.
    This will create a virtual environment in which hydrolib-core is installed and made available for use in your own scripts.
