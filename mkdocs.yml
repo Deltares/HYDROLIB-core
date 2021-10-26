@@ -59,3 +59,35 @@ extra:
 copyright: Copyright &copy; 2021 Deltares
 extra_css:
   - stylesheets/extra.css
+
+nav:
+    - Home: 'index.md'
+    - How-to:
+        - Installation:
+            - 'pip install': 'guides/setup.md'
+            - 'Developer container': 'guides/devcontainers.md'
+            - 'Local clone + Poetry': 'guides/poetry.md'
+        - Contributing:
+            - 'guides/contributing.md'
+        - Documentation:
+            - 'guides/documentation.md'
+    - Tutorials:
+        - tutorials/steps.md
+        - tutorials/dataframe_handling.md
+        - tutorials/plotting_a_network.md
+    - Topics:
+        - topics/principles.md
+    - API Reference:
+        - reference/api.md
+        - reference/bui.md
+        - reference/dimr.md
+        - reference/ext.md
+        - reference/forcing.md
+        - reference/glossary.md
+        - reference/ini.md
+        - reference/mdu.md
+        - reference/net.md
+        - reference/polyfile.md
+        - reference/structures.md
+        - reference/xyz.md
+    - Changelog: 'changelog.md'
