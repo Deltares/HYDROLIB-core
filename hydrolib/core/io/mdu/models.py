@@ -345,7 +345,7 @@ class Geometry(INIBasedModel):
     crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
     crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
     storagenodefile: Optional[Path] = Field(None, alias="ctorageNodeFile")
-    onedtwodlinkfile: Optional[Path] = Field(None, alias="oneDTwoDLinkFile")
+    onedtwodlinkfile: Optional[Path] = Field(None, alias="1d2dLinkFile")
     proflocfile: Optional[Path] = Field(None, alias="profLocFile")
     profdeffile: Optional[Path] = Field(None, alias="profDefFile")
     profdefxyzfile: Optional[Path] = Field(None, alias="profDefXyzFile")

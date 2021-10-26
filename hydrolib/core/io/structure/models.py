@@ -4,7 +4,6 @@ TODO Implement the following structures
 - Generalstructure
 - Long culvert
 - Gate
-- Dambreak
 
 Add comments for these structures. Maybe link them to descriptions of `Field`s?
 """
@@ -66,6 +65,10 @@ class Structure(INIBasedModel):
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
+    _split_to_list = get_split_string_on_delimiter_validator(
+        "xcoordinates", "ycoordinates"
+    )
+
     @validator("type", pre=True)
     def _validate_type(cls, value):
         return get_from_subclass_defaults(Structure, "type", value)
@@ -94,13 +97,23 @@ class Structure(INIBasedModel):
             # Compound structure does not require a location specification.
             return values
 
+        # Apparently the overriding functionality does not seem to work in pydantic,
+        # therefore we need to do this.
+        if issubclass(cls, Dambreak):
+            # The check on only_coordinates_structures remains as that handles the case
+            # where a 'flat structure' is created giving the type string name "dambreak".
+            return values
+
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
-        if type == "longculvert":
+        only_coordinates_structures = dict(
+            longculvert="LongCulvert", dambreak="Dambreak"
+        )
+        if type in only_coordinates_structures.keys():
             assert (
                 coordinates_in_model
-            ), "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
+            ), f"`num/x/yCoordinates` are mandatory for a {only_coordinates_structures[type]} structure."
             return values
 
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
@@ -147,20 +160,21 @@ class Structure(INIBasedModel):
             values (dict): Dictionary of values to be used to generate a structure.
 
         Raises:
+            ValueError: When the given coordinates is less than 2.
             ValueError: When the given coordinates do not match in expected size.
 
         Returns:
             bool: Result of valid coordinates in dictionary.
         """
-        coordinates_in_model = (
-            "numcoordinates" in values
-            and "xcoordinates" in values
-            and "ycoordinates" in values
-        )
-        if not coordinates_in_model:
+        searched_keys = ["numcoordinates", "xcoordinates", "ycoordinates"]
+        if any(values.get(k, None) is None for k in searched_keys):
             return False
 
         n_coords = values["numcoordinates"]
+        if n_coords < 2:
+            raise ValueError(
+                f"Expected at least 2 coordinates, but only {n_coords} declared."
+            )
 
         def get_coord_len(coord: str) -> int:
             if values[coord] is None:
@@ -212,13 +226,14 @@ class FlowDirection(str, Enum):
     positive = "positive"
     negative = "negative"
     both = "both"
+    allowedvaluestext = "Possible values: both, positive, negative, none."
 
 
 class Weir(Structure):
     class Comments(Structure.Comments):
         type: Optional[str] = Field("Structure type; must read weir", alias="type")
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowDir"
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
 
         crestlevel: Optional[str] = Field(
@@ -252,7 +267,7 @@ class UniversalWeir(Structure):
             "Structure type; must read universalWeir", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
-            "Possible values: both, positive, negative, none.", alias="allowedFlowDir"
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
 
         numlevels: Optional[str] = Field("Number of yz-Values.", alias="numLevels")
@@ -374,6 +389,245 @@ class Orifice(Structure):
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
+
+class DambreakAlgorithm(int, Enum):
+    van_der_knaap = 1  # "van der Knaap, 2000"
+    verheij_van_der_knaap = 2  # "Verheij-van der Knaap, 2002"
+    timeseries = 3  # "Predefined time series, dambreakLevelsAndWidths."
+
+    @property
+    def description(self) -> str:
+        """
+        Property to return the description of the enums defined above.
+        Useful for comments in output files.
+
+        Returns:
+            str: Description for the current enum.
+        """
+        description_dict = dict(
+            van_der_knaap="van der Knaap, 2000",
+            verheij_van_der_knaap="Verheij-van der Knaap, 2002",
+            timeseries="Predefined time series, dambreakLevelsAndWidths",
+        )
+        return description_dict[self.name]
+
+
+class Dambreak(Structure):
+    class Comments(Structure.Comments):
+        type: Optional[str] = Field("Structure type; must read dambreak", alias="type")
+        startlocationx: Optional[str] = Field(
+            "x-coordinate of breach starting point.", alias="startLocationX"
+        )
+        startlocationy: Optional[str] = Field(
+            "y-coordinate of breach starting point.", alias="startLocationY"
+        )
+        algorithm: Optional[str] = Field(
+            "Breach growth algorithm. Possible values are: 1 (van der Knaap (2000)), 2 (Verheij–van der Knaap (2002)), 3: Predefined time series, see dambreakLevelsAndWidths",
+            alias="algorithm",
+        )
+        crestlevelini: Optional[str] = Field(
+            "Initial breach level zcrest level [m AD].", alias="crestLevelIni"
+        )
+        breachwidthini: Optional[str] = Field(
+            "Initial breach width B0 [m].", alias="breachWidthIni"
+        )
+        crestlevelmin: Optional[str] = Field(
+            "Minimal breach level zmin [m AD].", alias="crestLevelMin"
+        )
+        t0: Optional[str] = Field("Breach start time Tstart [s].", alias="t0")
+        timetobreachtomaximumdepth: Optional[str] = Field(
+            "tPhase 1 [s].", alias="timeToBreachToMaximumDepth"
+        )
+        f1: Optional[str] = Field("Factor f1 [-]", alias="f1")
+        f2: Optional[str] = Field("Factor f2 [-]", alias="f2")
+        ucrit: Optional[str] = Field(
+            "Critical flow velocity uc for erosion [m/s].", alias="uCrit"
+        )
+        waterlevelupstreamlocationx: Optional[str] = Field(
+            "(optional) x-coordinate of custom upstream water level point.",
+            alias="waterLevelUpstreamLocationX",
+        )
+        waterlevelupstreamlocationy: Optional[str] = Field(
+            "(optional) y-coordinate of custom upstream water level point.",
+            alias="waterLevelUpstreamLocationY",
+        )
+        waterleveldownstreamlocationx: Optional[str] = Field(
+            "(optional) x-coordinate of custom downstream water level point.",
+            alias="waterLevelDownstreamLocationX",
+        )
+        waterleveldownstreamlocationy: Optional[str] = Field(
+            "(optional) y-coordinate of custom downstream water level point.",
+            alias="waterLevelDownstreamLocationY",
+        )
+        waterlevelupstreamnodeid: Optional[str] = Field(
+            "(optional) Node Id of custom upstream water level point.",
+            alias="waterLevelUpstreamNodeId",
+        )
+        waterleveldownstreamnodeid: Optional[str] = Field(
+            "(optional) Node Id of custom downstream water level point.",
+            alias="waterLevelDownstreamNodeId",
+        )
+        dambreaklevelsandwidths: Optional[str] = Field(
+            "(only when algorithm=3) Filename of <*.tim> file (Section C.4) containing the breach levels and widths.",
+            alias="dambreakLevelsAndWidths",
+        )
+
+    comments: Comments = Comments()
+    type: Literal["dambreak"] = Field("dambreak", alias="type")
+    startlocationx: float = Field(alias="startLocationX")
+    startlocationy: float = Field(alias="startLocationY")
+    algorithm: DambreakAlgorithm = Field(alias="algorithm")
+
+    crestlevelini: float = Field(alias="crestLevelIni")
+    breachwidthini: float = Field(alias="breachWidthIni")
+    crestlevelmin: float = Field(alias="crestLevelMin")
+    t0: float = Field(alias="t0")
+    timetobreachtomaximumdepth: float = Field(alias="timeToBreachToMaximumDepth")
+    f1: float = Field(alias="f1")
+    f2: float = Field(alias="f2")
+    ucrit: float = Field(alias="uCrit")
+    waterlevelupstreamlocationx: Optional[float] = Field(
+        alias="waterLevelUpstreamLocationX"
+    )
+    waterlevelupstreamlocationy: Optional[float] = Field(
+        alias="waterLevelUpstreamLocationY"
+    )
+    waterleveldownstreamlocationx: Optional[float] = Field(
+        alias="waterLevelDownstreamLocationX"
+    )
+    waterleveldownstreamlocationy: Optional[float] = Field(
+        alias="waterLevelDownstreamLocationY"
+    )
+    waterlevelupstreamnodeid: Optional[str] = Field(alias="waterLevelUpstreamNodeId")
+    waterleveldownstreamnodeid: Optional[str] = Field(
+        alias="waterLevelDownstreamNodeId"
+    )
+    dambreaklevelsandwidths: Optional[Path] = Field(alias="dambreakLevelsAndWidths")
+
+    @validator("algorithm", pre=True)
+    @classmethod
+    def validate_algorithm(cls, value: str) -> DambreakAlgorithm:
+        """
+        Validates the algorithm parameter for the dambreak structure.
+
+        Args:
+            value (int): algorithm value read from the user's input.
+
+        Raises:
+            ValueError: When the value given is not of type int.
+            ValueError: When the value given is not in the range [1,3]
+
+        Returns:
+            int: Validated value.
+        """
+        int_value = -1
+        try:
+            int_value = int(value)
+        except Exception:
+            raise ValueError("Dambreak algorithm value should be of type int.")
+        if 0 < int_value <= 3:
+            return DambreakAlgorithm(int_value)
+        raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
+
+    @validator("dambreaklevelsandwidths")
+    @classmethod
+    def validate_dambreak_levels_and_widths(
+        cls, field_value: Optional[Path], values: dict
+    ) -> Optional[Path]:
+        """
+        Validates whether a dambreak can be created with the given dambreakLevelsAndWidths
+        property. This property should be given when the algorithm value is 3.
+
+        Args:
+            field_value (Optional[Path]): Value given for dambreakLevelsAndWidths.
+            values (dict): Dictionary of values already validated (assuming algorithm is in it).
+
+        Raises:
+            ValueError: When algorithm value is not 3 and field_value has a value.
+
+        Returns:
+            Optional[Path]: The value given for dambreakLevelsAndwidths.
+        """
+        # Retrieve the algorithm value (if not found use 0).
+        algorithm_value = values.get("algorithm", 0)
+        if field_value is not None and algorithm_value != 3:
+            # dambreakLevelsAndWidths can only be set when algorithm = 3
+            raise ValueError(
+                f"Dambreak field dambreakLevelsAndWidths can only be set when algorithm = 3, current value: {algorithm_value}."
+            )
+        return field_value
+
+    @root_validator
+    @classmethod
+    def check_location(cls, values: dict) -> dict:
+        """
+        Verifies whether the location for this structure contains valid values for
+        numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
+
+        Args:
+            values (dict): Dictionary of validated values to create a Dambreak.
+
+        Raises:
+            ValueError: When the values dictionary does not contain valid coordinates or polyline file..
+
+        Returns:
+            dict: Dictionary of validated values.
+        """
+        if (
+            Structure.validate_coordinates_in_model(values)
+            or values.get("polylinefile", None) is not None
+        ):
+            return values
+
+        raise ValueError(
+            "`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure."
+        )
+
+
+class Bridge(Structure):
+    class Comments(Structure.Comments):
+        type: Optional[str] = Field("Structure type; must read bridge", alias="type")
+        allowedflowdir: Optional[str] = Field(
+            FlowDirection.allowedvaluestext, alias="allowedFlowdir"
+        )
+
+        csdefid: Optional[str] = Field(
+            "Id of Cross-Section Definition.", alias="csDefId"
+        )
+        shift: Optional[str] = Field(
+            "Vertical shift of the cross section definition [m]. Defined positive upwards."
+        )
+        inletlosscoeff: Optional[str] = Field(
+            "Inlet loss coefficient [-], ξ_i.",
+            alias="inletLossCoeff",
+        )
+        outletlosscoeff: Optional[str] = Field(
+            "Outlet loss coefficient [-], k.",
+            alias="outletLossCoeff",
+        )
+        frictiontype: Optional[str] = Field(
+            "Friction type, possible values are: Chezy, Manning, wallLawNikuradse, WhiteColebrook, StricklerNikuradse, Strickler, deBosBijkerk.",
+            alias="frictionType",
+        )
+        friction: Optional[str] = Field(
+            "Friction value, used in friction loss.",
+            alias="friction",
+        )
+        length: Optional[str] = Field("Length [m], L.")
+
+    comments: Comments = Comments()
+
+    type: Literal["bridge"] = Field("bridge", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+
+    csdefid: str = Field(alias="csDefId")
+    shift: float
+    inletlosscoeff: float = Field(alias="inletLossCoeff")
+    outletlosscoeff: float = Field(alias="outletLossCoeff")
+    frictiontype: str = Field(alias="frictionType")
+    friction: float
+    length: float
 
 
 class StructureGeneral(INIGeneral):
