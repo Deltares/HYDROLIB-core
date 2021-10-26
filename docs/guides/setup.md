@@ -19,3 +19,5 @@ conda install hydrolib-core -c conda-forge
     If you use `conda`, it's advisable to install hydrolib-core
     within a new environment with only `conda-forge` as channel. 
 -->
+
+After successful installation, you should be able to do the ["First steps" tutorial](../tutorials/steps.md). 
