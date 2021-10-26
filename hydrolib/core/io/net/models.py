@@ -76,19 +76,41 @@ class Mesh2d(BaseModel):
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
-    mesh2d_node_x: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_node_y: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_node_z: np.ndarray = np.empty(0, dtype=np.double)
+    mesh2d_node_x: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_node_y: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_node_z: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
 
-    mesh2d_edge_x: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_edge_y: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_edge_z: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_edge_nodes: np.ndarray = np.empty((0, 2), dtype=np.int32)
+    mesh2d_edge_x: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_edge_y: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_edge_z: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_edge_nodes: np.ndarray = Field(
+        default_factory=lambda: np.empty((0, 2), dtype=np.int32)
+    )
 
-    mesh2d_face_x: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_face_y: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_face_z: np.ndarray = np.empty(0, dtype=np.double)
-    mesh2d_face_nodes: np.ndarray = np.empty((0, 0), dtype=np.int32)
+    mesh2d_face_x: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_face_y: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_face_z: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_face_nodes: np.ndarray = Field(
+        default_factory=lambda: np.empty((0, 0), dtype=np.int32)
+    )
 
     def is_empty(self) -> bool:
         """Determine whether this Mesh2d is empty.
@@ -382,10 +404,12 @@ class Link1d2d(BaseModel):
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
-    link1d2d_id: np.ndarray = np.empty(0, object)
-    link1d2d_long_name: np.ndarray = np.empty(0, object)
-    link1d2d_contact_type: np.ndarray = np.empty(0, np.int32)
-    link1d2d: np.ndarray = np.empty((0, 2), np.int32)
+    link1d2d_id: np.ndarray = Field(default_factory=lambda: np.empty(0, object))
+    link1d2d_long_name: np.ndarray = Field(default_factory=lambda: np.empty(0, object))
+    link1d2d_contact_type: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.int32)
+    )
+    link1d2d: np.ndarray = Field(default_factory=lambda: np.empty((0, 2), np.int32))
 
     def is_empty(self) -> bool:
         """Whether this Link1d2d is currently empty.
@@ -407,10 +431,12 @@ class Link1d2d(BaseModel):
 
     def clear(self) -> None:
         """Remove all saved links from the links administration"""
-        self.link1d2d_id = np.empty(0, object)
-        self.link1d2d_long_name = np.empty(0, object)
-        self.link1d2d_contact_type = np.empty(0, np.int32)
-        self.link1d2d = np.empty((0, 2), np.int32)
+        self.link1d2d_id = Field(default_factory=lambda: np.empty(0, object))
+        self.link1d2d_long_name = Field(default_factory=lambda: np.empty(0, object))
+        self.link1d2d_contact_type = Field(
+            default_factory=lambda: np.empty(0, np.int32)
+        )
+        self.link1d2d = Field(default_factory=lambda: np.empty((0, 2), np.int32))
 
     def _process(self) -> None:
         """
@@ -481,31 +507,55 @@ class Mesh1d(BaseModel):
 
     branches: Dict[str, Branch] = {}
 
-    network1d_node_id: np.ndarray = np.empty(0, object)
-    network1d_node_long_name: np.ndarray = np.empty(0, object)
-    network1d_node_x: np.ndarray = np.empty(0, np.double)
-    network1d_node_y: np.ndarray = np.empty(0, np.double)
-    network1d_branch_id: np.ndarray = np.empty(0, object)
-    network1d_branch_long_name: np.ndarray = np.empty(0, object)
-    network1d_branch_length: np.ndarray = np.empty(0, np.double)
-    network1d_branch_order: np.ndarray = np.empty(0, np.int32)
-    network1d_edge_nodes: np.ndarray = np.empty((0, 2), np.int32)
-    network1d_geom_x: np.ndarray = np.empty(0, np.double)
-    network1d_geom_y: np.ndarray = np.empty(0, np.double)
-    network1d_part_node_count: np.ndarray = np.empty(0, np.int32)
+    network1d_node_id: np.ndarray = Field(default_factory=lambda: np.empty(0, object))
+    network1d_node_long_name: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, object)
+    )
+    network1d_node_x: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    network1d_node_y: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    network1d_branch_id: np.ndarray = Field(default_factory=lambda: np.empty(0, object))
+    network1d_branch_long_name: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, object)
+    )
+    network1d_branch_length: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.double)
+    )
+    network1d_branch_order: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.int32)
+    )
+    network1d_edge_nodes: np.ndarray = Field(
+        default_factory=lambda: np.empty((0, 2), np.int32)
+    )
+    network1d_geom_x: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    network1d_geom_y: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    network1d_part_node_count: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.int32)
+    )
 
-    mesh1d_node_x: np.ndarray = np.empty(0, np.double)
-    mesh1d_node_y: np.ndarray = np.empty(0, np.double)
-    mesh1d_node_id: np.ndarray = np.empty(0, object)
-    mesh1d_node_long_name: np.ndarray = np.empty(0, object)
-    mesh1d_node_branch_id: np.ndarray = np.empty(0, np.int32)
-    mesh1d_node_branch_offset: np.ndarray = np.empty(0, np.double)
+    mesh1d_node_x: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    mesh1d_node_y: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    mesh1d_node_id: np.ndarray = Field(default_factory=lambda: np.empty(0, object))
+    mesh1d_node_long_name: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, object)
+    )
+    mesh1d_node_branch_id: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.int32)
+    )
+    mesh1d_node_branch_offset: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.double)
+    )
 
-    mesh1d_edge_nodes: np.ndarray = np.empty((0, 2), np.int32)
-    mesh1d_edge_x: np.ndarray = np.empty(0, np.double)
-    mesh1d_edge_y: np.ndarray = np.empty(0, np.double)
-    mesh1d_edge_branch_id: np.ndarray = np.empty(0, np.int32)
-    mesh1d_edge_branch_offset: np.ndarray = np.empty(0, np.double)
+    mesh1d_edge_nodes: np.ndarray = Field(
+        default_factory=lambda: np.empty((0, 2), np.int32)
+    )
+    mesh1d_edge_x: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    mesh1d_edge_y: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
+    mesh1d_edge_branch_id: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.int32)
+    )
+    mesh1d_edge_branch_offset: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.double)
+    )
 
     def is_empty(self) -> bool:
         return self.mesh1d_node_x.size == 0
