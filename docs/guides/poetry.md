@@ -66,3 +66,6 @@ by first starting a poetry shell with the virtual hydrolib-core environment:
 (base) PS C:\checkouts\HYDROLIB-core_git> code
 ```
 
+!!! note
+    If you use `conda`, do not combine conda virtual environments with the poetry virtual environment.
+    In other words, run the `poetry install` command from the `base` conda environment.
