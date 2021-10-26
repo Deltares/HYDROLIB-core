@@ -69,3 +69,18 @@ by first starting a poetry shell with the virtual hydrolib-core environment:
 !!! note
     If you use `conda`, do not combine conda virtual environments with the poetry virtual environment.
     In other words, run the `poetry install` command from the `base` conda environment.
+
+## Frequently asked questions
+- How to fix "File ... does not exist" errors during `poetry install` as in the example below?
+```
+  * Installing six (1.16.0)
+
+  ValueError
+
+  File \C:\Users\dam_ar\AppData\Local\pypoetry\Cache\artifacts\48\e6\04\8118155ae3ec3a16dd2a213bbf7a7d8a62c596b2e90f73a22c896269f1\six-1.16.0-py2.py3-none-any.whl does not exist
+```
+  This may occur when a conda environment was activated.
+  Delete the `AppData\Local\pypoetry\Cache` directory.
+  Then run `conda deactivate` to return to the base environment.
+  Finally, rerun `poetry install`.
+
