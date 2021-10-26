@@ -350,7 +350,6 @@ class TestParser:
     def test_float_values(
         self, tmp_path, line: str, expected_key: str, expected_value: str
     ):
-        parser = Parser(ParserConfig())
         p = tmp_path / "test.ini"
         p.write_text("[sectionA]\n" + line)
         result = Parser.parse(p)
