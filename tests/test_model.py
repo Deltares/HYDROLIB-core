@@ -230,6 +230,7 @@ def test_mdu_from_scratch():
     model.save()
 
 
+@pytest.mark.filterwarnings("ignore:File.*not found:UserWarning")
 def test_read_ext_missing_boundary_field_raises_correct_error():
     file = "missing_boundary_field.ext"
     identifier = "Boundary2"

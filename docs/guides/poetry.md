@@ -33,18 +33,32 @@ Installing the current project: hydrolib-core (0.1.3)
 3. Test your installation, by running the hydrolib-core pytest suite via poetry:
 ```
 (base) PS C:\checkouts\HYDROLIB-core_git> poetry run pytest
-================================================= test session starts =================================================
+===================================== test session starts ======================================
 platform win32 -- Python 3.8.8, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
 rootdir: C:\checkouts\HYDROLIB-core_git, configfile: pyproject.toml
 plugins: cov-2.12.1
-collected 426 items / 2 deselected / 424 selected
+collected 473 items / 2 deselected / 471 selected
 
-tests\test_model.py ...............                                                                              [  3%]
-tests\test_utils.py .......                                                                                      [  5%]
-[..]
+tests\test_model.py ...............                                                       [  3%]
+tests\test_utils.py .......                                                               [  4%]
+tests\io\test_bc.py ....                                                                  [  5%]
+tests\io\test_bui.py ...........................                                          [ 11%]
+tests\io\test_dimr.py ...                                                                 [ 11%]
+tests\io\test_docker.py .                                                                 [ 12%]
+tests\io\test_ext.py ........................................................             [ 23%]
+tests\io\test_fnm.py ..................                                                   [ 27%]
+tests\io\test_ini.py .................................................................... [ 42%]
+.........................................................                                 [ 54%]
+tests\io\test_net.py ............                                                         [ 56%]
+tests\io\test_parser.py .                                                                 [ 57%]
+tests\io\test_polyfile.py ............................................................... [ 70%]
+....................................                                                      [ 78%]
+tests\io\test_structure.py .............................................................. [ 91%]
+.........................................                                                 [100%]
+
+============================== 471 passed, 2 deselected in 3.50s ===============================
 (base) PS C:\checkouts\HYDROLIB-core_git>
-```
-
+```   
 4. Start using hydrolib-core. You can launch your favourite editor (for example VS Code)
 by first starting a poetry shell with the virtual hydrolib-core environment:
 ```

@@ -11,7 +11,8 @@ from ..utils import test_output_dir
 def test_from_scratch_docker():
     # TODO Make this model run in Docker to test actual validity
     dimr = DIMR()
-    fm = FMModel(filepath="test.mdu")
+    fm = FMModel()
+    fm.filepath = "test.mdu"
     # debug(fm.geometry.netfile)
     # manipulate the model
     # Start adding geometry
