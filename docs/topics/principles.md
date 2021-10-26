@@ -77,7 +77,7 @@ You can see this tree structure if you call `show_tree`.
 # Parsing and serializing `INIBasedModels`
 Parsing an INI file should be case-insensitive. To achieve this, the parsable field names of each `INIBasedModel` should be equal to the expected key in the file in lower case. 
 
-Some property values are explicitly made case-insensitive for parsing as well. This applies to enum values and values that represent a specific type of `INIBasedModel` (such as the type property of a structure). To support this, custom validators are placed to compare the given value with the available known values. 
+Some property values are explicitly made case-insensitive for parsing as well. This applies to enum values and values that represent a specific type of `INIBasedModel`, such as the type property of a structure. To support this, custom validators are placed to compare the given value with the available known values. Structures are initialized based on the value in the `type` field. The value of this field of each subclass of a `Structure` is compared to the input and the subclass with the corresponding type is initialized. 
 
 The serialization of an `INIBasedModel` to an INI file should respect certain casing rules (overriding the casing used by the user):
 - Property keys need to be "lowerCamelCase"
