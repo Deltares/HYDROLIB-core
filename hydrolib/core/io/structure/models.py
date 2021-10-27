@@ -17,7 +17,11 @@ from pydantic import Field
 from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.io.ini.util import (
+    get_enum_validator,
+    get_from_subclass_defaults,
+    get_split_string_on_delimiter_validator,
+)
 from hydrolib.core.utils import str_is_empty_or_none
 
 logger = logging.getLogger(__name__)
@@ -50,12 +54,12 @@ class Structure(INIBasedModel):
 
     _header: Literal["Structure"] = "Structure"
 
-    id: str = Field("id", max_length=256)
-    name: str = Field("id")
-    structure_type: str = Field(alias="type")
+    id: str = Field("id", max_length=256, alias="id")
+    name: str = Field("id", alias="name")
+    type: str = Field(alias="type")
 
     branchid: Optional[str] = Field(None, alias="branchId")
-    chainage: Optional[float] = None
+    chainage: Optional[float] = Field(None, alias="chainage")
 
     numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
@@ -65,27 +69,31 @@ class Structure(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
+    @validator("type", pre=True)
+    def _validate_type(cls, value):
+        return get_from_subclass_defaults(Structure, "type", value)
+
     @root_validator
     @classmethod
     def check_location(cls, values: dict) -> dict:
         """
         Validates the location of the structure based on the given parameters.
-        For instance, if a branchId is given, then it is expected also the chainage,
-        otherwise numCoordinates x and yCoordinates shall be expected.
+        For instance, if a branchid is given, then it is expected also the chainage,
+        otherwise numcoordinates xcoordinates and ycoordinates shall be expected.
 
         Args:
             values (dict): Dictionary of values validated for the new structure.
 
         Raises:
             ValueError: When branchid or chainage values are not valid (empty strings).
-            ValueError: When the number of coordinates (x,y) do not match numCoordinates.
+            ValueError: When the number of xcoordinates and ycoordinates do not match numcoordinates.
 
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
         filtered_values = {k: v for k, v in values.items() if v is not None}
-        structure_type = filtered_values.get("structure_type", "").lower()
-        if structure_type == "compound" or issubclass(cls, Compound):
+        type = filtered_values.get("type", "").lower()
+        if type == "compound" or issubclass(cls, Compound):
             # Compound structure does not require a location specification.
             return values
 
@@ -102,10 +110,10 @@ class Structure(INIBasedModel):
         only_coordinates_structures = dict(
             longculvert="LongCulvert", dambreak="Dambreak"
         )
-        if structure_type in only_coordinates_structures.keys():
+        if type in only_coordinates_structures.keys():
             assert (
                 coordinates_in_model
-            ), f"`num/x/yCoordinates` are mandatory for a {only_coordinates_structures[structure_type]} structure."
+            ), f"`num/x/yCoordinates` are mandatory for a {only_coordinates_structures[type]} structure."
             return values
 
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
@@ -119,17 +127,17 @@ class Structure(INIBasedModel):
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:
         """
-        Static method to validate whether the given branchId and chainage values
+        Static method to validate whether the given branchid and chainage values
         match the expectation of a new structure.
 
         Args:
             values (dict): Dictionary of values to be used to generate a structure.
 
         Raises:
-            ValueError: When the value for branchId or chainage are not valid.
+            ValueError: When the value for branchid or chainage are not valid.
 
         Returns:
-            bool: Result of valid branchId / chainage in dictionary.
+            bool: Result of valid branchid / chainage in dictionary.
         """
         branchid = values.get("branchid", None)
         if branchid is None:
@@ -138,7 +146,7 @@ class Structure(INIBasedModel):
         chainage = values.get("chainage", None)
         if str_is_empty_or_none(branchid) or chainage is None:
             raise ValueError(
-                "A valid value for branchId and chainage is required when branchid key is specified."
+                "A valid value for branchId and chainage is required when branchId key is specified."
             )
         return True
 
@@ -178,24 +186,31 @@ class Structure(INIBasedModel):
         if n_coords == len_x_coords == len_y_coords:
             return True
         raise ValueError(
-            f"Expected {n_coords} coordinates, given {len_x_coords} for x and {len_y_coords} for y coordinates."
+            f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on function field."""
+        """Try to iniatialize subclass based on the `type` field.
+        This field is compared to each `type` field of the derived models of `Structure`.
+        The derived model with an equal structure type will be initialized.
+
+        Raises:
+            ValueError: When the given type is not a known structure type.
+        """
+
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
             for c in cls.__subclasses__():
                 if (
-                    c.__fields__.get("structure_type").default
+                    c.__fields__.get("type").default.lower()
                     == v.get("type", "").lower()
                 ):
                     v = c(**v)
                     break
             else:
-                logger.warning(
+                raise ValueError(
                     f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
                 )
         return super().validate(v)
@@ -223,9 +238,7 @@ class FlowDirection(str, Enum):
 
 class Weir(Structure):
     class Comments(Structure.Comments):
-        structure_type: Optional[str] = Field(
-            "Structure type; must read weir", alias="type"
-        )
+        type: Optional[str] = Field("Structure type; must read weir", alias="type")
         allowedflowdir: Optional[str] = Field(
             FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
@@ -244,18 +257,20 @@ class Weir(Structure):
 
     comments: Comments = Comments()
 
-    structure_type: Literal["weir"] = Field("weir", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["weir"] = Field("weir", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
+    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
 
 class UniversalWeir(Structure):
     class Comments(Structure.Comments):
-        structure_type: Optional[str] = Field(
+        type: Optional[str] = Field(
             "Structure type; must read universalWeir", alias="type"
         )
         allowedflowdir: Optional[str] = Field(
@@ -280,8 +295,8 @@ class UniversalWeir(Structure):
 
     comments: Comments = Comments()
 
-    structure_type: Literal["universalWeir"] = Field("universalWeir", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["universalWeir"] = Field("universalWeir", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     numlevels: int = Field(alias="numLevels")
     yvalues: List[float] = Field(alias="yValues")
@@ -290,6 +305,7 @@ class UniversalWeir(Structure):
     dischargecoeff: float = Field(alias="dischargeCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("yvalues", "zvalues")
+    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
 
 class CulvertSubType(str, Enum):
@@ -299,14 +315,14 @@ class CulvertSubType(str, Enum):
 
 class Culvert(Structure):
 
-    structure_type: Literal["culvert"] = Field("culvert", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["culvert"] = Field("culvert", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     leftlevel: float = Field(alias="leftLevel")
     rightlevel: float = Field(alias="rightLevel")
     csdefid: str = Field(alias="csDefId")
-    length: float
-    inletlosscoeff: float = Field(alias="inletlossCoeff")
+    length: float = Field(alias="length")
+    inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
     valveopeningheight: Union[float, Path] = Field(alias="valveOpeningHeight")
@@ -319,23 +335,25 @@ class Culvert(Structure):
     bendlosscoeff: float = Field(alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
+    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+    _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
 
 
 class Pump(Structure):
 
-    structure_type: Literal["pump"] = Field("pump", alias="type")
+    type: Literal["pump"] = Field("pump", alias="type")
 
-    orientation: str
+    orientation: str = Field(alias="orientation")
     controlside: str = Field(alias="controlSide")  # TODO Enum
     numstages: int = Field(0, alias="numStages")
-    capacity: Union[float, Path]
+    capacity: Union[float, Path] = Field(alias="capacity")
 
     startlevelsuctionside: List[float] = Field(alias="startLevelSuctionSide")
     stoplevelsuctionside: List[float] = Field(alias="stopLevelSuctionSide")
     startleveldeliveryside: List[float] = Field(alias="startLevelDeliverySide")
     stopleveldeliveryside: List[float] = Field(alias="stopLevelDeliverySide")
     numreductionlevels: int = Field(0, alias="numReductionLevels")
-    head: List[float]
+    head: List[float] = Field(alias="head")
     reductionfactor: List[float] = Field(alias="reductionFactor")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -350,7 +368,7 @@ class Pump(Structure):
 
 class Compound(Structure):
 
-    structure_type: Literal["compound"] = Field("compound", alias="type")
+    type: Literal["compound"] = Field("compound", alias="type")
     numstructures: int = Field(alias="numStructures")
     structureids: List[str] = Field(alias="structureIds")
 
@@ -361,8 +379,8 @@ class Compound(Structure):
 
 class Orifice(Structure):
 
-    structure_type: Literal["orifice"] = Field("orifice", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
+    type: Literal["orifice"] = Field("orifice", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
@@ -374,8 +392,10 @@ class Orifice(Structure):
     uselimitflowpos: bool = Field(False, alias="useLimitFlowPos")
     limitflowpos: Optional[float] = Field(alias="limitFlowPos")
 
-    uselimitflowneg: bool = Field(False, alias="useLimitflowNeg")
+    uselimitflowneg: bool = Field(False, alias="useLimitFlowNeg")
     limitflowneg: Optional[float] = Field(alias="limitFlowneg")
+
+    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
 
 class DambreakAlgorithm(int, Enum):
@@ -402,9 +422,7 @@ class DambreakAlgorithm(int, Enum):
 
 class Dambreak(Structure):
     class Comments(Structure.Comments):
-        structure_type: Optional[str] = Field(
-            "Structure type; must read dambreak", alias="type"
-        )
+        type: Optional[str] = Field("Structure type; must read dambreak", alias="type")
         startlocationx: Optional[str] = Field(
             "x-coordinate of breach starting point.", alias="startLocationX"
         )
@@ -463,7 +481,7 @@ class Dambreak(Structure):
         )
 
     comments: Comments = Comments()
-    structure_type: Literal["dambreak"] = Field("dambreak", alias="type")
+    type: Literal["dambreak"] = Field("dambreak", alias="type")
     startlocationx: float = Field(alias="startLocationX")
     startlocationy: float = Field(alias="startLocationY")
     algorithm: DambreakAlgorithm = Field(alias="algorithm")
@@ -576,9 +594,7 @@ class Dambreak(Structure):
 
 class Bridge(Structure):
     class Comments(Structure.Comments):
-        structure_type: Optional[str] = Field(
-            "Structure type; must read bridge", alias="type"
-        )
+        type: Optional[str] = Field("Structure type; must read bridge", alias="type")
         allowedflowdir: Optional[str] = Field(
             FlowDirection.allowedvaluestext, alias="allowedFlowdir"
         )
@@ -609,7 +625,7 @@ class Bridge(Structure):
 
     comments: Comments = Comments()
 
-    structure_type: Literal["bridge"] = Field("bridge", alias="type")
+    type: Literal["bridge"] = Field("bridge", alias="type")
     allowedflowdir: FlowDirection = Field(alias="allowedFlowdir")
 
     csdefid: str = Field(alias="csDefId")
@@ -623,8 +639,8 @@ class Bridge(Structure):
 
 class StructureGeneral(INIGeneral):
     _header: Literal["General"] = "General"
-    fileVersion: str = "3.00"
-    fileType: Literal["structure"] = "structure"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
 class StructureModel(INIModel):

@@ -1,8 +1,10 @@
 """util.py provides additional utility methods related to handling ini files.
 """
-from typing import Any
+from enum import Enum
+from typing import Any, Type
 
 from pydantic.class_validators import validator
+from pydantic.main import BaseModel
 
 
 def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
@@ -29,6 +31,22 @@ def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = N
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
 
+def get_enum_validator(*field_name: str, enum: Type[Enum]):
+    """Get a case-insensitive enum validator that will returns the corresponding enum value.
+
+    Args:
+        enum (Type[Enum]): The enum type for which to validate.
+    """
+
+    def get_enum(v):
+        for entry in enum:
+            if entry.lower() == v.lower():
+                return entry
+        return v
+
+    return validator(*field_name, allow_reuse=True, pre=True)(get_enum)
+
+
 def make_list_validator(*field_name: str):
     """Get a validator make a list of object if a single object is passed."""
 
@@ -38,3 +56,22 @@ def make_list_validator(*field_name: str):
         return v
 
     return validator(*field_name, allow_reuse=True, pre=True)(split)
+
+
+def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
+    """Gets a value that corresponds with the default field value of one of the subclasses.
+
+    Args:
+        cls (Type[BaseModel]): The parent model type.
+        fieldname (str): The field name for which retrieve the default for.
+        value (str): The value to compare with.
+
+    Returns:
+        [type]: The field default that corresponds to the value.
+    """
+    for c in cls.__subclasses__():
+        default = c.__fields__.get(fieldname).default
+        if default.lower() == value.lower():
+            return default
+
+    return value

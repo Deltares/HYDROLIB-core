@@ -10,6 +10,7 @@ from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
     Bridge,
     Compound,
+    Culvert,
     Dambreak,
     DambreakAlgorithm,
     FlowDirection,
@@ -109,7 +110,7 @@ def test_weir_construction_with_parser():
         branchId          = branch      # (optional) Branch on which the structure is located.
         chainage          = 3.0         # (optional) Chainage on the branch (m)
         type              = weir        # Structure type
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
         crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
@@ -128,7 +129,7 @@ def test_weir_construction_with_parser():
     assert weir.name == "weir"
     assert weir.branchid == "branch"
     assert weir.chainage == 3.0
-    assert weir.structure_type == "weir"
+    assert weir.type == "weir"
     assert weir.allowedflowdir == FlowDirection.positive
     assert weir.crestlevel == 10.5
     assert weir.crestwidth is None
@@ -146,7 +147,7 @@ def test_weir_comments_construction_with_parser():
         branchId          = branch      
         chainage          = 3.0         # My own special comment 1
         type              = weir        
-        allowedFlowdir    = positive    
+        allowedFlowDir    = positive    
         crestLevel        = 10.5        
         crestWidth        =             
         useVelocityHeight = false       # My own special comment 2
@@ -165,7 +166,7 @@ def test_weir_comments_construction_with_parser():
     assert weir.comments.name is None
     assert weir.comments.branchid is None
     assert weir.comments.chainage == "My own special comment 1"
-    assert weir.comments.structure_type is None
+    assert weir.comments.type is None
     assert weir.comments.allowedflowdir is None
     assert weir.comments.crestlevel is None
     assert weir.comments.crestwidth is None
@@ -188,7 +189,7 @@ def test_weir_with_unknown_parameters():
         # ----------------------------------------------------------------------
 
         type              = weir        # Structure type
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
         crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
@@ -209,7 +210,7 @@ def test_weir_with_unknown_parameters():
     assert weir.name == "weir"
     assert weir.branchid == "branch"
     assert weir.chainage == 3.0
-    assert weir.structure_type == "weir"
+    assert weir.type == "weir"
     assert weir.allowedflowdir == FlowDirection.positive
     assert weir.crestlevel == 10.5
     assert weir.crestwidth is None
@@ -227,7 +228,7 @@ def test_universal_construction_with_parser():
         branchId          = branch           # (optional) Branch on which the structure is located.
         chainage          = 6.0              # (optional) Chainage on the branch (m).
         type              = universalWeir    # Structure type
-        allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
         yValues           = 1.0 2.0          # y-values of the cross section (m) 
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
@@ -267,7 +268,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         branchId          = branch      # Branch on which the structure is located.
         chainage          = 3.0         # Chainage on the branch (m).
         type              = weir        # Structure type; must read weir
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD).
         crestWidth        =             # Width of the weir (m).
         useVelocityHeight = false       # Flag indicating whether the velocity height is to be calculated or not.
@@ -278,7 +279,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         branchId          = branch           # Branch on which the structure is located.
         chainage          = 6.0              # Chainage on the branch (m).
         type              = universalWeir    # Structure type; must read universalWeir
-        allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
         yValues           = 1.0 2.0          # y-values of the cross section (m). (number of values = numLevels) 
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
@@ -339,6 +340,153 @@ def test_read_structures_missing_structure_field_raises_correct_error():
 
     expected_message = f"{file} -> structure -> 1 -> {identifier} -> {field}"
     assert expected_message in str(error.value)
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("WEIR", "weir"),
+        ("UniversalWeir", "universalWeir"),
+        ("Culvert", "culvert"),
+        ("Pump", "pump"),
+        ("Compound", "compound"),
+        ("Orifice", "orifice"),
+    ],
+)
+def test_parses_type_case_insensitive(input, expected):
+    structure = Structure(type=input, branchid="branchid", chainage="1")
+
+    assert structure.type == expected
+
+
+def _get_allowedflowdir_cases() -> List:
+    return [
+        ("None", "none"),
+        ("Positive", "positive"),
+        ("NEGATIVE", "negative"),
+        ("Both", "both"),
+    ]
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_weir_parses_flowdirection_case_insensitive(input, expected):
+    structure = Weir(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_universalweir_parses_flowdirection_case_insensitive(input, expected):
+    structure = UniversalWeir(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+        numlevels=0,
+        yvalues=[],
+        zvalues=[],
+        dischargecoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_culvert_parses_flowdirection_case_insensitive(input, expected):
+
+    structure = Culvert(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        subtype="invertedSiphon",
+        bendlosscoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_orifice_parses_flowdirection_case_insensitive(input, expected):
+    structure = Orifice(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+        corrcoeff="1",
+        gateloweredgelevel="1",
+        usevelocityheight="0",
+        uselimitflowpos="0",
+        uselimitflowneg="0",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [("Culvert", "culvert"), ("INVERTEDSiphon", "invertedSiphon")],
+)
+def test_culvert_parses_subtype_case_insensitive(input, expected):
+
+    structure = Culvert(
+        subtype=input,
+        allowedflowdir="both",
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        bendlosscoeff="1",
+    )
+
+    assert structure.subtype == expected
 
 
 class TestBridge:
@@ -427,7 +575,7 @@ class TestBridge:
         assert bridge.name == "RS1-KBR31name"
         assert bridge.branchid == "riv_RS1_264"
         assert bridge.chainage == 104.184
-        assert bridge.structure_type == "bridge"
+        assert bridge.type == "bridge"
         assert bridge.allowedflowdir == FlowDirection.both
         assert bridge.csdefid == "W_980.1S_0"
         assert bridge.shift == 0.0
@@ -478,7 +626,7 @@ class TestBridge:
         assert bridge.name == "RS1-KBR31name"
         assert bridge.branchid == "riv_RS1_264"
         assert bridge.chainage == 104.184
-        assert bridge.structure_type == "bridge"
+        assert bridge.type == "bridge"
         assert bridge.allowedflowdir == FlowDirection.both
         assert bridge.csdefid == "W_980.1S_0"
         assert bridge.shift == 0.0
@@ -543,7 +691,7 @@ class TestStructure:
         structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
 
         @pytest.mark.parametrize(
-            "structure_type, expectation, error_mssg",
+            "type, expectation, error_mssg",
             [
                 pytest.param(
                     "",
@@ -617,12 +765,12 @@ class TestStructure:
             ],
         )
         def test_check_location_given_no_values_raises_expectation(
-            self, structure_type: str, expectation, error_mssg: str
+            self, type: str, expectation, error_mssg: str
         ):
             with expectation as exc_err:
                 input_dict = dict(
                     notAValue="Not a relevant value",
-                    structure_type=structure_type,
+                    type=type,
                     numcoordinates=None,
                     xcoordinates=None,
                     ycoordinates=None,
@@ -669,7 +817,7 @@ class TestStructure:
                 Structure.check_location(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchId key is specified."
             )
 
         wrong_coord_test_cases = [
@@ -705,7 +853,7 @@ class TestStructure:
                 )
             assert (
                 str(exc_err.value)
-                == f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."
+                == f"Expected {n_coords} coordinates, given {len(x_coords)} for xCoordinates and {len(y_coords)} for yCoordinates."
             )
 
         @pytest.mark.parametrize(
@@ -762,7 +910,7 @@ class TestStructure:
                 Structure.validate_branch_and_chainage_in_model(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchId key is specified."
             )
 
     class TestValidateCoordinatesInModel:
@@ -824,7 +972,7 @@ class TestStructure:
                 )
             assert (
                 str(exc_err.value)
-                == "Expected 2 coordinates, given 3 for x and 4 for y coordinates."
+                == "Expected 2 coordinates, given 3 for xCoordinates and 4 for yCoordinates."
             )
 
         @pytest.mark.parametrize("n_coords", [(0), (1)])
@@ -871,7 +1019,7 @@ class DambreakTestCases:
     )
     too_few_coords = "Expected at least 2 coordinates, but only {} declared."
     mismatch_coords = (
-        "Expected {} coordinates, given {} for x and {} for y coordinates."
+        "Expected {} coordinates, given {} for xCoordinates and {} for yCoordinates."
     )
 
 
@@ -1042,7 +1190,7 @@ class TestDambreak:
         dambreak_obj = self.parse_dambreak_from_text(structure_text)
         assert dambreak_obj
         assert isinstance(dambreak_obj, Structure)
-        assert dambreak_obj.structure_type == "dambreak"
+        assert dambreak_obj.type == "dambreak"
         assert dambreak_obj.id == "dambreak"
         assert dambreak_obj.startlocationx == 1.2
         assert dambreak_obj.startlocationy == 4.0
@@ -1089,7 +1237,7 @@ class TestDambreak:
         assert isinstance(dambreak, Structure), "A dambreak should be a structure."
         assert dambreak.id == "NLNJ-2021"
         assert dambreak.name == "NederlandNaranjito2021"
-        assert dambreak.structure_type == "dambreak"
+        assert dambreak.type == "dambreak"
         assert dambreak.startlocationx == 4.2
         assert dambreak.startlocationy == 2.4
         assert dambreak.algorithm == 1

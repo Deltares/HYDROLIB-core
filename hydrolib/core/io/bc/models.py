@@ -5,12 +5,17 @@ from pathlib import Path
 from typing import Callable, Dict, List, Literal
 
 from pydantic import Extra
+from pydantic.class_validators import validator
 from pydantic.fields import Field
 
 from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
-from hydrolib.core.io.ini.util import make_list_validator
+from hydrolib.core.io.ini.util import (
+    get_enum_validator,
+    get_from_subclass_defaults,
+    make_list_validator,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +39,11 @@ class TimeInterpolation(str, Enum):
 
 class ForcingBase(DataBlockINIBasedModel):
 
-    _header: Literal["forcing"] = "forcing"
-    name: str
-    function: str
-    quantity: List[str]
-    unit: List[str]
+    _header: Literal["Forcing"] = "Forcing"
+    name: str = Field(alias="name")
+    function: str = Field(alias="function")
+    quantity: List[str] = Field(alias="quantity")
+    unit: List[str] = Field(alias="unit")
 
     _make_lists = make_list_validator("quantity", "unit")
 
@@ -50,21 +55,32 @@ class ForcingBase(DataBlockINIBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
+    @validator("function", pre=True)
+    def _set_function(cls, value):
+        return get_from_subclass_defaults(ForcingBase, "function", value)
+
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on function field."""
+        """Try to iniatialize subclass based on the `function` field.
+        This field is compared to each `function` field of the derived models of `ForcingBase`.
+        The derived model with an equal function type will be initialized.
+
+        Raises:
+            ValueError: When the given type is not a known structure type.
+        """
+
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
             for c in cls.__subclasses__():
                 if (
-                    c.__fields__.get("function").default
+                    c.__fields__.get("function").default.lower()
                     == v.get("function", "").lower()
                 ):
                     v = c(**v)
                     break
             else:
-                logger.warning(
+                raise ValueError(
                     f"Function of {cls.__name__} with name={v.get('name', '')} and function={v.get('function', '')} is not recognized."
                 )
         return v
@@ -79,18 +95,22 @@ class ForcingBase(DataBlockINIBasedModel):
 class TimeSeries(ForcingBase):
     function: Literal["timeseries"] = "timeseries"
     timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
-    offset: float = 0.0
-    factor: float = 1.0
+    offset: float = Field(0.0, alias="offset")
+    factor: float = Field(1.0, alias="factor")
+
+    _timeinterpolation_validator = get_enum_validator(
+        "timeinterpolation", enum=TimeInterpolation
+    )
 
 
 class Harmonic(ForcingBase):
     function: Literal["harmonic"] = "harmonic"
-    factor: float = 1.0
+    factor: float = Field(1.0, alias="factor")
 
 
 class Astronomic(ForcingBase):
     function: Literal["astronomic"] = "astronomic"
-    factor: float = 1.0
+    factor: float = Field(1.0, alias="factor")
 
 
 class HarmonicCorrection(ForcingBase):
@@ -104,12 +124,19 @@ class AstronomicCorrection(ForcingBase):
 class T3D(ForcingBase):
     function: Literal["t3d"] = "t3d"
 
-    offset: float = 0.0
-    factor: float = 1.0
+    offset: float = Field(0.0, alias="offset")
+    factor: float = Field(1.0, alias="factor")
 
-    vertical_positions: List[float] = Field(alias="verticalPositions")
-    vertical_interpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
-    vertical_position_type: VerticalPositionType = Field(alias="verticalPositionType")
+    verticalpositions: List[float] = Field(alias="verticalPositions")
+    verticalinterpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
+    verticalpositiontype: VerticalPositionType = Field(alias="verticalPositionType")
+
+    _verticalinterpolation_validator = get_enum_validator(
+        "verticalinterpolation", enum=VerticalInterpolation
+    )
+    _verticalpositiontype_validator = get_enum_validator(
+        "verticalpositiontype", enum=VerticalPositionType
+    )
 
 
 class QHTable(ForcingBase):
@@ -119,13 +146,13 @@ class QHTable(ForcingBase):
 class Constant(ForcingBase):
     function: Literal["constant"] = "constant"
 
-    offset: float = 0.0
-    factor: float = 1.0
+    offset: float = Field(0.0, alias="offset")
+    factor: float = Field(1.0, alias="factor")
 
 
 class ForcingGeneral(INIGeneral):
-    fileVersion: str = "1.01"
-    fileType: Literal["boundConds"] = "boundConds"
+    fileversion: str = Field("1.01", alias="fileVersion")
+    filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
 class ForcingModel(INIModel):

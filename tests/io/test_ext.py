@@ -25,17 +25,17 @@ class TestModels:
             def test_given_no_numcoordinates_raises_valueerror(self):
                 with pytest.raises(ValueError) as exc_mssg:
                     Lateral.validate_coordinates(
-                        field_value=[42, 24], values=dict(numCoordinates=None)
+                        field_value=[42, 24], values=dict(numcoordinates=None)
                     )
                 assert (
                     str(exc_mssg.value)
-                    == "numCoordinates should be given when providing x or y coordinates."
+                    == "numCoordinates should be given when providing xCoordinates or yCoordinates."
                 )
 
             def test_given_wrong_numcoordinates_raises_assertionerror(self):
                 with pytest.raises(AssertionError) as exc_mssg:
                     Lateral.validate_coordinates(
-                        field_value=[42, 24], values=dict(numCoordinates=1)
+                        field_value=[42, 24], values=dict(numcoordinates=1)
                     )
                 assert (
                     str(exc_mssg.value)
@@ -44,7 +44,7 @@ class TestModels:
 
             def test_given_correct_numcoordinates(self):
                 return_value = Lateral.validate_coordinates(
-                    field_value=[42, 24], values=dict(numCoordinates=2)
+                    field_value=[42, 24], values=dict(numcoordinates=2)
                 )
                 assert return_value == [42, 24]
 
@@ -94,11 +94,11 @@ class TestModels:
                 "dict_values",
                 [
                     pytest.param(
-                        dict(nodeId=None, branch_id=None, n_coords=None, chainage=None),
+                        dict(nodeid=None, branch_id=None, n_coords=None, chainage=None),
                         id="All None",
                     ),
                     pytest.param(
-                        dict(nodeId="", branch_id="", n_coords=0, chainage=None),
+                        dict(nodeid="", branch_id="", n_coords=0, chainage=None),
                         id="All Empty",
                     ),
                 ],
@@ -108,7 +108,7 @@ class TestModels:
                     Lateral.validate_location_dependencies(values=dict_values)
                 assert (
                     str(exc_err.value)
-                    == "Either nodeId, branchId (with chainage) or numCoordinates (with x, y coordinates) are required."
+                    == "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
                 )
 
             @pytest.mark.parametrize(
@@ -118,26 +118,26 @@ class TestModels:
                 self, missing_coordinates: str
             ):
                 test_dict = dict(
-                    nodeId=None,
-                    branchId=None,
+                    nodeid=None,
+                    branchid=None,
                     chainage=None,
-                    numCoordinates=2,
-                    xCoordinates=[42, 24],
-                    yCoordinates=[24, 42],
+                    numcoordinates=2,
+                    xcoordinates=[42, 24],
+                    ycoordinates=[24, 42],
                 )
-                test_dict[missing_coordinates] = None
+                test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
                     Lateral.validate_location_dependencies(test_dict)
                 assert str(exc_error.value) == f"{missing_coordinates} should be given."
 
             def test_given_numcoordinates_and_valid_coordinates(self):
                 test_dict = dict(
-                    nodeId=None,
-                    branchId=None,
+                    nodeid=None,
+                    branchid=None,
                     chainage=None,
-                    numCoordinates=2,
-                    xCoordinates=[42, 24],
-                    yCoordinates=[24, 42],
+                    numcoordinates=2,
+                    xcoordinates=[42, 24],
+                    ycoordinates=[24, 42],
                 )
                 return_value = Lateral.validate_location_dependencies(test_dict)
                 assert return_value == test_dict
@@ -146,23 +146,23 @@ class TestModels:
                 with pytest.raises(ValueError) as exc_err:
                     Lateral.validate_location_dependencies(
                         dict(
-                            nodeId=None,
-                            branchId="aBranchId",
+                            nodeid=None,
+                            branchid="aBranchId",
                             chainage=None,
                         )
                     )
                 assert (
                     str(exc_err.value)
-                    == "Chainage should be provided when branchId specified."
+                    == "Chainage should be provided when branchId is specified."
                 )
 
             @pytest.mark.parametrize(
                 "dict_values",
                 [
-                    pytest.param(dict(nodeId="42"), id="Given nodeId"),
+                    pytest.param(dict(nodeid="42"), id="Given nodeid"),
                     pytest.param(
-                        dict(branchId="aBranchId", chainage=4.2),
-                        id="Given branchId and chainage",
+                        dict(branchid="aBranchId", chainage=4.2),
+                        id="Given branchid and chainage",
                     ),
                 ],
             )
@@ -170,35 +170,35 @@ class TestModels:
                 self, dict_values: dict
             ):
                 test_values = dict(
-                    numCoordinates=2,
-                    xCoordinates=[42, 24],
-                    yCoordinates=[24, 42],
-                    locationType="wrongType",
+                    numcoordinates=2,
+                    xcoordinates=[42, 24],
+                    ycoordinates=[24, 42],
+                    locationtype="wrongType",
                 )
                 test_dict = {**dict_values, **test_values}
                 with pytest.raises(ValueError) as exc_err:
                     Lateral.validate_location_dependencies(test_dict)
                 assert (
                     str(exc_err.value)
-                    == "LocationType should be 1d when nodeId (or branchId and chainage) specified."
+                    == "LocationType should be 1d when nodeId (or branchId and chainage) is specified."
                 )
 
             @pytest.mark.parametrize(
                 "dict_values",
                 [
-                    pytest.param(dict(nodeId="24"), id="Given nodeId"),
+                    pytest.param(dict(nodeid="24"), id="Given nodeid"),
                     pytest.param(
-                        dict(branchId="aBranchId", chainage=4.2),
-                        id="Given branchId and chainage.",
+                        dict(branchid="aBranchId", chainage=4.2),
+                        id="Given branchid and chainage.",
                     ),
                 ],
             )
             def test_given_1d_args_and_1d_location_type(self, dict_values: dict):
                 test_values = dict(
-                    numCoordinates=2,
-                    xCoordinates=[42, 24],
-                    yCoordinates=[24, 42],
-                    locationType="1d",
+                    numcoordinates=2,
+                    xcoordinates=[42, 24],
+                    ycoordinates=[24, 42],
+                    locationtype="1d",
                 )
                 test_dict = {**dict_values, **test_values}
                 return_value = Lateral.validate_location_dependencies(test_dict)
@@ -207,10 +207,10 @@ class TestModels:
             @pytest.mark.parametrize(
                 "test_dict",
                 [
-                    pytest.param(dict(nodeId="aNodeId"), id="With NodeId"),
+                    pytest.param(dict(nodeid="aNodeId"), id="With NodeId"),
                     pytest.param(
-                        dict(branchId="aBranchId", chainage=42),
-                        id="Witch branchId and chainage",
+                        dict(branchid="aBranchId", chainage=42),
+                        id="Witch branchid and chainage",
                     ),
                 ],
             )
@@ -224,9 +224,9 @@ class TestModels:
             def test_given_1d_args_but_no_locationtype_then_sets_value(
                 self, test_dict: dict, location_type: str
             ):
-                test_dict["locationType"] = location_type
+                test_dict["locationtype"] = location_type
                 return_value = Lateral.validate_location_dependencies(test_dict)
-                assert return_value["locationType"] == "1d"
+                assert return_value["locationtype"] == "1d"
 
         class TestValidateFromCtor:
             @pytest.mark.parametrize(
@@ -243,14 +243,12 @@ class TestModels:
                     Lateral(
                         id="42",
                         discharge="aDischarge",
-                        numCoordinates=None,
-                        xCoordinates=x_coord,
-                        yCoordinates=y_coord,
+                        numcoordinates=None,
+                        xcoordinates=x_coord,
+                        ycoordinates=y_coord,
                     )
 
-                expected_error_mssg = (
-                    "numCoordinates should be given when providing x or y coordinates."
-                )
+                expected_error_mssg = "numCoordinates should be given when providing xCoordinates or yCoordinates."
                 assert expected_error_mssg in str(exc_mssg.value)
 
             @pytest.mark.parametrize(
@@ -267,9 +265,9 @@ class TestModels:
                     Lateral(
                         id="42",
                         discharge="bDischarge",
-                        numCoordinates=2,
-                        xCoordinates=x_coord,
-                        yCoordinates=y_coord,
+                        numcoordinates=2,
+                        xcoordinates=x_coord,
+                        ycoordinates=y_coord,
                     )
 
             @pytest.mark.parametrize(
@@ -279,12 +277,12 @@ class TestModels:
                 lateral_dict = dict(
                     id="42",
                     discharge="cDischarge",
-                    numCoordinates=2,
-                    xCoordinates=[42, 24],
-                    yCoordinates=[24, 42],
-                    locationType="all",
+                    numcoordinates=2,
+                    xcoordinates=[42, 24],
+                    ycoordinates=[24, 42],
+                    locationtype="all",
                 )
-                lateral_dict[missing_coord] = None
+                lateral_dict[missing_coord.lower()] = None
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(**lateral_dict)
 
@@ -296,10 +294,10 @@ class TestModels:
                     Lateral(
                         id="42",
                         discharge="dDischarge",
-                        numCoordinates=2,
-                        xCoordinates=[42, 24],
-                        yCoordinates=[24, 42],
-                        locationType=location_type,
+                        numcoordinates=2,
+                        xcoordinates=[42, 24],
+                        ycoordinates=[24, 42],
+                        locationtype=location_type,
                     )
                 expected_error_mssg = f"Value given ({location_type}) not accepted, should be one of: 1d, 2d, all"
                 assert expected_error_mssg in str(exc_mssg.value)
@@ -307,18 +305,18 @@ class TestModels:
             @pytest.mark.parametrize(
                 "location_values",
                 [
-                    pytest.param(dict(nodeId="aNodeId"), id="nodeId given."),
+                    pytest.param(dict(nodeid="aNodeId"), id="nodeid given."),
                     pytest.param(
-                        dict(branchId="aBranchId", chainage=42),
-                        id="branchId + chainage given.",
+                        dict(branchid="aBranchId", chainage=42),
+                        id="branchid + chainage given.",
                     ),
                     pytest.param(
-                        dict(nodeId="aNodeId", branchId="aBranchId", chainage=42),
+                        dict(nodeid="aNodeId", branchid="aBranchId", chainage=42),
                         id="all given.",
                     ),
                     pytest.param(
-                        dict(nodeId="", branchId="aBranchId", chainage=42),
-                        id="Empty nodeId.",
+                        dict(nodeid="", branchid="aBranchId", chainage=42),
+                        id="Empty nodeid.",
                     ),
                 ],
             )
@@ -329,10 +327,10 @@ class TestModels:
                 default_values = dict(
                     id="42",
                     discharge="eDischarge",
-                    numCoordinates=2,
-                    xCoordinates=[42, 24],
-                    yCoordinates=[24, 42],
-                    locationType="1d",
+                    numcoordinates=2,
+                    xcoordinates=[42, 24],
+                    ycoordinates=[24, 42],
+                    locationtype="1d",
                 )
                 test_dict = {**default_values, **location_values}
 
@@ -347,25 +345,25 @@ class TestModels:
                 "location_dict",
                 [
                     pytest.param(
-                        dict(locationType="1d", nodeId="aNodeId"), id="1D-With NodeId"
+                        dict(locationtype="1d", nodeid="aNodeId"), id="1D-With NodeId"
                     ),
                     pytest.param(
-                        dict(locationType="1d", branchId="aBranchId", chainage=4.2),
+                        dict(locationtype="1d", branchid="aBranchId", chainage=4.2),
                         id="1D-With BranchId and Chainage",
                     ),
                     pytest.param(
                         dict(
-                            locationType="2d",
-                            xCoordinates=[42, 24],
-                            yCoordinates=[24, 42],
+                            locationtype="2d",
+                            xcoordinates=[42, 24],
+                            ycoordinates=[24, 42],
                         ),
                         id="2D-With coordinates",
                     ),
                     pytest.param(
                         dict(
-                            locationType="all",
-                            xCoordinates=[42, 24],
-                            yCoordinates=[24, 42],
+                            locationtype="all",
+                            xcoordinates=[42, 24],
+                            ycoordinates=[24, 42],
                         ),
                         id="All-With coordinates",
                     ),
@@ -376,7 +374,7 @@ class TestModels:
                 default_values = dict(
                     id="42",
                     discharge="fDischarge",
-                    numCoordinates=2,
+                    numcoordinates=2,
                 )
                 lateral_dict = {**default_values, **location_dict}
                 # 2. Run test.
@@ -413,10 +411,10 @@ class TestModels:
             # 1. Explicit declaration of parameters (to validate keys as they are written)
             dict_values = {
                 "quantity": "42",
-                "nodeId": "aNodeId",
-                "locationFile": Path("aLocationFile"),
+                "nodeid": "aNodeId",
+                "locationfile": Path("aLocationFile"),
                 "forcingFile": ForcingModel(),
-                "bndWidth1d": 4.2,
+                "bndWidth1D": 4.2,
                 "bndBlDepth": 2.4,
             }
 
@@ -425,10 +423,10 @@ class TestModels:
             boundary_as_dict = created_boundary.dict()
             # 3. Verify boundary values as expected.
             assert boundary_as_dict["quantity"] == dict_values["quantity"]
-            assert boundary_as_dict["nodeid"] == dict_values["nodeId"]
-            assert boundary_as_dict["locationfile"] == dict_values["locationFile"]
+            assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
+            assert boundary_as_dict["locationfile"] == dict_values["locationfile"]
             assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
-            assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1d"]
+            assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1D"]
             assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
 
         class TestValidateRootValidator:

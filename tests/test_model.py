@@ -308,6 +308,7 @@ def test_boundary_with_forcing_file_without_match_returns_none():
     forcing_file = ForcingModel(forcing=[forcing1, forcing2])
 
     boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
+    boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
 
     assert boundary.forcing is None
     assert boundary.nodeid == "bnd3"

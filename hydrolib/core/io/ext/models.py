@@ -15,11 +15,11 @@ from hydrolib.core.utils import str_is_empty_or_none
 
 class Boundary(INIBasedModel):
     _header: Literal["Boundary"] = "Boundary"
-    quantity: str
+    quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
     locationfile: Optional[Path] = Field(alias="locationFile")
     forcingfile: ForcingModel = Field(alias="forcingFile")
-    bndwidth1d: Optional[float] = Field(alias="bndWidth1d")
+    bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 
     def is_intermediate_link(self) -> bool:
@@ -29,7 +29,7 @@ class Boundary(INIBasedModel):
     @classmethod
     def check_nodeid_or_locationfile_present(cls, values: Dict):
         """
-        Verifies that either nodeId or locationFile properties have been set.
+        Verifies that either nodeid or locationfile properties have been set.
 
         Args:
             values (Dict): Dictionary with values already validated.
@@ -50,13 +50,13 @@ class Boundary(INIBasedModel):
 
     def _get_identifier(self, data: dict) -> str:
         """
-        Retrieves the identifier for a boundary, which is the node_id (nodeId)
+        Retrieves the identifier for a boundary, which is the nodeid
 
         Args:
             data (dict): Dictionary of values for this boundary.
 
         Returns:
-            str: The node_id (nodeId) value or None if not found.
+            str: The nodeid value or None if not found.
         """
         return data.get("nodeid", None)
 
@@ -85,30 +85,30 @@ class Boundary(INIBasedModel):
 
 class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
-    id: str
-    name: str = ""
-    locationType: Optional[str]
-    nodeId: Optional[str]
-    branchId: Optional[str]
-    chainage: Optional[float]
-    numCoordinates: Optional[int]
-    xCoordinates: Optional[List[int]]
-    yCoordinates: Optional[List[int]]
-    discharge: str
+    id: str = Field(alias="id")
+    name: str = Field("", alias="name")
+    locationtype: Optional[str] = Field(alias="locationType")
+    nodeid: Optional[str] = Field(alias="nodeId")
+    branchid: Optional[str] = Field(alias="branchId")
+    chainage: Optional[float] = Field(alias="chainage")
+    numcoordinates: Optional[int] = Field(alias="numCoordinates")
+    xcoordinates: Optional[List[int]] = Field(alias="xCoordinates")
+    ycoordinates: Optional[List[int]] = Field(alias="yCoordinates")
+    discharge: str = Field(alias="discharge")
 
     _split_to_list = get_split_string_on_delimiter_validator(
-        "xCoordinates", "yCoordinates"
+        "xcoordinates", "ycoordinates"
     )
 
     def _get_identifier(self, data: dict) -> str:
         return data["id"] if "id" in data else None
 
-    @validator("xCoordinates", "yCoordinates")
+    @validator("xcoordinates", "ycoordinates")
     @classmethod
     def validate_coordinates(cls, field_value: List[int], values: Dict) -> List[int]:
         """
         Method to validate whether the given coordinates match in number
-        to the expected value given for numCoordinates.
+        to the expected value given for numcoordinates.
 
         Args:
             field_value (List[int]): Coordinates list (x or y)
@@ -120,10 +120,10 @@ class Lateral(INIBasedModel):
         Returns:
             List[int]: Validated list of coordinates.
         """
-        num_coords = values.get("numCoordinates", None)
+        num_coords = values.get("numcoordinates", None)
         if num_coords is None:
             raise ValueError(
-                "numCoordinates should be given when providing x or y coordinates."
+                "numCoordinates should be given when providing xCoordinates or yCoordinates."
             )
         assert num_coords == len(
             field_value
@@ -132,20 +132,20 @@ class Lateral(INIBasedModel):
         )
         return field_value
 
-    @validator("locationType")
+    @validator("locationtype")
     @classmethod
     def validate_location_type(cls, v: str) -> str:
         """
         Method to validate whether the specified location type is correct.
 
         Args:
-            v (str): Given value for the locationType field.
+            v (str): Given value for the locationtype field.
 
         Raises:
-            ValueError: When the value given for locationType is unknown.
+            ValueError: When the value given for locationtype is unknown.
 
         Returns:
-            str: Validated locationType string.
+            str: Validated locationtype string.
         """
         possible_values = ["1d", "2d", "all"]
         if v.lower() not in possible_values:
@@ -167,29 +167,29 @@ class Lateral(INIBasedModel):
             values (Dict): Dictionary of Laterals validated fields.
 
         Raises:
-            ValueError: When neither nodeId, branchId or coordinates have been given.
+            ValueError: When neither nodeid, branchid or coordinates have been given.
             ValueError: When either x or y coordinates were expected but not given.
-            ValueError: When locationType should be 1d but other was specified.
+            ValueError: When locationtype should be 1d but other was specified.
 
         Returns:
             Dict: Validated dictionary of Lateral fields.
         """
 
         def validate_coordinates(coord_name: str) -> None:
-            if values.get(coord_name, None) is None:
+            if values.get(coord_name.lower(), None) is None:
                 raise ValueError("{} should be given.".format(coord_name))
 
-        # If nodeId or branchId and Chainage are present
-        node_id: str = values.get("nodeId", None)
-        branch_id: str = values.get("branchId", None)
-        n_coords: int = values.get("numCoordinates", 0)
+        # If nodeid or branchid and Chainage are present
+        node_id: str = values.get("nodeid", None)
+        branch_id: str = values.get("branchid", None)
+        n_coords: int = values.get("numcoordinates", 0)
         chainage: float = values.get("chainage", None)
 
         # First validation - at least one of the following should be specified.
         if str_is_empty_or_none(node_id) and (str_is_empty_or_none(branch_id)):
             if n_coords == 0:
                 raise ValueError(
-                    "Either nodeId, branchId (with chainage) or numCoordinates (with x, y coordinates) are required."
+                    "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
                 )
             else:
                 # Second validation, coordinates should be valid.
@@ -197,16 +197,18 @@ class Lateral(INIBasedModel):
                 validate_coordinates("yCoordinates")
             return values
         else:
-            # Third validation, chainage should be given with branchId
+            # Third validation, chainage should be given with branchid
             if not str_is_empty_or_none(branch_id) and chainage is None:
-                raise ValueError("Chainage should be provided when branchId specified.")
-            # Fourth validation, when nodeId, or branchId specified, expected 1d.
-            location_type = values.get("locationType", None)
+                raise ValueError(
+                    "Chainage should be provided when branchId is specified."
+                )
+            # Fourth validation, when nodeid, or branchid specified, expected 1d.
+            location_type = values.get("locationtype", None)
             if str_is_empty_or_none(location_type):
-                values["locationType"] = "1d"
+                values["locationtype"] = "1d"
             elif location_type.lower() != "1d":
                 raise ValueError(
-                    "LocationType should be 1d when nodeId (or branchId and chainage) specified."
+                    "LocationType should be 1d when nodeId (or branchId and chainage) is specified."
                 )
 
         return values
@@ -214,8 +216,8 @@ class Lateral(INIBasedModel):
 
 class ExtGeneral(INIGeneral):
     _header: Literal["General"] = "General"
-    fileVersion: str = "2.01"
-    fileType: Literal["extForce"] = "extForce"
+    fileversion: str = Field("2.01", alias="fileVersion")
+    filetype: Literal["extForce"] = Field("extForce", alias="fileType")
 
 
 class ExtModel(INIModel):
