@@ -63,7 +63,7 @@ class ForcingBase(DataBlockINIBasedModel):
     def validate(cls, v):
         """Try to iniatialize subclass based on the `function` field.
         This field is compared to each `function` field of the derived models of `ForcingBase`.
-        The derived model with an equal function type will be initialized. 
+        The derived model with an equal function type will be initialized.
 
         Raises:
             ValueError: When the given type is not a known structure type.
