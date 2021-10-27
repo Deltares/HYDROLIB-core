@@ -11,6 +11,10 @@ In the examples below it is placed in `C:\checkouts\HYDROLIB-core_git`.
 ## Use Poetry to install hydrolib-core
 We use `poetry` to manage our package and its dependencies.
 
+!!! note
+    If you use `conda`, do not combine conda virtual environments with the poetry virtual environment.
+    In other words, run the `poetry install` command from the `base` conda environment.
+
 1. Download + installation instructions for Poetry are [here](https://python-poetry.org/).
 2. After installation of Poetry itself, now use it to install your local clone of the hydrolib-core package, as follows.
    Make sure Poetry is available on your `PATH` and run `poetry install` in the hydrolib-core directory in your shell of choice.
@@ -65,10 +69,6 @@ by first starting a poetry shell with the virtual hydrolib-core environment:
 (base) PS C:\checkouts\HYDROLIB-core_git> poetry shell
 (base) PS C:\checkouts\HYDROLIB-core_git> code
 ```
-
-!!! note
-    If you use `conda`, do not combine conda virtual environments with the poetry virtual environment.
-    In other words, run the `poetry install` command from the `base` conda environment.
 
 ## Frequently asked questions
 - How to fix "File ... does not exist" errors during `poetry install` as in the example below?
