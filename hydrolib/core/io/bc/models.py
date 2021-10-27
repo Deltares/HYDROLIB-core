@@ -61,7 +61,14 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on function field."""
+        """Try to iniatialize subclass based on the `function` field.
+        This field is compared to each `function` field of the derived models of `ForcingBase`.
+        The derived model with an equal function type will be initialized. 
+
+        Raises:
+            ValueError: When the given type is not a known structure type.
+        """
+
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
@@ -73,7 +80,7 @@ class ForcingBase(DataBlockINIBasedModel):
                     v = c(**v)
                     break
             else:
-                logger.warning(
+                raise ValueError(
                     f"Function of {cls.__name__} with name={v.get('name', '')} and function={v.get('function', '')} is not recognized."
                 )
         return v

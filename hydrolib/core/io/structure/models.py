@@ -191,7 +191,14 @@ class Structure(INIBasedModel):
 
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on function field."""
+        """Try to iniatialize subclass based on the `type` field.
+        This field is compared to each `type` field of the derived models of `Structure`.
+        The derived model with an equal structure type will be initialized.
+
+        Raises:
+            ValueError: When the given type is not a known structure type.
+        """
+
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
@@ -203,7 +210,7 @@ class Structure(INIBasedModel):
                     v = c(**v)
                     break
             else:
-                logger.warning(
+                raise ValueError(
                     f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
                 )
         return super().validate(v)
