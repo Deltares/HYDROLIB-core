@@ -80,7 +80,7 @@ class INIBasedModel(BaseModel, ABC):
     comments: Optional[Comments] = Comments()
 
     @root_validator(pre=True)
-    def _skip_nones(cls, values):
+    def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields."""
         dropkeys = []
         for k, v in values.items():
@@ -90,6 +90,9 @@ class INIBasedModel(BaseModel, ABC):
         logger.info(f"Dropped unset keys: {dropkeys}")
         for k in dropkeys:
             values.pop(k)
+
+        if "_header" in values:
+            values["_header"] = cls._header
 
         return values
 
@@ -129,6 +132,10 @@ class INIBasedModel(BaseModel, ABC):
         for key, value in self:
             if key in self._exclude_fields():
                 continue
+
+            if key in self.__fields__:
+                key = self.__fields__[key].alias
+
             prop = Property(
                 key=key,
                 value=INIBasedModel._convert_value(value),
@@ -152,9 +159,9 @@ class DataBlockINIBasedModel(INIBasedModel):
 
 
 class INIGeneral(INIBasedModel):
-    _header: Literal["general"] = "general"
-    fileVersion: str = "3.00"
-    fileType: str
+    _header: Literal["General"] = "General"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: str = Field(alias="fileType")
 
     @classmethod
     def _supports_comments(cls):
@@ -162,18 +169,18 @@ class INIGeneral(INIBasedModel):
 
 
 class FrictGeneral(INIGeneral):
-    fileVersion: str = "3.00"
-    fileType: Literal["roughness"] = "roughness"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["roughness"] = Field("roughness", alias="fileType")
 
 
 class CrossdefGeneral(INIGeneral):
-    fileVersion: str = "3.00"
-    fileType: Literal["crossDef"] = "crossDef"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["crossDef"] = Field("crossDef", alias="fileType")
 
 
 class CrosslockGeneral(INIGeneral):
-    fileVersion: str = "3.00"
-    fileType: Literal["crossLoc"] = "crossLoc"
+    fileversion: str = Field("3.00", alias="fileVersion")
+    filetype: Literal["crossLoc"] = Field("crossLoc", alias="fileType")
 
 
 class INIModel(FileModel):
@@ -217,8 +224,9 @@ class INIModel(FileModel):
 
 
 class Definition(INIBasedModel):
-    id: str
-    type: str
+    _header: Literal["Definition"] = "Definition"
+    id: str = Field(alias="id")
+    type: str = Field(alias="type")
 
     @classmethod
     def _duplicate_keys_as_list(cls):
@@ -237,8 +245,9 @@ class CrossDefModel(INIModel):
 
 
 class CrossSection(INIBasedModel):
-    id: str
-    branchid: str
+    _header: Literal["CrossSection"] = "CrossSection"
+    id: str = Field(alias="id")
+    branchid: str = Field(alias="branchId")
 
 
 class CrossLocModel(INIModel):
@@ -251,9 +260,10 @@ class CrossLocModel(INIModel):
 
 
 class Global(INIBasedModel):
-    frictionId: str
-    frictionType: str
-    frictionValue: float
+    _header: Literal["Global"] = "Global"
+    frictionid: str = Field(alias="frictionId")
+    frictiontype: str = Field(alias="frictionType")
+    frictionvalue: float = Field(alias="frictionValue")
 
 
 class FrictionModel(INIModel):
