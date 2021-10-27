@@ -22,7 +22,7 @@
 'pluvius.3b'                                     *10. Pluvius                                                       I
 'pluvius.alg'                                    *11. Pluvius algemeen                                              I
 'kasklass'                    *12. Kasklasse                                                     I
-'default.bui'                                        *13. buifile                                                  I
+'DEFAULT.BUI'                                        *13. buifile                                                  I
 'default.evp'                                       *14. verdampingsfile                                          I
 'unpaved.3b'                                     *15. unpaved algemeen                                              I
 'unpaved.sto'                                    *16. unpaved storage                                               I
