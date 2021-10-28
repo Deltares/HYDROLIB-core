@@ -8,10 +8,10 @@ The list below is a nonexhaustive list of terminology and concepts used in HYDRO
 ---
 ### BC file
 Input file containing the actual forcing data for model forcings specified elsewhere in the model input, for example time series or astronomical components.
-Originates from boundary conditions as specified in the [external forcings file](#external-forcings-file), but nowadays also used in [structure files](#structure-file). More details about the syntax and the various supported function types in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsection.E.2.3).
+Originates from boundary conditions as specified in the [external forcings file](#external-forcings-file), but nowadays also used in [structure files](#structure-file). More details about the syntax and the various supported function types in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.E.2.3).
 
 ### Boundary condition
-Flow (or constituent) boundary condition that forces a [D-Flow FM](#d-flow-fm) model, such as waterlevel and discharge boundary conditions. Defined in the [external forcings file](#external-forcings-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsubsection.C.5.2.1).
+Flow (or constituent) boundary condition that forces a [D-Flow FM](#d-flow-fm) model, such as waterlevel and discharge boundary conditions. Defined in the [external forcings file](#external-forcings-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.C.5.2.1).
 
 ### Branch
 The network edges in a network topology of 1D models. The computational [grid](#grid) points are positioned on these branches using branch id and a [chainage](#chainage) value.
@@ -36,20 +36,20 @@ Input files for [D-Flow FM](#d-flow-fm) that define the 1D network's cross secti
 Two parts: [cross section definition file](#cross-section-definition-file) and [cross section location files](#cross-section-location-file). Not to be confused with [observation cross section files](#observation-cross-section-file)!
 
 ### Cross section definition file
-Input file for [D-Flow FM](#d-flow-fm) that defines the various cross section shapes in a model with a 1D network. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsection.C.16.1).
+Input file for [D-Flow FM](#d-flow-fm) that defines the various cross section shapes in a model with a 1D network. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1).
 
 ### Cross section location file
-Input file for [D-Flow FM](#d-flow-fm) that defines the location of cross section shapes in a model with a 1D network. Each location refers to a (possible shared) [cross section definition](#cross-section-definition-file). Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsection.C.16.2).
+Input file for [D-Flow FM](#d-flow-fm) that defines the location of cross section shapes in a model with a 1D network. Each location refers to a (possible shared) [cross section definition](#cross-section-definition-file). Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.2).
 
 ## D
 ---
 ### Deltares conventions
 A proposal for additional NetCDF conventions that build on the existing [UGRID conventions](#ugrid-conventions), intended to properly describe 1D network topologies as a coordinate space on which 1D computational grids are defined. Also 1D2D grid couplings are included.
-More details in: the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#section.B.2).
+More details in: the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.B.2).
 
 ### D-Flow FM
 D-Flow Flexible Mesh. The computational backend that solves 1D/2D/3D hydrodynamics in the Delf3D Flexible Mesh Suite.
-Toplevel input is the [MDU file](#mdu-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf).
+Toplevel input is the [MDU file](#mdu-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf).
 
 ### D-HYDRO Suite 1D2D (Beta)
 Integral software suite for hydraulic 1D2D modelling, including rainfall runoff and realtime control.
@@ -67,7 +67,7 @@ Input file for [DIMR](#dimr) (typically ``dimr_config.xml``) for an [integrated 
 A geometrical "line" in a 1D, 2D or 3D mesh. Connects two [mesh nodes](#node-mesh) as its end points. Building block of the [UGRID-conventions](#ugrid-conventions).
 
 ### External forcings file
-Input file for [D-Flow FM](#d-flow-fm) describing model forcings such as [boundary conditions](#boundary-condition), [laterals](#lateral) and [meteo](#meteo). Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsection.C.5.2).
+Input file for [D-Flow FM](#d-flow-fm) describing model forcings such as [boundary conditions](#boundary-condition), [laterals](#lateral) and [meteo](#meteo). Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2).
 
 ## F
 ---
@@ -93,7 +93,7 @@ Snapping is done either to (sets of) [flow nodes](#flow-node) or (sequence of) [
 ---
 ### His file
 Output file of [D-Flow FM](#d-flow-fm) containing model results as time series on a specific set of discrete locations, which are typically the hydraulic structures, observation stations and more.
-More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsection.F.3.1).
+More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.F.3.1).
 
 ## I
 ---
@@ -106,7 +106,7 @@ Delft3D FM uses several input files that are formatted in an INI-like syntax. Th
 
 ### Initial field file
 Input file for [D-Flow FM](#d-flow-fm) describing initial conditions and other spatially varying parameter fields.
-Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#section.D.2).
+Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.D.2).
 
 ## J
 ---
@@ -117,19 +117,19 @@ Format is INI-like. More details in the [Delft3D FM User Manual](https://content
 ## L
 ---
 ### Lateral
-Lateral discharge in [D-Flow FM](#d-flow-fm), which acts as a source (or sink) of volume. Defined in the [external forcings file](#external-forcings-file). The actual forcing data may come from timeseries in a [.bc file](#bc-file) or from [RR](#rainfall-runoff) a coupled/integrated model. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsubsection.C.5.2.2).
+Lateral discharge in [D-Flow FM](#d-flow-fm), which acts as a source (or sink) of volume. Defined in the [external forcings file](#external-forcings-file). The actual forcing data may come from timeseries in a [.bc file](#bc-file) or from [RR](#rainfall-runoff) a coupled/integrated model. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.C.5.2.2).
 
 ## M
 ---
 ### Map file
 Output file of [D-Flow FM](#d-flow-fm) containing the model results on all grid points.
-More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsection.F.3.1).
+More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.F.3.1).
 
 ### MDU file
-Main input file of [D-Flow FM](#d-flow-fm). Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#appendix.A).
+Main input file of [D-Flow FM](#d-flow-fm). Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#appendix.A).
 
 ### meteo
-Meteorological forcings of a model. Typically sources (or sinks) of volume via precipitation and evaporation, or forcing via wind. For [D-Flow FM](#d-flow-fm) defined in the [external forcings file](#external-forcings-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsubsection.C.5.2.3).
+Meteorological forcings of a model. Typically sources (or sinks) of volume via precipitation and evaporation, or forcing via wind. For [D-Flow FM](#d-flow-fm) defined in the [external forcings file](#external-forcings-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.C.5.2.3).
 
 ### mesh
 See [grid](#grid).
@@ -152,16 +152,16 @@ Files that define the model locations for which output should be produced in the
 Two types: [observation point file](#observation-point-file) and [observation cross section file](#observation-cross-section-file).
 
 ### Observation cross section file
-Input file for [D-Flow FM](#d-flow-fm) that describes the model locations for which (cumulative) flow "flux" output should be produced in the [his file](#his-file). For example: cumulative discharge, salinity transport. Applies both to 1D, 2D, 1D2D and 3D models. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsubsection.F.2.4.2).
+Input file for [D-Flow FM](#d-flow-fm) that describes the model locations for which (cumulative) flow "flux" output should be produced in the [his file](#his-file). For example: cumulative discharge, salinity transport. Applies both to 1D, 2D, 1D2D and 3D models. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.4.2).
 
 ### Observation point file
-Input file for [D-Flow FM](#d-flow-fm) that describes the model point locations for which local output should be produced in the [his file](#his-file). For example: waterlevel, velocity vector/magnitude, tracer concentration as instantanous values. Applies both to 1D, 2D, 1D2D and 3D models. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#subsubsection.F.2.2.1).
+Input file for [D-Flow FM](#d-flow-fm) that describes the model point locations for which local output should be produced in the [his file](#his-file). For example: waterlevel, velocity vector/magnitude, tracer concentration as instantanous values. Applies both to 1D, 2D, 1D2D and 3D models. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.2.1).
 
 
 ## P
 ---
 ### Polyline file
-File containing a sequence of polylines in model coordinates. Each polyline has header lines with a label and row+column count, and at least a list of x, y-points. More than 2 columns may be present (z, data1, ...) for particular model inputs, see for example the [fixed weir file](#fixed-weir-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#section.C.2).
+File containing a sequence of polylines in model coordinates. Each polyline has header lines with a label and row+column count, and at least a list of x, y-points. More than 2 columns may be present (z, data1, ...) for particular model inputs, see for example the [fixed weir file](#fixed-weir-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.C.2).
 
 ### Polygon file
 See [polyline file](#polyline-file). The point sequences are interpreted as closed polygons.
@@ -180,18 +180,18 @@ Toplevel input is in various ``rtc*.xml`` files. Part of the D-Real Time Control
 
 ### Roughness file
 Input file for [D-Flow FM](#d-flow-fm) describing roughness values on the 1D network.
-Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#section.C.15).
+Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.C.15).
 
 ## S
 ---
 ### Sample file
-File containing an unstructured set of sample point values. Typically used as input file for initial fields or other spatially varying fields in the [initial fields file](#initial-field-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#section.C.3).
+File containing an unstructured set of sample point values. Typically used as input file for initial fields or other spatially varying fields in the [initial fields file](#initial-field-file). More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.C.3).
 
 ### Staggered grid
 Discretization method used in [D-Flow FM](#d-flow-fm) where the PDE variables are not all defined on the same topological grid locations. Water level, concentrations and other volume-related variables are defined on the pressure points (also: [flow nodes](#flow-node)), and the fluxes and other transport-related variables are defined on the velocity points (also: [flow links](#flow-link)).
 
 ### Structure file
-Input file for [D-Flow FM](#d-flow-fm) containing the hydraulic structures. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf#section.C.12).
+Input file for [D-Flow FM](#d-flow-fm) containing the hydraulic structures. Format is INI-like. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.C.12).
 
 ## T
 ---
@@ -223,5 +223,5 @@ See [sample file](#sample-file).
 ---
 
 
- [Delft3D FM User Manual]: https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf
+ [Delft3D FM User Manual]: https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf
  
