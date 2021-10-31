@@ -286,6 +286,39 @@ class TestParser:
         assert parser._is_property(line) == expected_result
 
     @pytest.mark.parametrize(
+        "line,config,expected_value,expected_comment",
+        [
+            ("key=value", ParserConfig(allow_only_keywords=False), "value", None),
+            ("key=#value#", ParserConfig(allow_only_keywords=False), "#value#", None),
+            (
+                "key= value # comment words",
+                ParserConfig(allow_only_keywords=False),
+                "value",
+                "comment words",
+            ),
+            (
+                "key= #value# # comment words   ",
+                ParserConfig(allow_only_keywords=False),
+                "#value#",
+                "comment words",
+            ),
+        ],
+    )
+    def test_retrieve_property_comment(
+        self,
+        line: str,
+        config: ParserConfig,
+        expected_value: str,
+        expected_comment: str,
+    ):
+        parser = Parser(config)
+        key, valuestring = parser._retrieve_key_value(line)
+        assert parser._retrieve_property_comment(valuestring) == (
+            expected_comment,
+            expected_value,
+        )
+
+    @pytest.mark.parametrize(
         "line,config,expected_result",
         [
             (

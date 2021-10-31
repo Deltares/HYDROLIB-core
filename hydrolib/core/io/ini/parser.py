@@ -239,8 +239,26 @@ class Parser:
 
     def _retrieve_property_comment(self, line: str) -> Tuple[Optional[str], str]:
         if self._config.parse_comments and self._config.comment_delimiter in line:
-            key_value, comment = line.split(self._config.comment_delimiter, 1)
-            return comment.strip(), key_value.strip()
+            # key_value, comment = line.split(self._config.comment_delimiter, 1)
+            parts = line.strip().split(self._config.comment_delimiter)
+            numhash = len(parts) - 1
+            if numhash == 1:
+                # normal value, simple comment: "key =  somevalue # and a comment "
+                return parts[-1].strip(), parts[0].strip()
+            elif parts[0] == "":
+                # hashed value, possible with comment: "key = #somevalue# ..."
+                return (
+                    self._config.comment_delimiter.join(parts[3:]).strip()
+                    if numhash >= 3
+                    else None,
+                    self._config.comment_delimiter.join(parts[0:3]).strip(),
+                )
+            else:
+                # normal value, comment with maybe more hashes: "key = somevalue #This is comment #2, or two "
+                return (
+                    self._config.comment_delimiter.join(parts[1:]).strip(),
+                    parts[0].strip(),
+                )
         else:
             return None, line.strip()
 
