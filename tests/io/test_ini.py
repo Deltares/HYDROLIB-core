@@ -302,6 +302,12 @@ class TestParser:
                 "#value#",
                 "comment words",
             ),
+            (
+                "key=value # With a comment and also hash #2 halfway",
+                ParserConfig(allow_only_keywords=False),
+                "value",
+                "With a comment and also hash #2 halfway",
+            ),
         ],
     )
     def test_retrieve_property_comment(
