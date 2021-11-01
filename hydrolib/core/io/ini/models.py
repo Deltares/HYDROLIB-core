@@ -231,6 +231,10 @@ class CrossSectionDefinition(INIBasedModel):
     # TODO: would we want to load this from something externally and generate these automatically
     class Comments(INIBasedModel.Comments):
         id: Optional[str] = "Unique cross-section definition id."
+        thalweg: Optional[str] = Field(
+            "Transverse Y coordinate at which the cross section aligns with the branch "
+            + "(Keyword used by GUI only)."
+        )
 
     comments: Comments = Comments()
 
@@ -238,6 +242,7 @@ class CrossSectionDefinition(INIBasedModel):
 
     id: str = Field(alias="id")
     type: str = Field(alias="type")
+    thalweg: Optional[float]
 
     @classmethod
     def _duplicate_keys_as_list(cls):
