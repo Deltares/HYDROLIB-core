@@ -263,12 +263,13 @@ class Parser:
         """
 
         if self._config.parse_comments and self._config.comment_delimiter in line:
-            parts = line.strip().split(self._config.comment_delimiter)
-            numhash = len(parts) - 1
+            line = line.strip()
+            parts = line.split(self._config.comment_delimiter)
+            numhash = line.count(self._config.comment_delimiter)
             if numhash == 1:
                 # normal value, simple comment: "key =  somevalue # and a comment "
                 return parts[-1].strip(), parts[0].strip()
-            elif parts[0] == "":
+            elif line.startswith(self._config.comment_delimiter):
                 # hashed value, possible with comment: "key = #somevalue# ..."
                 return (
                     self._config.comment_delimiter.join(parts[3:]).strip()
