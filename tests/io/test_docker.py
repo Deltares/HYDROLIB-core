@@ -38,4 +38,4 @@ def test_from_scratch_docker():
     assert (test_output_dir / "docker" / "network.nc").is_file()
     assert (test_output_dir / "docker" / "test.mdu").is_file()
     assert (test_output_dir / "docker" / "structures.ini").is_file()
-    assert (test_output_dir / "docker" / "dimrconfig.xml").is_file()
+    assert (test_output_dir / "docker" / "dimr_config.xml").is_file()

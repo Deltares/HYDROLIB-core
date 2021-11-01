@@ -283,7 +283,7 @@ class DIMR(FileModel):
 
     @classmethod
     def _filename(cls) -> str:
-        return "dimrconfig"
+        return "dimr_config"
 
     @classmethod
     def _get_serializer(cls) -> Callable:
