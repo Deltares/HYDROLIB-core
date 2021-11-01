@@ -238,6 +238,30 @@ class Parser:
         self._current_section.add_datarow(line.split())  # type: ignore
 
     def _retrieve_property_comment(self, line: str) -> Tuple[Optional[str], str]:
+        """Retrieve the comment and value part from the valuestring of a key-value pair.
+
+        The comment retrieval is complicated by the fact that in the Deltares-INI
+        dialect, the comment delimiter '#' plays a double role: it may also be used
+        to quote string values (for example if the contain spaces).
+
+        Example lines that are supported:
+        key = valueAndNoComment
+        key = valueA  # and a simple comment
+        key = #valueA with possible spaces#
+        key = #valueA#  # and a simple comment
+        key = #valueA# # and a complicated comment with hashes #1 example
+        key = value # and a complicated comment with hashes #2.
+
+        Keywords arguments:
+            line (str) -- the partial string of the line containing both value and
+                possibly a comment at the end. Note that the "key =" part must already
+                have been split off, for example by _retrieve_key_value
+
+        Returns:
+            Tuple with the comment and string value, respectively. If no comment is
+            present, the first tuple element is None.
+        """
+
         if self._config.parse_comments and self._config.comment_delimiter in line:
             parts = line.strip().split(self._config.comment_delimiter)
             numhash = len(parts) - 1
