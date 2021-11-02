@@ -9,10 +9,10 @@
     <parallel>
       <startGroup>
         <time>0 60 7200</time>
-        <start name="Rainfall Runoff" />
-        <coupler name="rr_to_flow" />
+        <start name="Rainfall Runoff"/>
+        <coupler name="rr_to_flow"/>
       </startGroup>
-      <start name="FlowFM" />
+      <start name="FlowFM"/>
     </parallel>
   </control>
   <component name="Rainfall Runoff">
