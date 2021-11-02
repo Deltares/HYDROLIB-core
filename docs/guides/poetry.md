@@ -29,7 +29,7 @@ Package operations: 67 installs, 0 updates, 0 removals
 
   * Installing six (1.16.0)
 [..]
-Installing the current project: hydrolib-core (0.1.3)
+Installing the current project: hydrolib-core (0.1.5)
 (base) PS C:\checkouts\HYDROLIB-core_git> 
 ```  
    If you need to use an already existing Python installation, you can activate it and run `poetry env use system` before `poetry install`.

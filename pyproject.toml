@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.1.4"
+version = "0.1.5"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -33,7 +33,7 @@ matplotlib = "^3.4"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.4"
+version = "0.1.5"
 tag_format = "$version"
 version_files = [
     "hydrolib/core/__init__.py",
