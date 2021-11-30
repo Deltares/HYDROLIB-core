@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Generic, TypeVar
 
 import pytest
+from numpy import array
 from pydantic.generics import GenericModel
 
 TWrapper = TypeVar("TWrapper")
@@ -17,12 +18,13 @@ test_output_dir = test_data_dir / "output"
 test_reference_dir = test_data_dir / "reference"
 
 
-def assert_files_equal(file: str, reference_file: str):
+def assert_files_equal(file: str, reference_file: str, skip_lines: list = []):
     """Asserts that two files are equal based on content.
 
     Args:
         file (str): The path to the input file.
         reference_file (str): The path to the reference file.
+        skip_lines (list): Optional parameter; the line indices to skip for comparison. Default is an empty list.
     """
 
     with file.open() as af:
@@ -34,4 +36,6 @@ def assert_files_equal(file: str, reference_file: str):
     assert len(actual_lines) == len(reference_lines)
 
     for i in range(len(reference_lines)):
+        if i in skip_lines:
+            continue
         assert actual_lines[i] == reference_lines[i]

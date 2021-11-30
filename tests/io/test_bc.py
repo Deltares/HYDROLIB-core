@@ -226,7 +226,7 @@ class TestForcingModel:
         forcingmodel.save()
 
         assert file.is_file() == True
-        assert_files_equal(file, reference_file)
+        assert_files_equal(file, reference_file, skip_lines=[0, 3])
 
 
 def _create_time_series_values():
