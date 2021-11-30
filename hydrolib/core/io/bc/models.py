@@ -49,7 +49,7 @@ class ForcingBase(DataBlockINIBasedModel):
     _header: Literal["Forcing"] = "Forcing"
     name: str = Field(alias="name")
     function: str = Field(alias="function")
-    quantities: List[QuantityUnitPair] = None
+    quantities: List[QuantityUnitPair]
 
     def _exclude_fields(self) -> Set:
         return {"quantities"}.union(super()._exclude_fields())
@@ -64,9 +64,9 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @root_validator(pre=True)
     def _validate_quantities(cls, values):
-        quantitiesKey = "quantities"
+        quantitieskey = "quantities"
 
-        if values.get(quantitiesKey) is not None:
+        if values.get(quantitieskey) is not None:
             return values
 
         quantities = values.get("quantity")
@@ -77,7 +77,7 @@ class ForcingBase(DataBlockINIBasedModel):
             raise ValueError("unit is not provided")
 
         if isinstance(quantities, str) and isinstance(units, str):
-            values[quantitiesKey] = [(quantities, units)]
+            values[quantitieskey] = [(quantities, units)]
             return values
 
         if isinstance(quantities, list) and isinstance(units, list):
@@ -86,7 +86,7 @@ class ForcingBase(DataBlockINIBasedModel):
                     "Number of quantities should be equal to number of units"
                 )
 
-            values[quantitiesKey] = [
+            values[quantitieskey] = [
                 (quantity, unit) for quantity, unit in zip(quantities, units)
             ]
             return values
