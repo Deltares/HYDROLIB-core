@@ -30,8 +30,8 @@ class TestTimeSeries:
         assert forcing.offset == 0.0
         assert forcing.factor == 1.0
         assert forcing.timeinterpolation == TimeInterpolation.linear
-        assert forcing.quantity[0] == "time"
-        assert forcing.unit[0] == "s"
+        assert forcing.quantities[0].quantity == "time"
+        assert forcing.quantities[0].unit == "s"
         assert forcing.datablock[0] == [1.0, 2.0, 3.0]
 
     def test_read_bc_expected_result(self):
@@ -62,11 +62,11 @@ class TestTimeSeries:
         assert forcing.name == "right01_0001"
         assert forcing.function == "timeseries"
         assert isinstance(forcing, TimeSeries)
-        assert forcing.quantity[0] == "time"
-        assert forcing.unit[0] == "minutes since 2001-01-01"
+        assert forcing.quantities[0].quantity == "time"
+        assert forcing.quantities[0].unit == "minutes since 2001-01-01"
         assert forcing.datablock[0] == [0.0, 2.5]
-        assert forcing.quantity[1] == "waterlevelbnd"
-        assert forcing.unit[1] == "m"
+        assert forcing.quantities[1].quantity == "waterlevelbnd"
+        assert forcing.quantities[1].unit == "m"
         assert forcing.datablock[1] == [1440.0, 2.5]
 
 
@@ -109,12 +109,13 @@ class TestForcingModel:
     def test_read_bc_missing_field_raises_correct_error(self):
         file = "missing_field.bc"
         identifier = "Boundary2"
-        field = "quantity"
 
         filepath = test_data_dir / "input/invalid_files" / file
 
         with pytest.raises(ValidationError) as error:
             ForcingModel(filepath)
 
-        expected_message = f"{file} -> forcing -> 1 -> {identifier} -> {field}"
-        assert expected_message in str(error.value)
+        expected_message1 = f"{file} -> forcing -> 1 -> {identifier}"
+        expected_message2 = "quantity is not provided"
+        assert expected_message1 in str(error.value)
+        assert expected_message2 in str(error.value)

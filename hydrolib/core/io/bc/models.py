@@ -5,6 +5,8 @@ from typing import Callable, List, Literal, NamedTuple, Set
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
+from pydantic.error_wrappers import ErrorWrapper, ValidationError
+from pydantic.errors import MissingError
 from pydantic.fields import Field
 
 from hydrolib.core.io.ini.io_models import Property, Section
@@ -62,9 +64,17 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @root_validator(pre=True)
     def _validate_quantities(cls, values):
-        quantities = values["quantity"]
-        units = values["unit"]
         quantitiesKey = "quantities"
+
+        if values.get(quantitiesKey) is not None:
+            return values
+
+        quantities = values.get("quantity")
+        if quantities is None:
+            raise ValueError("quantity is not provided")
+        units = values.get("unit")
+        if units is None:
+            raise ValueError("unit is not provided")
 
         if isinstance(quantities, str) and isinstance(units, str):
             values[quantitiesKey] = [(quantities, units)]
