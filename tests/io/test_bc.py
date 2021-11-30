@@ -133,7 +133,7 @@ class TestForcingBase:
             (["time", "dischargebnd"], "m³/s"),
             (
                 ["time", "dischargebnd", "extra"],
-                ["minutes since 2015-01-01 00:00:00", "m³/s"],
+                ["minutes since 2021-01-01 00:00:00", "m³/s"],
             ),
         ],
     )
@@ -153,25 +153,6 @@ class TestForcingBase:
 
         expected_message = "Number of quantities should be equal to number of units"
         assert expected_message in str(error.value)
-
-    def test_create_forcingbase_with_valid_values(self):
-        values = dict(
-            name="some_boundary",
-            function="timeseries",
-            quantity=["time", "dischargebnd"],
-            unit=["minutes since 2015-01-01 00:00:00", "m³/s"],
-            datablock=[["0", "0"], ["1800", "100"], ["4320", "100"]],
-        )
-
-        forcingbase = ForcingBase(**values)
-
-        assert forcingbase.name == "some_boundary"
-        assert forcingbase.function == "timeseries"
-        assert len(forcingbase.quantities) == 2
-        assert forcingbase.quantities[0].quantity == "time"
-        assert forcingbase.quantities[0].unit == "minutes since 2015-01-01 00:00:00"
-        assert forcingbase.quantities[1].quantity == "dischargebnd"
-        assert forcingbase.quantities[1].unit == "m³/s"
 
 
 class TestForcingModel:
