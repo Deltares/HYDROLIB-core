@@ -27,11 +27,11 @@ from hydrolib.core.io.xyz.models import XYZModel
 
 from .io.test_bui import BuiTestData
 from .utils import (
+    invalid_test_data_dir,
     test_data_dir,
     test_input_dir,
     test_output_dir,
     test_reference_dir,
-    invalid_test_data_dir,
 )
 
 

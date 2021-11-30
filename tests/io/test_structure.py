@@ -22,7 +22,7 @@ from hydrolib.core.io.structure.models import (
     Weir,
 )
 
-from ..utils import WrapperTest, test_data_dir, invalid_test_data_dir
+from ..utils import WrapperTest, invalid_test_data_dir, test_data_dir
 
 uniqueid_str = "Unique structure id (max. 256 characters)."
 
