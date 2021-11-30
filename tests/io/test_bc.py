@@ -27,23 +27,22 @@ from ..utils import (
 
 class TestTimeSeries:
     def test_create_a_forcing_from_scratch(self):
-        forcing = TimeSeries(
-            name="F001",
-            function="timeseries",
-            timeinterpolation=TimeInterpolation.linear,
-            quantity="time",
-            unit="s",
-            datablock=[[1.0, 2.0, 3.0]],
-        )
+        forcing = TimeSeries(**_create_time_series_values())
 
-        assert forcing.name == "F001"
         assert isinstance(forcing, TimeSeries)
-        assert forcing.offset == 0.0
-        assert forcing.factor == 1.0
-        assert forcing.timeinterpolation == TimeInterpolation.linear
+        assert forcing.name == "boundary_timeseries"
+        assert forcing.offset == 1.23
+        assert forcing.factor == 2.34
+        assert forcing.timeinterpolation == TimeInterpolation.block_to
+        assert len(forcing.quantities) == 2
         assert forcing.quantities[0].quantity == "time"
-        assert forcing.quantities[0].unit == "s"
-        assert forcing.datablock[0] == [1.0, 2.0, 3.0]
+        assert forcing.quantities[0].unit == "minutes since 2015-01-01 00:00:00"
+        assert forcing.quantities[1].quantity == "dischargebnd"
+        assert forcing.quantities[1].unit == "m³/s"
+        assert len(forcing.datablock) == 3
+        assert forcing.datablock[0] == [0, 1.23]
+        assert forcing.datablock[1] == [60, 2.34]
+        assert forcing.datablock[2] == [120, 3.45]
 
     def test_read_bc_expected_result(self):
         input_str = inspect.cleandoc(
