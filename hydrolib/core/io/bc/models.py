@@ -62,13 +62,9 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @root_validator(pre=True)
     def _validate_quantities(cls, values):
-
-        quantityKey = "quantity"
-        unitKey = "unit"
+        quantities = values["quantity"]
+        units = values["unit"]
         quantitiesKey = "quantities"
-
-        quantities = values[quantityKey]
-        units = values[unitKey]
 
         if isinstance(quantities, str) and isinstance(units, str):
             values[quantitiesKey] = [(quantities, units)]
