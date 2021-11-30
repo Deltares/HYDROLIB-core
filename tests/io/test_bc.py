@@ -1,17 +1,28 @@
 import inspect
+from pathlib import Path
 
 import pytest
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.bc.models import (
+    T3D,
+    Constant,
     ForcingBase,
     ForcingModel,
+    Harmonic,
+    HarmonicCorrection,
+    QHTable,
     TimeInterpolation,
     TimeSeries,
 )
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
-from ..utils import test_data_dir
+from ..utils import (
+    assert_files_equal,
+    test_data_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 class TestTimeSeries:
@@ -91,6 +102,78 @@ class TestForcingBase:
 
         assert forcing.function == expected
 
+    @pytest.mark.parametrize(
+        "missing_field",
+        [
+            "quantity",
+            "unit",
+        ],
+    )
+    def test_create_forcingbase_missing_field_raises_correct_error(
+        self, missing_field: str
+    ):
+        values = dict(
+            name="Boundary2",
+            function="constant",
+            quantity="dischargebnd",
+            unit="m³/s",
+            datablock=[["100"]],
+        )
+
+        del values[missing_field]
+
+        with pytest.raises(ValidationError) as error:
+            ForcingBase(**values)
+
+        expected_message = f"{missing_field} is not provided"
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "quantities,units",
+        [
+            (["time", "dischargebnd"], "m³/s"),
+            (
+                ["time", "dischargebnd", "extra"],
+                ["minutes since 2015-01-01 00:00:00", "m³/s"],
+            ),
+        ],
+    )
+    def test_create_forcingbase_mismatch_number_of_quantities_units_raises_correct_error(
+        self, quantities, units
+    ):
+        values = dict(
+            name="Boundary2",
+            function="constant",
+            quantity=quantities,
+            unit=units,
+            datablock=[["100"]],
+        )
+
+        with pytest.raises(ValidationError) as error:
+            ForcingBase(**values)
+
+        expected_message = "Number of quantities should be equal to number of units"
+        assert expected_message in str(error.value)
+
+    def test_create_forcingbase_with_valid_values(self):
+        values = dict(
+            name="some_boundary",
+            function="timeseries",
+            quantity=["time", "dischargebnd"],
+            unit=["minutes since 2015-01-01 00:00:00", "m³/s"],
+            datablock=[["0", "0"], ["1800", "100"], ["4320", "100"]],
+        )
+
+        forcingbase = ForcingBase(**values)
+
+        assert forcingbase.name == "some_boundary"
+        assert forcingbase.function == "timeseries"
+        assert len(forcingbase.quantities) == 2
+        assert forcingbase.quantities[0].quantity == "time"
+        assert forcingbase.quantities[0].unit == "minutes since 2015-01-01 00:00:00"
+        assert forcingbase.quantities[1].quantity == "dischargebnd"
+        assert forcingbase.quantities[1].unit == "m³/s"
+
 
 class TestForcingModel:
     """
@@ -119,3 +202,130 @@ class TestForcingModel:
         expected_message2 = "quantity is not provided"
         assert expected_message1 in str(error.value)
         assert expected_message2 in str(error.value)
+
+    def test_save_forcing_model(self):
+        file = Path(test_output_dir / "test.bc")
+        reference_file = Path(test_reference_dir / "bc" / "test.bc")
+        forcingmodel = ForcingModel()
+        forcingmodel.filepath = file
+
+        timeseries = TimeSeries(**_create_time_series_values())
+        harmonic = Harmonic(**_create_harmonic_values(False))
+        harmoniccorrection = HarmonicCorrection(**_create_harmonic_values(True))
+        t3d = T3D(**_create_t3d_values())
+        qhtable = QHTable(**_create_qhtable_values())
+        constant = Constant(**_create_constant_values())
+
+        forcingmodel.forcing.append(timeseries)
+        forcingmodel.forcing.append(harmonic)
+        forcingmodel.forcing.append(harmoniccorrection)
+        forcingmodel.forcing.append(t3d)
+        forcingmodel.forcing.append(qhtable)
+        forcingmodel.forcing.append(constant)
+
+        forcingmodel.save()
+
+        assert file.is_file() == True
+        assert_files_equal(file, reference_file)
+
+
+def _create_time_series_values():
+    return dict(
+        name="boundary_timeseries",
+        function="timeseries",
+        timeinterpolation="blockTo",
+        offset="1.23",
+        factor="2.34",
+        quantities=[
+            ("time", "minutes since 2015-01-01 00:00:00"),
+            ("dischargebnd", "m³/s"),
+        ],
+        datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
+    )
+
+
+def _create_harmonic_values(iscorrection: bool):
+    function = "harmoniccorrection" if iscorrection else "harmonic"
+    return dict(
+        name=f"boundary_{function}",
+        function=function,
+        quantities=[
+            ("harmonic component", "minutes"),
+            ("waterlevelbnd amplitude", "m"),
+            ("waterlevelbnd phase", "deg"),
+        ],
+        datablock=[
+            ["0", "1.23", "2.34"],
+            ["60", "3.45", "4.56"],
+        ],
+    )
+
+
+def _create_astronomic_values(iscorrection: bool):
+    function = "astronomiccorrection" if iscorrection else "astronomic"
+    return dict(
+        name=f"boundary_{function}",
+        function=function,
+        quantities=[
+            ("astronomic component", "-"),
+            ("waterlevelbnd amplitude", "m"),
+            ("waterlevelbnd phase", "deg"),
+        ],
+        datablock=[
+            ["A0", "1.23", "2.34"],
+            ["M4", "3.45", "4.56"],
+            ["N2", "5.67", "6.78"],
+        ],
+    )
+
+
+def _create_t3d_values():
+    return dict(
+        name="boundary_t3d",
+        function="t3d",
+        offset="1.23",
+        factor="2.34",
+        verticalpositions=["3.45", "4.56", "5.67"],
+        verticalinterpolation="log",
+        verticalpositiontype="percBed",
+        quantities=[
+            ("time", "m"),
+            ("verticalposition", "-"),
+        ],
+        datablock=[
+            ["0", "1", "2", "3"],
+            ["60", "4", "5", "6"],
+            ["120", "7", "8", "9"],
+        ],
+    )
+
+
+def _create_qhtable_values():
+    return dict(
+        name="boundary_qhtable",
+        function="qhtable",
+        quantities=[
+            ("qhbnd discharge", "m3/s"),
+            ("qhbnd waterlevel", "m"),
+        ],
+        datablock=[
+            ["1.23", "2.34"],
+            ["3.45", "4.56"],
+        ],
+    )
+
+
+def _create_constant_values():
+    return dict(
+        name="boundary_constant",
+        function="constant",
+        offset="1.23",
+        factor="2.34",
+        timeinterpolation="linear",
+        quantities=[
+            ("waterlevelbnd", "m"),
+        ],
+        datablock=[
+            ["3.45"],
+        ],
+    )
