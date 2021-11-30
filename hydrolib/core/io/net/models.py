@@ -273,16 +273,6 @@ class Mesh2d(BaseModel):
 
 
 class Branch:
-
-    # geometry: np.empty(0, dtype=np.double)
-    # _x_coordinates: np.empty(0, dtype=np.double)
-    # _y_coordinates: np.empty(0, dtype=np.double)
-    # _distance: np.empty(0, dtype=np.double)
-    # length: float = 0.0
-    # branch_offsets: np.empty(0, dtype=np.double)
-    # nodes: np.empty(0, dtype=np.double)
-    # present: np.empty(0, dtype=bool)
-
     def __init__(
         self,
         geometry: np.ndarray,
@@ -316,12 +306,7 @@ class Branch:
         self.branch_offsets = branch_offsets
         # Calculate node positions
         if branch_offsets is not None:
-            # if (branch_offsets < 0.0).any():
-            #     raise ValueError("Minimum branch offset is smaller than 0.0")
-            # elif (branch_offsets > self.length).any():
-            #     raise ValueError(
-            #         f"Maximum branch offset ({max(branch_offsets)}) is larger than the branch length ({self.length})"
-            #     )
+            # TODO Add validation for offsets smaller than 0 or smaller than the branch length.
             self.node_xy = self.interpolate(branch_offsets)
 
         # Set which of the nodes are present

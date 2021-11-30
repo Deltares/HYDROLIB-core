@@ -11,7 +11,7 @@ from hydrolib.core.io.bc.models import (
 )
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
-from ..utils import WrapperTest, test_data_dir
+from ..utils import WrapperTest, test_data_dir, invalid_test_data_dir
 
 
 def test_forcing_model():
@@ -85,7 +85,7 @@ def test_read_bc_missing_field_raises_correct_error():
     identifier = "Boundary2"
     field = "quantity"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ForcingModel(filepath)
