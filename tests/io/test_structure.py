@@ -1397,3 +1397,48 @@ class TestDambreak:
             with pytest.raises(ValueError) as exc_err:
                 Dambreak.check_location(invalid_values)
             assert str(exc_err.value) == expected_err
+
+
+class TestOrifice:
+    """
+    Wrapper class to test all the methods and sublcasses in:
+    hydrolib.core.io.structure.models.py Orifice class.
+    """
+
+    def test_create_orifice(self):
+        structure = Orifice(**self._create_orifice_values())
+
+        assert structure.id == "structure_id"
+        assert structure.name == "structure_name"
+        assert structure.type == "orifice"
+        assert structure.branchid == "branch_id"
+        assert structure.chainage == 1.23
+        assert structure.allowedflowdir == FlowDirection.positive
+        assert structure.crestlevel == 2.34
+        assert structure.crestwidth == 3.45
+        assert structure.gateloweredgelevel == 4.56
+        assert structure.corrcoeff == 5.67
+        assert structure.usevelocityheight == True
+        assert structure.uselimitflowpos == True
+        assert structure.limitflowpos == 6.78
+        assert structure.uselimitflowneg == True
+        assert structure.limitflowneg == 7.89
+
+    def _create_orifice_values(self) -> dict:
+        return dict(
+            id="structure_id",
+            name="structure_name",
+            type="orifice",
+            branchid="branch_id",
+            chainage="1.23",
+            allowedflowdir="positive",
+            crestlevel="2.34",
+            crestwidth="3.45",
+            gateloweredgelevel="4.56",
+            corrcoeff="5.67",
+            usevelocityheight="true",
+            uselimitflowpos="true",
+            limitflowpos="6.78",
+            uselimitflowneg="true",
+            limitflowneg="7.89",
+        )
