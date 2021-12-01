@@ -238,9 +238,51 @@ class Parser:
         self._current_section.add_datarow(line.split())  # type: ignore
 
     def _retrieve_property_comment(self, line: str) -> Tuple[Optional[str], str]:
+        """Retrieve the comment and value part from the valuestring of a key-value pair.
+
+        The comment retrieval is complicated by the fact that in the Deltares-INI
+        dialect, the comment delimiter '#' plays a double role: it may also be used
+        to quote string values (for example if the contain spaces).
+
+        Example lines that are supported:
+        key = valueAndNoComment
+        key = valueA  # and a simple comment
+        key = #valueA with possible spaces#
+        key = #valueA#  # and a simple comment
+        key = #valueA# # and a complicated comment with hashes #1 example
+        key = value # and a complicated comment with hashes #2.
+
+        Keywords arguments:
+            line (str) -- the partial string of the line containing both value and
+                possibly a comment at the end. Note that the "key =" part must already
+                have been split off, for example by _retrieve_key_value
+
+        Returns:
+            Tuple with the comment and string value, respectively. If no comment is
+            present, the first tuple element is None.
+        """
+
         if self._config.parse_comments and self._config.comment_delimiter in line:
-            key_value, comment = line.split(self._config.comment_delimiter, 1)
-            return comment.strip(), key_value.strip()
+            line = line.strip()
+            parts = line.split(self._config.comment_delimiter)
+            numhash = line.count(self._config.comment_delimiter)
+            if numhash == 1:
+                # normal value, simple comment: "key =  somevalue # and a comment "
+                return parts[-1].strip(), parts[0].strip()
+            elif line.startswith(self._config.comment_delimiter):
+                # hashed value, possible with comment: "key = #somevalue# ..."
+                return (
+                    self._config.comment_delimiter.join(parts[3:]).strip()
+                    if numhash >= 3
+                    else None,
+                    self._config.comment_delimiter.join(parts[0:3]).strip(),
+                )
+            else:
+                # normal value, comment with maybe more hashes: "key = somevalue #This is comment #2, or two "
+                return (
+                    self._config.comment_delimiter.join(parts[1:]).strip(),
+                    parts[0].strip(),
+                )
         else:
             return None, line.strip()
 

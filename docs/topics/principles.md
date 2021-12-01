@@ -45,9 +45,9 @@ You can see this tree structure if you call `show_tree`.
 
 ## In detail:
 => **User initializes a new root FileModel from file**:
-1) `FileModel.__new__(cls, filepath: str/Path)`
+1. `FileModel.__new__(cls, filepath: str/Path)`
 	- Returns the result of the default `__new__` function
-2) `FileModel.__init__(self, filepath: str/Path)`
+2. `FileModel.__init__(self, filepath: str/Path)`
 	- `self` holds the FileModel instance that was returned in step 1.
 	- `filepath` is *assumed* to hold the absolute file path to the root file.
 	- Updates the global variable `context_dir` with the parent directory of `filepath`. 
@@ -55,16 +55,16 @@ You can see this tree structure if you call `show_tree`.
 	- Loads the data (`dict`) from the file.
 	- Initialize `self` with the data.
 	- => **Pydantic tries to convert the data to objects, a.o. sub FileModels**:
-3) `FileModel.validate(value: str)`
+3. `FileModel.validate(value: str)`
 	- `value` holds a relative or absolute file path to the referenced file.
 	- If `value` is not an absolute file path, resolves the absolute path by using the directory stored in the `context_dir`, previously set in step 2.
 	- Calls `super().validate(value)` with the absolute file path stored in `value`.
 	- => **Pydantic create a new FileModel with the data**:
-4) `FileModel.__new__(cls, filepath: str)`
+4. `FileModel.__new__(cls, filepath: str)`
 	- `filepath` holds the absolute file path that was resolved in step 3.
 	- If `FileModel._file_models_cache` already contains a FileModel instance with this `filepath`, returns the cached instance,
 		- Otherwise, returns the result of the default `__new__` function.
-5) `FileModel.__init__(self, filepath: str)`
+5. `FileModel.__init__(self, filepath: str)`
 	- `self` holds the FileModel instance that was returned in step 4.
 	- `filepath` holds the absolute file path that was resolved in step 3.
 	- If `FileModel._file_models_cache` already contains a FileModel instance with this `filepath`, returns immediately: no initialization is done.
@@ -72,7 +72,7 @@ You can see this tree structure if you call `show_tree`.
 	- Loads the data (`dict`) from the file.
 	- Initialize `self` with the data.
 	- => **Pydantic tries to convert the data to objects, a.o. sub FileModels**:
-6) Repeat steps 3-5
+6. Repeat steps 3-5
 
 # Parsing and serializing `INIBasedModels`
 Parsing an INI file should be case-insensitive. To achieve this, the parsable field names of each `INIBasedModel` should be equal to the expected key in the file in lower case. 

@@ -22,7 +22,9 @@ from hydrolib.core.io.structure.models import (
     Weir,
 )
 
-from ..utils import WrapperTest, test_data_dir
+from ..utils import WrapperTest, invalid_test_data_dir, test_data_dir
+
+uniqueid_str = "Unique structure id (max. 256 characters)."
 
 
 def test_structure_model():
@@ -65,7 +67,7 @@ def test_create_a_weir_from_scratch():
         == "W stands for weir, 003 because we expect to have at most 999 weirs"
     )
 
-    assert weir.comments.id == "Unique structure id (max. 256 characters)."
+    assert weir.comments.id == uniqueid_str
 
 
 def test_id_comment_has_correct_default():
@@ -80,7 +82,7 @@ def test_id_comment_has_correct_default():
         usevelocityheight=False,
     )
 
-    assert weir.comments.id == "Unique structure id (max. 256 characters)."
+    assert weir.comments.id == uniqueid_str
 
 
 def test_add_comment_to_weir():
@@ -333,7 +335,7 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     identifier = "Structure2"
     field = "crestLevel"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         StructureModel(filepath)
@@ -535,7 +537,7 @@ class TestBridge:
             == "B stands for Bridge, 003 because we expect to have at most 999 weirs"
         )
 
-        assert bridge.comments.id == "Unique structure id (max. 256 characters)."
+        assert bridge.comments.id == uniqueid_str
 
     def test_bridge_construction_with_parser(self):
         parser = Parser(ParserConfig())

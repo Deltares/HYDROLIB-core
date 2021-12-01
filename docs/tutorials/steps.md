@@ -44,5 +44,5 @@ dimr.component.append(
 dimr.save(folder=Path("."))
 ```
 The save on the top of the model hierarchy will result in saves of all child models,
-so this results in four files (`dimrconfig.xml`, `network.nc`, `structures.ini`,`test.mdu`)
+so this results in four files (`dimr_config.xml`, `network.nc`, `structures.ini`,`test.mdu`)
 in the working directory.
