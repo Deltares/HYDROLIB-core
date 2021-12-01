@@ -39,4 +39,7 @@ def assert_files_equal(file: str, reference_file: str, skip_lines: list = []):
     for i in range(len(reference_lines)):
         if i in skip_lines:
             continue
-        assert actual_lines[i] == reference_lines[i]
+
+        actual = actual_lines[i]
+        reference = reference_lines[i]
+        assert actual == reference, f"<{actual}> not equal to <{reference}>"

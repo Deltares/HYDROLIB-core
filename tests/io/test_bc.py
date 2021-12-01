@@ -88,8 +88,8 @@ class TestForcingBase:
             ("TimeSeries", "timeseries"),
             ("haRmoniC", "harmonic"),
             ("ASTRONOMIC", "astronomic"),
-            ("harmonicCorrection", "harmoniccorrection"),
-            ("AstronomicCorrection", "astronomiccorrection"),
+            ("harmonic-Correction", "harmonic-correction"),
+            ("Astronomic-Correction", "astronomic-correction"),
             ("t3D", "t3d"),
             ("QHtable", "qhtable"),
             ("Constant", "constant"),
@@ -226,7 +226,7 @@ def _create_time_series_values():
 
 
 def _create_harmonic_values(iscorrection: bool):
-    function = "harmoniccorrection" if iscorrection else "harmonic"
+    function = "harmonic-correction" if iscorrection else "harmonic"
     return dict(
         name=f"boundary_{function}",
         function=function,
@@ -243,7 +243,7 @@ def _create_harmonic_values(iscorrection: bool):
 
 
 def _create_astronomic_values(iscorrection: bool):
-    function = "astronomiccorrection" if iscorrection else "astronomic"
+    function = "astronomic-correction" if iscorrection else "astronomic"
     return dict(
         name=f"boundary_{function}",
         function=function,

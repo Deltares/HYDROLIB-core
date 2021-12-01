@@ -32,8 +32,8 @@
         60.0    3.45    4.56
 
 [Forcing]
-    name     = boundary_harmoniccorrection
-    function = harmoniccorrection
+    name     = boundary_harmonic-correction
+    function = harmonic-correction
     quantity = harmonic component
     unit     = minutes
     quantity = waterlevelbnd amplitude

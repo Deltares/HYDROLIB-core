@@ -159,11 +159,11 @@ class Astronomic(ForcingBase):
 
 
 class HarmonicCorrection(ForcingBase):
-    function: Literal["harmoniccorrection"] = "harmoniccorrection"
+    function: Literal["harmonic-correction"] = "harmonic-correction"
 
 
 class AstronomicCorrection(ForcingBase):
-    function: Literal["astronomiccorrection"] = "astronomiccorrection"
+    function: Literal["astronomic-correction"] = "astronomic-correction"
 
 
 class T3D(ForcingBase):
