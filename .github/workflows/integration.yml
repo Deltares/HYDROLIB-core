@@ -1,9 +1,14 @@
 name: ci
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-
   CI:
     strategy:
       fail-fast: false
@@ -25,14 +30,13 @@ jobs:
         uses: abatilo/actions-poetry@v2.0.0
         with:
           poetry-version: 1.1.8
+
       - name: Cache Poetry virtualenv
         uses: actions/cache@v1
         id: cache
         with:
           path: ~/.virtualenvs
           key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            venv-${{ matrix.os }}-${{ matrix.python-version }}-
 
       - name: Set Poetry config
         run: |
@@ -52,8 +56,8 @@ jobs:
       - name: Pull image from DockerHub
         run: docker pull deltares/delft3dfm
 
-      # - name: Run image in container
-      #   run: docker run --detach company/repo:version
-
-      - name: Run only integration test
+      - name: Run only integration test to generate input
         run: poetry run pytest -m docker
+
+      - name: Run image in container
+        run: docker run  -v $(pwd)/tests/data/output/docker:/data deltares/delft3dfm /opt/delft3dfm_latest/lnx64/bin/run_dimr.sh

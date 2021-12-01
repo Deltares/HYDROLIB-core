@@ -1,15 +1,18 @@
+import pytest
 from devtools import debug
 
 from hydrolib.core.io.dimr.models import DIMR, FMComponent
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
+from tests.utils import test_input_dir, test_output_dir
 
 from ..utils import test_output_dir
 
 
+@pytest.mark.skip  # skipped as long as its imcomplete
 def test_from_scratch_docker():
-    # TODO Make this model run in Docker to test actual validity
+    # TODO Make a valid model from scratch
     dimr = DIMR()
     fm = FMModel(filepath="test.mdu")
     # debug(fm.geometry.netfile)
@@ -37,4 +40,23 @@ def test_from_scratch_docker():
     assert (test_output_dir / "docker" / "network.nc").is_file()
     assert (test_output_dir / "docker" / "test.mdu").is_file()
     assert (test_output_dir / "docker" / "structures.ini").is_file()
-    assert (test_output_dir / "docker" / "dimrconfig.xml").is_file()
+    assert (test_output_dir / "docker" / "dimr_config.xml").is_file()
+
+
+@pytest.mark.docker
+def test_existing_model_saved_docker():
+
+    test_file = (
+        test_input_dir
+        / "e02"
+        / "c11_korte-woerden-1d"
+        / "dimr_model"
+        / "dimr_config.xml"
+    )
+
+    dimr = DIMR(filepath=test_file)
+    dimr.save(folder=test_output_dir / "docker")
+    assert (test_output_dir / "docker" / "FlowFM_net.nc").is_file()
+    assert (test_output_dir / "docker" / "FlowFM.mdu").is_file()
+    assert (test_output_dir / "docker" / "structures.ini").is_file()
+    assert (test_output_dir / "docker" / "dimr_config.xml").is_file()
