@@ -28,6 +28,7 @@ from hydrolib.core.io.xyz.models import XYZModel
 from .io.test_bui import BuiTestData
 from .utils import (
     assert_files_equal,
+    invalid_test_data_dir,
     test_data_dir,
     test_input_dir,
     test_output_dir,
@@ -232,7 +233,7 @@ def test_read_ext_missing_boundary_field_raises_correct_error():
     identifier = "Boundary2"
     field = "quantity"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
@@ -246,7 +247,7 @@ def test_read_ext_missing_lateral_field_raises_correct_error():
     identifier = "Lateral2"
     field = "discharge"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
@@ -260,7 +261,7 @@ def test_read_dimr_missing_component_field_raises_correct_error():
     identifier = "FlowFM"
     field = "workingdir"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)
@@ -274,7 +275,7 @@ def test_read_dimr_missing_coupler_field_raises_correct_error():
     identifier = "rr_to_flow"
     field = "targetcomponent"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)
@@ -303,7 +304,6 @@ def test_boundary_with_forcing_file_without_match_returns_none():
 
     forcing_file = ForcingModel(forcing=[forcing1, forcing2])
 
-    boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
     boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
 
     assert boundary.forcing is None

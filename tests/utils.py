@@ -13,6 +13,7 @@ class WrapperTest(GenericModel, Generic[TWrapper]):
 
 
 test_data_dir = Path(__file__).parent / "data"
+invalid_test_data_dir = test_data_dir / "input/invalid_files"
 test_input_dir = test_data_dir / "input"
 test_output_dir = test_data_dir / "output"
 test_reference_dir = test_data_dir / "reference"

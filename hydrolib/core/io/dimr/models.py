@@ -68,7 +68,7 @@ class Component(BaseModel, ABC):
     def is_intermediate_link(self) -> bool:
         return True
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data["name"] if "name" in data else None
 
 
@@ -124,7 +124,7 @@ class ComponentOrCouplerRef(BaseModel):
 
     name: str
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data["name"] if "name" in data else None
 
 
@@ -184,7 +184,7 @@ class Coupler(BaseModel):
         # TODO set to True once we replace Paths with FileModels
         return False
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data["name"] if "name" in data else None
 
 

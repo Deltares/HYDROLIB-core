@@ -52,12 +52,12 @@ class BaseModel(PydanticBaseModel):
         try:
             super().__init__(**data)
         except ValidationError as e:
-            id = self._get_identifier(data)
-            if id is None:
+            identifier = self._get_identifier(data)
+            if identifier is None:
                 raise e
             else:
                 # If there is an identifier, include this in the ValidationError messages.
-                raise ValidationError([ErrorWrapper(e, loc=id)], self.__class__)
+                raise ValidationError([ErrorWrapper(e, loc=identifier)], self.__class__)
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
@@ -101,7 +101,7 @@ class BaseModel(PydanticBaseModel):
         if self.is_file_link():
             getattr(self, f)(*args, **kwargs)
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         """Gets the identifier for this model.
 
         Args:
@@ -270,7 +270,7 @@ class FileModel(BaseModel, ABC):
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         filepath = data.get("filepath")
         if filepath:
             return filepath.name

@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Literal, NamedTuple, Set
+from typing import Callable, Dict, List, Literal, NamedTuple, Optional, Set
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
@@ -121,7 +121,7 @@ class ForcingBase(DataBlockINIBasedModel):
                 )
         return v
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data["name"] if "name" in data else None
 
     def _to_section(self) -> Section:

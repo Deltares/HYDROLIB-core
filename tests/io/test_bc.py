@@ -19,6 +19,7 @@ from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
 from ..utils import (
     assert_files_equal,
+    invalid_test_data_dir,
     test_data_dir,
     test_output_dir,
     test_reference_dir,
@@ -173,7 +174,7 @@ class TestForcingModel:
         file = "missing_field.bc"
         identifier = "Boundary2"
 
-        filepath = test_data_dir / "input/invalid_files" / file
+        filepath = invalid_test_data_dir / file
 
         with pytest.raises(ValidationError) as error:
             ForcingModel(filepath)
