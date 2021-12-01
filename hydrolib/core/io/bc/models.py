@@ -37,7 +37,7 @@ class QuantityUnitPair(NamedTuple):
     quantity: str
     unit: str
 
-    def to_properties(self):
+    def _to_properties(self):
         yield Property(key="quantity", value=self.quantity)
         yield Property(key="unit", value=self.unit)
 
@@ -128,7 +128,7 @@ class ForcingBase(DataBlockINIBasedModel):
         section = super()._to_section()
 
         for quantity in self.quantities:
-            for prop in quantity.to_properties():
+            for prop in quantity._to_properties():
                 section.content.append(prop)
 
         return section
