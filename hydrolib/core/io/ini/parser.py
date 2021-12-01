@@ -334,11 +334,27 @@ class Parser:
             config = ParserConfig()
         parser = cls(config)
 
+        progline = re.compile(
+            r"^([^#]*=\s*)([^#]*)(#.*)?"
+        )  # matches whole line: "Field = Value Maybe more # optional comment"
+        progfloat = re.compile(
+            r"([\d.]+)([dD])([+\-]?\d+)"
+        )  # matches a float value: 1d9, 1D-3, 1.D+4, etc.
+
         with filepath.open() as f:
             for line in f:
                 # Replace Fortran scientific notation for doubles
                 # Match number d/D +/- number (e.g. 1d-05 or 1.23D+01 or 1.d-4)
-                line = re.sub(r"([\d.]+)([dD])([+\-]?\d+)", r"\1e\3", line)
+                match = progline.match(line)
+                if match:  # Only process value
+                    line = (
+                        match.group(1)
+                        + progfloat.sub(r"\1e\3", match.group(2))
+                        + str(match.group(3) or "")
+                    )
+                else:  # Process full line
+                    line = progfloat.sub(r"\1e\3", line)
+
                 parser.feed_line(line)
 
         return parser.finalize().flatten()
