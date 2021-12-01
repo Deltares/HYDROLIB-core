@@ -109,7 +109,7 @@ class FrictBranch(INIBasedModel):
     chainage: Optional[List[float]]
     frictionvalues: Optional[List[float]] = Field(
         alias="frictionValues"
-    )  # TODO: turn this into List[List[float]]
+    )  # TODO: turn this into List[List[float]], see issue #143.
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "levels",
@@ -118,15 +118,16 @@ class FrictBranch(INIBasedModel):
         delimiter=" ",
     )
 
-    _make_lists = make_list_validator("frictionvalues")
-
 
 class FrictionModel(INIModel):
     general: FrictGeneral = FrictGeneral()
-    global_: FrictGlobal = Field(alias="global")  # to circumvent built-in kw
+    global_: List[FrictGlobal] = Field([], alias="global")  # to circumvent built-in kw
     branch: List[FrictBranch] = []
 
     _split_to_list = make_list_validator(
+        "global_",
+    )
+    _split_to_list2 = make_list_validator(
         "branch",
     )
 
