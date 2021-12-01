@@ -440,27 +440,6 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
 
 @pytest.mark.parametrize(
     "input,expected",
-    _get_allowedflowdir_cases(),
-)
-def test_orifice_parses_flowdirection_case_insensitive(input, expected):
-    structure = Orifice(
-        allowedflowdir=input,
-        id="strucid",
-        branchid="branchid",
-        chainage="1",
-        crestlevel="1",
-        corrcoeff="1",
-        gateloweredgelevel="1",
-        usevelocityheight="0",
-        uselimitflowpos="0",
-        uselimitflowneg="0",
-    )
-
-    assert structure.allowedflowdir == expected
-
-
-@pytest.mark.parametrize(
-    "input,expected",
     [("Culvert", "culvert"), ("INVERTEDSiphon", "invertedSiphon")],
 )
 def test_culvert_parses_subtype_case_insensitive(input, expected):
@@ -1423,6 +1402,26 @@ class TestOrifice:
         assert structure.limitflowpos == 6.78
         assert structure.uselimitflowneg == True
         assert structure.limitflowneg == 7.89
+
+    @pytest.mark.parametrize(
+        "input,expected",
+        _get_allowedflowdir_cases(),
+    )
+    def test_orifice_parses_flowdirection_case_insensitive(self, input, expected):
+        structure = Orifice(
+            allowedflowdir=input,
+            id="strucid",
+            branchid="branchid",
+            chainage="1",
+            crestlevel="1",
+            corrcoeff="1",
+            gateloweredgelevel="1",
+            usevelocityheight="0",
+            uselimitflowpos="0",
+            uselimitflowneg="0",
+        )
+
+        assert structure.allowedflowdir == expected
 
     def _create_orifice_values(self) -> dict:
         return dict(
