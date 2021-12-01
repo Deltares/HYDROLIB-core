@@ -384,13 +384,35 @@ class Orifice(Structure):
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
     # TODO Use a validator here to check the optionals related to the bool field
-    uselimitflowpos: bool = Field(False, alias="useLimitFlowPos")
+    uselimitflowpos: Optional[bool] = Field(False, alias="useLimitFlowPos")
     limitflowpos: Optional[float] = Field(alias="limitFlowPos")
 
-    uselimitflowneg: bool = Field(False, alias="useLimitFlowNeg")
-    limitflowneg: Optional[float] = Field(alias="limitFlowneg")
+    uselimitflowneg: Optional[bool] = Field(False, alias="useLimitFlowNeg")
+    limitflowneg: Optional[float] = Field(alias="limitFlowNeg")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
+    @validator("limitflowpos", always=True)
+    @classmethod
+    def _validate_limitflowpos(cls, v, values):
+
+        if v is None and values["uselimitflowpos"] == True:
+            raise ValueError(
+                "limitFlowPos should be defined when useLimitFlowPos is true"
+            )
+
+        return v
+
+    @validator("limitflowneg", always=True)
+    @classmethod
+    def _validate_limitflowneg(cls, v, values):
+
+        if v is None and values["uselimitflowneg"] == True:
+            raise ValueError(
+                "limitFlowNeg should be defined when useLimitFlowNeg is true"
+            )
+
+        return v
 
 
 class DambreakAlgorithm(int, Enum):
