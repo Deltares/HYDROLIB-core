@@ -2,7 +2,7 @@ import logging
 from abc import ABC
 from enum import Enum
 from pathlib import Path
-from typing import Callable, Dict, List, Literal
+from typing import Callable, Dict, List, Literal, Optional
 
 from pydantic import Extra
 from pydantic.class_validators import validator
@@ -85,7 +85,7 @@ class ForcingBase(DataBlockINIBasedModel):
                 )
         return v
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data["name"] if "name" in data else None
 
     class Config:
