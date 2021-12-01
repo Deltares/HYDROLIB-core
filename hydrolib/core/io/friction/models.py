@@ -2,7 +2,8 @@ import logging
 from pathlib import Path
 from typing import List, Literal, Optional
 
-from pydantic import Field
+from pydantic import Field, NonNegativeInt, PositiveInt
+from pydantic.class_validators import validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
@@ -103,9 +104,9 @@ class FrictBranch(INIBasedModel):
     frictiontype: str = Field(alias="frictionType")
     functiontype: Optional[str] = Field("constant", alias="functionType")
     timeseriesid: Optional[str] = Field(alias="timeSeriesId")
-    numlevels: Optional[int] = Field(alias="numLevels")
+    numlevels: Optional[PositiveInt] = Field(alias="numLevels")
     levels: Optional[List[float]]
-    numlocations: Optional[int] = Field(0, alias="numLocations")
+    numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
     chainage: Optional[List[float]]
     frictionvalues: Optional[List[float]] = Field(
         alias="frictionValues"
@@ -117,6 +118,49 @@ class FrictBranch(INIBasedModel):
         "frictionvalues",
         delimiter=" ",
     )
+
+    @validator("levels", always=True)
+    @classmethod
+    def _validate_levels(cls, v, values):
+        foo = "bar"
+        if v is not None and (
+            values["numlevels"] is None or len(v) != values["numlevels"]
+        ):
+            raise ValueError(
+                f"Number of values for levels should be equal to the numLevels value (branchId={values.get('branchid', '')})."
+            )
+
+        return v
+
+    @validator("chainage", always=True)
+    @classmethod
+    def _validate_chainage(cls, v, values):
+        if v is not None and len(v) != values["numlocations"]:
+            raise ValueError(
+                f"Number of values for chainage should be equal to the numLocations value (branchId={values.get('branchid', '')})."
+            )
+
+        return v
+
+    @validator("frictionvalues", always=True)
+    @classmethod
+    def _validate_frictionvalues(cls, v, values):
+        # number of values should be equal to numlocations*numlevels
+        numvals = max(1, values["numlocations"]) * (
+            1
+            if (
+                "numlevels" not in values
+                or values["numlevels"] is None
+                or values["numlevels"] is 0
+            )
+            else values["numlevels"]
+        )
+        if v is not None and len(v) != numvals:
+            raise ValueError(
+                f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={values.get('branchid', '')})."
+            )
+
+        return v
 
 
 class FrictionModel(INIModel):
