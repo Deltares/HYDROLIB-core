@@ -270,7 +270,9 @@ def _create_t3d_values():
         verticalpositiontype="percBed",
         quantities=[
             ("time", "m"),
-            ("verticalposition", "-"),
+            ("salinitybnd", "ppt"),
+            ("salinitybnd", "ppt"),
+            ("salinitybnd", "ppt"),
         ],
         datablock=[
             ["0", "1", "2", "3"],

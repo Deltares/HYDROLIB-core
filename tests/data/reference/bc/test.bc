@@ -53,8 +53,12 @@
     verticalPositionType  = percBed
     quantity              = time
     unit                  = m
-    quantity              = verticalposition
-    unit                  = -
+    quantity              = salinitybnd
+    unit                  = ppt
+    quantity              = salinitybnd
+    unit                  = ppt
+    quantity              = salinitybnd
+    unit                  = ppt
         0.0      1.0    2.0    3.0
         60.0     4.0    5.0    6.0
         120.0    7.0    8.0    9.0
