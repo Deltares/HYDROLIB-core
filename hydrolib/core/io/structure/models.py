@@ -397,15 +397,15 @@ class Orifice(Structure):
     @validator("limitflowpos", always=True)
     @classmethod
     def _validate_limitflowpos(cls, v, values):
-        return cls.validate_limitflow(v, values, "limitFlowPos", "useLimitFlowPos")
+        return cls._validate_limitflow(v, values, "limitFlowPos", "useLimitFlowPos")
 
     @validator("limitflowneg", always=True)
     @classmethod
     def _validate_limitflowneg(cls, v, values):
-        return cls.validate_limitflow(v, values, "limitFlowNeg", "useLimitFlowNeg")
+        return cls._validate_limitflow(v, values, "limitFlowNeg", "useLimitFlowNeg")
 
     @classmethod
-    def validate_limitflow(cls, v, values, limitflow: str, uselimitflow: str):
+    def _validate_limitflow(cls, v, values, limitflow: str, uselimitflow: str):
         if v is None and values[uselimitflow.lower()] == True:
             raise ValueError(
                 f"{limitflow} should be defined when {uselimitflow} is true"
