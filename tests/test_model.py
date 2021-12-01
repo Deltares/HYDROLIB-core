@@ -26,7 +26,13 @@ from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 from .io.test_bui import BuiTestData
-from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
+from .utils import (
+    invalid_test_data_dir,
+    test_data_dir,
+    test_input_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 def test_dimr_model():
@@ -230,12 +236,13 @@ def test_mdu_from_scratch():
     model.save()
 
 
+@pytest.mark.filterwarnings("ignore:File.*not found:UserWarning")
 def test_read_ext_missing_boundary_field_raises_correct_error():
     file = "missing_boundary_field.ext"
     identifier = "Boundary2"
     field = "quantity"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
@@ -249,7 +256,7 @@ def test_read_ext_missing_lateral_field_raises_correct_error():
     identifier = "Lateral2"
     field = "discharge"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
@@ -263,7 +270,7 @@ def test_read_dimr_missing_component_field_raises_correct_error():
     identifier = "FlowFM"
     field = "workingdir"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)
@@ -277,7 +284,7 @@ def test_read_dimr_missing_coupler_field_raises_correct_error():
     identifier = "rr_to_flow"
     field = "targetcomponent"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)

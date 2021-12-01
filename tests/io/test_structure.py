@@ -1,13 +1,18 @@
 import inspect
 from contextlib import nullcontext as does_not_raise
-from typing import List, Union
+from pathlib import Path
+from typing import Any, Callable, List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
+    Bridge,
     Compound,
+    Culvert,
+    Dambreak,
+    DambreakAlgorithm,
     FlowDirection,
     Orifice,
     Pump,
@@ -17,7 +22,9 @@ from hydrolib.core.io.structure.models import (
     Weir,
 )
 
-from ..utils import WrapperTest, test_data_dir
+from ..utils import WrapperTest, invalid_test_data_dir, test_data_dir
+
+uniqueid_str = "Unique structure id (max. 256 characters)."
 
 
 def test_structure_model():
@@ -60,7 +67,7 @@ def test_create_a_weir_from_scratch():
         == "W stands for weir, 003 because we expect to have at most 999 weirs"
     )
 
-    assert weir.comments.id == "Unique structure id (max. 256 characters)."
+    assert weir.comments.id == uniqueid_str
 
 
 def test_id_comment_has_correct_default():
@@ -75,7 +82,7 @@ def test_id_comment_has_correct_default():
         usevelocityheight=False,
     )
 
-    assert weir.comments.id == "Unique structure id (max. 256 characters)."
+    assert weir.comments.id == uniqueid_str
 
 
 def test_add_comment_to_weir():
@@ -105,7 +112,7 @@ def test_weir_construction_with_parser():
         branchId          = branch      # (optional) Branch on which the structure is located.
         chainage          = 3.0         # (optional) Chainage on the branch (m)
         type              = weir        # Structure type
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
         crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
@@ -124,7 +131,7 @@ def test_weir_construction_with_parser():
     assert weir.name == "weir"
     assert weir.branchid == "branch"
     assert weir.chainage == 3.0
-    assert weir.structure_type == "weir"
+    assert weir.type == "weir"
     assert weir.allowedflowdir == FlowDirection.positive
     assert weir.crestlevel == 10.5
     assert weir.crestwidth is None
@@ -142,7 +149,7 @@ def test_weir_comments_construction_with_parser():
         branchId          = branch      
         chainage          = 3.0         # My own special comment 1
         type              = weir        
-        allowedFlowdir    = positive    
+        allowedFlowDir    = positive    
         crestLevel        = 10.5        
         crestWidth        =             
         useVelocityHeight = false       # My own special comment 2
@@ -161,7 +168,7 @@ def test_weir_comments_construction_with_parser():
     assert weir.comments.name is None
     assert weir.comments.branchid is None
     assert weir.comments.chainage == "My own special comment 1"
-    assert weir.comments.structure_type is None
+    assert weir.comments.type is None
     assert weir.comments.allowedflowdir is None
     assert weir.comments.crestlevel is None
     assert weir.comments.crestwidth is None
@@ -184,7 +191,7 @@ def test_weir_with_unknown_parameters():
         # ----------------------------------------------------------------------
 
         type              = weir        # Structure type
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD)
         crestWidth        =             # Width of weir (m)
         useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
@@ -205,7 +212,7 @@ def test_weir_with_unknown_parameters():
     assert weir.name == "weir"
     assert weir.branchid == "branch"
     assert weir.chainage == 3.0
-    assert weir.structure_type == "weir"
+    assert weir.type == "weir"
     assert weir.allowedflowdir == FlowDirection.positive
     assert weir.crestlevel == 10.5
     assert weir.crestwidth is None
@@ -223,7 +230,7 @@ def test_universal_construction_with_parser():
         branchId          = branch           # (optional) Branch on which the structure is located.
         chainage          = 6.0              # (optional) Chainage on the branch (m).
         type              = universalWeir    # Structure type
-        allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
         yValues           = 1.0 2.0          # y-values of the cross section (m) 
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
@@ -263,7 +270,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         branchId          = branch      # Branch on which the structure is located.
         chainage          = 3.0         # Chainage on the branch (m).
         type              = weir        # Structure type; must read weir
-        allowedFlowdir    = positive    # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
         crestLevel        = 10.5        # Crest level of weir (m AD).
         crestWidth        =             # Width of the weir (m).
         useVelocityHeight = false       # Flag indicating whether the velocity height is to be calculated or not.
@@ -274,7 +281,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         branchId          = branch           # Branch on which the structure is located.
         chainage          = 6.0              # Chainage on the branch (m).
         type              = universalWeir    # Structure type; must read universalWeir
-        allowedFlowdir    = positive         # Possible values: both, positive, negative, none.
+        allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
         yValues           = 1.0 2.0          # y-values of the cross section (m). (number of values = numLevels) 
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
@@ -328,7 +335,7 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     identifier = "Structure2"
     field = "crestLevel"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         StructureModel(filepath)
@@ -337,10 +344,340 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     assert expected_message in str(error.value)
 
 
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("WEIR", "weir"),
+        ("UniversalWeir", "universalWeir"),
+        ("Culvert", "culvert"),
+        ("Pump", "pump"),
+        ("Compound", "compound"),
+        ("Orifice", "orifice"),
+    ],
+)
+def test_parses_type_case_insensitive(input, expected):
+    structure = Structure(type=input, branchid="branchid", chainage="1")
+
+    assert structure.type == expected
+
+
+def _get_allowedflowdir_cases() -> List:
+    return [
+        ("None", "none"),
+        ("Positive", "positive"),
+        ("NEGATIVE", "negative"),
+        ("Both", "both"),
+    ]
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_weir_parses_flowdirection_case_insensitive(input, expected):
+    structure = Weir(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_universalweir_parses_flowdirection_case_insensitive(input, expected):
+    structure = UniversalWeir(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+        numlevels=0,
+        yvalues=[],
+        zvalues=[],
+        dischargecoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_culvert_parses_flowdirection_case_insensitive(input, expected):
+
+    structure = Culvert(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        subtype="invertedSiphon",
+        bendlosscoeff="1",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_allowedflowdir_cases(),
+)
+def test_orifice_parses_flowdirection_case_insensitive(input, expected):
+    structure = Orifice(
+        allowedflowdir=input,
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        crestlevel="1",
+        corrcoeff="1",
+        gateloweredgelevel="1",
+        usevelocityheight="0",
+        uselimitflowpos="0",
+        uselimitflowneg="0",
+    )
+
+    assert structure.allowedflowdir == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [("Culvert", "culvert"), ("INVERTEDSiphon", "invertedSiphon")],
+)
+def test_culvert_parses_subtype_case_insensitive(input, expected):
+
+    structure = Culvert(
+        subtype=input,
+        allowedflowdir="both",
+        id="strucid",
+        branchid="branchid",
+        chainage="1",
+        leftlevel="1",
+        rightlevel="1",
+        csdefid="",
+        length="1",
+        inletlosscoeff="1",
+        outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
+        valveonoff="1",
+        valveopeningheight="1",
+        numlosscoeff="1",
+        relopening=[],
+        losscoeff=[],
+        bedfrictiontype="",
+        bedfriction="1",
+        bendlosscoeff="1",
+    )
+
+    assert structure.subtype == expected
+
+
+class TestBridge:
+    """
+    Wrapper class to test all the methods and subclasses in:
+    hydrolib.core.io.structure.models.py Bridge class
+    """
+
+    def test_create_a_bridge_from_scratch(self):
+        bridge = Bridge(
+            id="b003",
+            name="B003",
+            branchid="B1",
+            chainage=5.0,
+            allowedflowdir=FlowDirection.both,
+            csdefid="W_980.1S_0",
+            shift=-1.23,
+            inletlosscoeff=1,
+            outletlosscoeff=1,
+            frictiontype="Strickler",
+            friction=70,
+            length=100,
+            comments=Bridge.Comments(
+                name="B stands for Bridge, 003 because we expect to have at most 999 weirs"
+            ),
+        )
+
+        assert isinstance(
+            bridge, Structure
+        ), "Bridge should also be an instance of a Structure"
+
+        assert bridge.id == "b003"
+        assert bridge.name == "B003"
+        assert bridge.branchid == "B1"
+        assert bridge.chainage == 5.0
+        assert bridge.allowedflowdir == FlowDirection.both
+        assert bridge.csdefid == "W_980.1S_0"
+        assert bridge.shift == -1.23
+        assert bridge.inletlosscoeff == 1
+        assert bridge.outletlosscoeff == 1
+        assert bridge.frictiontype == "Strickler"
+        assert bridge.friction == 70
+        assert bridge.length == 100
+        assert (
+            bridge.comments.name
+            == "B stands for Bridge, 003 because we expect to have at most 999 weirs"
+        )
+
+        assert bridge.comments.id == uniqueid_str
+
+    def test_bridge_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            type = bridge                   # Structure type; must read bridge
+            id = RS1-KBR31                  # Unique structure id (max. 256 characters).
+            name = RS1-KBR31name            # Given name in the user interface.
+            branchid = riv_RS1_264          # (optional) Branch on which the structure is located.
+            chainage = 104.184              # (optional) Chainage on the branch (m)
+            allowedFlowDir = both           # Possible values: both, positive, negative, none.
+            csDefId = W_980.1S_0            # Id of Cross-Section Definition.
+            shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
+            inletLossCoeff = 1              # Inlet loss coefficient [-], ?_i.
+            outletLossCoeff = 1
+            frictionType = Strickler        # Friction type
+            friction = 70
+            length = 9.75
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+        bridge = wrapper.val
+
+        assert isinstance(
+            bridge, Structure
+        ), "Bridge should also be an instance of a Structure"
+
+        assert bridge.id == "RS1-KBR31"
+        assert bridge.name == "RS1-KBR31name"
+        assert bridge.branchid == "riv_RS1_264"
+        assert bridge.chainage == 104.184
+        assert bridge.type == "bridge"
+        assert bridge.allowedflowdir == FlowDirection.both
+        assert bridge.csdefid == "W_980.1S_0"
+        assert bridge.shift == 0.0
+        assert bridge.inletlosscoeff == 1
+        assert bridge.outletlosscoeff == 1
+        assert bridge.frictiontype == "Strickler"
+        assert bridge.friction == 70
+        assert bridge.length == 9.75
+
+    def test_bridge_with_unknown_parameters(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            type = bridge                   # Structure type; must read bridge
+            id = RS1-KBR31                  # Unique structure id (max. 256 characters).
+            name = RS1-KBR31name            # Given name in the user interface.
+            branchid = riv_RS1_264          # (optional) Branch on which the structure is located.
+            chainage = 104.184              # (optional) Chainage on the branch (m)
+            allowedFlowDir = both           # Possible values: both, positive, negative, none.
+            csDefId = W_980.1S_0            # Id of Cross-Section Definition.
+
+            # ----------------------------------------------------------------------
+            bedLevel           = 10.0        # A deliberately added unknown (in fact: old, unsupported) property
+            # ----------------------------------------------------------------------
+
+            shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
+            inletLossCoeff = 1              # Inlet loss coefficient [-], ?_i.
+            outletLossCoeff = 1
+            frictionType = Strickler        # Friction type
+            friction = 70
+            length = 9.75
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+        bridge = wrapper.val
+
+        assert bridge.bedlevel == "10.0"  # type: ignore (note: deliberately lowercase key here)
+
+        assert bridge.id == "RS1-KBR31"
+        assert bridge.name == "RS1-KBR31name"
+        assert bridge.branchid == "riv_RS1_264"
+        assert bridge.chainage == 104.184
+        assert bridge.type == "bridge"
+        assert bridge.allowedflowdir == FlowDirection.both
+        assert bridge.csdefid == "W_980.1S_0"
+        assert bridge.shift == 0.0
+        assert bridge.inletlosscoeff == 1
+        assert bridge.outletlosscoeff == 1
+        assert bridge.frictiontype == "Strickler"
+        assert bridge.friction == 70
+        assert bridge.length == 9.75
+
+    def test_bridge_with_missing_required_parameters(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            type = bridge                   # Structure type; must read bridge
+            id = RS1-KBR31                  # Unique structure id (max. 256 characters).
+            name = RS1-KBR31name            # Given name in the user interface.
+            branchid = riv_RS1_264          # (optional) Branch on which the structure is located.
+            chainage = 104.184              # (optional) Chainage on the branch (m)
+            allowedFlowDir = both           # Possible values: both, positive, negative, none.
+            # csDefId = W_980.1S_0            # Id of Cross-Section Definition.
+            # shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
+            # inletLossCoeff = 1              # Inlet loss coefficient [-], ?_i.
+            # outletLossCoeff = 1
+            # frictionType = Strickler        # Friction type
+            # friction = 70
+            # length = 9.75
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        expected_message = "7 validation errors for WrapperTest[Bridge]"
+        with pytest.raises(ValueError) as exc_err:
+            wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+            bridge = wrapper.val
+        assert expected_message in str(exc_err.value)
+
+        assert "bridge" not in locals()  # Bridge structure should not have been created
+
+
 class TestStructure:
     """
     Wrapper class to test all the methods and subclasses in:
-    hydrolib.core.io.structure.models.py Structure class
+    hydrolib.core.io.structure.models.py Structure class.
     """
 
     class TestRootValidator:
@@ -352,10 +689,11 @@ class TestStructure:
         long_culvert_err = (
             "`num/x/yCoordinates` are mandatory for a LongCulvert structure."
         )
+        dambreak_err = "`num/x/yCoordinates` are mandatory for a Dambreak structure."
         structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
 
         @pytest.mark.parametrize(
-            "structure_type, expectation, error_mssg",
+            "type, expectation, error_mssg",
             [
                 pytest.param(
                     "",
@@ -400,6 +738,12 @@ class TestStructure:
                     id="Orifice raises.",
                 ),
                 pytest.param(
+                    "bridge",
+                    pytest.raises(AssertionError),
+                    structure_err,
+                    id="Bridge raises.",
+                ),
+                pytest.param(
                     "gate",
                     pytest.raises(AssertionError),
                     structure_err,
@@ -414,7 +758,7 @@ class TestStructure:
                 pytest.param(
                     "dambreak",
                     pytest.raises(AssertionError),
-                    structure_err,
+                    dambreak_err,
                     id="Dambreak raises.",
                 ),
                 pytest.param(
@@ -423,15 +767,15 @@ class TestStructure:
             ],
         )
         def test_check_location_given_no_values_raises_expectation(
-            self, structure_type: str, expectation, error_mssg: str
+            self, type: str, expectation, error_mssg: str
         ):
             with expectation as exc_err:
                 input_dict = dict(
                     notAValue="Not a relevant value",
-                    structure_type=structure_type,
-                    n_coordinates=None,
-                    x_coordinates=None,
-                    y_coordinates=None,
+                    type=type,
+                    numcoordinates=None,
+                    xcoordinates=None,
+                    ycoordinates=None,
                     branchid=None,
                     chainage=None,
                 )
@@ -444,9 +788,9 @@ class TestStructure:
         def test_check_location_given_compound_structure_raises_nothing(self):
             input_dict = dict(
                 notAValue="Not a relevant value",
-                n_coordinates=None,
-                x_coordinates=None,
-                y_coordinates=None,
+                numcoordinates=None,
+                xcoordinates=None,
+                ycoordinates=None,
                 branchid=None,
                 chainage=None,
             )
@@ -475,7 +819,7 @@ class TestStructure:
                 Structure.check_location(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchId key is specified."
             )
 
         wrong_coord_test_cases = [
@@ -504,14 +848,14 @@ class TestStructure:
             with pytest.raises(ValueError) as exc_err:
                 Structure.check_location(
                     dict(
-                        n_coordinates=n_coords,
-                        x_coordinates=x_coords,
-                        y_coordinates=y_coords,
+                        numcoordinates=n_coords,
+                        xcoordinates=x_coords,
+                        ycoordinates=y_coords,
                     )
                 )
             assert (
                 str(exc_err.value)
-                == f"Expected {n_coords} coordinates, given {len(x_coords)} for x and {len(y_coords)} for y coordinates."
+                == f"Expected {n_coords} coordinates, given {len(x_coords)} for xCoordinates and {len(y_coords)} for yCoordinates."
             )
 
         @pytest.mark.parametrize(
@@ -519,9 +863,9 @@ class TestStructure:
             [
                 pytest.param(
                     dict(
-                        n_coordinates=0,
-                        x_coordinates=[],
-                        y_coordinates=[],
+                        numcoordinates=2,
+                        xcoordinates=[4.2, 2.4],
+                        ycoordinates=[2.4, 4.2],
                     ),
                     id="Coordinates given.",
                 ),
@@ -568,7 +912,7 @@ class TestStructure:
                 Structure.validate_branch_and_chainage_in_model(dict_values)
             assert (
                 str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchid key is specified."
+                == "A valid value for branchId and chainage is required when branchId key is specified."
             )
 
     class TestValidateCoordinatesInModel:
@@ -581,34 +925,35 @@ class TestStructure:
             [
                 pytest.param(dict(), False, id="No values."),
                 pytest.param(
-                    dict(n_coordinates=None), False, id="Missing x_y_coordinates"
+                    dict(numcoordinates=None), False, id="Missing x_y_coordinates"
                 ),
                 pytest.param(
-                    dict(n_coordinates=None, y_coordinates=None),
+                    dict(numcoordinates=None, ycoordinates=None),
                     False,
-                    id="Missing x_coordinates",
+                    id="Missing xcoordinates",
                 ),
                 pytest.param(
-                    dict(n_coordinates=None, x_coordinates=None),
+                    dict(numcoordinates=None, xcoordinates=None),
                     False,
-                    id="Missing y_coordinates",
-                ),
-                pytest.param(
-                    dict(n_coordinates=0, x_coordinates=None, y_coordinates=None),
-                    True,
-                    id="None coordinates.",
-                ),
-                pytest.param(
-                    dict(n_coordinates=0, x_coordinates=[], y_coordinates=[]),
-                    True,
-                    id="Empty list coordinates.",
+                    id="Missing ycoordinates",
                 ),
                 pytest.param(
                     dict(
-                        n_coordinates=2, x_coordinates=[42, 24], y_coordinates=[24, 42]
+                        numcoordinates=2,
+                        xcoordinates=[4.2, 2.4],
+                        ycoordinates=[2.4, 4.2],
                     ),
                     True,
-                    id="With coordinates.",
+                    id="With 2 coordinates.",
+                ),
+                pytest.param(
+                    dict(
+                        numcoordinates=3,
+                        xcoordinates=[4.2, 2.4, 4.4],
+                        ycoordinates=[2.4, 4.2, 2.2],
+                    ),
+                    True,
+                    id="With 3 coordinates.",
                 ),
             ],
         )
@@ -618,16 +963,437 @@ class TestStructure:
             validation = Structure.validate_coordinates_in_model(dict_values)
             assert validation == expectation
 
-        def test_given_invalid_values_raises_value_error(self):
+        def test_given_different_coordinate_length_values_raises_value_error(self):
             with pytest.raises(ValueError) as exc_err:
                 Structure.validate_coordinates_in_model(
                     dict(
-                        n_coordinates=1,
-                        x_coordinates=[42, 24],
-                        y_coordinates=[24, 42, 66],
+                        numcoordinates=2,
+                        xcoordinates=[10, 20, 30],
+                        ycoordinates=[10, 20, 30, 50],
                     )
                 )
             assert (
                 str(exc_err.value)
-                == "Expected 1 coordinates, given 2 for x and 3 for y coordinates."
+                == "Expected 2 coordinates, given 3 for xCoordinates and 4 for yCoordinates."
             )
+
+        @pytest.mark.parametrize("n_coords", [(0), (1)])
+        def test_given_less_than_2_coordinates_raises_value_error(self, n_coords: int):
+            with pytest.raises(ValueError) as exc_err:
+                Structure.validate_coordinates_in_model(
+                    dict(
+                        numcoordinates=n_coords,
+                        xcoordinates=[10, 20, 30],
+                        ycoordinates=[10, 20, 30, 50],
+                    )
+                )
+            assert (
+                str(exc_err.value)
+                == f"Expected at least 2 coordinates, but only {n_coords} declared."
+            )
+
+
+class TestDambreakAlgorithm:
+    """
+    Wrapper class to test all the methods in:
+    hydrolib.core.io.structure.models.py DambreakAlgorithm enum class.
+    """
+
+    @pytest.mark.parametrize(
+        "enum_value, enum_description",
+        [
+            pytest.param(1, "van der Knaap, 2000"),
+            pytest.param(2, "Verheij-van der Knaap, 2002"),
+            pytest.param(3, "Predefined time series, dambreakLevelsAndWidths"),
+        ],
+    )
+    def test_get_enum_as_str_returns_description(
+        self, enum_value: int, enum_description: str
+    ):
+        assert DambreakAlgorithm(enum_value).description == enum_description
+
+
+class DambreakTestCases:
+    """Just a wrapper so it can be referenced from other classes."""
+
+    check_location_err = (
+        "`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure."
+    )
+    too_few_coords = "Expected at least 2 coordinates, but only {} declared."
+    mismatch_coords = (
+        "Expected {} coordinates, given {} for xCoordinates and {} for yCoordinates."
+    )
+
+
+class TestDambreak:
+    """
+    Wrapper class to test all the methods and sublcasses in:
+    hydrolib.core.io.structure.models.py Dambreak class.
+    """
+
+    @pytest.fixture
+    def default_dambreak_values(self) -> dict:
+        return dict(
+            id="NLNJ-2021",
+            name="NederlandNaranjito2021",
+            type="dambreak",
+            startlocationx=4.2,
+            startlocationy=2.4,
+            algorithm=1,
+            crestlevelini=1,
+            breachwidthini=24,
+            crestlevelmin=42,
+            t0=2.2,
+            timetobreachtomaximumdepth=4.4,
+            f1=22.4,
+            f2=44.2,
+            ucrit=44.22,
+            waterlevelupstreamlocationx=1.2,
+            waterlevelupstreamlocationy=2.3,
+            waterleveldownstreamlocationx=3.4,
+            waterleveldownstreamlocationy=4.5,
+            waterlevelupstreamnodeid="anUpstreamNodeId",
+            waterleveldownstreamnodeid="aDownstreamNodeId",
+        )
+
+    @pytest.fixture
+    def valid_dambreak_values(self, default_dambreak_values: dict) -> dict:
+        coordinates_dict = dict(
+            numcoordinates=2,
+            xcoordinates=[4.2, 2.4],
+            ycoordinates=[2.4, 4.2],
+        )
+        return {**default_dambreak_values, **coordinates_dict}
+
+    @pytest.mark.parametrize(
+        "location_dict, err_mssg",
+        [
+            pytest.param(
+                dict(),
+                DambreakTestCases.check_location_err,
+                id="No values.",
+            ),
+            pytest.param(
+                dict(numcoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="Missing x_y_coordinates",
+            ),
+            pytest.param(
+                dict(numcoordinates=None, ycoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="Missing xcoordinates",
+            ),
+            pytest.param(
+                dict(numcoordinates=None, xcoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="Missing ycoordinates",
+            ),
+            pytest.param(
+                dict(numcoordinates=0, xcoordinates=None, ycoordinates=None),
+                DambreakTestCases.check_location_err,
+                id="None coordinates.",
+            ),
+            pytest.param(
+                dict(numcoordinates=0, xcoordinates=[], ycoordinates=[]),
+                DambreakTestCases.too_few_coords.format(0),
+                id="Empty list coordinates.",
+            ),
+            pytest.param(
+                dict(numcoordinates=1, xcoordinates=[], ycoordinates=[]),
+                DambreakTestCases.too_few_coords.format(1),
+                id="One coordinate.",
+            ),
+            pytest.param(
+                dict(numcoordinates=2, xcoordinates=[4.2], ycoordinates=[]),
+                DambreakTestCases.mismatch_coords.format(2, 1, 0),
+                id="Mismatch coordinates.",
+            ),
+        ],
+    )
+    def test_given_invalid_location_raises_validation_error(
+        self,
+        location_dict: dict,
+        err_mssg: str,
+        default_dambreak_values: dict,
+    ):
+        # 1. Define test data
+        test_values = {**default_dambreak_values, **location_dict}
+
+        # 2. Run test
+        with pytest.raises(ValidationError) as exc_err:
+            Dambreak(**test_values)
+
+        # 3. Verify final expectations.
+        assert err_mssg in str(exc_err.value)
+
+    def test_given_valid_values_creates_dambreak(self, valid_dambreak_values: dict):
+        dambreak = Dambreak(**valid_dambreak_values)
+        self.validate_valid_default_dambreak(dambreak)
+
+    def test_given_structure_text_with_num_x_y_coordinates_parses_structure(self):
+        # 1. Define structure text.
+        structure_text = inspect.cleandoc(
+            """
+            [Structure]
+            type = dambreak                 # Structure type; must read dambreak
+            id = NLNJ-2021                  # Unique structure id (max. 256 characters).
+            name = NederlandNaranjito2021   # Given name in the user interface.
+            numCoordinates = 2              # Number of values in xCoordinates and yCoordinates. This value should be greater or equal 2.
+            xCoordinates = 4.2 2.4       # x-coordinates of the link selection polygon.
+            yCoordinates = 2.4 4.2       # y-coordinates of the link selection polygon.
+            startLocationX = 4.2            # x-coordinate of breach starting point.
+            startLocationY = 2.4            # y-coordinate of breach starting point.
+            algorithm = 1                   # Breach growth algorithm.
+
+            crestLevelIni = 1               # Initial breach level.
+            breachWidthIni = 24             # Initial breach width.
+            crestLevelMin = 42              # Minimal breach level.
+            t0 = 2.2                        # Breach start time.
+            timeToBreachToMaximumDepth = 4.4    # tphase 1.
+            f1 = 22.4                       # Factor f1.
+            f2 = 44.2                       # Factor f2.
+            uCrit = 44.22                   # Critical flow velocity uc for erosion [m/s].
+            waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
+            waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
+            waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
+            waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
+            waterLevelUpstreamNodeId = anUpstreamNodeId # Node Id of custom upstream water level point.
+            waterLevelDownstreamNodeId = aDownstreamNodeId # Node Id of custom downstream water level point.
+            """
+        )
+        # 2. Parse data.
+        dambreak_obj = self.parse_dambreak_from_text(structure_text)
+        self.validate_valid_default_dambreak(dambreak_obj)
+
+    def test_given_structure_text_with_polylinefile_parses_structure(self):
+        structure_text = inspect.cleandoc(
+            """
+            [structure]
+            type                       = dambreak  
+            id                         = dambreak  
+            polylinefile               = dambreak2ddrybreach.pli
+            startLocationX             = 1.2 
+            startLocationY             = 4.0
+            algorithm                  = 3             # 1 VdKnaap ,2 Verheij-vdKnaap
+            crestLevelIni              = 0.4
+            breachWidthIni             = 1
+            crestLevelMin              = 0.2
+            timeToBreachToMaximumDepth = 0.1           #in seconds 
+            f1                         = 1
+            f2                         = 1
+            ucrit                      = 0.001
+            t0                         = 0.0001        # make it a boolean
+            dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 3            
+            materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
+            """
+        )
+
+        # 2. Parse data.
+        dambreak_obj = self.parse_dambreak_from_text(structure_text)
+        assert dambreak_obj
+        assert isinstance(dambreak_obj, Structure)
+        assert dambreak_obj.type == "dambreak"
+        assert dambreak_obj.id == "dambreak"
+        assert dambreak_obj.startlocationx == 1.2
+        assert dambreak_obj.startlocationy == 4.0
+        assert dambreak_obj.algorithm == 3
+        assert dambreak_obj.crestlevelini == 0.4
+        assert dambreak_obj.breachwidthini == 1
+        assert dambreak_obj.crestlevelmin == 0.2
+        assert dambreak_obj.timetobreachtomaximumdepth == 0.1
+        assert dambreak_obj.f1 == 1
+        assert dambreak_obj.f2 == 1
+        assert dambreak_obj.ucrit == 0.001
+        assert dambreak_obj.t0 == 0.0001
+        assert dambreak_obj.dambreaklevelsandwidths == Path("dambreak.tim")
+        assert dambreak_obj.dict()["materialtype"] == "1"
+
+    def parse_dambreak_from_text(self, structure_text: str) -> Dambreak:
+        """
+        Method just to simplify how the tests can parse a dambreak without having to
+        repeat the same code for each test.
+
+        Args:
+            structure_text (str): Text containing Dambreak structure.
+
+        Returns:
+            Dambreak: Parsed object.
+        """
+        # 1. Parse data.
+        parser = Parser(ParserConfig())
+        for line in structure_text.splitlines():
+            parser.feed_line(line)
+        document = parser.finalize()
+
+        # 2. Parse object
+        return WrapperTest[Dambreak].parse_obj({"val": document.sections[0]}).val
+
+    def validate_valid_default_dambreak(self, dambreak: Dambreak):
+        """
+        Method to validate the default (valid) test case for a Dambreak.
+
+        Args:
+            dambreak (Dambreak): Instance that needs to be verified for its expected values.
+        """
+
+        assert isinstance(dambreak, Structure), "A dambreak should be a structure."
+        assert dambreak.id == "NLNJ-2021"
+        assert dambreak.name == "NederlandNaranjito2021"
+        assert dambreak.type == "dambreak"
+        assert dambreak.startlocationx == 4.2
+        assert dambreak.startlocationy == 2.4
+        assert dambreak.algorithm == 1
+        assert dambreak.crestlevelini == 1
+        assert dambreak.breachwidthini == 24
+        assert dambreak.crestlevelmin == 42
+        assert dambreak.t0 == 2.2
+        assert dambreak.timetobreachtomaximumdepth == 4.4
+        assert dambreak.f1 == 22.4
+        assert dambreak.f2 == 44.2
+        assert dambreak.ucrit == 44.22
+        assert dambreak.numcoordinates == 2
+        assert dambreak.xcoordinates == [4.2, 2.4]
+        assert dambreak.ycoordinates == [2.4, 4.2]
+        assert dambreak.waterlevelupstreamlocationx == 1.2
+        assert dambreak.waterlevelupstreamlocationy == 2.3
+        assert dambreak.waterleveldownstreamlocationx == 3.4
+        assert dambreak.waterleveldownstreamlocationy == 4.5
+        assert dambreak.waterlevelupstreamnodeid == "anUpstreamNodeId"
+        assert dambreak.waterleveldownstreamnodeid == "aDownstreamNodeId"
+
+    class TestValidateAlgorithm:
+        """
+        Wrapper to validate all paradigms of validate_algorithm
+        """
+
+        @pytest.mark.parametrize(
+            "value",
+            [pytest.param("", id="Empty string."), pytest.param(None, id="None")],
+        )
+        def test_given_not_int_raises_value_error(self, value: Any):
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.validate_algorithm(value)
+            assert (
+                str(exc_err.value) == "Dambreak algorithm value should be of type int."
+            )
+
+        @pytest.mark.parametrize(
+            "value",
+            [pytest.param(0), pytest.param(4), pytest.param(-1)],
+        )
+        def test_given_value_out_of_range_raises_value_error(self, value: int):
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.validate_algorithm(value)
+            assert str(exc_err.value) == "Dambreak algorithm value should be 1, 2 or 3."
+
+        @pytest.mark.parametrize(
+            "value",
+            [pytest.param(1), pytest.param(2), pytest.param(3)],
+        )
+        def test_given_valid_value_returns_value(self, value: int):
+            assert Dambreak.validate_algorithm(value) == value
+
+    class TestValidateDambreakLevelsAndWidths:
+        """
+        Wrapper to validate all paradigms of
+        validate_dambreak_leels_and_widths
+        """
+
+        algorithm_values = [(-1), (0), (1), (2), (4)]
+
+        @pytest.mark.parametrize(
+            "algorithm_value",
+            algorithm_values,
+        )
+        @pytest.mark.parametrize(
+            "field_value",
+            [
+                pytest.param("", id="Empty string"),
+                pytest.param(Path(""), id="Empty Path"),
+                pytest.param("JustAValue", id="String value"),
+                pytest.param(Path("JustAValue"), id="Path value"),
+            ],
+        )
+        def test_given_field_value_but_no_algorithm_3_raises_value_error(
+            self, field_value: str, algorithm_value: int
+        ):
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.validate_dambreak_levels_and_widths(
+                    field_value,
+                    dict(
+                        algorithm=algorithm_value,
+                    ),
+                )
+            assert (
+                str(exc_err.value)
+                == f"Dambreak field dambreakLevelsAndWidths can only be set when algorithm = 3, current value: {algorithm_value}."
+            )
+
+        def test_given_algorithm_value_3_returns_field_value(self):
+            field_value = "justAValue"
+            return_value = Dambreak.validate_dambreak_levels_and_widths(
+                field_value, dict(algorithm=3)
+            )
+            assert return_value == field_value
+
+        @pytest.mark.parametrize("algorithm_value", algorithm_values)
+        def test_given_none_field_value_and_algorithm_value_not_3_returns_field_value(
+            self, algorithm_value: int
+        ):
+            return_value = Dambreak.validate_dambreak_levels_and_widths(
+                None, dict(algorithm=algorithm_value)
+            )
+            assert return_value is None
+
+    class TestCheckLocation:
+        """
+        Wrapper to validate all paradigms of check_location
+        """
+
+        @pytest.mark.parametrize(
+            "dict_values",
+            [
+                pytest.param(
+                    dict(numcoordinates=2, xcoordinates=[0, 1], ycoordinates=[2, 3]),
+                    id="With 2 coordinates",
+                ),
+                pytest.param(
+                    dict(
+                        numcoordinates=3, xcoordinates=[0, 1, 2], ycoordinates=[2, 3, 4]
+                    ),
+                    id="With 3 coordinates",
+                ),
+                pytest.param(dict(polylinefile=Path()), id="Empty path"),
+                pytest.param(
+                    dict(polylinefile=Path("aFilePath")), id="Path with file name"
+                ),
+            ],
+        )
+        def test_given_valid_values_returns_values(self, dict_values: dict):
+            return_value = Dambreak.check_location(dict_values)
+            assert return_value == dict_values
+
+        @pytest.mark.parametrize(
+            "invalid_values, expected_err",
+            [
+                pytest.param(
+                    dict(), DambreakTestCases.check_location_err, id="Empty dict."
+                ),
+                pytest.param(
+                    dict(
+                        numcoordinates=None,
+                        xcoordinates=None,
+                        ycoordinates=None,
+                        polylinefile=None,
+                    ),
+                    DambreakTestCases.check_location_err,
+                    id="Dict with Nones.",
+                ),
+            ],
+        )
+        def test_given_invalid_values_raises_expectation(
+            self, invalid_values: dict, expected_err: str
+        ):
+            with pytest.raises(ValueError) as exc_err:
+                Dambreak.check_location(invalid_values)
+            assert str(exc_err.value) == expected_err

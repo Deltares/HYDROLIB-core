@@ -11,7 +11,7 @@ from hydrolib.core.io.bc.models import (
 )
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
-from ..utils import WrapperTest, test_data_dir
+from ..utils import WrapperTest, invalid_test_data_dir, test_data_dir
 
 
 def test_forcing_model():
@@ -85,10 +85,31 @@ def test_read_bc_missing_field_raises_correct_error():
     identifier = "Boundary2"
     field = "quantity"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ForcingModel(filepath)
 
     expected_message = f"{file} -> forcing -> 1 -> {identifier} -> {field}"
     assert expected_message in str(error.value)
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("TimeSeries", "timeseries"),
+        ("haRmoniC", "harmonic"),
+        ("ASTRONOMIC", "astronomic"),
+        ("harmonicCorrection", "harmoniccorrection"),
+        ("AstronomicCorrection", "astronomiccorrection"),
+        ("t3D", "t3d"),
+        ("QHtable", "qhtable"),
+        ("Constant", "constant"),
+        ("DOESNOTEXIST", "DOESNOTEXIST"),
+        ("doesnotexist", "doesnotexist"),
+    ],
+)
+def test_parses_function_case_insensitive(input, expected):
+    forcing = ForcingBase(function=input, name="somename", quantity=[], unit=[])
+
+    assert forcing.function == expected
