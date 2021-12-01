@@ -1403,29 +1403,23 @@ class TestOrifice:
         assert structure.uselimitflowneg == True
         assert structure.limitflowneg == 7.89
 
-    def test_validate_limitflowpos(self):
+    @pytest.mark.parametrize(
+        "limitflow, uselimitflow",
+        [
+            pytest.param("limitFlowPos", "useLimitFlowPos"),
+            pytest.param("limitFlowNeg", "useLimitFlowNeg"),
+        ],
+    )
+    def test_validate_limitflow(self, limitflow: str, uselimitflow: str):
         values = self._create_orifice_values()
-        del values["limitflowpos"]
+        del values[limitflow.lower()]
 
         with pytest.raises(ValidationError) as error:
             Orifice(**values)
 
-        expected_message = "1 validation error for Orifice\n\
-structure_id -> limitFlowPos\n  \
-limitFlowPos should be defined when useLimitFlowPos is true"
-
-        assert expected_message in str(error.value)
-
-    def test_validate_limitflowneg(self):
-        values = self._create_orifice_values()
-        del values["limitflowneg"]
-
-        with pytest.raises(ValidationError) as error:
-            Orifice(**values)
-
-        expected_message = "1 validation error for Orifice\n\
-structure_id -> limitFlowNeg\n  \
-limitFlowNeg should be defined when useLimitFlowNeg is true"
+        expected_message = f"1 validation error for Orifice\n\
+structure_id -> {limitflow}\n  \
+{limitflow} should be defined when {uselimitflow} is true"
 
         assert expected_message in str(error.value)
 
