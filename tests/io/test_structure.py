@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Callable, List, Union
 
 import pytest
+from attr.validators import optional
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
@@ -1443,21 +1444,39 @@ structure_id -> {limitflow}\n  \
 
         assert structure.allowedflowdir == expected
 
-    def _create_orifice_values(self) -> dict:
+    def test_optional_fields_have_correct_defaults(self):
+        structure = Orifice(**self._create_required_orifice_values())
+
+        assert structure.allowedflowdir == FlowDirection.both
+        assert structure.crestwidth == None
+        assert structure.uselimitflowpos == False
+        assert structure.limitflowpos == None
+        assert structure.uselimitflowneg == False
+        assert structure.limitflowneg == None
+
+    def _create_required_orifice_values(self) -> dict:
         return dict(
             id="structure_id",
             name="structure_name",
             type="orifice",
             branchid="branch_id",
             chainage="1.23",
-            allowedflowdir="positive",
             crestlevel="2.34",
-            crestwidth="3.45",
             gateloweredgelevel="4.56",
             corrcoeff="5.67",
             usevelocityheight="true",
+        )
+
+    def _create_orifice_values(self) -> dict:
+        optional_values = dict(
+            allowedflowdir="positive",
+            crestwidth="3.45",
             uselimitflowpos="true",
             limitflowpos="6.78",
             uselimitflowneg="true",
             limitflowneg="7.89",
         )
+
+        optional_values.update(self._create_required_orifice_values())
+
+        return optional_values

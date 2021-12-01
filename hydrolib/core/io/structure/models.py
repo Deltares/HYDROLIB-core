@@ -375,7 +375,9 @@ class Compound(Structure):
 class Orifice(Structure):
 
     type: Literal["orifice"] = Field("orifice", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(
+        FlowDirection.both, alias="allowedFlowDir"
+    )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
