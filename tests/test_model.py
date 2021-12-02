@@ -63,7 +63,11 @@ def test_parse_rr_model_returns_correct_model():
 
     # verify some non-default names altered in the source file.
     assert model.control_file == Path("not-delft_3b.ini")
-    assert model.bui_file == BuiTestData.bui_model()
+
+    expected_bui_model = BuiTestData.bui_model()
+    # we expect the path to not be absolute, as such we need to adjust that.
+    expected_bui_model.filepath = Path(expected_bui_model.filepath.name)
+    assert model.bui_file == expected_bui_model
     assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
 
 
@@ -202,7 +206,7 @@ def test_mdu_model():
 
 def test_model_with_duplicate_file_references_use_same_instances():
     model = ExtModel(
-        filepath=Path(
+        filepath=(
             test_data_dir
             / "input"
             / "e02"
