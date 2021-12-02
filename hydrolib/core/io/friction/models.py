@@ -146,7 +146,7 @@ class FrictBranch(INIBasedModel):
     @classmethod
     def _validate_frictionvalues(cls, v, values):
         # number of values should be equal to numlocations*numlevels
-        numvals = max(1, values["numlocations"]) * (
+        numlevels = (
             1
             if (
                 "numlevels" not in values
@@ -155,6 +155,7 @@ class FrictBranch(INIBasedModel):
             )
             else values["numlevels"]
         )
+        numvals = max(1, values["numlocations"]) * numlevels
         if v is not None and len(v) != numvals:
             raise ValueError(
                 f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={values.get('branchid', '')})."
