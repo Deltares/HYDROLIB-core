@@ -16,7 +16,6 @@ from typing import (
     Union,
 )
 
-from _typeshed import Self
 from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
 
@@ -315,9 +314,9 @@ class CrossSectionDefinition(INIBasedModel):
         Returns:
             bool: True when input is valid, False otherwise.
         """
-        frictionid = getattr(cls, frictionid_attr, "")
-        frictiontype = getattr(cls, frictiontype_attr, "")
-        frictionvalue = getattr(cls, frictionvalue_attr, "")
+        frictionid = values.get(frictionid_attr) or ""
+        frictiontype = values.get(frictiontype_attr) or ""
+        frictionvalue = values.get(frictionvalue_attr) or ""
 
         if frictionid == "":
             if frictiontype == "" or frictionvalue == "":
@@ -391,7 +390,7 @@ class CircleCrsDef(CrossSectionDefinition):
             dict: Dictionary of validated values.
         """
         if CrossSectionDefinition._validate_friction_specification(
-            cls, values, "frictionid", "frictiontype", "frictionvalue"
+            values, "frictionid", "frictiontype", "frictionvalue"
         ):
             return values
 

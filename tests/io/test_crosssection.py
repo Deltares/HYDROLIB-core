@@ -38,7 +38,7 @@ def test_create_a_circlecrsdef_from_scratch():
         id="Prof1",
         diameter=3.14,
         frictiontype="wallLawNikuradse",
-        frictionvalue=[1.5],
+        frictionvalue=1.5,
     )
     assert cd.id == "Prof1"
     assert cd.diameter == 3.14
@@ -61,8 +61,3 @@ def test_create_a_circlecrsdef_with_duplicate_frictionspec():
     )
 
     assert expected_message in str(error.value)
-
-    # assert cd.id == "Prof1"
-    # assert cd.diameter == 3.14
-    # assert cd.frictiontype == "wallLawNikuradse"
-    # assert cd.frictionvalue == 1.5
