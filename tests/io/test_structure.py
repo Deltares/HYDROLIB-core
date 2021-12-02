@@ -1289,26 +1289,20 @@ structure_id -> {limitflow}\n  \
 class TestWeir:
     def test_create_a_weir_from_scratch(self):
         weir = Weir(
-            id="w003",
-            name="W003",
-            branchid="B1",
-            chainage=5.0,
-            allowedflowdir=FlowDirection.none,
-            crestlevel=0.5,
-            usevelocityheight=False,
+            **self._create_weir_values(),
             comments=Weir.Comments(
                 name="W stands for weir, 003 because we expect to have at most 999 weirs"
             ),
         )
 
-        assert weir.id == "w003"
-        assert weir.name == "W003"
-        assert weir.branchid == "B1"
-        assert weir.chainage == 5.0
-        assert weir.allowedflowdir == FlowDirection.none
-        assert weir.crestlevel == 0.5
-        assert weir.crestwidth == None
-        assert weir.usevelocityheight == False
+        assert weir.id == "structure_id"
+        assert weir.name == "structure_name"
+        assert weir.branchid == "branch_id"
+        assert weir.chainage == 1.23
+        assert weir.allowedflowdir == FlowDirection.positive
+        assert weir.crestlevel == 2.34
+        assert weir.crestwidth == 3.45
+        assert weir.usevelocityheight == True
         assert (
             weir.comments.name
             == "W stands for weir, 003 because we expect to have at most 999 weirs"
@@ -1317,30 +1311,12 @@ class TestWeir:
         assert weir.comments.id == uniqueid_str
 
     def test_id_comment_has_correct_default(self):
-        weir = Weir(
-            id="weir_id",
-            name="W001",
-            branchid="branch",
-            chainage=3.0,
-            allowedflowdir=FlowDirection.positive,
-            crestlevel=10.5,
-            crestwidth=None,
-            usevelocityheight=False,
-        )
+        weir = Weir(**self._create_weir_values())
 
         assert weir.comments.id == uniqueid_str
 
     def test_add_comment_to_weir(self):
-        weir = Weir(
-            id="weir_id",
-            name="W001",
-            branchid="branch",
-            chainage=3.0,
-            allowedflowdir=FlowDirection.positive,
-            crestlevel=10.5,
-            crestwidth=None,
-            usevelocityheight=False,
-        )
+        weir = Weir(**self._create_weir_values())
 
         weir.comments.usevelocityheight = "a different value"
         assert weir.comments.usevelocityheight == "a different value"
@@ -1466,11 +1442,8 @@ class TestWeir:
     )
     def test_weir_parses_flowdirection_case_insensitive(self, input, expected):
         structure = Weir(
+            **self._create_required_weir_values(),
             allowedflowdir=input,
-            id="strucid",
-            branchid="branchid",
-            chainage="1",
-            crestlevel="1",
         )
 
         assert structure.allowedflowdir == expected
