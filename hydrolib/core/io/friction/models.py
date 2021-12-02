@@ -171,8 +171,6 @@ class FrictionModel(INIModel):
 
     _split_to_list = make_list_validator(
         "global_",
-    )
-    _split_to_list2 = make_list_validator(
         "branch",
     )
 
