@@ -6,9 +6,11 @@ also represents a file on disk.
 """
 import logging
 from abc import ABC, abstractclassmethod
+from contextlib import contextmanager
 from contextvars import ContextVar
+from enum import IntEnum
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type
 from warnings import warn
 from weakref import WeakValueDictionary
 
@@ -23,15 +25,7 @@ logger = logging.getLogger(__name__)
 # We use ContextVars to keep a reference to the folder
 # we're currently parsing files in. In the future
 # we could move to https://github.com/samuelcolvin/pydantic/issues/1549
-context_dir: ContextVar[Path] = ContextVar("folder")
-
-
-def _reset_context_dir(token):
-    # Once the model has been completely initialized
-    # reset the context
-    if token:
-        logger.info("Reset context.")
-        context_dir.reset(token)
+context_file_loading: ContextVar["FileLoadContext"] = ContextVar("file_loading")
 
 
 class BaseModel(PydanticBaseModel):
@@ -113,6 +107,106 @@ class BaseModel(PydanticBaseModel):
         return None
 
 
+class ResolveRelativeMode(IntEnum):
+    ToParent = 0
+    ToAnchor = 1
+
+
+# TODO: This should probably be moved to a separate file
+class FilePathResolver:
+    def __init__(self) -> None:
+        self._anchors: List[Path] = []
+        self._relatives: List[Tuple[Path, ResolveRelativeMode]] = []
+
+    @property
+    def _anchor(self) -> Optional[Path]:
+        return self._anchors[-1] if self._anchors else None
+
+    @property
+    def _direct_parent(self) -> Path:
+        return self._relatives[-1][0] if self._relatives else Path.cwd()
+
+    def _get_current_parent(self) -> Path:
+        if self._anchor:
+            return self._anchor
+        return self._direct_parent
+
+    def resolve(self, path: Path) -> Path:
+        if path.is_absolute():
+            return path
+
+        parent = self._get_current_parent()
+        return (parent / path).resolve()
+
+    def push_relative(self, path: Path, relative_mode: ResolveRelativeMode) -> None:
+        if relative_mode == ResolveRelativeMode.ToAnchor:
+            self._anchors.append(path)
+
+        self._relatives.append((self.resolve(path), relative_mode))
+
+    def pop_relative(self) -> None:
+        if not self._relatives:
+            return
+
+        _, relative_mode = self._relatives.pop()
+
+        if relative_mode == ResolveRelativeMode.ToAnchor:
+            self._anchors.pop()
+
+
+class FileModelCache:
+    def __init__(self):
+        self._cache_dict: Dict[Path, "FileModel"] = {}
+
+    def retrieve_model(self, path: Path) -> Optional["FileModel"]:
+        return self._cache_dict.get(path, None)
+
+    def register_model(self, path: Path, model: "FileModel") -> None:
+        self._cache_dict[path] = model
+
+
+class FileLoadContext:
+    def __init__(self) -> None:
+        self._path_resolver = FilePathResolver()
+        self._cache = FileModelCache()
+
+    def retrieve_model(self, path: Optional[Path]) -> Optional["FileModel"]:
+        if path is None:
+            return None
+
+        absolute_path = self._path_resolver.resolve(path)
+        return self._cache.retrieve_model(absolute_path)
+
+    def register_model(self, path: Path, model: "FileModel") -> None:
+        absolute_path = self._path_resolver.resolve(path)
+        self._cache.register_model(absolute_path, model)
+
+    def resolve(self, path: Path) -> Path:
+        return self._path_resolver.resolve(path)
+
+    def push_relative(self, path: Path, relative_mode: ResolveRelativeMode) -> None:
+        self._path_resolver.push_relative(path, relative_mode)
+
+    def pop_relative(self) -> None:
+        self._path_resolver.pop_relative()
+
+
+@contextmanager
+def file_load_context():
+    file_loading_context = context_file_loading.get(None)
+    context_reset_token = None
+
+    if not file_loading_context:
+        file_loading_context = FileLoadContext()
+        context_reset_token = context_file_loading.set(file_loading_context)
+
+    try:
+        yield file_loading_context
+    finally:
+        if context_reset_token is not None:
+            context_file_loading.reset(context_reset_token)
+
+
 class FileModel(BaseModel, ABC):
     """Base class to represent models with a file representation.
 
@@ -139,18 +233,11 @@ class FileModel(BaseModel, ABC):
         Returns:
             FileModel: A file model.
         """
-
-        if filepath:
-            filepath = Path(filepath)
-
-            if filepath in FileModel._file_models_cache:
-                filemodel = FileModel._file_models_cache[filepath]
-                logger.info(
-                    f"Returning existing {type(filemodel).__name__} from cache, because {filepath} was already parsed."
-                )
-                return filemodel
-
-        return super().__new__(cls)
+        with file_load_context() as context:
+            if (file_model := context.retrieve_model(filepath)) is not None:
+                return file_model
+            else:
+                return super().__new__(cls)
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
         """Initialize a model.
@@ -158,29 +245,25 @@ class FileModel(BaseModel, ABC):
         The model is empty (with defaults) if no `filepath` is given,
         otherwise the file at `filepath` will be parsed."""
         # Parse the file if path is given
-        context_dir_reset_token = None
-        if filepath:
-            filepath = Path(filepath)  # so we also accept strings
+        if not filepath:
+            return super().__init__(*args, **kwargs)
 
-            if filepath in FileModel._file_models_cache:
-                return None
+        with file_load_context() as context:
+            context.register_model(filepath, self)
 
-            # If not set, this is the root file path
-            if not context_dir.get(None):
-                logger.info(f"Set context to {filepath.parent}")
-                context_dir_reset_token = context_dir.set(filepath.parent)
+            loading_path = context.resolve(filepath)
 
-            FileModel._file_models_cache[filepath] = self
-
+            context.push_relative(filepath.parent, self._relative_mode)
             logger.info(f"Loading data from {filepath}")
-            data = self._load(filepath)
+
+            data = self._load(loading_path)
             data["filepath"] = filepath
             kwargs.update(data)
 
-        try:
-            super().__init__(*args, **kwargs)
-        finally:
-            _reset_context_dir(context_dir_reset_token)
+            result = super().__init__(*args, **kwargs)
+            context.pop_relative()
+
+            return result
 
     def is_file_link(self) -> bool:
         return True
@@ -189,17 +272,8 @@ class FileModel(BaseModel, ABC):
     def validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
-            filepath = Path(value)
-
-            # Use the context if needed to resolve the absolute file path
-            if not filepath.is_absolute():
-                # The context_dir has been set within the initializer of the root FileModel
-                folder = context_dir.get()
-                logger.info(f"Used context to get {folder} for {filepath}")
-                filepath = folder / filepath
-
             # Pydantic Model init requires a dict
-            value = {"filepath": filepath}
+            value = {"filepath": Path(value)}
         return super().validate(value)
 
     def _load(self, filepath: Path) -> Dict:
@@ -275,3 +349,7 @@ class FileModel(BaseModel, ABC):
         if filepath:
             return filepath.name
         return None
+
+    @property
+    def _relative_mode(self) -> ResolveRelativeMode:
+        return ResolveRelativeMode.ToParent
