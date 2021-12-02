@@ -246,7 +246,8 @@ class FileModel(BaseModel, ABC):
         otherwise the file at `filepath` will be parsed."""
         # Parse the file if path is given
         if not filepath:
-            return super().__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
+            return
 
         with file_load_context() as context:
             context.register_model(filepath, self)
@@ -260,10 +261,8 @@ class FileModel(BaseModel, ABC):
             data["filepath"] = filepath
             kwargs.update(data)
 
-            result = super().__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             context.pop_relative()
-
-            return result
 
     def is_file_link(self) -> bool:
         return True
