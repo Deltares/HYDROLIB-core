@@ -1267,7 +1267,7 @@ structure_id -> {limitflow}\n  \
             usevelocityheight="true",
         )
 
-        orifice_values.update(create_structure_values())
+        orifice_values.update(create_structure_values("orifice"))
 
         return orifice_values
 
@@ -1475,12 +1475,37 @@ class TestWeir:
 
         assert structure.allowedflowdir == expected
 
+    def test_optional_fields_have_correct_defaults(self):
+        structure = Weir(**self._create_required_weir_values())
 
-def create_structure_values() -> dict:
+        assert structure.allowedflowdir == FlowDirection.both
+        assert structure.crestwidth == None
+
+    def _create_required_weir_values(self) -> dict:
+        weir_values = dict(
+            crestlevel="2.34",
+            corrcoeff="5.67",
+            usevelocityheight="true",
+        )
+
+        weir_values.update(create_structure_values("weir"))
+        return weir_values
+
+    def _create_weir_values(self) -> dict:
+        weir_values = dict(
+            allowedflowdir="positive",
+            crestwidth="3.45",
+        )
+
+        weir_values.update(self._create_required_weir_values())
+        return weir_values
+
+
+def create_structure_values(type: str) -> dict:
     return dict(
         id="structure_id",
         name="structure_name",
-        type="orifice",
+        type=type,
         branchid="branch_id",
         chainage="1.23",
     )
