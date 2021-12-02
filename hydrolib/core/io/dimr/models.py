@@ -6,7 +6,7 @@ from typing import Callable, List, Literal, Optional, Type, Union
 from pydantic import Field, validator
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, FileModel, file_load_context
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
@@ -265,17 +265,14 @@ class DIMR(FileModel):
         """
         return self._to_serializable_dict(self)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    @validator("component", each_item=True)
+    def load_component_models(cls, v):
+        try:
+            v.model = v.get_model()(filepath=v.filepath)
+        except NotImplementedError:
+            pass
 
-        # After initilization, try to load all component models
-        if self.filepath:
-            for comp in self.component:
-                fn = self.filepath.parent / comp.filepath
-                try:
-                    comp.model = comp.get_model()(filepath=fn)
-                except NotImplementedError:
-                    continue
+        return v
 
     @classmethod
     def _ext(cls) -> str:
