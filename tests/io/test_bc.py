@@ -43,11 +43,11 @@ class TestTimeSeries:
         assert forcing.offset == 1.23
         assert forcing.factor == 2.34
         assert forcing.timeinterpolation == TimeInterpolation.block_to
-        assert len(forcing.quantities) == 2
-        assert forcing.quantities[0].quantity == "time"
-        assert forcing.quantities[0].unit == "minutes since 2015-01-01 00:00:00"
-        assert forcing.quantities[1].quantity == "dischargebnd"
-        assert forcing.quantities[1].unit == "m³/s"
+        assert len(forcing.quantityunitpair) == 2
+        assert forcing.quantityunitpair[0].quantity == "time"
+        assert forcing.quantityunitpair[0].unit == "minutes since 2015-01-01 00:00:00"
+        assert forcing.quantityunitpair[1].quantity == "dischargebnd"
+        assert forcing.quantityunitpair[1].unit == "m³/s"
         assert len(forcing.datablock) == 3
         assert forcing.datablock[0] == [0, 1.23]
         assert forcing.datablock[1] == [60, 2.34]
@@ -81,11 +81,11 @@ class TestTimeSeries:
         assert forcing.name == "right01_0001"
         assert forcing.function == "timeseries"
         assert isinstance(forcing, TimeSeries)
-        assert forcing.quantities[0].quantity == "time"
-        assert forcing.quantities[0].unit == "minutes since 2001-01-01"
+        assert forcing.quantityunitpair[0].quantity == "time"
+        assert forcing.quantityunitpair[0].unit == "minutes since 2001-01-01"
         assert forcing.datablock[0] == [0.0, 2.5]
-        assert forcing.quantities[1].quantity == "waterlevelbnd"
-        assert forcing.quantities[1].unit == "m"
+        assert forcing.quantityunitpair[1].quantity == "waterlevelbnd"
+        assert forcing.quantityunitpair[1].unit == "m"
         assert forcing.datablock[1] == [1440.0, 2.5]
 
 
@@ -106,7 +106,7 @@ class TestForcingBase:
         ],
     )
     def test_parses_function_case_insensitive(self, input, expected):
-        forcing = ForcingBase(function=input, name="somename", quantities=[])
+        forcing = ForcingBase(function=input, name="somename", quantityunitpair=[])
 
         assert forcing.function == expected
 
@@ -225,7 +225,7 @@ def _create_time_series_values():
         timeinterpolation="blockTo",
         offset="1.23",
         factor="2.34",
-        quantities=[
+        quantityunitpair=[
             ("time", "minutes since 2015-01-01 00:00:00"),
             ("dischargebnd", "m³/s"),
         ],
@@ -238,7 +238,7 @@ def _create_harmonic_values(iscorrection: bool):
     return dict(
         name=f"boundary_{function}",
         function=function,
-        quantities=[
+        quantityunitpair=[
             ("harmonic component", "minutes"),
             ("waterlevelbnd amplitude", "m"),
             ("waterlevelbnd phase", "deg"),
@@ -255,7 +255,7 @@ def _create_astronomic_values(iscorrection: bool):
     return dict(
         name=f"boundary_{function}",
         function=function,
-        quantities=[
+        quantityunitpair=[
             ("astronomic component", "-"),
             ("waterlevelbnd amplitude", "m"),
             ("waterlevelbnd phase", "deg"),
@@ -277,7 +277,7 @@ def _create_t3d_values():
         verticalpositions=["3.45", "4.56", "5.67"],
         verticalinterpolation="log",
         verticalpositiontype="percBed",
-        quantities=[
+        quantityunitpair=[
             ("time", "m"),
             ("salinitybnd", "ppt"),
             ("salinitybnd", "ppt"),
@@ -295,7 +295,7 @@ def _create_qhtable_values():
     return dict(
         name="boundary_qhtable",
         function="qhtable",
-        quantities=[
+        quantityunitpair=[
             ("qhbnd discharge", "m3/s"),
             ("qhbnd waterlevel", "m"),
         ],
@@ -313,7 +313,7 @@ def _create_constant_values():
         offset="1.23",
         factor="2.34",
         timeinterpolation="linear",
-        quantities=[
+        quantityunitpair=[
             ("waterlevelbnd", "m"),
         ],
         datablock=[

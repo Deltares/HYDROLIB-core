@@ -47,10 +47,10 @@ class ForcingBase(DataBlockINIBasedModel):
     _header: Literal["Forcing"] = "Forcing"
     name: str = Field(alias="name")
     function: str = Field(alias="function")
-    quantities: List[QuantityUnitPair]
+    quantityunitpair: List[QuantityUnitPair]
 
     def _exclude_fields(self) -> Set:
-        return {"quantities"}.union(super()._exclude_fields())
+        return {"quantityunitpair"}.union(super()._exclude_fields())
 
     @classmethod
     def _supports_comments(cls):
@@ -61,10 +61,10 @@ class ForcingBase(DataBlockINIBasedModel):
         return True
 
     @root_validator(pre=True)
-    def _validate_quantities(cls, values):
-        quantitieskey = "quantities"
+    def _validate_quantityunitpair(cls, values):
+        quantityunitpairkey = "quantityunitpair"
 
-        if values.get(quantitieskey) is not None:
+        if values.get(quantityunitpairkey) is not None:
             return values
 
         quantities = values.get("quantity")
@@ -75,7 +75,7 @@ class ForcingBase(DataBlockINIBasedModel):
             raise ValueError("unit is not provided")
 
         if isinstance(quantities, str) and isinstance(units, str):
-            values[quantitieskey] = [(quantities, units)]
+            values[quantityunitpairkey] = [(quantities, units)]
             return values
 
         if isinstance(quantities, list) and isinstance(units, list):
@@ -84,7 +84,7 @@ class ForcingBase(DataBlockINIBasedModel):
                     "Number of quantities should be equal to number of units"
                 )
 
-            values[quantitieskey] = [
+            values[quantityunitpairkey] = [
                 (quantity, unit) for quantity, unit in zip(quantities, units)
             ]
             return values
@@ -127,7 +127,7 @@ class ForcingBase(DataBlockINIBasedModel):
     def _to_section(self) -> Section:
         section = super()._to_section()
 
-        for quantity in self.quantities:
+        for quantity in self.quantityunitpair:
             for prop in quantity._to_properties():
                 section.content.append(prop)
 

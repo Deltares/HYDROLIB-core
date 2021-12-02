@@ -312,4 +312,4 @@ def test_boundary_with_forcing_file_without_match_returns_none():
 
 
 def _create_forcing(name: str, quantity: str) -> ForcingBase:
-    return ForcingBase(name=name, quantities=[(quantity, "")], function="")
+    return ForcingBase(name=name, quantityunitpair=[(quantity, "")], function="")
