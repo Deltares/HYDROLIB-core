@@ -1,6 +1,5 @@
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.dimr.models import DIMR
-
 from tests.utils import test_input_dir
 
 
