@@ -184,11 +184,6 @@ class INIGeneral(INIBasedModel):
         return True
 
 
-class FrictGeneral(INIGeneral):
-    fileversion: str = Field("3.00", alias="fileVersion")
-    filetype: Literal["roughness"] = Field("roughness", alias="fileType")
-
-
 class CrossdefGeneral(INIGeneral):
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["crossDef"] = Field("crossDef", alias="fileType")
@@ -668,19 +663,3 @@ class CrossLocModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "crsloc"
-
-
-class Global(INIBasedModel):
-    _header: Literal["Global"] = "Global"
-    frictionid: str = Field(alias="frictionId")
-    frictiontype: str = Field(alias="frictionType")
-    frictionvalue: float = Field(alias="frictionValue")
-
-
-class FrictionModel(INIModel):
-    general: FrictGeneral = FrictGeneral()
-    global_: List[Global] = Field([], alias="global")  # to circumvent built-in kw
-
-    _split_to_list = make_list_validator(
-        "global_",
-    )
