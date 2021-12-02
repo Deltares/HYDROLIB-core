@@ -297,7 +297,7 @@ def write_ini(
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    with path.open("w") as f:
+    with path.open("wb") as f:
 
         for line in serializer.serialize(document):
-            f.write(line + "\n")
+            f.write((line + "\n").encode("utf8"))
