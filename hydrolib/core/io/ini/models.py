@@ -25,6 +25,7 @@ from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.ini.util import (
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
+    make_list_length_validator,
 )
 
 from .io_models import (
@@ -540,6 +541,20 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         "frictiontypes",
         delimiter=";",
     )
+
+    @root_validator
+    @classmethod
+    def check_lists(cls, values: dict) -> dict:
+        _check_list_length = make_list_length_validator(
+            "levels",
+            "flowwidths",
+            "totalwidths",
+            length=values["numlevels"],
+            length_name="numlevels",
+            annotation=f"id = {values['id']}",
+        )
+
+        return values
 
     @root_validator
     @classmethod

@@ -100,7 +100,11 @@ def test_create_a_zwrivercrsdef_from_scratch():
         id="Prof1",
         numlevels=2,
         levels=[-2, 3],
-        flowwidths=[11, 44],
+        flowwidths=[
+            11,
+            44,
+            12,
+        ],  # Intentional error, to try and trigger make_list_length_validator()
         frictiontypes=["Manning"],
         frictionvalues=[0.03],
     )
