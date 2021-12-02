@@ -424,6 +424,26 @@ class RectangleCrsDef(CrossSectionDefinition):
     frictiontype: Optional[str] = Field(alias="frictionType")
     frictionvalue: Optional[float] = Field(alias="frictionValue")
 
+    @root_validator
+    @classmethod
+    def check_friction(cls, values: dict) -> dict:
+        """
+        Verifies whether the crosssection definition has a valid friction specification.
+
+        Args:
+            values (dict): Dictionary of validated values to create a CrossSectionDefinition subclass.
+
+        Raises:
+            ValueError: When the values dictionary does not contain valid friction keys.
+
+        Returns:
+            dict: Dictionary of validated values.
+        """
+        if CrossSectionDefinition._validate_friction_specification(
+            values, "frictionid", "frictiontype", "frictionvalue"
+        ):
+            return values
+
 
 class ZWRiverCrsDef(CrossSectionDefinition):
     class Comments(CrossSectionDefinition.Comments):
@@ -520,6 +540,26 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         "frictiontypes",
         delimiter=";",
     )
+
+    @root_validator
+    @classmethod
+    def check_friction(cls, values: dict) -> dict:
+        """
+        Verifies whether the crosssection definition has a valid friction specification.
+
+        Args:
+            values (dict): Dictionary of validated values to create a CrossSectionDefinition subclass.
+
+        Raises:
+            ValueError: When the values dictionary does not contain valid friction keys.
+
+        Returns:
+            dict: Dictionary of validated values.
+        """
+        if CrossSectionDefinition._validate_friction_specification(
+            values, "frictionids", "frictiontypes", "frictionvalues"
+        ):
+            return values
 
 
 class ZWCrsDef(CrossSectionDefinition):

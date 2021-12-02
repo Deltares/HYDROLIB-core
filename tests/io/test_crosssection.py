@@ -41,6 +41,7 @@ def test_create_a_circlecrsdef_from_scratch():
         frictionvalue=1.5,
     )
     assert cd.id == "Prof1"
+    assert cd.type == "circle"
     assert cd.diameter == 3.14
     assert cd.frictiontype == "wallLawNikuradse"
     assert cd.frictionvalue == 1.5
@@ -58,6 +59,71 @@ def test_create_a_circlecrsdef_with_duplicate_frictionspec():
         )
     expected_message = (
         f'Cross section with id "{csdefid}" has duplicate friction specification'
+    )
+
+    assert expected_message in str(error.value)
+
+
+def test_create_a_rectanglecrsdef_from_scratch():
+    cd = RectangleCrsDef(
+        id="Prof1",
+        width=3.14,
+        height=2.718,
+        frictiontype="wallLawNikuradse",
+        frictionvalue=1.5,
+    )
+    assert cd.id == "Prof1"
+    assert cd.type == "rectangle"
+    assert cd.width == 3.14
+    assert cd.height == 2.718
+    assert cd.frictiontype == "wallLawNikuradse"
+    assert cd.frictionvalue == 1.5
+
+
+def test_create_a_rectanglecrsdef_without_frictionspec():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = RectangleCrsDef(
+            id=csdefid,
+            width=3.14,
+            height=2.718,
+        )
+    expected_message = (
+        f'Cross section with id "{csdefid}" is missing any friction specification.'
+    )
+
+    assert expected_message in str(error.value)
+
+
+def test_create_a_zwrivercrsdef_from_scratch():
+    cd = ZWRiverCrsDef(
+        id="Prof1",
+        numlevels=2,
+        levels=[-2, 3],
+        flowwidths=[11, 44],
+        frictiontypes=["Manning"],
+        frictionvalues=[0.03],
+    )
+    assert cd.id == "Prof1"
+    assert cd.type == "zwRiver"
+    assert cd.numlevels == 2
+    assert cd.levels == [-2, 3]
+    assert cd.flowwidths == [11, 44]
+    assert cd.frictiontypes == ["Manning"]
+    assert cd.frictionvalues == [0.03]
+
+
+def test_create_a_zwrivercrsdef_without_frictionspec():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = ZWRiverCrsDef(
+            id=csdefid,
+            numlevels=2,
+            levels=[-2, 3],
+            flowwidths=[11, 44],
+        )
+    expected_message = (
+        f'Cross section with id "{csdefid}" is missing any friction specification.'
     )
 
     assert expected_message in str(error.value)
