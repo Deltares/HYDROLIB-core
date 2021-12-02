@@ -254,7 +254,8 @@ class Weir(Structure):
 
     type: Literal["weir"] = Field("weir", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
-        FlowDirection.both, alias="allowedFlowDir")
+        FlowDirection.both, alias="allowedFlowDir"
+    )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
