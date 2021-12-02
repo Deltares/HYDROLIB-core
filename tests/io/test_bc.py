@@ -12,6 +12,7 @@ from hydrolib.core.io.bc.models import (
     Harmonic,
     HarmonicCorrection,
     QHTable,
+    QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
 )
@@ -24,6 +25,13 @@ from ..utils import (
     test_output_dir,
     test_reference_dir,
 )
+
+
+class TestQuantityUnitPair:
+    def test_create_quantityunitpair(self):
+        pair = QuantityUnitPair(quantity="some_quantity", unit="some_unit")
+        assert pair.quantity == "some_quantity"
+        assert pair.unit == "some_unit"
 
 
 class TestTimeSeries:
@@ -98,7 +106,7 @@ class TestForcingBase:
         ],
     )
     def test_parses_function_case_insensitive(self, input, expected):
-        forcing = ForcingBase(function=input, name="somename", quantity=[], unit=[])
+        forcing = ForcingBase(function=input, name="somename", quantities=[])
 
         assert forcing.function == expected
 
