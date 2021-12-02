@@ -291,51 +291,52 @@ class CrossSectionDefinition(INIBasedModel):
                 )
         return super().validate(v)
 
-    @classmethod
-    def _validate_friction_specification(
-        cls,
-        values: dict,
+    @staticmethod
+    def _get_friction_root_validator(
         frictionid_attr: str,
         frictiontype_attr: str,
         frictionvalue_attr: str,
-    ) -> bool:
+    ):
         """
-        Verifies whether the crosssection definition (subclass) has a valid friction specification.
-        Supposed to be called from with subclass validators for their friction fields.
+        Make a root_validator that verifies whether the crosssection definition (subclass)
+        has a valid friction specification.
+        Supposed to be embedded in subclasses for their friction fields.
 
         Args:
-            values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
             frictionid_attr: name of the frictionid attribute in the subclass.
             frictiontype_attr: name of the frictiontype attribute in the subclass.
             frictionvalue_attr: name of the frictionvalue attribute in the subclass.
 
-        Raises:
-            ValueError: When the values dictionary does not contain valid friction keys.
-
         Returns:
-            bool: True when input is valid, False otherwise.
+            root_validator: to be embedded in the subclass that needs it.
         """
-        frictionid = values.get(frictionid_attr) or ""
-        frictiontype = values.get(frictiontype_attr) or ""
-        frictionvalue = values.get(frictionvalue_attr) or ""
 
-        if frictionid == "":
-            if frictiontype == "" or frictionvalue == "":
-                raise ValueError(
-                    f"Cross section with id \"{values.get('id', '')}\" is missing any friction specification."
-                )
-        else:
-            if frictiontype != "" or frictionvalue != "":
-                raise ValueError(
-                    f"Cross section with id \"{values.get('id', '')}\" has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
-                )
+        def validate_friction_specification(cls, values):
+            """
+            The actual validator function.
 
-        return True
+            Args:
+            cls: The subclass for which the root_validator is called.
+            values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
+            """
+            frictionid = values.get(frictionid_attr) or ""
+            frictiontype = values.get(frictiontype_attr) or ""
+            frictionvalue = values.get(frictionvalue_attr) or ""
 
-        # if CrossSectionDefinition._validate_friction_specification(
-        #    cls, values, "frictionid", "frictiontype", "frictionvalue"
-        # ):
-        #    return values
+            if frictionid == "":
+                if frictiontype == "" or frictionvalue == "":
+                    raise ValueError(
+                        f"Cross section with id \"{values.get('id', '')}\" is missing any friction specification."
+                    )
+            else:
+                if frictiontype != "" or frictionvalue != "":
+                    raise ValueError(
+                        f"Cross section with id \"{values.get('id', '')}\" has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
+                    )
+
+            return values
+
+        return root_validator(allow_reuse=True)(validate_friction_specification)
 
 
 class CrossDefModel(INIModel):
@@ -375,25 +376,9 @@ class CircleCrsDef(CrossSectionDefinition):
     frictiontype: Optional[str] = Field(alias="frictionType")
     frictionvalue: Optional[float] = Field(alias="frictionValue")
 
-    @root_validator
-    @classmethod
-    def check_friction(cls, values: dict) -> dict:
-        """
-        Verifies whether the crosssection definition has a valid friction specification.
-
-        Args:
-            values (dict): Dictionary of validated values to create a CrossSectionDefinition subclass.
-
-        Raises:
-            ValueError: When the values dictionary does not contain valid friction keys.
-
-        Returns:
-            dict: Dictionary of validated values.
-        """
-        if CrossSectionDefinition._validate_friction_specification(
-            values, "frictionid", "frictiontype", "frictionvalue"
-        ):
-            return values
+    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
+        "frictionid", "frictiontype", "frictionvalue"
+    )
 
 
 class RectangleCrsDef(CrossSectionDefinition):
@@ -425,25 +410,9 @@ class RectangleCrsDef(CrossSectionDefinition):
     frictiontype: Optional[str] = Field(alias="frictionType")
     frictionvalue: Optional[float] = Field(alias="frictionValue")
 
-    @root_validator
-    @classmethod
-    def check_friction(cls, values: dict) -> dict:
-        """
-        Verifies whether the crosssection definition has a valid friction specification.
-
-        Args:
-            values (dict): Dictionary of validated values to create a CrossSectionDefinition subclass.
-
-        Raises:
-            ValueError: When the values dictionary does not contain valid friction keys.
-
-        Returns:
-            dict: Dictionary of validated values.
-        """
-        if CrossSectionDefinition._validate_friction_specification(
-            values, "frictionid", "frictiontype", "frictionvalue"
-        ):
-            return values
+    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
+        "frictionid", "frictiontype", "frictionvalue"
+    )
 
 
 class ZWRiverCrsDef(CrossSectionDefinition):
@@ -542,6 +511,10 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         delimiter=";",
     )
 
+    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
+        "frictionids", "frictiontypes", "frictionvalues"
+    )
+
     @root_validator
     @classmethod
     def check_lists(cls, values: dict) -> dict:
@@ -555,26 +528,6 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         )
 
         return values
-
-    @root_validator
-    @classmethod
-    def check_friction(cls, values: dict) -> dict:
-        """
-        Verifies whether the crosssection definition has a valid friction specification.
-
-        Args:
-            values (dict): Dictionary of validated values to create a CrossSectionDefinition subclass.
-
-        Raises:
-            ValueError: When the values dictionary does not contain valid friction keys.
-
-        Returns:
-            dict: Dictionary of validated values.
-        """
-        if CrossSectionDefinition._validate_friction_specification(
-            values, "frictionids", "frictiontypes", "frictionvalues"
-        ):
-            return values
 
 
 class ZWCrsDef(CrossSectionDefinition):
