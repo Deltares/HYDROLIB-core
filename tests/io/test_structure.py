@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Callable, List, Union
 
 import pytest
+from attr.validators import optional
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
@@ -433,27 +434,6 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         bedfriction="1",
         subtype="invertedSiphon",
         bendlosscoeff="1",
-    )
-
-    assert structure.allowedflowdir == expected
-
-
-@pytest.mark.parametrize(
-    "input,expected",
-    _get_allowedflowdir_cases(),
-)
-def test_orifice_parses_flowdirection_case_insensitive(input, expected):
-    structure = Orifice(
-        allowedflowdir=input,
-        id="strucid",
-        branchid="branchid",
-        chainage="1",
-        crestlevel="1",
-        corrcoeff="1",
-        gateloweredgelevel="1",
-        usevelocityheight="0",
-        uselimitflowpos="0",
-        uselimitflowneg="0",
     )
 
     assert structure.allowedflowdir == expected
@@ -1397,3 +1377,106 @@ class TestDambreak:
             with pytest.raises(ValueError) as exc_err:
                 Dambreak.check_location(invalid_values)
             assert str(exc_err.value) == expected_err
+
+
+class TestOrifice:
+    """
+    Wrapper class to test all the methods and sublcasses in:
+    hydrolib.core.io.structure.models.py Orifice class.
+    """
+
+    def test_create_orifice(self):
+        structure = Orifice(**self._create_orifice_values())
+
+        assert structure.id == "structure_id"
+        assert structure.name == "structure_name"
+        assert structure.type == "orifice"
+        assert structure.branchid == "branch_id"
+        assert structure.chainage == 1.23
+        assert structure.allowedflowdir == FlowDirection.positive
+        assert structure.crestlevel == 2.34
+        assert structure.crestwidth == 3.45
+        assert structure.gateloweredgelevel == 4.56
+        assert structure.corrcoeff == 5.67
+        assert structure.usevelocityheight == True
+        assert structure.uselimitflowpos == True
+        assert structure.limitflowpos == 6.78
+        assert structure.uselimitflowneg == True
+        assert structure.limitflowneg == 7.89
+
+    @pytest.mark.parametrize(
+        "limitflow, uselimitflow",
+        [
+            pytest.param("limitFlowPos", "useLimitFlowPos"),
+            pytest.param("limitFlowNeg", "useLimitFlowNeg"),
+        ],
+    )
+    def test_validate_limitflow(self, limitflow: str, uselimitflow: str):
+        values = self._create_orifice_values()
+        del values[limitflow.lower()]
+
+        with pytest.raises(ValidationError) as error:
+            Orifice(**values)
+
+        expected_message = f"1 validation error for Orifice\n\
+structure_id -> {limitflow}\n  \
+{limitflow} should be defined when {uselimitflow} is true"
+
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "input,expected",
+        _get_allowedflowdir_cases(),
+    )
+    def test_orifice_parses_flowdirection_case_insensitive(self, input, expected):
+        structure = Orifice(
+            allowedflowdir=input,
+            id="strucid",
+            branchid="branchid",
+            chainage="1",
+            crestlevel="1",
+            corrcoeff="1",
+            gateloweredgelevel="1",
+            usevelocityheight="0",
+            uselimitflowpos="0",
+            uselimitflowneg="0",
+        )
+
+        assert structure.allowedflowdir == expected
+
+    def test_optional_fields_have_correct_defaults(self):
+        structure = Orifice(**self._create_required_orifice_values())
+
+        assert structure.allowedflowdir == FlowDirection.both
+        assert structure.crestwidth == None
+        assert structure.uselimitflowpos == False
+        assert structure.limitflowpos == None
+        assert structure.uselimitflowneg == False
+        assert structure.limitflowneg == None
+
+    def _create_required_orifice_values(self) -> dict:
+        return dict(
+            id="structure_id",
+            name="structure_name",
+            type="orifice",
+            branchid="branch_id",
+            chainage="1.23",
+            crestlevel="2.34",
+            gateloweredgelevel="4.56",
+            corrcoeff="5.67",
+            usevelocityheight="true",
+        )
+
+    def _create_orifice_values(self) -> dict:
+        orifice_values = dict(
+            allowedflowdir="positive",
+            crestwidth="3.45",
+            uselimitflowpos="true",
+            limitflowpos="6.78",
+            uselimitflowneg="true",
+            limitflowneg="7.89",
+        )
+
+        orifice_values.update(self._create_required_orifice_values())
+
+        return orifice_values
