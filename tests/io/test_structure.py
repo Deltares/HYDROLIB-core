@@ -1468,7 +1468,7 @@ structure_id -> {limitflow}\n  \
         )
 
     def _create_orifice_values(self) -> dict:
-        optional_values = dict(
+        orifice_values = dict(
             allowedflowdir="positive",
             crestwidth="3.45",
             uselimitflowpos="true",
@@ -1477,6 +1477,6 @@ structure_id -> {limitflow}\n  \
             limitflowneg="7.89",
         )
 
-        optional_values.update(self._create_required_orifice_values())
+        orifice_values.update(self._create_required_orifice_values())
 
-        return optional_values
+        return orifice_values
