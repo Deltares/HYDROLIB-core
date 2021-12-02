@@ -1260,17 +1260,16 @@ structure_id -> {limitflow}\n  \
         assert structure.limitflowneg == None
 
     def _create_required_orifice_values(self) -> dict:
-        return dict(
-            id="structure_id",
-            name="structure_name",
-            type="orifice",
-            branchid="branch_id",
-            chainage="1.23",
+        orifice_values = dict(
             crestlevel="2.34",
             gateloweredgelevel="4.56",
             corrcoeff="5.67",
             usevelocityheight="true",
         )
+
+        orifice_values.update(create_structure_values())
+
+        return orifice_values
 
     def _create_orifice_values(self) -> dict:
         orifice_values = dict(
@@ -1475,3 +1474,13 @@ class TestWeir:
         )
 
         assert structure.allowedflowdir == expected
+
+
+def create_structure_values() -> dict:
+    return dict(
+        id="structure_id",
+        name="structure_name",
+        type="orifice",
+        branchid="branch_id",
+        chainage="1.23",
+    )
