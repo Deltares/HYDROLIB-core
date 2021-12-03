@@ -1,21 +1,17 @@
 import logging
-from abc import ABC
 from enum import Enum
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional
+from typing import Callable, Dict, List, Literal, NamedTuple, Optional, Set
 
 from pydantic import Extra
-from pydantic.class_validators import validator
+from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
+from hydrolib.core.io.ini.io_models import Property, Section
 from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
-from hydrolib.core.io.ini.util import (
-    get_enum_validator,
-    get_from_subclass_defaults,
-    make_list_validator,
-)
+from hydrolib.core.io.ini.util import get_enum_validator, get_from_subclass_defaults
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +33,24 @@ class TimeInterpolation(str, Enum):
     block_to = "blockTo"
 
 
+class QuantityUnitPair(NamedTuple):
+    quantity: str
+    unit: str
+
+    def _to_properties(self):
+        yield Property(key="quantity", value=self.quantity)
+        yield Property(key="unit", value=self.unit)
+
+
 class ForcingBase(DataBlockINIBasedModel):
 
     _header: Literal["Forcing"] = "Forcing"
     name: str = Field(alias="name")
     function: str = Field(alias="function")
-    quantity: List[str] = Field(alias="quantity")
-    unit: List[str] = Field(alias="unit")
+    quantityunitpair: List[QuantityUnitPair]
 
-    _make_lists = make_list_validator("quantity", "unit")
+    def _exclude_fields(self) -> Set:
+        return {"quantityunitpair"}.union(super()._exclude_fields())
 
     @classmethod
     def _supports_comments(cls):
@@ -54,6 +59,37 @@ class ForcingBase(DataBlockINIBasedModel):
     @classmethod
     def _duplicate_keys_as_list(cls):
         return True
+
+    @root_validator(pre=True)
+    def _validate_quantityunitpair(cls, values):
+        quantityunitpairkey = "quantityunitpair"
+
+        if values.get(quantityunitpairkey) is not None:
+            return values
+
+        quantities = values.get("quantity")
+        if quantities is None:
+            raise ValueError("quantity is not provided")
+        units = values.get("unit")
+        if units is None:
+            raise ValueError("unit is not provided")
+
+        if isinstance(quantities, str) and isinstance(units, str):
+            values[quantityunitpairkey] = [(quantities, units)]
+            return values
+
+        if isinstance(quantities, list) and isinstance(units, list):
+            if not len(quantities) == len(units):
+                raise ValueError(
+                    "Number of quantities should be equal to number of units"
+                )
+
+            values[quantityunitpairkey] = [
+                (quantity, unit) for quantity, unit in zip(quantities, units)
+            ]
+            return values
+
+        raise ValueError("Number of quantities should be equal to number of units")
 
     @validator("function", pre=True)
     def _set_function(cls, value):
@@ -88,6 +124,15 @@ class ForcingBase(DataBlockINIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data["name"] if "name" in data else None
 
+    def _to_section(self) -> Section:
+        section = super()._to_section()
+
+        for quantity in self.quantityunitpair:
+            for prop in quantity._to_properties():
+                section.content.append(prop)
+
+        return section
+
     class Config:
         extra = Extra.ignore
 
@@ -114,11 +159,11 @@ class Astronomic(ForcingBase):
 
 
 class HarmonicCorrection(ForcingBase):
-    function: Literal["harmoniccorrection"] = "harmoniccorrection"
+    function: Literal["harmonic-correction"] = "harmonic-correction"
 
 
 class AstronomicCorrection(ForcingBase):
-    function: Literal["astronomiccorrection"] = "astronomiccorrection"
+    function: Literal["astronomic-correction"] = "astronomic-correction"
 
 
 class T3D(ForcingBase):
