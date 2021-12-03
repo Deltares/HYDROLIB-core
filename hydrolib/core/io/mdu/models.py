@@ -4,10 +4,10 @@ from typing import Dict, List, Literal, Optional, Union
 from pydantic import Field
 
 from hydrolib.core.io.ext.models import ExtModel
+from hydrolib.core.io.friction.models import FrictionModel
 from hydrolib.core.io.ini.models import (
     CrossDefModel,
     CrossLocModel,
-    FrictionModel,
     INIBasedModel,
     INIGeneral,
     INIModel,

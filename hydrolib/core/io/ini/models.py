@@ -42,6 +42,18 @@ from .util import make_list_validator
 
 logger = logging.getLogger(__name__)
 
+frictionid_description = 'Name of the roughness variable associated with \
+    this cross section. Either this parameter or \
+    frictionType should be specified. If neither \
+    parameter is specified, the frictionId defaults \
+    to "Main".'
+
+frictiontype_description = "Roughness type associated with this cross section \
+    Either this parameter or frictionId should be specified."
+
+frictionvalue_description = "Roughness value; its meaning depends on the roughness type selected \
+    (only used if frictionType specified)."
+
 
 class INIBasedModel(BaseModel, ABC):
     """INIBasedModel defines the base model for ini models
@@ -172,11 +184,6 @@ class INIGeneral(INIBasedModel):
         return True
 
 
-class FrictGeneral(INIGeneral):
-    fileversion: str = Field("3.00", alias="fileVersion")
-    filetype: Literal["roughness"] = Field("roughness", alias="fileType")
-
-
 class CrossdefGeneral(INIGeneral):
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["crossDef"] = Field("crossDef", alias="fileType")
@@ -296,21 +303,15 @@ class CircleCrsDef(CrossSectionDefinition):
 
         diameter: Optional[str] = Field("Internal diameter of the circle [m].")
         frictionid: Optional[str] = Field(
-            "Name of the roughness variable associated with "
-            + "this cross section. Either this parameter or "
-            + "frictionType should be specified. If neither "
-            + "parameter is specified, the frictionId defaults "
-            + 'to "Main".',
+            frictionid_description,
             alias="frictionId",
         )
         frictiontype: Optional[str] = Field(
-            "Roughness type associated with this cross section  "
-            + "Either this parameter or frictionId should be specified.",
+            frictiontype_description,
             alias="frictionType",
         )
         frictionvalue: Optional[str] = Field(
-            "Roughness value; its meaning depends on the roughness type selected "
-            + "(only used if frictionType specified).",
+            frictionvalue_description,
             alias="frictionValue",
         )
 
@@ -330,21 +331,15 @@ class RectangleCrsDef(CrossSectionDefinition):
         height: Optional[str] = Field("Height of the rectangle [m].")
         closed: Optional[str] = Field("no: Open channel, yes: Closed channel.")
         frictionid: Optional[str] = Field(
-            "Name of the roughness variable associated with "
-            + "this cross section. Either this parameter or "
-            + "frictionType should be specified. If neither "
-            + "parameter is specified, the frictionId defaults "
-            + 'to "Main".',
+            frictionid_description,
             alias="frictionId",
         )
         frictiontype: Optional[str] = Field(
-            "Roughness type associated with this cross section  "
-            + "Either this parameter or frictionId should be specified.",
+            frictiontype_description,
             alias="frictionType",
         )
         frictionvalue: Optional[str] = Field(
-            "Roughness value; its meaning depends on the roughness type selected "
-            + "(only used if frictionType specified).",
+            frictionvalue_description,
             alias="frictionValue",
         )
 
@@ -478,21 +473,15 @@ class ZWCrsDef(CrossSectionDefinition):
             alias="totalWidths",
         )
         frictionid: Optional[str] = Field(
-            "Name of the roughness variable associated with "
-            + "this cross section. Either this parameter or "
-            + "frictionType should be specified. If neither "
-            + "parameter is specified, the frictionId defaults "
-            + 'to "Main".',
+            frictionid_description,
             alias="frictionId",
         )
         frictiontype: Optional[str] = Field(
-            "Roughness type associated with this cross section  "
-            + "Either this parameter or frictionId should be specified.",
+            frictiontype_description,
             alias="frictionType",
         )
         frictionvalue: Optional[str] = Field(
-            "Roughness value; its meaning depends on the roughness type selected "
-            + "(only used if frictionType specified).",
+            frictionvalue_description,
             alias="frictionValue",
         )
 
@@ -674,19 +663,3 @@ class CrossLocModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "crsloc"
-
-
-class Global(INIBasedModel):
-    _header: Literal["Global"] = "Global"
-    frictionid: str = Field(alias="frictionId")
-    frictiontype: str = Field(alias="frictionType")
-    frictionvalue: float = Field(alias="frictionValue")
-
-
-class FrictionModel(INIModel):
-    general: FrictGeneral = FrictGeneral()
-    global_: List[Global] = Field([], alias="global")  # to circumvent built-in kw
-
-    _split_to_list = make_list_validator(
-        "global_",
-    )

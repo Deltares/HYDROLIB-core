@@ -26,7 +26,14 @@ from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 from .io.test_bui import BuiTestData
-from .utils import test_data_dir, test_input_dir, test_output_dir, test_reference_dir
+from .utils import (
+    assert_files_equal,
+    invalid_test_data_dir,
+    test_data_dir,
+    test_input_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 def test_dimr_model():
@@ -149,17 +156,7 @@ def test_dimr_model_save():
     dimr.save()
 
     assert file.is_file() == True
-
-    with file.open() as af:
-        actual_lines = af.readlines()
-
-    with reference_file.open() as rf:
-        reference_lines = rf.readlines()
-
-    assert len(actual_lines) == len(reference_lines)
-
-    for i in range(len(reference_lines)):
-        assert actual_lines[i] == reference_lines[i]
+    assert_files_equal(file, reference_file)
 
 
 def test_xyz_model():
@@ -240,7 +237,7 @@ def test_read_ext_missing_boundary_field_raises_correct_error():
     identifier = "Boundary2"
     field = "quantity"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
@@ -254,7 +251,7 @@ def test_read_ext_missing_lateral_field_raises_correct_error():
     identifier = "Lateral2"
     field = "discharge"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
@@ -268,7 +265,7 @@ def test_read_dimr_missing_component_field_raises_correct_error():
     identifier = "FlowFM"
     field = "workingdir"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)
@@ -282,7 +279,7 @@ def test_read_dimr_missing_coupler_field_raises_correct_error():
     identifier = "rr_to_flow"
     field = "targetcomponent"
 
-    filepath = test_data_dir / "input/invalid_files" / file
+    filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)
@@ -312,7 +309,6 @@ def test_boundary_with_forcing_file_without_match_returns_none():
     forcing_file = ForcingModel(forcing=[forcing1, forcing2])
 
     boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
-    boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
 
     assert boundary.forcing is None
     assert boundary.nodeid == "bnd3"
@@ -320,4 +316,4 @@ def test_boundary_with_forcing_file_without_match_returns_none():
 
 
 def _create_forcing(name: str, quantity: str) -> ForcingBase:
-    return ForcingBase(name=name, quantity=[quantity], function="", unit=[])
+    return ForcingBase(name=name, quantityunitpair=[(quantity, "")], function="")

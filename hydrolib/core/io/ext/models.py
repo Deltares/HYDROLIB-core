@@ -48,7 +48,7 @@ class Boundary(INIBasedModel):
             )
         return values
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         """
         Retrieves the identifier for a boundary, which is the nodeid
 
@@ -76,8 +76,8 @@ class Boundary(INIBasedModel):
             if self.nodeid != forcing.name:
                 continue
 
-            for quantity in forcing.quantity:
-                if quantity.startswith(self.quantity):
+            for quantity in forcing.quantityunitpair:
+                if quantity.quantity.startswith(self.quantity):
                     return forcing
 
         return None
@@ -100,7 +100,7 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data["id"] if "id" in data else None
 
     @validator("xcoordinates", "ycoordinates")

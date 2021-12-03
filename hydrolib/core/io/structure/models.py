@@ -92,36 +92,31 @@ class Structure(INIBasedModel):
             dict: Dictionary of values validated for the new structure.
         """
         filtered_values = {k: v for k, v in values.items() if v is not None}
-        type = filtered_values.get("type", "").lower()
-        if type == "compound" or issubclass(cls, Compound):
+        structype = filtered_values.get("type", "").lower()
+
+        # TODO This seems to be a bit of a hack.
+        if not (structype == "compound" or issubclass(cls, (Compound, Dambreak))):
             # Compound structure does not require a location specification.
-            return values
+            only_coordinates_structures = dict(
+                longculvert="LongCulvert", dambreak="Dambreak"
+            )
+            coordinates_in_model = Structure.validate_coordinates_in_model(
+                filtered_values
+            )
 
-        # Apparently the overriding functionality does not seem to work in pydantic,
-        # therefore we need to do this.
-        if issubclass(cls, Dambreak):
-            # The check on only_coordinates_structures remains as that handles the case
-            # where a 'flat structure' is created giving the type string name "dambreak".
-            return values
+            # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
+            if structype in only_coordinates_structures.keys():
+                assert (
+                    coordinates_in_model
+                ), f"`num/x/yCoordinates` are mandatory for a {only_coordinates_structures[structype]} structure."
 
-        coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
-
-        # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
-        only_coordinates_structures = dict(
-            longculvert="LongCulvert", dambreak="Dambreak"
-        )
-        if type in only_coordinates_structures.keys():
+            branch_and_chainage_in_model = (
+                Structure.validate_branch_and_chainage_in_model(filtered_values)
+            )
             assert (
-                coordinates_in_model
-            ), f"`num/x/yCoordinates` are mandatory for a {only_coordinates_structures[type]} structure."
-            return values
+                branch_and_chainage_in_model or coordinates_in_model
+            ), "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
 
-        branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
-            filtered_values
-        )
-        assert (
-            branch_and_chainage_in_model or coordinates_in_model
-        ), "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
         return values
 
     @staticmethod
@@ -224,7 +219,7 @@ class Structure(INIBasedModel):
         exclude_set = super()._exclude_fields().union(exclude_set)
         return exclude_set
 
-    def _get_identifier(self, data: dict) -> str:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data["id"]
 
 
@@ -380,7 +375,9 @@ class Compound(Structure):
 class Orifice(Structure):
 
     type: Literal["orifice"] = Field("orifice", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(
+        FlowDirection.both, alias="allowedFlowDir"
+    )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
@@ -389,13 +386,32 @@ class Orifice(Structure):
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
     # TODO Use a validator here to check the optionals related to the bool field
-    uselimitflowpos: bool = Field(False, alias="useLimitFlowPos")
+    uselimitflowpos: Optional[bool] = Field(False, alias="useLimitFlowPos")
     limitflowpos: Optional[float] = Field(alias="limitFlowPos")
 
-    uselimitflowneg: bool = Field(False, alias="useLimitFlowNeg")
-    limitflowneg: Optional[float] = Field(alias="limitFlowneg")
+    uselimitflowneg: Optional[bool] = Field(False, alias="useLimitFlowNeg")
+    limitflowneg: Optional[float] = Field(alias="limitFlowNeg")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
+    @validator("limitflowpos", always=True)
+    @classmethod
+    def _validate_limitflowpos(cls, v, values):
+        return cls._validate_limitflow(v, values, "limitFlowPos", "useLimitFlowPos")
+
+    @validator("limitflowneg", always=True)
+    @classmethod
+    def _validate_limitflowneg(cls, v, values):
+        return cls._validate_limitflow(v, values, "limitFlowNeg", "useLimitFlowNeg")
+
+    @classmethod
+    def _validate_limitflow(cls, v, values, limitflow: str, uselimitflow: str):
+        if v is None and values[uselimitflow.lower()] == True:
+            raise ValueError(
+                f"{limitflow} should be defined when {uselimitflow} is true"
+            )
+
+        return v
 
 
 class DambreakAlgorithm(int, Enum):
