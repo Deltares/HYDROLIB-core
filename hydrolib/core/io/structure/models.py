@@ -253,7 +253,9 @@ class Weir(Structure):
     comments: Comments = Comments()
 
     type: Literal["weir"] = Field("weir", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(
+        FlowDirection.both, alias="allowedFlowDir"
+    )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
@@ -375,7 +377,9 @@ class Compound(Structure):
 class Orifice(Structure):
 
     type: Literal["orifice"] = Field("orifice", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(
+        FlowDirection.both, alias="allowedFlowDir"
+    )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
@@ -384,13 +388,32 @@ class Orifice(Structure):
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
     # TODO Use a validator here to check the optionals related to the bool field
-    uselimitflowpos: bool = Field(False, alias="useLimitFlowPos")
+    uselimitflowpos: Optional[bool] = Field(False, alias="useLimitFlowPos")
     limitflowpos: Optional[float] = Field(alias="limitFlowPos")
 
-    uselimitflowneg: bool = Field(False, alias="useLimitFlowNeg")
-    limitflowneg: Optional[float] = Field(alias="limitFlowneg")
+    uselimitflowneg: Optional[bool] = Field(False, alias="useLimitFlowNeg")
+    limitflowneg: Optional[float] = Field(alias="limitFlowNeg")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
+    @validator("limitflowpos", always=True)
+    @classmethod
+    def _validate_limitflowpos(cls, v, values):
+        return cls._validate_limitflow(v, values, "limitFlowPos", "useLimitFlowPos")
+
+    @validator("limitflowneg", always=True)
+    @classmethod
+    def _validate_limitflowneg(cls, v, values):
+        return cls._validate_limitflow(v, values, "limitFlowNeg", "useLimitFlowNeg")
+
+    @classmethod
+    def _validate_limitflow(cls, v, values, limitflow: str, uselimitflow: str):
+        if v is None and values[uselimitflow.lower()] == True:
+            raise ValueError(
+                f"{limitflow} should be defined when {uselimitflow} is true"
+            )
+
+        return v
 
 
 class DambreakAlgorithm(int, Enum):

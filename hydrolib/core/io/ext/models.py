@@ -76,8 +76,8 @@ class Boundary(INIBasedModel):
             if self.nodeid != forcing.name:
                 continue
 
-            for quantity in forcing.quantity:
-                if quantity.startswith(self.quantity):
+            for quantity in forcing.quantityunitpair:
+                if quantity.quantity.startswith(self.quantity):
                     return forcing
 
         return None
