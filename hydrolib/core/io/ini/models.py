@@ -520,7 +520,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         "flowwidths",
         "totalwidths",
         length_name="numlevels",
-        annotation="id",
+        id_name="id",
     )
 
 

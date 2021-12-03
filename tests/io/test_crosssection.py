@@ -100,11 +100,7 @@ def test_create_a_zwrivercrsdef_from_scratch():
         id="Prof1",
         numlevels=2,
         levels=[-2, 3],
-        flowwidths=[
-            11,
-            44,
-            12,
-        ],  # Intentional error, to try and trigger make_list_length_validator()
+        flowwidths=[11, 44],
         frictiontypes=["Manning"],
         frictionvalues=[0.03],
     )
@@ -115,6 +111,22 @@ def test_create_a_zwrivercrsdef_from_scratch():
     assert cd.flowwidths == [11, 44]
     assert cd.frictiontypes == ["Manning"]
     assert cd.frictionvalues == [0.03]
+
+
+def test_create_a_zwrivercrsdef_with_wrong_list_lengths():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = ZWRiverCrsDef(
+            id=csdefid,
+            numlevels=2,
+            levels=[-2, 3, 13],  # Intentional wrong list length
+            flowwidths=[11, 44],
+            frictiontypes=["Manning"],
+            frictionvalues=[0.03],
+        )
+    expected_message = f"Number of values for levels should be equal to the numlevels value (id={csdefid})."
+
+    assert expected_message in str(error.value)
 
 
 def test_create_a_zwrivercrsdef_without_frictionspec():

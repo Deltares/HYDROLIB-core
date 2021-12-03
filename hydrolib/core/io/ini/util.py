@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Any, Type
 
-from pydantic.class_validators import validator, root_validator
+from pydantic.class_validators import root_validator, validator
 from pydantic.main import BaseModel
 
 
@@ -58,18 +58,26 @@ def make_list_validator(*field_name: str):
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
 
-def make_list_length_root_validator(*field_names, length_name: str, annotation: str):
-    """Get a validator make a list of object if a single object is passed."""
+def make_list_length_root_validator(*field_names, length_name: str, id_name: str):
+    """
+    Get a root_validator that checks the correct length of several list fields in an object.
+
+    Args:
+        *field_names (str): names of the instance variables that are a list and need checking.
+        length_name (str): name of the instance variable that stores the expected length.
+        id_name (str): name of the ``id`` instance variable that will be printed in an error message string.
+    """
 
     def validate_correct_length(cls, values):
-        length = int(values.get("length_name", "0"))
+        length = int(values.get(length_name, "0"))
 
         for field_name in field_names:
-            field = values.get(field_name) or []
-            if not (isinstance(field, list) and len(field) == length):
-
+            field = values.get(field_name)
+            if field is not None and not (
+                isinstance(field, list) and len(field) == length
+            ):
                 raise ValueError(
-                    f"Number of values for {field_name} should be equal to the {length_name} value ({annotation})."
+                    f"Number of values for {field_name} should be equal to the {length_name} value ({id_name}={values[id_name]})."
                 )
         return values
 
