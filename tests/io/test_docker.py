@@ -1,5 +1,5 @@
-from devtools import debug
 import pytest
+from devtools import debug
 
 from hydrolib.core.io.dimr.models import DIMR, FMComponent
 from hydrolib.core.io.mdu.models import FMModel
