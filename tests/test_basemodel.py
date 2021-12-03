@@ -38,8 +38,8 @@ def test_loading_a_file_twice_returns_different_model_instances() -> None:
     assert model_a is not model_b
 
 
-class TestFileLoadContext:
-    def test_file_load_context_is_created_and_disposed_properly(self):
+class TestContextManagerFileLoadContext:
+    def test_context_is_created_and_disposed_properly(self):
         assert context_file_loading.get(None) is None
 
         with file_load_context() as flc:
@@ -48,16 +48,18 @@ class TestFileLoadContext:
 
         assert context_file_loading.get(None) is None
 
-    def test_file_load_context_called_multiple_times_provides_same_instance(self):
+    def test_context_called_multiple_times_provides_same_instance(self):
         with file_load_context() as flc_root:
             with file_load_context() as flc_child:
                 assert flc_child is flc_root
 
-    def test_file_model_cache_without_state_returns_none(self):
+
+class TestFileModelCache:
+    def test_cache_without_state_returns_none(self):
         cache = FileModelCache()
         assert cache.retrieve_model(Path("some/path")) is None
 
-    def test_file_model_cache_with_state_returns_correct_result(self):
+    def test_cache_with_state_returns_correct_result(self):
         cache = FileModelCache()
 
         path = Path.cwd() / "some-dimr.xml"
@@ -67,6 +69,8 @@ class TestFileLoadContext:
 
         assert cache.retrieve_model(path) is model
 
+
+class TestFilePathResolver:
     @pytest.mark.parametrize(
         ("parents", "n_to_pop", "input_path", "expected_result"),
         [
@@ -211,7 +215,7 @@ class TestFileLoadContext:
             ),
         ],
     )
-    def test_path_resolver_resolves_to_expected_result(
+    def test_resolves_to_expected_result(
         self,
         parents: Sequence[Tuple[Path, ResolveRelativeMode]],
         n_to_pop: int,
@@ -227,3 +231,56 @@ class TestFileLoadContext:
             resolver.pop_last_parent()
 
         assert resolver.resolve(input_path) == expected_result
+
+
+class TestFileLoadContext:
+    def test_retrieve_model_with_none_returns_none(self):
+        context = FileLoadContext()
+        assert context.retrieve_model(None) is None
+
+    @pytest.mark.parametrize(
+        "path",
+        [
+            pytest.param(Path("dimr.xml"), id="relative_path"),
+            pytest.param(test_input_dir / "dimr.xml", id="absolute_path"),
+        ],
+    )
+    def test_retrieve_model_with_relative_path_returns_correct_result(
+        self,
+        path: Path,
+    ):
+        context = FileLoadContext()
+        model = DIMR()
+
+        context.register_model(path, model)
+        retrieved_model = context.retrieve_model(path)
+
+        assert retrieved_model is model
+
+    @pytest.mark.parametrize(
+        ("register_path", "retrieval_path"),
+        [
+            pytest.param(Path("dimr.xml"), Path("dimr.xml"), id="relative-relative"),
+            pytest.param(
+                Path("dimr.xml"), Path.cwd() / Path("dimr.xml"), id="relative-absolute"
+            ),
+            pytest.param(
+                Path.cwd() / Path("dimr.xml"), Path("dimr.xml"), id="absolute-relative"
+            ),
+            pytest.param(
+                Path.cwd() / Path("dimr.xml"),
+                Path.cwd() / Path("dimr.xml"),
+                id="absolute-absolute",
+            ),
+        ],
+    )
+    def test_retrieve_model_is_always_determined_from_the_absolute_path(
+        self,
+        register_path: Path,
+        retrieval_path: Path,
+    ):
+        context = FileLoadContext()
+
+        model = DIMR()
+        context.register_model(register_path, model)
+        assert context.retrieve_model(retrieval_path) is model
