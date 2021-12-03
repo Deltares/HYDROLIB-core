@@ -108,15 +108,35 @@ class BaseModel(PydanticBaseModel):
 
 
 class ResolveRelativeMode(IntEnum):
+    """ResolveRelativeMode defines the possible resolve modes used within the
+    FilePathResolver. These are dependent on the type of model and as such
+    defined in (the subclasses of) the FileModel
+
+    Options:
+        ToParent:
+            Relative paths should be resolved relative to their direct parent model.
+        ToAnchor:
+            All relative paths should be resolved relative to the specified regardless
+            of subsequent parent model locations.
+    """
+
     ToParent = 0
     ToAnchor = 1
 
 
 # TODO: This should probably be moved to a separate file
 class FilePathResolver:
+    """FilePathResolver is responsible for resolving relative paths.
+
+    The current state to which paths are resolved can be altered by
+    pushing a new parent path to the FilePathResolver, or removing the
+    latest added parent path from the FilePathResolver
+    """
+
     def __init__(self) -> None:
+        """Creates a new empty FilePathResolver."""
         self._anchors: List[Path] = []
-        self._relatives: List[Tuple[Path, ResolveRelativeMode]] = []
+        self._parents: List[Tuple[Path, ResolveRelativeMode]] = []
 
     @property
     def _anchor(self) -> Optional[Path]:
@@ -124,7 +144,7 @@ class FilePathResolver:
 
     @property
     def _direct_parent(self) -> Path:
-        return self._relatives[-1][0] if self._relatives else Path.cwd()
+        return self._parents[-1][0] if self._parents else Path.cwd()
 
     def _get_current_parent(self) -> Path:
         if self._anchor:
@@ -132,45 +152,107 @@ class FilePathResolver:
         return self._direct_parent
 
     def resolve(self, path: Path) -> Path:
+        """Resolve the provided path to an absolute path given the current state.
+
+        If the provided path is already absolute, it will be returned as is.
+
+        Args:
+            path (Path): The path to resolve
+
+        Returns:
+            Path: An absolute path resolved given the current state.
+        """
         if path.is_absolute():
             return path
 
         parent = self._get_current_parent()
         return (parent / path).resolve()
 
-    def push_relative(self, path: Path, relative_mode: ResolveRelativeMode) -> None:
+    def push_new_parent(
+        self, parent_path: Path, relative_mode: ResolveRelativeMode
+    ) -> None:
+        """Push a new parent_path with the given relative_mode to this FilePathResolver.
+
+        Relative paths added to this FilePathResolver will be resolved with respect
+        to the current state, i.e. similar to FilePathResolver.resolve.
+
+        Args:
+            parent_path (Path): The parent path
+            relative_mode (ResolveRelativeMode): The relative mode used to resolve.
+        """
         if relative_mode == ResolveRelativeMode.ToAnchor:
-            self._anchors.append(path)
+            self._anchors.append(parent_path)
 
-        self._relatives.append((self.resolve(path), relative_mode))
+        self._parents.append((self.resolve(parent_path), relative_mode))
 
-    def pop_relative(self) -> None:
-        if not self._relatives:
+    def pop_last_parent(self) -> None:
+        """Pop the last added parent from this FilePathResolver
+
+        If there are currently no parents defined, nothing will happen.
+        """
+        if not self._parents:
             return
 
-        _, relative_mode = self._relatives.pop()
+        _, relative_mode = self._parents.pop()
 
         if relative_mode == ResolveRelativeMode.ToAnchor:
             self._anchors.pop()
 
 
 class FileModelCache:
+    """
+    FileModelCache provides a simple structure to register and retrieve FileModel
+    objects.
+    """
+
     def __init__(self):
+        """Creates a new empty FileModelCache."""
         self._cache_dict: Dict[Path, "FileModel"] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
+        """Retrieve the model associated with the (absolute) path if
+        it has been registered before, otherwise return None.
+
+        Returns:
+            [Optional[FileModel]]:
+                The FileModel associated with the Path if it has been registered
+                before, otherwise None.
+        """
         return self._cache_dict.get(path, None)
 
     def register_model(self, path: Path, model: "FileModel") -> None:
+        """Register the model with the specified path in this FileModelCache.
+
+        Args:
+            path (Path): The path to associate the model with.
+            model (FileModel): The model to be associated with the path.
+        """
         self._cache_dict[path] = model
 
 
 class FileLoadContext:
+    """FileLoadContext provides the context necessary to resolve paths
+    during the init of a FileModel, as well as ensure the relevant models
+    are only read once.
+    """
+
     def __init__(self) -> None:
+        """Creates a new empty FileLoadContext."""
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
 
     def retrieve_model(self, path: Optional[Path]) -> Optional["FileModel"]:
+        """Retrieve the model associated with the path.
+
+        If no model has been associated with the provided path, or the path is None,
+        then None will be returned. Relative paths will be resolved based on the
+        current state of the FileLoadContext.
+
+        Returns:
+            [Optional[FileModel]]:
+                The file model associated with the provided path if it has been
+                registered, else None.
+        """
         if path is None:
             return None
 
@@ -178,21 +260,58 @@ class FileLoadContext:
         return self._cache.retrieve_model(absolute_path)
 
     def register_model(self, path: Path, model: "FileModel") -> None:
+        """Associate the provided model with the provided path.
+
+        Relative paths will be resolved based on the current state of the
+        FileLoadContext.
+
+        Args:
+            path (Path): The relative path from which the model was loaded.
+            model (FileModel): The loaded model.
+        """
         absolute_path = self._path_resolver.resolve(path)
         self._cache.register_model(absolute_path, model)
 
     def resolve(self, path: Path) -> Path:
+        """Resolve the provided path.
+
+        If path is already absolute, it will be returned as is. Otherwise
+        it will be resolved based on the current state of this FileLoadContext.
+
+        Args:
+            path (Path): The path to be resolved.
+
+        Returns:
+            Path: An absolute path resolved based on the current state.
+        """
         return self._path_resolver.resolve(path)
 
-    def push_relative(self, path: Path, relative_mode: ResolveRelativeMode) -> None:
-        self._path_resolver.push_relative(path, relative_mode)
+    def push_new_parent(
+        self, parent_path: Path, relative_mode: ResolveRelativeMode
+    ) -> None:
+        """Push a new parent_path with the given relative_mode on this
+        FileLoadContext.
 
-    def pop_relative(self) -> None:
-        self._path_resolver.pop_relative()
+        Args:
+            parent_path (Path): The parent path to be added to this FileLoadContext.
+            relative_mode (ResolveRelativeMode): The relative mode.
+        """
+        self._path_resolver.push_new_parent(parent_path, relative_mode)
+
+    def pop_last_parent(self) -> None:
+        """Pop the last added parent off this FileLoadContext."""
+        self._path_resolver.pop_last_parent()
 
 
 @contextmanager
 def file_load_context():
+    """Provides a FileLoadingContext. If none has been created in the context of
+    this call stack yet, a new one will be created, which will be maintained
+    until it goes out of scope.
+
+    Yields:
+        [FileLoadContext]: The file load context.
+    """
     file_loading_context = context_file_loading.get(None)
     context_reset_token = None
 
@@ -228,7 +347,7 @@ class FileModel(BaseModel, ABC):
         If the file at the provided file path was already parsed, this instance is returned.
 
         Args:
-            filepath (Optional[Path], optional): The absolute file path to the file. Defaults to None.
+            filepath (Optional[Path], optional): The file path to the file. Defaults to None.
 
         Returns:
             FileModel: A file model.
@@ -240,11 +359,12 @@ class FileModel(BaseModel, ABC):
                 return super().__new__(cls)
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
-        """Initialize a model.
+        """Creates a new FileModel from the given filepath.
 
-        The model is empty (with defaults) if no `filepath` is given,
-        otherwise the file at `filepath` will be parsed."""
-        # Parse the file if path is given
+        If no filepath is provided, the model is initialized as an empty
+        model with default values.
+        If the filepath is provided, it is read from disk.
+        """
         if not filepath:
             super().__init__(*args, **kwargs)
             return
@@ -254,7 +374,7 @@ class FileModel(BaseModel, ABC):
 
             loading_path = context.resolve(filepath)
 
-            context.push_relative(filepath.parent, self._relative_mode)
+            context.push_new_parent(filepath.parent, self._relative_mode)
             logger.info(f"Loading data from {filepath}")
 
             data = self._load(loading_path)
@@ -262,7 +382,7 @@ class FileModel(BaseModel, ABC):
             kwargs.update(data)
 
             super().__init__(*args, **kwargs)
-            context.pop_relative()
+            context.pop_last_parent()
 
     def is_file_link(self) -> bool:
         return True
