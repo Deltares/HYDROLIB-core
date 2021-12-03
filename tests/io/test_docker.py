@@ -1,5 +1,5 @@
-import pytest
 from devtools import debug
+import pytest
 
 from hydrolib.core.io.dimr.models import DIMR, FMComponent
 from hydrolib.core.io.mdu.models import FMModel
@@ -50,14 +50,14 @@ def test_existing_model_saved_docker():
     test_file = (
         test_input_dir
         / "e02"
-        / "c11_korte-woerden-1d"
-        / "dimr_model"
+        / "f101_1D-boundaries"
+        / "c01_steady-state-flow"
         / "dimr_config.xml"
     )
 
     dimr = DIMR(filepath=test_file)
     dimr.save(folder=test_output_dir / "docker")
-    assert (test_output_dir / "docker" / "FlowFM_net.nc").is_file()
-    assert (test_output_dir / "docker" / "FlowFM.mdu").is_file()
-    assert (test_output_dir / "docker" / "structures.ini").is_file()
+    assert (test_output_dir / "docker" / "Boundary_net.nc").is_file()
+    assert (test_output_dir / "docker" / "Boundary.mdu").is_file()
+    assert (test_output_dir / "docker" / "observcrs.ini").is_file()
     assert (test_output_dir / "docker" / "dimr_config.xml").is_file()
