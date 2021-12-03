@@ -571,6 +571,18 @@ class ZWCrsDef(CrossSectionDefinition):
         delimiter=" ",
     )
 
+    _check_list_length = make_list_length_root_validator(
+        "levels",
+        "flowwidths",
+        "totalwidths",
+        length_name="numlevels",
+        id_name="id",
+    )
+
+    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
+        "frictionid", "frictiontype", "frictionvalue"
+    )
+
 
 class YZCrsDef(CrossSectionDefinition):
     class Comments(CrossSectionDefinition.Comments):
@@ -629,7 +641,7 @@ class YZCrsDef(CrossSectionDefinition):
     zcoordinates: List[float] = Field(alias="zCoordinates")
     conveyance: Optional[str] = Field("segmented")
     sectioncount: Optional[int] = Field(1, alias="sectionCount")
-    frictionpositions: List[float] = Field(alias="frictionPositions")
+    frictionpositions: Optional[List[float]] = Field(alias="frictionPositions")
     frictionids: Optional[List[str]] = Field(alias="frictionIds")
     frictiontypes: Optional[List[str]] = Field(alias="frictionTypes")
     frictionvalues: Optional[List[float]] = Field(alias="frictionValues")
@@ -645,6 +657,31 @@ class YZCrsDef(CrossSectionDefinition):
         "frictionids",
         "frictiontypes",
         delimiter=";",
+    )
+
+    _check_yzlist_length = make_list_length_root_validator(
+        "ycoordinates",
+        "zcoordinates",
+        length_name="yzcount",
+        id_name="id",
+    )
+
+    _check_frictlist_length = make_list_length_root_validator(
+        "frictionids",
+        "frictiontypes",
+        "frictionvalues",
+        length_name="sectioncount",
+        id_name="id",
+    )
+    _check_frictlist_length1 = make_list_length_root_validator(
+        "frictionpositions",
+        length_name="sectioncount",
+        length_incr=1,  # 1 extra for frictionpositions
+        id_name="id",
+    )
+
+    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
+        "frictionids", "frictiontypes", "frictionvalues"
     )
 
 
@@ -716,6 +753,19 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
                 f"xyz cross section definition should not contain field yzCount (rather: xyzCount), current value: {yzcount_value}."
             )
         return field_value
+
+    _check_yzlist_length = make_list_length_root_validator(
+        "ycoordinates",
+        "zcoordinates",
+        length_name="xyzcount",
+        id_name="id",
+    )
+
+    _check_xlist_length = make_list_length_root_validator(
+        "xcoordinates",
+        length_name="xyzcount",
+        id_name="id",
+    )
 
 
 class CrossSection(INIBasedModel):

@@ -22,7 +22,7 @@ from ..utils import WrapperTest, test_data_dir
 
 
 def test_crossdef_model():
-    filepath = test_data_dir / "input/TMP_dflowfm_individual_files/crsdef1.ini"
+    filepath = test_data_dir / "input/dflowfm_individual_files/crsdef1.ini"
     m = CrossDefModel(filepath)
     assert len(m.definition) == 4
 
@@ -141,5 +141,127 @@ def test_create_a_zwrivercrsdef_without_frictionspec():
     expected_message = (
         f'Cross section with id "{csdefid}" is missing any friction specification.'
     )
+
+    assert expected_message in str(error.value)
+
+
+def test_create_a_yzcrsdef_from_scratch():
+    cd = YZCrsDef(
+        id="Prof1",
+        yzcount=4,
+        ycoordinates=[-10, -2, 3, 12],
+        zcoordinates=[1, -4, -4.1, 2],
+        frictiontypes=["Manning"],
+        frictionvalues=[0.03],
+    )
+    assert cd.id == "Prof1"
+    assert cd.type == "yz"
+    assert cd.yzcount == 4
+    assert cd.ycoordinates == [-10, -2, 3, 12]
+    assert cd.zcoordinates == [1, -4, -4.1, 2]
+    assert cd.frictiontypes == ["Manning"]
+    assert cd.frictionvalues == [0.03]
+
+
+def test_create_a_yzcrsdef_with_wrong_list_length_yz():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = YZCrsDef(
+            id=csdefid,
+            yzcount=4,
+            ycoordinates=[-10, -2, 3, 12],
+            zcoordinates=[1, -4, -4.1],  # Intentional wrong list length
+            frictiontypes=["Manning"],
+            frictionvalues=[0.03],
+        )
+    expected_message = f"Number of values for zcoordinates should be equal to the yzcount value (id={csdefid})."
+
+    assert expected_message in str(error.value)
+
+
+def test_create_a_yzcrsdef_with_wrong_list_length_frict():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = YZCrsDef(
+            id=csdefid,
+            yzcount=4,
+            ycoordinates=[-10, -2, 3, 12],
+            zcoordinates=[1, -4, -4.1, 2],
+            sectioncount=2,
+            frictiontypes=["Manning", "Manning"],
+            frictionvalues=[0.03],  # Intentional wrong list length
+        )
+    expected_message = f"Number of values for frictionvalues should be equal to the sectioncount value (id={csdefid})."
+
+    assert expected_message in str(error.value)
+
+
+def test_create_a_yzcrsdef_without_frictionspec():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = YZCrsDef(
+            id=csdefid,
+            yzcount=4,
+            ycoordinates=[-10, -2, 3, 12],
+            zcoordinates=[1, -4, -4.1, 2],
+        )
+    expected_message = (
+        f'Cross section with id "{csdefid}" is missing any friction specification.'
+    )
+
+    assert expected_message in str(error.value)
+
+
+def test_create_a_xyzcrsdef_from_scratch():
+    cd = XYZCrsDef(
+        id="Prof1",
+        xyzcount=4,
+        xcoordinates=[10, 20, 30, 40],
+        ycoordinates=[-10, -2, 3, 12],
+        zcoordinates=[1, -4, -4.1, 2],
+        frictiontypes=["Manning"],
+        frictionvalues=[0.03],
+    )
+    assert cd.id == "Prof1"
+    assert cd.type == "xyz"
+    assert cd.yzcount == None
+    assert cd.xyzcount == 4
+    assert cd.xcoordinates == [10, 20, 30, 40]
+    assert cd.ycoordinates == [-10, -2, 3, 12]
+    assert cd.zcoordinates == [1, -4, -4.1, 2]
+    assert cd.frictiontypes == ["Manning"]
+    assert cd.frictionvalues == [0.03]
+
+
+def test_create_a_xyzcrsdef_with_wrong_list_length_yz():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = XYZCrsDef(
+            id=csdefid,
+            xyzcount=4,
+            xcoordinates=[10, 20, 30, 40],
+            ycoordinates=[-10, -2, 3, 12],
+            zcoordinates=[1, -4, -4.1],  # Intentional wrong list length
+            frictiontypes=["Manning"],
+            frictionvalues=[0.03],
+        )
+    expected_message = f"Number of values for zcoordinates should be equal to the xyzcount value (id={csdefid})."
+
+    assert expected_message in str(error.value)
+
+
+def test_create_a_xyzcrsdef_with_wrong_list_length_x():
+    csdefid = "Prof1"
+    with pytest.raises(ValidationError) as error:
+        cd = XYZCrsDef(
+            id=csdefid,
+            xyzcount=4,
+            xcoordinates=[10, 20, 30],  # Intentional wrong list length
+            ycoordinates=[-10, -2, 3, 12],
+            zcoordinates=[1, -4, -4.1, 2],
+            frictiontypes=["Manning"],
+            frictionvalues=[0.03],
+        )
+    expected_message = f"Number of values for xcoordinates should be equal to the xyzcount value (id={csdefid})."
 
     assert expected_message in str(error.value)
