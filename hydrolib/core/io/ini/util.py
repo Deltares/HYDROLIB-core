@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Any, Type
 
-from pydantic.class_validators import validator
+from pydantic.class_validators import validator, root_validator
 from pydantic.main import BaseModel
 
 
@@ -58,23 +58,22 @@ def make_list_validator(*field_name: str):
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
 
-def make_list_length_validator(
-    *field_name, length: int, length_name: str, annotation: str
-):
+def make_list_length_root_validator(*field_names, length_name: str, annotation: str):
     """Get a validator make a list of object if a single object is passed."""
 
-    def has_correct_length(v: Any, length: int, length_name: str, annotation: str):
-        foo = "bar"
-        if isinstance(v, list) and len(v) == length:
-            return v
+    def validate_correct_length(cls, values):
+        length = int(values.get("length_name", "0"))
 
-        raise ValueError(
-            f"Number of values for {field_name} should be equal to the {length_name} value ({annotation})."
-        )
+        for field_name in field_names:
+            field = values.get(field_name) or []
+            if not (isinstance(field, list) and len(field) == length):
 
-    return validator(*field_name, allow_reuse=True, pre=True)(
-        lambda v: has_correct_length(v, length, length_name, annotation)
-    )
+                raise ValueError(
+                    f"Number of values for {field_name} should be equal to the {length_name} value ({annotation})."
+                )
+        return values
+
+    return root_validator(allow_reuse=True)(validate_correct_length)
 
 
 def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
