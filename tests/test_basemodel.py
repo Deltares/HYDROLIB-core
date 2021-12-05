@@ -16,26 +16,35 @@ from hydrolib.core.io.dimr.models import DIMR
 from tests.utils import test_input_dir
 
 
-def test_loading_a_file_twice_returns_different_model_instances() -> None:
-    # If the same source file is read multiple times, we expect that
-    # multiple (deep) copies are returned, and not references to the
-    # same object.
+class TestFileModel:
+    def test_dimr_model_is_a_file_model(self):
+        # For the ease of testing, we use DIMR model, which implements FileModel
+        # If this test fails the other tests are basically useless.
+        assert issubclass(DIMR, FileModel)
 
-    # For the ease of testing, we use DIMR model, which implements FileModel
-    assert issubclass(DIMR, FileModel)
+    def test_loading_a_file_twice_returns_different_model_instances(self) -> None:
+        # If the same source file is read multiple times, we expect that
+        # multiple (deep) copies are returned, and not references to the
+        # same object.
 
-    test_file = (
-        test_input_dir
-        / "e02"
-        / "c11_korte-woerden-1d"
-        / "dimr_model"
-        / "dimr_config.xml"
-    )
+        test_file = (
+            test_input_dir
+            / "e02"
+            / "c11_korte-woerden-1d"
+            / "dimr_model"
+            / "dimr_config.xml"
+        )
 
-    model_a = DIMR(test_file)
-    model_b = DIMR(test_file)
+        model_a = DIMR(test_file)
+        model_b = DIMR(test_file)
 
-    assert model_a is not model_b
+        assert model_a is not model_b
+
+    # TODO - Tests
+    # - Save / Load
+    # - Absolute / Relative
+    # - With / without anchors
+    # - Relative paths stay relative
 
 
 class TestContextManagerFileLoadContext:
