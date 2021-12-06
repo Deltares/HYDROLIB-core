@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.io.mdu.models import Output
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.utils import get_list_index_safely, str_is_empty_or_none
 
 
 class TestSplitString:
@@ -35,3 +35,24 @@ class TestStrIsEmptyOrNone:
 
     def test_given_valid_args_returns_true(self):
         assert str_is_empty_or_none("aValue") is False
+
+
+class TestGetListIndexSafely:
+    @pytest.mark.parametrize(
+        "list, item, start, end, exp_index",
+        [
+            pytest.param([0, 1, 2], 0, 0, 2, 0),
+            pytest.param([0, 1, 2], 1, 0, 2, 1),
+            pytest.param([0, 1, 2], 2, 0, 2, 2),
+            pytest.param([0, 1, 2], 3, 0, 2, -1),
+            pytest.param([0, 1, 2], 0, 0, 1, 0),
+            pytest.param([0, 1, 2], 1, 0, 1, 1),
+            pytest.param([0, 1, 2], 2, 0, 1, -1),
+        ],
+    )
+    def test_get_item_index_expected_result(
+        self, list: list, item, start: int, end: int, exp_index: int
+    ):
+        result = get_list_index_safely(list, item, start, end)
+
+        assert result == exp_index

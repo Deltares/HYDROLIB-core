@@ -1,5 +1,5 @@
-from types import new_class
-from typing import Any, Callable, Generator, Generic, List, TypeVar, cast
+from typing import Any, List
+from warnings import warn
 
 
 def example(a: float, b: float = 1.0) -> float:
@@ -45,3 +45,24 @@ def str_is_empty_or_none(str_field: str) -> bool:
         bool: Evaluation result.
     """
     return str_field is None or not str_field or str_field.isspace()
+
+
+def get_list_index_safely(list: list, item, start: int, end: int) -> int:
+    """Gets the index of `item` in `list` safely.
+
+    Args:
+        list (list): The list in which to search.
+        item ([type]): he item to search.
+        start (int): The included index to start searching.
+        end (int): The included index to end searching.
+
+    Returns:
+        int: The index of `item` if found; otherwise, -1.
+    """
+
+    try:
+        return list.index(item, start, end + 1)
+
+    except ValueError:
+        warn(f"Could not find {item} between indices {start} and {end}.")
+        return -1
