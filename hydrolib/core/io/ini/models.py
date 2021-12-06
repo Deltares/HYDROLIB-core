@@ -252,6 +252,9 @@ class CrossSectionDefinition(INIBasedModel):
     type: str = Field(alias="type")
     thalweg: Optional[float]
 
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data["id"]
+
     @classmethod
     def _duplicate_keys_as_list(cls):
         return True
@@ -676,8 +679,8 @@ class YZCrsDef(CrossSectionDefinition):
     _check_frictlist_length1 = make_list_length_root_validator(
         "frictionpositions",
         length_name="sectioncount",
-        length_incr=1,  # 1 extra for frictionpositions
         id_name="id",
+        length_incr=1,  # 1 extra for frictionpositions
     )
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(

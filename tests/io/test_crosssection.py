@@ -188,12 +188,15 @@ def test_create_a_yzcrsdef_with_wrong_list_length_frict():
             ycoordinates=[-10, -2, 3, 12],
             zcoordinates=[1, -4, -4.1, 2],
             sectioncount=2,
+            frictionpositions=[1, 2],  # Intentional wrong list length
             frictiontypes=["Manning", "Manning"],
             frictionvalues=[0.03],  # Intentional wrong list length
         )
-    expected_message = f"Number of values for frictionvalues should be equal to the sectioncount value (id={csdefid})."
+    expected_message0 = f"Number of values for frictionvalues should be equal to the sectioncount value (id={csdefid})."
+    expected_message1 = f"Number of values for frictionpositions should be equal to the sectioncount value + 1 (id={csdefid})."
 
-    assert expected_message in str(error.value)
+    assert expected_message0 in str(error.value)
+    assert expected_message1 in str(error.value)
 
 
 def test_create_a_yzcrsdef_without_frictionspec():
