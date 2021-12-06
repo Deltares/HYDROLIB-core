@@ -34,7 +34,9 @@ def assert_files_equal(file: str, reference_file: str, skip_lines: list = []):
     with reference_file.open() as rf:
         reference_lines = rf.readlines()
 
-    assert len(actual_lines) == len(reference_lines), f"<{len(actual_lines)}> not equal to <{len(reference_lines)}>"
+    assert len(actual_lines) == len(
+        reference_lines
+    ), f"<{len(actual_lines)}> not equal to <{len(reference_lines)}>"
 
     for i in range(len(reference_lines)):
         if i in skip_lines:
