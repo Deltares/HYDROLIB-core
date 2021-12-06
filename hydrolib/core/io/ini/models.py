@@ -324,12 +324,12 @@ class CrossSectionDefinition(INIBasedModel):
             if frictionid == "":
                 if frictiontype == "" or frictionvalue == "":
                     raise ValueError(
-                        f"Cross section with id \"{values.get('id', '')}\" is missing any friction specification."
+                        f"Cross section is missing any friction specification."
                     )
             else:
                 if frictiontype != "" or frictionvalue != "":
                     raise ValueError(
-                        f"Cross section with id \"{values.get('id', '')}\" has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
+                        f"Cross section has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
                     )
 
             return values
@@ -518,7 +518,6 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         "flowwidths",
         "totalwidths",
         length_name="numlevels",
-        id_name="id",
     )
 
 
@@ -579,7 +578,6 @@ class ZWCrsDef(CrossSectionDefinition):
         "flowwidths",
         "totalwidths",
         length_name="numlevels",
-        id_name="id",
     )
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
@@ -666,7 +664,6 @@ class YZCrsDef(CrossSectionDefinition):
         "ycoordinates",
         "zcoordinates",
         length_name="yzcount",
-        id_name="id",
     )
 
     _check_frictlist_length = make_list_length_root_validator(
@@ -674,12 +671,10 @@ class YZCrsDef(CrossSectionDefinition):
         "frictiontypes",
         "frictionvalues",
         length_name="sectioncount",
-        id_name="id",
     )
     _check_frictlist_length1 = make_list_length_root_validator(
         "frictionpositions",
         length_name="sectioncount",
-        id_name="id",
         length_incr=1,  # 1 extra for frictionpositions
     )
 
@@ -761,13 +756,11 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         "ycoordinates",
         "zcoordinates",
         length_name="xyzcount",
-        id_name="id",
     )
 
     _check_xlist_length = make_list_length_root_validator(
         "xcoordinates",
         length_name="xyzcount",
-        id_name="id",
     )
 
 

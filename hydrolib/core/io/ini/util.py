@@ -59,7 +59,7 @@ def make_list_validator(*field_name: str):
 
 
 def make_list_length_root_validator(
-    *field_names, length_name: str, id_name: str, length_incr: int = 0
+    *field_names, length_name: str, length_incr: int = 0
 ):
     """
     Get a root_validator that checks the correct length of several list fields in an object.
@@ -68,7 +68,6 @@ def make_list_length_root_validator(
         *field_names (str): names of the instance variables that are a list and need checking.
         length_name (str): name of the instance variable that stores the expected length.
         length_incr (int): Optional extra increment of length value (e.g., to have +1 extra value in lists).
-        id_name (str): name of the ``id`` instance variable that will be printed in an error message string.
     """
 
     def validate_correct_length(cls, values):
@@ -86,7 +85,7 @@ def make_list_length_root_validator(
                 isinstance(field, list) and len(field) == length
             ):
                 raise ValueError(
-                    f"Number of values for {field_name} should be equal to the {length_name} value{incrstring} ({id_name}={values[id_name]})."
+                    f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}."
                 )
         return values
 
