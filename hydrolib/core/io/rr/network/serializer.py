@@ -21,7 +21,7 @@ class NodeFileSerializer:
 
     @staticmethod
     def _to_line(node: dict) -> str:
-        id = node["id"]
+        identifier = node["id"]
         nm = node["nm"]
         ri = node["ri"]
         mt = node["mt"]
@@ -30,4 +30,4 @@ class NodeFileSerializer:
         px = node["px"]
         py = node["py"]
 
-        return f"id '{id}' nm '{nm}' ri '{ri}' mt 1 '{mt}' nt {nt} ObID '{obid}' px {px} py {py}"
+        return f"id '{identifier}' nm '{nm}' ri '{ri}' mt 1 '{mt}' nt {nt} ObID '{obid}' px {px} py {py}"
