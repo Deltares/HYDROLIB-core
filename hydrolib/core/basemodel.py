@@ -10,17 +10,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-)
+from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
 from warnings import warn
 from weakref import WeakValueDictionary
 
