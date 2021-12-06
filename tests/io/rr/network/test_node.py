@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from hydrolib.core.io.rr.network.models import Node, NodeFile
+from tests.utils import test_input_dir
 
 
 class TestNode:
@@ -24,6 +27,23 @@ class TestNodeFile:
         assert len(nodefile.node) == 1
         assert nodefile.node[0].id == "node_id"
 
+    def test_load_from_file(self):
+
+        path = Path(test_input_dir / "rr_network" / "3B_NOD.TP")
+
+        nodefile = NodeFile(filepath=path)
+
+        assert len(nodefile.node) == 640
+
+        node = nodefile.node[7]
+        assert node.id == "unp_AFW_BOM200-P_1386"
+        assert node.name == "unp_AFW_BOM200-P_1386"
+        assert node.branchid == -1
+        assert node.modelnodetype == 2
+        assert node.netternodetype == 44
+        assert node.objectid == "3B_UNPAVED"
+        assert node.xposition == 133860
+        assert node.yposition == 422579
 
 def create_node_values() -> dict:
     return dict(

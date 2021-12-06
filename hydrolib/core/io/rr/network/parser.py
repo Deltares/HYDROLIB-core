@@ -63,7 +63,7 @@ class NodeFileParser:
                     index += 1
 
                 index += 1
-                value = parts[index]
+                value = parts[index].strip("'")
                 index += 1
 
                 node[key] = value
