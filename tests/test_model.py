@@ -197,8 +197,23 @@ def test_mdu_model():
     model.save()
 
     assert model.filepath.is_file()
-    assert model.geometry.frictfile[0].filepath.is_file()
-    assert model.geometry.structurefile[0].filepath.is_file()
+
+    # The frictfile[0] and structurefile[0] contains a relative path by default, so it
+    # needs to be made relative to the parent model path.
+    assert model.geometry.frictfile is not None
+    assert model.geometry.frictfile[0] is not None
+    assert model.geometry.frictfile[0].filepath is not None
+
+    parent_dir = model.filepath.parent
+    frictfile_path = parent_dir / model.geometry.frictfile[0].filepath
+    assert frictfile_path.is_file()
+
+    assert model.geometry.structurefile is not None
+    assert model.geometry.structurefile[0] is not None
+    assert model.geometry.structurefile[0].filepath is not None
+
+    structurefile_path = parent_dir / model.geometry.structurefile[0].filepath
+    assert structurefile_path.is_file()
 
 
 def test_model_with_duplicate_file_references_use_same_instances():

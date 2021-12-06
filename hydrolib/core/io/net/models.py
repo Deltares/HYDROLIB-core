@@ -11,7 +11,11 @@ from meshkernel.py_structures import GeometryList
 from pydantic import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel, file_load_context
+from hydrolib.core.basemodel import (
+    BaseModel,
+    FileModel,
+    file_load_context,
+)
 from hydrolib.core.io.net.reader import UgridReader
 from hydrolib.core.io.net.writer import UgridWriter
 
@@ -967,7 +971,7 @@ class NetworkModel(FileModel):
 
     def _post_init_load(self) -> None:
         """
-        Load the network file if the filepath exists relative to the 
+        Load the network file if the filepath exists relative to the
         current FileLoadContext.
         """
         super()._post_init_load()
@@ -1001,7 +1005,14 @@ class NetworkModel(FileModel):
     def _filename(cls) -> str:
         return "network"
 
-    def _save(self, folder: Path):
+    def _save(self):
+        with file_load_context() as context:
+            write_path = context.resolve(self.filepath)  # type: ignore[arg-type]
+
+            write_path.parent.mkdir(parents=True, exist_ok=True)
+            self.network.to_file(write_path)
+
+    def _export(self, folder: Path) -> None:
         filename = Path(self.filepath.name) if self.filepath else self._generate_name()
         self.filepath = folder / filename
         folder.mkdir(parents=True, exist_ok=True)
