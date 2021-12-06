@@ -387,6 +387,13 @@ class FileModel(BaseModel, ABC):
             context.pop_last_parent()
 
     def _post_init_load(self) -> None:
+        """
+        _post_init_load provides a hook into the __init__ of the FileModel which can be
+        used in subclasses for logic that requires the FileModel FileLoadContext.
+
+        It is guaranteed to be called after the pydantic model is, with the FileLoadContext
+        relative to this FileModel being loaded.
+        """
         pass
 
     def is_file_link(self) -> bool:

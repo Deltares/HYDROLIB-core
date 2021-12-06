@@ -266,6 +266,11 @@ class DIMR(FileModel):
         return self._to_serializable_dict(self)
 
     def _post_init_load(self) -> None:
+        """
+        Load the component models of this DIMR model.
+        """
+        super()._post_init_load()
+
         for comp in self.component:
             try:
                 comp.model = comp.get_model()(filepath=comp.filepath)

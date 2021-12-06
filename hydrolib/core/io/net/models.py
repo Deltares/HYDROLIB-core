@@ -966,6 +966,12 @@ class NetworkModel(FileModel):
     network: Network = Field(default_factory=Network)
 
     def _post_init_load(self) -> None:
+        """
+        Load the network file if the filepath exists relative to the 
+        current FileLoadContext.
+        """
+        super()._post_init_load()
+
         if self.filepath is None:
             return
 
