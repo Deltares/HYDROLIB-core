@@ -45,6 +45,7 @@ class TestNodeFile:
         assert node.xposition == 133860
         assert node.yposition == 422579
 
+
 def create_node_values() -> dict:
     return dict(
         id="node_id",
