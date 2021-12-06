@@ -151,7 +151,7 @@ class FrictBranch(INIBasedModel):
             if (
                 "numlevels" not in values
                 or values["numlevels"] is None
-                or values["numlevels"] is 0
+                or values["numlevels"] == 0
             )
             else values["numlevels"]
         )
