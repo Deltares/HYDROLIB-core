@@ -226,7 +226,6 @@ class ResolveRelativeMode(IntEnum):
     ToAnchor = 1
 
 
-# TODO: This should probably be moved to a separate file
 class FilePathResolver:
     """FilePathResolver is responsible for resolving relative paths.
 
@@ -601,7 +600,7 @@ class FileModel(BaseModel, ABC):
         save_traverser.traverse(self, context)
 
     def _save(self) -> None:
-        """Save the data of this FileModel
+        """Save the data of this FileModel.
 
         _save provides a hook for child models to overwrite the save behaviour as
         called during the tree traversal.
@@ -609,7 +608,13 @@ class FileModel(BaseModel, ABC):
         self._serialize(self.dict())
 
     def _serialize(self, data: dict) -> None:
-        self._get_serializer()(self._resolved_filepath, data)
+        path = self._resolved_filepath
+        if path is None:
+            # TODO: Do we need to add a warning / exception here
+            return
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self._get_serializer()(path, data)
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
