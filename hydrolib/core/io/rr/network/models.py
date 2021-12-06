@@ -22,6 +22,10 @@ class Node(BaseModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data["id"] if "id" in data else data.get("nm")
 
+    def dict(self, *args, **kwargs):
+        kwargs["by_alias"] = True
+        return super().dict(*args, **kwargs)
+
 
 class NodeFile(FileModel):
     node: List[Node] = []
