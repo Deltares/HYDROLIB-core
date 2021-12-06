@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.io.rr.network.parser import NodeFileParser
-from tests.utils import test_input_dir
+from tests.utils import test_input_dir, test_output_dir
 
 
 class TestNodeFileParser:
@@ -37,3 +37,26 @@ class TestNodeFileParser:
         assert node["ObID"] == "'3B_UNPAVED'"
         assert node["px"] == "133860"
         assert node["py"] == "422579"
+
+    @pytest.mark.parametrize(
+        "input_file",
+        ["3B_NOD_format1.TP", "3B_NOD_format2.TP", "3B_NOD_format3.TP"],
+    )
+    def test_parse_parses_file_correctly(self, input_file: str):
+
+        path = Path(test_input_dir / "rr_network" / input_file)
+
+        result = NodeFileParser.parse(path)
+
+        assert len(result) == 1
+        assert len(result["node"]) == 3
+
+        node = result["node"][1]
+        assert node["id"] == "'unp_AFW_BOM200-P_1606'"
+        assert node["nm"] == "'unp_AFW_BOM200-P_1606'"
+        assert node["ri"] == "'-1'"
+        assert node["mt"] == "'2'"
+        assert node["nt"] == "44"
+        assert node["ObID"] == "'3B_UNPAVED'"
+        assert node["px"] == "136207"
+        assert node["py"] == "423934"

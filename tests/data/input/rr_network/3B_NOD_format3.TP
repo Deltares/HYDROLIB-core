@@ -1,0 +1,16 @@
+NODE id 'unp_AFW_BOM208-P_2275_1' nm 'unp_AFW_BOM208-P_2275_1' ri
+ '-1' mt 1 '2' nt 44 ObID '3B_UNPAVED' px 133818 py 425334 
+ 
+node NODE 
+id 'unp_AFW_BOM200-P_1606' 
+nm 'unp_AFW_BOM200-P_1606' 
+ri '-1' 
+mt 1 '2' 
+nt 44 
+ObID '3B_UNPAVED' 
+px 136207 
+py 423934 node NODE id 'unp_AFW_BOM205-P_806' nm 'unp_AFW_BOM205-P_806' ri '-1' mt 1 '2' nt 44 ObID '3B_UNPAVED' px 136225 py 424299 
+
+
+
+node
