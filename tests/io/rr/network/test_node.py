@@ -6,13 +6,13 @@ class TestNode:
         node = Node(**create_node_values())
 
         assert node.id == "node_id"
-        assert node.nm == "node_name"
-        assert node.ri == 1
-        assert node.mt == 2
-        assert node.nt == 3
-        assert node.obid == "node_obid"
-        assert node.px == 1.23
-        assert node.py == 2.34
+        assert node.name == "node_name"
+        assert node.branchid == 1
+        assert node.modelnodetype == 2
+        assert node.netternodetype == 3
+        assert node.objectid == "node_obid"
+        assert node.xposition == 1.23
+        assert node.yposition == 2.34
 
 
 class TestNodeFile:

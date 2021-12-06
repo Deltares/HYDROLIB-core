@@ -10,13 +10,13 @@ class Node(BaseModel):
     """Represents a node from the topology node file."""
 
     id: str = Field(alias="id")
-    nm: str = Field(alias="nm")
-    ri: int = Field(alias="ri")
-    mt: int = Field(alias="mt")
-    nt: int = Field(alias="nt")
-    obid: str = Field(alias="ObId")
-    px: float = Field(alias="px")
-    py: float = Field(alias="py")
+    name: str = Field(alias="nm")
+    branchid: int = Field(alias="ri")
+    modelnodetype: int = Field(alias="mt")
+    netternodetype: int = Field(alias="nt")
+    objectid: str = Field(alias="ObId")
+    xposition: float = Field(alias="px")
+    yposition: float = Field(alias="py")
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data["id"] if "id" in data else data.get("nm")
