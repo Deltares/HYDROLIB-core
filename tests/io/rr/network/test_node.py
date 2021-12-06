@@ -32,7 +32,7 @@ def create_node_values() -> dict:
         ri=1,
         mt=2,
         nt=3,
-        ObId="node_obid",
+        ObID="node_obid",
         px=1.23,
         py=2.34,
     )

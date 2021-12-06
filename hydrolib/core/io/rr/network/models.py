@@ -15,7 +15,7 @@ class Node(BaseModel):
     branchid: int = Field(alias="ri")
     modelnodetype: int = Field(alias="mt")
     netternodetype: int = Field(alias="nt")
-    objectid: str = Field(alias="ObId")
+    objectid: str = Field(alias="ObID")
     xposition: float = Field(alias="px")
     yposition: float = Field(alias="py")
 
