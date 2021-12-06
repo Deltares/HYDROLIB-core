@@ -16,10 +16,6 @@ This mostly happens in `validate`, a Pydantic override, to make
 sure that if we initialize with a single unnamed argument (Pydantic only accepts keyword arguments)
 we try to parse it as a filepath.
 
-### DIMR `__init__` override
-We override the `__init__` method of DIMR to parse any underlying FileModels.
-These are not loaded automatically because they're deeply nested in `components`.
-
 ### NetworkModel __init__ override
 We override the `__init__` method of the NetworkModel
 because we initalize an underlying Network (based on Meshkernel) with the given filepath.
