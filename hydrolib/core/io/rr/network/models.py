@@ -3,8 +3,8 @@ from typing import Callable, List, Optional
 from pydantic.fields import Field
 
 from hydrolib.core.basemodel import BaseModel, FileModel
-from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.io.rr.network.parser import NodeFileParser
+from hydrolib.core.io.rr.network.serializer import NodeFileSerializer
 
 
 class Node(BaseModel):
@@ -40,7 +40,7 @@ class NodeFile(FileModel):
 
     @classmethod
     def _get_serializer(cls) -> Callable:
-        return DummySerializer.serialize
+        return NodeFileSerializer.serialize
 
     @classmethod
     def _get_parser(cls) -> Callable:

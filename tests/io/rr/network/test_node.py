@@ -1,7 +1,12 @@
 from pathlib import Path
 
 from hydrolib.core.io.rr.network.models import Node, NodeFile
-from tests.utils import test_input_dir
+from tests.utils import (
+    assert_files_equal,
+    test_input_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 class TestNode:
@@ -44,6 +49,19 @@ class TestNodeFile:
         assert node.objectid == "3B_UNPAVED"
         assert node.xposition == 133860
         assert node.yposition == 422579
+
+    def test_save(self):
+
+        output_file = Path(test_output_dir / "rr" / "serialize.tp")
+        reference_file = Path(test_reference_dir / "rr" / "serialize.tp")
+
+        node = Node(**create_node_values())
+        nodefile = NodeFile(node=[node, node, node])
+        nodefile.filepath = output_file
+
+        nodefile.save()
+
+        assert_files_equal(output_file, reference_file)
 
     def test_to_dict(self):
         data = create_node_values()
