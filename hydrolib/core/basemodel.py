@@ -382,7 +382,12 @@ class FileModel(BaseModel, ABC):
             kwargs.update(data)
 
             super().__init__(*args, **kwargs)
+            self._post_init_load()
+
             context.pop_last_parent()
+
+    def _post_init_load(self) -> None:
+        pass
 
     def is_file_link(self) -> bool:
         return True

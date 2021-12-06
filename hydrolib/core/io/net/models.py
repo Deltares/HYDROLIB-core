@@ -11,7 +11,7 @@ from meshkernel.py_structures import GeometryList
 from pydantic import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, FileModel, file_load_context
 from hydrolib.core.io.net.reader import UgridReader
 from hydrolib.core.io.net.writer import UgridWriter
 
@@ -965,11 +965,15 @@ class NetworkModel(FileModel):
 
     network: Network = Field(default_factory=Network)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def _post_init_load(self) -> None:
+        if self.filepath is None:
+            return
 
-        if self.filepath and self.filepath.is_file():
-            self.network = Network.from_file(self.filepath)
+        with file_load_context() as context:
+            network_path = context.resolve(self.filepath)
+
+            if network_path.is_file():
+                self.network = Network.from_file(network_path)
 
     @property
     def _mesh1d(self):

@@ -265,14 +265,12 @@ class DIMR(FileModel):
         """
         return self._to_serializable_dict(self)
 
-    @validator("component", each_item=True)
-    def load_component_models(cls, v):
-        try:
-            v.model = v.get_model()(filepath=v.filepath)
-        except NotImplementedError:
-            pass
-
-        return v
+    def _post_init_load(self) -> None:
+        for comp in self.component:
+            try:
+                comp.model = comp.get_model()(filepath=comp.filepath)
+            except NotImplementedError:
+                pass
 
     @classmethod
     def _ext(cls) -> str:

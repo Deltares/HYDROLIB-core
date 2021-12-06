@@ -1,11 +1,3 @@
-from pathlib import Path
-from typing import List, Optional
-
-import pytest
-from pydantic import ValidationError
-
-from hydrolib.core.io.bc.models import ForcingModel
-from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.mdu.models import FMModel
 
 from ..utils import test_input_dir
@@ -25,7 +17,6 @@ class TestModels:
             / "FlowFM.mdu"
         )
         fm_model = FMModel(input_mdu)
-
         assert fm_model.geometry.netfile is not None
 
         mesh = fm_model.geometry.netfile._mesh1d
