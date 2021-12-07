@@ -1,9 +1,9 @@
+import shutil
 from os import path
 from pathlib import Path
 from typing import Sequence, Tuple
 
 import pytest
-import shutil
 
 from hydrolib.core.basemodel import (
     FileLoadContext,
@@ -17,7 +17,6 @@ from hydrolib.core.basemodel import (
 from hydrolib.core.io.dimr.models import DIMR
 from hydrolib.core.io.mdu.models import FMModel
 from tests.utils import test_input_dir, test_output_dir
-
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
 
