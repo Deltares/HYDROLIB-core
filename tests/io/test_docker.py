@@ -59,5 +59,10 @@ def test_existing_model_saved_docker():
     dimr.save(folder=test_output_dir / "docker")
     assert (test_output_dir / "docker" / "Boundary_net.nc").is_file()
     assert (test_output_dir / "docker" / "Boundary.mdu").is_file()
-    assert (test_output_dir / "docker" / "observcrs.ini").is_file()
+    # assert (test_output_dir / "docker" / "observcrs.ini").is_file() # Only possible once issue #159 is done
+    assert (test_output_dir / "docker" / "Boundary.ext").is_file()
+    assert (test_output_dir / "docker" / "BoundaryConditions.bc").is_file()
+    assert (test_output_dir / "docker" / "CrossSectionLocations.ini").is_file()
+    assert (test_output_dir / "docker" / "CrossSectionDefinitions.ini").is_file()
+    assert (test_output_dir / "docker" / "roughness-Main.ini").is_file()
     assert (test_output_dir / "docker" / "dimr_config.xml").is_file()
