@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field
+from hydrolib.core.basemodel import FileModel, ResolveRelativeMode
 
 from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
@@ -416,3 +417,13 @@ class FMModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "fm"
+
+    @FileModel._relative_mode.getter
+    def _relative_mode(self) -> ResolveRelativeMode:
+        if not hasattr(self, 'general') or self.general is None:
+            return ResolveRelativeMode.ToParent
+
+        if self.general.pathsrelativetoparent:
+            return ResolveRelativeMode.ToParent
+        else:
+            return ResolveRelativeMode.ToAnchor
