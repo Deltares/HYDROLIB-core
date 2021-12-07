@@ -5,7 +5,7 @@ from pydantic.fields import Field
 
 from hydrolib.core.basemodel import BaseModel, FileModel
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.io.rr.network.parser import NodeFileParser
+from hydrolib.core.io.rr.network.parser import NetworkTopologyFileParser
 from hydrolib.core.io.rr.network.serializer import (
     LinkFileSerializer,
     NodeFileSerializer,
@@ -108,7 +108,7 @@ class NodeFile(FileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        return NodeFileParser.parse
+        return NetworkTopologyFileParser.parse
 
 
 class Link(BaseModel):

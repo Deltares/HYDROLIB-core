@@ -4,7 +4,7 @@ from warnings import warn
 from hydrolib.core.utils import get_list_index_safely
 
 
-class NodeFileParser:
+class NetworkTopologyFileParser:
     """A parser for topology node files."""
 
     @staticmethod
