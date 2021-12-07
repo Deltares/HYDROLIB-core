@@ -1,0 +1,905 @@
+[General]
+fileVersion = 2.01
+fileType = extForce
+
+[Boundary]
+	quantity = dischargebnd
+	nodeId = 140703_391887
+	forcingFile = boundaries.bc
+
+[Boundary]
+	quantity = waterlevelbnd
+	nodeId = 141134_395446
+	forcingFile = boundaries.bc
+
+[Lateral]
+	id = lat_1
+	name = lat_1
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_2
+	name = lat_2
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_3
+	name = lat_3
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = nieuw3
+	name = nieuw3
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = nieuw7
+	name = nieuw7
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = nieuw9
+	name = nieuw9
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376.1_2873
+	chainage = 122.566
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_842
+	name = lat_842
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_843
+	name = lat_843
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_844
+	name = lat_844
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_848
+	name = lat_848
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_849
+	name = lat_849
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_850
+	name = lat_850
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_851
+	name = lat_851
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_852
+	name = lat_852
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_860
+	name = lat_860
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 193.21
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_861
+	name = lat_861
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 82.237
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_871
+	name = lat_871
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 99.678
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_872
+	name = lat_872
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 299.912
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_873
+	name = lat_873
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_909
+	chainage = 524.62
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_874
+	name = lat_874
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS371_739
+	chainage = 100.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_875
+	name = lat_875
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS371_739
+	chainage = 300.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_876
+	name = lat_876
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS371_739
+	chainage = 476.559
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_893
+	name = lat_893
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS374-AA_1073
+	chainage = 100.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_894
+	name = lat_894
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS374-AA_1073
+	chainage = 343.12
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_895
+	name = lat_895
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 100.164
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_896
+	name = lat_896
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 300.164
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_897
+	name = lat_897
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 500.164
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_898
+	name = lat_898
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 700.164
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_899
+	name = lat_899
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 900.164
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_900
+	name = lat_900
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 1100.164
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_901
+	name = lat_901
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 1300.164
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_902
+	name = lat_902
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 1500.164
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_903
+	name = lat_903
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1076
+	chainage = 1662.839
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_904
+	name = lat_904
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372_544
+	chainage = 100.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_905
+	name = lat_905
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372_544
+	chainage = 300.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_906
+	name = lat_906
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372_544
+	chainage = 500.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_907
+	name = lat_907
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372_544
+	chainage = 700.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_908
+	name = lat_908
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372_544
+	chainage = 900.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_909
+	name = lat_909
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372_544
+	chainage = 1100.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_910
+	name = lat_910
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372_544
+	chainage = 1311.383
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_928
+	name = lat_928
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS374-AA_1073
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_931
+	name = lat_931
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS372.1_1272
+	chainage = 102.202
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_934
+	name = lat_934
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373_2442
+	chainage = 100.002
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_935
+	name = lat_935
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373_2442
+	chainage = 300.002
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_936
+	name = lat_936
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373_2442
+	chainage = 490.473
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_937
+	name = lat_937
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_943
+	name = lat_943
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_959
+	name = lat_959
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_978
+	name = lat_978
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376_817
+	chainage = 100.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_979
+	name = lat_979
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376_817
+	chainage = 226.296
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_980
+	name = lat_980
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376_817
+	chainage = 326.296
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_981
+	name = lat_981
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376_817
+	chainage = 468.546
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_982
+	name = lat_982
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 100.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_983
+	name = lat_983
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 300.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_984
+	name = lat_984
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 500.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_985
+	name = lat_985
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 700.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_986
+	name = lat_986
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 888.616
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_987
+	name = lat_987
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 102.248
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_988
+	name = lat_988
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 300.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_989
+	name = lat_989
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 500.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_990
+	name = lat_990
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 700.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_991
+	name = lat_991
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 900.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_992
+	name = lat_992
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 1100.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_993
+	name = lat_993
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 1318.409
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_994
+	name = lat_994
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376.1_2873
+	chainage = 100.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_995
+	name = lat_995
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376.1_2873
+	chainage = 258.772
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_996
+	name = lat_996
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_2611
+	chainage = 100.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_997
+	name = lat_997
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_2611
+	chainage = 277.487
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_998
+	name = lat_998
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 0.1
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1005
+	name = lat_1005
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS375_41
+	chainage = 1015.259
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1012
+	name = lat_1012
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1013
+	name = lat_1013
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1020
+	name = lat_1020
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 149.61
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1021
+	name = lat_1021
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1022
+	name = lat_1022
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 49.61
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_1024
+	name = lat_1024
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 331.822
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_1025
+	name = lat_1025
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1031
+	name = lat_1031
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 343.24
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1032
+	name = lat_1032
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_1033
+	name = lat_1033
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1034
+	name = lat_1034
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1078
+	name = lat_1078
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373-AA_2001
+	chainage = 100.0
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_1079
+	name = lat_1079
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373-AA_2001
+	chainage = 300.0
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1080
+	name = lat_1080
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373-AA_2001
+	chainage = 547.47
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1202
+	name = lat_1202
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 1026.752
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1203
+	name = lat_1203
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 1126.752
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1204
+	name = lat_1204
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 1277.312
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_1205
+	name = lat_1205
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_1810
+	chainage = 1510.158
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1206
+	name = lat_1206
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373_2442
+	chainage = 1257.175
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_1207
+	name = lat_1207
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373_2442
+	chainage = 680.943
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1208
+	name = lat_1208
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373_2442
+	chainage = 880.941
+	discharge = boundaries.bc
+
+[Lateral]
+	id = lat_1209
+	name = lat_1209
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS373_2442
+	chainage = 1062.891
+	discharge = REALTIME
+
+[Lateral]
+	id = lat_1332
+	name = lat_1332
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = rrcon_Moergestel
+	name = rrcon_Moergestel
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 348.2332091784679
+	discharge = boundaries.bc
+
+[Lateral]
+	id = os_101
+	name = os_101
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376.1_2873
+	chainage = 41.691
+	discharge = REALTIME
+
+[Lateral]
+	id = os_102
+	name = os_102
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376.1_2873
+	chainage = 186.329
+	discharge = REALTIME
+
+[Lateral]
+	id = os_103
+	name = os_103
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS376_817
+	chainage = 3.319
+	discharge = REALTIME
+
+[Lateral]
+	id = os_104
+	name = os_104
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 147.106
+	discharge = REALTIME
+
+[Lateral]
+	id = os_105
+	name = os_105
+	type = discharge
+	locationType = 1d
+	branchId = riv_RS1_264
+	chainage = 294.331
+	discharge = REALTIME
+
