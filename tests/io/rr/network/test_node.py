@@ -31,12 +31,12 @@ class TestNode:
             (
                 "mt",
                 99,
-                "99 is not a supported model node type (mt). Supported values: 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14, 15, 16, 23.",
+                "99 is not a supported model node type (mt). Supported values:",
             ),
             (
                 "nt",
                 99,
-                "99 is not a supported netter node type (nt). Supported values: None, 34, 35, 69, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 54, 55, 56.",
+                "99 is not a supported netter node type (nt). Supported values:",
             ),
             (
                 "mt",
