@@ -253,7 +253,7 @@ class CrossSectionDefinition(INIBasedModel):
     thalweg: Optional[float]
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["id"]
+        return data.get("id")
 
     @classmethod
     def _duplicate_keys_as_list(cls):
