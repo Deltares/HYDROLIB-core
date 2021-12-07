@@ -49,7 +49,7 @@ class TestNodeFileParser:
 
         path = Path(test_input_dir / "rr_network" / input_file)
         parser = NetworkTopologyFileParser("node")
-        
+
         result = parser.parse(path)
 
         assert len(result) == 1
