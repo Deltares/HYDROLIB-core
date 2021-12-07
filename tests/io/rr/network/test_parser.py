@@ -9,10 +9,10 @@ from tests.utils import test_input_dir
 class TestNodeFileParser:
     def test_parse_file_does_not_exist_warns(self):
 
-        path = "does/not/exist.tp"
+        path = Path("does/not/exist.tp")
 
         with pytest.warns(UserWarning) as warning:
-            result = NodeFileParser.parse(Path(path))
+            result = NodeFileParser.parse(path)
 
         actualmessage = warning.list[0].message.args[0]
         assert actualmessage == f"File: `{path}` not found, skipped parsing."
