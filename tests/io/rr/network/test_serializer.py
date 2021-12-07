@@ -1,6 +1,9 @@
 from pathlib import Path
 
-from hydrolib.core.io.rr.network.serializer import NodeFileSerializer
+from hydrolib.core.io.rr.network.serializer import (
+    LinkFileSerializer,
+    NodeFileSerializer,
+)
 from tests.utils import assert_files_equal, test_output_dir, test_reference_dir
 
 
@@ -28,4 +31,31 @@ def create_node_values() -> dict:
         ObID="node_obid",
         px=1.23,
         py=2.34,
+    )
+
+
+class TestLinkFileSerializer:
+    def test_serialize(self):
+
+        output_file = Path(test_output_dir / "rr" / "serialize_link.tp")
+        reference_file = Path(test_reference_dir / "rr" / "serialize_link.tp")
+
+        data = dict(
+            link=[create_link_values(), create_link_values(), create_link_values()]
+        )
+        LinkFileSerializer.serialize(output_file, data)
+
+        assert_files_equal(output_file, reference_file)
+
+
+def create_link_values() -> dict:
+    return dict(
+        id="link_id",
+        nm="link_name",
+        ri=1,
+        mt=2,
+        bt=3,
+        ObID="link_obid",
+        bn="link_beginnode",
+        en="link_endnode",
     )
