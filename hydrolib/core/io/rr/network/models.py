@@ -78,12 +78,12 @@ class Node(BaseModel):
     def _raise_if_invalid_type(
         cls, values, field_name: str, supported_values: set, description: str
     ):
-        type = values.get(field_name)
+        field_value = values.get(field_name)
 
-        if type not in supported_values:
+        if field_value not in supported_values:
             str_supported_values = ", ".join([str(t) for t in supported_values])
             raise ValueError(
-                f"{type} is not a supported {description}. Supported values: {str_supported_values}."
+                f"{field_value} is not a supported {description}. Supported values: {str_supported_values}."
             )
 
 
