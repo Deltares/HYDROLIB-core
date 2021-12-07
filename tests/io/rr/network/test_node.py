@@ -96,8 +96,8 @@ class TestNodeFile:
 
     def test_save(self):
 
-        output_file = Path(test_output_dir / "rr" / "serialize.tp")
-        reference_file = Path(test_reference_dir / "rr" / "serialize.tp")
+        output_file = Path(test_output_dir / "rr" / "serialize_node.tp")
+        reference_file = Path(test_reference_dir / "rr" / "serialize_node.tp")
 
         node = Node(**create_node_values())
         nodefile = NodeFile(node=[node, node, node])

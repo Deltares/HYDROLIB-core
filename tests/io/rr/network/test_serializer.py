@@ -10,8 +10,8 @@ from tests.utils import assert_files_equal, test_output_dir, test_reference_dir
 class TestNodeFileSerializer:
     def test_serialize(self):
 
-        output_file = Path(test_output_dir / "rr" / "serialize.tp")
-        reference_file = Path(test_reference_dir / "rr" / "serialize.tp")
+        output_file = Path(test_output_dir / "rr" / "serialize_node.tp")
+        reference_file = Path(test_reference_dir / "rr" / "serialize_node.tp")
 
         data = dict(
             node=[create_node_values(), create_node_values(), create_node_values()]
