@@ -40,8 +40,8 @@ class TestNode:
             ),
             (
                 "mt",
-                6,
-                "6 is not a supported model node type (mt) when netter node type (nt) is 44. Supported value: 2.",
+                3,
+                "3 is not a supported model node type (mt) when netter node type (nt) is 44. Supported value: 2.",
             ),
         ],
     )
@@ -55,6 +55,16 @@ class TestNode:
             Node(**values)
 
         assert exp_message in str(error.value)
+
+    def test_skip_validation_modelnodetype6(self):
+        values = create_node_values()
+        values["mt"] = 6
+        values["nt"] = 99
+
+        try:
+            Node(**values)
+        except ValidationError as error:
+            raise pytest.fail(f"Validation failed for mt = 6: {error}")
 
 
 class TestNodeFile:

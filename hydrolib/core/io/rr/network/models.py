@@ -55,17 +55,21 @@ class Node(BaseModel):
         cls._raise_if_invalid_type(
             values, "modelnodetype", set(nodetypes.values()), "model node type (mt)"
         )
+
+        modelnodetype = values.get("modelnodetype")
+        if modelnodetype == 6:
+            return values
+
         cls._raise_if_invalid_type(
             values, "netternodetype", set(nodetypes.keys()), "netter node type (nt)"
         )
 
         netternodetype = values.get("netternodetype")
         modelnodetype_expected = nodetypes[netternodetype]
-        modelnodetype_actual = values.get("modelnodetype")
 
-        if modelnodetype_actual != modelnodetype_expected:
+        if modelnodetype != modelnodetype_expected:
             raise ValueError(
-                f"{modelnodetype_actual} is not a supported model node type (mt) when netter node type (nt) is {netternodetype}. Supported value: {modelnodetype_expected}."
+                f"{modelnodetype} is not a supported model node type (mt) when netter node type (nt) is {netternodetype}. Supported value: {modelnodetype_expected}."
             )
 
         return values
