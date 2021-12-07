@@ -7,8 +7,16 @@ from hydrolib.core.utils import get_list_index_safely
 class NetworkTopologyFileParser:
     """A parser for topology node files."""
 
-    @staticmethod
-    def parse(path: Path):
+    def __init__(self, enclosing_tag: str):
+        """Initializes a new instance of the `NetworkTopologyFileParser` class.
+
+        Args:
+            closing_tag (str): The enclosing tag for the enclosed topology data per item.
+        """
+
+        self.enclosing_tag = enclosing_tag
+
+    def parse(self, path: Path):
         """Parses a topology node file to a dictionary.
 
         Args:
@@ -24,8 +32,8 @@ class NetworkTopologyFileParser:
 
         nodes = []
 
-        key_start = "NODE"
-        key_end = "node"
+        key_start = self.enclosing_tag.upper()
+        key_end = self.enclosing_tag.lower()
 
         length_parts = len(parts)
 

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from hydrolib.core.io.net.models import Network
 from hydrolib.core.io.rr.network.parser import NetworkTopologyFileParser
 from tests.utils import test_input_dir
 
@@ -10,9 +11,10 @@ class TestNodeFileParser:
     def test_parse_file_does_not_exist_warns(self):
 
         path = Path("does/not/exist.tp")
+        parser = NetworkTopologyFileParser("node")
 
         with pytest.warns(UserWarning) as warning:
-            result = NetworkTopologyFileParser.parse(path)
+            result = parser.parse(path)
 
         actualmessage = warning.list[0].message.args[0]
         assert actualmessage == f"File: `{path}` not found, skipped parsing."
@@ -22,8 +24,9 @@ class TestNodeFileParser:
     def test_parse_parses_file_correctly(self):
 
         path = Path(test_input_dir / "rr_network" / "3B_NOD.TP")
+        parser = NetworkTopologyFileParser("node")
 
-        result = NetworkTopologyFileParser.parse(path)
+        result = parser.parse(path)
 
         assert len(result) == 1
         assert len(result["node"]) == 640
@@ -45,8 +48,9 @@ class TestNodeFileParser:
     def test_parse_parses_file_correctly(self, input_file: str):
 
         path = Path(test_input_dir / "rr_network" / input_file)
-
-        result = NetworkTopologyFileParser.parse(path)
+        parser = NetworkTopologyFileParser("node")
+        
+        result = parser.parse(path)
 
         assert len(result) == 1
         assert len(result["node"]) == 3
