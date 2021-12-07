@@ -1,7 +1,9 @@
+from os import path
 from pathlib import Path
 from typing import Sequence, Tuple
 
 import pytest
+import shutil
 
 from hydrolib.core.basemodel import (
     FileLoadContext,
@@ -13,7 +15,11 @@ from hydrolib.core.basemodel import (
     file_load_context,
 )
 from hydrolib.core.io.dimr.models import DIMR
-from tests.utils import test_input_dir
+from hydrolib.core.io.mdu.models import FMModel
+from tests.utils import test_input_dir, test_output_dir
+
+
+_external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
 
 
 class TestFileModel:
@@ -40,11 +46,145 @@ class TestFileModel:
 
         assert model_a is not model_b
 
-    # TODO - Tests
-    # - Save / Load
-    # - Absolute / Relative
-    # - With / without anchors
-    # - Relative paths stay relative
+    def _resolve(self, path: Path, relative_parent: Path) -> Path:
+        if path.is_absolute():
+            return path
+        return relative_parent / path
+
+    @pytest.mark.parametrize(
+        "paths_relative_to_parent",
+        [True, False],
+    )
+    @pytest.mark.parametrize(
+        (
+            "netfile",
+            "structuresfile",
+            "roughness_channel",
+            "roughness_main",
+            "roughness_sewer",
+            "extforcefile",
+        ),
+        [
+            pytest.param(
+                Path("FlowFM_net.nc"),
+                Path("structures.ini"),
+                Path("roughness-Channels.ini"),
+                Path("roughness-Main.ini"),
+                Path("roughness-Sewers.ini"),
+                Path("FM_model_bnd.ext"),
+                id="flat-hierarchy",
+            ),
+            pytest.param(
+                Path("./net/FlowFM_net.nc"),
+                Path("./struc/structures.ini"),
+                Path("./channels/roughness-Channels.ini"),
+                Path("./channels/roughness-Main.ini"),
+                Path("./channels/roughness-Sewers.ini"),
+                Path("./ext/FM_model_bnd.ext"),
+                id="relative paths",
+            ),
+            pytest.param(
+                _external_path / "FlowFM_net.nc",
+                _external_path / "structures.ini",
+                _external_path / "roughness-Channels.ini",
+                _external_path / "roughness-Main.ini",
+                _external_path / "roughness-Sewers.ini",
+                _external_path / "FM_model_bnd.ext",
+                id="absolute paths",
+            ),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "forcingfile",
+        [
+            Path("FM_model_boundaryconditions1d.bc"),
+            Path("./ext/FM_model_boundaryconditions1d.bc"),
+            _external_path / "FM_model_boundaryconditions1d.bc",
+        ],
+    )
+    def test_save_and_load_maintains_correct_paths(
+        self,
+        paths_relative_to_parent: bool,
+        netfile: Path,
+        structuresfile: Path,
+        roughness_channel: Path,
+        roughness_main: Path,
+        roughness_sewer: Path,
+        extforcefile: Path,
+        forcingfile: Path,
+    ):
+        reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
+        reference_model = FMModel(reference_model_path)
+
+        # TODO: temp fix should be fixed with #150
+        reference_model.wind.cdbreakpoints = []
+        reference_model.wind.windspeedbreakpoints = []
+
+        output_dir = (
+            test_output_dir / self.test_save_and_load_maintains_correct_paths.__name__
+        )
+
+        if _external_path.exists():
+            shutil.rmtree(_external_path)
+
+        if output_dir.exists():
+            shutil.rmtree(output_dir)
+
+        model_path = output_dir / "fm.mdu"
+
+        # Configure paths
+        reference_model.filepath = model_path
+        reference_model.general.pathsrelativetoparent = paths_relative_to_parent
+
+        geometry = reference_model.geometry
+
+        geometry.netfile.filepath = netfile  # type: ignore[arg-type]
+        geometry.structurefile[0].filepath = structuresfile  # type: ignore[arg-type]
+        geometry.frictfile[0].filepath = roughness_channel  # type: ignore[arg-type]
+        geometry.frictfile[1].filepath = roughness_main  # type: ignore[arg-type]
+        geometry.frictfile[2].filepath = roughness_sewer  # type: ignore[arg-type]
+
+        extforce = reference_model.external_forcing.extforcefilenew
+
+        extforce.filepath = extforcefile  # type: ignore[arg-type]
+        extforce.boundary[0].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
+        extforce.boundary[1].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
+
+        reference_model.save()
+
+        read_model = FMModel(model_path)
+
+        assert read_model.filepath == model_path
+        assert read_model.general.pathsrelativetoparent == paths_relative_to_parent
+
+        read_geometry = read_model.geometry
+        assert read_geometry.netfile.filepath == netfile  # type: ignore[arg-type]
+        assert read_geometry.structurefile[0].filepath == structuresfile  # type: ignore[arg-type]
+        assert read_geometry.frictfile[0].filepath == roughness_channel  # type: ignore[arg-type]
+        assert read_geometry.frictfile[1].filepath == roughness_main  # type: ignore[arg-type]
+        assert read_geometry.frictfile[2].filepath == roughness_sewer  # type: ignore[arg-type]
+
+        read_extforce = read_model.external_forcing.extforcefilenew
+
+        assert read_extforce.filepath == extforcefile  # type: ignore[arg-type]
+        assert Path(read_extforce.boundary[0].forcingfile.filepath) == forcingfile  # type: ignore[arg-type]
+        assert Path(read_extforce.boundary[1].forcingfile.filepath) == forcingfile  # type: ignore[arg-type]
+
+        # We assume that if the file exists it is read correctly.
+        # The contents should be verified in the specific models.
+        assert self._resolve(model_path, output_dir).is_file()
+        assert self._resolve(netfile, output_dir).is_file()
+        assert self._resolve(structuresfile, output_dir).is_file()
+        assert self._resolve(roughness_channel, output_dir).is_file()
+        assert self._resolve(roughness_main, output_dir).is_file()
+        assert self._resolve(roughness_sewer, output_dir).is_file()
+        assert self._resolve(extforcefile, output_dir).is_file()
+
+        if paths_relative_to_parent:
+            parent = self._resolve(extforcefile, output_dir).parent
+            assert self._resolve(forcingfile, parent).is_file()
+        else:
+            assert self._resolve(forcingfile, output_dir).is_file()
 
 
 class TestContextManagerFileLoadContext:
