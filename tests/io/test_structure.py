@@ -41,185 +41,6 @@ def test_structure_model():
     assert isinstance(m.structure[5], Pump)
 
 
-def test_create_a_weir_from_scratch():
-    weir = Weir(
-        id="w003",
-        name="W003",
-        branchid="B1",
-        chainage=5.0,
-        allowedflowdir=FlowDirection.none,
-        crestlevel=0.5,
-        usevelocityheight=False,
-        comments=Weir.Comments(
-            name="W stands for weir, 003 because we expect to have at most 999 weirs"
-        ),
-    )
-
-    assert weir.id == "w003"
-    assert weir.name == "W003"
-    assert weir.branchid == "B1"
-    assert weir.chainage == 5.0
-    assert weir.allowedflowdir == FlowDirection.none
-    assert weir.crestlevel == 0.5
-    assert weir.crestwidth == None
-    assert weir.usevelocityheight == False
-    assert (
-        weir.comments.name
-        == "W stands for weir, 003 because we expect to have at most 999 weirs"
-    )
-
-    assert weir.comments.id == uniqueid_str
-
-
-def test_id_comment_has_correct_default():
-    weir = Weir(
-        id="weir_id",
-        name="W001",
-        branchid="branch",
-        chainage=3.0,
-        allowedflowdir=FlowDirection.positive,
-        crestlevel=10.5,
-        crestwidth=None,
-        usevelocityheight=False,
-    )
-
-    assert weir.comments.id == uniqueid_str
-
-
-def test_add_comment_to_weir():
-    weir = Weir(
-        id="weir_id",
-        name="W001",
-        branchid="branch",
-        chainage=3.0,
-        allowedflowdir=FlowDirection.positive,
-        crestlevel=10.5,
-        crestwidth=None,
-        usevelocityheight=False,
-    )
-
-    weir.comments.usevelocityheight = "a different value"
-    assert weir.comments.usevelocityheight == "a different value"
-
-
-def test_weir_construction_with_parser():
-    parser = Parser(ParserConfig())
-
-    input_str = inspect.cleandoc(
-        """
-        [Structure]
-        id                = weir_id     # Unique structure id (max. 256 characters).
-        name              = weir        # Given name in the user interface.
-        branchId          = branch      # (optional) Branch on which the structure is located.
-        chainage          = 3.0         # (optional) Chainage on the branch (m)
-        type              = weir        # Structure type
-        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
-        crestLevel        = 10.5        # Crest level of weir (m AD)
-        crestWidth        =             # Width of weir (m)
-        useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
-        """
-    )
-
-    for line in input_str.splitlines():
-        parser.feed_line(line)
-
-    document = parser.finalize()
-
-    wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
-    weir = wrapper.val
-
-    assert weir.id == "weir_id"
-    assert weir.name == "weir"
-    assert weir.branchid == "branch"
-    assert weir.chainage == 3.0
-    assert weir.type == "weir"
-    assert weir.allowedflowdir == FlowDirection.positive
-    assert weir.crestlevel == 10.5
-    assert weir.crestwidth is None
-    assert weir.usevelocityheight == False
-
-
-def test_weir_comments_construction_with_parser():
-    parser = Parser(ParserConfig())
-
-    input_str = inspect.cleandoc(
-        """
-        [Structure]
-        id                = weir_id     
-        name              = weir        
-        branchId          = branch      
-        chainage          = 3.0         # My own special comment 1
-        type              = weir        
-        allowedFlowDir    = positive    
-        crestLevel        = 10.5        
-        crestWidth        =             
-        useVelocityHeight = false       # My own special comment 2
-        """
-    )
-
-    for line in input_str.splitlines():
-        parser.feed_line(line)
-
-    document = parser.finalize()
-
-    wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
-    weir = wrapper.val
-
-    assert weir.comments.id is None
-    assert weir.comments.name is None
-    assert weir.comments.branchid is None
-    assert weir.comments.chainage == "My own special comment 1"
-    assert weir.comments.type is None
-    assert weir.comments.allowedflowdir is None
-    assert weir.comments.crestlevel is None
-    assert weir.comments.crestwidth is None
-    assert weir.comments.usevelocityheight == "My own special comment 2"
-
-
-def test_weir_with_unknown_parameters():
-    parser = Parser(ParserConfig())
-
-    input_str = inspect.cleandoc(
-        """
-        [Structure]
-        id                = weir_id     # Unique structure id (max. 256 characters).
-        name              = weir        # Given name in the user interface.
-        branchId          = branch      # (optional) Branch on which the structure is located.
-        chainage          = 3.0         # (optional) Chainage on the branch (m)
-
-        # ----------------------------------------------------------------------
-        unknown           = 10.0        # A deliberately added unknown property
-        # ----------------------------------------------------------------------
-
-        type              = weir        # Structure type
-        allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
-        crestLevel        = 10.5        # Crest level of weir (m AD)
-        crestWidth        =             # Width of weir (m)
-        useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
-        """
-    )
-
-    for line in input_str.splitlines():
-        parser.feed_line(line)
-
-    document = parser.finalize()
-
-    wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
-    weir = wrapper.val
-
-    assert weir.unknown == "10.0"  # type: ignore
-
-    assert weir.id == "weir_id"
-    assert weir.name == "weir"
-    assert weir.branchid == "branch"
-    assert weir.chainage == 3.0
-    assert weir.type == "weir"
-    assert weir.allowedflowdir == FlowDirection.positive
-    assert weir.crestlevel == 10.5
-    assert weir.crestwidth is None
-    assert weir.usevelocityheight == False
-
-
 def test_universal_construction_with_parser():
     parser = Parser(ParserConfig())
 
@@ -369,22 +190,6 @@ def _get_allowedflowdir_cases() -> List:
         ("NEGATIVE", "negative"),
         ("Both", "both"),
     ]
-
-
-@pytest.mark.parametrize(
-    "input,expected",
-    _get_allowedflowdir_cases(),
-)
-def test_weir_parses_flowdirection_case_insensitive(input, expected):
-    structure = Weir(
-        allowedflowdir=input,
-        id="strucid",
-        branchid="branchid",
-        chainage="1",
-        crestlevel="1",
-    )
-
-    assert structure.allowedflowdir == expected
 
 
 @pytest.mark.parametrize(
@@ -1455,17 +1260,16 @@ structure_id -> {limitflow}\n  \
         assert structure.limitflowneg == None
 
     def _create_required_orifice_values(self) -> dict:
-        return dict(
-            id="structure_id",
-            name="structure_name",
-            type="orifice",
-            branchid="branch_id",
-            chainage="1.23",
+        orifice_values = dict(
             crestlevel="2.34",
             gateloweredgelevel="4.56",
             corrcoeff="5.67",
             usevelocityheight="true",
         )
+
+        orifice_values.update(create_structure_values("orifice"))
+
+        return orifice_values
 
     def _create_orifice_values(self) -> dict:
         orifice_values = dict(
@@ -1480,3 +1284,201 @@ structure_id -> {limitflow}\n  \
         orifice_values.update(self._create_required_orifice_values())
 
         return orifice_values
+
+
+class TestWeir:
+    def test_create_a_weir_from_scratch(self):
+        weir = Weir(
+            **self._create_weir_values(),
+            comments=Weir.Comments(
+                name="W stands for weir, 003 because we expect to have at most 999 weirs"
+            ),
+        )
+
+        assert weir.id == "structure_id"
+        assert weir.name == "structure_name"
+        assert weir.branchid == "branch_id"
+        assert weir.chainage == 1.23
+        assert weir.allowedflowdir == FlowDirection.positive
+        assert weir.crestlevel == 2.34
+        assert weir.crestwidth == 3.45
+        assert weir.usevelocityheight == True
+        assert (
+            weir.comments.name
+            == "W stands for weir, 003 because we expect to have at most 999 weirs"
+        )
+
+        assert weir.comments.id == uniqueid_str
+
+    def test_id_comment_has_correct_default(self):
+        weir = Weir(**self._create_weir_values())
+
+        assert weir.comments.id == uniqueid_str
+
+    def test_add_comment_to_weir(self):
+        weir = Weir(**self._create_weir_values())
+
+        weir.comments.usevelocityheight = "a different value"
+        assert weir.comments.usevelocityheight == "a different value"
+
+    def test_weir_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                = weir_id     # Unique structure id (max. 256 characters).
+            name              = weir        # Given name in the user interface.
+            branchId          = branch      # (optional) Branch on which the structure is located.
+            chainage          = 3.0         # (optional) Chainage on the branch (m)
+            type              = weir        # Structure type
+            allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
+            crestLevel        = 10.5        # Crest level of weir (m AD)
+            crestWidth        =             # Width of weir (m)
+            useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
+        weir = wrapper.val
+
+        assert weir.id == "weir_id"
+        assert weir.name == "weir"
+        assert weir.branchid == "branch"
+        assert weir.chainage == 3.0
+        assert weir.type == "weir"
+        assert weir.allowedflowdir == FlowDirection.positive
+        assert weir.crestlevel == 10.5
+        assert weir.crestwidth is None
+        assert weir.usevelocityheight == False
+
+    def test_weir_comments_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                = weir_id     
+            name              = weir        
+            branchId          = branch      
+            chainage          = 3.0         # My own special comment 1
+            type              = weir        
+            allowedFlowDir    = positive    
+            crestLevel        = 10.5        
+            crestWidth        =             
+            useVelocityHeight = false       # My own special comment 2
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
+        weir = wrapper.val
+
+        assert weir.comments.id is None
+        assert weir.comments.name is None
+        assert weir.comments.branchid is None
+        assert weir.comments.chainage == "My own special comment 1"
+        assert weir.comments.type is None
+        assert weir.comments.allowedflowdir is None
+        assert weir.comments.crestlevel is None
+        assert weir.comments.crestwidth is None
+        assert weir.comments.usevelocityheight == "My own special comment 2"
+
+    def test_weir_with_unknown_parameters(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                = weir_id     # Unique structure id (max. 256 characters).
+            name              = weir        # Given name in the user interface.
+            branchId          = branch      # (optional) Branch on which the structure is located.
+            chainage          = 3.0         # (optional) Chainage on the branch (m)
+
+            # ----------------------------------------------------------------------
+            unknown           = 10.0        # A deliberately added unknown property
+            # ----------------------------------------------------------------------
+
+            type              = weir        # Structure type
+            allowedFlowDir    = positive    # Possible values: both, positive, negative, none.
+            crestLevel        = 10.5        # Crest level of weir (m AD)
+            crestWidth        =             # Width of weir (m)
+            useVelocityHeight = false       # Flag indicates whether the velocity height is to be calculated or not.
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
+        weir = wrapper.val
+
+        assert weir.unknown == "10.0"  # type: ignore
+
+        assert weir.id == "weir_id"
+        assert weir.name == "weir"
+        assert weir.branchid == "branch"
+        assert weir.chainage == 3.0
+        assert weir.type == "weir"
+        assert weir.allowedflowdir == FlowDirection.positive
+        assert weir.crestlevel == 10.5
+        assert weir.crestwidth is None
+        assert weir.usevelocityheight == False
+
+    @pytest.mark.parametrize(
+        "input,expected",
+        _get_allowedflowdir_cases(),
+    )
+    def test_weir_parses_flowdirection_case_insensitive(self, input, expected):
+        structure = Weir(
+            **self._create_required_weir_values(),
+            allowedflowdir=input,
+        )
+
+        assert structure.allowedflowdir == expected
+
+    def test_optional_fields_have_correct_defaults(self):
+        structure = Weir(**self._create_required_weir_values())
+
+        assert structure.allowedflowdir == FlowDirection.both
+        assert structure.crestwidth == None
+
+    def _create_required_weir_values(self) -> dict:
+        weir_values = dict(
+            crestlevel="2.34",
+            corrcoeff="5.67",
+            usevelocityheight="true",
+        )
+
+        weir_values.update(create_structure_values("weir"))
+        return weir_values
+
+    def _create_weir_values(self) -> dict:
+        weir_values = dict(
+            allowedflowdir="positive",
+            crestwidth="3.45",
+        )
+
+        weir_values.update(self._create_required_weir_values())
+        return weir_values
+
+
+def create_structure_values(type: str) -> dict:
+    return dict(
+        id="structure_id",
+        name="structure_name",
+        type=type,
+        branchid="branch_id",
+        chainage="1.23",
+    )

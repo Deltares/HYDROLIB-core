@@ -122,7 +122,7 @@ class ForcingBase(DataBlockINIBasedModel):
         return v
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["name"] if "name" in data else None
+        return data.get("name")
 
     def _to_section(self) -> Section:
         section = super()._to_section()
