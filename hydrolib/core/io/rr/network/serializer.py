@@ -15,9 +15,10 @@ class NodeFileSerializer:
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with path.open("w") as f:
+        with path.open("wb") as f:
             for node in data["node"]:
-                f.write(f"NODE {NodeFileSerializer._to_line(node)} node{os.linesep}")
+                line = f"NODE {NodeFileSerializer._to_line(node)} node{os.linesep}"
+                f.write(line.encode("utf8"))
 
     @staticmethod
     def _to_line(node: dict) -> str:
