@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import pytest
+from pydantic.error_wrappers import ValidationError
+
 from hydrolib.core.io.rr.network.models import Node, NodeFile
 from tests.utils import (
     assert_files_equal,
@@ -17,10 +20,41 @@ class TestNode:
         assert node.name == "node_name"
         assert node.branchid == 1
         assert node.modelnodetype == 2
-        assert node.netternodetype == 3
+        assert node.netternodetype == 44
         assert node.objectid == "node_obid"
         assert node.xposition == 1.23
         assert node.yposition == 2.34
+
+    @pytest.mark.parametrize(
+        "key, value, exp_message",
+        [
+            (
+                "mt",
+                99,
+                "99 is not a supported model node type (mt). Supported values: 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14, 15, 16, 23.",
+            ),
+            (
+                "nt",
+                99,
+                "99 is not a supported netter node type (nt). Supported values: None, 34, 35, 69, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 54, 55, 56.",
+            ),
+            (
+                "mt",
+                6,
+                "6 is not a supported model node type (mt) when netter node type (nt) is 44. Supported value: 2.",
+            ),
+        ],
+    )
+    def test_validate_unsupported_modelnodetype(
+        self, key: str, value: int, exp_message: str
+    ):
+        values = create_node_values()
+        values[key] = value
+
+        with pytest.raises(ValidationError) as error:
+            Node(**values)
+
+        assert exp_message in str(error.value)
 
 
 class TestNodeFile:
@@ -78,7 +112,7 @@ def create_node_values() -> dict:
         nm="node_name",
         ri=1,
         mt=2,
-        nt=3,
+        nt=44,
         ObID="node_obid",
         px=1.23,
         py=2.34,
