@@ -77,17 +77,20 @@ nav:
         - tutorials/plotting_a_network.md
     - Topics:
         - topics/principles.md
+        - topics/pydantic.md
     - API Reference:
         - reference/api.md
         - reference/bui.md
+        - reference/crosssection.md
         - reference/dimr.md
         - reference/ext.md
+        - reference/friction.md
         - reference/forcing.md
         - reference/glossary.md
         - reference/ini.md
         - reference/mdu.md
         - reference/net.md
         - reference/polyfile.md
-        - reference/structures.md
+        - reference/structure.md
         - reference/xyz.md
     - Changelog: 'changelog.md'
