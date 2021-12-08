@@ -3,6 +3,8 @@ from pathlib import Path
 
 
 class NodeFileSerializer:
+    """Serializer for the RR node topology data."""
+
     @staticmethod
     def serialize(path: Path, data: dict):
         """
@@ -35,6 +37,8 @@ class NodeFileSerializer:
 
 
 class LinkFileSerializer:
+    """Serializer for the RR link topology data."""
+
     @staticmethod
     def serialize(path: Path, data: dict):
         """
