@@ -165,7 +165,7 @@ class INIBasedModel(BaseModel, ABC):
 class DataBlockINIBasedModel(INIBasedModel):
     """DataBlockINIBasedModel defines the base model for ini models with datablocks."""
 
-    datablock: List[List[float]] = []
+    datablock: List[List[Union[float, str]]] = []
 
     _make_lists = make_list_validator("datablock")
 

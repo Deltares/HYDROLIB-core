@@ -6,6 +6,8 @@ from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.bc.models import (
     T3D,
+    Astronomic,
+    AstronomicCorrection,
     Constant,
     ForcingBase,
     ForcingModel,
@@ -211,11 +213,22 @@ class TestForcingModel:
         forcingmodel.forcing.append(t3d)
         forcingmodel.forcing.append(qhtable)
         forcingmodel.forcing.append(constant)
-
         forcingmodel.save()
 
         assert file.is_file() == True
         assert_files_equal(file, reference_file, skip_lines=[0, 3])
+
+    @pytest.mark.parametrize("cls", [Astronomic, AstronomicCorrection])
+    def test_astronomic_values_with_strings_in_datablock_are_parsed_correctly(
+        self, cls
+    ):
+        try:
+            is_correction = cls == AstronomicCorrection
+            _ = cls(**_create_astronomic_values(is_correction))
+        except ValidationError:
+            pytest.fail(
+                f"No validation error should be raised when creating an {cls.__name__}"
+            )
 
 
 def _create_time_series_values():
