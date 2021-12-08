@@ -1,15 +1,6 @@
 import logging
 from abc import ABC
-from typing import (
-    Any,
-    Callable,
-    List,
-    Literal,
-    Optional,
-    Set,
-    Type,
-    Union,
-)
+from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
@@ -22,12 +13,7 @@ from hydrolib.core.io.ini.util import (
     make_list_length_root_validator,
 )
 
-from .io_models import (
-    CommentBlock,
-    Document,
-    Property,
-    Section,
-)
+from .io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import SerializerConfig, write_ini
 from .util import make_list_validator
