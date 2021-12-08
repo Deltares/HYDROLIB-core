@@ -1,6 +1,6 @@
 import logging
 from abc import ABC
-from typing import Any, Callable, List, Literal, Optional, Set, Type
+from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
@@ -125,7 +125,7 @@ class INIBasedModel(BaseModel, ABC):
 class DataBlockINIBasedModel(INIBasedModel):
     """DataBlockINIBasedModel defines the base model for ini models with datablocks."""
 
-    datablock: List[List[float]] = []
+    datablock: List[List[Union[float, str]]] = []
 
     _make_lists = make_list_validator("datablock")
 
