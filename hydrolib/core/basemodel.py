@@ -211,8 +211,13 @@ class ModelTreeTraverser(Generic[TAcc]):
 
 class ResolveRelativeMode(IntEnum):
     """ResolveRelativeMode defines the possible resolve modes used within the
-    FilePathResolver. These are dependent on the type of model and as such
-    defined in (the subclasses of) the FileModel
+    FilePathResolver.
+
+    It determines how the relative paths to child models within some FileModel
+    should be interpreted. By default it should be relative to the parent model,
+    i.e. the model in which the mode is defined. However there exist some exceptions,
+    where the relative paths should be evaluated relative to some other folder,
+    regardless of the current parent location.
 
     Options:
         ToParent:
@@ -431,11 +436,24 @@ class FileModel(BaseModel, ABC):
     """Base class to represent models with a file representation.
 
     It therefore always has a `filepath` and if it is given on
-    initilization, it will parse that file.
+    initilization, it will parse that file. The filepath can be
+    relative, in which case the paths are expected to be resolved
+    relative to some root model. If a path is absolute, this path
+    will always be used, regardless of a root parent.
+
+    When saving a model, if the current filepath is relative, the
+    last resolved absolute path will be used. If the model has just
+    been read, the
 
     This class extends the `validate` option of Pydantic,
     so when when a Path is given to a field with type `FileModel`,
     it doesn't error, but actually initializes the `FileModel`.
+
+    Attributes:
+        filepath (Optional[Path]):
+            The path of this FileModel. This path can be either absolute or relative.
+            If it is a relative path, it is assumed to be resolved from some root
+            model.
     """
 
     __slots__ = ["__weakref__"]
@@ -652,4 +670,9 @@ class FileModel(BaseModel, ABC):
 
     @property
     def _relative_mode(self) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativ
+        """
         return ResolveRelativeMode.ToParent

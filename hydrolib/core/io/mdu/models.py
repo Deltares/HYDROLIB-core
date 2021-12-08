@@ -415,6 +415,13 @@ class FMModel(INIModel):
 
     @FileModel._relative_mode.getter
     def _relative_mode(self) -> ResolveRelativeMode:
+        # This method overrides the _relative_mode property of the FileModel:
+        # The FMModel has a "special" feature which determines how relative filepaths
+        # should be resolved. When the field "pathsRelativeToParent" is set to False
+        # all relative paths should be resolved in respect to the parent directory of
+        # the mdu file. As such we need to explicitly set the resolve mode to ToAnchor
+        # when this attribute is set.
+
         if not hasattr(self, "general") or self.general is None:
             return ResolveRelativeMode.ToParent
 
