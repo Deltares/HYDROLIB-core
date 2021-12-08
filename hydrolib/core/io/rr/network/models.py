@@ -117,7 +117,7 @@ class Link(BaseModel):
     """Represents a link from the topology link file."""
 
     id: str = Field(alias="id")
-    name: str = Field(alias="nm")
+    name: Optional[str] = Field(alias="nm")
     branchid: int = Field(alias="ri")
     modellinktype: int = Field(alias="mt")
     branchtype: int = Field(alias="bt")
@@ -136,7 +136,8 @@ class Link(BaseModel):
 class LinkFile(FileModel):
     """Represents the file with the RR link topology data."""
 
-    link: List[Link] = []
+    _parser = NetworkTopologyFileParser(enclosing_tag="brch")
+    link: List[Link] = Field([], alias="brch")
 
     @classmethod
     def _ext(cls) -> str:
@@ -152,4 +153,4 @@ class LinkFile(FileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        return DummmyParser.parse
+        return cls._parser.parse

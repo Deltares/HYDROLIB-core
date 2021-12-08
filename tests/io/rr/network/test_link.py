@@ -22,6 +22,11 @@ class TestLink:
         assert link.beginnode == "link_beginnode"
         assert link.endnode == "link_endnode"
 
+    def test_optional_fields_have_correct_defaults(self):
+        link = Link(**create_required_link_values())
+
+        assert link.name == None
+
 
 class TestLinkFile:
     def test_create_linkfile(self):
@@ -38,7 +43,16 @@ class TestLinkFile:
 
         linkfile = LinkFile(filepath=path)
 
-        # assert TODO
+        assert len(linkfile.link) == 61
+
+        link = linkfile.link[7]
+        assert link.id == "8"
+        assert link.branchid == -1
+        assert link.modellinktype == 0
+        assert link.branchtype == 17
+        assert link.objectid == "3B_LINK"
+        assert link.beginnode == "unp_riv_RS373_6"
+        assert link.endnode == "lat_936"
 
     def test_save(self):
 
@@ -63,9 +77,14 @@ class TestLinkFile:
 
 
 def create_link_values() -> dict:
+    linkvalues = dict(nm="link_name")
+    linkvalues.update(create_required_link_values())
+    return linkvalues
+
+
+def create_required_link_values() -> dict:
     return dict(
         id="link_id",
-        nm="link_name",
         ri=1,
         mt=2,
         bt=3,
