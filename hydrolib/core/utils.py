@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
 
 def example(a: float, b: float = 1.0) -> float:
@@ -46,7 +46,7 @@ def str_is_empty_or_none(str_field: str) -> bool:
     return str_field is None or not str_field or str_field.isspace()
 
 
-def get_substring_between(source: str, start: str, end: str) -> str:
+def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
     """Finds the substring between two other strings.
 
     Args:
