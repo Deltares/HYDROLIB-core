@@ -1,22 +1,22 @@
 from pathlib import Path
 from warnings import warn
 
-from hydrolib.core.utils import get_list_index_safely
+from hydrolib.core.utils import get_substring_between
 
 
 class NetworkTopologyFileParser:
-    """A parser for topology files such as node and link files."""
+    """A parser for RR topology files such as node and link files."""
 
     def __init__(self, enclosing_tag: str):
         """Initializes a new instance of the `NetworkTopologyFileParser` class.
 
         Args:
-            closing_tag (str): The enclosing tag for the enclosed topology data per item.
+            closing_tag (str): The enclosing tag for the enclosed topology data per record.
         """
 
         self.enclosing_tag = enclosing_tag
 
-    def parse(self, path: Path):
+    def parse(self, path: Path) -> dict:
         """Parses a network topology file to a dictionary.
 
         Args:
@@ -28,43 +28,26 @@ class NetworkTopologyFileParser:
             return {}
 
         with open(path) as file:
-            parts = file.read().split()
+            lines = file.readlines()
 
         records = []
 
         key_start = self.enclosing_tag.upper()
         key_end = self.enclosing_tag.lower()
 
-        length_parts = len(parts)
+        for line in lines:
 
-        index = 0
-        while index < length_parts:
-
-            index_startrecord = get_list_index_safely(
-                parts, key_start, index, length_parts
-            )
-            if index_startrecord == -1:
+            substring = get_substring_between(line, key_start, key_end)
+            if substring == None:
                 continue
 
-            index_nextrecord = get_list_index_safely(
-                parts, key_start, index_startrecord + 1, length_parts
-            )
-            if index_nextrecord == -1:
-                index_nextrecord = length_parts
-
-            index_endrecord = get_list_index_safely(
-                parts, key_end, index_startrecord + 1, index_nextrecord
-            )
-            if index_endrecord == -1:
-                index = index_nextrecord
-                continue
-
-            index = index_startrecord
-            index += 1
+            parts = substring.split()
+            length_parts = len(parts)
 
             record = {}
 
-            while index < index_endrecord - 1:
+            index = 0
+            while index < length_parts - 1:
                 key = parts[index]
                 if key == "mt" and parts[index + 1] == "1":
                     # `mt 1` is one keyword, but was parsed as two separate parts.
@@ -77,6 +60,5 @@ class NetworkTopologyFileParser:
                 record[key] = value
 
             records.append(record)
-            index += 1
 
         return {key_end: records}
