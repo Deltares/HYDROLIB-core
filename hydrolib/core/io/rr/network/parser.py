@@ -1,7 +1,7 @@
 from pathlib import Path
 from warnings import warn
 
-from hydrolib.core.utils import get_list_index_safely
+from hydrolib.core.utils import get_substring_between
 
 
 class NodeFileParser:
@@ -20,43 +20,26 @@ class NodeFileParser:
             return {}
 
         with open(path) as file:
-            parts = file.read().split()
+            lines = file.readlines()
 
         nodes = []
 
         key_start = "NODE"
         key_end = "node"
 
-        length_parts = len(parts)
+        for line in lines:
 
-        index = 0
-        while index < length_parts:
-
-            index_startnode = get_list_index_safely(
-                parts, key_start, index, length_parts
-            )
-            if index_startnode == -1:
+            substring = get_substring_between(line, key_start, key_end)
+            if substring == None:
                 continue
 
-            index_nextnode = get_list_index_safely(
-                parts, key_start, index_startnode + 1, length_parts
-            )
-            if index_nextnode == -1:
-                index_nextnode = length_parts
-
-            index_endnode = get_list_index_safely(
-                parts, key_end, index_startnode + 1, index_nextnode
-            )
-            if index_endnode == -1:
-                index = index_nextnode
-                continue
-
-            index = index_startnode
-            index += 1
+            parts = substring.split()
+            length_parts = len(parts)
 
             node = {}
 
-            while index < index_endnode - 1:
+            index = 0
+            while index < length_parts - 1:
                 key = parts[index]
                 if key == "mt" and parts[index + 1] == "1":
                     # `mt 1` is one keyword, but was parsed as two separate parts.
@@ -69,6 +52,5 @@ class NodeFileParser:
                 node[key] = value
 
             nodes.append(node)
-            index += 1
 
         return dict(node=nodes)

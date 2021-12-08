@@ -1,5 +1,4 @@
 from typing import Any, List
-from warnings import warn
 
 
 def example(a: float, b: float = 1.0) -> float:
@@ -47,22 +46,26 @@ def str_is_empty_or_none(str_field: str) -> bool:
     return str_field is None or not str_field or str_field.isspace()
 
 
-def get_list_index_safely(list: list, item, start: int, end: int) -> int:
-    """Gets the index of `item` in `list` safely.
+def get_substring_between(source: str, start: str, end: str) -> str:
+    """Finds the substring between two other strings.
 
     Args:
-        list (list): The list in which to search.
-        item ([type]): he item to search.
-        start (int): The included index to start searching.
-        end (int): The included index to end searching.
+        source (str): The source string.
+        start (str): The starting string from where to create the substring.
+        end (str): The end string to where to create the substring.
 
     Returns:
-        int: The index of `item` if found; otherwise, -1.
+        str: The substring if found; otherwise, `None`.
     """
 
-    try:
-        return list.index(item, start, end + 1)
+    index_start = source.find(start)
+    if index_start == -1:
+        return None
 
-    except ValueError:
-        warn(f"Could not find {item} between indices {start} and {end}.")
-        return -1
+    index_start += len(start)
+
+    index_end = source.find(end, index_start)
+    if index_end == -1:
+        return None
+
+    return source[index_start:index_end]
