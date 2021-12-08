@@ -1,44 +1,21 @@
 import logging
 from abc import ABC
-from functools import reduce
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Literal,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, FileModel
-from hydrolib.core.io.base import DummySerializer
 from hydrolib.core.io.ini.util import (
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
 )
 
-from .io_models import (
-    CommentBlock,
-    ContentElement,
-    Datablock,
-    DatablockRow,
-    Document,
-    Property,
-    Section,
-)
+from .io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
-from .serializer import Serializer, SerializerConfig, write_ini
+from .serializer import SerializerConfig, write_ini
 from .util import make_list_validator
 
 logger = logging.getLogger(__name__)
@@ -165,7 +142,7 @@ class INIBasedModel(BaseModel, ABC):
 class DataBlockINIBasedModel(INIBasedModel):
     """DataBlockINIBasedModel defines the base model for ini models with datablocks."""
 
-    datablock: List[List[float]] = []
+    datablock: List[List[Union[float, str]]] = []
 
     _make_lists = make_list_validator("datablock")
 
