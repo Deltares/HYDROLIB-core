@@ -2,12 +2,11 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.io.net.models import Network
 from hydrolib.core.io.rr.network.parser import NetworkTopologyFileParser
 from tests.utils import test_input_dir
 
 
-class TestNodeFileParser:
+class TestNetworkTopologyFileParser:
     def test_parse_file_does_not_exist_warns(self):
 
         path = Path("does/not/exist.tp")
