@@ -8,7 +8,7 @@ class NodeFileParser:
     """A parser for topology node files."""
 
     @staticmethod
-    def parse(path: Path):
+    def parse(path: Path) -> dict:
         """Parses a topology node file to a dictionary.
 
         Args:
