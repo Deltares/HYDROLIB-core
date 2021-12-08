@@ -1,7 +1,6 @@
 """
 TODO Implement the following structures
 - Bridge
-- Generalstructure
 - Long culvert
 - Gate
 
@@ -414,6 +413,55 @@ class Orifice(Structure):
             )
 
         return v
+
+
+class GateOpeningHorizontalDirection(str, Enum):
+    """Horizontal opening direction of gate door[s]."""
+
+    symmetric = "symmetric"
+    fromLeft = "fromLeft"
+    fromRight = "fromRight"
+    allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
+
+
+class GeneralStructure(Structure):
+    type: Literal["generalStructure"] = Field("generalStructure", alias="type")
+    allowedflowdir: Optional[FlowDirection] = Field(
+        FlowDirection.both, alias="allowedFlowDir"
+    )
+
+    upstream1width: Optional[float] = Field(10.0, alias="upstream1Width")
+    upstream1level: Optional[float] = Field(0.0, alias="upstream1Level")
+    upstream2width: Optional[float] = Field(10.0, alias="upstream2Width")
+    upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
+
+    crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
+    crestlevel: Optional[float] = Field(0.0, alias="crestLevel")
+    crestlength: Optional[float] = Field(0.0, alias="crestLength")
+
+    downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
+    downstream1level: Optional[float] = Field(0.0, alias="downstream1Level")
+    downstream2width: Optional[float] = Field(10.0, alias="downstream1Width")
+    downstream2level: Optional[float] = Field(0.0, alias="downstream1Level")
+
+    gateloweredgelevel: Optional[float] = Field(11.0, alias="gateLowerEdgeLevel")
+    posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
+    posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
+    posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
+    posdrownweirflowcoeff: Optional[float] = Field(1.0, alias="posDrownWeirFlowCoeff")
+    poscontrcoeffreegate: Optional[float] = Field(1.0, alias="posContrCoefFreeGate")
+    negfreegateflowcoeff: Optional[float] = Field(1.0, alias="negFreeGateFlowCoeff")
+    negdrowngateflowcoeff: Optional[float] = Field(1.0, alias="negDrownGateFlowCoeff")
+    negfreeweirflowcoeff: Optional[float] = Field(1.0, alias="negFreeWeirFlowCoeff")
+    negdrownweirflowcoeff: Optional[float] = Field(1.0, alias="negDrownWeirFlowCoeff")
+    negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
+    extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
+    gateheight: Optional[float] = Field(1e10, alias="gateHeight")
+    gateopeningwidth: Optional[float] = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
+        GateOpeningHorizontalDirection.symmetric, alias="gateOpeningHorizontalDirection"
+    )
+    usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
 
 
 class DambreakAlgorithm(int, Enum):
