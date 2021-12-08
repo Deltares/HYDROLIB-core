@@ -58,7 +58,7 @@ class Boundary(INIBasedModel):
         Returns:
             str: The nodeid value or None if not found.
         """
-        return data.get("nodeid", None)
+        return data.get("nodeid")
 
     @property
     def forcing(self) -> ForcingBase:
@@ -101,7 +101,7 @@ class Lateral(INIBasedModel):
     )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["id"] if "id" in data else None
+        return data.get("id")
 
     @validator("xcoordinates", "ycoordinates")
     @classmethod

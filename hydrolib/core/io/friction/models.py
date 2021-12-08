@@ -122,7 +122,6 @@ class FrictBranch(INIBasedModel):
     @validator("levels", always=True)
     @classmethod
     def _validate_levels(cls, v, values):
-        foo = "bar"
         if v is not None and (
             values["numlevels"] is None or len(v) != values["numlevels"]
         ):

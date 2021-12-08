@@ -69,7 +69,7 @@ class Component(BaseModel, ABC):
         return True
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["name"] if "name" in data else None
+        return data.get("name")
 
 
 class FMComponent(Component):
@@ -125,7 +125,7 @@ class ComponentOrCouplerRef(BaseModel):
     name: str
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["name"] if "name" in data else None
+        return data.get("name")
 
 
 class CoupledItem(BaseModel):
@@ -185,7 +185,7 @@ class Coupler(BaseModel):
         return False
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["name"] if "name" in data else None
+        return data.get("name")
 
 
 class StartGroup(BaseModel):

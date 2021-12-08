@@ -68,7 +68,7 @@ def test_create_a_frictbranch_from_scratch():
 def test_create_a_frictbranch_with_incorrect_levels_or_locations():
     branchid = "B1"
     with pytest.raises(ValidationError) as error:
-        fb = FrictBranch(
+        _ = FrictBranch(
             branchid=branchid,
             frictiontype="wallLawNikuradse",
             chainage=[10, 20],  # intentional wrong len(), should be 1
