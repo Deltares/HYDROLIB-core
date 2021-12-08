@@ -7,6 +7,7 @@ from pydantic.types import FilePath
 
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.bui.models import BuiModel
+from hydrolib.core.io.rr.network.models import LinkFile, NodeFile
 
 from .parser import read
 from .serializer import write
@@ -19,8 +20,8 @@ class RainfallRunoffModel(FileModel):
 
     # Note that order is defined by the .fnm file type and is used for parsing the data.
     control_file: Path = Path("delft_3b.ini")
-    node_data: Path = Path("3b_nod.tp")
-    link_data: Path = Path("3b_link.tp")
+    node_data: Optional[NodeFile]
+    link_data: Optional[LinkFile]
     open_water_data: Path = Path("3brunoff.tp")
     paved_area_general: Path = Path("paved.3b")
     paved_area_storage: Path = Path("paved.sto")
