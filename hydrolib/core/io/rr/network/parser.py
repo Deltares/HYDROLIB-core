@@ -42,12 +42,11 @@ class NetworkTopologyFileParser:
                 continue
 
             parts = substring.split()
-            length_parts = len(parts)
 
             record = {}
 
             index = 0
-            while index < length_parts - 1:
+            while index < len(parts) - 1:
                 key = parts[index]
                 if key == "mt" and parts[index + 1] == "1":
                     # `mt 1` is one keyword, but was parsed as two separate parts.
