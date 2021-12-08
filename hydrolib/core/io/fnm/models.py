@@ -20,7 +20,7 @@ class RainfallRunoffModel(FileModel):
     # Note that order is defined by the .fnm file type and is used for parsing the data.
     control_file: Path = Path("delft_3b.ini")
     node_data: Path = Path("3b_nod.tp")
-    branch_data: Path = Path("3b_link.tp")
+    link_data: Path = Path("3b_link.tp")
     open_water_data: Path = Path("3brunoff.tp")
     paved_area_general: Path = Path("paved.3b")
     paved_area_storage: Path = Path("paved.sto")

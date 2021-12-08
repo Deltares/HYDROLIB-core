@@ -16,7 +16,7 @@ class TestRainFallRunoffModel:
         assert len(result) == 127
         assert result[0] == "control_file"
         assert result[1] == "node_data"
-        assert result[2] == "branch_data"
+        assert result[2] == "link_data"
         assert result[-1] == "meteo_input_file_temperature"
         assert result[-2] == "meteo_input_file_evaporation"
         assert result[-3] == "meteo_input_file_rainfall"
