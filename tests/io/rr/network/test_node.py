@@ -25,6 +25,11 @@ class TestNode:
         assert node.xposition == 1.23
         assert node.yposition == 2.34
 
+    def test_optional_fields_have_correct_defaults(self):
+        node = Node(**create_required_node_values())
+
+        assert node.name == None
+
     @pytest.mark.parametrize(
         "key, value, exp_message",
         [
@@ -117,9 +122,14 @@ class TestNodeFile:
 
 
 def create_node_values() -> dict:
+    nodevalues = dict(nm="node_name")
+    nodevalues.update(create_required_node_values())
+    return nodevalues
+
+
+def create_required_node_values():
     return dict(
         id="node_id",
-        nm="node_name",
         ri=1,
         mt=2,
         nt=44,
