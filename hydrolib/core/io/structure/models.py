@@ -425,6 +425,87 @@ class GateOpeningHorizontalDirection(str, Enum):
 
 
 class GeneralStructure(Structure):
+    class Comments(INIBasedModel.Comments):
+        type: Optional[str] = Field(
+            "Structure type; must read generalStructure", alias="type"
+        )
+        allowedflowdir: Optional[str] = Field(
+            FlowDirection.allowedvaluestext, alias="allowedFlowDir"
+        )
+
+        upstream1width: Optional[str] = Field("w_u1 [m]", alias="upstream1Width")
+        upstream1level: Optional[str] = Field("z_u1 [m AD]", alias="upstream1Level")
+        upstream2width: Optional[str] = Field("w_u2 [m]", alias="upstream2Width")
+        upstream2level: Optional[str] = Field("z_u2 [m D]", alias="upstream2Level")
+
+        crestwidth: Optional[str] = Field("w_s [m]", alias="crestWidth")
+        crestlevel: Optional[str] = Field("z_s [m AD]", alias="crestLevel")
+        crestlength: Optional[str] = Field(
+            "The crest length across the general structure [m]. When the crest length > 0, the extra resistance for this structure will be ls * g/(C2 * waterdepth)",
+            alias="crestLength",
+        )
+
+        downstream1width: Optional[str] = Field("w_d1 [m]", alias="downstream1Width")
+        downstream1level: Optional[str] = Field("z_d1 [m AD]", alias="downstream1Level")
+        downstream2width: Optional[str] = Field("w_d2 [m]", alias="downstream1Width")
+        downstream2level: Optional[str] = Field("z_d2 [m AD]", alias="downstream1Level")
+
+        gateloweredgelevel: Optional[str] = Field(
+            "Position of gate door’s lower edge [m AD]", alias="gateLowerEdgeLevel"
+        )
+        posfreegateflowcoeff: Optional[str] = Field(
+            "Positive free gate flow corr.coeff. cgf [-]", alias="posFreeGateFlowCoeff"
+        )
+        posdrowngateflowcoeff: Optional[str] = Field(
+            "Positive drowned gate flow corr.coeff. cgd [-]",
+            alias="posDrownGateFlowCoeff",
+        )
+        posfreeweirflowcoeff: Optional[str] = Field(
+            "Positive free weir flow corr.coeff. cwf [-]", alias="posFreeWeirFlowCoeff"
+        )
+        posdrownweirflowcoeff: Optional[str] = Field(
+            "Positive drowned weir flow corr.coeff. cwd [-]",
+            alias="posDrownWeirFlowCoeff",
+        )
+        poscontrcoeffreegate: Optional[str] = Field(
+            "Positive gate flow contraction coefficient µgf [-]",
+            alias="posContrCoefFreeGate",
+        )
+        negfreegateflowcoeff: Optional[str] = Field(
+            "Negative free gate flow corr.coeff. cgf [-]", alias="negFreeGateFlowCoeff"
+        )
+        negdrowngateflowcoeff: Optional[str] = Field(
+            "Negative drowned gate flow corr.coeff. cgd [-]",
+            alias="negDrownGateFlowCoeff",
+        )
+        negfreeweirflowcoeff: Optional[str] = Field(
+            "Negative free weir flow corr.coeff. cwf [-]", alias="negFreeWeirFlowCoeff"
+        )
+        negdrownweirflowcoeff: Optional[str] = Field(
+            "Negative drowned weir flow corr.coeff. cwd [-]",
+            alias="negDrownWeirFlowCoeff",
+        )
+        negcontrcoeffreegate: Optional[str] = Field(
+            "Negative gate flow contraction coefficient mu gf [-]",
+            alias="negContrCoefFreeGate",
+        )
+        extraresistance: Optional[str] = Field("", alias="extraResistance")
+        gateheight: Optional[str] = Field("Extra resistance [-]", alias="gateHeight")
+        gateopeningwidth: Optional[str] = Field(
+            "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
+            alias="gateOpeningWidth",
+        )
+        gateopeninghorizontaldirection: Optional[str] = Field(
+            "Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight",
+            alias="gateOpeningHorizontalDirection",
+        )
+        usevelocityheight: Optional[bool] = Field(
+            "Flag indicates whether the velocity height is to be calculated or not",
+            alias="useVelocityHeight",
+        )
+
+    comments: Comments = Comments()
+
     type: Literal["generalStructure"] = Field("generalStructure", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
         FlowDirection.both, alias="allowedFlowDir"
