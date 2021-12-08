@@ -5,7 +5,7 @@ from hydrolib.core.utils import get_list_index_safely
 
 
 class NetworkTopologyFileParser:
-    """A parser for topology node files."""
+    """A parser for topology files such as node and link files."""
 
     def __init__(self, enclosing_tag: str):
         """Initializes a new instance of the `NetworkTopologyFileParser` class.
@@ -17,10 +17,10 @@ class NetworkTopologyFileParser:
         self.enclosing_tag = enclosing_tag
 
     def parse(self, path: Path):
-        """Parses a topology node file to a dictionary.
+        """Parses a network topology file to a dictionary.
 
         Args:
-            path (Path): Path to the topology node file.
+            path (Path): Path to the network topology file.
         """
 
         if not path.is_file():
@@ -30,7 +30,7 @@ class NetworkTopologyFileParser:
         with open(path) as file:
             parts = file.read().split()
 
-        nodes = []
+        records = []
 
         key_start = self.enclosing_tag.upper()
         key_end = self.enclosing_tag.lower()
@@ -40,31 +40,31 @@ class NetworkTopologyFileParser:
         index = 0
         while index < length_parts:
 
-            index_startnode = get_list_index_safely(
+            index_startrecord = get_list_index_safely(
                 parts, key_start, index, length_parts
             )
-            if index_startnode == -1:
+            if index_startrecord == -1:
                 continue
 
-            index_nextnode = get_list_index_safely(
-                parts, key_start, index_startnode + 1, length_parts
+            index_nextrecord = get_list_index_safely(
+                parts, key_start, index_startrecord + 1, length_parts
             )
-            if index_nextnode == -1:
-                index_nextnode = length_parts
+            if index_nextrecord == -1:
+                index_nextrecord = length_parts
 
-            index_endnode = get_list_index_safely(
-                parts, key_end, index_startnode + 1, index_nextnode
+            index_endrecord = get_list_index_safely(
+                parts, key_end, index_startrecord + 1, index_nextrecord
             )
-            if index_endnode == -1:
-                index = index_nextnode
+            if index_endrecord == -1:
+                index = index_nextrecord
                 continue
 
-            index = index_startnode
+            index = index_startrecord
             index += 1
 
-            node = {}
+            record = {}
 
-            while index < index_endnode - 1:
+            while index < index_endrecord - 1:
                 key = parts[index]
                 if key == "mt" and parts[index + 1] == "1":
                     # `mt 1` is one keyword, but was parsed as two separate parts.
@@ -74,9 +74,9 @@ class NetworkTopologyFileParser:
                 value = parts[index].strip("'")
                 index += 1
 
-                node[key] = value
+                record[key] = value
 
-            nodes.append(node)
+            records.append(record)
             index += 1
 
-        return dict(node=nodes)
+        return {key_end: records}

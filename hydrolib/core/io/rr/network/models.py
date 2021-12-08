@@ -93,8 +93,8 @@ class Node(BaseModel):
 
 
 class NodeFile(FileModel):
-    _parser = NetworkTopologyFileParser("node")
-    node: List[Node] = []
+    _parser = NetworkTopologyFileParser(enclosing_tag="node")
+    node: List[Node] = Field([], alias="node")
 
     @classmethod
     def _ext(cls) -> str:
