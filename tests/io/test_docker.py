@@ -1,6 +1,6 @@
 from devtools import debug
 
-from hydrolib.core.io.dimr.models import DIMR, FMComponent
+from hydrolib.core.io.dimr.models import DIMR, Start, FMComponent
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
@@ -34,6 +34,7 @@ def test_from_scratch_docker():
     dimr.component.append(
         FMComponent(name="test", workingDir=".", inputfile=fm.filepath, model=fm)
     )
+    dimr.control.append(Start(name="test"))
     dimr.save(folder=test_output_dir / "docker")
     assert (test_output_dir / "docker" / "network.nc").is_file()
     assert (test_output_dir / "docker" / "test.mdu").is_file()
