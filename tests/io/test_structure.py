@@ -1487,11 +1487,10 @@ def create_structure_values(type: str) -> dict:
 
 class TestGeneralStructure:
     def test_create_a_general_structure_from_scratch(self):
+        name_comment = "Generic name comment"
         struct = GeneralStructure(
             **self._create_general_structure_values(),
-            comments=GeneralStructure.Comments(
-                name="W stands for weir, 003 because we expect to have at most 999 weirs"
-            ),
+            comments=GeneralStructure.Comments(name=name_comment),
         )
 
         assert struct.id == "structure_id"
@@ -1532,10 +1531,7 @@ class TestGeneralStructure:
         assert struct.usevelocityheight == False
 
         assert struct.comments is not None
-        assert (
-            struct.comments.name
-            == "W stands for weir, 003 because we expect to have at most 999 weirs"
-        )
+        assert struct.comments.name == name_comment
 
         assert struct.comments.id == uniqueid_str
 
@@ -1548,8 +1544,11 @@ class TestGeneralStructure:
         struct = GeneralStructure(**self._create_general_structure_values())
 
         assert struct.comments is not None
-        struct.comments.usevelocityheight = "a different value"
-        assert struct.comments.usevelocityheight == "a different value"
+
+        new_comment = "a very different value"
+
+        struct.comments.usevelocityheight = new_comment
+        assert struct.comments.usevelocityheight == new_comment
 
     def test_general_structure_construction_with_parser(self):
         parser = Parser(ParserConfig())
