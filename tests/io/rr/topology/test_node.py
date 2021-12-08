@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.rr.network.models import Node, NodeFile
+from hydrolib.core.io.rr.topology.models import Node, NodeFile
 from tests.utils import (
     assert_files_equal,
     test_input_dir,

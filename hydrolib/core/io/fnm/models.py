@@ -7,7 +7,7 @@ from pydantic.types import FilePath
 
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.bui.models import BuiModel
-from hydrolib.core.io.rr.network.models import LinkFile, NodeFile
+from hydrolib.core.io.rr.topology.models import LinkFile, NodeFile
 
 from .parser import read
 from .serializer import write

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hydrolib.core.io.rr.network.serializer import (
+from hydrolib.core.io.rr.topology.serializer import (
     LinkFileSerializer,
     NodeFileSerializer,
 )

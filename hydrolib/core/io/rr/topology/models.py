@@ -6,8 +6,8 @@ from pydantic.fields import Field
 from hydrolib.core.basemodel import BaseModel, FileModel
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.io.net.models import Network
-from hydrolib.core.io.rr.network.parser import NetworkTopologyFileParser
-from hydrolib.core.io.rr.network.serializer import (
+from hydrolib.core.io.rr.topology.parser import NetworkTopologyFileParser
+from hydrolib.core.io.rr.topology.serializer import (
     LinkFileSerializer,
     NodeFileSerializer,
 )

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.io.rr.network.parser import NetworkTopologyFileParser
+from hydrolib.core.io.rr.topology.parser import NetworkTopologyFileParser
 from tests.utils import test_input_dir
 
 
