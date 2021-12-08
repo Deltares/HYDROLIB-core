@@ -1729,43 +1729,43 @@ class TestGeneralStructure:
         input_str = inspect.cleandoc(
             """
             [Structure]
-            id                             = potato_id        
-            name                           = structure_potato 
+            id                             = id        
+            name                           = extravagante_waarde
 
             # ----------------------------------------------------------------------
             unknown           = 10.0        # A deliberately added unknown property
             # ----------------------------------------------------------------------
 
             type                           = generalStructure 
-            branchId                       = branch      
-            chainage                       = 3.53  
+            branchId                       = stump
+            chainage                       = 13.53  
             allowedFlowDir                 = positive         
-            upstream1Width                 = 11.0             
-            upstream1Level                 = 12.0             
-            upstream2Width                 = 13.0             
-            upstream2Level                 = 14.0             
-            crestWidth                     = 15.0             
-            crestLevel                     = 16.0             
-            crestLength                    = 17.0             
-            downstream1Width               = 18.0             
-            downstream1Level               = 19.0             
-            downstream2Width               = 19.1             
-            downstream2Level               = 19.2             
-            gateLowerEdgeLevel             = 19.3             
-            posFreeGateFlowCoeff           = 19.4             
-            posDrownGateFlowCoeff          = 19.5             
-            posFreeWeirFlowCoeff           = 19.6             
-            posDrownWeirFlowCoeff          = 19.7             
-            posContrCoefFreeGate           = 19.8             
-            negFreeGateFlowCoeff           = 19.9             
-            negDrownGateFlowCoeff          = 18.1             
-            negFreeWeirFlowCoeff           = 18.2             
-            negDrownWeirFlowCoeff          = 18.3             
-            negContrCoefFreeGate           = 18.4             
-            extraResistance                = 18.5             
-            gateHeight                     = 18.6
-            gateOpeningWidth               = 18.7              
-            gateOpeningHorizontalDirection = fromLeft         
+            upstream1Width                 = 111.0             
+            upstream1Level                 = 112.0             
+            upstream2Width                 = 113.0             
+            upstream2Level                 = 114.0             
+            crestWidth                     = 115.0             
+            crestLevel                     = 116.0             
+            crestLength                    = 117.0             
+            downstream1Width               = 118.0             
+            downstream1Level               = 119.0             
+            downstream2Width               = 119.1             
+            downstream2Level               = 119.2             
+            gateLowerEdgeLevel             = 119.3             
+            posFreeGateFlowCoeff           = 119.4             
+            posDrownGateFlowCoeff          = 119.5             
+            posFreeWeirFlowCoeff           = 119.6             
+            posDrownWeirFlowCoeff          = 119.7             
+            posContrCoefFreeGate           = 119.8             
+            negFreeGateFlowCoeff           = 119.9             
+            negDrownGateFlowCoeff          = 118.1             
+            negFreeWeirFlowCoeff           = 118.2             
+            negDrownWeirFlowCoeff          = 118.3             
+            negContrCoefFreeGate           = 118.4             
+            extraResistance                = 118.5             
+            gateHeight                     = 118.6
+            gateOpeningWidth               = 118.7              
+            gateOpeningHorizontalDirection = fromRight
             useVelocityHeight              = 0
             """
         )
@@ -1780,40 +1780,40 @@ class TestGeneralStructure:
 
         assert struct.unknown == "10.0"  # type: ignore
 
-        assert struct.id == "potato_id"
-        assert struct.name == "structure_potato"
-        assert struct.branchid == "branch"
-        assert struct.chainage == 3.53
+        assert struct.id == "id"
+        assert struct.name == "extravagante_waarde"
+        assert struct.branchid == "stump"
+        assert struct.chainage == 13.53
         assert struct.type == "generalStructure"
         assert struct.allowedflowdir == FlowDirection.positive
-        assert struct.upstream1width == 11.0
-        assert struct.upstream1level == 12.0
-        assert struct.upstream2width == 13.0
-        assert struct.upstream2level == 14.0
-        assert struct.crestwidth == 15.0
-        assert struct.crestlevel == 16.0
-        assert struct.crestlength == 17.0
-        assert struct.downstream1width == 18.0
-        assert struct.downstream1level == 19.0
-        assert struct.downstream2width == 19.1
-        assert struct.downstream2level == 19.2
-        assert struct.gateloweredgelevel == 19.3
-        assert struct.posfreegateflowcoeff == 19.4
-        assert struct.posdrowngateflowcoeff == 19.5
-        assert struct.posfreeweirflowcoeff == 19.6
-        assert struct.posdrownweirflowcoeff == 19.7
-        assert struct.poscontrcoeffreegate == 19.8
-        assert struct.negfreegateflowcoeff == 19.9
-        assert struct.negdrowngateflowcoeff == 18.1
-        assert struct.negfreeweirflowcoeff == 18.2
-        assert struct.negdrownweirflowcoeff == 18.3
-        assert struct.negcontrcoeffreegate == 18.4
-        assert struct.extraresistance == 18.5
-        assert struct.gateheight == 18.6
-        assert struct.gateopeningwidth == 18.7
+        assert struct.upstream1width == 111.0
+        assert struct.upstream1level == 112.0
+        assert struct.upstream2width == 113.0
+        assert struct.upstream2level == 114.0
+        assert struct.crestwidth == 115.0
+        assert struct.crestlevel == 116.0
+        assert struct.crestlength == 117.0
+        assert struct.downstream1width == 118.0
+        assert struct.downstream1level == 119.0
+        assert struct.downstream2width == 119.1
+        assert struct.downstream2level == 119.2
+        assert struct.gateloweredgelevel == 119.3
+        assert struct.posfreegateflowcoeff == 119.4
+        assert struct.posdrowngateflowcoeff == 119.5
+        assert struct.posfreeweirflowcoeff == 119.6
+        assert struct.posdrownweirflowcoeff == 119.7
+        assert struct.poscontrcoeffreegate == 119.8
+        assert struct.negfreegateflowcoeff == 119.9
+        assert struct.negdrowngateflowcoeff == 118.1
+        assert struct.negfreeweirflowcoeff == 118.2
+        assert struct.negdrownweirflowcoeff == 118.3
+        assert struct.negcontrcoeffreegate == 118.4
+        assert struct.extraresistance == 118.5
+        assert struct.gateheight == 118.6
+        assert struct.gateopeningwidth == 118.7
         assert (
             struct.gateopeninghorizontaldirection
-            == GateOpeningHorizontalDirection.from_left
+            == GateOpeningHorizontalDirection.from_right
         )
         assert struct.usevelocityheight == False
 
