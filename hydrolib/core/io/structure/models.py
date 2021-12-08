@@ -419,13 +419,13 @@ class GateOpeningHorizontalDirection(str, Enum):
     """Horizontal opening direction of gate door[s]."""
 
     symmetric = "symmetric"
-    fromLeft = "fromLeft"
-    fromRight = "fromRight"
+    from_left = "fromLeft"
+    from_right = "fromRight"
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
 class GeneralStructure(Structure):
-    class Comments(INIBasedModel.Comments):
+    class Comments(Structure.Comments):
         type: Optional[str] = Field(
             "Structure type; must read generalStructure", alias="type"
         )
@@ -447,8 +447,8 @@ class GeneralStructure(Structure):
 
         downstream1width: Optional[str] = Field("w_d1 [m]", alias="downstream1Width")
         downstream1level: Optional[str] = Field("z_d1 [m AD]", alias="downstream1Level")
-        downstream2width: Optional[str] = Field("w_d2 [m]", alias="downstream1Width")
-        downstream2level: Optional[str] = Field("z_d2 [m AD]", alias="downstream1Level")
+        downstream2width: Optional[str] = Field("w_d2 [m]", alias="downstream2Width")
+        downstream2level: Optional[str] = Field("z_d2 [m AD]", alias="downstream2Level")
 
         gateloweredgelevel: Optional[str] = Field(
             "Position of gate door’s lower edge [m AD]", alias="gateLowerEdgeLevel"
@@ -489,8 +489,10 @@ class GeneralStructure(Structure):
             "Negative gate flow contraction coefficient mu gf [-]",
             alias="negContrCoefFreeGate",
         )
-        extraresistance: Optional[str] = Field("", alias="extraResistance")
-        gateheight: Optional[str] = Field("Extra resistance [-]", alias="gateHeight")
+        extraresistance: Optional[str] = Field(
+            "Extra resistance [-]", alias="extraResistance"
+        )
+        gateheight: Optional[str] = Field(None, alias="gateHeight")
         gateopeningwidth: Optional[str] = Field(
             "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
             alias="gateOpeningWidth",
@@ -499,12 +501,12 @@ class GeneralStructure(Structure):
             "Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight",
             alias="gateOpeningHorizontalDirection",
         )
-        usevelocityheight: Optional[bool] = Field(
+        usevelocityheight: Optional[str] = Field(
             "Flag indicates whether the velocity height is to be calculated or not",
             alias="useVelocityHeight",
         )
 
-    comments: Comments = Comments()
+    comments: Optional[Comments] = Comments()
 
     type: Literal["generalStructure"] = Field("generalStructure", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
@@ -522,8 +524,8 @@ class GeneralStructure(Structure):
 
     downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
     downstream1level: Optional[float] = Field(0.0, alias="downstream1Level")
-    downstream2width: Optional[float] = Field(10.0, alias="downstream1Width")
-    downstream2level: Optional[float] = Field(0.0, alias="downstream1Level")
+    downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
+    downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
 
     gateloweredgelevel: Optional[float] = Field(11.0, alias="gateLowerEdgeLevel")
     posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
