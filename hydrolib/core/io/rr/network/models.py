@@ -93,7 +93,7 @@ class Node(BaseModel):
 
 
         Args:
-            values ([type]): Dictionary with values that are used to create this `Node`. 
+            values ([type]): Dictionary with values that are used to create this `Node`.
             field_name (str): Field name of the node type to validate.
             supported_values (set): Set of all the supported values for this node type.
             description (str): Description of this node type that will be readable for the user.
