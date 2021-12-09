@@ -8,6 +8,34 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral
 from hydrolib.core.io.ini.util import get_enum_validator
 
 
+def make_list_length_root_validator(*field_names, length_name: str):
+    """
+    Get a root_validator that checks the correct length of several list fields in an object.
+
+    Args:
+        *field_names (str): names of the instance variables that are a list and need checking.
+        length_name (str): name of the instance variable that stores the expected length.
+    """
+
+    def validate_correct_length(cls, values):
+        length = values.get(length_name)
+        if length is None:
+            # length attribute not present, possibly defer validation to a subclass.
+            return values
+
+        for field_name in field_names:
+
+            field_value = values.get(field_name)
+            if field_value is not None and len(field_value) != length:
+                raise ValueError(
+                    f"Number of values for {field_name} should be equal to the {length_name} value."
+                )
+
+        return values
+
+    return root_validator(allow_reuse=True)(validate_correct_length)
+
+
 class NodeType(str, Enum):
     inspection = "inspection"
     soakawaydrain = "soakawayDrain"
@@ -140,11 +168,13 @@ class StorageNode(INIBasedModel):
     @classmethod
     def validate_usetable(cls, values):
 
-        usetable = values["usetable"]
-
-        if usetable:
+        if values["usetable"]:
             cls._validate_required_usetable_fields(
                 "numlevels", "levels", "storagearea", values=values, usetable=True
+            )
+
+            cls._validate_list_length(
+                "levels", "storagearea", length_field_name="numlevels", values=values
             )
         else:
             cls._validate_required_usetable_fields(
@@ -166,4 +196,17 @@ class StorageNode(INIBasedModel):
             if values.get(field) == None:
                 raise ValueError(
                     f"{field} should be provided when useTable is {usetable}"
+                )
+
+    @classmethod
+    def _validate_list_length(
+        cls, *field_names: str, length_field_name: str, values: dict
+    ):
+
+        length = values[length_field_name]
+
+        for field in field_names:
+            if len(values[field]) != length:
+                raise ValueError(
+                    f"Number of values for {field} should be equal to the {length_field_name} value."
                 )

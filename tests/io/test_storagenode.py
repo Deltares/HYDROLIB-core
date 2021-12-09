@@ -11,8 +11,7 @@ from hydrolib.core.io.storagenode.models import (
 
 class TestStorageNode:
     def test_create_storage_node_usetable_true(self):
-        vals = _create_storage_node_values(usetable=True)
-        storagenode = StorageNode(**vals)
+        storagenode = StorageNode(**_create_storage_node_values(usetable=True))
 
         assert storagenode.id == "storagenode_id"
         assert storagenode.name == "storagenode_name"
@@ -76,6 +75,19 @@ class TestStorageNode:
 
         expected_message = (
             f"{missingfield} should be provided when useTable is {usetable}"
+        )
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize("field", ["storagearea", "levels"])
+    def test_validate_numlevels_fields_lengths(self, field: str):
+        values = _create_required_storage_node_values(True)
+        values[field] = [1, 2, 3, 4, 5, 6, 7]
+
+        with pytest.raises(ValidationError) as error:
+            StorageNode(**values)
+
+        expected_message = (
+            f"Number of values for {field} should be equal to the numlevels value."
         )
         assert expected_message in str(error.value)
 
