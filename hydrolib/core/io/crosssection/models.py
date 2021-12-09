@@ -27,17 +27,29 @@ frictionvalue_description = "Roughness value; its meaning depends on the roughne
     (only used if frictionType specified)."
 
 
-class CrossdefGeneral(INIGeneral):
+class CrossDefGeneral(INIGeneral):
+    """The crosssection definition file's `[General]` section with file meta data."""
+
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["crossDef"] = Field("crossDef", alias="fileType")
 
 
-class CrosslockGeneral(INIGeneral):
+class CrossLocGeneral(INIGeneral):
+    """The crosssection location file's `[General]` section with file meta data."""
+
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["crossLoc"] = Field("crossLoc", alias="fileType")
 
 
 class CrossSectionDefinition(INIBasedModel):
+    """
+    A `[Definition]` block for use inside a crosssection definition file,
+    i.e., a [CrossDefModel][hydrolib.core.io.crosssection.models.CrossDefModel].
+
+    This class is intended as an abstract class: various subclasses should
+    define they actual types of crosssection definitions.
+    """
+
     # TODO: would we want to load this from something externally and generate these automatically
     class Comments(INIBasedModel.Comments):
         id: Optional[str] = "Unique cross-section definition id."
@@ -140,7 +152,17 @@ class CrossSectionDefinition(INIBasedModel):
 
 
 class CrossDefModel(INIModel):
-    general: CrossdefGeneral = CrossdefGeneral()
+    """
+    The overall crosssection definition model that contains the contents of one crossdef file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile`.
+
+    Attributes:
+        general (CrossdefGeneral): `[General]` block with file metadata.
+        definition (List[CrossSectionDefinition]): List of `[Definition]` blocks for all cross sections.
+    """
+
+    general: CrossDefGeneral = CrossDefGeneral()
     definition: List[CrossSectionDefinition] = []
 
     _make_list = make_list_validator("definition")
@@ -151,6 +173,14 @@ class CrossDefModel(INIModel):
 
 
 class CircleCrsDef(CrossSectionDefinition):
+    """
+    Crosssection definition with `type=circle`, to be included in a crossdef file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+
+    All lowercased attributes match with the circle input as described in
+    [UM Sec.C.16.1.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.1).
+    """
+
     class Comments(CrossSectionDefinition.Comments):
         type: Optional[str] = Field("Cross section type; must read circle")
 
@@ -182,6 +212,14 @@ class CircleCrsDef(CrossSectionDefinition):
 
 
 class RectangleCrsDef(CrossSectionDefinition):
+    """
+    Crosssection definition with `type=rectangle`, to be included in a crossdef file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+
+    All lowercased attributes match with the rectangle input as described in
+    [UM Sec.C.16.1.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.2).
+    """
+
     class Comments(CrossSectionDefinition.Comments):
         type: Optional[str] = Field("Cross section type; must read rectangle")
         width: Optional[str] = Field("Width of the rectangle [m].")
@@ -216,6 +254,14 @@ class RectangleCrsDef(CrossSectionDefinition):
 
 
 class ZWRiverCrsDef(CrossSectionDefinition):
+    """
+    Crosssection definition with `type=zwRiver`, to be included in a crossdef file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+
+    All lowercased attributes match with the zwRiver input as described in
+    [UM Sec.C.16.1.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.3).
+    """
+
     class Comments(CrossSectionDefinition.Comments):
         type: Optional[str] = Field(
             "Cross section type; must read zwRiver", alias="type"
@@ -324,6 +370,14 @@ class ZWRiverCrsDef(CrossSectionDefinition):
 
 
 class ZWCrsDef(CrossSectionDefinition):
+    """
+    Crosssection definition with `type=zw`, to be included in a crossdef file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+
+    All lowercased attributes match with the zw input as described in
+    [UM Sec.C.16.1.4](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.4).
+    """
+
     class Comments(CrossSectionDefinition.Comments):
         type: Optional[str] = Field("Cross section type; must read zw", alias="type")
         # NOTE: Field "template" deliberately ignored for now.
@@ -388,6 +442,14 @@ class ZWCrsDef(CrossSectionDefinition):
 
 
 class YZCrsDef(CrossSectionDefinition):
+    """
+    Crosssection definition with `type=yz`, to be included in a crossdef file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+
+    All lowercased attributes match with the yz input as described in
+    [UM Sec.C.16.1.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.6).
+    """
+
     class Comments(CrossSectionDefinition.Comments):
         type: Optional[str] = Field("Cross section type; must read yz", alias="type")
         conveyance: Optional[str] = Field(
@@ -487,11 +549,20 @@ class YZCrsDef(CrossSectionDefinition):
 
 class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     """
-    A class for XYZ Cross section definitions.
+    Crosssection definition with `type=xyz`, to be included in a crossdef file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+
+    All lowercased attributes match with the xyz input as described in
+    [UM Sec.C.16.1.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.5).
 
     This class extends the YZCrsDef class with x-coordinates and an optional
     branchId field. Most other attributes are inherited, but the coordcount
     is overridden under the Pydantic alias "xyzCount".
+
+    Attributes:
+        yzcount (Optional[int]): dummy attribute that should not be set nor used.
+            Only present to mask the inherited attribute from parent class YZCrsDef.
+        xyzcount (int): Number of XYZ-coordinates. Always use this instead of yzcount.
     """
 
     class Comments(YZCrsDef.Comments):
@@ -567,13 +638,34 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 
 
 class CrossSection(INIBasedModel):
+    """
+    A `[CrossSection]` block for use inside a crosssection location file,
+    i.e., a [CrossLocModel][hydrolib.core.io.crosssection.models.CrossLocModel].
+
+    Attributes:
+        id (str): Unique cross-section location id.
+        branchid (str): (optional) Branch on which the cross section is located.
+    """
+
+    # TODO: complete support for all crosssection fields: #172.
+
     _header: Literal["CrossSection"] = "CrossSection"
     id: str = Field(alias="id")
     branchid: str = Field(alias="branchId")
 
 
 class CrossLocModel(INIModel):
-    general: CrosslockGeneral = CrosslockGeneral()
+    """
+    The overall crosssection location model that contains the contents of one crossloc file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crosslocfile`.
+
+    Attributes:
+        general (CrossLocGeneral): `[General]` block with file metadata.
+        crosssection (List[CrossSection]): List of `[CrossSection]` blocks for all cross section locations.
+    """
+
+    general: CrossLocGeneral = CrossLocGeneral()
     crosssection: List[CrossSection] = []
 
     @classmethod

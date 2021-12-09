@@ -46,12 +46,6 @@ class BuiPrecipitationEvent(BaseModel):
 class BuiModel(FileModel):
     """
     Model that represents the file structure of a .bui file.
-
-    Args:
-        FileModel (BuiModel): Basemodel.
-
-    Returns:
-        BuiModel: New object containing data representing the .bui file.
     """
 
     default_dataset: int = 1  # Default value (always)

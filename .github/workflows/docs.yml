@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
@@ -22,8 +24,6 @@ jobs:
         with:
           path: ~/.virtualenvs
           key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            venv-${{ matrix.os }}-${{ matrix.python-version }}-
 
       - name: Set Poetry config
         run: |
@@ -34,4 +34,9 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - run: poetry run mkdocs gh-deploy --force
+      - name: Setup doc deploy
+        run: |
+          git config --global user.name '${{ github.actor }}'
+          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+
+      - run: poetry run mike deploy --push develop
