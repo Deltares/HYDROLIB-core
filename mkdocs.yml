@@ -97,6 +97,8 @@ nav:
       - reference/mdu.md
       - reference/net.md
       - reference/polyfile.md
-      - reference/structures.md
       - reference/xyz.md
+      - reference/crosssection.md
+      - reference/friction.md
+      - reference/structure.md
   - Changelog: "changelog.md"
