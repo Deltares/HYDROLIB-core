@@ -71,9 +71,10 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
-addopts = "-m \"not plots\""
+addopts = "-m \"not plots and not docker\""
 markers = [
-    "plots"
+    "plots",
+    "docker"
 ]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
