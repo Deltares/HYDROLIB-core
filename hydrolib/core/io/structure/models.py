@@ -221,6 +221,11 @@ class Structure(INIBasedModel):
 
 
 class FlowDirection(str, Enum):
+    """
+    Enum class containing the valid values for the allowedFlowDirection
+    attribute in several subclasses of Structure.
+    """
+
     none = "none"
     positive = "positive"
     negative = "negative"
@@ -231,7 +236,7 @@ class FlowDirection(str, Enum):
 class Weir(Structure):
     """
     Hydraulic structure with `type=weir`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the weir input as described in
     [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
@@ -275,7 +280,7 @@ class Weir(Structure):
 class UniversalWeir(Structure):
     """
     Hydraulic structure with `type=universalWeir`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the universal weir input as described in
     [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
@@ -332,7 +337,7 @@ class CulvertSubType(str, Enum):
 class Culvert(Structure):
     """
     Hydraulic structure with `type=culvert`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the culvert input as described in
     [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
@@ -367,7 +372,7 @@ class Culvert(Structure):
 class Pump(Structure):
     """
     Hydraulic structure with `type=pump`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the pump input as described in
     [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
@@ -403,7 +408,7 @@ class Pump(Structure):
 class Compound(Structure):
     """
     Hydraulic structure with `type=compound`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the compound input as described in
     [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
@@ -423,7 +428,7 @@ class Compound(Structure):
 class Orifice(Structure):
     """
     Hydraulic structure with `type=orifice`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the orifice input as described in
     [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
@@ -496,7 +501,7 @@ class DambreakAlgorithm(int, Enum):
 class Dambreak(Structure):
     """
     Hydraulic structure with `type=dambreak`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the dambreak input as described in
     [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
@@ -678,7 +683,7 @@ class Dambreak(Structure):
 class Bridge(Structure):
     """
     Hydraulic structure with `type=bridge`, to be included in a structure file.
-    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.structurefile[0].structure[..]`
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the bridge input as described in
     [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
