@@ -149,7 +149,7 @@ class TestFileModel:
         extforce.boundary[0].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
         extforce.boundary[1].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
 
-        reference_model.save()
+        reference_model.save(recurse=True)
 
         read_model = FMModel(model_path)
 

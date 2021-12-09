@@ -16,6 +16,7 @@ from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
+from pydantic.fields import PrivateAttr
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import to_key
@@ -252,7 +253,16 @@ class FilePathResolver:
     def _direct_parent(self) -> Path:
         return self._parents[-1][0] if self._parents else Path.cwd()
 
-    def _get_current_parent(self) -> Path:
+    def get_current_parent(self) -> Path:
+        """Get the current absolute path with which files are resolved.
+
+        If the current mode is relative to the parent, the latest added
+        parent is added. If the current mode is relative to an anchor
+        path, the latest added anchor path is returned.
+
+        Returns:
+            Path: The absolute path to the current parent.
+        """
         if self._anchor:
             return self._anchor
         return self._direct_parent
@@ -271,7 +281,7 @@ class FilePathResolver:
         if path.is_absolute():
             return path
 
-        parent = self._get_current_parent()
+        parent = self.get_current_parent()
         return (parent / path).resolve()
 
     def push_new_parent(
@@ -378,6 +388,18 @@ class FileLoadContext:
         absolute_path = self._path_resolver.resolve(path)
         self._cache.register_model(absolute_path, model)
 
+    def get_current_parent(self) -> Path:
+        """Get the current absolute path with which files are resolved.
+
+        If the current mode is relative to the parent, the latest added
+        parent is added. If the current mode is relative to an anchor
+        path, the latest added anchor path is returned.
+
+        Returns:
+            Path: The absolute path to the current parent.
+        """
+        return self._path_resolver.get_current_parent()
+
     def resolve(self, path: Path) -> Path:
         """Resolve the provided path.
 
@@ -432,6 +454,14 @@ def file_load_context():
             context_file_loading.reset(context_reset_token)
 
 
+def _should_traverse(model: BaseModel, _: FileLoadContext) -> bool:
+    return model.is_intermediate_link()
+
+
+def _should_execute(model: BaseModel, _: FileLoadContext) -> bool:
+    return model.is_file_link()
+
+
 class FileModel(BaseModel, ABC):
     """Base class to represent models with a file representation.
 
@@ -454,12 +484,20 @@ class FileModel(BaseModel, ABC):
             The path of this FileModel. This path can be either absolute or relative.
             If it is a relative path, it is assumed to be resolved from some root
             model.
+        save_location (Path):
+            A readonly property corresponding with the (current) save location of this
+            FileModel. If read from a file or after saving recursively or
+            after calling synchronize_filepath, this value will be updated to its new
+            state. If made from memory and filepath is not set, it will correspond with
+            cwd / filename.extension
     """
 
     __slots__ = ["__weakref__"]
     # Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
     _file_models_cache: WeakValueDictionary = WeakValueDictionary()
     filepath: Optional[Path] = None
+    # Absolute anchor is used to resolve the save location when the filepath is relative.
+    _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
 
     def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
         """Creates a new model.
@@ -491,6 +529,7 @@ class FileModel(BaseModel, ABC):
         with file_load_context() as context:
             context.register_model(filepath, self)
 
+            self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
 
             context.push_new_parent(filepath.parent, self._relative_mode)
@@ -523,6 +562,20 @@ class FileModel(BaseModel, ABC):
         with file_load_context() as context:
             return context.resolve(self.filepath)
 
+    @property
+    def save_location(self) -> Path:
+        """Gets the current save location which will be used when calling `save()`
+
+        Returns:
+            Path: The location at which this model will be saved.
+        """
+        filepath = self.filepath if self.filepath is not None else self._generate_name()
+
+        if filepath.is_absolute:
+            return filepath
+
+        return self._absolute_anchor_path / filepath
+
     def is_file_link(self) -> bool:
         return True
 
@@ -543,46 +596,56 @@ class FileModel(BaseModel, ABC):
             warn(f"File: `{filepath}` not found, skipped parsing.")
             return {}
 
-    def save(self, folder: Optional[Path] = None) -> Path:
-        """Save model and child models to their set filepaths.
+    def save(self, filepath: Optional[Path] = None, recurse: bool = False) -> None:
+        """Save the model to disk.
 
-        If a folder is given, for models with an unset filepath,
-        we generate one based on the given `folder` and a default name.
-        Otherwise we override the folder part of already set filepaths.
-        This can thus be used to copy complete models.
+        If recurse is set to True, all of the child FileModels will be saved as well.
+        Relative child models are stored relative to this Model, according to the
+        model file hierarchy specified with the respective filepaths.
+        Absolute paths will be written to their respective locations. Note that this
+        will overwrite any existing files that are stored in this location.
+
+        Note that if recurse is set to True, the save_location properties of the
+        children are updated to their respective new locations.
+
+        If filepath it is specified, the filepath of this FileModel is set to the
+        specified path before the save operation is executed. If none is specified
+        it will use the current filepath.
+
+        If the used filepath is relative, it will be stored at the current
+        save_location. If you only want to save a child model of some root model, it is
+        recommended to first call synchronize_filepaths on the root model, to ensure
+        the child model's save_location is correctly determined.
 
         Args:
-            folder: path to the folder where this FileModel will be stored
+            filepath (Optional[Path], optional):
+                The file path at which this model is saved. If None is specified
+                it defaults to the filepath currently stored in the filemodel.
+                Defaults to None.
+            recurse (bool, optional):
+                Whether to save all children of this FileModel (when set to True),
+                or only save this model (when set to False). Defaults to False.
         """
-        if self.filepath is None and folder is None:
-            raise ValueError(
-                "Either set the `filepath` on the model or pass a `folder` when saving."
-            )
-
-        # Handle export
-        if folder is not None:
-            self._apply_recurse(self._export.__name__, folder)
-            return self.filepath  # type: ignore[arg-type]
+        if filepath is not None:
+            self.filepath = filepath
 
         # Handle save
         with file_load_context() as context:
-            self._save_tree(context)
-            return self._resolved_filepath  # type: ignore[arg-type]
+            context.push_new_parent(self._absolute_anchor_path, self._relative_mode)
 
-    def _export(self, folder: Path) -> None:
-        filename = Path(self.filepath.name) if self.filepath else self._generate_name()
-        self.filepath = folder / filename
+            if recurse:
+                self._save_tree(context)
+            else:
+                self._save_instance()
 
-        self._serialize(self.dict())
+    def _save_instance(self) -> None:
+        if self.filepath is None:
+            self.filepath = self._generate_name()
+
+        self._save()
 
     def _save_tree(self, context: FileLoadContext) -> None:
         # Ensure all names are generated prior to saving
-        def should_traverse(model: BaseModel, _: FileLoadContext) -> bool:
-            return model.is_intermediate_link()
-
-        def should_execute(model: BaseModel, _: FileLoadContext) -> bool:
-            return model.is_file_link()
-
         def execute_generate_name(
             model: BaseModel, acc: FileLoadContext
         ) -> FileLoadContext:
@@ -591,8 +654,8 @@ class FileModel(BaseModel, ABC):
             return acc
 
         name_traverser = ModelTreeTraverser[FileLoadContext](
-            should_traverse=should_traverse,
-            should_execute=should_execute,
+            should_traverse=_should_traverse,
+            should_execute=_should_execute,
             post_traverse_func=execute_generate_name,
         )
 
@@ -606,12 +669,13 @@ class FileModel(BaseModel, ABC):
         def save_post(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
             if isinstance(model, FileModel):
                 acc.pop_last_parent()
+                model._absolute_anchor_path = acc.get_current_parent()
                 model._save()
             return acc
 
         save_traverser = ModelTreeTraverser[FileLoadContext](
-            should_traverse=should_traverse,
-            should_execute=should_execute,
+            should_traverse=_should_traverse,
+            should_execute=_should_execute,
             pre_traverse_func=save_pre,
             post_traverse_func=save_post,
         )
@@ -633,6 +697,34 @@ class FileModel(BaseModel, ABC):
 
         path.parent.mkdir(parents=True, exist_ok=True)
         self._get_serializer()(path, data)
+
+    def synchronize_filepaths(self) -> None:
+        """Synchronize the save_location properties of all child models respective to
+        this FileModel's save_location.
+        """
+
+        def sync_pre(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
+            if isinstance(model, FileModel):
+                acc.push_new_parent(model.filepath.parent, model._relative_mode)  # type: ignore[arg-type]
+            return acc
+
+        def sync_post(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
+            if isinstance(model, FileModel):
+                acc.pop_last_parent()
+                model._absolute_anchor_path = acc.get_current_parent()
+                model._save()
+            return acc
+
+        traverser = ModelTreeTraverser[FileLoadContext](
+            should_traverse=_should_traverse,
+            should_execute=_should_execute,
+            pre_traverse_func=sync_pre,
+            post_traverse_func=sync_post,
+        )
+
+        with file_load_context() as context:
+            context.push_new_parent(self._absolute_anchor_path, self._relative_mode)
+            traverser.traverse(self, context)
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
