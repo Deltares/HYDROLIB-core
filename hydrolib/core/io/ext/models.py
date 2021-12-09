@@ -14,6 +14,14 @@ from hydrolib.core.utils import str_is_empty_or_none
 
 
 class Boundary(INIBasedModel):
+    """
+    A `[Boundary]` block for use inside an external forcings file,
+    i.e., a [ExtModel][hydrolib.core.io.ext.models.ExtModel].
+
+    All lowercased attributes match with the boundary input as described in
+    [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
+    """
+
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
@@ -84,6 +92,14 @@ class Boundary(INIBasedModel):
 
 
 class Lateral(INIBasedModel):
+    """
+    A `[Lateral]` block for use inside an external forcings file,
+    i.e., a [ExtModel][hydrolib.core.io.ext.models.ExtModel].
+
+    All lowercased attributes match with the lateral input as described in
+    [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
+    """
+
     _header: Literal["Lateral"] = "Lateral"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
@@ -215,12 +231,25 @@ class Lateral(INIBasedModel):
 
 
 class ExtGeneral(INIGeneral):
+    """The external forcing file's `[General]` section with file meta data."""
+
     _header: Literal["General"] = "General"
     fileversion: str = Field("2.01", alias="fileVersion")
     filetype: Literal["extForce"] = Field("extForce", alias="fileType")
 
 
 class ExtModel(INIModel):
+    """
+    The overall external forcings model that contains the contents of one external forcings file (new format).
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.external_forcing.extforcefilenew`.
+
+    Attributes:
+        general (ExtGeneral): `[General]` block with file metadata.
+        boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
+        lateral List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
+    """
+
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = []
     lateral: List[Lateral] = []
