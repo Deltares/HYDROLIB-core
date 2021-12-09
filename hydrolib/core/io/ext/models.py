@@ -235,7 +235,7 @@ class Lateral(INIBasedModel):
 
 
 class ExtGeneral(INIGeneral):
-    """The external forcing file's ```[General]``` section with file meta data."""
+    """The external forcing file's `[General]` section with file meta data."""
 
     _header: Literal["General"] = "General"
     fileversion: str = Field("2.01", alias="fileVersion")
@@ -249,9 +249,9 @@ class ExtModel(INIModel):
     This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.external_forcing.extforcefilenew`.
 
     Attributes:
-        general (ExtGeneral): ```[General]``` block with file metadata.
-        boundary (List[Boundary]): List of ```[Boundary]``` blocks for all boundary conditions.
-        lateral List[Lateral]): List of ```[Lateral]``` blocks for all lateral discharges.
+        general (ExtGeneral): `[General]` block with file metadata.
+        boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
+        lateral List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
     """
 
     general: ExtGeneral = ExtGeneral()

@@ -28,14 +28,14 @@ frictionvalue_description = "Roughness value; its meaning depends on the roughne
 
 
 class CrossDefGeneral(INIGeneral):
-    """The crosssection definition file's ```[General]``` section with file meta data."""
+    """The crosssection definition file's `[General]` section with file meta data."""
 
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["crossDef"] = Field("crossDef", alias="fileType")
 
 
 class CrossLocGeneral(INIGeneral):
-    """The crosssection location file's ```[General]``` section with file meta data."""
+    """The crosssection location file's `[General]` section with file meta data."""
 
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["crossLoc"] = Field("crossLoc", alias="fileType")
@@ -158,8 +158,8 @@ class CrossDefModel(INIModel):
     This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile`.
 
     Attributes:
-        general (CrossdefGeneral): ```[General]``` block with file metadata.
-        definition (List[CrossSectionDefinition]): List of ```[Definition]``` blocks for all cross sections.
+        general (CrossdefGeneral): `[General]` block with file metadata.
+        definition (List[CrossSectionDefinition]): List of `[Definition]` blocks for all cross sections.
     """
 
     general: CrossDefGeneral = CrossDefGeneral()
@@ -671,8 +671,8 @@ class CrossLocModel(INIModel):
     This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crosslocfile`.
 
     Attributes:
-        general (CrossLocGeneral): ```[General]``` block with file metadata.
-        crosssection (List[CrossSection]): List of ```[CrossSection]``` blocks for all cross section locations.
+        general (CrossLocGeneral): `[General]` block with file metadata.
+        crosssection (List[CrossSection]): List of `[CrossSection]` blocks for all cross section locations.
     """
 
     general: CrossLocGeneral = CrossLocGeneral()

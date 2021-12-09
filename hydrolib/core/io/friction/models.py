@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class FrictGeneral(INIGeneral):
-    """The friction file's ```[General]``` section with file meta data."""
+    """The friction file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
         fileversion: Optional[str] = Field(
@@ -38,7 +38,7 @@ class FrictGeneral(INIGeneral):
 
 
 class FrictGlobal(INIBasedModel):
-    """A ```[Global]``` block for use inside a friction file.
+    """A `[Global]` block for use inside a friction file.
 
     Multiple of such blocks may be present to define multiple frictionId classes.
     """
@@ -65,7 +65,7 @@ class FrictGlobal(INIBasedModel):
 
 
 class FrictBranch(INIBasedModel):
-    """A ```[Branch]``` block for use inside a friction file.
+    """A `[Branch]` block for use inside a friction file.
 
     Each block can define the roughness value(s) on a particular branch.
     """
@@ -181,9 +181,9 @@ class FrictionModel(INIModel):
     This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel].
 
     Attributes:
-        general (FrictGeneral): ```[General]``` block with file metadata.
-        global_ (List[FrictGlobal]): Definitions of ```[Global]``` friction classes.
-        branch (List[FrictBranch]): Definitions of ```[Branch]``` friction values.
+        general (FrictGeneral): `[General]` block with file metadata.
+        global_ (List[FrictGlobal]): Definitions of `[Global]` friction classes.
+        branch (List[FrictBranch]): Definitions of `[Branch]` friction values.
     """
 
     general: FrictGeneral = FrictGeneral()
