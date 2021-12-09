@@ -1540,40 +1540,6 @@ BuiModel            (<a title="hydrolib.core.basemodel.FileModel" href="../api/#
 
       <p>Model that represents the file structure of a .bui file.</p>
 
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>FileModel</code></td>
-        <td><code>BuiModel</code></td>
-        <td><p>Basemodel.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>BuiModel</code></td>
-      <td><p>New object containing data representing the .bui file.</p></td>
-    </tr>
-  </tbody>
-</table>
 
 
 
@@ -2502,7 +2468,7 @@ hours and minutes.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>timestamp</code></td>
+        <td><code>duration</code></td>
         <td><code>timedelta</code></td>
         <td><p>Timedelta to convert.</p></td>
         <td><em>required</em></td>
@@ -2534,7 +2500,7 @@ hours and minutes.</p>
 <span class="sd">    hours and minutes.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        timestamp (timedelta): Timedelta to convert.</span>
+<span class="sd">        duration (timedelta): Timedelta to convert.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: Dictionary containing all fields.</span>
@@ -3028,7 +2994,7 @@ Otherwise it will crash.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>event_list_data</code></td>
+        <td><code>data_to_serialize</code></td>
         <td><code>Dict</code></td>
         <td><p>Dictionary containing list of events.</p></td>
         <td><em>required</em></td>
@@ -3058,7 +3024,7 @@ Otherwise it will crash.</p>
 <span class="sd">    Serializes a event list dictionary into a single text block.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        event_list_data (Dict): Dictionary containing list of events.</span>
+<span class="sd">        data_to_serialize (Dict): Dictionary containing list of events.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Text block representing all precipitation events.</span>

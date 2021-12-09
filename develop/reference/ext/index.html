@@ -880,6 +880,20 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ext.models.ExtGeneral" class="md-nav__link">
+    ExtGeneral
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ext.models.ExtModel" class="md-nav__link">
+    ExtModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.ext.models.Lateral" class="md-nav__link">
     Lateral
   </a>
@@ -1162,6 +1176,20 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ext.models.ExtGeneral" class="md-nav__link">
+    ExtGeneral
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ext.models.ExtModel" class="md-nav__link">
+    ExtModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.ext.models.Lateral" class="md-nav__link">
     Lateral
   </a>
@@ -1254,6 +1282,10 @@ Boundary            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="
 
     <div class="doc doc-contents ">
 
+      <p>A <code>[Boundary]</code> block for use inside an external forcings file,
+i.e., a <a href="#hydrolib.core.io.ext.models.ExtModel">ExtModel</a>.</p>
+<p>All lowercased attributes match with the boundary input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1">UM Sec.C.5.2.1</a>.</p>
 
 
 
@@ -1468,7 +1500,129 @@ Boundary            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="
 
 
 
+  <div class="doc doc-object doc-class">
 
+
+
+<h3 id="hydrolib.core.io.ext.models.ExtGeneral" class="doc doc-heading">
+        <code>
+ExtGeneral            (<span title="hydrolib.core.io.ini.models.INIGeneral">INIGeneral</span>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ext.models.ExtGeneral" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The external forcing file's <code>[General]</code> section with file meta data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ext.models.ExtModel" class="doc doc-heading">
+        <code>
+ExtModel            (<a title="hydrolib.core.io.ini.models.INIModel" href="../ini/#hydrolib.core.io.ini.models.INIModel">INIModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ext.models.ExtModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The overall external forcings model that contains the contents of one external forcings file (new format).</p>
+<p>This model is typically referenced under a <a href="../mdu/#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.external_forcing.extforcefilenew</code>.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>general</code></td>
+        <td><code>ExtGeneral</code></td>
+        <td><p><code>[General]</code> block with file metadata.</p></td>
+      </tr>
+      <tr>
+        <td><code>boundary</code></td>
+        <td><code>List[Boundary]</code></td>
+        <td><p>List of <code>[Boundary]</code> blocks for all boundary conditions.</p></td>
+      </tr>
+      <tr>
+        <td><code>lateral</code></td>
+        <td><code>List[Lateral]</code></td>
+        <td><p>List of <code>[Lateral]</code> blocks for all lateral discharges.</p></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 
@@ -1492,6 +1646,10 @@ Lateral            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href=".
 
     <div class="doc doc-contents ">
 
+      <p>A <code>[Lateral]</code> block for use inside an external forcings file,
+i.e., a <a href="#hydrolib.core.io.ext.models.ExtModel">ExtModel</a>.</p>
+<p>All lowercased attributes match with the lateral input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2">UM Sec.C.5.2.2</a>.</p>
 
 
 

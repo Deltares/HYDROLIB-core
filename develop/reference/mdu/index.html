@@ -934,6 +934,20 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Hydrology" class="md-nav__link">
+    Hydrology
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Numerics" class="md-nav__link">
+    Numerics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#hydrolib.core.io.mdu.models.Output" class="md-nav__link">
     Output
   </a>
@@ -950,6 +964,55 @@ You're not viewing the latest version.
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Physics" class="md-nav__link">
+    Physics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Restart" class="md-nav__link">
+    Restart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Time" class="md-nav__link">
+    Time
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Trachytopes" class="md-nav__link">
+    Trachytopes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.VolumeTables" class="md-nav__link">
+    VolumeTables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Waves" class="md-nav__link">
+    Waves
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Wind" class="md-nav__link">
+    Wind
+  </a>
   
 </li>
       
@@ -1139,6 +1202,20 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Hydrology" class="md-nav__link">
+    Hydrology
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Numerics" class="md-nav__link">
+    Numerics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#hydrolib.core.io.mdu.models.Output" class="md-nav__link">
     Output
   </a>
@@ -1155,6 +1232,55 @@ You're not viewing the latest version.
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Physics" class="md-nav__link">
+    Physics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Restart" class="md-nav__link">
+    Restart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Time" class="md-nav__link">
+    Time
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Trachytopes" class="md-nav__link">
+    Trachytopes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.VolumeTables" class="md-nav__link">
+    VolumeTables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Waves" class="md-nav__link">
+    Waves
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hydrolib.core.io.mdu.models.Wind" class="md-nav__link">
+    Wind
+  </a>
   
 </li>
       
@@ -1208,6 +1334,10 @@ ExternalForcing            (<a title="hydrolib.core.io.ini.models.INIBasedModel"
 
     <div class="doc doc-contents ">
 
+      <p>The <code>[External Forcing]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.external_forcing</code>.</p>
+<p>All lowercased attributes match with the [External Forcing] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
 
 
 
@@ -1300,7 +1430,10 @@ FMModel            (<a title="hydrolib.core.io.ini.models.INIModel" href="../ini
 
     <div class="doc doc-contents ">
 
-      <p>FM Model representation.</p>
+      <p>The overall FM model that contains the contents of the toplevel MDU file.</p>
+<p>All lowercased attributes match with the supported "[section]"s as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+<p>Each of these class attributes refers to an underlying model class for that particular section.</p>
 
 
 
@@ -1389,6 +1522,10 @@ Geometry            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="
 
     <div class="doc doc-contents ">
 
+      <p>The <code>[Geometry]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.geometry</code>.</p>
+<p>All lowercased attributes match with the [Geometry] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
 
 
 
@@ -1586,7 +1723,182 @@ Geometry            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="
 
 
 
+  <div class="doc doc-object doc-class">
 
+
+
+<h3 id="hydrolib.core.io.mdu.models.Hydrology" class="doc doc-heading">
+        <code>
+Hydrology            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Hydrology" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Hydrology]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.hydrology</code>.</p>
+<p>All lowercased attributes match with the [Hydrology] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.Numerics" class="doc doc-heading">
+        <code>
+Numerics            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Numerics" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Numerics]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.numerics</code>.</p>
+<p>All lowercased attributes match with the [Numerics] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 
@@ -1610,6 +1922,10 @@ Output            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="..
 
     <div class="doc doc-contents ">
 
+      <p>The <code>[Output]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.output</code>.</p>
+<p>All lowercased attributes match with the [Output] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
 
 
 
@@ -1919,6 +2235,33 @@ Output            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="..
 
 
 
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.Physics" class="doc doc-heading">
+        <code>
+Physics            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Physics" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Physics]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.physics</code>.</p>
+<p>All lowercased attributes match with the [Physics] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
 
 
 
@@ -1938,6 +2281,512 @@ Output            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="..
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.Restart" class="doc doc-heading">
+        <code>
+Restart            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Restart" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Restart]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.restart</code>.</p>
+<p>All lowercased attributes match with the [Restart] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.Time" class="doc doc-heading">
+        <code>
+Time            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Time" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Time]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.time</code>.</p>
+<p>All lowercased attributes match with the [Time] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.Trachytopes" class="doc doc-heading">
+        <code>
+Trachytopes            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Trachytopes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Trachytopes]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.trachytopes</code>.</p>
+<p>All lowercased attributes match with the [Trachytopes] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.VolumeTables" class="doc doc-heading">
+        <code>
+VolumeTables            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.VolumeTables" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[VolumeTables]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.volumetables</code>.</p>
+<p>All lowercased attributes match with the [VolumeTables] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.Waves" class="doc doc-heading">
+        <code>
+Waves            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Waves" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Waves]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.waves</code>.</p>
+<p>All lowercased attributes match with the [Waves] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.mdu.models.Wind" class="doc doc-heading">
+        <code>
+Wind            (<a title="hydrolib.core.io.ini.models.INIBasedModel" href="../ini/#hydrolib.core.io.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.mdu.models.Wind" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The <code>[Wind]</code> section in an MDU file.</p>
+<p>This model is typically referenced under <a href="#hydrolib.core.io.mdu.models.FMModel">FMModel</a><code>.wind</code>.</p>
+<p>All lowercased attributes match with the [Wind] input as described in
+<a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A">UM Sec.A</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 
