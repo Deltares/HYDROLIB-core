@@ -211,6 +211,7 @@ class StorageNode(INIBasedModel):
                     f"Number of values for {field} should be equal to the {length_field_name} value."
                 )
 
+
 class StorageNodeModel(INIModel):
     general: StorageNodeGeneral = StorageNodeGeneral()
     storagenode: List[StorageNode] = []
