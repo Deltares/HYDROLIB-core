@@ -4,7 +4,7 @@ from typing import List, Literal, Optional
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral
+from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_enum_validator
 
 
@@ -210,3 +210,11 @@ class StorageNode(INIBasedModel):
                 raise ValueError(
                     f"Number of values for {field} should be equal to the {length_field_name} value."
                 )
+
+class StorageNodeModel(INIModel):
+    general: StorageNodeGeneral = StorageNodeGeneral()
+    storagenode: List[StorageNode] = []
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "nodeFile"
