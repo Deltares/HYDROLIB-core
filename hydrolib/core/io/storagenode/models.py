@@ -181,7 +181,6 @@ class StorageNode(INIBasedModel):
                 "bedlevel",
                 "area",
                 "streetlevel",
-                "streetstoragearea",
                 values=values,
                 usetable=False,
             )
@@ -211,6 +210,7 @@ class StorageNode(INIBasedModel):
                     f"Number of values for {field} should be equal to the {length_field_name} value."
                 )
 
+
 class StorageNodeModel(INIModel):
     general: StorageNodeGeneral = StorageNodeGeneral()
     storagenode: List[StorageNode] = []
@@ -218,3 +218,17 @@ class StorageNodeModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "nodeFile"
+
+    @validator("storagenode", each_item=True)
+    def _validate(cls, storagenode: StorageNode, values: dict):
+        """Validates for each storage node whether the streetStorageArea value is provided
+        when the general useStreetStorage is True and the storage node useTable is False.
+        """
+
+        usestreetstorage = values["general"].usestreetstorage
+
+        if usestreetstorage and not storagenode.usetable:
+            if storagenode.streetstoragearea is None:
+                raise ValueError(
+                    f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id {storagenode.id}"
+                )

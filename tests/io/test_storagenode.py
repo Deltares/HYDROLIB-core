@@ -5,8 +5,19 @@ from hydrolib.core.io.storagenode.models import (
     Interpolation,
     NodeType,
     StorageNode,
+    StorageNodeGeneral,
+    StorageNodeModel,
     StorageType,
 )
+
+
+class TestStorageNodeGeneral:
+    def test_create(self):
+        general = StorageNodeGeneral()
+
+        assert general.fileversion == "2.00"
+        assert general.filetype == "storageNodes"
+        assert general.usestreetstorage == True
 
 
 class TestStorageNode:
@@ -63,7 +74,6 @@ class TestStorageNode:
             (False, "bedlevel"),
             (False, "area"),
             (False, "streetlevel"),
-            (False, "streetstoragearea"),
         ],
     )
     def test_validate_required_usetable_fields(self, usetable: bool, missingfield: str):
@@ -89,6 +99,19 @@ class TestStorageNode:
         expected_message = (
             f"Number of values for {field} should be equal to the numlevels value."
         )
+        assert expected_message in str(error.value)
+
+
+class TestStorageNodeModel:
+    def test_validate_storagenode_requires_streetstoragearea(self):
+
+        storagenodevalues = _create_required_storage_node_values(False)
+        del storagenodevalues["streetstoragearea"]
+
+        with pytest.raises(ValidationError) as error:
+            StorageNodeModel(**dict(storagenode=[storagenodevalues]))
+
+        expected_message = f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id storagenode_id"
         assert expected_message in str(error.value)
 
 
