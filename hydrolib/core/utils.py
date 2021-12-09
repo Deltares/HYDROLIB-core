@@ -1,5 +1,4 @@
-from types import new_class
-from typing import Any, Callable, Generator, Generic, List, TypeVar, cast
+from typing import Any, List, Optional
 
 
 def example(a: float, b: float = 1.0) -> float:
@@ -45,3 +44,28 @@ def str_is_empty_or_none(str_field: str) -> bool:
         bool: Evaluation result.
     """
     return str_field is None or not str_field or str_field.isspace()
+
+
+def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
+    """Finds the substring between two other strings.
+
+    Args:
+        source (str): The source string.
+        start (str): The starting string from where to create the substring.
+        end (str): The end string to where to create the substring.
+
+    Returns:
+        str: The substring if found; otherwise, `None`.
+    """
+
+    index_start = source.find(start)
+    if index_start == -1:
+        return None
+
+    index_start += len(start)
+
+    index_end = source.find(end, index_start)
+    if index_end == -1:
+        return None
+
+    return source[index_start:index_end]

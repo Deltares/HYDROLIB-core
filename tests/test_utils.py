@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.io.mdu.models import Output
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.utils import get_substring_between, str_is_empty_or_none
 
 
 class TestSplitString:
@@ -35,3 +35,22 @@ class TestStrIsEmptyOrNone:
 
     def test_given_valid_args_returns_true(self):
         assert str_is_empty_or_none("aValue") is False
+
+
+class TestGetSubstringBetween:
+    @pytest.mark.parametrize(
+        "start, end, exp_result",
+        [
+            pytest.param("", "brown", "The quick "),
+            pytest.param("brown", "lazy", " fox jumps over the "),
+            pytest.param("lazy", "brown", None),
+            pytest.param("brown", "cat", None),
+        ],
+    )
+    def test_get_substring_between_expected_result(
+        self, start: str, end: str, exp_result: str
+    ):
+        source = "The quick brown fox jumps over the lazy dog"
+        result = get_substring_between(source, start, end)
+
+        assert result == exp_result
