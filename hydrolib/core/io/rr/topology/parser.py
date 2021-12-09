@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Iterable
 from warnings import warn
 
 from hydrolib.core.utils import get_substring_between
@@ -23,13 +24,19 @@ class NetworkTopologyFileParser:
             path (Path): Path to the network topology file.
         """
 
+        file_content = self._read_file(path)
+        return self._parse_lines(file_content)
+
+    def _read_file(self, path: Path) -> Iterable[str]:
         if not path.is_file():
             warn(f"File: `{path}` not found, skipped parsing.")
-            return {}
+            return []
 
         with open(path) as file:
             lines = file.readlines()
+        return lines
 
+    def _parse_lines(self, lines: Iterable[str]) -> dict:
         records = []
 
         key_start = self._enclosing_tag.upper()
@@ -41,23 +48,27 @@ class NetworkTopologyFileParser:
             if substring == None:
                 continue
 
-            parts = substring.split()
-
-            record = {}
-
-            index = 0
-            while index < len(parts) - 1:
-                key = parts[index]
-                if key == "mt" and parts[index + 1] == "1":
-                    # `mt 1` is one keyword, but was parsed as two separate parts.
-                    index += 1
-
-                index += 1
-                value = parts[index].strip("'")
-                index += 1
-
-                record[key] = value
-
+            record = self._parse_line(substring)
             records.append(record)
 
         return {key_end: records}
+
+    def _parse_line(self, line: str) -> dict:
+        parts = line.split()
+
+        record = {}
+
+        index = 0
+        while index < len(parts) - 1:
+            key = parts[index]
+            if key == "mt" and parts[index + 1] == "1":
+                # `mt 1` is one keyword, but was parsed as two separate parts.
+                index += 1
+
+            index += 1
+            value = parts[index].strip("'")
+            index += 1
+
+            record[key] = value
+
+        return record

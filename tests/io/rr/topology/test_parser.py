@@ -18,7 +18,7 @@ class TestNetworkTopologyFileParser:
         actualmessage = warning.list[0].message.args[0]
         assert actualmessage == f"File: `{path}` not found, skipped parsing."
         assert result is not None
-        assert len(result) == 0
+        assert len(result["node"]) == 0
 
     def test_parse_parses_file_correctly(self):
 
