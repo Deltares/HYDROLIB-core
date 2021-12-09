@@ -40,6 +40,11 @@ jobs:
           export RELEASE_TAG_VERSION=${{ github.event.release.tag_name }}
           echo "RELEASE_TAG_VERSION=${RELEASE_TAG_VERSION:1}" >> $GITHUB_ENV
 
+      - name: Setup doc deploy
+        run: |
+          git config --global user.name '${{ github.actor }}'
+          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+
       - run: |
           poetry run mike deploy --push --update-aliases ${RELEASE_TAG_VERSION} latest
           poetry run mike set-default --push latest

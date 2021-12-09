@@ -34,5 +34,9 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - run: poetry run mkdocs gh-deploy --force
+      - name: Setup doc deploy
+        run: |
+          git config --global user.name '${{ github.actor }}'
+          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+
       - run: poetry run mike deploy --push develop
