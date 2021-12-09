@@ -6,17 +6,15 @@ from typing import Any, Callable, List, Union
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.ini.models import (
+from hydrolib.core.io.crosssection.models import (
     CircleCrsDef,
     CrossDefModel,
-    CrossSectionDefinition,
     RectangleCrsDef,
     XYZCrsDef,
     YZCrsDef,
     ZWCrsDef,
     ZWRiverCrsDef,
 )
-from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
 from ..utils import WrapperTest, test_data_dir
 

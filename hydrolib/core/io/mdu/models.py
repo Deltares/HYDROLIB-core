@@ -3,15 +3,10 @@ from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field
 
+from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
-from hydrolib.core.io.ini.models import (
-    CrossDefModel,
-    CrossLocModel,
-    INIBasedModel,
-    INIGeneral,
-    INIModel,
-)
+from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
@@ -105,6 +100,13 @@ class Physics(INIBasedModel):
     dalton: float = Field(0.0013, alias="dalton")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
     betaspiral: int = Field(0, alias="betaSpiral")
+
+
+class Sediment(INIBasedModel):
+    _header: Literal["Sediment"] = "Sediment"
+    sedimentmodelnr: Optional[int] = Field(alias="Sedimentmodelnr")
+    morfile: Optional[str] = Field(alias="MorFile")
+    sedfile: Optional[str] = Field(alias="SedFile")
 
 
 class Wind(INIBasedModel):
@@ -400,6 +402,7 @@ class FMModel(INIModel):
     volumetables: VolumeTables = Field(default_factory=VolumeTables)
     numerics: Numerics = Field(default_factory=Numerics)
     physics: Physics = Field(default_factory=Physics)
+    sediment: Sediment = Field(default_factory=Sediment)
     wind: Wind = Field(default_factory=Wind)
     waves: Optional[Waves] = None
     time: Time = Field(default_factory=Time)
