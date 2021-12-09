@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Any, Dict
 
 
 class NodeFileSerializer:
@@ -23,7 +24,7 @@ class NodeFileSerializer:
                 f.write(line.encode("utf8"))
 
     @staticmethod
-    def _to_line(node: dict) -> str:
+    def _to_line(node: Dict[str, Any]) -> str:
         identifier = node["id"]
         nm = node["nm"]
         ri = node["ri"]
@@ -57,7 +58,7 @@ class LinkFileSerializer:
                 f.write(line.encode("utf8"))
 
     @staticmethod
-    def _to_line(link: dict) -> str:
+    def _to_line(link: Dict[str, Any]) -> str:
         identifier = link["id"]
         nm = link["nm"]
         ri = link["ri"]
