@@ -240,8 +240,6 @@ class Weir(Structure):
 
     All lowercased attributes match with the weir input as described in
     [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
-
-    Attributes:
     """
 
     class Comments(Structure.Comments):
@@ -284,8 +282,6 @@ class UniversalWeir(Structure):
 
     All lowercased attributes match with the universal weir input as described in
     [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
-
-    Attributes:
     """
 
     class Comments(Structure.Comments):
@@ -341,8 +337,6 @@ class Culvert(Structure):
 
     All lowercased attributes match with the culvert input as described in
     [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
-
-    Attributes:
     """
 
     type: Literal["culvert"] = Field("culvert", alias="type")
@@ -376,8 +370,6 @@ class Pump(Structure):
 
     All lowercased attributes match with the pump input as described in
     [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
-
-    Attributes:
     """
 
     type: Literal["pump"] = Field("pump", alias="type")
@@ -412,8 +404,6 @@ class Compound(Structure):
 
     All lowercased attributes match with the compound input as described in
     [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
-
-    Attributes:
     """
 
     type: Literal["compound"] = Field("compound", alias="type")
@@ -432,8 +422,6 @@ class Orifice(Structure):
 
     All lowercased attributes match with the orifice input as described in
     [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
-
-    Attributes:
     """
 
     type: Literal["orifice"] = Field("orifice", alias="type")
@@ -505,8 +493,6 @@ class Dambreak(Structure):
 
     All lowercased attributes match with the dambreak input as described in
     [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
-
-    Attributes:
     """
 
     class Comments(Structure.Comments):
@@ -687,8 +673,6 @@ class Bridge(Structure):
 
     All lowercased attributes match with the bridge input as described in
     [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
-
-    Attributes:
     """
 
     class Comments(Structure.Comments):
