@@ -2,6 +2,7 @@ site_name: hydrolib-core documentation
 theme:
   name: material
   language: en
+  custom_dir: docs/overrides
   icon:
     logo: material/water-polo
   palette:
@@ -23,6 +24,7 @@ theme:
 plugins:
   - search
   - autorefs
+  - table-reader
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -46,9 +48,14 @@ markdown_extensions:
   - admonition
   - toc:
       permalink: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 repo_url: https://github.com/Deltares/hydrolib-core
 repo_name: deltares/hydrolib-core
 extra:
+  version:
+    provider: mike
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Deltares/hydrolib-core
@@ -61,36 +68,35 @@ extra_css:
   - stylesheets/extra.css
 
 nav:
-    - Home: 'index.md'
-    - How-to:
-        - Installation:
-            - 'pip install': 'guides/setup.md'
-            - 'Developer container': 'guides/devcontainers.md'
-            - 'Local clone + Poetry': 'guides/poetry.md'
-        - Contributing:
-            - 'guides/contributing.md'
-        - Documentation:
-            - 'guides/documentation.md'
-    - Tutorials:
-        - tutorials/steps.md
-        - tutorials/dataframe_handling.md
-        - tutorials/plotting_a_network.md
-    - Topics:
-        - topics/principles.md
-        - topics/pydantic.md
-    - API Reference:
-        - reference/api.md
-        - reference/bui.md
-        - reference/crosssection.md
-        - reference/dimr.md
-        - reference/ext.md
-        - reference/friction.md
-        - reference/forcing.md
-        - reference/glossary.md
-        - reference/ini.md
-        - reference/mdu.md
-        - reference/net.md
-        - reference/polyfile.md
-        - reference/structure.md
-        - reference/xyz.md
-    - Changelog: 'changelog.md'
+  - Home: "index.md"
+  - How-to:
+      - Installation:
+          - "pip install": "guides/setup.md"
+          - "Developer container": "guides/devcontainers.md"
+          - "Local clone + Poetry": "guides/poetry.md"
+      - Contributing:
+          - "guides/contributing.md"
+      - Documentation:
+          - "guides/documentation.md"
+  - Tutorials:
+      - tutorials/steps.md
+      - tutorials/dataframe_handling.md
+      - tutorials/plotting_a_network.md
+  - Topics:
+      - topics/dhydro_support.md
+      - topics/principles.md
+      - topics/pydantic.md
+  - API Reference:
+      - reference/api.md
+      - reference/bui.md
+      - reference/dimr.md
+      - reference/ext.md
+      - reference/forcing.md
+      - reference/glossary.md
+      - reference/ini.md
+      - reference/mdu.md
+      - reference/net.md
+      - reference/polyfile.md
+      - reference/structures.md
+      - reference/xyz.md
+  - Changelog: "changelog.md"
