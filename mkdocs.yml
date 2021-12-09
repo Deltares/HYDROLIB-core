@@ -40,12 +40,16 @@ plugins:
       custom_templates: templates
       watch:
         - hydrolib/core
+  - table-reader
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
   - admonition
   - toc:
       permalink: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 repo_url: https://github.com/Deltares/hydrolib-core
 repo_name: deltares/hydrolib-core
 extra:
@@ -76,6 +80,7 @@ nav:
         - tutorials/dataframe_handling.md
         - tutorials/plotting_a_network.md
     - Topics:
+        - topics/dhydro_support.md
         - topics/principles.md
     - API Reference:
         - reference/api.md
