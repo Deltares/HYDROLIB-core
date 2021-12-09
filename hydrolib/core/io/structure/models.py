@@ -744,7 +744,15 @@ class StructureGeneral(INIGeneral):
 
 
 class StructureModel(INIModel):
-    """Toplevel INIModel for a structure file."""
+    """
+    The overall structure model that contains the contents of one structure file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[..]`.
+
+    Attributes:
+        general (StructureGeneral): `[General]` block with file metadata.
+        branch (List[Structure]): List of `[Structure]` blocks for all hydraulic structures.
+    """
 
     general: StructureGeneral = StructureGeneral()
     structure: List[Structure] = []

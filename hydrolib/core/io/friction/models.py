@@ -176,9 +176,10 @@ class FrictBranch(INIBasedModel):
 
 
 class FrictionModel(INIModel):
-    """The overall friction model that contains the contents of one friction file.
+    """
+    The overall friction model that contains the contents of one friction file.
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel].
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.frictfile[..]`.
 
     Attributes:
         general (FrictGeneral): `[General]` block with file metadata.
