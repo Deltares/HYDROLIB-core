@@ -1,9 +1,11 @@
 from enum import Enum
 from typing import List, Literal, Optional
 
+from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral
+from hydrolib.core.io.ini.util import get_enum_validator
 
 
 class NodeType(str, Enum):
@@ -18,7 +20,7 @@ class StorageType(str, Enum):
     closed = "closed"
 
 
-class Interpolate(str, Enum):
+class Interpolation(str, Enum):
     linear = "linear"
     block = "block"
 
@@ -114,16 +116,54 @@ class StorageNode(INIBasedModel):
     usetable: bool = Field(alias="useTable")
 
     # useTable is True
-    bedlevel: float = Field(alias="bedLevel")
-    area: float = Field(alias="area")
-    streetlevel: float = Field(alias="streetLevel")
-    streetstoragearea: float = Field(alias="streetStorageArea")
+    bedlevel: Optional[float] = Field(alias="bedLevel")
+    area: Optional[float] = Field(alias="area")
+    streetlevel: Optional[float] = Field(alias="streetLevel")
+    streetstoragearea: Optional[float] = Field(alias="streetStorageArea")
     storagetype: Optional[StorageType] = Field(
         StorageType.reservoir, alias="storageType"
     )
 
     # useTable is False
-    numlevels: int = Field(alias="numLevels")
-    levels: List[float] = Field(alias="levels")
-    storagearea: List[float] = Field(alias="storageArea")
-    interpolate: Optional[Interpolate] = Field(Interpolate.linear, alias="interpolate")
+    numlevels: Optional[int] = Field(alias="numLevels")
+    levels: Optional[List[float]] = Field(alias="levels")
+    storagearea: Optional[List[float]] = Field(alias="storageArea")
+    interpolate: Optional[Interpolation] = Field(
+        Interpolation.linear, alias="interpolate"
+    )
+
+    _interpolation_validator = get_enum_validator("interpolate", enum=Interpolation)
+    _nodetype_validator = get_enum_validator("nodetype", enum=NodeType)
+    _storagetype_validator = get_enum_validator("storagetype", enum=StorageType)
+
+    @root_validator(skip_on_failure=True)
+    @classmethod
+    def validate_usetable(cls, values):
+
+        usetable = values["usetable"]
+
+        if usetable:
+            cls._validate_required_usetable_fields(
+                "numlevels", "levels", "storagearea", values=values, usetable=True
+            )
+        else:
+            cls._validate_required_usetable_fields(
+                "bedlevel",
+                "area",
+                "streetlevel",
+                "streetstoragearea",
+                values=values,
+                usetable=False,
+            )
+
+        return values
+
+    @classmethod
+    def _validate_required_usetable_fields(
+        cls, *field_names: str, values: dict, usetable: bool
+    ):
+        for field in field_names:
+            if values.get(field) == None:
+                raise ValueError(
+                    f"{field} should be provided when useTable is {usetable}"
+                )
