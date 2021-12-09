@@ -267,7 +267,26 @@ class Start(ControlModel):
 
 
 class DIMR(FileModel):
-    """DIMR model representation."""
+    """DIMR model representation.
+
+    Attributes:
+        documentation (Documentation): File metadata.
+        control (List[Union[Start, Parallel]]): The `<control>` element with a list
+            of [Start][hydrolib.core.io.dimr.models.Start]
+            and [Parallel][hydrolib.core.io.dimr.models.Parallel] sub-elements,
+            which defines the (sequence of) program(s) to be run.
+            May be empty while constructing, but must be non-empty when saving!
+            Also, all referenced components must be present in `component` when
+            saving. Similarly, all referenced couplers must be present in `coupler`.
+        component (List[Union[RRComponent, FMComponent, Component]]): List of
+            `<component>` elements that defines which programs can be used inside
+            the `<control>` subelements. Must be non-empty when saving!
+        coupler (Optional[List[Coupler]]): optional list of `<coupler>` elements
+            that defines which couplers can be used inside the `<parallel>`
+            elements under `<control>`.
+        waitFile (Optional[str]): Optional waitfile name for debugging.
+        global_settings (Optional[GlobalSettings]): Optional global DIMR settings.
+    """
 
     documentation: Documentation = Documentation()
     control: List[Union[Start, Parallel]] = Field(
