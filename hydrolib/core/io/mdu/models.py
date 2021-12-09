@@ -102,6 +102,13 @@ class Physics(INIBasedModel):
     betaspiral: int = Field(0, alias="betaSpiral")
 
 
+class Sediment(INIBasedModel):
+    _header: Literal["Sediment"] = "Sediment"
+    sedimentmodelnr: Optional[int] = Field(alias="Sedimentmodelnr")
+    morfile: Optional[str] = Field(alias="MorFile")
+    sedfile: Optional[str] = Field(alias="SedFile")
+
+
 class Wind(INIBasedModel):
     _header: Literal["Wind"] = "Wind"
     icdtyp: int = Field(2, alias="icdTyp")
@@ -395,6 +402,7 @@ class FMModel(INIModel):
     volumetables: VolumeTables = Field(default_factory=VolumeTables)
     numerics: Numerics = Field(default_factory=Numerics)
     physics: Physics = Field(default_factory=Physics)
+    sediment: Sediment = Field(default_factory=Sediment)
     wind: Wind = Field(default_factory=Wind)
     waves: Optional[Waves] = None
     time: Time = Field(default_factory=Time)
