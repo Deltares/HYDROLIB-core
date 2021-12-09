@@ -11,10 +11,10 @@ class NetworkTopologyFileParser:
         """Initializes a new instance of the `NetworkTopologyFileParser` class.
 
         Args:
-            closing_tag (str): The enclosing tag for the enclosed topology data per record.
+            enclosing_tag (str): The enclosing tag for the enclosed topology data per record.
         """
 
-        self.enclosing_tag = enclosing_tag
+        self._enclosing_tag = enclosing_tag
 
     def parse(self, path: Path) -> dict:
         """Parses a network topology file to a dictionary.
@@ -32,8 +32,8 @@ class NetworkTopologyFileParser:
 
         records = []
 
-        key_start = self.enclosing_tag.upper()
-        key_end = self.enclosing_tag.lower()
+        key_start = self._enclosing_tag.upper()
+        key_end = self._enclosing_tag.lower()
 
         for line in lines:
 
