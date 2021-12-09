@@ -71,6 +71,11 @@ class Component(BaseModel, ABC):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
+    def dict(self, *args, **kwargs):
+        # Exclude the FileModel from any DIMR serialization.
+        kwargs["exclude"] = {"model"}
+        return super().dict(*args, **kwargs)
+
 
 class FMComponent(Component):
     library: Literal["dflowfm"] = "dflowfm"
@@ -208,7 +213,33 @@ class StartGroup(BaseModel):
         return to_list(v)
 
 
-class Parallel(BaseModel):
+class ControlModel(BaseModel):
+    """
+    Overrides to make sure that the control elements in the DIMR
+    are parsed and serialized correctly.
+    """
+
+    _type: str
+
+    def dict(self, *args, **kwargs):
+        """Add control element prefixes for serialized data."""
+        return {
+            str(self._type): super().dict(*args, **kwargs),
+        }
+
+    @classmethod
+    def validate(cls, v):
+        """Remove control element prefixes from parsed data."""
+
+        # should be replaced by discriminated unions once merged
+        # https://github.com/samuelcolvin/pydantic/pull/2336
+        if isinstance(v, dict) and len(v.keys()) == 1:
+            key = list(v.keys())[0]
+            v = v[key]
+        return super().validate(v)
+
+
+class Parallel(ControlModel):
     """
     Specification of a parallel control flow: one main component and a group of related components and couplers.
     Step wise execution order according to order in parallel control flow.
@@ -218,52 +249,62 @@ class Parallel(BaseModel):
         start: Main component to be executed step wise (provides start time, end time and time step).
     """
 
+    _type: Literal["parallel"] = "parallel"
     startGroup: StartGroup
     start: ComponentOrCouplerRef
 
 
-class Control(BaseModel):
+class Start(ControlModel):
     """
-    Control flow specification for the DIMR-execution.
+    Specification of a serial control flow: one main component.
 
     Attributes:
-        parallel: Specification of a control flow that has to be executed in parallel.
-        start: Reference to the component instance to be started.
+        name: Name of the reference to a BMI-compliant model component instance
     """
 
-    parallel: Optional[List[Parallel]] = []
-    start: Optional[List[ComponentOrCouplerRef]] = []
-
-    @validator("parallel", "start", pre=True)
-    def validate_parallel(cls, v):
-        return to_list(v)
-
-    def is_intermediate_link(self) -> bool:
-        # TODO set to True once we replace Paths with FileModels
-        return False
+    _type: Literal["start"] = "start"
+    name: str
 
 
 class DIMR(FileModel):
-    """DIMR model representation."""
+    """DIMR model representation.
+
+    Attributes:
+        documentation (Documentation): File metadata.
+        control (List[Union[Start, Parallel]]): The `<control>` element with a list
+            of [Start][hydrolib.core.io.dimr.models.Start]
+            and [Parallel][hydrolib.core.io.dimr.models.Parallel] sub-elements,
+            which defines the (sequence of) program(s) to be run.
+            May be empty while constructing, but must be non-empty when saving!
+            Also, all referenced components must be present in `component` when
+            saving. Similarly, all referenced couplers must be present in `coupler`.
+        component (List[Union[RRComponent, FMComponent, Component]]): List of
+            `<component>` elements that defines which programs can be used inside
+            the `<control>` subelements. Must be non-empty when saving!
+        coupler (Optional[List[Coupler]]): optional list of `<coupler>` elements
+            that defines which couplers can be used inside the `<parallel>`
+            elements under `<control>`.
+        waitFile (Optional[str]): Optional waitfile name for debugging.
+        global_settings (Optional[GlobalSettings]): Optional global DIMR settings.
+    """
 
     documentation: Documentation = Documentation()
-    control: Control = Control()
+    control: List[Union[Start, Parallel]] = Field(
+        [], discriminator="_type"
+    )  # used in Pydantic 1.9
     component: List[Union[RRComponent, FMComponent, Component]] = []
     coupler: Optional[List[Coupler]] = []
     waitFile: Optional[str]
     global_settings: Optional[GlobalSettings]
 
-    @validator("component", "coupler", pre=True)
+    @validator("component", "coupler", "control", pre=True)
     def validate_component(cls, v):
         return to_list(v)
 
     def dict(self, *args, **kwargs):
-        """Converts this object recursively to a dictionary.
-
-        Returns:
-            dict: The created dictionary for this object.
-        """
-        return self._to_serializable_dict(self)
+        kwargs["exclude_none"] = True
+        kwargs["exclude"] = {"filepath"}
+        return super().dict(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -292,28 +333,3 @@ class DIMR(FileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         return DIMRParser.parse
-
-    def _to_serializable_dict(self, obj) -> dict:
-        if not hasattr(obj, "__dict__"):
-            return obj
-
-        result = {}
-
-        for key, val in obj.__dict__.items():
-            if (
-                key.startswith("_")
-                or key == "filepath"
-                or isinstance(val, FileModel)
-                or val is None
-            ):
-                continue
-
-            element = []
-            if isinstance(val, list):
-                for item in val:
-                    element.append(self._to_serializable_dict(item))
-            else:
-                element = self._to_serializable_dict(val)
-            result[key] = element
-
-        return result
