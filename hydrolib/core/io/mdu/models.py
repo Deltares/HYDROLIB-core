@@ -339,7 +339,7 @@ class Geometry(INIBasedModel):
     frictfile: Optional[List[FrictionModel]] = Field(None, alias="frictFile")
     crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
     crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
-    storagenodefile: Optional[Path] = Field(None, alias="ctorageNodeFile")
+    storagenodefile: Optional[Path] = Field(None, alias="storageNodeFile")
     onedtwodlinkfile: Optional[Path] = Field(None, alias="1d2dLinkFile")
     proflocfile: Optional[Path] = Field(None, alias="profLocFile")
     profdeffile: Optional[Path] = Field(None, alias="profDefFile")
