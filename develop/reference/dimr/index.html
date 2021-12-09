@@ -840,6 +840,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dimr.models.Component.dict" class="md-nav__link">
+    dict()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.dimr.models.Component.is_intermediate_link" class="md-nav__link">
     is_intermediate_link()
   </a>
@@ -859,16 +866,23 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dimr.models.Control" class="md-nav__link">
-    Control
+  <a href="#hydrolib.core.io.dimr.models.ControlModel" class="md-nav__link">
+    ControlModel
   </a>
   
-    <nav class="md-nav" aria-label="Control">
+    <nav class="md-nav" aria-label="ControlModel">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dimr.models.Control.is_intermediate_link" class="md-nav__link">
-    is_intermediate_link()
+  <a href="#hydrolib.core.io.dimr.models.ControlModel.dict" class="md-nav__link">
+    dict()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dimr.models.ControlModel.validate" class="md-nav__link">
+    validate()
   </a>
   
 </li>
@@ -969,6 +983,13 @@ You're not viewing the latest version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.dimr.models.Parallel" class="md-nav__link">
     Parallel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dimr.models.Start" class="md-nav__link">
+    Start
   </a>
   
 </li>
@@ -1243,6 +1264,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dimr.models.Component.dict" class="md-nav__link">
+    dict()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.dimr.models.Component.is_intermediate_link" class="md-nav__link">
     is_intermediate_link()
   </a>
@@ -1262,16 +1290,23 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dimr.models.Control" class="md-nav__link">
-    Control
+  <a href="#hydrolib.core.io.dimr.models.ControlModel" class="md-nav__link">
+    ControlModel
   </a>
   
-    <nav class="md-nav" aria-label="Control">
+    <nav class="md-nav" aria-label="ControlModel">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dimr.models.Control.is_intermediate_link" class="md-nav__link">
-    is_intermediate_link()
+  <a href="#hydrolib.core.io.dimr.models.ControlModel.dict" class="md-nav__link">
+    dict()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dimr.models.ControlModel.validate" class="md-nav__link">
+    validate()
   </a>
   
 </li>
@@ -1372,6 +1407,13 @@ You're not viewing the latest version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.dimr.models.Parallel" class="md-nav__link">
     Parallel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dimr.models.Start" class="md-nav__link">
+    Start
   </a>
   
 </li>
@@ -1572,6 +1614,36 @@ Component            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.dimr.models.Component.dict" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#hydrolib.core.io.dimr.models.Component.dict" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dimr/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># Exclude the FileModel from any DIMR serialization.</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;exclude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
 
 
 
@@ -1714,9 +1786,9 @@ ComponentOrCouplerRef            (<a title="hydrolib.core.basemodel.BaseModel" h
 
 
 
-<h3 id="hydrolib.core.io.dimr.models.Control" class="doc doc-heading">
+<h3 id="hydrolib.core.io.dimr.models.ControlModel" class="doc doc-heading">
         <code>
-Control            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+ControlModel            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
         </code>
 
 
@@ -1724,34 +1796,13 @@ Control            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#h
       <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
   </span>
 
-<a href="#hydrolib.core.io.dimr.models.Control" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#hydrolib.core.io.dimr.models.ControlModel" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
-      <p>Control flow specification for the DIMR-execution.</p>
+      <p>Overrides to make sure that the control elements in the DIMR
+are parsed and serialized correctly.</p>
 
-<p><strong>Attributes:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>parallel</code></td>
-        <td><code>Optional[List[hydrolib.core.io.dimr.models.Parallel]]</code></td>
-        <td><p>Specification of a control flow that has to be executed in parallel.</p></td>
-      </tr>
-      <tr>
-        <td><code>start</code></td>
-        <td><code>Optional[List[hydrolib.core.io.dimr.models.ComponentOrCouplerRef]]</code></td>
-        <td><p>Reference to the component instance to be started.</p></td>
-      </tr>
-  </tbody>
-</table>
 
 
 
@@ -1770,21 +1821,23 @@ Control            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#h
 
 
 
-<h4 id="hydrolib.core.io.dimr.models.Control.is_intermediate_link" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
+<h4 id="hydrolib.core.io.dimr.models.ControlModel.dict" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
-<a href="#hydrolib.core.io.dimr.models.Control.is_intermediate_link" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#hydrolib.core.io.dimr.models.ControlModel.dict" class="headerlink" title="Permanent link">&para;</a></h4>
 
     <div class="doc doc-contents ">
 
-      <p>Generic attribute for models that have children fields that could contain files.</p>
+      <p>Add control element prefixes for serialized data.</p>
 
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/dimr/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="c1"># TODO set to True once we replace Paths with FileModels</span>
-    <span class="k">return</span> <span class="kc">False</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add control element prefixes for serialized data.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+    <span class="p">}</span>
 </code></pre></div>
         </details>
     </div>
@@ -1795,10 +1848,40 @@ Control            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#h
 
 
 
+  <div class="doc doc-object doc-method">
 
 
 
+<h4 id="hydrolib.core.io.dimr.models.ControlModel.validate" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code>
 
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dimr.models.ControlModel.validate" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Remove control element prefixes from parsed data.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dimr/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove control element prefixes from parsed data.&quot;&quot;&quot;</span>
+
+    <span class="c1"># should be replaced by discriminated unions once merged</span>
+    <span class="c1"># https://github.com/samuelcolvin/pydantic/pull/2336</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
@@ -2063,6 +2146,58 @@ DIMR            (<a title="hydrolib.core.basemodel.FileModel" href="../api/#hydr
 
       <p>DIMR model representation.</p>
 
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>documentation</code></td>
+        <td><code>Documentation</code></td>
+        <td><p>File metadata.</p></td>
+      </tr>
+      <tr>
+        <td><code>control</code></td>
+        <td><code>List[Union[Start, Parallel]]</code></td>
+        <td><p>The <code>&lt;control&gt;</code> element with a list
+of <a href="#hydrolib.core.io.dimr.models.Start">Start</a>
+and <a href="#hydrolib.core.io.dimr.models.Parallel">Parallel</a> sub-elements,
+which defines the (sequence of) program(s) to be run.
+May be empty while constructing, but must be non-empty when saving!
+Also, all referenced components must be present in <code>component</code> when
+saving. Similarly, all referenced couplers must be present in <code>coupler</code>.</p></td>
+      </tr>
+      <tr>
+        <td><code>component</code></td>
+        <td><code>List[Union[RRComponent, FMComponent, Component]]</code></td>
+        <td><p>List of
+<code>&lt;component&gt;</code> elements that defines which programs can be used inside
+the <code>&lt;control&gt;</code> subelements. Must be non-empty when saving!</p></td>
+      </tr>
+      <tr>
+        <td><code>coupler</code></td>
+        <td><code>Optional[List[Coupler]]</code></td>
+        <td><p>optional list of <code>&lt;coupler&gt;</code> elements
+that defines which couplers can be used inside the <code>&lt;parallel&gt;</code>
+elements under <code>&lt;control&gt;</code>.</p></td>
+      </tr>
+      <tr>
+        <td><code>waitFile</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Optional waitfile name for debugging.</p></td>
+      </tr>
+      <tr>
+        <td><code>global_settings</code></td>
+        <td><code>Optional[GlobalSettings]</code></td>
+        <td><p>Optional global DIMR settings.</p></td>
+      </tr>
+  </tbody>
+</table>
 
 
 
@@ -2104,32 +2239,14 @@ DIMR            (<a title="hydrolib.core.basemodel.FileModel" href="../api/#hydr
 
     <div class="doc doc-contents ">
 
-      <p>Converts this object recursively to a dictionary.</p>
+      <p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
 
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>dict</code></td>
-      <td><p>The created dictionary for this object.</p></td>
-    </tr>
-  </tbody>
-</table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/dimr/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts this object recursively to a dictionary.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        dict: The created dictionary for this object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_serializable_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;exclude_none&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;exclude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;filepath&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2459,7 +2576,7 @@ Logger            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hy
 
 <h3 id="hydrolib.core.io.dimr.models.Parallel" class="doc doc-heading">
         <code>
-Parallel            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+Parallel            (<a title="hydrolib.core.io.dimr.models.ControlModel" href="#hydrolib.core.io.dimr.models.ControlModel">ControlModel</a>)
         </code>
 
 
@@ -2524,6 +2641,70 @@ Step wise execution order according to order in parallel control flow.</p>
 
 
 
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.dimr.models.Start" class="doc doc-heading">
+        <code>
+Start            (<a title="hydrolib.core.io.dimr.models.ControlModel" href="#hydrolib.core.io.dimr.models.ControlModel">ControlModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dimr.models.Start" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Specification of a serial control flow: one main component.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the reference to a BMI-compliant model component instance</p></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 
