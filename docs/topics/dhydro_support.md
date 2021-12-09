@@ -10,6 +10,15 @@ Below is a list of D-HYDRO functionalities, grouped by kernel, and the current s
 
 \* indicates a scheduled release that is not out yet.
 
-{{ read_excel('docs/topics/dhydro_support_hydrolib-core.xlsx', engine='openpyxl') }}
+## DIMR
+{{ read_excel('docs/topics/dhydro_support_hydrolib-core.xlsx', engine='openpyxl', sheet_name="DIMR mkdocs table") }}
+
+## FM
+{{ read_excel('docs/topics/dhydro_support_hydrolib-core.xlsx', engine='openpyxl', sheet_name="FM mkdocs table") }}
+
+## RR
+{{ read_excel('docs/topics/dhydro_support_hydrolib-core.xlsx', engine='openpyxl', sheet_name="RR mkdocs table") }}
+
+
 
 (Table source available on: <https://github.com/Deltares/HYDROLIB-core/blob/main/docs/topics/dhydro_support_hydrolib-core.xlsx>)
