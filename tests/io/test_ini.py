@@ -391,7 +391,7 @@ class TestParser:
     ):
         p = tmp_path / "test.ini"
         p.write_text("[sectionA]\n" + line)
-        result = Parser.parse(p)
+        result = Parser.parse(p).flatten()
         assert result["sectiona"][expected_key] == expected_value
 
     @pytest.mark.parametrize(
@@ -414,7 +414,7 @@ class TestParser:
     ):
         p = tmp_path / "test.ini"
         p.write_text("[sectionA]\n" + line)
-        result = Parser.parse(p)
+        result = Parser.parse(p).flatten()
         assert result["sectiona"][expected_key] == expected_value
 
     def test_feed_comment_at_the_beginning_of_the_document_gets_added_to_the_header(

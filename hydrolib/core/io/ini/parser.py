@@ -338,7 +338,31 @@ class Parser:
         return self._config.parse_datablocks
 
     @classmethod
-    def parse(cls, filepath: Path, config: ParserConfig = None):
+    def parse_as_dict(cls, filepath: Path, config: ParserConfig = None) -> dict:
+        """
+        Parses an INI file without a specific model type and returns it as a dictionary.
+
+        Args:
+            filepath (Path): File path to the INI-format file.
+            config (ParserConfig, optional): Parser configuration to use. Defaults to None.
+
+        Returns:
+            dict: Representation of the parsed INI-file.
+        """
+        return cls.parse(filepath, config).flatten()
+
+    @classmethod
+    def parse(cls, filepath: Path, config: ParserConfig = None) -> Document:
+        """
+        Parses an INI file without a specific model type and returns it as a Document.
+
+        Args:
+            filepath (Path): File path to the INI-format file.
+            config (ParserConfig, optional): Parser configuration to use. Defaults to None.
+
+        Returns:
+            Document: Representation of the parsed INI-file.
+        """
         if not config:
             config = ParserConfig()
         parser = cls(config)
@@ -366,4 +390,4 @@ class Parser:
 
                 parser.feed_line(line)
 
-        return parser.finalize().flatten()
+        return parser.finalize()
