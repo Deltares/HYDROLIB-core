@@ -1,0 +1,3032 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.0">
+    
+    
+      
+        <title>Ini - hydrolib-core documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8b42a75e.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="deltares" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ini" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="hydrolib-core documentation" class="md-header__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 16h2v2h-2c-1.4 0-2.8-.4-4-1-2.5 1.3-5.5 1.3-8 0-1.2.6-2.6 1-4 1H2v-2h2c1.4 0 2.8-.5 4-1.3 2.4 1.7 5.6 1.7 8 0 1.2.8 2.6 1.3 4 1.3m-7-5.4c.6-.3 1.3-.6 2-.7v.3c.3 1 .3 1.9.2 2.9-.9.5-2 .8-3 .8.5-1 .8-2.2.8-3.3m-.1-7c-1.4.4-2.6 1.1-3.6 2.1-.4-1-.6-2-.6-3 2.2-1 4.7-.9 6.9.2.3.1.6.2.8.4-1.2-.1-2.4 0-3.5.3m-6.1 9.7c-.6.3-1.2.5-1.8.6-.7-1.3-1-2.7-1-4.1.5 1 1.2 2 2 2.8.3.2.5.5.8.7m12.2.6c-.6-.1-1.2-.3-1.7-.5.2-1.2.1-2.4-.2-3.6 1.1.1 2.1.4 3 1-.1 1-.4 1.9-.9 2.8l-.2.3M7.4 11.2c-1.2-1.1-1.9-2.7-2.2-4.3L5.1 6c.5-.8 1-1.4 1.7-2 .1 1.4.6 2.7 1.4 3.8.7 1.1 1.7 2.1 2.8 2.7 0 .8-.2 1.6-.5 2.4-1.2-.3-2.2-.9-3.1-1.7m6.1-5.7c1.5-.4 3.2-.3 4.7.2l.8.4c.4.7.6 1.5.8 2.3-2.5-1.1-5.4-.9-7.8.4-.7-.3-1.2-.8-1.7-1.4l.1-.1c.9-.8 1.9-1.5 3.1-1.8M16 18.7c1.2.8 2.6 1.3 4 1.3h2v2h-2c-1.4 0-2.8-.4-4-1-2.5 1.3-5.5 1.3-8 0-1.2.6-2.6 1-4 1H2v-2h2c1.4 0 2.8-.5 4-1.3 2.4 1.7 5.6 1.7 8 0z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hydrolib-core documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Ini
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="deltares" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/Deltares/hydrolib-core/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/hydrolib-core
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../guides/setup/" class="md-tabs__link">
+        How-to
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorials/steps/" class="md-tabs__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../topics/principles/" class="md-tabs__link">
+        Topics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../api/" class="md-tabs__link md-tabs__link--active">
+        API Reference
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../changelog/" class="md-tabs__link">
+      Changelog
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="hydrolib-core documentation" class="md-nav__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 16h2v2h-2c-1.4 0-2.8-.4-4-1-2.5 1.3-5.5 1.3-8 0-1.2.6-2.6 1-4 1H2v-2h2c1.4 0 2.8-.5 4-1.3 2.4 1.7 5.6 1.7 8 0 1.2.8 2.6 1.3 4 1.3m-7-5.4c.6-.3 1.3-.6 2-.7v.3c.3 1 .3 1.9.2 2.9-.9.5-2 .8-3 .8.5-1 .8-2.2.8-3.3m-.1-7c-1.4.4-2.6 1.1-3.6 2.1-.4-1-.6-2-.6-3 2.2-1 4.7-.9 6.9.2.3.1.6.2.8.4-1.2-.1-2.4 0-3.5.3m-6.1 9.7c-.6.3-1.2.5-1.8.6-.7-1.3-1-2.7-1-4.1.5 1 1.2 2 2 2.8.3.2.5.5.8.7m12.2.6c-.6-.1-1.2-.3-1.7-.5.2-1.2.1-2.4-.2-3.6 1.1.1 2.1.4 3 1-.1 1-.4 1.9-.9 2.8l-.2.3M7.4 11.2c-1.2-1.1-1.9-2.7-2.2-4.3L5.1 6c.5-.8 1-1.4 1.7-2 .1 1.4.6 2.7 1.4 3.8.7 1.1 1.7 2.1 2.8 2.7 0 .8-.2 1.6-.5 2.4-1.2-.3-2.2-.9-3.1-1.7m6.1-5.7c1.5-.4 3.2-.3 4.7.2l.8.4c.4.7.6 1.5.8 2.3-2.5-1.1-5.4-.9-7.8.4-.7-.3-1.2-.8-1.7-1.4l.1-.1c.9-.8 1.9-1.5 3.1-1.8M16 18.7c1.2.8 2.6 1.3 4 1.3h2v2h-2c-1.4 0-2.8-.4-4-1-2.5 1.3-5.5 1.3-8 0-1.2.6-2.6 1-4 1H2v-2h2c1.4 0 2.8-.5 4-1.3 2.4 1.7 5.6 1.7 8 0z"/></svg>
+
+    </a>
+    hydrolib-core documentation
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/Deltares/hydrolib-core/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/hydrolib-core
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" data-md-state="indeterminate" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          How-to
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="How-to" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          How-to
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" data-md-state="indeterminate" type="checkbox" id="__nav_2_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_1">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/setup/" class="md-nav__link">
+        pip install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/devcontainers/" class="md-nav__link">
+        Developer container
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/poetry/" class="md-nav__link">
+        Local clone + Poetry
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" data-md-state="indeterminate" type="checkbox" id="__nav_2_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          Contributing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contributing" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Contributing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3" data-md-state="indeterminate" type="checkbox" id="__nav_2_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Documentation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/documentation/" class="md-nav__link">
+        Documentation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" data-md-state="indeterminate" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/steps/" class="md-nav__link">
+        First steps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dataframe_handling/" class="md-nav__link">
+        Dataframe handling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plotting_a_network/" class="md-nav__link">
+        Plotting a network
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" data-md-state="indeterminate" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Topics
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Topics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/principles/" class="md-nav__link">
+        First principles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/pydantic/" class="md-nav__link">
+        Pydantic
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          API Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        Api
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bui/" class="md-nav__link">
+        Bui
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crosssection/" class="md-nav__link">
+        Crosssection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dimr/" class="md-nav__link">
+        Dimr
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ext/" class="md-nav__link">
+        Ext
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../friction/" class="md-nav__link">
+        Friction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../forcing/" class="md-nav__link">
+        Forcing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Ini
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Ini
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ini" class="md-nav__link">
+    ini
+  </a>
+  
+    <nav class="md-nav" aria-label="ini">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    Model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.DataBlockINIBasedModel" class="md-nav__link">
+    DataBlockINIBasedModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel" class="md-nav__link">
+    INIBasedModel
+  </a>
+  
+    <nav class="md-nav" aria-label="INIBasedModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel.Comments" class="md-nav__link">
+    Comments
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIModel" class="md-nav__link">
+    INIModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parser" class="md-nav__link">
+    Parser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser" class="md-nav__link">
+    Parser
+  </a>
+  
+    <nav class="md-nav" aria-label="Parser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser.feed_line" class="md-nav__link">
+    feed_line()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser.finalize" class="md-nav__link">
+    finalize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.ParserConfig" class="md-nav__link">
+    ParserConfig
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer" class="md-nav__link">
+    Serializer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.MaxLengths" class="md-nav__link">
+    MaxLengths
+  </a>
+  
+    <nav class="md-nav" aria-label="MaxLengths">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.MaxLengths.from_section" class="md-nav__link">
+    from_section()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer" class="md-nav__link">
+    SectionSerializer
+  </a>
+  
+    <nav class="md-nav" aria-label="SectionSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.config" class="md-nav__link">
+    config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.max_length" class="md-nav__link">
+    max_length
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.serialize" class="md-nav__link">
+    serialize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.Serializer" class="md-nav__link">
+    Serializer
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.Serializer.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.Serializer.serialize" class="md-nav__link">
+    serialize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SerializerConfig" class="md-nav__link">
+    SerializerConfig
+  </a>
+  
+    <nav class="md-nav" aria-label="SerializerConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SerializerConfig.total_datablock_indent" class="md-nav__link">
+    total_datablock_indent
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SerializerConfig.total_property_indent" class="md-nav__link">
+    total_property_indent
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.write_ini" class="md-nav__link">
+    write_ini()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mdu/" class="md-nav__link">
+        Mdu
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../net/" class="md-nav__link">
+        Net
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polyfile/" class="md-nav__link">
+        Polyfile
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structure/" class="md-nav__link">
+        Structure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xyz/" class="md-nav__link">
+        Xyz
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ini" class="md-nav__link">
+    ini
+  </a>
+  
+    <nav class="md-nav" aria-label="ini">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    Model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.DataBlockINIBasedModel" class="md-nav__link">
+    DataBlockINIBasedModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel" class="md-nav__link">
+    INIBasedModel
+  </a>
+  
+    <nav class="md-nav" aria-label="INIBasedModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel.Comments" class="md-nav__link">
+    Comments
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIModel" class="md-nav__link">
+    INIModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parser" class="md-nav__link">
+    Parser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser" class="md-nav__link">
+    Parser
+  </a>
+  
+    <nav class="md-nav" aria-label="Parser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser.feed_line" class="md-nav__link">
+    feed_line()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.Parser.finalize" class="md-nav__link">
+    finalize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.parser.ParserConfig" class="md-nav__link">
+    ParserConfig
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer" class="md-nav__link">
+    Serializer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.MaxLengths" class="md-nav__link">
+    MaxLengths
+  </a>
+  
+    <nav class="md-nav" aria-label="MaxLengths">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.MaxLengths.from_section" class="md-nav__link">
+    from_section()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer" class="md-nav__link">
+    SectionSerializer
+  </a>
+  
+    <nav class="md-nav" aria-label="SectionSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.config" class="md-nav__link">
+    config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.max_length" class="md-nav__link">
+    max_length
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SectionSerializer.serialize" class="md-nav__link">
+    serialize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.Serializer" class="md-nav__link">
+    Serializer
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.Serializer.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.Serializer.serialize" class="md-nav__link">
+    serialize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SerializerConfig" class="md-nav__link">
+    SerializerConfig
+  </a>
+  
+    <nav class="md-nav" aria-label="SerializerConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SerializerConfig.total_datablock_indent" class="md-nav__link">
+    total_datablock_indent
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.SerializerConfig.total_property_indent" class="md-nav__link">
+    total_property_indent
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.serializer.write_ini" class="md-nav__link">
+    write_ini()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/Deltares/hydrolib-core/edit/master/docs/reference/ini.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>Ini</h1>
+                
+                <h2 id="ini">ini<a class="headerlink" href="#ini" title="Permanent link">&para;</a></h2>
+<p>The ini module provides the generic logic for parsing Deltares ini based files, such as the mdu, structures files, as well as more complex files such as the boundary condition (bc) files.</p>
+<p>Note that specific attribute files that employ this ini format often have their own dedicated module (and separate API doc page). These include:</p>
+<ul>
+<li><a href="../mdu/">MDU file</a> (<code>hydrolib.core.io.mdu</code>)</li>
+<li><a href="../crosssection/">cross section files</a> (<code>hydrolib.core.io.crosssection</code>)</li>
+<li><a href="../ext/">external forcing file</a> (<code>hydrolib.core.io.ext</code>)</li>
+<li><a href="../friction/">friction</a> (<code>hydrolib.core.io.friction</code>)</li>
+<li><a href="../structure/">structure file</a> (<code>hydrolib.core.io.structure</code>)</li>
+</ul>
+<h3 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-object doc-module">
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.models.DataBlockINIBasedModel" class="doc doc-heading">
+        <code>DataBlockINIBasedModel</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.models.DataBlockINIBasedModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>DataBlockINIBasedModel defines the base model for ini models with datablocks.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.models.INIBasedModel" class="doc doc-heading">
+        <code>INIBasedModel</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.models.INIBasedModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>INIBasedModel defines the base model for ini models</p>
+<p>INIBasedModel instances can be created from Section instances
+obtained through parsing ini documents. It further supports
+adding arbitrary fields to it, which will be written to file.
+Lastly, no arbitrary types are allowed for the defined fields.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>comments</code></td>
+        <td><code>Optional[Comments]</code></td>
+        <td><p>Optional Comments if defined by the user.</p></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h4 id="hydrolib.core.io.ini.models.INIBasedModel.Comments" class="doc doc-heading">
+        <code>Comments</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.models.INIBasedModel.Comments" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Comments defines the comments of an INIBasedModel</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.models.INIModel" class="doc doc-heading">
+        <code>INIModel</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.models.INIModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>INI Model representation.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+<h3 id="parser">Parser<a class="headerlink" href="#parser" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-object doc-module">
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.parser.Parser" class="doc doc-heading">
+        <code>Parser</code>
+
+
+
+<a href="#hydrolib.core.io.ini.parser.Parser" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Parser defines a generic Parser for Deltares ini files.</p>
+<p>The Parser can be configured with a ParserConfig object.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.parser.Parser.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.parser.Parser.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Creates a new Parser configured with the provided config</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>ParserConfig</code></td>
+        <td><p>The configuration of this Parser</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new Parser configured with the provided config</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (ParserConfig): The configuration of this Parser</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_current_section</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_IntermediateSection</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_current_header_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_IntermediateCommentBlock</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_StateType</span><span class="o">.</span><span class="n">NO_SECTION_FOUND</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_line_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># TODO add invalid blocks</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_feed_line</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+        <span class="n">Parser</span><span class="o">.</span><span class="n">_StateType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">Parser</span><span class="o">.</span><span class="n">_StateType</span><span class="o">.</span><span class="n">NO_SECTION_FOUND</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_comment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_header_comment</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_section_header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_next_section_header</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">Parser</span><span class="o">.</span><span class="n">_StateType</span><span class="o">.</span><span class="n">PARSING_PROPERTIES</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_comment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_section_comment</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_section_header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_next_section_header</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_property</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_property</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_datarow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_new_datarow</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">Parser</span><span class="o">.</span><span class="n">_StateType</span><span class="o">.</span><span class="n">PARSING_DATABLOCK</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_section_header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_next_section_header</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_datarow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_datarow</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_handle_emptyline</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Parser</span><span class="o">.</span><span class="n">_StateType</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_StateType</span><span class="o">.</span><span class="n">NO_SECTION_FOUND</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_current_header_block</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_StateType</span><span class="o">.</span><span class="n">PARSING_PROPERTIES</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noop</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_StateType</span><span class="o">.</span><span class="n">PARSING_DATABLOCK</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noop</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.parser.Parser.feed_line" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">feed_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+
+<a href="#hydrolib.core.io.ini.parser.Parser.feed_line" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse the next line with this Parser.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>line</code></td>
+        <td><code>str</code></td>
+        <td><p>The line to parse</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">feed_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse the next line with this Parser.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        line (str): The line to parse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_empty_line</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">is_line_type</span><span class="p">,</span> <span class="n">handle_line_type</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_line</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">is_line_type</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                <span class="n">handle_line_type</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># handle exception</span>
+            <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_emptyline</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">]()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_increment_line</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.parser.Parser.finalize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span></code>
+
+
+<a href="#hydrolib.core.io.ini.parser.Parser.finalize" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Finalize parsing and return the constructed Document.</p>
+
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Document</code></td>
+      <td><p>Document:
+    A Document describing the parsed ini file.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Finalize parsing and return the constructed Document.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Document:</span>
+<span class="sd">            A Document describing the parsed ini file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO handle invalid block</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_finish_current_header_block</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_finalise_current_section</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.parser.ParserConfig" class="doc doc-heading">
+        <code>ParserConfig</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.parser.ParserConfig" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>ParserConfig defines the configuration options of the Parser</p>
+<p>Note that we cannot set both allow_only_keywords and parse_datablocks to True
+because we cannot distinguish between datablocks and key only properties. As
+such this will lead to a validation error.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>allow_only_keywords</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to allow properties with only keys (no '=' or value).
+Defaults to True.</p></td>
+      </tr>
+      <tr>
+        <td><code>parse_datablocks</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to allow parsing of datablocks at the bottom of sections.
+Defaults to False.</p></td>
+      </tr>
+      <tr>
+        <td><code>parse_comments</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether we allow parsing of comments defined with the comment_delimeter.
+Defaults to True.</p></td>
+      </tr>
+      <tr>
+        <td><code>comment_delimiter</code></td>
+        <td><code>str</code></td>
+        <td><p>The character or sequence of character used to define a comment.
+Defaults to '#'.</p></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+<h3 id="serializer">Serializer<a class="headerlink" href="#serializer" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-object doc-module">
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.serializer.MaxLengths" class="doc doc-heading">
+        <code>MaxLengths</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.MaxLengths" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>MaxLengths defines the maxmimum lengths of the parts of a section</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>key</code></td>
+        <td><code>int</code></td>
+        <td><p>The maximum length of all the keys of the properties within a section.
+If no properties are present it should be 0.</p></td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>int</code></td>
+        <td><p>The maximum length of all the non None values of the properties within a
+section. If no properties are present, or all values are None, it should
+be 0.</p></td>
+      </tr>
+      <tr>
+        <td><code>datablock</code></td>
+        <td><code>Optional[Sequence[int]]</code></td>
+        <td><p>The maximum length of the values of each column of the Datablock.
+If no datablock is present it defaults to None.</p></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.MaxLengths.from_section" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">from_section</span><span class="p">(</span><span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MaxLengths</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.MaxLengths.from_section" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Generate a MaxLengths instance from the given Section</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>section</code></td>
+        <td><code>Section</code></td>
+        <td><p>The section of which the MaxLengths are calculated</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>MaxLengths</code></td>
+      <td><p>MaxLengths: The MaxLengths corresponding with the provided section</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/serializer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_section</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MaxLengths&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Generate a MaxLengths instance from the given Section</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        section (Section): The section of which the MaxLengths are calculated</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        MaxLengths: The MaxLengths corresponding with the provided section</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">properties</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Property</span><span class="p">))</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">max_key_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">max_value_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">max_datablock_lengths</span> <span class="o">=</span> <span class="n">MaxLengths</span><span class="o">.</span><span class="n">_of_datablock</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">datablock</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">max_key_length</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">max_value_length</span><span class="p">,</span>
+        <span class="n">datablock</span><span class="o">=</span><span class="n">max_datablock_lengths</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.serializer.SectionSerializer" class="doc doc-heading">
+        <code>SectionSerializer</code>
+
+
+
+<a href="#hydrolib.core.io.ini.serializer.SectionSerializer" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>SectionSerializer provides the serialize method to serialize a Section</p>
+<p>The entrypoint of this method is the serialize method, which will construct
+an actual instance and serializes the Section with it.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.SectionSerializer.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="n">MaxLengths</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.SectionSerializer.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Create a new SectionSerializer</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The config describing the serialization options</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>max_length</code></td>
+        <td><code>MaxLengths</code></td>
+        <td><p>The max lengths of the section being serialized</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/serializer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="n">MaxLengths</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a new SectionSerializer</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (SerializerConfig): The config describing the serialization options</span>
+<span class="sd">        max_length (MaxLengths): The max lengths of the section being serialized</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_max_length</span> <span class="o">=</span> <span class="n">max_length</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.SectionSerializer.config" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.SectionSerializer.config" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>The SerializerConfig used while serializing the section.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.SectionSerializer.max_length" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">max_length</span><span class="p">:</span> <span class="n">MaxLengths</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.SectionSerializer.max_length" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>The MaxLengths of the Section being serialized by this SectionSerializer.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.SectionSerializer.serialize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.SectionSerializer.serialize" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Serialize the provided section with the given config</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>section</code></td>
+        <td><code>Section</code></td>
+        <td><p>The section to serialize</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The config describing the serialization options</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Iterable[str]</code></td>
+      <td><p>Lines: The iterable lines of the serialized section</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/serializer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Serialize the provided section with the given config</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        section (Section): The section to serialize</span>
+<span class="sd">        config (SerializerConfig): The config describing the serialization options</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Lines: The iterable lines of the serialized section</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">serializer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">MaxLengths</span><span class="o">.</span><span class="n">from_section</span><span class="p">(</span><span class="n">section</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">serializer</span><span class="o">.</span><span class="n">_serialize_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.serializer.Serializer" class="doc doc-heading">
+        <code>Serializer</code>
+
+
+
+<a href="#hydrolib.core.io.ini.serializer.Serializer" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Serializer serializes Document to its corresponding lines.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.Serializer.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.Serializer.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Creates a new Serializer with the provided configuration.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The configuration of this Serializer.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/serializer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new Serializer with the provided configuration.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (SerializerConfig): The configuration of this Serializer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.Serializer.serialize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
+
+<a href="#hydrolib.core.io.ini.serializer.Serializer.serialize" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Serialize the provided document into an iterable of lines.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>document</code></td>
+        <td><code>Document</code></td>
+        <td><p>The Document to serialize.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Iterable[str]</code></td>
+      <td><p>Lines: An iterable returning each line of the serialized Document.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/serializer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Serialize the provided document into an iterable of lines.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        document (Document): The Document to serialize.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Lines: An iterable returning each line of the serialized Document.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">header_iterable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serialize_document_header</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">header_comment</span><span class="p">)</span>
+
+    <span class="n">serialize_section</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">SectionSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span>
+    <span class="n">sections</span> <span class="o">=</span> <span class="p">(</span><span class="n">serialize_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">sections</span><span class="p">)</span>
+    <span class="n">sections_with_spacing</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">_interweave</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">])</span>
+    <span class="n">sections_iterable</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">sections_with_spacing</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">chain</span><span class="p">(</span><span class="n">header_iterable</span><span class="p">,</span> <span class="n">sections_iterable</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.ini.serializer.SerializerConfig" class="doc doc-heading">
+        <code>SerializerConfig</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.SerializerConfig" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>SerializerConfig defines the configuration options of the Serializer</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>section_indent</code></td>
+        <td><code>int</code></td>
+        <td><p>The number of spaces with which whole sections should be indented.
+Defaults to 0.</p></td>
+      </tr>
+      <tr>
+        <td><code>property_indent</code></td>
+        <td><code>int</code></td>
+        <td><p>The number of spaces with which properties should be indented relative to
+the section header (i.e. the full indent equals the section_indent plus
+property_indent). Defaults to 4.</p></td>
+      </tr>
+      <tr>
+        <td><code>datablock_indent</code></td>
+        <td><code>int</code></td>
+        <td><p>The number of spaces with which datablock rows are indented relative to
+the section header (i.e. the full indent equals the section_indent plus
+datablock_indent). Defaults to 8.</p></td>
+      </tr>
+      <tr>
+        <td><code>datablock_spacing</code></td>
+        <td><code>int</code></td>
+        <td><p>The number of spaces between datablock columns. Note that there might be
+additional offset to ensure . is lined out. Defaults to 4.</p></td>
+      </tr>
+      <tr>
+        <td><code>comment_delimiter</code></td>
+        <td><code>str</code></td>
+        <td><p>The character used to delimit comments. Defaults to '#'.</p></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.SerializerConfig.total_datablock_indent" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">total_datablock_indent</span><span class="p">:</span> <span class="nb">int</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.SerializerConfig.total_datablock_indent" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>The combined datablock indentation, i.e. section_indent + datablock_indent</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.ini.serializer.SerializerConfig.total_property_indent" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">total_property_indent</span><span class="p">:</span> <span class="nb">int</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.serializer.SerializerConfig.total_property_indent" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>The combined property indentation, i.e. section_indent + property_indent</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="hydrolib.core.io.ini.serializer.write_ini" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">write_ini</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">SerializerConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+
+<a href="#hydrolib.core.io.ini.serializer.write_ini" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Write the provided document to the specified path</p>
+<p>If the provided path already exists, it will be overwritten. If the parent folder
+do not exist, they will be created.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>path</code></td>
+        <td><code>Path</code></td>
+        <td><p>The path to which the document should be written.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>document</code></td>
+        <td><code>Document</code></td>
+        <td><p>The document to serialize to the specified path.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>Optional[hydrolib.core.io.ini.serializer.SerializerConfig]</code></td>
+        <td><p>An optional configuration of the serializer. If none provided, it will
+default to the standard SerializerConfig. Defaults to None.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/serializer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_ini</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SerializerConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Write the provided document to the specified path</span>
+
+<span class="sd">    If the provided path already exists, it will be overwritten. If the parent folder</span>
+<span class="sd">    do not exist, they will be created.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (Path): The path to which the document should be written.</span>
+<span class="sd">        document (Document): The document to serialize to the specified path.</span>
+<span class="sd">        config (Optional[SerializerConfig], optional):</span>
+<span class="sd">            An optional configuration of the serializer. If none provided, it will</span>
+<span class="sd">            default to the standard SerializerConfig. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">SerializerConfig</span><span class="p">()</span>
+
+    <span class="n">serializer</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">serializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">line</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">))</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../glossary/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Glossary" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Glossary
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../mdu/" class="md-footer__link md-footer__link--next" aria-label="Next: Mdu" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Mdu
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2021 Deltares
+          </div>
+        
+        
+          Made with
+          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+            Material for MkDocs
+          </a>
+        
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+      <a href="https://github.com/Deltares/hydrolib-core" target="_blank" rel="noopener" title="Source code" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+      <a href="https://gitter.im/Deltares/hydrolib" target="_blank" rel="noopener" title="Chat with us on Gitter" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M66.4 322.5H16V0h50.4v322.5zM166.9 76.1h-50.4V512h50.4V76.1zm100.6 0h-50.4V512h50.4V76.1zM368 76h-50.4v247H368V76z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.4fc53ad4.min.js"></script>
+      
+    
+  </body>
+</html>
