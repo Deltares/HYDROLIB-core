@@ -1,11 +1,9 @@
 """
-TODO Implement the following structures
-- Bridge
-- Long culvert
-- Gate
-
-Add comments for these structures. Maybe link them to descriptions of `Field`s?
+structure namespace for storing the contents of an [FMModel][hydrolib.core.io.mdu.models.FMModel]'s structure file.
 """
+# TODO Implement the following structures
+# - Gate
+#
 
 import logging
 from enum import Enum
@@ -223,6 +221,11 @@ class Structure(INIBasedModel):
 
 
 class FlowDirection(str, Enum):
+    """
+    Enum class containing the valid values for the allowedFlowDirection
+    attribute in several subclasses of Structure.
+    """
+
     none = "none"
     positive = "positive"
     negative = "negative"
@@ -231,6 +234,14 @@ class FlowDirection(str, Enum):
 
 
 class Weir(Structure):
+    """
+    Hydraulic structure with `type=weir`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the weir input as described in
+    [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field("Structure type; must read weir", alias="type")
         allowedflowdir: Optional[str] = Field(
@@ -265,6 +276,14 @@ class Weir(Structure):
 
 
 class UniversalWeir(Structure):
+    """
+    Hydraulic structure with `type=universalWeir`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the universal weir input as described in
+    [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field(
             "Structure type; must read universalWeir", alias="type"
@@ -305,11 +324,20 @@ class UniversalWeir(Structure):
 
 
 class CulvertSubType(str, Enum):
+    """Enum class to store a [Culvert][hydrolib.core.io.structure.models.Culvert]'s subType."""
+
     culvert = "culvert"
     invertedSiphon = "invertedSiphon"
 
 
 class Culvert(Structure):
+    """
+    Hydraulic structure with `type=culvert`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the culvert input as described in
+    [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
+    """
 
     type: Literal["culvert"] = Field("culvert", alias="type")
     allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
@@ -336,6 +364,13 @@ class Culvert(Structure):
 
 
 class Pump(Structure):
+    """
+    Hydraulic structure with `type=pump`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the pump input as described in
+    [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
+    """
 
     type: Literal["pump"] = Field("pump", alias="type")
 
@@ -363,6 +398,13 @@ class Pump(Structure):
 
 
 class Compound(Structure):
+    """
+    Hydraulic structure with `type=compound`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the compound input as described in
+    [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
+    """
 
     type: Literal["compound"] = Field("compound", alias="type")
     numstructures: int = Field(alias="numStructures")
@@ -374,6 +416,13 @@ class Compound(Structure):
 
 
 class Orifice(Structure):
+    """
+    Hydraulic structure with `type=orifice`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the orifice input as described in
+    [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
+    """
 
     type: Literal["orifice"] = Field("orifice", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
@@ -570,6 +619,14 @@ class DambreakAlgorithm(int, Enum):
 
 
 class Dambreak(Structure):
+    """
+    Hydraulic structure with `type=dambreak`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the dambreak input as described in
+    [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field("Structure type; must read dambreak", alias="type")
         startlocationx: Optional[str] = Field(
@@ -742,6 +799,14 @@ class Dambreak(Structure):
 
 
 class Bridge(Structure):
+    """
+    Hydraulic structure with `type=bridge`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the bridge input as described in
+    [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field("Structure type; must read bridge", alias="type")
         allowedflowdir: Optional[str] = Field(
@@ -787,12 +852,24 @@ class Bridge(Structure):
 
 
 class StructureGeneral(INIGeneral):
+    """`[General]` section with structure file metadata."""
+
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
 class StructureModel(INIModel):
+    """
+    The overall structure model that contains the contents of one structure file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[..]`.
+
+    Attributes:
+        general (StructureGeneral): `[General]` block with file metadata.
+        branch (List[Structure]): List of `[Structure]` blocks for all hydraulic structures.
+    """
+
     general: StructureGeneral = StructureGeneral()
     structure: List[Structure] = []
 

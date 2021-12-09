@@ -3,7 +3,6 @@ name: ci
 on: [push]
 
 jobs:
-
   CI:
     strategy:
       fail-fast: false
@@ -31,8 +30,6 @@ jobs:
         with:
           path: ~/.virtualenvs
           key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            venv-${{ matrix.os }}-${{ matrix.python-version }}-
 
       - name: Set Poetry config
         run: |
@@ -61,5 +58,5 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
         env:
-          GITHUB_TOKEN: ${{ secrets.SONAR_GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.SONAR_GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
