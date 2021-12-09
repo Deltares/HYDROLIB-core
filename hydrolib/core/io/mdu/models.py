@@ -32,8 +32,6 @@ class Numerics(INIBasedModel):
 
     All lowercased attributes match with the [Numerics] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Numerics"] = "Numerics"
@@ -73,8 +71,6 @@ class VolumeTables(INIBasedModel):
 
     All lowercased attributes match with the [VolumeTables] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["VolumeTables"] = "VolumeTables"
@@ -91,8 +87,6 @@ class Physics(INIBasedModel):
 
     All lowercased attributes match with the [Physics] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Physics"] = "Physics"
@@ -143,8 +137,6 @@ class Wind(INIBasedModel):
 
     All lowercased attributes match with the [Wind] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Wind"] = "Wind"
@@ -177,8 +169,6 @@ class Waves(INIBasedModel):
 
     All lowercased attributes match with the [Waves] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Waves"] = "Waves"
@@ -195,8 +185,6 @@ class Time(INIBasedModel):
 
     All lowercased attributes match with the [Time] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Time"] = "Time"
@@ -220,8 +208,6 @@ class Restart(INIBasedModel):
 
     All lowercased attributes match with the [Restart] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Restart"] = "Restart"
@@ -237,8 +223,6 @@ class ExternalForcing(INIBasedModel):
 
     All lowercased attributes match with the [External Forcing] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["External Forcing"] = "External Forcing"
@@ -261,8 +245,6 @@ class Hydrology(INIBasedModel):
 
     All lowercased attributes match with the [Hydrology] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Hydrology"] = "Hydrology"
@@ -277,8 +259,6 @@ class Trachytopes(INIBasedModel):
 
     All lowercased attributes match with the [Trachytopes] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Trachytopes"] = "Trachytopes"
@@ -296,8 +276,6 @@ class Output(INIBasedModel):
 
     All lowercased attributes match with the [Output] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Output"] = "Output"
@@ -446,8 +424,6 @@ class Geometry(INIBasedModel):
 
     All lowercased attributes match with the [Geometry] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
-
-    Attributes:
     """
 
     _header: Literal["Geometry"] = "Geometry"
@@ -526,8 +502,6 @@ class FMModel(INIModel):
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
 
     Each of these class attributes refers to an underlying model class for that particular section.
-
-    Attributes:
     """
 
     general: General = Field(default_factory=General)

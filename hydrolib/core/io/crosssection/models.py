@@ -44,7 +44,7 @@ class CrossLocGeneral(INIGeneral):
 class CrossSectionDefinition(INIBasedModel):
     """
     A `[Definition]` block for use inside a crosssection definition file,
-    i.e., a [CrossDefModel][hydrolib.core.io.crosssection.model.CrossDefModel].
+    i.e., a [CrossDefModel][hydrolib.core.io.crosssection.models.CrossDefModel].
 
     This class is intended as an abstract class: various subclasses should
     define they actual types of crosssection definitions.
@@ -179,8 +179,6 @@ class CircleCrsDef(CrossSectionDefinition):
 
     All lowercased attributes match with the circle input as described in
     [UM Sec.C.16.1.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.1).
-
-    Attributes:
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -220,8 +218,6 @@ class RectangleCrsDef(CrossSectionDefinition):
 
     All lowercased attributes match with the rectangle input as described in
     [UM Sec.C.16.1.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.2).
-
-    Attributes:
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -264,8 +260,6 @@ class ZWRiverCrsDef(CrossSectionDefinition):
 
     All lowercased attributes match with the zwRiver input as described in
     [UM Sec.C.16.1.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.3).
-
-    Attributes:
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -382,8 +376,6 @@ class ZWCrsDef(CrossSectionDefinition):
 
     All lowercased attributes match with the zw input as described in
     [UM Sec.C.16.1.4](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.4).
-
-    Attributes:
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -456,8 +448,6 @@ class YZCrsDef(CrossSectionDefinition):
 
     All lowercased attributes match with the yz input as described in
     [UM Sec.C.16.1.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.6).
-
-    Attributes:
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -650,7 +640,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 class CrossSection(INIBasedModel):
     """
     A `[CrossSection]` block for use inside a crosssection location file,
-    i.e., a [CrossLocModel][hydrolib.core.io.crosssection.model.CrossLocModel].
+    i.e., a [CrossLocModel][hydrolib.core.io.crosssection.models.CrossLocModel].
 
     Attributes:
         id (str): Unique cross-section location id.

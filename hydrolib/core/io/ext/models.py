@@ -16,12 +16,10 @@ from hydrolib.core.utils import str_is_empty_or_none
 class Boundary(INIBasedModel):
     """
     A `[Boundary]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.io.ext.model.ExtModel].
+    i.e., a [ExtModel][hydrolib.core.io.ext.models.ExtModel].
 
     All lowercased attributes match with the boundary input as described in
     [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
-
-    Attributes:
     """
 
     _header: Literal["Boundary"] = "Boundary"
@@ -96,12 +94,10 @@ class Boundary(INIBasedModel):
 class Lateral(INIBasedModel):
     """
     A `[Lateral]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.io.ext.model.ExtModel].
+    i.e., a [ExtModel][hydrolib.core.io.ext.models.ExtModel].
 
     All lowercased attributes match with the lateral input as described in
     [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
-
-    Attributes:
     """
 
     _header: Literal["Lateral"] = "Lateral"
