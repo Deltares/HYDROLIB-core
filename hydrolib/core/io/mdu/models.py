@@ -10,6 +10,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
+from hydrolib.core.io.storagenode.models import StorageNodeModel
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
 
@@ -453,7 +454,7 @@ class Geometry(INIBasedModel):
     frictfile: Optional[List[FrictionModel]] = Field(None, alias="frictFile")
     crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
     crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
-    storagenodefile: Optional[Path] = Field(None, alias="storageNodeFile")
+    storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
     onedtwodlinkfile: Optional[Path] = Field(None, alias="1d2dLinkFile")
     proflocfile: Optional[Path] = Field(None, alias="profLocFile")
     profdeffile: Optional[Path] = Field(None, alias="profDefFile")
