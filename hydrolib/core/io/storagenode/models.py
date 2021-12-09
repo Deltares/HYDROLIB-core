@@ -138,7 +138,7 @@ class StorageNode(INIBasedModel):
 
     @root_validator(skip_on_failure=True)
     @classmethod
-    def validate_usetable(cls, values):
+    def _validate_usetable(cls, values):
 
         if values["usetable"]:
             cls._validate_required_usetable_fields(
