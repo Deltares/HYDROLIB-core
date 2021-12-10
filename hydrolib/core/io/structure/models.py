@@ -12,6 +12,7 @@ from typing import List, Literal, Optional, Set, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
+from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
@@ -855,7 +856,7 @@ class StructureGeneral(INIGeneral):
     """`[General]` section with structure file metadata."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("2.0.0"), alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 

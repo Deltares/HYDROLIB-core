@@ -1,5 +1,8 @@
 from typing import Any, List, Optional
 
+from pydantic import validator, Field
+from semantic_version import Version as SemVer
+
 
 def example(a: float, b: float = 1.0) -> float:
     """[summary]
@@ -69,3 +72,55 @@ def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
         return None
 
     return source[index_start:index_end]
+
+
+class HVersion(SemVer):
+    @classmethod
+    def coerce(cls, *args, **kwargs):
+        version = super().coerce(*args, **kwargs)
+        return cls(**version.__dict__)
+
+
+class FMVersion(HVersion):
+    def __str__(self) -> str:
+        """Add zero to minor version if it is less than 10."""
+        version = f"{self.major}"
+        if self.minor is not None:
+            version = f"{version}.{self.minor:02d}"
+
+        return version
+
+
+class DIMRVersion(HVersion):
+    def __str__(self) -> str:
+        """Strip patch version."""
+        version = f"{self.major}"
+        if self.minor is not None:
+            version = f"{version}.{self.minor}"
+
+        return version
+
+
+def get_version_validator(*field_name: str):
+    """Get a validator to check the Version number."""
+
+    def check_version(cls, v: Any, field: Field):
+        """Validate (semantic) version numbers."""
+
+        if isinstance(v, str):
+            version = field.default.__class__.coerce(v)
+        elif isinstance(v, (FMVersion, DIMRVersion)):
+            version = v
+        elif v is None:
+            return field.default
+        else:
+            raise ValueError(f"Invalid version specified: {v}")
+
+        if version < field.default or version >= field.default.next_major():
+            raise ValueError(
+                f"Input with version {v} isn't a version support by HYDROLIB-core, which supports >={field.default}"
+            )
+
+        return version
+
+    return validator(*field_name, allow_reuse=True, pre=True)(check_version)

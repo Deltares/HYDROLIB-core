@@ -4,6 +4,7 @@ from typing import List, Literal, Optional
 
 from pydantic import Field, NonNegativeInt, PositiveInt
 from pydantic.class_validators import validator
+from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
@@ -32,7 +33,7 @@ class FrictGeneral(INIGeneral):
 
     comments: Comments = Comments()
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.01", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("3.0.0"), alias="fileVersion")
     filetype: Literal["roughness"] = Field("roughness", alias="fileType")
     frictionvaluesfile: Optional[Path] = Field(alias="frictionValuesFile")
 

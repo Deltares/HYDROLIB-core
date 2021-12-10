@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
 from pydantic import Field, root_validator, validator
+from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -234,7 +235,7 @@ class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta data."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("2.01", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("2.1.0"), alias="fileVersion")
     filetype: Literal["extForce"] = Field("extForce", alias="fileType")
 
 

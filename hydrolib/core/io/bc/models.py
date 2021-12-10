@@ -6,6 +6,7 @@ from typing import Callable, List, Literal, NamedTuple, Optional, Set
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
+from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.ini.io_models import Property, Section
 from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
@@ -196,7 +197,7 @@ class Constant(ForcingBase):
 
 
 class ForcingGeneral(INIGeneral):
-    fileversion: str = Field("1.01", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("1.1.0"), alias="fileVersion")
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 

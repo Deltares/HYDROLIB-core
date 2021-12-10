@@ -3,6 +3,7 @@ from typing import List, Literal, Optional
 
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
+from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
@@ -30,14 +31,14 @@ frictionvalue_description = "Roughness value; its meaning depends on the roughne
 class CrossDefGeneral(INIGeneral):
     """The crosssection definition file's `[General]` section with file meta data."""
 
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("3.0.0"), alias="fileVersion")
     filetype: Literal["crossDef"] = Field("crossDef", alias="fileType")
 
 
 class CrossLocGeneral(INIGeneral):
     """The crosssection location file's `[General]` section with file meta data."""
 
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("1.1.0"), alias="fileVersion")
     filetype: Literal["crossLoc"] = Field("crossLoc", alias="fileType")
 
 

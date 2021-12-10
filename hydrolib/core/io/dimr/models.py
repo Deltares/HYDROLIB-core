@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Callable, List, Literal, Optional, Type, Union
 
 from pydantic import Field, validator
+from semantic_version import Version as SemVersion
+
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel
@@ -11,7 +13,7 @@ from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from hydrolib.core.io.mdu.models import FMModel
-from hydrolib.core.utils import to_list
+from hydrolib.core.utils import DIMRVersion, to_list, get_version_validator
 
 
 class KeyValuePair(BaseModel):
@@ -103,9 +105,13 @@ class Documentation(BaseModel):
         creationDate: The creation date of the DIMR file.
     """
 
-    fileVersion: str = "1.3"
+    fileVersion: DIMRVersion = DIMRVersion.coerce("1.2")
     createdBy: str = f"hydrolib-core {__version__}"
     creationDate: datetime = Field(default_factory=datetime.utcnow)
+
+    _version_validator = get_version_validator(
+        "fileVersion",
+    )
 
 
 class GlobalSettings(BaseModel):

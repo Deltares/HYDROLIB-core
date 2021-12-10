@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field
+from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
@@ -19,7 +20,7 @@ class General(INIGeneral):
     program: str = Field("D-Flow FM", alias="program")
     version: str = Field("1.2.94.66079M", alias="version")
     filetype: Literal["modelDef"] = Field("modelDef", alias="fileType")
-    fileversion: str = Field("1.09", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("1.9.0"), alias="fileVersion")
     autostart: bool = Field(False, alias="autoStart")
     pathsrelativetoparent: bool = Field(False, alias="pathsRelativeToParent")
 
