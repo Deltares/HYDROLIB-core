@@ -570,12 +570,12 @@ class FileModel(BaseModel, ABC):
         Returns:
             Path: The location at which this model will be saved.
         """
-        filepath = self.filepath if self.filepath is not None else self._generate_name()
+        filepath = self.filepath or self._generate_name()
 
         if filepath.is_absolute():
             return filepath
-
-        return self._absolute_anchor_path / filepath
+        else:
+            return self._absolute_anchor_path / filepath
 
     def is_file_link(self) -> bool:
         return True
