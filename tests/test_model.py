@@ -1,6 +1,6 @@
+import shutil
 from datetime import datetime
 from pathlib import Path
-import shutil
 
 import pytest
 from pydantic.error_wrappers import ValidationError
