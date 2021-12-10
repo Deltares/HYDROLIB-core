@@ -117,7 +117,7 @@ class Lateral(INIBasedModel):
     )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data.get("id")
+        return data.get("id") or data.get("name")
 
     @validator("xcoordinates", "ycoordinates")
     @classmethod

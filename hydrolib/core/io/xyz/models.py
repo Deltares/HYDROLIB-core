@@ -25,6 +25,12 @@ class XYZPoint(BaseModel):
         None, alias="group", description="comment or group name"
     )
 
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        x = data.get("x")
+        y = data.get("y")
+        z = data.get("z")
+        return f"x:{x} y:{y} z:{z}"
+
 
 class XYZModel(FileModel):
     """Sample or forcing file.

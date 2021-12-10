@@ -217,7 +217,7 @@ class Structure(INIBasedModel):
         return exclude_set
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data.get("id")
+        return data.get("id") or data.get("name")
 
 
 class FlowDirection(str, Enum):
