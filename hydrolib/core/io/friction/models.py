@@ -63,6 +63,9 @@ class FrictGlobal(INIBasedModel):
     frictiontype: str = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
 
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data.get("frictionid")
+
 
 class FrictBranch(INIBasedModel):
     """A `[Branch]` block for use inside a friction file.
@@ -130,6 +133,9 @@ class FrictBranch(INIBasedModel):
         "frictionvalues",
         delimiter=" ",
     )
+
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data.get("branchid")
 
     @validator("levels", always=True)
     @classmethod
