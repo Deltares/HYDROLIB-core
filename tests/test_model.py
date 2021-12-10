@@ -1,9 +1,8 @@
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+import shutil
 
 import pytest
-from devtools import debug
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import FileModel
@@ -182,10 +181,6 @@ def test_xyz_model():
 
 
 def test_mdu_model():
-    output_fn = Path(test_output_dir / "test.mdu")
-    if output_fn.is_file():
-        output_fn.unlink()
-
     model = FMModel(
         filepath=Path(
             test_data_dir
@@ -199,27 +194,32 @@ def test_mdu_model():
     )
     assert model.geometry.comments.uniformwidth1d == "test"
 
-    model.filepath = output_fn
-    model.save()
+    output_dir = test_output_dir / test_mdu_model.__name__
+    output_fn = output_dir / FMModel._generate_name()
 
-    assert model.filepath.is_file()
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
 
-    # The frictfile[0] and structurefile[0] contains a relative path by default, so it
-    # needs to be made relative to the parent model path.
+    model.save(filepath=output_fn, recurse=True)
+
+    assert model.save_location == output_fn
+    assert model.save_location.is_file()
+
     assert model.geometry.frictfile is not None
+    frictfile = model.geometry.frictfile[0]
     assert model.geometry.frictfile[0] is not None
     assert model.geometry.frictfile[0].filepath is not None
 
-    parent_dir = model.filepath.parent
-    frictfile_path = parent_dir / model.geometry.frictfile[0].filepath
-    assert frictfile_path.is_file()
+    assert frictfile.save_location == output_dir / frictfile.filepath
+    assert frictfile.save_location.is_file()
 
     assert model.geometry.structurefile is not None
-    assert model.geometry.structurefile[0] is not None
-    assert model.geometry.structurefile[0].filepath is not None
+    structurefile = model.geometry.structurefile[0]
+    assert structurefile is not None
+    assert structurefile.filepath is not None
 
-    structurefile_path = parent_dir / model.geometry.structurefile[0].filepath
-    assert structurefile_path.is_file()
+    assert structurefile.save_location == output_dir / structurefile.filepath
+    assert structurefile.save_location.is_file()
 
 
 def test_model_with_duplicate_file_references_use_same_instances():
