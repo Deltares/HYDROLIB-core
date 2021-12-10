@@ -59,15 +59,21 @@ def make_list_validator(*field_name: str):
 
 
 def make_list_length_root_validator(
-    *field_names, length_name: str, length_incr: int = 0
+    *field_names,
+    length_name: str,
+    length_incr: int = 0,
+    list_required_with_length: bool = False,
 ):
     """
-    Get a root_validator that checks the correct length of several list fields in an object.
+    Get a root_validator that checks the correct length (and presence) of several list fields in an object.
 
     Args:
         *field_names (str): names of the instance variables that are a list and need checking.
         length_name (str): name of the instance variable that stores the expected length.
         length_incr (int): Optional extra increment of length value (e.g., to have +1 extra value in lists).
+        list_required_with_length (obj:`bool`, optional): Whether each list *must* be present if the length
+            attribute is present in the input values. Default: False. If False, list length is only checked
+            for the lists that are not None.
     """
 
     def validate_correct_length(cls, values):
@@ -81,12 +87,16 @@ def make_list_length_root_validator(
 
         for field_name in field_names:
             field = values.get(field_name)
-            if field is not None and not (
-                isinstance(field, list) and len(field) == length
-            ):
+            if field is not None:
+                if not (isinstance(field, list) and len(field) == length):
+                    raise ValueError(
+                        f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}."
+                    )
+            elif list_required_with_length:
                 raise ValueError(
-                    f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}."
+                    f"List {field_name} cannot be missing if {length_name} is given."
                 )
+
         return values
 
     return root_validator(allow_reuse=True)(validate_correct_length)
