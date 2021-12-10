@@ -6,10 +6,41 @@ from typing import Any, Callable, List, Union
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.friction.models import FrictBranch, FrictGlobal, FrictionModel
+from hydrolib.core.io.friction.models import (
+    FrictBranch,
+    FrictGlobal,
+    FrictionModel,
+    FrictionType,
+)
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
 from ..utils import WrapperTest, test_data_dir
+
+
+def _get_frictiontype_cases() -> List:
+    return [
+        ("CHEZY", "Chezy"),
+        ("MANNING", "Manning"),
+        ("WALLLAWNIKURADSE", "wallLawNikuradse"),
+        ("WHITECOLEBROOK", "WhiteColebrook"),
+        ("STRICKLERNIKURADSE", "StricklerNikuradse"),
+        ("STRICKLER", "Strickler"),
+        ("DEBOSBIJKERK", "deBosBijkerk"),
+    ]
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    _get_frictiontype_cases(),
+)
+def test_frictglobal_parses_frictiontype_case_insensitive(input, expected):
+    fg = FrictGlobal(
+        frictiontype=input,
+        frictionid="strucid",
+        frictionvalue=1.0,
+    )
+
+    assert fg.frictiontype == expected
 
 
 def test_friction_model():
@@ -20,7 +51,7 @@ def test_friction_model():
 
     assert isinstance(m.branch[0], FrictBranch)
     assert m.branch[0].branchid == "Channel1"
-    assert m.branch[0].frictiontype == "Manning"
+    assert m.branch[0].frictiontype == FrictionType.manning
     assert m.branch[0].functiontype == "constant"
     assert m.branch[0].numlocations == 2
     assert m.branch[0].chainage == [0.0, 100.0]
@@ -28,7 +59,7 @@ def test_friction_model():
 
     assert isinstance(m.branch[1], FrictBranch)
     assert m.branch[1].branchid == "Channel4"
-    assert m.branch[1].frictiontype == "Chezy"
+    assert m.branch[1].frictiontype == FrictionType.chezy
     assert m.branch[1].functiontype == "constant"
     assert m.branch[1].numlocations == 0
     assert m.branch[1].chainage == None
@@ -37,7 +68,7 @@ def test_friction_model():
     # TODO: Enable this block once issue #143 is done.
     # assert isinstance(m.branch[2], FrictBranch)
     # assert m.branch[2].branchid == "Channel7"
-    # assert m.branch[2].frictiontype == "Chezy"
+    # assert m.branch[2].frictiontype == FrictionType.chezy
     # assert m.branch[2].functiontype == "absDischarge"
     # assert m.branch[2].numlocations == 2
     # assert m.branch[2].chainage == [0, 300]
@@ -55,13 +86,13 @@ def test_friction_model():
 def test_create_a_frictbranch_from_scratch():
     fb = FrictBranch(
         branchid="B1",
-        frictiontype="wallLawNikuradse",
+        frictiontype=FrictionType.walllawnikuradse,
         frictionvalues=[1.5],
     )
     assert fb.branchid == "B1"
     assert fb.numlocations == 0  # default
     assert fb.functiontype == "constant"  # default
-    assert fb.frictiontype == "wallLawNikuradse"
+    assert fb.frictiontype == FrictionType.walllawnikuradse
     assert fb.frictionvalues == [1.5]
 
 
@@ -70,7 +101,7 @@ def test_create_a_frictbranch_with_incorrect_levels_or_locations():
     with pytest.raises(ValidationError) as error:
         _ = FrictBranch(
             branchid=branchid,
-            frictiontype="wallLawNikuradse",
+            frictiontype=FrictionType.walllawnikuradse,
             chainage=[10, 20],  # intentional wrong len(), should be 1
             levels=[-42],  # intentional wrong len(), should be absent/not given.
             frictionvalues=[1.5, 2.5, 3.5],  # intentional wrong len(), should be 1

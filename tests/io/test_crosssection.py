@@ -15,6 +15,7 @@ from hydrolib.core.io.crosssection.models import (
     ZWCrsDef,
     ZWRiverCrsDef,
 )
+from hydrolib.core.io.friction.models import FrictionType
 
 from ..utils import WrapperTest, test_data_dir
 
@@ -34,7 +35,7 @@ class TestCrossSection:
     circledef = {
         "id": "Prof1",
         "diameter": 3.14,
-        "frictiontype": "wallLawNikuradse",
+        "frictiontype": FrictionType.walllawnikuradse,
         "frictionvalue": 1.5,
     }
 
@@ -42,7 +43,7 @@ class TestCrossSection:
         "id": "Prof1",
         "width": 3.14,
         "height": 2.718,
-        "frictiontype": "wallLawNikuradse",
+        "frictiontype": FrictionType.walllawnikuradse,
         "frictionvalue": 1.5,
     }
 
@@ -51,7 +52,7 @@ class TestCrossSection:
         "numlevels": 2,
         "levels": [-2, 3],
         "flowwidths": [11, 44],
-        "frictiontype": "Manning",
+        "frictiontype": FrictionType.manning,
         "frictionvalue": 0.03,
     }
 
@@ -60,7 +61,7 @@ class TestCrossSection:
         "numlevels": 2,
         "levels": [-2, 3],
         "flowwidths": [11, 44],
-        "frictiontypes": ["Manning"],
+        "frictiontypes": [FrictionType.manning],
         "frictionvalues": [0.03],
     }
 
@@ -69,7 +70,7 @@ class TestCrossSection:
         "yzcount": 4,
         "ycoordinates": [-10, -2, 3, 12],
         "zcoordinates": [1, -4, -4.1, 2],
-        "frictiontypes": ["Manning"],
+        "frictiontypes": [FrictionType.manning],
         "frictionvalues": [0.03],
     }
 
@@ -79,7 +80,7 @@ class TestCrossSection:
         "xcoordinates": [10, 20, 30, 40],
         "ycoordinates": [-10, -2, 3, 12],
         "zcoordinates": [1, -4, -4.1, 2],
-        "frictiontypes": ["Manning"],
+        "frictiontypes": [FrictionType.manning],
         "frictionvalues": [0.03],
     }
 
@@ -118,7 +119,7 @@ class TestCrossSection:
                 id=csdefid,
                 diameter=3.14,
                 frictionid="Brick",
-                frictiontype="wallLawNikuradse",
+                frictiontype=FrictionType.walllawnikuradse,
                 frictionvalue=1.5,
             )
         expected_message = f"Cross section has duplicate friction specification"
@@ -145,7 +146,7 @@ class TestCrossSection:
                 numlevels=2,
                 levels=[-2, 3, 13],  # Intentional wrong list length
                 flowwidths=[11, 44],
-                frictiontypes=["Manning"],
+                frictiontypes=[FrictionType.manning],
                 frictionvalues=[0.03],
             )
         expected_message = (
@@ -175,7 +176,7 @@ class TestCrossSection:
                 yzcount=4,
                 ycoordinates=[-10, -2, 3, 12],
                 zcoordinates=[1, -4, -4.1],  # Intentional wrong list length
-                frictiontypes=["Manning"],
+                frictiontypes=[FrictionType.manning],
                 frictionvalues=[0.03],
             )
         expected_message = (
@@ -194,7 +195,7 @@ class TestCrossSection:
                 zcoordinates=[1, -4, -4.1, 2],
                 sectioncount=2,
                 frictionpositions=[1, 2],  # Intentional wrong list length
-                frictiontypes=["Manning", "Manning"],
+                frictiontypes=[FrictionType.manning, FrictionType.manning],
                 frictionvalues=[0.03],  # Intentional wrong list length
             )
         expected_message0 = f"Number of values for frictionvalues should be equal to the sectioncount value."
@@ -225,7 +226,7 @@ class TestCrossSection:
                 xcoordinates=[10, 20, 30, 40],
                 ycoordinates=[-10, -2, 3, 12],
                 zcoordinates=[1, -4, -4.1],  # Intentional wrong list length
-                frictiontypes=["Manning"],
+                frictiontypes=[FrictionType.manning],
                 frictionvalues=[0.03],
             )
         expected_message = (
@@ -243,7 +244,7 @@ class TestCrossSection:
                 xcoordinates=[10, 20, 30],  # Intentional wrong list length
                 ycoordinates=[-10, -2, 3, 12],
                 zcoordinates=[1, -4, -4.1, 2],
-                frictiontypes=["Manning"],
+                frictiontypes=[FrictionType.manning],
                 frictionvalues=[0.03],
             )
         expected_message = (

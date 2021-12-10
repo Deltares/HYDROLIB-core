@@ -6,6 +6,7 @@ from typing import Any, List, Union
 import pytest
 from pydantic.error_wrappers import ValidationError
 
+from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
     Bridge,
@@ -259,7 +260,7 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         numlosscoeff="1",
         relopening=[],
         losscoeff=[],
-        bedfrictiontype="",
+        bedfrictiontype=FrictionType.manning,
         bedfriction="1",
         subtype="invertedSiphon",
         bendlosscoeff="1",
@@ -292,7 +293,7 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         numlosscoeff="1",
         relopening=[],
         losscoeff=[],
-        bedfrictiontype="",
+        bedfrictiontype=FrictionType.manning,
         bedfriction="1",
         bendlosscoeff="1",
     )
@@ -317,7 +318,7 @@ class TestBridge:
             shift=-1.23,
             inletlosscoeff=1,
             outletlosscoeff=1,
-            frictiontype="Strickler",
+            frictiontype=FrictionType.strickler,
             friction=70,
             length=100,
             comments=Bridge.Comments(
@@ -338,7 +339,7 @@ class TestBridge:
         assert bridge.shift == -1.23
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == "Strickler"
+        assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
         assert bridge.length == 100
         assert (
@@ -392,7 +393,7 @@ class TestBridge:
         assert bridge.shift == 0.0
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == "Strickler"
+        assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
@@ -443,7 +444,7 @@ class TestBridge:
         assert bridge.shift == 0.0
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == "Strickler"
+        assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
