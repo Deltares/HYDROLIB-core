@@ -72,11 +72,11 @@ def make_list_length_root_validator(
         length_name (str): name of the instance variable that stores the expected length.
         length_incr (int): Optional extra increment of length value (e.g., to have +1 extra value in lists).
         list_required_with_length (obj:`bool`, optional): Whether each list *must* be present if the length
-            attribute is present in the input values. Default: False. If False, list length is only checked
-            for the lists that are not None.
+            attribute is present (and > 0) in the input values. Default: False. If False, list length is only
+            checked for the lists that are not None.
     """
 
-    def validate_correct_length(cls, values):
+    def validate_correct_length(cls, values: dict):
         length = values.get(length_name)
         if length is None:
             # length attribute not present, possibly defer validation to a subclass.
@@ -88,11 +88,11 @@ def make_list_length_root_validator(
         for field_name in field_names:
             field = values.get(field_name)
             if field is not None:
-                if not (isinstance(field, list) and len(field) == length):
+                if len(field) != length:
                     raise ValueError(
                         f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}."
                     )
-            elif list_required_with_length:
+            elif list_required_with_length and length > 0:
                 raise ValueError(
                     f"List {field_name} cannot be missing if {length_name} is given."
                 )
