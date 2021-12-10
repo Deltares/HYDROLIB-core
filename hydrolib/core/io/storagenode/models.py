@@ -213,10 +213,13 @@ class StorageNodeModel(INIModel):
 
         usestreetstorage = values["general"].usestreetstorage
 
-        if usestreetstorage and not storagenode.usetable:
-            if storagenode.streetstoragearea is None:
-                raise ValueError(
-                    f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id {storagenode.id}"
-                )
+        if (
+            usestreetstorage
+            and not storagenode.usetable
+            and storagenode.streetstoragearea is None
+        ):
+            raise ValueError(
+                f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id {storagenode.id}"
+            )
 
         return storagenode

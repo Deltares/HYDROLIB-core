@@ -135,8 +135,8 @@ def _create_required_storage_node_values(usetable: bool) -> dict:
             dict(
                 usetable="true",
                 numlevels="3",
-                levels=["0.1", "0.2", "0.3"],
-                storagearea=["0.4", "0.5", "0.6"],
+                levels="0.1 0.2 0.3",
+                storagearea="0.4 0.5 0.6",
             )
         )
     else:
