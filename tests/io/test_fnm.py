@@ -7,16 +7,32 @@ import pytest
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from hydrolib.core.io.fnm.parser import parse
 from hydrolib.core.io.fnm.serializer import serialize
+from tests.utils import test_input_dir
 
 
 class TestRainFallRunoffModel:
+    def test_load_from_file(self):
+        path = Path(
+            test_input_dir
+            / "e02"
+            / "c11_korte-woerden-1d"
+            / "dimr_model"
+            / "rr"
+            / "Sobek_3b.fnm"
+        )
+
+        model = RainfallRunoffModel(filepath=path)
+
+        assert model.node_data is not None
+        assert model.link_data is not None
+
     def test_property_keys_returns_correct_list(self):
         result = list(RainfallRunoffModel.property_keys())
 
         assert len(result) == 127
         assert result[0] == "control_file"
         assert result[1] == "node_data"
-        assert result[2] == "branch_data"
+        assert result[2] == "link_data"
         assert result[-1] == "meteo_input_file_temperature"
         assert result[-2] == "meteo_input_file_evaporation"
         assert result[-3] == "meteo_input_file_rainfall"
@@ -99,7 +115,7 @@ def test_serialize_parse_should_return_same_result():
     model = RainfallRunoffModel()
 
     # Scramble some values to ensure we're not just getting the default.
-    model.node_data = Path("somewhere_else")
+    model.open_water_data = Path("somewhere_else")
     model.green_house_general = Path("greenhouse.general")
     model.restart_file_input = Path("aa_res.res")
     model.meteo_input_file_rainfall = Path("some_path.ini")

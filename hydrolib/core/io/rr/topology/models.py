@@ -4,8 +4,13 @@ from pydantic.class_validators import root_validator
 from pydantic.fields import Field
 
 from hydrolib.core.basemodel import BaseModel, FileModel
-from hydrolib.core.io.rr.network.parser import NodeFileParser
-from hydrolib.core.io.rr.network.serializer import NodeFileSerializer
+from hydrolib.core.io.base import DummmyParser, DummySerializer
+from hydrolib.core.io.net.models import Network
+from hydrolib.core.io.rr.topology.parser import NetworkTopologyFileParser
+from hydrolib.core.io.rr.topology.serializer import (
+    LinkFileSerializer,
+    NodeFileSerializer,
+)
 
 # Dictionary with `nt` mapped against the expected `mt`.
 nodetypes_netter_to_rr = {
@@ -111,7 +116,8 @@ class Node(BaseModel):
 
 
 class NodeFile(FileModel):
-    node: List[Node] = []
+    _parser = NetworkTopologyFileParser(enclosing_tag="node")
+    node: List[Node] = Field([], alias="node")
 
     @classmethod
     def _ext(cls) -> str:
@@ -127,4 +133,47 @@ class NodeFile(FileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        return NodeFileParser.parse
+        return cls._parser.parse
+
+
+class Link(BaseModel):
+    """Represents a link from the topology link file."""
+
+    id: str = Field(alias="id")
+    name: Optional[str] = Field(alias="nm")
+    branchid: int = Field(alias="ri")
+    modellinktype: int = Field(alias="mt")
+    branchtype: int = Field(alias="bt")
+    objectid: str = Field(alias="ObID")
+    beginnode: str = Field(alias="bn")
+    endnode: str = Field(alias="en")
+
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data["id"] if "id" in data else data.get("nm")
+
+    def dict(self, *args, **kwargs):
+        kwargs["by_alias"] = True
+        return super().dict(*args, **kwargs)
+
+
+class LinkFile(FileModel):
+    """Represents the file with the RR link topology data."""
+
+    _parser = NetworkTopologyFileParser(enclosing_tag="brch")
+    link: List[Link] = Field([], alias="brch")
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".tp"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "3b_link"
+
+    @classmethod
+    def _get_serializer(cls) -> Callable:
+        return LinkFileSerializer.serialize
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return cls._parser.parse
