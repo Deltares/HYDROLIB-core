@@ -167,6 +167,31 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     assert expected_message in str(error.value)
 
 
+def test_create_structure_without_id():
+    field = "id"
+    with pytest.raises(ValidationError) as error:
+        structure = Structure(
+            branchid="branch", chainage=10
+        )  # Intentionally no id+type
+
+    expected_message = f"{field}"
+    assert expected_message in str(error.value)
+    assert error.value.errors()[0]["type"] == "value_error.missing"
+
+
+def test_create_structure_without_type():
+    identifier = "structA"
+    field = "type"
+    with pytest.raises(ValidationError) as error:
+        structure = Structure(
+            id=identifier, branchid="branch", chainage=10
+        )  # Intentionally no type
+
+    expected_message = f"{identifier} -> {field}"
+    assert expected_message in str(error.value)
+    assert error.value.errors()[0]["type"] == "value_error.missing"
+
+
 @pytest.mark.parametrize(
     "input,expected",
     [
