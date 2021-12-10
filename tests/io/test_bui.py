@@ -11,6 +11,9 @@ from hydrolib.core.io.bui.serializer import (
     BuiSerializer,
     write_bui_file,
 )
+from tests.io.test_structure import (
+    test_weir_and_universal_weir_resolve_from_parsed_document,
+)
 from tests.utils import test_input_dir, test_output_dir
 
 
@@ -150,8 +153,15 @@ class TestModel:
                 0.2
             """
             )
+
             # 2. Save file and read its content.
-            save_path = default_bui_model.save(test_output_dir)
+            save_path = (
+                test_output_dir
+                / self.test_save_default_verify_expected_text.__name__
+                / BuiModel._generate_name()
+            )
+
+            default_bui_model.save(save_path, recurse=True)
             assert save_path.is_file()
             text_read = save_path.read_text(encoding="utf8")
 
@@ -167,8 +177,16 @@ class TestModel:
 
         def test_save_default_and_load_returns_same_model(self):
             default_bui_model = BuiTestData.bui_model()
-            save_path = default_bui_model.save(test_output_dir)
+
+            save_path = (
+                test_output_dir
+                / self.test_save_default_and_load_returns_same_model.__name__
+                / BuiModel._generate_name()
+            )
+
+            default_bui_model.save(filepath=save_path, recurse=True)
             assert save_path.is_file()
+
             new_model = BuiModel(save_path)
             assert default_bui_model == new_model
 

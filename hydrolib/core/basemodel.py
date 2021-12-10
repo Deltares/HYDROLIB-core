@@ -296,10 +296,11 @@ class FilePathResolver:
             parent_path (Path): The parent path
             relative_mode (ResolveRelativeMode): The relative mode used to resolve.
         """
+        absolute_parent_path = self.resolve(parent_path)
         if relative_mode == ResolveRelativeMode.ToAnchor:
-            self._anchors.append(parent_path)
+            self._anchors.append(absolute_parent_path)
 
-        self._parents.append((self.resolve(parent_path), relative_mode))
+        self._parents.append((absolute_parent_path, relative_mode))
 
     def pop_last_parent(self) -> None:
         """Pop the last added parent from this FilePathResolver
@@ -571,7 +572,7 @@ class FileModel(BaseModel, ABC):
         """
         filepath = self.filepath if self.filepath is not None else self._generate_name()
 
-        if filepath.is_absolute:
+        if filepath.is_absolute():
             return filepath
 
         return self._absolute_anchor_path / filepath

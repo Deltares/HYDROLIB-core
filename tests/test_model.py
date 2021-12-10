@@ -45,8 +45,10 @@ def test_dimr_model():
         / "dimr_model"
         / "dimr_config.xml"
     )
+
     # Confirm parsing results in correct
     # components for each type of submodel
+
     d = DIMR(filepath=test_file)
     assert len(d.component) == 2
     assert isinstance(d.component[0], RRComponent)
@@ -54,9 +56,15 @@ def test_dimr_model():
 
     # Confirm saving creates new files and
     # files for child model
-    d.save(folder=test_output_dir / "tmp")
-    assert d.filepath.is_file()
-    assert d.component[1].model.filepath.is_file()
+    save_path = test_output_dir / test_dimr_model.__name__ / DIMR._generate_name()
+
+    d.save(filepath=save_path, recurse=True)
+
+    assert d.save_location == save_path
+    assert d.save_location.is_file()
+
+    assert d.component[1].model is not None
+    assert d.component[1].model.save_location.is_file()
 
 
 def test_parse_rr_model_returns_correct_model():

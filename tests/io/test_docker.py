@@ -1,3 +1,4 @@
+from pathlib import Path
 from devtools import debug
 
 from hydrolib.core.io.dimr.models import DIMR, FMComponent
@@ -12,7 +13,7 @@ def test_from_scratch_docker():
     # TODO Make this model run in Docker to test actual validity
     dimr = DIMR()
     fm = FMModel()
-    fm.filepath = "test.mdu"
+    fm.filepath = Path("test.mdu")
     # debug(fm.geometry.netfile)
     # manipulate the model
     # Start adding geometry
@@ -34,8 +35,12 @@ def test_from_scratch_docker():
     dimr.component.append(
         FMComponent(name="test", workingDir=".", inputfile=fm.filepath, model=fm)
     )
-    dimr.save(folder=test_output_dir / "docker")
-    assert (test_output_dir / "docker" / "network.nc").is_file()
-    assert (test_output_dir / "docker" / "test.mdu").is_file()
-    assert (test_output_dir / "docker" / "structures.ini").is_file()
-    assert (test_output_dir / "docker" / "dimr_config.xml").is_file()
+
+    save_dir = test_output_dir / test_from_scratch_docker.__name__
+    save_path = save_dir / dimr._generate_name()
+
+    dimr.save(filepath=save_path, recurse=True)
+    assert (save_dir / "network.nc").is_file()
+    assert (save_dir / "test.mdu").is_file()
+    assert (save_dir / "structures.ini").is_file()
+    assert (save_dir / "dimr_config.xml").is_file()
