@@ -1,9 +1,9 @@
+from pathlib import Path
 import pytest
 from devtools import debug
 
 from hydrolib.core.io.dimr.models import DIMR, FMComponent, Start
 from hydrolib.core.io.mdu.models import FMModel
-from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
 from tests.utils import test_input_dir, test_output_dir
 
@@ -38,11 +38,14 @@ def test_from_scratch_docker():
         FMComponent(name="test", workingDir=".", inputfile=fm.filepath, model=fm)
     )
     dimr.control.append(Start(name="test"))
-    dimr.save(folder=test_output_dir / "docker")
-    assert (test_output_dir / "docker" / "network.nc").is_file()
-    assert (test_output_dir / "docker" / "test.mdu").is_file()
-    assert (test_output_dir / "docker" / "structures.ini").is_file()
-    assert (test_output_dir / "docker" / "dimr_config.xml").is_file()
+    output_dir = test_output_dir / "docker"
+
+    save_path = test_output_dir / "docker" / "dimr_config.xml"
+    dimr.save(filepath=save_path, recurse=True)
+    assert (output_dir / "network.nc").is_file()
+    assert (output_dir / "test.mdu").is_file()
+    assert (output_dir / "structures.ini").is_file()
+    assert save_path.is_file()
 
 
 @pytest.mark.docker
@@ -57,13 +60,17 @@ def test_existing_model_saved_docker():
     )
 
     dimr = DIMR(filepath=test_file)
-    dimr.save(folder=test_output_dir / "docker")
-    assert (test_output_dir / "docker" / "Boundary_net.nc").is_file()
-    assert (test_output_dir / "docker" / "Boundary.mdu").is_file()
-    # assert (test_output_dir / "docker" / "observcrs.ini").is_file() # Only possible once issue #159 is done
-    assert (test_output_dir / "docker" / "Boundary.ext").is_file()
-    assert (test_output_dir / "docker" / "BoundaryConditions.bc").is_file()
-    assert (test_output_dir / "docker" / "CrossSectionLocations.ini").is_file()
-    assert (test_output_dir / "docker" / "CrossSectionDefinitions.ini").is_file()
-    assert (test_output_dir / "docker" / "roughness-Main.ini").is_file()
-    assert (test_output_dir / "docker" / "dimr_config.xml").is_file()
+
+    output_dir = test_output_dir / "docker"
+    save_path = output_dir / "dimr_config.xml"
+
+    dimr.save(filepath=save_path, recurse=True)
+    assert (output_dir / "Boundary_net.nc").is_file()
+    assert (output_dir / "Boundary.mdu").is_file()
+    # assert (output_dir / "observcrs.ini").is_file() # Only possible once issue #159 is done
+    assert (output_dir / "Boundary.ext").is_file()
+    assert (output_dir / "BoundaryConditions.bc").is_file()
+    assert (output_dir / "CrossSectionLocations.ini").is_file()
+    assert (output_dir / "CrossSectionDefinitions.ini").is_file()
+    assert (output_dir / "roughness-Main.ini").is_file()
+    assert save_path.is_file()
