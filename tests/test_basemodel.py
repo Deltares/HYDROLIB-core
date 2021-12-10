@@ -254,26 +254,35 @@ class TestFileModel:
         model.synchronize_filepaths()
 
         assert model.filepath == fm_path
+        assert not model.save_location.is_file()
+
         netfile = model.geometry.netfile
         assert netfile.save_location == self._resolve(netfile.filepath, other_dir)  # type: ignore
+        assert not netfile.save_location.is_file()  # type: ignore
 
         structuresfile = model.geometry.structurefile[0]  # type: ignore
         assert structuresfile.save_location == self._resolve(structuresfile.filepath, other_dir)  # type: ignore
+        assert not structuresfile.save_location.is_file()
 
         roughness_channel = model.geometry.frictfile[0]  # type: ignore
         assert roughness_channel.save_location == self._resolve(roughness_channel.filepath, other_dir)  # type: ignore
+        assert not roughness_channel.save_location.is_file()  # type: ignore
 
         roughness_main = model.geometry.frictfile[1]  # type: ignore
         assert roughness_main.save_location == self._resolve(roughness_main.filepath, other_dir)  # type: ignore
+        assert not roughness_main.save_location.is_file()  # type: ignore
 
         roughness_sewer = model.geometry.frictfile[2]  # type: ignore
         assert roughness_sewer.save_location == self._resolve(roughness_sewer.filepath, other_dir)  # type: ignore
+        assert not roughness_sewer.save_location.is_file()  # type: ignore
 
         extforcefile = model.external_forcing.extforcefilenew
         assert extforcefile.save_location == self._resolve(extforcefile.filepath, other_dir)  # type: ignore
+        assert not extforcefile.save_location.is_file()  # type: ignore
 
         forcing = extforcefile.boundary[0].forcingfile  # type: ignore
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
+        assert not forcing.save_location.is_file()  # type: ignore
 
 
 class TestContextManagerFileLoadContext:

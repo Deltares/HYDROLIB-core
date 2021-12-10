@@ -713,7 +713,6 @@ class FileModel(BaseModel, ABC):
             if isinstance(model, FileModel):
                 acc.pop_last_parent()
                 model._absolute_anchor_path = acc.get_current_parent()
-                model._save()
             return acc
 
         traverser = ModelTreeTraverser[FileLoadContext](
