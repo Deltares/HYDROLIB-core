@@ -1,0 +1,243 @@
+[General]
+    majorVersion         = 1                   
+    minorVersion         = 0                   
+    fileType             = boundConds          
+
+[Boundary]
+    name                 = lat_1209            
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_1204            
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_986             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_900             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_935             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_1024            
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_908             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_936             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_876             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_893             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_997             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_982             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_987             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_902             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_931             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_1032            
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_994             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_981             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_1022            
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_993             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_873             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_895             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_871             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_904             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_1078            
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_1206            
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_897             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_991             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = lat_909             
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = os_101              
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = os_102              
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = os_103              
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = os_104              
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+
+[Boundary]
+    name                 = os_105              
+    function             = constant            
+    quantity             = water_level         
+    unit                 = m                   
+    0
+

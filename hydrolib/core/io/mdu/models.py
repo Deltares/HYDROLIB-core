@@ -26,6 +26,15 @@ class General(INIGeneral):
 
 
 class Numerics(INIBasedModel):
+    """
+    The `[Numerics]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.numerics`.
+
+    All lowercased attributes match with the [Numerics] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Numerics"] = "Numerics"
     cflmax: float = Field(0.7, alias="cflMax")
     advectype: int = Field(33, alias="advecType")
@@ -56,6 +65,15 @@ class Numerics(INIBasedModel):
 
 
 class VolumeTables(INIBasedModel):
+    """
+    The `[VolumeTables]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.volumetables`.
+
+    All lowercased attributes match with the [VolumeTables] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["VolumeTables"] = "VolumeTables"
     usevolumetables: bool = Field(False, alias="useVolumeTables")
     increment: float = Field(0.2, alias="increment")
@@ -63,6 +81,15 @@ class VolumeTables(INIBasedModel):
 
 
 class Physics(INIBasedModel):
+    """
+    The `[Physics]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.physics`.
+
+    All lowercased attributes match with the [Physics] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Physics"] = "Physics"
     uniffrictcoef: float = Field(0.023, alias="unifFrictCoef")
     uniffricttype: int = Field(1, alias="unifFrictType")
@@ -103,7 +130,23 @@ class Physics(INIBasedModel):
     betaspiral: int = Field(0, alias="betaSpiral")
 
 
+class Sediment(INIBasedModel):
+    _header: Literal["Sediment"] = "Sediment"
+    sedimentmodelnr: Optional[int] = Field(alias="Sedimentmodelnr")
+    morfile: Optional[str] = Field(alias="MorFile")
+    sedfile: Optional[str] = Field(alias="SedFile")
+
+
 class Wind(INIBasedModel):
+    """
+    The `[Wind]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.wind`.
+
+    All lowercased attributes match with the [Wind] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Wind"] = "Wind"
     icdtyp: int = Field(2, alias="icdTyp")
     cdbreakpoints: List[float] = Field([0.00063, 0.00723], alias="cdBreakpoints")
@@ -127,6 +170,15 @@ class Wind(INIBasedModel):
 
 
 class Waves(INIBasedModel):
+    """
+    The `[Waves]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.waves`.
+
+    All lowercased attributes match with the [Waves] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Waves"] = "Waves"
     wavemodelnr: int = Field(3, alias="waveModelNr")
     rouwav: str = Field("FR84", alias="rouWav")
@@ -134,6 +186,15 @@ class Waves(INIBasedModel):
 
 
 class Time(INIBasedModel):
+    """
+    The `[Time]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.time`.
+
+    All lowercased attributes match with the [Time] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Time"] = "Time"
     refdate: int = Field(20200101, alias="refDate")  # TODO Convert to datetime
     tzone: float = Field(0.0, alias="tZone")
@@ -148,12 +209,30 @@ class Time(INIBasedModel):
 
 
 class Restart(INIBasedModel):
+    """
+    The `[Restart]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.restart`.
+
+    All lowercased attributes match with the [Restart] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Restart"] = "Restart"
     restartfile: Optional[Path] = Field(None, alias="restartFile")
     restartdatetime: Optional[str] = Field(None, alias="restartDateTime")
 
 
 class ExternalForcing(INIBasedModel):
+    """
+    The `[External Forcing]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.external_forcing`.
+
+    All lowercased attributes match with the [External Forcing] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["External Forcing"] = "External Forcing"
     extforcefile: Optional[Path] = Field(None, alias="extForceFile")
     extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
@@ -167,11 +246,29 @@ class ExternalForcing(INIBasedModel):
 
 
 class Hydrology(INIBasedModel):
+    """
+    The `[Hydrology]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.hydrology`.
+
+    All lowercased attributes match with the [Hydrology] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Hydrology"] = "Hydrology"
     interceptionmodel: bool = Field(False, alias="interceptionModel")
 
 
 class Trachytopes(INIBasedModel):
+    """
+    The `[Trachytopes]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.trachytopes`.
+
+    All lowercased attributes match with the [Trachytopes] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
     trtdef: Optional[int] = Field(None, alias="trtDef")  # no doc?
@@ -180,6 +277,15 @@ class Trachytopes(INIBasedModel):
 
 
 class Output(INIBasedModel):
+    """
+    The `[Output]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.output`.
+
+    All lowercased attributes match with the [Output] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
     _header: Literal["Output"] = "Output"
     wrishp_crs: bool = Field(False, alias="wrishp_crs")
     wrishp_weir: bool = Field(False, alias="wrishp_weir")
@@ -319,6 +425,14 @@ class Output(INIBasedModel):
 
 
 class Geometry(INIBasedModel):
+    """
+    The `[Geometry]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry`.
+
+    All lowercased attributes match with the [Geometry] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
 
     _header: Literal["Geometry"] = "Geometry"
     netfile: Optional[NetworkModel] = Field(
@@ -389,13 +503,21 @@ class Geometry(INIBasedModel):
 
 
 class FMModel(INIModel):
-    """FM Model representation."""
+    """
+    The overall FM model that contains the contents of the toplevel MDU file.
+
+    All lowercased attributes match with the supported "[section]"s as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+
+    Each of these class attributes refers to an underlying model class for that particular section.
+    """
 
     general: General = Field(default_factory=General)
     geometry: Geometry = Field(default_factory=Geometry)
     volumetables: VolumeTables = Field(default_factory=VolumeTables)
     numerics: Numerics = Field(default_factory=Numerics)
     physics: Physics = Field(default_factory=Physics)
+    sediment: Sediment = Field(default_factory=Sediment)
     wind: Wind = Field(default_factory=Wind)
     waves: Optional[Waves] = None
     time: Time = Field(default_factory=Time)

@@ -11,7 +11,6 @@ from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
-    Control,
     CoupledItem,
     Coupler,
     FMComponent,
@@ -109,8 +108,7 @@ def test_dimr_model_save():
 
     dimr = DIMR()
     dimr.documentation.creationDate = datetime(2021, 7, 29, 12, 45)
-    dimr.control = Control()
-    dimr.control.parallel.append(
+    dimr.control.append(
         Parallel(
             startGroup=StartGroup(
                 time="0 60 7200",

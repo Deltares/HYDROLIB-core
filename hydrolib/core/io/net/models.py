@@ -891,7 +891,7 @@ class Network:
         present, and loads them one by one.
 
         Args:
-            file (Path): path to netcdf file with network data
+            file_path (Path): path to netcdf file with network data
 
         Returns:
             Network: The instance of the class itself that is returned

@@ -61,7 +61,7 @@ class BuiEventSerializer:
         hours and minutes.
 
         Args:
-            timestamp (timedelta): Timedelta to convert.
+            duration (timedelta): Timedelta to convert.
 
         Returns:
             Dict: Dictionary containing all fields.
@@ -177,7 +177,7 @@ class BuiSerializer:
         Serializes a event list dictionary into a single text block.
 
         Args:
-            event_list_data (Dict): Dictionary containing list of events.
+            data_to_serialize (Dict): Dictionary containing list of events.
 
         Returns:
             str: Text block representing all precipitation events.
