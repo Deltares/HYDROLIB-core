@@ -69,7 +69,7 @@ class StorageNode(INIBasedModel):
             alias="nodeType",
         )
         nodeid: Optional[str] = Field(
-            "Connection node on which the storage nodeis located.", alias="nodeId"
+            "Connection node on which the storage node is located.", alias="nodeId"
         )
         usetable: Optional[str] = Field(
             "Switch to select a simple (false) or tabulated (true) storage area.",
@@ -105,7 +105,7 @@ class StorageNode(INIBasedModel):
             "Areas in storage area table [m2].", alias="storageArea"
         )
         interpolate: Optional[str] = Field(
-            "Interpolation type for storage area table either linear or block.",
+            "Interpolation type for storage area table. Possible values: linear or block.",
             alias="interpolate",
         )
 
