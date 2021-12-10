@@ -92,6 +92,33 @@ def make_list_length_root_validator(
     return root_validator(allow_reuse=True)(validate_correct_length)
 
 
+# TODO also use this for the storage nodes once in the main
+def get_required_fields_validator(
+    *field_names, dependent_field_name: str, dependent_value: Any
+):
+    """Gets a validator that checks whether the fields are provided.
+
+    Args:
+        *field_names (str): names of the instance variables that need to be validated.
+        dependent_field_name (str): name of the instance variable on which the fields are dependent.
+        dependent_value (Any): the value that the dependent field should contain to perform this validation.
+    """
+
+    def validate_required_fields(cls, values: dict):
+        if values.get(dependent_field_name) != dependent_value:
+            return values
+
+        for field in field_names:
+            if values.get(field) == None:
+                raise ValueError(
+                    f"{field} should be provided when {dependent_field_name} is {dependent_value}"
+                )
+
+        return values
+
+    return root_validator(allow_reuse=True)(validate_required_fields)
+
+
 def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
     """Gets a value that corresponds with the default field value of one of the subclasses.
 

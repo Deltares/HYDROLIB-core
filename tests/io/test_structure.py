@@ -1857,3 +1857,43 @@ class TestGeneralStructure:
             self._create_required_general_structure_values()
         )
         return general_structure_values
+
+
+class TestCulvert:
+    @pytest.mark.parametrize(
+        "missing_field",
+        ["valveopeningheight", "numlosscoeff", "relopening", "losscoeff"],
+    )
+    def test_validate_required_fields_based_on_valveonoff(self, missing_field: str):
+        values = self._create_culvert_values()
+        del values[missing_field]
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = f"{missing_field} should be provided when valveonoff is True"
+        assert expected_message in str(error.value)
+
+    def _create_culvert_values(self):
+        values = create_structure_values("culvert")
+        values.update(
+            dict(
+                allowedflowdir="both",
+                leftlevel="1.23",
+                rightlevel="2.34",
+                csdefid="cs_def_id",
+                length="3.45",
+                inletlosscoeff="4.56",
+                outletlosscoeff="5.67",
+                valveonoff="true",
+                valveopeningheight="6.78",
+                numlosscoeff="10",
+                relopening="7.89 9.87 8.76",
+                losscoeff="7.65 6.54 5.43",
+                bedfrictiontype="bed_friction_type",
+                bedfriction="4.32",
+                subtype="invertedSiphon",
+                bendlosscoeff="3.21",
+            )
+        )
+        return values
