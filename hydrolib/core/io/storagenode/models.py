@@ -5,7 +5,11 @@ from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import get_enum_validator
+from hydrolib.core.io.ini.util import (
+    get_enum_validator,
+    get_split_string_on_delimiter_validator,
+    make_list_validator,
+)
 
 
 class NodeType(str, Enum):
@@ -135,6 +139,14 @@ class StorageNode(INIBasedModel):
     _interpolation_validator = get_enum_validator("interpolate", enum=Interpolation)
     _nodetype_validator = get_enum_validator("nodetype", enum=NodeType)
     _storagetype_validator = get_enum_validator("storagetype", enum=StorageType)
+    _split_to_list = get_split_string_on_delimiter_validator(
+        "levels",
+        "storagearea",
+        delimiter=" ",
+    )
+
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data.get("id") or data.get("name")
 
     @root_validator(skip_on_failure=True)
     @classmethod
@@ -187,6 +199,8 @@ class StorageNodeModel(INIModel):
     general: StorageNodeGeneral = StorageNodeGeneral()
     storagenode: List[StorageNode] = []
 
+    _make_list = make_list_validator("storagenode")
+
     @classmethod
     def _filename(cls) -> str:
         return "nodeFile"
@@ -204,3 +218,5 @@ class StorageNodeModel(INIModel):
                 raise ValueError(
                     f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id {storagenode.id}"
                 )
+
+        return storagenode
