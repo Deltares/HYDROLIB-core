@@ -1,5 +1,4 @@
 import shutil
-from os import path
 from pathlib import Path
 from typing import Sequence, Tuple
 
@@ -22,6 +21,8 @@ _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_e
 
 
 class TestFileModel:
+    _reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
+
     def test_dimr_model_is_a_file_model(self):
         # For the ease of testing, we use DIMR model, which implements FileModel
         # If this test fails the other tests are basically useless.
@@ -44,6 +45,21 @@ class TestFileModel:
         model_b = DIMR(test_file)
 
         assert model_a is not model_b
+
+    def test_save_model_without_recurse_only_saves_the_model(self):
+        model = FMModel(self._reference_model_path)
+
+        output_path = (
+            test_output_dir
+            / self.test_save_model_without_recurse_only_saves_the_model.__name__
+            / "fm.mdu"
+        )
+
+        model.save(filepath=output_path, recurse=False)
+
+        files_in_output = list(output_path.parent.glob("**/*"))
+        assert len(files_in_output) == 1
+        assert files_in_output[0] == output_path
 
     def _resolve(self, path: Path, relative_parent: Path) -> Path:
         if path.is_absolute():
@@ -112,10 +128,8 @@ class TestFileModel:
         extforcefile: Path,
         forcingfile: Path,
     ):
-        reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
-        reference_model = FMModel(reference_model_path)
+        reference_model = FMModel(self._reference_model_path)
 
-        # TODO: temp fix should be fixed with #150
         reference_model.wind.cdbreakpoints = []
         reference_model.wind.windspeedbreakpoints = []
 
@@ -184,6 +198,82 @@ class TestFileModel:
             assert self._resolve(forcingfile, parent).is_file()
         else:
             assert self._resolve(forcingfile, output_dir).is_file()
+
+    def test_save_location_after_init_is_correct(self):
+        model = FMModel(self._reference_model_path)
+        assert model.save_location == self._reference_model_path
+
+    @pytest.mark.parametrize(
+        ("changed_path", "expected_save_location"),
+        [
+            pytest.param(
+                Path("other.mdu"),
+                Path.cwd() / "other.mdu",
+                id="to-relative-same-folder",
+            ),
+            pytest.param(
+                Path("other_folder") / "other.mdu",
+                Path.cwd() / "other_folder" / "other.mdu",
+                id="to-relative-other-folder",
+            ),
+            pytest.param(
+                Path(Path.cwd().root) / "absolute" / "other.mdu",
+                Path(Path.cwd().root) / "absolute" / "other.mdu",
+                id="to-absolute",
+            ),
+        ],
+    )
+    def test_after_filepath_change_should_return_correct_save_location(
+        self, changed_path: Path, expected_save_location: Path
+    ):
+        model = FMModel(self._reference_model_path)
+        # Because the read model was read first, relative paths shoud be
+        # relative to the current working directory.
+        model.filepath = changed_path
+        assert model.save_location == expected_save_location
+
+    def test_change_filepath_from_absolute_to_relative_to_absolute_results_in_the_same_save_location(
+        self,
+    ):
+        model = FMModel(self._reference_model_path)
+        relative_path = Path("relative.mdu")
+        model.filepath = relative_path
+        expected_path = model.save_location
+
+        model.filepath = Path.cwd() / "absolute.mdu"
+        model.filepath = relative_path
+
+        assert model.save_location == expected_path
+
+    def test_synchronize_filepaths_updates_save_location_correctly(self):
+        model = FMModel(self._reference_model_path)
+
+        other_dir = Path(Path.cwd().root) / "some" / "other" / "dir"
+        fm_path = other_dir / "other.mdu"
+        model.filepath = fm_path
+        model.synchronize_filepaths()
+
+        assert model.filepath == fm_path
+        netfile = model.geometry.netfile
+        assert netfile.save_location == self._resolve(netfile.filepath, other_dir)  # type: ignore
+
+        structuresfile = model.geometry.structurefile[0]  # type: ignore
+        assert structuresfile.save_location == self._resolve(structuresfile.filepath, other_dir)  # type: ignore
+
+        roughness_channel = model.geometry.frictfile[0]  # type: ignore
+        assert roughness_channel.save_location == self._resolve(roughness_channel.filepath, other_dir)  # type: ignore
+
+        roughness_main = model.geometry.frictfile[1]  # type: ignore
+        assert roughness_main.save_location == self._resolve(roughness_main.filepath, other_dir)  # type: ignore
+
+        roughness_sewer = model.geometry.frictfile[2]  # type: ignore
+        assert roughness_sewer.save_location == self._resolve(roughness_sewer.filepath, other_dir)  # type: ignore
+
+        extforcefile = model.external_forcing.extforcefilenew
+        assert extforcefile.save_location == self._resolve(extforcefile.filepath, other_dir)  # type: ignore
+
+        forcing = extforcefile.boundary[0].forcingfile  # type: ignore
+        assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
 
 
 class TestContextManagerFileLoadContext:
