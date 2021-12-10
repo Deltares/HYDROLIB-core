@@ -47,7 +47,7 @@ class Node(BaseModel):
     yposition: float = Field(alias="py")
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["id"] if "id" in data else data.get("nm")
+        return data.get("id") or data.get("nm")
 
     def dict(self, *args, **kwargs):
         kwargs["by_alias"] = True
@@ -149,7 +149,7 @@ class Link(BaseModel):
     endnode: str = Field(alias="en")
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["id"] if "id" in data else data.get("nm")
+        return data.get("id") or data.get("nm")
 
     def dict(self, *args, **kwargs):
         kwargs["by_alias"] = True
