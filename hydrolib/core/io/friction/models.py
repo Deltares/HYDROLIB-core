@@ -4,10 +4,10 @@ from typing import List, Literal, Optional
 
 from pydantic import Field, NonNegativeInt, PositiveInt
 from pydantic.class_validators import validator
-from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.utils import FMVersion
 
 from ..ini.util import make_list_validator
 

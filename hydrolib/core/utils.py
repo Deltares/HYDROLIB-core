@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 
-from pydantic import validator, Field
+from pydantic import Field, validator
 from semantic_version import Version as SemVer
 
 

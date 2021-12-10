@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field
-from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
@@ -13,6 +12,7 @@ from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
+from hydrolib.core.utils import FMVersion
 
 
 class General(INIGeneral):

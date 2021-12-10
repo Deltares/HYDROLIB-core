@@ -4,11 +4,10 @@ from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
-from hydrolib.core.utils import FMVersion
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, FileModel
-from hydrolib.core.utils import get_version_validator
+from hydrolib.core.utils import FMVersion, get_version_validator
 
 from .io_models import CommentBlock, Document, Property, Section
 from .parser import Parser

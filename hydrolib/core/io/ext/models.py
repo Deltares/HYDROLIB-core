@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
 from pydantic import Field, root_validator, validator
-from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -11,7 +10,7 @@ from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.utils import FMVersion, str_is_empty_or_none
 
 
 class Boundary(INIBasedModel):

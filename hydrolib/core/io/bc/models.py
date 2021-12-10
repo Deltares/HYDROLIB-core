@@ -6,13 +6,13 @@ from typing import Callable, List, Literal, NamedTuple, Optional, Set
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
-from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.ini.io_models import Property, Section
 from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import get_enum_validator, get_from_subclass_defaults
+from hydrolib.core.utils import FMVersion
 
 logger = logging.getLogger(__name__)
 

@@ -3,7 +3,6 @@ from typing import List, Literal, Optional
 
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
-from hydrolib.core.utils import FMVersion
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
@@ -12,6 +11,7 @@ from hydrolib.core.io.ini.util import (
     make_list_length_root_validator,
     make_list_validator,
 )
+from hydrolib.core.utils import FMVersion
 
 logger = logging.getLogger(__name__)
 
