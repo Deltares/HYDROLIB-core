@@ -6,6 +6,7 @@ from typing import List, Literal, Optional
 
 from pydantic import Field
 from pydantic.class_validators import validator
+from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
@@ -107,16 +108,93 @@ class IniFieldGeneral(INIGeneral):
     filetype: Literal["iniField"] = Field("iniField", alias="fileType")
 
 
-# class AbstractSpatialField(INIBasedModel, ABC):
-#     quantity: str = Field(alias="quantity")
+class AbstractSpatialField(INIBasedModel, ABC):
+    """
+    Abstract base class for `[Initial]` and `[Parameter]` block data in
+    inifield files.
+
+    Defines all common fields. Used via subclasses InitialField and ParameterField.
+    """
+
+    class Comments(INIBasedModel.Comments):
+        quantity: Optional[str] = Field(
+            "Name of the quantity. See UM Table D.2.", alias="quantity"
+        )
+        datafile: Optional[str] = Field(
+            "Name of file containing field data values.", alias="dataFile"
+        )
+        datafiletype: Optional[str] = Field("Type of dataFile.", alias="dataFileType")
+        interpolationmethod: Optional[str] = Field(
+            "Type of (spatial) interpolation.", alias="interpolationmethod"
+        )
+        operand: Optional[str] = Field(
+            "How this data is combined with previous data for the same quantity (if any).",
+            alias="operand",
+        )
+        averagingtype: Optional[str] = Field(
+            "Type of averaging, if interpolationMethod=averaging .",
+            alias="averagingtype",
+        )
+        averagingrelsize: Optional[str] = Field(
+            "Relative search cell size for averaging.", alias="averagingrelsize"
+        )
+        averagingnummin: Optional[str] = Field(
+            "Minimum number of points in averaging. Must be ≥ 1.",
+            alias="averagingnummin",
+        )
+        averagingpercentile: Optional[str] = Field(
+            "Percentile value for which data values to include in averaging. 0.0 means off.",
+            alias="averagingpercentile",
+        )
+        extrapolationmethod: Optional[str] = Field(
+            "Option for (spatial) extrapolation.", alias="extrapolationmethod"
+        )
+        locationtype: Optional[str] = Field(
+            "Target location of interpolation.", alias="locationtype"
+        )
+        value: Optional[str] = Field(
+            "Only for dataFileType=polygon. The constant value to be set inside for all model points inside the polygon."
+        )
+
+    comments: Comments = Comments()
+
+    quantity: str = Field(alias="quantity")
+    datafile: Path = Field(alias="dataFile")
+    datafiletype: DataFileType = Field(alias="dataFileType")
+    interpolationmethod: Optional[InterpolationMethod] = Field(
+        alias="interpolationMethod"
+    )
+    operand: Optional[Operand] = Field(Operand.override, alias="operand")
+    averagingtype: Optional[AveragingType] = Field(
+        AveragingType.mean, alias="averagingType"
+    )
+    averagingrelsize: Optional[NonNegativeFloat] = Field(1.01, alias="averagingRelSize")
+    averagingnummin: Optional[PositiveInt] = Field(1, alias="averagingNumMin")
+    averagingpercentile: Optional[NonNegativeFloat] = Field(
+        0, alias="averagingPercentile"
+    )
+    extrapolationmethod: Optional[bool] = Field(False, alias="extrapolationMethod")
+    value: Optional[float] = Field(alias="value")
 
 
-# class InitialField(AbstractSpatialField):
-#     _header: Literal["Initial"] = "Initial"
+class InitialField(AbstractSpatialField):
+    """
+    Initial condition field definition, represents an `[Initial]` block in
+    an inifield file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.inifieldfile.initial[..]`
+    """
+
+    _header: Literal["Initial"] = "Initial"
 
 
-# class ParameterField(AbstractSpatialField):
-#     _header: Literal["Parameter"] = "Parameter"
+class ParameterField(AbstractSpatialField):
+    """
+    Parameter field definition, represents a `[Parameter]` block in
+    an inifield file.
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.inifieldfile.parameter[..]`
+    """
+
+    _header: Literal["Parameter"] = "Parameter"
 
 
 class IniFieldModel(INIModel):
@@ -130,10 +208,10 @@ class IniFieldModel(INIModel):
     """
 
     general: IniFieldGeneral = IniFieldGeneral()
-    # initial: List[InitialField] = []
-    # parameter: List[ParameterField] = []
+    initial: List[InitialField] = []
+    parameter: List[ParameterField] = []
 
-    # _split_to_list = make_list_validator("boundary", "lateral")
+    _split_to_list = make_list_validator("initial", "parameter")
 
     @classmethod
     def _ext(cls) -> str:
