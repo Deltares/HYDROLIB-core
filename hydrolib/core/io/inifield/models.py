@@ -174,6 +174,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
         0, alias="averagingPercentile"
     )
     extrapolationmethod: Optional[bool] = Field(False, alias="extrapolationMethod")
+    locationtype: Optional[str] = Field(LocationType.all, alias="locationType")
     value: Optional[float] = Field(alias="value")
 
 
