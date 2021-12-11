@@ -186,6 +186,16 @@ class AbstractSpatialField(INIBasedModel, ABC):
     averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
     locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
 
+    @validator("value", always=True)
+    @classmethod
+    def _validate_value_and_filetype(cls, v, values: dict):
+        if v is not None and values.get("datafiletype") != DataFileType.polygon:
+            raise ValueError(
+                f"When value={v} is given, dataFileType={DataFileType.polygon} is required."
+            )
+
+        return v
+
 
 class InitialField(AbstractSpatialField):
     """

@@ -151,3 +151,15 @@ class TestIniField:
         assert inifield.operand == Operand.override
         assert inifield.interpolationmethod == None
         assert inifield.extrapolationmethod == False
+
+    def test_initialfield_value_with_wrong_datafiletype(self):
+        inifield_values = self._create_required_inifield_values()
+        inifield_values["value"] = 1.23
+        inifield_values["datafiletype"] = "sample"
+
+        with pytest.raises(ValidationError) as error:
+            _ = InitialField(**inifield_values)
+
+        expected_message = f"When value=1.23 is given, dataFileType={DataFileType.polygon} is required."
+
+        assert expected_message in str(error.value)
