@@ -10,6 +10,7 @@ from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    get_enum_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -174,8 +175,16 @@ class AbstractSpatialField(INIBasedModel, ABC):
         0, alias="averagingPercentile"
     )
     extrapolationmethod: Optional[bool] = Field(False, alias="extrapolationMethod")
-    locationtype: Optional[str] = Field(LocationType.all, alias="locationType")
+    locationtype: Optional[LocationType] = Field(LocationType.all, alias="locationType")
     value: Optional[float] = Field(alias="value")
+
+    datafiletype_validator = get_enum_validator("datafiletype", enum=DataFileType)
+    interpolationmethod_validator = get_enum_validator(
+        "interpolationmethod", enum=InterpolationMethod
+    )
+    operand_validator = get_enum_validator("operand", enum=Operand)
+    averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
+    locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
 
 
 class InitialField(AbstractSpatialField):
