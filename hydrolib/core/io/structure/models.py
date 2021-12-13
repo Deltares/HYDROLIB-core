@@ -362,9 +362,7 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[Union[float, Path]] = Field(
-        alias="valveOpeningHeight"
-    )  #
+    valveopeningheight: Optional[Union[float, Path]] = Field(alias="valveOpeningHeight")
     numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
     relopening: Optional[List[float]] = Field(alias="relOpening")
     losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
