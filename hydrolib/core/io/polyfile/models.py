@@ -48,6 +48,12 @@ class Point(BaseModel):
     z: Optional[float]
     data: Sequence[float]
 
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        x = data.get("x")
+        y = data.get("y")
+        z = data.get("z")
+        return f"x:{x} y:{y} z:{z}"
+
 
 class PolyObject(BaseModel):
     """PolyObject describing a single block in a poly file.
