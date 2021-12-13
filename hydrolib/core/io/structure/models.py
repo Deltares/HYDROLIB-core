@@ -366,8 +366,8 @@ class Culvert(Structure):
     numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
     relopening: Optional[List[float]] = Field(alias="relOpening")
     losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
-    bedfrictiontype: str = Field(alias="bedFrictionType")
-    bedfriction: float = Field(alias="bedFriction")
+    bedfrictiontype: Optional[str] = Field(alias="bedFrictionType")
+    bedfriction: Optional[float] = Field(alias="bedFriction")
     subtype: Optional[CulvertSubType] = Field(CulvertSubType.culvert, alias="subType")
     bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
 
@@ -382,6 +382,13 @@ class Culvert(Structure):
         "losscoeff",
         conditional_field_name="valveonoff",
         conditional_value=True,
+    )
+
+    _check_list_length = make_list_length_root_validator(
+        "relopening",
+        "losscoeff",
+        length_name="numlosscoeff",
+        list_required_with_length=True,
     )
 
     _bendlosscoeff = get_required_fields_validator(
