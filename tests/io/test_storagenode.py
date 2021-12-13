@@ -69,8 +69,6 @@ class TestStorageNode:
         "usetable, missingfield",
         [
             (True, "numlevels"),
-            (True, "levels"),
-            (True, "storagearea"),
             (False, "bedlevel"),
             (False, "area"),
             (False, "streetlevel"),
@@ -85,6 +83,19 @@ class TestStorageNode:
 
         expected_message = (
             f"{missingfield} should be provided when useTable is {usetable}"
+        )
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize("missingfield", ["levels", "storagearea"])
+    def test_validate_required_lists_numlevels(self, missingfield: str):
+        values = _create_required_storage_node_values(usetable=True)
+        del values[missingfield]
+
+        with pytest.raises(ValidationError) as error:
+            StorageNode(**values)
+
+        expected_message = (
+            f"List {missingfield} cannot be missing if numlevels is given."
         )
         assert expected_message in str(error.value)
 

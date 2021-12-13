@@ -8,6 +8,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_split_string_on_delimiter_validator,
+    make_list_length_root_validator,
     make_list_validator,
 )
 
@@ -145,6 +146,13 @@ class StorageNode(INIBasedModel):
         delimiter=" ",
     )
 
+    _check_list_length = make_list_length_root_validator(
+        "levels",
+        "storagearea",
+        length_name="numlevels",
+        list_required_with_length=True,
+    )
+
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
 
@@ -155,10 +163,6 @@ class StorageNode(INIBasedModel):
         if values["usetable"]:
             cls._validate_required_usetable_fields(
                 "numlevels", "levels", "storagearea", values=values, usetable=True
-            )
-
-            cls._validate_list_length(
-                "levels", "storagearea", length_field_name="numlevels", values=values
             )
         else:
             cls._validate_required_usetable_fields(
