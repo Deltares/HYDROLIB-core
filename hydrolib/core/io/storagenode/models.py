@@ -14,6 +14,8 @@ from hydrolib.core.io.ini.util import (
 
 
 class NodeType(str, Enum):
+    """The storage node type."""
+
     inspection = "inspection"
     soakawaydrain = "soakawayDrain"
     compartment = "compartment"
@@ -21,16 +23,22 @@ class NodeType(str, Enum):
 
 
 class StorageType(str, Enum):
+    """The storage type of the storage node."""
+
     reservoir = "reservoir"
     closed = "closed"
 
 
 class Interpolation(str, Enum):
+    """The interpolation type for the storage area table."""
+
     linear = "linear"
     block = "block"
 
 
 class StorageNodeGeneral(INIGeneral):
+    """The storage node file's `[General]` section with file meta data."""
+
     class Comments(INIBasedModel.Comments):
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
@@ -54,6 +62,13 @@ class StorageNodeGeneral(INIGeneral):
 
 
 class StorageNode(INIBasedModel):
+    """
+    A storage node that is included in the storage node file.
+
+    All lowercased attributes match with the storage node input as described in
+    [UM Sec.C.17](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.C.17).
+    """
+
     class Comments(INIBasedModel.Comments):
         id: Optional[str] = Field("Unique id of the storage node.", alias="id")
         name: Optional[str] = Field("Long name in the user interface.", alias="name")
@@ -200,6 +215,16 @@ class StorageNode(INIBasedModel):
 
 
 class StorageNodeModel(INIModel):
+    """
+    The overall storage node model that contains the contents of one storage node file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.storagenodefile[..]`.
+
+    Attributes:
+        general (StorageNodeGeneral): `[General]` block with file metadata.
+        storagenode (List[StorageNode]): List of `[StorageNode]` blocks for all storage nodes.
+    """
+
     general: StorageNodeGeneral = StorageNodeGeneral()
     storagenode: List[StorageNode] = []
 
