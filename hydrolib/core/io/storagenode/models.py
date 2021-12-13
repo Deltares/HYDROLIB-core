@@ -209,19 +209,6 @@ class StorageNode(INIBasedModel):
                     f"{field} should be provided when useTable is {usetable}"
                 )
 
-    @classmethod
-    def _validate_list_length(
-        cls, *field_names: str, length_field_name: str, values: dict
-    ):
-
-        length = values[length_field_name]
-
-        for field in field_names:
-            if len(values[field]) != length:
-                raise ValueError(
-                    f"Number of values for {field} should be equal to the {length_field_name} value."
-                )
-
 
 class StorageNodeModel(INIModel):
     """
