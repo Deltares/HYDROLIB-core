@@ -11,6 +11,7 @@ from hydrolib.core.io.structure.models import (
     Bridge,
     Compound,
     Culvert,
+    CulvertSubType,
     Dambreak,
     DambreakAlgorithm,
     FlowDirection,
@@ -2049,7 +2050,7 @@ class TestCulvert:
         ["valveopeningheight", "numlosscoeff", "relopening", "losscoeff"],
     )
     def test_validate_required_fields_based_on_valveonoff(self, missing_field: str):
-        values = self._create_culvert_values()
+        values = self._create_culvert_values(valveonoff=True)
         del values[missing_field]
 
         with pytest.raises(ValidationError) as error:
@@ -2058,7 +2059,22 @@ class TestCulvert:
         expected_message = f"{missing_field} should be provided when valveonoff is True"
         assert expected_message in str(error.value)
 
-    def _create_culvert_values(self):
+    def test_validate_default_subtype(self):
+        culvert = Culvert(**self._create_culvert_values(valveonoff=False))
+
+        assert culvert.subtype == CulvertSubType.culvert
+
+    def test_validate_bendlosscoeff_required_when_culvert_subtype(self):
+        values = self._create_culvert_values(valveonoff=False)
+        del values["bendlosscoeff"]
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = f"bendlosscoeff should be provided when subtype is culvert"
+        assert expected_message in str(error.value)
+
+    def _create_culvert_values(self, valveonoff: bool):
         values = create_structure_values("culvert")
         values.update(
             dict(
@@ -2069,15 +2085,21 @@ class TestCulvert:
                 length="3.45",
                 inletlosscoeff="4.56",
                 outletlosscoeff="5.67",
-                valveonoff="true",
-                valveopeningheight="6.78",
-                numlosscoeff="10",
-                relopening="7.89 9.87 8.76",
-                losscoeff="7.65 6.54 5.43",
+                valveonoff=valveonoff,
                 bedfrictiontype="bed_friction_type",
                 bedfriction="4.32",
-                subtype="invertedSiphon",
                 bendlosscoeff="3.21",
             )
         )
+
+        if valveonoff:
+            values.update(
+                dict(
+                    valveopeningheight="6.78",
+                    numlosscoeff="10",
+                    relopening="7.89 9.87 8.76",
+                    losscoeff="7.65 6.54 5.43",
+                )
+            )
+
         return values

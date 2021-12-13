@@ -370,7 +370,7 @@ class Culvert(Structure):
     losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
     bedfrictiontype: str = Field(alias="bedFrictionType")
     bedfriction: float = Field(alias="bedFriction")
-    subtype: Optional[CulvertSubType] = Field(alias="subType")
+    subtype: Optional[CulvertSubType] = Field(CulvertSubType.culvert, alias="subType")
     bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
@@ -384,6 +384,12 @@ class Culvert(Structure):
         "losscoeff",
         conditional_field_name="valveonoff",
         conditional_value=True,
+    )
+
+    _bendlosscoeff = get_required_fields_validator(
+        "bendlosscoeff",
+        conditional_field_name="subtype",
+        conditional_value=CulvertSubType.culvert,
     )
 
 
