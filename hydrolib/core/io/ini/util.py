@@ -102,6 +102,32 @@ def make_list_length_root_validator(
     return root_validator(allow_reuse=True)(validate_correct_length)
 
 
+def get_required_fields_validator(
+    *field_names, conditional_field_name: str, conditional_value: Any
+):
+    """Gets a validator that checks whether the fields are provided, if `conditional_field_name` is equal to `conditional_value`.
+
+    Args:
+        *field_names (str): Names of the instance variables that need to be validated.
+        conditional_field_name (str): Name of the instance variable on which the fields are dependent.
+        conditional_value (Any): Value that the conditional field should contain to perform this validation.
+    """
+
+    def validate_required_fields(cls, values: dict):
+        if values.get(conditional_field_name) != conditional_value:
+            return values
+
+        for field in field_names:
+            if values.get(field) == None:
+                raise ValueError(
+                    f"{field} should be provided when {conditional_field_name} is {conditional_value}"
+                )
+
+        return values
+
+    return root_validator(allow_reuse=True)(validate_required_fields)
+
+
 def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
     """Gets a value that corresponds with the default field value of one of the subclasses.
 
