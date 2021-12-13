@@ -104,24 +104,24 @@ def make_list_length_root_validator(
 
 # TODO also use this for the storage nodes once in the main
 def get_required_fields_validator(
-    *field_names, dependent_field_name: str, dependent_value: Any
+    *field_names, conditional_field_name: str, conditional_value: Any
 ):
-    """Gets a validator that checks whether the fields are provided.
+    """Gets a validator that checks whether the fields are provided, if `conditional_field_name` is equal to `conditional_value`.
 
     Args:
-        *field_names (str): names of the instance variables that need to be validated.
-        dependent_field_name (str): name of the instance variable on which the fields are dependent.
-        dependent_value (Any): the value that the dependent field should contain to perform this validation.
+        *field_names (str): Names of the instance variables that need to be validated.
+        conditional_field_name (str): Name of the instance variable on which the fields are dependent.
+        conditional_value (Any): Value that the conditional field should contain to perform this validation.
     """
 
     def validate_required_fields(cls, values: dict):
-        if values.get(dependent_field_name) != dependent_value:
+        if values.get(conditional_field_name) != conditional_value:
             return values
 
         for field in field_names:
             if values.get(field) == None:
                 raise ValueError(
-                    f"{field} should be provided when {dependent_field_name} is {dependent_value}"
+                    f"{field} should be provided when {conditional_field_name} is {conditional_value}"
                 )
 
         return values

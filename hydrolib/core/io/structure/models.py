@@ -382,8 +382,8 @@ class Culvert(Structure):
         "numlosscoeff",
         "relopening",
         "losscoeff",
-        dependent_field_name="valveonoff",
-        dependent_value=True,
+        conditional_field_name="valveonoff",
+        conditional_value=True,
     )
 
 
