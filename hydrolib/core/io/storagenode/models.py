@@ -7,6 +7,7 @@ from pydantic.fields import Field
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
+    get_required_fields_validator,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
     make_list_validator,
@@ -177,37 +178,24 @@ class StorageNode(INIBasedModel):
         list_required_with_length=True,
     )
 
+    _usetable_true_validator = get_required_fields_validator(
+        "numlevels",
+        "levels",
+        "storagearea",
+        conditional_field_name="usetable",
+        conditional_value=True,
+    )
+
+    _usetable_false_validator = get_required_fields_validator(
+        "bedlevel",
+        "area",
+        "streetlevel",
+        conditional_field_name="usetable",
+        conditional_value=False,
+    )
+
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
-
-    @root_validator(skip_on_failure=True)
-    @classmethod
-    def _validate_usetable(cls, values):
-
-        if values["usetable"]:
-            cls._validate_required_usetable_fields(
-                "numlevels", "levels", "storagearea", values=values, usetable=True
-            )
-        else:
-            cls._validate_required_usetable_fields(
-                "bedlevel",
-                "area",
-                "streetlevel",
-                values=values,
-                usetable=False,
-            )
-
-        return values
-
-    @classmethod
-    def _validate_required_usetable_fields(
-        cls, *field_names: str, values: dict, usetable: bool
-    ):
-        for field in field_names:
-            if values.get(field) == None:
-                raise ValueError(
-                    f"{field} should be provided when useTable is {usetable}"
-                )
 
 
 class StorageNodeModel(INIModel):

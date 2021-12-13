@@ -82,7 +82,7 @@ class TestStorageNode:
             StorageNode(**values)
 
         expected_message = (
-            f"{missingfield} should be provided when useTable is {usetable}"
+            f"{missingfield} should be provided when usetable is {usetable}"
         )
         assert expected_message in str(error.value)
 

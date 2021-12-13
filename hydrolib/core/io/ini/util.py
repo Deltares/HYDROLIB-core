@@ -102,7 +102,6 @@ def make_list_length_root_validator(
     return root_validator(allow_reuse=True)(validate_correct_length)
 
 
-# TODO also use this for the storage nodes once in the main
 def get_required_fields_validator(
     *field_names, conditional_field_name: str, conditional_value: Any
 ):
