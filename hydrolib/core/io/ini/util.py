@@ -63,6 +63,7 @@ def make_list_length_root_validator(
     length_name: str,
     length_incr: int = 0,
     list_required_with_length: bool = False,
+    min_length: int = 0,
 ):
     """
     Get a root_validator that checks the correct length (and presence) of several list fields in an object.
@@ -74,6 +75,8 @@ def make_list_length_root_validator(
         list_required_with_length (obj:`bool`, optional): Whether each list *must* be present if the length
             attribute is present (and > 0) in the input values. Default: False. If False, list length is only
             checked for the lists that are not None.
+        min_length (int): minimal required length for list, overrides length_name value if that is smaller.
+            For example, to require at least list length 1 when length value is given as 0.
     """
 
     def validate_correct_length(cls, values: dict):
@@ -82,15 +85,16 @@ def make_list_length_root_validator(
             # length attribute not present, possibly defer validation to a subclass.
             return values
 
-        length = length + length_incr
+        length = max(length + length_incr, min_length)
         incrstring = f" + {length_incr}" if length_incr != 0 else ""
+        minstring = f" (and at least {min_length})" if min_length > 0 else ""
 
         for field_name in field_names:
             field = values.get(field_name)
             if field is not None:
                 if len(field) != length:
                     raise ValueError(
-                        f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}."
+                        f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}{minstring}."
                     )
             elif list_required_with_length and length > 0:
                 raise ValueError(
