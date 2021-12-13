@@ -226,7 +226,7 @@ class IniFieldModel(INIModel):
     Attributes:
         general (IniFieldGeneral): `[General]` block with file metadata.
         initial (List[InitialField]): List of `[Initial]` blocks with initial condition definitions.
-        parameter (List[ParameterField]) = List of `[Parameter]` blocks with spatial parameter definitions.
+        parameter (List[ParameterField]): List of `[Parameter]` blocks with spatial parameter definitions.
     """
 
     general: IniFieldGeneral = IniFieldGeneral()
