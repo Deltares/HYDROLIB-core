@@ -14,7 +14,10 @@ from hydrolib.core.io.ini.util import (
 
 
 class NodeType(str, Enum):
-    """The storage node type."""
+    """
+    Enum class containing the valid values for the node type
+    as used in StorageNode.
+    """
 
     inspection = "inspection"
     soakawaydrain = "soakawayDrain"
@@ -23,14 +26,20 @@ class NodeType(str, Enum):
 
 
 class StorageType(str, Enum):
-    """The storage type of the storage node."""
+    """
+    Enum class containing the valid values for the storage type
+    as used in StorageNode.
+    """
 
     reservoir = "reservoir"
     closed = "closed"
 
 
 class Interpolation(str, Enum):
-    """The interpolation type for the storage area table."""
+    """
+    Enum class containing the valid values for the interpolation type
+    as used for a storage area table in StorageNode.
+    """
 
     linear = "linear"
     block = "block"
