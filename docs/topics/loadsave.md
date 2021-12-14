@@ -1,12 +1,14 @@
 # Loading and Saving within HYDROLIB-core
 
+*This article describes the architectural choices of saving and loading, if you are looking for how to save, please refer to the tutorials.*
+
 The motivation of HYDROLIB-core is to provide a python library to interact with the
 D-HYDRO suite files. These files generally form a sort of tree structure, with a single
-root model (generally a DIMR or FM model), and different layers of child models which 
-are defined in their parent models. These child models can either be defined relative
-to their parent models or with absolute file paths. This leads to potentially complex
-model structures, which need to be read and written correctly HYDROLIB-core without 
-any implicit changes to either the contents or the structures.
+root model (generally a DIMR or an FM model), and different layers of child models 
+which are referenced in their parent models. These child models can either be 
+referenced relative to their parent models or with absolute file paths. This leads to
+potentially complex model structures, which need to be read and written correctly 
+by HYDROLIB-core without any changes to either the contents or the structure.
 
 This article discusses the architectural choices made when designing the read and write 
 capabalities, as well as the considerations that should be taken when implementing your
@@ -22,9 +24,9 @@ own models. As such we will discuss the following topics:
 
 When implementing the model read and write behaviour of HYDROLIB-core, the main 
 motivation is to ensure models are read and written as is. Properties should
-not be adjusted nor dropped (unless there is a very clear reason for such changes), 
-when either reading or writing. This behaviour should extend to the way the tree 
-structure of the models is handled. Therefor, file paths, stored in the `filepath`
+not be adjusted nor dropped when reading or writing (unless there is a very 
+clear reason to do so). This behaviour should extend to the way the tree structure 
+of the models is handled. Therefor, file paths, stored in the `filepath`
 property, which are not explicitly set to be absolute are kept relative and resolved
 while reading or writing. 
 
@@ -34,6 +36,9 @@ child models have no reference to their parent. This eases the bookkeeping when
 building your models in memory, however it also means that it is not possible 
 to resolve the absolute path of a child model without also providing the root
 model it is part of. This behaviour is further documented in the following sections.
+In order to alleviate this shortcoming, each file model keeps track of its save
+location, which can be synchronized with the file path of the root model, if this
+is required.
 
 ## Loading Models: Resolving the tree structure with the `FileLoadContext`
 
@@ -70,10 +75,11 @@ The constructor of the filepath performs the following tasks:
 
 1. Request the context.
 2. Register itself within the model cache with its file path.
-3. Resolve its absolute path, to read from.
-4. Update the current parent directory.
-5. Read all the model data including sub-models.
-6. Remove itself as a parent directory.
+3. Store the absolute file path anchor (i.e. the absolute path to its parent)
+4. Resolve its absolute path, to read from.
+5. Update the current parent directory.
+6. Read all the model data including sub-models.
+7. Remove itself as a parent directory.
 
 Because the constructor recursively reads child models, and the data is only read after
 the current parent directory has been updated, the child models will correctly resolve
@@ -87,10 +93,21 @@ are created.
 
 ## Saving Models: Traversing the model tree with the `ModelTreeTraverser`
 
-Currently, the save / write logic corresponds with writing the full model tree. This 
-can be done through the `save` method provided on any `FileModel`. This will resolve
-the relative file paths with respect to the model from which `save` is called, and
-maintains the absolute file paths.
+Currently, the save function on the `FileModel` offers the following options:
+
+* `filepath`:  Allows the user to set a new file path. If none is defined, the current file path will be used.
+* `recurse`: A flag indicating whether only this model needs to be saved, or also it child models.
+
+As such it is possible to store both individual models, as well as model trees. 
+
+When saving a model, it will be stored at the `save_location`. If `recurse` is true, then
+the child model will be evaluated with regards to the root model. This may lead to some 
+inconsistencies, especially with the deprecated `pathsRelativeToParent` set to false in 
+the FlowFM model. As such care needs to be taken by the user.
+
+The `save_location` of relative child models will **NOT** be automatically updated when the
+parent `filepath` is updated. If such an update is required the user is expected to call 
+`synchronize_filepaths` on the parent model.
 
 ### `ModelTreeTraverser`
 
@@ -112,36 +129,36 @@ or to build an output value while traversing the model tree.
 In order to store a model as well as its children, we need to perform the following 
 tasks.
 
-1. Ensure the file path of the model as well as its children is set.
+1. Ensure the file paths of both the model and all of its children are set.
 2. Save the the models and its children recursively.
 
 We need to ensure all file paths are set before we store the models, in order to 
-resolve the actual file paths during the save operation. As such this is done in a
-separate step. 
+resolve the actual file paths during the save operation. As such these two operations
+are done in separate steps. 
 
 Both of these tasks make use of the `ModelTreeTraverser`. It will traverse through
-any immediate file link model, and execute for any file link. In case of the task
-1, it will generate the file paths if none is set. The save traversal uses the 
-pre and post traverse functions to maintain the parent path used to resolve the
+any immediate file link model, and execute the pre and post functions for any file link. 
+In case of task 1, it will generate the file paths if none is set. The save traversal
+uses the pre and post traverse functions to maintain the parent path used to resolve the
 relative file paths of any models. The post function is further used to actually
 write the model to file through a dedicated `_save` function.
 
 ### Saving a sub-tree relative to some model tree
 
-Currently, saving sub-trees is not supported, however additional discussion related to
-this subject can be found in [issue \#96](https://github.com/Deltares/HYDROLIB-core/issues/96).
+Saving a sub tree is in principle the same as calling `save` on the root model, but only
+a child model. One thing that should be taken into account is, the save is called relative
+to the current value in `save_location`. As such if changes were made to the `filepath`
+of a parent model, `synchronize_filepaths` should be called on the root model.
 
 ### Saving individual models without their children
 
-Currently, Saving individual models without their children is not supported, however 
-additional discussion related to this subject can be found in 
-[issue \#96](https://github.com/Deltares/HYDROLIB-core/issues/96).
+An individual model can be saved with the `save` and `recurse` set to `False` (i.e. 
+the default behaviour). When this is done, only the model on which `save` was called
+will be written to disk at the current `save_location`.
 
 ### Exporting / Save as
 
-You can export your models by calling the `save` function with the `folder` argument.
-This will flatten your model hierarchy to the single provided `folder` and change the
-state
+Exporting is currently not implemented, but will be as part of [issue #170](https://github.com/Deltares/HYDROLIB-core/issues/170).
 
 ## Extensions: Caveats to ensure your model plays nice with HYDROLIB-core
 
