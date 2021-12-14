@@ -94,8 +94,10 @@ nav:
       - reference/forcing.md
       - reference/glossary.md
       - reference/ini.md
+      - reference/inifield.md
       - reference/mdu.md
       - reference/net.md
+      - reference/onedfield.md
       - reference/polyfile.md
       - reference/xyz.md
       - reference/crosssection.md

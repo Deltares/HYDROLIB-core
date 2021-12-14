@@ -1,7 +1,7 @@
 """util.py provides additional utility methods related to handling ini files.
 """
 from enum import Enum
-from typing import Any, Type
+from typing import Any, List, Optional, Type
 
 from pydantic.class_validators import root_validator, validator
 from pydantic.main import BaseModel
@@ -65,6 +65,7 @@ def make_list_length_root_validator(
     length_name: str,
     length_incr: int = 0,
     list_required_with_length: bool = False,
+    min_length: int = 0,
 ):
     """
     Get a root_validator that checks the correct length (and presence) of several list fields in an object.
@@ -76,28 +77,55 @@ def make_list_length_root_validator(
         list_required_with_length (obj:`bool`, optional): Whether each list *must* be present if the length
             attribute is present (and > 0) in the input values. Default: False. If False, list length is only
             checked for the lists that are not None.
+        min_length (int): minimum for list length value, overrides length_name value if that is smaller.
+            For example, to require list length 1 when length value is given as 0.
     """
 
+    def _get_incorrect_length_validation_message() -> str:
+        """Make a string with a validation message, ready to be format()ed with
+        field name and length name."""
+        incrstring = f" + {length_incr}" if length_incr != 0 else ""
+        minstring = f" (and at least {min_length})" if min_length > 0 else ""
+
+        return (
+            "Number of values for {} should be equal to the {} value"
+            + incrstring
+            + minstring
+            + "."
+        )
+
+    def _validate_listfield_length(
+        field_name: str, field: Optional[List[Any]], requiredlength: int
+    ):
+        """Validate the length of a single field, which should be a list."""
+
+        if field is not None and len(field) != requiredlength:
+            raise ValueError(
+                _get_incorrect_length_validation_message().format(
+                    field_name, length_name
+                )
+            )
+        if field is None and list_required_with_length and requiredlength > 0:
+            raise ValueError(
+                f"List {field_name} cannot be missing if {length_name} is given."
+            )
+
+        return field
+
     def validate_correct_length(cls, values: dict):
+        """The actual validator, will loop across all specified field names in outer function."""
         length = values.get(length_name)
         if length is None:
             # length attribute not present, possibly defer validation to a subclass.
             return values
 
-        length = length + length_incr
-        incrstring = f" + {length_incr}" if length_incr != 0 else ""
+        requiredlength = max(length + length_incr, min_length)
 
         for field_name in field_names:
             field = values.get(field_name)
-            if field is not None:
-                if len(field) != length:
-                    raise ValueError(
-                        f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}."
-                    )
-            elif list_required_with_length and length > 0:
-                raise ValueError(
-                    f"List {field_name} cannot be missing if {length_name} is given."
-                )
+            values[field_name] = _validate_listfield_length(
+                field_name, field, requiredlength
+            )
 
         return values
 

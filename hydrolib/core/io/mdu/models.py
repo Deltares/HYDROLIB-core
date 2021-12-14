@@ -8,6 +8,7 @@ from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.io.inifield.models import IniFieldModel
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.storagenode.models import StorageNodeModel
@@ -443,7 +444,7 @@ class Geometry(INIBasedModel):
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
     structurefile: Optional[List[StructureModel]] = Field(None, alias="structureFile")
-    inifieldfile: Optional[Path] = Field(None, alias="iniFieldFile")
+    inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
     waterlevinifile: Optional[Path] = Field(None, alias="waterLevIniFile")
     landboundaryfile: Optional[List[Path]] = Field(None, alias="landBoundaryFile")
     thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
