@@ -75,8 +75,8 @@ def make_list_length_root_validator(
         list_required_with_length (obj:`bool`, optional): Whether each list *must* be present if the length
             attribute is present (and > 0) in the input values. Default: False. If False, list length is only
             checked for the lists that are not None.
-        min_length (int): minimal required length for list, overrides length_name value if that is smaller.
-            For example, to require at least list length 1 when length value is given as 0.
+        min_length (int): minimum for list length value, overrides length_name value if that is smaller.
+            For example, to require list length 1 when length value is given as 0.
     """
 
     def validate_correct_length(cls, values: dict):
@@ -91,12 +91,11 @@ def make_list_length_root_validator(
 
         for field_name in field_names:
             field = values.get(field_name)
-            if field is not None:
-                if len(field) != length:
-                    raise ValueError(
-                        f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}{minstring}."
-                    )
-            elif list_required_with_length and length > 0:
+            if field is not None and len(field) != length:
+                raise ValueError(
+                    f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}{minstring}."
+                )
+            if field is None and list_required_with_length and length > 0:
                 raise ValueError(
                     f"List {field_name} cannot be missing if {length_name} is given."
                 )
