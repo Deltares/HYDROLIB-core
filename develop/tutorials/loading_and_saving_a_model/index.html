@@ -13,7 +13,7 @@
     
     
       
-        <title>First principles - hydrolib-core documentation</title>
+        <title>Loading and saving a model - hydrolib-core documentation</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#first-principles" class="md-skip">
+        <a href="#loading-and-saving-a-model" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@ You're not viewing the latest release version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              First principles
+              Loading and saving a model
             
           </span>
         </div>
@@ -250,7 +250,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-tabs__item">
-      <a href="../../tutorials/steps/" class="md-tabs__link">
+      <a href="../steps/" class="md-tabs__link">
         Tutorials
       </a>
     </li>
@@ -260,15 +260,13 @@ You're not viewing the latest release version.
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../dhydro_support/" class="md-tabs__link md-tabs__link--active">
+      <a href="../../topics/dhydro_support/" class="md-tabs__link">
         Topics
       </a>
     </li>
@@ -605,7 +603,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/steps/" class="md-nav__link">
+      <a href="../steps/" class="md-nav__link">
         First steps
       </a>
     </li>
@@ -619,7 +617,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/dataframe_handling/" class="md-nav__link">
+      <a href="../dataframe_handling/" class="md-nav__link">
         Dataframe handling
       </a>
     </li>
@@ -633,7 +631,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/plotting_a_network/" class="md-nav__link">
+      <a href="../plotting_a_network/" class="md-nav__link">
         Plotting a network
       </a>
     </li>
@@ -653,14 +651,12 @@ You're not viewing the latest release version.
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" data-md-state="indeterminate" type="checkbox" id="__nav_4" checked>
       
       
       
@@ -683,7 +679,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../dhydro_support/" class="md-nav__link">
+      <a href="../../topics/dhydro_support/" class="md-nav__link">
         List of D-HYDRO functionalities and support in HYDROLIB-core
       </a>
     </li>
@@ -695,21 +691,11 @@ You're not viewing the latest release version.
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../topics/principles/" class="md-nav__link">
         First principles
       </a>
-      
     </li>
   
 
@@ -721,7 +707,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../pydantic/" class="md-nav__link">
+      <a href="../../topics/pydantic/" class="md-nav__link">
         Pydantic
       </a>
     </li>
@@ -1028,6 +1014,62 @@ You're not viewing the latest release version.
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#load-the-model" class="md-nav__link">
+    Load the model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#save-the-model-in-a-new-location" class="md-nav__link">
+    Save the model in a new location
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adjust-the-model-in-a-update-it-on-disk" class="md-nav__link">
+    Adjust the model in a update it on disk
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caveats-when-saving-models" class="md-nav__link">
+    Caveats when saving models
+  </a>
+  
+    <nav class="md-nav" aria-label="Caveats when saving models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filepath-changes-do-not-automatically-propagate" class="md-nav__link">
+    Filepath changes do not automatically propagate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#synchronizing-filepaths-is-relative-to-the-model-it-is-called-upon" class="md-nav__link">
+    Synchronizing filepaths is relative to the model it is called upon
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1038,92 +1080,80 @@ You're not viewing the latest release version.
             <article class="md-content__inner md-typeset">
               
                 
-<a href="https://github.com/Deltares/hydrolib-core/edit/master/docs/topics/principles.md" title="Edit this page" class="md-content__button md-icon">
+<a href="https://github.com/Deltares/hydrolib-core/edit/master/docs/tutorials/loading_and_saving_a_model.md" title="Edit this page" class="md-content__button md-icon">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
 </a>
 
 
-<h1 id="first-principles">First principles<a class="headerlink" href="#first-principles" title="Permanent link">&para;</a></h1>
-<p>hydrolib-core is structured around the input and output files (I/O) of the DHYDRO suite.</p>
-<h1 id="inheritancefile-handling">Inheritance/file handling<a class="headerlink" href="#inheritancefile-handling" title="Permanent link">&para;</a></h1>
-<p>Model setups often consist of different files, many implicitly linked to each other.
-HYDROLIB makes these links explicit, by recursively loading all child configuration files.</p>
-<p>For example, when parsing a DIMR file, one could happen upon a reference to an MDU file, which
-contain references to other files, such as cross sections, etc.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">dimr</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">test_data_dir</span> <span class="o">/</span> <span class="s2">&quot;dimr_config.xml&quot;</span><span class="p">))</span>
+<h1 id="loading-and-saving-a-model">Loading and saving a model<a class="headerlink" href="#loading-and-saving-a-model" title="Permanent link">&para;</a></h1>
+<p>In this article we will look at loading and saving a model. First we will load a model,
+and store it in a new location. Then make adjustments to one of the sub models, and 
+store the model in place. Lastly, we will look at some caveats of saving and loading
+models.</p>
+<p>If you do not have a DIMR model, you can use <a href="https://github.com/Deltares/HYDROLIB-core/tree/main/tests/data/input/e02/c11_korte-woerden-1d/dimr_model">the example model in the test data</a>.</p>
+<h2 id="load-the-model">Load the model<a class="headerlink" href="#load-the-model" title="Permanent link">&para;</a></h2>
+<p>We can load a model by constructing a new DIMR model by calling the <code>DIMR</code> with the
+file path to this model:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># assuming the DIMR model is stored in your current working directory.</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./dimr_config.xml&quot;</span><span class="p">)</span>
+<span class="n">dimr_model</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">model_path</span><span class="p">)</span>
 </code></pre></div>
-<p>You can see this tree structure if you call <code>show_tree</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">dimr</span><span class="o">.</span><span class="n">show_tree</span><span class="p">()</span>
-  <span class="n">DIMR</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">dimr_config</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span>
-    <span class="n">RRComponent</span>
-    <span class="n">FMComponent</span>
-     <span class="err">∟</span> <span class="n">FMModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM</span><span class="o">.</span><span class="n">mdu</span><span class="o">.</span>
-       <span class="err">∟</span> <span class="n">Geometry</span>
-         <span class="err">∟</span> <span class="n">StructureModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">structures</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">CrossDefModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">crsdef</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">CrossLocModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">crsloc</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">FrictionModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">roughness</span><span class="o">-</span><span class="n">Main</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">FrictionModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">roughness</span><span class="o">-</span><span class="n">Sewer1</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">FrictionModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">roughness</span><span class="o">-</span><span class="n">Sewer2</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-       <span class="err">∟</span> <span class="n">ExternalForcing</span>
-         <span class="err">∟</span> <span class="n">ExtModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_bnd</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span>
-           <span class="err">∟</span> <span class="n">Boundary</span>
-             <span class="err">∟</span> <span class="n">ForcingModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_boundaryconditions1d</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span>
-           <span class="err">∟</span> <span class="n">Boundary</span>
-             <span class="err">∟</span> <span class="n">ForcingModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_boundaryconditions1d</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span>
-           <span class="err">∟</span> <span class="n">Boundary</span>
-             <span class="err">∟</span> <span class="n">ForcingModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_boundaryconditions1d</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span>
+<h2 id="save-the-model-in-a-new-location">Save the model in a new location<a class="headerlink" href="#save-the-model-in-a-new-location" title="Permanent link">&para;</a></h2>
+<p>If we want to store the full model in a different location we can use the <code>save</code> function:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Adjust this new_path to a path convenient for you.</span>
+<span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;some/other/path/dimr_config.xml&quot;</span><span class="p">)</span>  
+<span class="n">dimr_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">new_path</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
-<h1 id="program-flow-while-recursively-creating-filemodels">Program flow while recursively creating FileModels<a class="headerlink" href="#program-flow-while-recursively-creating-filemodels" title="Permanent link">&para;</a></h1>
-<h2 id="in-short">In short:<a class="headerlink" href="#in-short" title="Permanent link">&para;</a></h2>
-<ul>
-<li>The file resolver and the model cache are stored in context variable <code>context_file_loading</code>, such that referenced files can be found.</li>
-<li>During loading, the parsed data from files are cached in the <code>FileLoadContext</code> to ensure multiple references to the same model will not result in duplicate parsing and instances.</li>
-<li>Pydantic first calls the <code>FileModel.validate</code> and then the initializer (<code>FileModel.__new__</code> and <code>FileModel.__init__</code>).</li>
-</ul>
-<h2 id="in-detail">In detail:<a class="headerlink" href="#in-detail" title="Permanent link">&para;</a></h2>
-<p><strong>User initializes a new root FileModel from file</strong>:</p>
-<ol>
-<li><code>FileModel.__new__(cls, filepath: str/Path)</code><ul>
-<li>Returns the result of the default <code>__new__</code> function</li>
-</ul>
-</li>
-<li><code>FileModel.__init__(self, filepath: str/Path)</code><ul>
-<li><code>self</code> holds the FileModel instance that was returned in step 1.  </li>
-<li><code>filepath</code> is holds the file path to the root file.</li>
-<li>Registers this model in the <code>FileLoadContext</code> with the file path.</li>
-<li>Resolves the absolute path to this model.</li>
-<li>Adds the folder of this model to the file resolver, such that the children can be resolved as well.</li>
-<li>Loads the data (<code>dict</code>) from the file.</li>
-<li>Initialize <code>self</code> with the data.</li>
-<li><strong>Pydantic tries to convert the data to objects, a.o. sub FileModels</strong>:</li>
-</ul>
-</li>
-<li><code>FileModel.validate(value: str)</code><ul>
-<li><code>value</code> holds a relative or absolute file path to the referenced file.</li>
-<li>If <code>value</code> is not an absolute file path, resolves the absolute path by using the <code>FileLoadContext</code> stored in the <code>context_file_loading</code>, previously set in step 2.</li>
-<li>Calls <code>super().validate(value)</code> with the file path stored in <code>value</code>.</li>
-<li><strong>Pydantic create a new FileModel with the data</strong>:</li>
-</ul>
-</li>
-<li><code>FileModel.__new__(cls, filepath: str)</code><ul>
-<li><code>filepath</code> holds the file path.</li>
-<li>If <code>FileModel._file_models_cache</code> already contains a FileModel instance with this <code>filepath</code>, returns the cached instance,<ul>
-<li>Otherwise, returns the result of the default <code>__new__</code> function.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Repeat steps 2-4</li>
-</ol>
-<h1 id="parsing-and-serializing-inibasedmodels">Parsing and serializing <code>INIBasedModels</code><a class="headerlink" href="#parsing-and-serializing-inibasedmodels" title="Permanent link">&para;</a></h1>
-<p>Parsing an INI file should be case-insensitive. To achieve this, the parsable field names of each <code>INIBasedModel</code> should be equal to the expected key in the file in lower case. </p>
-<p>Some property values are explicitly made case-insensitive for parsing as well. This applies to enum values and values that represent a specific type of <code>INIBasedModel</code>, such as the type property of a structure. To support this, custom validators are placed to compare the given value with the available known values. Structures are initialized based on the value in the <code>type</code> field. The value of this field of each subclass of a <code>Structure</code> is compared to the input and the subclass with the corresponding type is initialized. </p>
-<p>The serialization of an <code>INIBasedModel</code> to an INI file should respect certain casing rules (overriding the casing used by the user):
-- Property keys need to be "lowerCamelCase"
-- Section headers need to be "UpperCamelCase"</p>
-<p>To achieve this, each serializable field in a <code>INIBasedModel</code> has an alias. This alias will be written as property key to file. Each <code>INIBasedModel</code> that represents an INI section, has a field <code>_header</code>. The default value of this field will be written to file.
-Enum values and the values that represent a specific type of <code>INIBasedModel</code> will be serialized to file by how they are defined.</p>
+<p>By setting <code>recurse</code> to <code>True</code> we will ensure all files (which are supported by HYDROLIB-core) 
+are written to the new location, relative to the file path of the root model. 
+Providing the <code>filepath</code> argument has the same result as first setting the filepath, and then
+calling save:</p>
+<div class="highlight"><pre><span></span><code><span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;some/other/path/dimr_config.xml&quot;</span><span class="p">)</span>  
+<span class="n">dimr_model</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">new_path</span>
+<span class="n">dimr_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p>As such, when calling <code>filepath</code> after <code>save</code> it should be the same as <code>new_path</code>.
+Once save has been called all files (supported by HYDROLIB-core) should be located in the parent folder.</p>
+<h2 id="adjust-the-model-in-a-update-it-on-disk">Adjust the model in a update it on disk<a class="headerlink" href="#adjust-the-model-in-a-update-it-on-disk" title="Permanent link">&para;</a></h2>
+<p>Now that we have written our model in a different location, we can make some adjustments to it.
+We can retrieve the FM sub model as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="n">fm_component</span> <span class="o">=</span> <span class="n">dimr_model</span><span class="o">.</span><span class="n">component</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Index 0 corresponds with the RRComponent.</span>
+<span class="n">fm_model</span> <span class="o">=</span> <span class="n">fm_component</span><span class="o">.</span><span class="n">model</span>
+</code></pre></div>
+<p>We can adjust the model, by for example changing some of the properties. For example let's change the 
+<code>MapInterval</code> from 60 to 30:</p>
+<div class="highlight"><pre><span></span><code><span class="n">fm_model</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">mapinterval</span> <span class="o">=</span> <span class="mf">30.0</span>
+</code></pre></div>
+<p>With that change made we can go ahead and save just this specific sub model, in order to update the values on disk:</p>
+<div class="highlight"><pre><span></span><code><span class="n">fm_model</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div>
+<p>By default, if no <code>filepath</code> is selected, it will be stored in the current <code>save_location</code>. This should 
+correspond with the place where it was last stored on disk. Furthermore, by default <code>recurse</code> is set to 
+<code>False</code>, as such we will only rewrite the <code>.mdu</code> file.</p>
+<p>If we now inspect the <code>.mdu</code> file, we should see that the <code>MapInterval</code> in the <code>output</code> header has been set to 30:</p>
+<div class="highlight"><pre><span></span><code>...
+[output]
+...
+MapInterval       = 30.0
+...
+</code></pre></div>
+<h2 id="caveats-when-saving-models">Caveats when saving models<a class="headerlink" href="#caveats-when-saving-models" title="Permanent link">&para;</a></h2>
+<p>There are some caveats to take into account when saving models.</p>
+<h3 id="filepath-changes-do-not-automatically-propagate">Filepath changes do not automatically propagate<a class="headerlink" href="#filepath-changes-do-not-automatically-propagate" title="Permanent link">&para;</a></h3>
+<p>When changing the <code>filepath</code> property of a parent model, the changes in <code>save_location</code> will not
+automatically propagate. As such, when saving a child model with a relative path, if the parent
+model's <code>filepath</code> has been changed, the child model will still be saved at its original save location.
+In order to update the save location, <code>synchronize_filepaths</code> should be called on the root model.</p>
+<h3 id="synchronizing-filepaths-is-relative-to-the-model-it-is-called-upon">Synchronizing filepaths is relative to the model it is called upon<a class="headerlink" href="#synchronizing-filepaths-is-relative-to-the-model-it-is-called-upon" title="Permanent link">&para;</a></h3>
+<p><code>synchronize_filepaths</code> will only update the file paths of child models. As such it will not propagate
+changes mode in a parent model:</p>
+<div class="highlight"><pre><span></span><code>dimr_model.filepath = Path(&quot;some/other/path/dimr_config.xml&quot;)
+fm_model.synchronize_filepaths()  # This has no effect.
+</code></pre></div>
+<p>Because the <code>save_location</code> of the <code>fm_model</code> has not been changed, none of the child models will change either.</p>
+<p>Furthermore, extra care needs to be taken when dealing with FM models with the <code>pathsRelativeToParent</code> set to 
+<code>False</code>. This option will make all relative paths of child models relative to the <code>.mdu</code>. If <code>synchronize_filepaths</code> is called on a child model of the fm model, it will instead make all <code>save_locations</code> relative to this child model, which is incorrect.</p>
+<p>It is recommended to not use <code>pathsRelativeToParent</code> set to <code>False</code>.</p>
 
               
             </article>
@@ -1138,41 +1168,6 @@ Enum values and the values that represent a specific type of <code>INIBasedModel
       </main>
       
         <footer class="md-footer">
-  
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
-      
-        
-        <a href="../dhydro_support/" class="md-footer__link md-footer__link--prev" aria-label="Previous: List of D-HYDRO functionalities and support in HYDROLIB-core" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              List of D-HYDRO functionalities and support in HYDROLIB-core
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../pydantic/" class="md-footer__link md-footer__link--next" aria-label="Next: Pydantic" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Pydantic
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

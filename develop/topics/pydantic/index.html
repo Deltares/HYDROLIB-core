@@ -767,20 +767,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#dimr-__init__-override" class="md-nav__link">
-    DIMR __init__ override
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#networkmodel-init-override" class="md-nav__link">
-    NetworkModel init override
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#forcingbase-structure-and-crosssectiondefinition-validate-override" class="md-nav__link">
     ForcingBase, Structure and CrossSectionDefinition validate override
   </a>
@@ -1143,20 +1129,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#dimr-__init__-override" class="md-nav__link">
-    DIMR __init__ override
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#networkmodel-init-override" class="md-nav__link">
-    NetworkModel init override
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#forcingbase-structure-and-crosssectiondefinition-validate-override" class="md-nav__link">
     ForcingBase, Structure and CrossSectionDefinition validate override
   </a>
@@ -1207,17 +1179,13 @@ well understood and documented architecture.</p>
 <h3 id="basemodel-__init__-override">BaseModel <code>__init__</code> override<a class="headerlink" href="#basemodel-__init__-override" title="Permanent link">&para;</a></h3>
 <p>We override de <code>__init__</code> method to catch all validation errors and reissue them with an better error message.</p>
 <h3 id="filemodel-override">FileModel override<a class="headerlink" href="#filemodel-override" title="Permanent link">&para;</a></h3>
-<p>We override both <code>__new__</code> and <code>__init__</code> to cache models from disk. 
-Specifically we also use it to load a filepath from disk.</p>
+<p>We override both <code>__new__</code> and <code>__init__</code> of the <code>FileModel</code> to cache models from disk.
+The <code>FileModel</code> utilises the <code>FileLoadContext</code> to resolve relative paths and to retrieve
+models previously read as part of the loading of a root model. </p>
+<p>Specifically we also use it to load a filepath from disk.</p>
 <p>This mostly happens in <code>validate</code>, a Pydantic override, to make
 sure that if we initialize with a single unnamed argument (Pydantic only accepts keyword arguments)
 we try to parse it as a filepath.</p>
-<h3 id="dimr-__init__-override">DIMR <code>__init__</code> override<a class="headerlink" href="#dimr-__init__-override" title="Permanent link">&para;</a></h3>
-<p>We override the <code>__init__</code> method of DIMR to parse any underlying FileModels.
-These are not loaded automatically because they're deeply nested in <code>components</code>.</p>
-<h3 id="networkmodel-init-override">NetworkModel <strong>init</strong> override<a class="headerlink" href="#networkmodel-init-override" title="Permanent link">&para;</a></h3>
-<p>We override the <code>__init__</code> method of the NetworkModel
-because we initalize an underlying Network (based on Meshkernel) with the given filepath.</p>
 <h3 id="forcingbase-structure-and-crosssectiondefinition-validate-override">ForcingBase, Structure and CrossSectionDefinition <code>validate</code> override<a class="headerlink" href="#forcingbase-structure-and-crosssectiondefinition-validate-override" title="Permanent link">&para;</a></h3>
 <p>Validate is overriden to try to initialize the correct subclass of ForcingBase and CrossSectionDefinition, as discriminated unions do not work yet in Pydantic. I.e. if you specify Union{A, B} and A and B have clearly defined Literals it still can't choose whether to create A or B. The <a href="https://github.com/samuelcolvin/pydantic/pull/2336">PR</a> to fix this hasn't been merged yet.</p>
 <p><img alt="👎" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f44e.svg" title=":thumbsdown:" /> The code is duplicated in three places.</p>

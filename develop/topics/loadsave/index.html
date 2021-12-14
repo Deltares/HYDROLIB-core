@@ -13,7 +13,7 @@
     
     
       
-        <title>First principles - hydrolib-core documentation</title>
+        <title>Loading and Saving within HYDROLIB-core - hydrolib-core documentation</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#first-principles" class="md-skip">
+        <a href="#loading-and-saving-within-hydrolib-core" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@ You're not viewing the latest release version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              First principles
+              Loading and Saving within HYDROLIB-core
             
           </span>
         </div>
@@ -260,15 +260,13 @@ You're not viewing the latest release version.
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../dhydro_support/" class="md-tabs__link md-tabs__link--active">
+      <a href="../dhydro_support/" class="md-tabs__link">
         Topics
       </a>
     </li>
@@ -653,14 +651,12 @@ You're not viewing the latest release version.
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" data-md-state="indeterminate" type="checkbox" id="__nav_4" checked>
       
       
       
@@ -695,21 +691,11 @@ You're not viewing the latest release version.
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../principles/" class="md-nav__link">
         First principles
       </a>
-      
     </li>
   
 
@@ -1028,6 +1014,103 @@ You're not viewing the latest release version.
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation-hydrolib-core-should-not-adjust-files-when-reading-and-writing" class="md-nav__link">
+    Motivation: HYDROLIB-core should not adjust files when reading and writing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-models-resolving-the-tree-structure-with-the-fileloadcontext" class="md-nav__link">
+    Loading Models: Resolving the tree structure with the FileLoadContext
+  </a>
+  
+    <nav class="md-nav" aria-label="Loading Models: Resolving the tree structure with the FileLoadContext">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-behaviour-root-models-are-read-through-the-constructor-while-caching-sub-models" class="md-nav__link">
+    Current Behaviour: Root models are read through the constructor while caching sub-models
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-choices-the-tree-structure-is-resolved-with-the-fileloadcontext" class="md-nav__link">
+    Architectural Choices: The tree structure is resolved with the FileLoadContext
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saving-models-traversing-the-model-tree-with-the-modeltreetraverser" class="md-nav__link">
+    Saving Models: Traversing the model tree with the ModelTreeTraverser
+  </a>
+  
+    <nav class="md-nav" aria-label="Saving Models: Traversing the model tree with the ModelTreeTraverser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modeltreetraverser" class="md-nav__link">
+    ModelTreeTraverser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-a-complete-model-tree" class="md-nav__link">
+    Saving a complete model tree
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-a-sub-tree-relative-to-some-model-tree" class="md-nav__link">
+    Saving a sub-tree relative to some model tree
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-individual-models-without-their-children" class="md-nav__link">
+    Saving individual models without their children
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exporting-save-as" class="md-nav__link">
+    Exporting / Save as
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensions-caveats-to-ensure-your-model-plays-nice-with-hydrolib-core" class="md-nav__link">
+    Extensions: Caveats to ensure your model plays nice with HYDROLIB-core
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1038,92 +1121,167 @@ You're not viewing the latest release version.
             <article class="md-content__inner md-typeset">
               
                 
-<a href="https://github.com/Deltares/hydrolib-core/edit/master/docs/topics/principles.md" title="Edit this page" class="md-content__button md-icon">
+<a href="https://github.com/Deltares/hydrolib-core/edit/master/docs/topics/loadsave.md" title="Edit this page" class="md-content__button md-icon">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
 </a>
 
 
-<h1 id="first-principles">First principles<a class="headerlink" href="#first-principles" title="Permanent link">&para;</a></h1>
-<p>hydrolib-core is structured around the input and output files (I/O) of the DHYDRO suite.</p>
-<h1 id="inheritancefile-handling">Inheritance/file handling<a class="headerlink" href="#inheritancefile-handling" title="Permanent link">&para;</a></h1>
-<p>Model setups often consist of different files, many implicitly linked to each other.
-HYDROLIB makes these links explicit, by recursively loading all child configuration files.</p>
-<p>For example, when parsing a DIMR file, one could happen upon a reference to an MDU file, which
-contain references to other files, such as cross sections, etc.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">dimr</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">test_data_dir</span> <span class="o">/</span> <span class="s2">&quot;dimr_config.xml&quot;</span><span class="p">))</span>
-</code></pre></div>
-<p>You can see this tree structure if you call <code>show_tree</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">dimr</span><span class="o">.</span><span class="n">show_tree</span><span class="p">()</span>
-  <span class="n">DIMR</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">dimr_config</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span>
-    <span class="n">RRComponent</span>
-    <span class="n">FMComponent</span>
-     <span class="err">∟</span> <span class="n">FMModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM</span><span class="o">.</span><span class="n">mdu</span><span class="o">.</span>
-       <span class="err">∟</span> <span class="n">Geometry</span>
-         <span class="err">∟</span> <span class="n">StructureModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">structures</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">CrossDefModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">crsdef</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">CrossLocModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">crsloc</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">FrictionModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">roughness</span><span class="o">-</span><span class="n">Main</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">FrictionModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">roughness</span><span class="o">-</span><span class="n">Sewer1</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-         <span class="err">∟</span> <span class="n">FrictionModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">roughness</span><span class="o">-</span><span class="n">Sewer2</span><span class="o">.</span><span class="n">ini</span><span class="o">.</span>
-       <span class="err">∟</span> <span class="n">ExternalForcing</span>
-         <span class="err">∟</span> <span class="n">ExtModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_bnd</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span>
-           <span class="err">∟</span> <span class="n">Boundary</span>
-             <span class="err">∟</span> <span class="n">ForcingModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_boundaryconditions1d</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span>
-           <span class="err">∟</span> <span class="n">Boundary</span>
-             <span class="err">∟</span> <span class="n">ForcingModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_boundaryconditions1d</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span>
-           <span class="err">∟</span> <span class="n">Boundary</span>
-             <span class="err">∟</span> <span class="n">ForcingModel</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">FlowFM_boundaryconditions1d</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span>
-</code></pre></div>
-<h1 id="program-flow-while-recursively-creating-filemodels">Program flow while recursively creating FileModels<a class="headerlink" href="#program-flow-while-recursively-creating-filemodels" title="Permanent link">&para;</a></h1>
-<h2 id="in-short">In short:<a class="headerlink" href="#in-short" title="Permanent link">&para;</a></h2>
+<h1 id="loading-and-saving-within-hydrolib-core">Loading and Saving within HYDROLIB-core<a class="headerlink" href="#loading-and-saving-within-hydrolib-core" title="Permanent link">&para;</a></h1>
+<p><em>This article describes the architectural choices of saving and loading, if you are looking for how to save, please refer to the tutorials.</em></p>
+<p>The motivation of HYDROLIB-core is to provide a python library to interact with the
+D-HYDRO suite files. These files generally form a sort of tree structure, with a single
+root model (generally a DIMR or an FM model), and different layers of child models 
+which are referenced in their parent models. These child models can either be 
+referenced relative to their parent models or with absolute file paths. This leads to
+potentially complex model structures, which need to be read and written correctly 
+by HYDROLIB-core without any changes to either the contents or the structure.</p>
+<p>This article discusses the architectural choices made when designing the read and write 
+capabalities, as well as the considerations that should be taken when implementing your
+own models. As such we will discuss the following topics:</p>
 <ul>
-<li>The file resolver and the model cache are stored in context variable <code>context_file_loading</code>, such that referenced files can be found.</li>
-<li>During loading, the parsed data from files are cached in the <code>FileLoadContext</code> to ensure multiple references to the same model will not result in duplicate parsing and instances.</li>
-<li>Pydantic first calls the <code>FileModel.validate</code> and then the initializer (<code>FileModel.__new__</code> and <code>FileModel.__init__</code>).</li>
+<li>Motivation: HYDROLIB-core should not adjust files when reading and writing</li>
+<li>Structure of Models</li>
+<li>Loading Models: Resolving the tree structure with the <code>FileLoadContext</code></li>
+<li>Saving Models: Traversing the model tree with the <code>ModelTreeTraverser</code></li>
+<li>Extensions: Caveats to ensure your model plays nice with HYDROLIB-core</li>
 </ul>
-<h2 id="in-detail">In detail:<a class="headerlink" href="#in-detail" title="Permanent link">&para;</a></h2>
-<p><strong>User initializes a new root FileModel from file</strong>:</p>
+<h2 id="motivation-hydrolib-core-should-not-adjust-files-when-reading-and-writing">Motivation: HYDROLIB-core should not adjust files when reading and writing<a class="headerlink" href="#motivation-hydrolib-core-should-not-adjust-files-when-reading-and-writing" title="Permanent link">&para;</a></h2>
+<p>When implementing the model read and write behaviour of HYDROLIB-core, the main 
+motivation is to ensure models are read and written as is. Properties should
+not be adjusted nor dropped when reading or writing (unless there is a very 
+clear reason to do so). This behaviour should extend to the way the tree structure 
+of the models is handled. Therefor, file paths, stored in the <code>filepath</code>
+property, which are not explicitly set to be absolute are kept relative and resolved
+while reading or writing. </p>
+<p>This comes at the cost that the file location of a child model is not explicitly
+defined without the root model it is part of. Within the current implementation,
+child models have no reference to their parent. This eases the bookkeeping when
+building your models in memory, however it also means that it is not possible 
+to resolve the absolute path of a child model without also providing the root
+model it is part of. This behaviour is further documented in the following sections.
+In order to alleviate this shortcoming, each file model keeps track of its save
+location, which can be synchronized with the file path of the root model, if this
+is required.</p>
+<h2 id="loading-models-resolving-the-tree-structure-with-the-fileloadcontext">Loading Models: Resolving the tree structure with the <code>FileLoadContext</code><a class="headerlink" href="#loading-models-resolving-the-tree-structure-with-the-fileloadcontext" title="Permanent link">&para;</a></h2>
+<p>In order to load a model from disk, we need to call the appropriate constructor with a
+file path to an existing model file. The constructor will then ensure the model, and 
+its child models are read. Multiple references to the same sub-model will reference
+the same sub-model after reading.</p>
+<h3 id="current-behaviour-root-models-are-read-through-the-constructor-while-caching-sub-models">Current Behaviour: Root models are read through the constructor while caching sub-models<a class="headerlink" href="#current-behaviour-root-models-are-read-through-the-constructor-while-caching-sub-models" title="Permanent link">&para;</a></h3>
+<p>Currently, a model is loaded by calling the constructor with the filepath of the input
+file. HYDROLIB-core will then load the model as well as any children. Every child will
+only be read once, multiple references to the same child in the input files will result
+in references to the same child model in memory. When reading the model and its 
+children, the file structure will be kept intact. Any models with absolute paths will
+still reference the same absolute paths, while models with relative paths will also 
+have the same relative paths as within the original file. </p>
+<h3 id="architectural-choices-the-tree-structure-is-resolved-with-the-fileloadcontext">Architectural Choices: The tree structure is resolved with the <code>FileLoadContext</code><a class="headerlink" href="#architectural-choices-the-tree-structure-is-resolved-with-the-fileloadcontext" title="Permanent link">&para;</a></h3>
+<p>In order to properly resolve the model tree, we need to be able to keep track of the
+current parent of a model, as well as a way to store and retrieve read models. Both
+of these tasks are handled by the <code>FileLoadContext</code>. The context can be used to resolve
+relative paths by keeping track of the current parent folder of a model. It also provides
+a cache for read models, which files are not read more than once. </p>
+<p>A single <code>FileLoadContext</code> is created at the start of the constructor of the root
+model as a context variable. Subsequent child models can then reference this 
+<code>FileLoadContext</code>, by retrieving this same <code>FileLoadContext</code>. A convenience
+context manager is provided through the <code>file_load_context()</code> method in the 
+<code>basemodel.py</code>. </p>
+<p>The constructor of the filepath performs the following tasks:</p>
 <ol>
-<li><code>FileModel.__new__(cls, filepath: str/Path)</code><ul>
-<li>Returns the result of the default <code>__new__</code> function</li>
-</ul>
-</li>
-<li><code>FileModel.__init__(self, filepath: str/Path)</code><ul>
-<li><code>self</code> holds the FileModel instance that was returned in step 1.  </li>
-<li><code>filepath</code> is holds the file path to the root file.</li>
-<li>Registers this model in the <code>FileLoadContext</code> with the file path.</li>
-<li>Resolves the absolute path to this model.</li>
-<li>Adds the folder of this model to the file resolver, such that the children can be resolved as well.</li>
-<li>Loads the data (<code>dict</code>) from the file.</li>
-<li>Initialize <code>self</code> with the data.</li>
-<li><strong>Pydantic tries to convert the data to objects, a.o. sub FileModels</strong>:</li>
-</ul>
-</li>
-<li><code>FileModel.validate(value: str)</code><ul>
-<li><code>value</code> holds a relative or absolute file path to the referenced file.</li>
-<li>If <code>value</code> is not an absolute file path, resolves the absolute path by using the <code>FileLoadContext</code> stored in the <code>context_file_loading</code>, previously set in step 2.</li>
-<li>Calls <code>super().validate(value)</code> with the file path stored in <code>value</code>.</li>
-<li><strong>Pydantic create a new FileModel with the data</strong>:</li>
-</ul>
-</li>
-<li><code>FileModel.__new__(cls, filepath: str)</code><ul>
-<li><code>filepath</code> holds the file path.</li>
-<li>If <code>FileModel._file_models_cache</code> already contains a FileModel instance with this <code>filepath</code>, returns the cached instance,<ul>
-<li>Otherwise, returns the result of the default <code>__new__</code> function.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Repeat steps 2-4</li>
+<li>Request the context.</li>
+<li>Register itself within the model cache with its file path.</li>
+<li>Store the absolute file path anchor (i.e. the absolute path to its parent)</li>
+<li>Resolve its absolute path, to read from.</li>
+<li>Update the current parent directory.</li>
+<li>Read all the model data including sub-models.</li>
+<li>Remove itself as a parent directory.</li>
 </ol>
-<h1 id="parsing-and-serializing-inibasedmodels">Parsing and serializing <code>INIBasedModels</code><a class="headerlink" href="#parsing-and-serializing-inibasedmodels" title="Permanent link">&para;</a></h1>
-<p>Parsing an INI file should be case-insensitive. To achieve this, the parsable field names of each <code>INIBasedModel</code> should be equal to the expected key in the file in lower case. </p>
-<p>Some property values are explicitly made case-insensitive for parsing as well. This applies to enum values and values that represent a specific type of <code>INIBasedModel</code>, such as the type property of a structure. To support this, custom validators are placed to compare the given value with the available known values. Structures are initialized based on the value in the <code>type</code> field. The value of this field of each subclass of a <code>Structure</code> is compared to the input and the subclass with the corresponding type is initialized. </p>
-<p>The serialization of an <code>INIBasedModel</code> to an INI file should respect certain casing rules (overriding the casing used by the user):
-- Property keys need to be "lowerCamelCase"
-- Section headers need to be "UpperCamelCase"</p>
-<p>To achieve this, each serializable field in a <code>INIBasedModel</code> has an alias. This alias will be written as property key to file. Each <code>INIBasedModel</code> that represents an INI section, has a field <code>_header</code>. The default value of this field will be written to file.
-Enum values and the values that represent a specific type of <code>INIBasedModel</code> will be serialized to file by how they are defined.</p>
+<p>Because the constructor recursively reads child models, and the data is only read after
+the current parent directory has been updated, the child models will correctly resolve
+their resolve their relative paths. </p>
+<p>The <code>FileModel</code> further overrides its <code>__new__</code>. During the <code>__new__</code> call, it will 
+verify if the current (resolved) filepath which is being read, has already been 
+defined in the file model cache. If it is, then this instance will be returned, 
+instead of creating a new instance through the <code>__init__</code>. This ensures no duplicates
+are created.</p>
+<h2 id="saving-models-traversing-the-model-tree-with-the-modeltreetraverser">Saving Models: Traversing the model tree with the <code>ModelTreeTraverser</code><a class="headerlink" href="#saving-models-traversing-the-model-tree-with-the-modeltreetraverser" title="Permanent link">&para;</a></h2>
+<p>Currently, the save function on the <code>FileModel</code> offers the following options:</p>
+<ul>
+<li><code>filepath</code>:  Allows the user to set a new file path. If none is defined, the current file path will be used.</li>
+<li><code>recurse</code>: A flag indicating whether only this model needs to be saved, or also it child models.</li>
+</ul>
+<p>As such it is possible to store both individual models, as well as model trees. </p>
+<p>When saving a model, it will be stored at the <code>save_location</code>. If <code>recurse</code> is true, then
+the child model will be evaluated with regards to the root model. This may lead to some 
+inconsistencies, especially with the deprecated <code>pathsRelativeToParent</code> set to false in 
+the FlowFM model. As such care needs to be taken by the user.</p>
+<p>The <code>save_location</code> of relative child models will <strong>NOT</strong> be automatically updated when the
+parent <code>filepath</code> is updated. If such an update is required the user is expected to call 
+<code>synchronize_filepaths</code> on the parent model.</p>
+<h3 id="modeltreetraverser"><code>ModelTreeTraverser</code><a class="headerlink" href="#modeltreetraverser" title="Permanent link">&para;</a></h3>
+<p>For writing the models to file, as well as other operations, we need to be able to
+traverse the model tree. In order to do so, the <code>ModelTreeTraverser</code> is provided.
+It can be configured with the following 4 functions:</p>
+<ul>
+<li><strong>should_traverse</strong>: Evaluates whether to traverse to the provided BaseModel.</li>
+<li><strong>should_execute</strong>: Determines whether the traverse functions are executed for the given model.</li>
+<li><strong>pre_traverse_func</strong>: Function called with the current model before traversal into the children, i.e. top-down behaviour.</li>
+<li><strong>post_traverse_func</strong>: Function called with the current model after traversal into the children, i.e. bottom-up behaviour.</li>
+</ul>
+<p>All functions receive an accumulator, which flows through the program and is finally
+returned to the caller. This can be used to store state in between calls to traverse
+or to build an output value while traversing the model tree.</p>
+<h3 id="saving-a-complete-model-tree">Saving a complete model tree<a class="headerlink" href="#saving-a-complete-model-tree" title="Permanent link">&para;</a></h3>
+<p>In order to store a model as well as its children, we need to perform the following 
+tasks.</p>
+<ol>
+<li>Ensure the file paths of both the model and all of its children are set.</li>
+<li>Save the the models and its children recursively.</li>
+</ol>
+<p>We need to ensure all file paths are set before we store the models, in order to 
+resolve the actual file paths during the save operation. As such these two operations
+are done in separate steps. </p>
+<p>Both of these tasks make use of the <code>ModelTreeTraverser</code>. It will traverse through
+any immediate file link model, and execute the pre and post functions for any file link. 
+In case of task 1, it will generate the file paths if none is set. The save traversal
+uses the pre and post traverse functions to maintain the parent path used to resolve the
+relative file paths of any models. The post function is further used to actually
+write the model to file through a dedicated <code>_save</code> function.</p>
+<h3 id="saving-a-sub-tree-relative-to-some-model-tree">Saving a sub-tree relative to some model tree<a class="headerlink" href="#saving-a-sub-tree-relative-to-some-model-tree" title="Permanent link">&para;</a></h3>
+<p>Saving a sub tree is in principle the same as calling <code>save</code> on the root model, but only
+a child model. One thing that should be taken into account is, the save is called relative
+to the current value in <code>save_location</code>. As such if changes were made to the <code>filepath</code>
+of a parent model, <code>synchronize_filepaths</code> should be called on the root model.</p>
+<h3 id="saving-individual-models-without-their-children">Saving individual models without their children<a class="headerlink" href="#saving-individual-models-without-their-children" title="Permanent link">&para;</a></h3>
+<p>An individual model can be saved with the <code>save</code> and <code>recurse</code> set to <code>False</code> (i.e. 
+the default behaviour). When this is done, only the model on which <code>save</code> was called
+will be written to disk at the current <code>save_location</code>.</p>
+<h3 id="exporting-save-as">Exporting / Save as<a class="headerlink" href="#exporting-save-as" title="Permanent link">&para;</a></h3>
+<p>Exporting is currently not implemented, but will be as part of <a href="https://github.com/Deltares/HYDROLIB-core/issues/170">issue #170</a>.</p>
+<h2 id="extensions-caveats-to-ensure-your-model-plays-nice-with-hydrolib-core">Extensions: Caveats to ensure your model plays nice with HYDROLIB-core<a class="headerlink" href="#extensions-caveats-to-ensure-your-model-plays-nice-with-hydrolib-core" title="Permanent link">&para;</a></h2>
+<p>In the most common case, all of the file reading and writing is handled in the <code>FileModel</code>
+as such, just inheriting from the <code>FileModel</code> and providing the required parser and 
+setting the <code>_parser</code> and <code>_serializer</code> will be enough to ensure your model works as
+expected. There might be however some exceptions to your model that require additional
+configuration. The file model provides several hooks for this:</p>
+<p><strong>For loading:</strong> </p>
+<ul>
+<li><code>_post_init_load</code>: function called after a model is initialised but before the current <code>FileLoadContext</code> is changed. This allows the user to put any actions here which require a <code>FileLoadContext</code>. Examples of this can be found in the <code>DIMR</code> and <code>NetworkModel</code> classes.</li>
+<li>Overwrite <code>__init__</code>: We can overwrite the <code>__init__</code> of a child the <code>FileModel</code> however some care needs to be taken in this case. In particular the <code>__super__</code> needs to be called in order to ensure the model is loaded appropriately. Furthermore, if the <code>FileLoadContext</code> is required within the <code>__init__</code>, the <code>file_load_context</code> should be called before <code>__super__</code>:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
+        <span class="n">__super__</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># your code using the context</span>
+        <span class="o">...</span>
+</code></pre></div>
+<p><strong>For saving:</strong></p>
+<ul>
+<li><code>_save</code>: provides the save functionality called by the recursive saving of models. Overwriting this will allow you complete control over how the model is saved. An example of this can be found in the <code>NetworkFile</code>.</li>
+<li><code>_serialize</code>: provides the method to serialize your model. This can be overwritten in case a more specialised serialization is required, for example as done in <code>IniBasedModel</code> children.</li>
+<li><code>self._resolved_filepath</code>: will provide you with a resolved absolute version of the <code>filepath</code>. This only works in the context of <code>_save</code> and <code>_serialize</code>, as it relies on the context being started in the <code>save</code> method.</li>
+</ul>
 
               
             </article>
@@ -1138,41 +1296,6 @@ Enum values and the values that represent a specific type of <code>INIBasedModel
       </main>
       
         <footer class="md-footer">
-  
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
-      
-        
-        <a href="../dhydro_support/" class="md-footer__link md-footer__link--prev" aria-label="Previous: List of D-HYDRO functionalities and support in HYDROLIB-core" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              List of D-HYDRO functionalities and support in HYDROLIB-core
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../pydantic/" class="md-footer__link md-footer__link--next" aria-label="Next: Pydantic" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Pydantic
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
