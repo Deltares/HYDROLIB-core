@@ -6,7 +6,7 @@ from typing import Callable, List, Literal, Optional, Type, Union
 from pydantic import Field, validator
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, FileModel, file_load_context
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
 from hydrolib.core.io.fnm.models import RainfallRunoffModel
@@ -306,17 +306,17 @@ class DIMR(FileModel):
         kwargs["exclude"] = {"filepath"}
         return super().dict(*args, **kwargs)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def _post_init_load(self) -> None:
+        """
+        Load the component models of this DIMR model.
+        """
+        super()._post_init_load()
 
-        # After initilization, try to load all component models
-        if self.filepath:
-            for comp in self.component:
-                fn = self.filepath.parent / comp.filepath
-                try:
-                    comp.model = comp.get_model()(filepath=fn)
-                except NotImplementedError:
-                    continue
+        for comp in self.component:
+            try:
+                comp.model = comp.get_model()(filepath=comp.filepath)
+            except NotImplementedError:
+                pass
 
     @classmethod
     def _ext(cls) -> str:

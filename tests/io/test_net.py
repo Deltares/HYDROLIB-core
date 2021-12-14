@@ -192,8 +192,12 @@ def test_read_write_read_compare(filepath):
     network1 = NetworkModel(filepath=filepath)
 
     # Save to temporary location
-    tmppath = test_output_dir
-    network1.save(tmppath)
+    save_path = (
+        test_output_dir
+        / test_read_write_read_compare.__name__
+        / network1._generate_name()
+    )
+    network1.save(filepath=save_path)
 
     # Read a second network from this location
     network2 = NetworkModel(filepath=network1.filepath)
@@ -202,6 +206,7 @@ def test_read_write_read_compare(filepath):
     path = Path(__file__).parent.parent.parent.joinpath(
         "hydrolib/core/io/net/ugrid_conventions.json"
     )
+
     with open(path, "r") as f:
         conventions = json.load(f)
 

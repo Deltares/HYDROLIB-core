@@ -1,0 +1,14 @@
+[General]
+    fileVersion           = 2.00                
+    fileType              = extForce            
+
+
+[Boundary]
+quantity=dischargebnd
+nodeId=Node001
+forcingfile=FM_model_boundaryconditions1d.bc
+
+[Boundary]
+quantity=dischargebnd
+nodeId=Node002
+forcingfile=FM_model_boundaryconditions1d.bc
