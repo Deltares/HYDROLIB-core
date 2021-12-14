@@ -164,7 +164,7 @@ class INIModel(FileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        return Parser.parse
+        return Parser.parse_as_dict
 
     def _to_document(self) -> Document:
         header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])

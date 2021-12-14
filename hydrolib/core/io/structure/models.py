@@ -17,6 +17,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
+    get_required_fields_validator,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
 )
@@ -361,18 +362,40 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Union[float, Path] = Field(alias="valveOpeningHeight")
-    numlosscoeff: int = Field(alias="numLossCoeff")
-    relopening: List[float] = Field(alias="relOpening")
-    losscoeff: List[float] = Field(alias="lossCoeff")
-    bedfrictiontype: str = Field(alias="bedFrictionType")
-    bedfriction: float = Field(alias="bedFriction")
-    subtype: CulvertSubType = Field(alias="subType")
-    bendlosscoeff: float = Field(alias="bendLossCoeff")
+    valveopeningheight: Optional[Union[float, Path]] = Field(alias="valveOpeningHeight")
+    numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
+    relopening: Optional[List[float]] = Field(alias="relOpening")
+    losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
+    bedfrictiontype: Optional[str] = Field(alias="bedFrictionType")
+    bedfriction: Optional[float] = Field(alias="bedFriction")
+    subtype: Optional[CulvertSubType] = Field(CulvertSubType.culvert, alias="subType")
+    bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
+
+    _valveonoff_validator = get_required_fields_validator(
+        "valveopeningheight",
+        "numlosscoeff",
+        "relopening",
+        "losscoeff",
+        conditional_field_name="valveonoff",
+        conditional_value=True,
+    )
+
+    _check_list_length = make_list_length_root_validator(
+        "relopening",
+        "losscoeff",
+        length_name="numlosscoeff",
+        list_required_with_length=True,
+    )
+
+    _bendlosscoeff = get_required_fields_validator(
+        "bendlosscoeff",
+        conditional_field_name="subtype",
+        conditional_value=CulvertSubType.culvert,
+    )
 
 
 class Pump(Structure):
