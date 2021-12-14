@@ -217,8 +217,8 @@ class TestFileModel:
                 id="to-relative-other-folder",
             ),
             pytest.param(
-                Path(Path.cwd().root) / "absolute" / "other.mdu",
-                Path(Path.cwd().root) / "absolute" / "other.mdu",
+                test_output_dir / "absolute" / "other.mdu",
+                test_output_dir / "absolute" / "other.mdu",
                 id="to-absolute",
             ),
         ],
@@ -248,7 +248,7 @@ class TestFileModel:
     def test_synchronize_filepaths_updates_save_location_correctly(self):
         model = FMModel(self._reference_model_path)
 
-        other_dir = Path(Path.cwd().root) / "some" / "other" / "dir"
+        other_dir = test_output_dir / "some" / "other" / "dir"
         fm_path = other_dir / "other.mdu"
         model.filepath = fm_path
         model.synchronize_filepaths()
