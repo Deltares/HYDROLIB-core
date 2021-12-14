@@ -35,7 +35,7 @@ class DataFileType(str, Enum):
 
 class InterpolationMethod(str, Enum):
     """
-    Enum class containing the valid values for the dataFileType
+    Enum class containing the valid values for the interpolationMethod
     attribute in several subclasses of AbstractIniField.
     """
 
@@ -185,6 +185,12 @@ class AbstractSpatialField(INIBasedModel, ABC):
     operand_validator = get_enum_validator("operand", enum=Operand)
     averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
     locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
+
+    # TODO: Enable once PR #75 has been merged to main:
+    # _value_validator = get_required_fields_validator(
+    #     "value",
+    #     conditional_field_name="datafiletype",
+    #     conditional_value=DataFileType.polygon)
 
     @validator("value", always=True)
     @classmethod

@@ -24,46 +24,41 @@ from ..utils import WrapperTest, invalid_test_data_dir, test_data_dir
 
 
 class TestIniField:
-    def _get_datafiletype_cases() -> List:
-        return [
-            ("dataFileType", "ARCINFO", "arcinfo"),
-            ("dataFileType", "geotiff", "GeoTIFF"),
-            ("dataFileType", "samPLE", "sample"),
-            ("dataFileType", "1dfield", "1dField"),
-            ("dataFileType", "poLYGOn", "polygon"),
-        ]
+    _datafiletype_cases = [
+        ("dataFileType", "ARCINFO", "arcinfo"),
+        ("dataFileType", "geotiff", "GeoTIFF"),
+        ("dataFileType", "samPLE", "sample"),
+        ("dataFileType", "1dfield", "1dField"),
+        ("dataFileType", "poLYGOn", "polygon"),
+    ]
 
-    def _get_interpolationmethod_cases() -> List:
-        return [
-            ("interpolationMethod", "conSTant", "constant"),
-            ("interpolationMethod", "trianguLATION", "triangulation"),
-            ("interpolationMethod", "averAGING", "averaging"),
-        ]
+    _interpolationmethod_cases = [
+        ("interpolationMethod", "conSTant", "constant"),
+        ("interpolationMethod", "trianguLATION", "triangulation"),
+        ("interpolationMethod", "averAGING", "averaging"),
+    ]
 
-    def _get_operand_cases() -> List:
-        return [
-            ("operand", "o", "O"),
-            ("operand", "a", "A"),
-            ("operand", "x", "X"),
-            ("operand", "N", "N"),
-        ]
+    _operand_cases = [
+        ("operand", "o", "O"),
+        ("operand", "a", "A"),
+        ("operand", "x", "X"),
+        ("operand", "N", "N"),
+    ]
 
-    def _get_averagingtype_cases() -> List:
-        return [
-            ("averagingType", "MEAN", "mean"),
-            ("averagingType", "nearestnb", "nearestNb"),
-            ("averagingType", "MAX", "max"),
-            ("averagingType", "MIN", "min"),
-            ("averagingType", "invdist", "invDist"),
-            ("averagingType", "minabs", "minAbs"),
-        ]
+    _averagingtype_cases = [
+        ("averagingType", "MEAN", "mean"),
+        ("averagingType", "nearestnb", "nearestNb"),
+        ("averagingType", "MAX", "max"),
+        ("averagingType", "MIN", "min"),
+        ("averagingType", "invdist", "invDist"),
+        ("averagingType", "minabs", "minAbs"),
+    ]
 
-    def _get_locationtype_cases() -> List:
-        return [
-            ("locationType", "1D", "1d"),
-            ("locationType", "2D", "2d"),
-            ("locationType", "All", "all"),
-        ]
+    _locationtype_cases = [
+        ("locationType", "1D", "1d"),
+        ("locationType", "2D", "2d"),
+        ("locationType", "All", "all"),
+    ]
 
     def _create_required_inifield_values(self) -> dict:
         inifield_values = dict(
@@ -76,11 +71,11 @@ class TestIniField:
 
     @pytest.mark.parametrize(
         "attribute,input,expected",
-        _get_datafiletype_cases()
-        + _get_interpolationmethod_cases()
-        + _get_operand_cases()
-        + _get_averagingtype_cases()
-        + _get_locationtype_cases(),
+        _datafiletype_cases
+        + _interpolationmethod_cases
+        + _operand_cases
+        + _averagingtype_cases
+        + _locationtype_cases,
     )
     def test_initialfield_parses_flowdirection_case_insensitive(
         self, attribute: str, input, expected

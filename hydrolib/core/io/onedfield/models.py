@@ -109,7 +109,7 @@ class OneDFieldModel(INIModel):
     """
     The overall 1D field model that contains the contents of a 1D field file.
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.inifieldfile[..].initial[..].datafile`.
+    This model is typically used when a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.inifieldfile[..].initial[..].datafiletype==DataFileType.onedfield`.
 
     Attributes:
         general (OneDFieldGeneral): `[General]` block with file metadata.
