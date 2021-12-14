@@ -2087,7 +2087,7 @@ class TestCulvert:
                 inletlosscoeff="4.56",
                 outletlosscoeff="5.67",
                 valveonoff=valveonoff,
-                bedfrictiontype="bed_friction_type",
+                bedfrictiontype=FrictionType.whitecolebrook,
                 bedfriction="4.32",
                 bendlosscoeff="3.21",
             )
