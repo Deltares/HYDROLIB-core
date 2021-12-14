@@ -37,11 +37,13 @@ Now let's add this model to a DIMR config and save it.
 ```python
 from hydrolib.core.io.dimr.models import DIMR, FMComponent
 from pathlib import Path
+
 dimr = DIMR()
 dimr.component.append(
     FMComponent(name="test", workingDir=".", inputfile=fm.filepath, model=fm)
 )
-dimr.save(folder=Path("."))
+
+dimr.save(recurse=True)
 ```
 The save on the top of the model hierarchy will result in saves of all child models,
 so this results in four files (`dimr_config.xml`, `network.nc`, `structures.ini`,`test.mdu`)
