@@ -32,7 +32,9 @@ def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = N
 
 
 def get_enum_validator(*field_name: str, enum: Type[Enum]):
-    """Get a case-insensitive enum validator that will returns the corresponding enum value.
+    """
+    Get a case-insensitive enum validator that will returns the corresponding enum value.
+    If the input is a list, then each list value is checked individually.
 
     Args:
         enum (Type[Enum]): The enum type for which to validate.
@@ -44,7 +46,7 @@ def get_enum_validator(*field_name: str, enum: Type[Enum]):
                 return entry
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True)(get_enum)
+    return validator(*field_name, allow_reuse=True, pre=True, each_item=True)(get_enum)
 
 
 def make_list_validator(*field_name: str):

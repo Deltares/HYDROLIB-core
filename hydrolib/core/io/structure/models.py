@@ -13,6 +13,7 @@ from typing import List, Literal, Optional, Set, Union
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
 
+from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
@@ -366,7 +367,7 @@ class Culvert(Structure):
     numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
     relopening: Optional[List[float]] = Field(alias="relOpening")
     losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
-    bedfrictiontype: Optional[str] = Field(alias="bedFrictionType")
+    bedfrictiontype: Optional[FrictionType] = Field(alias="bedFrictionType")
     bedfriction: Optional[float] = Field(alias="bedFriction")
     subtype: Optional[CulvertSubType] = Field(CulvertSubType.culvert, alias="subType")
     bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
@@ -374,6 +375,7 @@ class Culvert(Structure):
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
+    _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
 
     _valveonoff_validator = get_required_fields_validator(
         "valveopeningheight",
@@ -900,9 +902,11 @@ class Bridge(Structure):
     shift: float
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
-    frictiontype: str = Field(alias="frictionType")
+    frictiontype: FrictionType = Field(alias="frictionType")
     friction: float
     length: float
+
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
 
 class StructureGeneral(INIGeneral):
