@@ -79,21 +79,32 @@ def make_list_length_root_validator(
             For example, to require list length 1 when length value is given as 0.
     """
 
+    def _get_incorrect_length_validation_message() -> str:
+        incrstring = f" + {length_incr}" if length_incr != 0 else ""
+        minstring = f" (and at least {min_length})" if min_length > 0 else ""
+
+        return (
+            "Number of values for {} should be equal to the {} value"
+            + incrstring
+            + minstring
+            + "."
+        )
+
     def validate_correct_length(cls, values: dict):
         length = values.get(length_name)
         if length is None:
             # length attribute not present, possibly defer validation to a subclass.
             return values
 
-        length = max(length + length_incr, min_length)
-        incrstring = f" + {length_incr}" if length_incr != 0 else ""
-        minstring = f" (and at least {min_length})" if min_length > 0 else ""
+        requiredlength = max(length + length_incr, min_length)
 
         for field_name in field_names:
             field = values.get(field_name)
-            if field is not None and len(field) != length:
+            if field is not None and len(field) != requiredlength:
                 raise ValueError(
-                    f"Number of values for {field_name} should be equal to the {length_name} value{incrstring}{minstring}."
+                    _get_incorrect_length_validation_message().format(
+                        field_name, length_name
+                    )
                 )
             if field is None and list_required_with_length and length > 0:
                 raise ValueError(
