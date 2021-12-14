@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from pathlib import Path
 from typing import List, Literal, Optional
 
@@ -6,11 +7,41 @@ from pydantic import Field, NonNegativeInt, PositiveInt
 from pydantic.class_validators import validator
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
-
-from ..ini.util import make_list_validator
+from hydrolib.core.io.ini.util import (
+    get_enum_validator,
+    get_split_string_on_delimiter_validator,
+    make_list_validator,
+)
 
 logger = logging.getLogger(__name__)
+
+
+class FrictionType(str, Enum):
+    """
+    Enum class containing the valid values for the frictionType
+    attribute in several subclasses of Structure/CrossSection/friction.models.
+    """
+
+    chezy = "Chezy"
+    """str: Chézy C [m 1/2 /s]"""
+
+    manning = "Manning"
+    """str: Manning n [s/m 1/3 ]"""
+
+    walllawnikuradse = "wallLawNikuradse"
+    """str: Nikuradse k_n [m]"""
+
+    whitecolebrook = "WhiteColebrook"
+    """str: Nikuradse k_n [m]"""
+
+    stricklernikuradse = "StricklerNikuradse"
+    """str: Nikuradse k_n [m]"""
+
+    strickler = "Strickler"
+    """str: Strickler k_s [m 1/3 /s]"""
+
+    debosbijkerk = "deBosBijkerk"
+    """str: De Bos-Bijkerk γ [1/s]"""
 
 
 class FrictGeneral(INIGeneral):
@@ -60,8 +91,10 @@ class FrictGlobal(INIBasedModel):
     comments: Comments = Comments()
     _header: Literal["Global"] = "Global"
     frictionid: str = Field(alias="frictionId")
-    frictiontype: str = Field(alias="frictionType")
+    frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
+
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("frictionid")
@@ -116,7 +149,7 @@ class FrictBranch(INIBasedModel):
     comments: Comments = Comments()
     _header: Literal["Branch"] = "Branch"
     branchid: str = Field(alias="branchId")
-    frictiontype: str = Field(alias="frictionType")
+    frictiontype: FrictionType = Field(alias="frictionType")
     functiontype: Optional[str] = Field("constant", alias="functionType")
     timeseriesid: Optional[str] = Field(alias="timeSeriesId")
     numlevels: Optional[PositiveInt] = Field(alias="numLevels")
@@ -133,6 +166,8 @@ class FrictBranch(INIBasedModel):
         "frictionvalues",
         delimiter=" ",
     )
+
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")

@@ -4,8 +4,10 @@ from typing import List, Literal, Optional
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
 
+from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    get_enum_validator,
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
@@ -203,12 +205,13 @@ class CircleCrsDef(CrossSectionDefinition):
     type: Literal["circle"] = Field("circle")
     diameter: float
     frictionid: Optional[str] = Field(alias="frictionId")
-    frictiontype: Optional[str] = Field(alias="frictionType")
+    frictiontype: Optional[FrictionType] = Field(alias="frictionType")
     frictionvalue: Optional[float] = Field(alias="frictionValue")
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionid", "frictiontype", "frictionvalue"
     )
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
 
 class RectangleCrsDef(CrossSectionDefinition):
@@ -245,12 +248,13 @@ class RectangleCrsDef(CrossSectionDefinition):
     height: float
     closed: bool = Field(True)
     frictionid: Optional[str] = Field(alias="frictionId")
-    frictiontype: Optional[str] = Field(alias="frictionType")
+    frictiontype: Optional[FrictionType] = Field(alias="frictionType")
     frictionvalue: Optional[float] = Field(alias="frictionValue")
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionid", "frictiontype", "frictionvalue"
     )
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
 
 class ZWRiverCrsDef(CrossSectionDefinition):
@@ -341,7 +345,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     fp1width: Optional[float] = Field(alias="fp1Width")
     fp2width: Optional[float] = Field(alias="fp2Width")
     frictionids: Optional[List[str]] = Field(alias="frictionIds")
-    frictiontypes: Optional[List[str]] = Field(alias="frictionTypes")
+    frictiontypes: Optional[List[FrictionType]] = Field(alias="frictionTypes")
     frictionvalues: Optional[List[float]] = Field(alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -360,6 +364,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionids", "frictiontypes", "frictionvalues"
     )
+    _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
 
     _check_list_length = make_list_length_root_validator(
         "levels",
@@ -419,7 +424,7 @@ class ZWCrsDef(CrossSectionDefinition):
     flowwidths: List[float] = Field(alias="flowWidths")
     totalwidths: Optional[List[float]] = Field(alias="totalWidths")
     frictionid: Optional[str] = Field(alias="frictionId")
-    frictiontype: Optional[str] = Field(alias="frictionType")
+    frictiontype: Optional[FrictionType] = Field(alias="frictionType")
     frictionvalue: Optional[float] = Field(alias="frictionValue")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -439,6 +444,7 @@ class ZWCrsDef(CrossSectionDefinition):
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionid", "frictiontype", "frictionvalue"
     )
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
 
 class YZCrsDef(CrossSectionDefinition):
@@ -508,7 +514,7 @@ class YZCrsDef(CrossSectionDefinition):
     sectioncount: Optional[int] = Field(1, alias="sectionCount")
     frictionpositions: Optional[List[float]] = Field(alias="frictionPositions")
     frictionids: Optional[List[str]] = Field(alias="frictionIds")
-    frictiontypes: Optional[List[str]] = Field(alias="frictionTypes")
+    frictiontypes: Optional[List[FrictionType]] = Field(alias="frictionTypes")
     frictionvalues: Optional[List[float]] = Field(alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -545,6 +551,7 @@ class YZCrsDef(CrossSectionDefinition):
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionids", "frictiontypes", "frictionvalues"
     )
+    _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
 
 
 class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
