@@ -12,11 +12,13 @@ from hydrolib.core.io.structure.models import (
     Bridge,
     Compound,
     Culvert,
+    CulvertSubType,
     Dambreak,
     DambreakAlgorithm,
     FlowDirection,
     GateOpeningHorizontalDirection,
     GeneralStructure,
+    Orientation,
     Orifice,
     Pump,
     Structure,
@@ -217,6 +219,13 @@ def _get_allowedflowdir_cases() -> List:
     ]
 
 
+def _get_orientation_cases() -> List:
+    return [
+        ("Positive", "positive"),
+        ("NEGATIVE", "negative"),
+    ]
+
+
 @pytest.mark.parametrize(
     "input,expected",
     _get_allowedflowdir_cases(),
@@ -258,8 +267,8 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
-        relopening=[],
-        losscoeff=[],
+        relopening=[1],
+        losscoeff=[1],
         bedfrictiontype=FrictionType.manning,
         bedfriction="1",
         subtype="invertedSiphon",
@@ -291,14 +300,25 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
-        relopening=[],
-        losscoeff=[],
+        relopening=[1],
+        losscoeff=[1],
         bedfrictiontype=FrictionType.manning,
         bedfriction="1",
         bendlosscoeff="1",
     )
 
     assert structure.subtype == expected
+
+
+def create_structure_values(type: str) -> dict:
+    """Create a dict with example field values for all common structure attributes."""
+    return dict(
+        id="structure_id",
+        name="structure_name",
+        type=type,
+        branchid="branch_id",
+        chainage="1.23",
+    )
 
 
 class TestBridge:
@@ -1499,14 +1519,156 @@ class TestWeir:
         return weir_values
 
 
-def create_structure_values(type: str) -> dict:
-    return dict(
-        id="structure_id",
-        name="structure_name",
-        type=type,
-        branchid="branch_id",
-        chainage="1.23",
+class TestPump:
+    _pumplists = [
+        ("startlevelsuctionside", "numstages"),
+        ("stoplevelsuctionside", "numstages"),
+        ("startleveldeliveryside", "numstages"),
+        ("stopleveldeliveryside", "numstages"),
+        ("head", "numreductionlevels"),
+        ("reductionfactor", "numreductionlevels"),
+    ]
+
+    def test_create_a_pump_from_scratch(self):
+        pump = Pump(
+            **self._create_pump_values(),
+            comments=Pump.Comments(
+                name="P stands for pump, 003 because we expect to have at most 999 pumps"
+            ),
+        )
+
+        assert pump.id == "structure_id"
+        assert pump.name == "structure_name"
+        assert pump.branchid == "branch_id"
+        assert pump.capacity == 2.34
+        assert pump.orientation == Orientation.negative
+        assert pump.numreductionlevels == 2
+        assert pump.head == [0, 2]
+        assert pump.reductionfactor == [0, 0.1]
+        assert (
+            pump.comments.name
+            == "P stands for pump, 003 because we expect to have at most 999 pumps"
+        )
+
+        assert pump.comments.id == uniqueid_str
+
+    def test_pump_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                = pump_id     # Unique structure id (max. 256 characters).
+            name              = pump_nm     # Given name in the user interface.
+            branchId          = branch      # (optional) Branch on which the structure is located.
+            chainage          = 3.0         # (optional) Chainage on the branch (m)
+            type              = pump        # Structure type
+            orientation       = positive    # Possible values: positive, negative.
+            capacity          = 10.5        # Crest level of weir (m AD)
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Pump].parse_obj({"val": document.sections[0]})
+        structure = wrapper.val
+
+        assert structure.id == "pump_id"
+        assert structure.name == "pump_nm"
+        assert structure.branchid == "branch"
+        assert structure.chainage == 3.0
+        assert structure.type == "pump"
+        assert structure.orientation == Orientation.positive
+        assert structure.capacity == 10.5
+
+    @pytest.mark.parametrize(
+        "input,expected",
+        _get_orientation_cases(),
     )
+    def test_pump_parses_orientation_case_insensitive(self, input, expected):
+        structure = Pump(
+            **self._create_required_pump_values(),
+            orientation=input,
+        )
+
+        assert structure.orientation == expected
+
+    @pytest.mark.parametrize(
+        "listname,lengthname",
+        _pumplists,
+    )
+    def test_create_a_pump_with_wrong_list_lengths(
+        self, listname: str, lengthname: str
+    ):
+        """Creates a pump with one start/stop/reduction attribute with wrong list length
+        and checks for correct error detection."""
+        correctlength = 3  # just a test value
+        correctlist = list(range(correctlength))
+        listargs = {key: correctlist for (key, _) in self._pumplists}
+        listargs[listname] = list(
+            range(correctlength + 1)
+        )  # Intentional wrong list length
+        listargs[lengthname] = correctlength
+
+        with pytest.raises(ValidationError) as error:
+
+            _ = Pump(
+                **self._create_required_pump_values(),
+                **listargs,
+            )
+
+        expected_message = f"Number of values for {listname} should be equal to the {lengthname} value."
+
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "listname,lengthname",
+        _pumplists,
+    )
+    def test_create_a_pump_with_missing_list(self, listname: str, lengthname: int):
+        """Creates a pump with one start/stop/reduction attribute list missing
+        and checks for correct error detection."""
+        correctlength = 3  # just a test value
+        correctlist = list(range(correctlength))
+        listargs = {key: correctlist for (key, _) in self._pumplists}
+        listargs.pop(listname)  # Remove one list argument
+        for (_, _lengthname) in self._pumplists:
+            listargs[_lengthname] = correctlength
+
+        with pytest.raises(ValidationError) as error:
+
+            _ = Pump(
+                **self._create_required_pump_values(),
+                **listargs,
+            )
+
+        expected_message = (
+            f"List {listname} cannot be missing if {lengthname} is given."
+        )
+
+        assert expected_message in str(error.value)
+
+    def _create_required_pump_values(self) -> dict:
+        pump_values = dict(
+            capacity="2.34",
+        )
+
+        pump_values.update(create_structure_values("pump"))
+        return pump_values
+
+    def _create_pump_values(self) -> dict:
+        pump_values = dict(
+            orientation="negative",
+            numreductionlevels=2,
+            head=[0, 2],
+            reductionfactor=[0, 0.1],
+        )
+
+        pump_values.update(self._create_required_pump_values())
+        return pump_values
 
 
 class TestGeneralStructure:
@@ -1881,3 +2043,64 @@ class TestGeneralStructure:
             self._create_required_general_structure_values()
         )
         return general_structure_values
+
+
+class TestCulvert:
+    @pytest.mark.parametrize(
+        "missing_field",
+        ["valveopeningheight", "numlosscoeff", "relopening", "losscoeff"],
+    )
+    def test_validate_required_fields_based_on_valveonoff(self, missing_field: str):
+        values = self._create_culvert_values(valveonoff=True)
+        del values[missing_field]
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = f"{missing_field} should be provided when valveonoff is True"
+        assert expected_message in str(error.value)
+
+    def test_validate_default_subtype(self):
+        culvert = Culvert(**self._create_culvert_values(valveonoff=False))
+
+        assert culvert.subtype == CulvertSubType.culvert
+
+    def test_validate_bendlosscoeff_required_when_culvert_subtype(self):
+        values = self._create_culvert_values(valveonoff=False)
+        del values["bendlosscoeff"]
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = f"bendlosscoeff should be provided when subtype is culvert"
+        assert expected_message in str(error.value)
+
+    def _create_culvert_values(self, valveonoff: bool):
+        values = create_structure_values("culvert")
+        values.update(
+            dict(
+                allowedflowdir="both",
+                leftlevel="1.23",
+                rightlevel="2.34",
+                csdefid="cs_def_id",
+                length="3.45",
+                inletlosscoeff="4.56",
+                outletlosscoeff="5.67",
+                valveonoff=valveonoff,
+                bedfrictiontype="bed_friction_type",
+                bedfriction="4.32",
+                bendlosscoeff="3.21",
+            )
+        )
+
+        if valveonoff:
+            values.update(
+                dict(
+                    valveopeningheight="6.78",
+                    numlosscoeff="10",
+                    relopening="7.89 9.87 8.76",
+                    losscoeff="7.65 6.54 5.43",
+                )
+            )
+
+        return values

@@ -18,7 +18,9 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
+    get_required_fields_validator,
     get_split_string_on_delimiter_validator,
+    make_list_length_root_validator,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
@@ -234,6 +236,17 @@ class FlowDirection(str, Enum):
     allowedvaluestext = "Possible values: both, positive, negative, none."
 
 
+class Orientation(str, Enum):
+    """
+    Enum class containing the valid values for the orientation
+    attribute in several subclasses of Structure.
+    """
+
+    positive = "positive"
+    negative = "negative"
+    allowedvaluestext = "Possible values: positive, negative."
+
+
 class Weir(Structure):
     """
     Hydraulic structure with `type=weir`, to be included in a structure file.
@@ -350,19 +363,41 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Union[float, Path] = Field(alias="valveOpeningHeight")
-    numlosscoeff: int = Field(alias="numLossCoeff")
-    relopening: List[float] = Field(alias="relOpening")
-    losscoeff: List[float] = Field(alias="lossCoeff")
-    bedfrictiontype: FrictionType = Field(alias="bedFrictionType")
-    bedfriction: float = Field(alias="bedFriction")
-    subtype: CulvertSubType = Field(alias="subType")
-    bendlosscoeff: float = Field(alias="bendLossCoeff")
+    valveopeningheight: Optional[Union[float, Path]] = Field(alias="valveOpeningHeight")
+    numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
+    relopening: Optional[List[float]] = Field(alias="relOpening")
+    losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
+    bedfrictiontype: Optional[FrictionType] = Field(alias="bedFrictionType")
+    bedfriction: Optional[float] = Field(alias="bedFriction")
+    subtype: Optional[CulvertSubType] = Field(CulvertSubType.culvert, alias="subType")
+    bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
     _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
+
+    _valveonoff_validator = get_required_fields_validator(
+        "valveopeningheight",
+        "numlosscoeff",
+        "relopening",
+        "losscoeff",
+        conditional_field_name="valveonoff",
+        conditional_value=True,
+    )
+
+    _check_list_length = make_list_length_root_validator(
+        "relopening",
+        "losscoeff",
+        length_name="numlosscoeff",
+        list_required_with_length=True,
+    )
+
+    _bendlosscoeff = get_required_fields_validator(
+        "bendlosscoeff",
+        conditional_field_name="subtype",
+        conditional_value=CulvertSubType.culvert,
+    )
 
 
 class Pump(Structure):
@@ -376,18 +411,20 @@ class Pump(Structure):
 
     type: Literal["pump"] = Field("pump", alias="type")
 
-    orientation: str = Field(alias="orientation")
-    controlside: str = Field(alias="controlSide")  # TODO Enum
-    numstages: int = Field(0, alias="numStages")
+    orientation: Optional[Orientation] = Field(alias="orientation")
+    controlside: Optional[str] = Field(alias="controlSide")  # TODO Enum
+    numstages: Optional[int] = Field(alias="numStages")
     capacity: Union[float, Path] = Field(alias="capacity")
 
-    startlevelsuctionside: List[float] = Field(alias="startLevelSuctionSide")
-    stoplevelsuctionside: List[float] = Field(alias="stopLevelSuctionSide")
-    startleveldeliveryside: List[float] = Field(alias="startLevelDeliverySide")
-    stopleveldeliveryside: List[float] = Field(alias="stopLevelDeliverySide")
-    numreductionlevels: int = Field(0, alias="numReductionLevels")
-    head: List[float] = Field(alias="head")
-    reductionfactor: List[float] = Field(alias="reductionFactor")
+    startlevelsuctionside: Optional[List[float]] = Field(alias="startLevelSuctionSide")
+    stoplevelsuctionside: Optional[List[float]] = Field(alias="stopLevelSuctionSide")
+    startleveldeliveryside: Optional[List[float]] = Field(
+        alias="startLevelDeliverySide"
+    )
+    stopleveldeliveryside: Optional[List[float]] = Field(alias="stopLevelDeliverySide")
+    numreductionlevels: Optional[int] = Field(alias="numReductionLevels")
+    head: Optional[List[float]] = Field(alias="head")
+    reductionfactor: Optional[List[float]] = Field(alias="reductionFactor")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "startlevelsuctionside",
@@ -396,6 +433,23 @@ class Pump(Structure):
         "stopleveldeliveryside",
         "head",
         "reductionfactor",
+    )
+    _orientation_validator = get_enum_validator("orientation", enum=Orientation)
+
+    _check_list_length = make_list_length_root_validator(
+        "startlevelsuctionside",
+        "stoplevelsuctionside",
+        "startleveldeliveryside",
+        "stopleveldeliveryside",
+        length_name="numstages",
+        list_required_with_length=True,
+    )
+
+    _check_list_length2 = make_list_length_root_validator(
+        "head",
+        "reductionfactor",
+        length_name="numreductionlevels",
+        list_required_with_length=True,
     )
 
 
