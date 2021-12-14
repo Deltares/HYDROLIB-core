@@ -13,6 +13,7 @@ from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.storagenode.models import StorageNodeModel
 from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
+from hydrolib.core.utils import FMVersion
 
 
 class General(INIGeneral):
@@ -20,7 +21,7 @@ class General(INIGeneral):
     program: str = Field("D-Flow FM", alias="program")
     version: str = Field("1.2.94.66079M", alias="version")
     filetype: Literal["modelDef"] = Field("modelDef", alias="fileType")
-    fileversion: str = Field("1.09", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("1.9.0"), alias="fileVersion")
     autostart: bool = Field(False, alias="autoStart")
     pathsrelativetoparent: bool = Field(False, alias="pathsRelativeToParent")
 

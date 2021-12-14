@@ -21,7 +21,7 @@ from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
 )
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.utils import FMVersion, str_is_empty_or_none
 
 logger = logging.getLogger(__name__)
 
@@ -909,7 +909,7 @@ class StructureGeneral(INIGeneral):
     """`[General]` section with structure file metadata."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("2.0.0"), alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 

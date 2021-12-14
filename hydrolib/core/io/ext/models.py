@@ -10,7 +10,7 @@ from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.utils import FMVersion, str_is_empty_or_none
 
 
 class Boundary(INIBasedModel):
@@ -234,7 +234,7 @@ class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta data."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("2.01", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("2.1.0"), alias="fileVersion")
     filetype: Literal["extForce"] = Field("extForce", alias="fileType")
 
 

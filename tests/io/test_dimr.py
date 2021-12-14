@@ -25,7 +25,7 @@ def test_parse_returns_correct_data():
     result = DIMRParser.parse(test_file)
 
     documentation = result["documentation"]
-    assert documentation["fileVersion"] == "1.2"
+    assert str(documentation["fileVersion"]) == "1.2"
     assert documentation["createdBy"] == "Deltares, Coupling Team"
     assert documentation["creationDate"] == "2020-03-17T10:02:49.4520672Z"
 
@@ -75,7 +75,7 @@ def test_serialize():
 
     data = {
         "documentation": {
-            "fileVersion": "1.3",
+            "fileVersion": "1.2",
             "createdBy": f"hydrolib-core {__version__}",
             "creationDate": "2020-03-17T10:02:49.4520672Z",
         },

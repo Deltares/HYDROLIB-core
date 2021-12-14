@@ -12,6 +12,7 @@ from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIM
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import get_enum_validator, get_from_subclass_defaults
+from hydrolib.core.utils import FMVersion
 
 logger = logging.getLogger(__name__)
 
@@ -196,7 +197,7 @@ class Constant(ForcingBase):
 
 
 class ForcingGeneral(INIGeneral):
-    fileversion: str = Field("1.01", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("1.1.0"), alias="fileVersion")
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 

@@ -7,6 +7,7 @@ from pydantic.class_validators import validator
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.utils import FMVersion, get_version_validator
 
 from .io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
@@ -33,7 +34,6 @@ class INIBasedModel(BaseModel, ABC):
 
     class Config:
         extra = Extra.allow
-        arbitrary_types_allowed = False
 
     @classmethod
     def _supports_comments(cls):
@@ -137,8 +137,12 @@ class DataBlockINIBasedModel(INIBasedModel):
 
 class INIGeneral(INIBasedModel):
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: FMVersion = Field(FMVersion("3.0.0"), alias="fileVersion")
     filetype: str = Field(alias="fileType")
+
+    _version_validator = get_version_validator(
+        "fileversion",
+    )
 
     @classmethod
     def _supports_comments(cls):
