@@ -22,15 +22,26 @@ class FrictionType(str, Enum):
     attribute in several subclasses of Structure/CrossSection/friction.models.
     """
 
-    chezy = "Chezy"  # Chézy C [m 1/2 /s]
-    manning = "Manning"  # Manning n [s/m 1/3 ]
-    walllawnikuradse = "wallLawNikuradse"  # Nikuradse k n [m]
-    whitecolebrook = "WhiteColebrook"  # Nikuradse k n [m]
-    stricklernikuradse = "StricklerNikuradse"  # Nikuradse k n [m]
-    strickler = "Strickler"  # Strickler k s [m 1/3 /s]
-    debosbijkerk = "deBosBijkerk"  # De Bos-Bijkerk γ [1/s]
+    chezy = "Chezy"
+    """str: Chézy C [m 1/2 /s]"""
 
-    allowedvaluestext = "Possible values: Chezy, Manning, wallLawNikuradse, WhiteColebrook, StricklerNikuradse, Strickler, deBosBijkerk."
+    manning = "Manning"
+    """str: Manning n [s/m 1/3 ]"""
+
+    walllawnikuradse = "wallLawNikuradse"
+    """str: Nikuradse k_n [m]"""
+
+    whitecolebrook = "WhiteColebrook"
+    """str: Nikuradse k_n [m]"""
+
+    stricklernikuradse = "StricklerNikuradse"
+    """str: Nikuradse k_n [m]"""
+
+    strickler = "Strickler"
+    """str: Strickler k_s [m 1/3 /s]"""
+
+    debosbijkerk = "deBosBijkerk"
+    """str: De Bos-Bijkerk γ [1/s]"""
 
 
 class FrictGeneral(INIGeneral):

@@ -14,7 +14,13 @@ from hydrolib.core.io.friction.models import (
 )
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
-from ..utils import WrapperTest, test_data_dir
+from ..utils import (
+    WrapperTest,
+    assert_files_equal,
+    test_data_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 def _get_frictiontype_cases() -> List:
@@ -113,3 +119,17 @@ def test_create_a_frictbranch_with_incorrect_levels_or_locations():
     assert expected_message0 in str(error.value)
     assert expected_message1 in str(error.value)
     assert expected_message2 in str(error.value)
+
+
+def test_save():
+
+    filepath = test_data_dir / "input/dflowfm_individual_files/roughness.ini"
+    m = FrictionModel(filepath)
+
+    output_file = Path(test_output_dir / "fm" / "serialize_roughness.ini")
+    reference_file = Path(test_reference_dir / "fm" / "serialize_roughness.ini")
+
+    m.filepath = output_file
+    m.save()
+
+    assert_files_equal(output_file, reference_file, [0])
