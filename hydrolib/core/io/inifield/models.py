@@ -11,6 +11,7 @@ from pydantic.types import NonNegativeFloat, PositiveInt
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
+    get_required_fields_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -186,11 +187,11 @@ class AbstractSpatialField(INIBasedModel, ABC):
     averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
     locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
 
-    # TODO: Enable once PR #75 has been merged to main:
-    # _value_validator = get_required_fields_validator(
-    #     "value",
-    #     conditional_field_name="datafiletype",
-    #     conditional_value=DataFileType.polygon)
+    _value_validator = get_required_fields_validator(
+        "value",
+        conditional_field_name="datafiletype",
+        conditional_value=DataFileType.polygon,
+    )
 
     @validator("value", always=True)
     @classmethod

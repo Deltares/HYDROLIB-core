@@ -82,6 +82,11 @@ class TestIniField:
     ):
         inifield_values = self._create_required_inifield_values()
         inifield_values[attribute.lower()] = input
+
+        datafiletype = inifield_values.get("datafiletype")
+        if datafiletype and datafiletype.lower() == DataFileType.polygon.lower():
+            inifield_values["value"] = 1.23  # optionally required
+
         inifield = InitialField(**inifield_values)
 
         assert getattr(inifield, attribute.lower()) == expected
@@ -150,11 +155,24 @@ class TestIniField:
     def test_initialfield_value_with_wrong_datafiletype(self):
         inifield_values = self._create_required_inifield_values()
         inifield_values["value"] = 1.23
-        inifield_values["datafiletype"] = "sample"
+        inifield_values["datafiletype"] = DataFileType.sample
 
         with pytest.raises(ValidationError) as error:
             _ = InitialField(**inifield_values)
 
         expected_message = f"When value=1.23 is given, dataFileType={DataFileType.polygon} is required."
+
+        assert expected_message in str(error.value)
+
+    def test_initialfield_value_with_missing_value(self):
+        inifield_values = self._create_required_inifield_values()
+        inifield_values["datafiletype"] = DataFileType.polygon
+
+        with pytest.raises(ValidationError) as error:
+            _ = InitialField(**inifield_values)
+
+        expected_message = (
+            f"value should be provided when datafiletype is {DataFileType.polygon}"
+        )
 
         assert expected_message in str(error.value)
