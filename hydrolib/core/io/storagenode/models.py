@@ -141,7 +141,7 @@ class StorageNode(INIBasedModel):
     name: str = Field(alias="name")
     manholeid: Optional[str] = Field(alias="manholeId")
 
-    nodetype: Optional[NodeType] = Field(NodeType.unspecified, alias="nodeType")
+    nodetype: Optional[NodeType] = Field(NodeType.unspecified.value, alias="nodeType")
     nodeid: str = Field(alias="nodeId")
     usetable: bool = Field(alias="useTable")
 
@@ -151,7 +151,7 @@ class StorageNode(INIBasedModel):
     streetlevel: Optional[float] = Field(alias="streetLevel")
     streetstoragearea: Optional[float] = Field(alias="streetStorageArea")
     storagetype: Optional[StorageType] = Field(
-        StorageType.reservoir, alias="storageType"
+        StorageType.reservoir.value, alias="storageType"
     )
 
     # useTable is False
@@ -159,7 +159,7 @@ class StorageNode(INIBasedModel):
     levels: Optional[List[float]] = Field(alias="levels")
     storagearea: Optional[List[float]] = Field(alias="storageArea")
     interpolate: Optional[Interpolation] = Field(
-        Interpolation.linear, alias="interpolate"
+        Interpolation.linear.value, alias="interpolate"
     )
 
     _interpolation_validator = get_enum_validator("interpolate", enum=Interpolation)

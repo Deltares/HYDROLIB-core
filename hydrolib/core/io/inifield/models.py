@@ -166,9 +166,9 @@ class AbstractSpatialField(INIBasedModel, ABC):
     interpolationmethod: Optional[InterpolationMethod] = Field(
         alias="interpolationMethod"
     )
-    operand: Optional[Operand] = Field(Operand.override, alias="operand")
+    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     averagingtype: Optional[AveragingType] = Field(
-        AveragingType.mean, alias="averagingType"
+        AveragingType.mean.value, alias="averagingType"
     )
     averagingrelsize: Optional[NonNegativeFloat] = Field(1.01, alias="averagingRelSize")
     averagingnummin: Optional[PositiveInt] = Field(1, alias="averagingNumMin")
@@ -176,7 +176,9 @@ class AbstractSpatialField(INIBasedModel, ABC):
         0, alias="averagingPercentile"
     )
     extrapolationmethod: Optional[bool] = Field(False, alias="extrapolationMethod")
-    locationtype: Optional[LocationType] = Field(LocationType.all, alias="locationType")
+    locationtype: Optional[LocationType] = Field(
+        LocationType.all.value, alias="locationType"
+    )
     value: Optional[float] = Field(alias="value")
 
     datafiletype_validator = get_enum_validator("datafiletype", enum=DataFileType)

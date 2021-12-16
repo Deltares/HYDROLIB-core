@@ -20,7 +20,14 @@ from hydrolib.core.io.inifield.models import (
     ParameterField,
 )
 
-from ..utils import WrapperTest, invalid_test_data_dir, test_data_dir
+from ..utils import (
+    WrapperTest,
+    assert_files_equal,
+    invalid_test_data_dir,
+    test_data_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 class TestIniField:
@@ -122,6 +129,21 @@ class TestIniField:
         assert m.parameter[1].interpolationmethod == InterpolationMethod.constant
         assert m.parameter[1].value == 0.03
         assert m.parameter[1].operand == Operand.mult
+
+    def test_load_and_save(self):
+        """Test whether a model loaded from file is serialized correctly.
+        Particularly intended to test writing of default enum values."""
+
+        filepath = test_data_dir / "input/dflowfm_individual_files/initialFields.ini"
+        m = IniFieldModel(filepath)
+
+        output_file = Path(test_output_dir / "fm" / "serialize_initialFields.ini")
+        reference_file = Path(test_reference_dir / "fm" / "serialize_initialFields.ini")
+
+        m.filepath = output_file
+        m.save()
+
+        assert_files_equal(output_file, reference_file, [0])
 
     def test_initialfield_construction_with_parser(self):
         parser = Parser(ParserConfig())
