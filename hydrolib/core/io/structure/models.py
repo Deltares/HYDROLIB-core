@@ -278,7 +278,7 @@ class Weir(Structure):
 
     type: Literal["weir"] = Field("weir", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
-        FlowDirection.both, alias="allowedFlowDir"
+        FlowDirection.both.value, alias="allowedFlowDir"
     )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
@@ -369,7 +369,9 @@ class Culvert(Structure):
     losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
     bedfrictiontype: Optional[FrictionType] = Field(alias="bedFrictionType")
     bedfriction: Optional[float] = Field(alias="bedFriction")
-    subtype: Optional[CulvertSubType] = Field(CulvertSubType.culvert, alias="subType")
+    subtype: Optional[CulvertSubType] = Field(
+        CulvertSubType.culvert.value, alias="subType"
+    )
     bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
@@ -482,7 +484,7 @@ class Orifice(Structure):
 
     type: Literal["orifice"] = Field("orifice", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
-        FlowDirection.both, alias="allowedFlowDir"
+        FlowDirection.both.value, alias="allowedFlowDir"
     )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
@@ -623,7 +625,7 @@ class GeneralStructure(Structure):
 
     type: Literal["generalStructure"] = Field("generalStructure", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
-        FlowDirection.both, alias="allowedFlowDir"
+        FlowDirection.both.value, alias="allowedFlowDir"
     )
 
     upstream1width: Optional[float] = Field(10.0, alias="upstream1Width")
@@ -655,7 +657,8 @@ class GeneralStructure(Structure):
     gateheight: Optional[float] = Field(1e10, alias="gateHeight")
     gateopeningwidth: Optional[float] = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
-        GateOpeningHorizontalDirection.symmetric, alias="gateOpeningHorizontalDirection"
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
     )
     usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
 
