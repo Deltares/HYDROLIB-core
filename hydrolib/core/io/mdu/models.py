@@ -3,6 +3,7 @@ from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field
 
+from hydrolib.core.basemodel import FileModel, ResolveRelativeMode
 from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
@@ -535,3 +536,20 @@ class FMModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "fm"
+
+    @FileModel._relative_mode.getter
+    def _relative_mode(self) -> ResolveRelativeMode:
+        # This method overrides the _relative_mode property of the FileModel:
+        # The FMModel has a "special" feature which determines how relative filepaths
+        # should be resolved. When the field "pathsRelativeToParent" is set to False
+        # all relative paths should be resolved in respect to the parent directory of
+        # the mdu file. As such we need to explicitly set the resolve mode to ToAnchor
+        # when this attribute is set.
+
+        if not hasattr(self, "general") or self.general is None:
+            return ResolveRelativeMode.ToParent
+
+        if self.general.pathsrelativetoparent:
+            return ResolveRelativeMode.ToParent
+        else:
+            return ResolveRelativeMode.ToAnchor

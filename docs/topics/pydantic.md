@@ -9,20 +9,16 @@ well understood and documented architecture.
 We override de `__init__` method to catch all validation errors and reissue them with an better error message.
 
 ### FileModel override
-We override both `__new__` and `__init__` to cache models from disk. 
+We override both `__new__` and `__init__` of the `FileModel` to cache models from disk.
+The `FileModel` utilises the `FileLoadContext` to resolve relative paths and to retrieve
+models previously read as part of the loading of a root model. 
+
+
 Specifically we also use it to load a filepath from disk.
 
 This mostly happens in `validate`, a Pydantic override, to make
 sure that if we initialize with a single unnamed argument (Pydantic only accepts keyword arguments)
 we try to parse it as a filepath.
-
-### DIMR `__init__` override
-We override the `__init__` method of DIMR to parse any underlying FileModels.
-These are not loaded automatically because they're deeply nested in `components`.
-
-### NetworkModel __init__ override
-We override the `__init__` method of the NetworkModel
-because we initalize an underlying Network (based on Meshkernel) with the given filepath.
 
 ### ForcingBase, Structure and CrossSectionDefinition `validate` override
 Validate is overriden to try to initialize the correct subclass of ForcingBase and CrossSectionDefinition, as discriminated unions do not work yet in Pydantic. I.e. if you specify Union{A, B} and A and B have clearly defined Literals it still can't choose whether to create A or B. The [PR](https://github.com/samuelcolvin/pydantic/pull/2336) to fix this hasn't been merged yet.

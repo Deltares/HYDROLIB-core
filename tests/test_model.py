@@ -1,9 +1,8 @@
-from dataclasses import dataclass
+import shutil
 from datetime import datetime
 from pathlib import Path
 
 import pytest
-from devtools import debug
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import FileModel
@@ -44,8 +43,10 @@ def test_dimr_model():
         / "dimr_model"
         / "dimr_config.xml"
     )
+
     # Confirm parsing results in correct
     # components for each type of submodel
+
     d = DIMR(filepath=test_file)
     assert len(d.component) == 2
     assert isinstance(d.component[0], RRComponent)
@@ -53,9 +54,15 @@ def test_dimr_model():
 
     # Confirm saving creates new files and
     # files for child model
-    d.save(folder=test_output_dir / "tmp")
-    assert d.filepath.is_file()
-    assert d.component[1].model.filepath.is_file()
+    save_path = test_output_dir / test_dimr_model.__name__ / DIMR._generate_name()
+
+    d.save(filepath=save_path, recurse=True)
+
+    assert d.save_location == save_path
+    assert d.save_location.is_file()
+
+    assert d.component[1].model is not None
+    assert d.component[1].model.save_location.is_file()
 
 
 def test_parse_rr_model_returns_correct_model():
@@ -69,7 +76,11 @@ def test_parse_rr_model_returns_correct_model():
 
     # verify some non-default names altered in the source file.
     assert model.control_file == Path("not-delft_3b.ini")
-    assert model.bui_file == BuiTestData.bui_model()
+
+    expected_bui_model = BuiTestData.bui_model()
+    # we expect the path to not be absolute, as such we need to adjust that.
+    expected_bui_model.filepath = Path(expected_bui_model.filepath.name)
+    assert model.bui_file == expected_bui_model
     assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
 
 
@@ -170,10 +181,6 @@ def test_xyz_model():
 
 
 def test_mdu_model():
-    output_fn = Path(test_output_dir / "test.mdu")
-    if output_fn.is_file():
-        output_fn.unlink()
-
     model = FMModel(
         filepath=Path(
             test_data_dir
@@ -187,17 +194,37 @@ def test_mdu_model():
     )
     assert model.geometry.comments.uniformwidth1d == "test"
 
-    model.filepath = output_fn
-    model.save()
+    output_dir = test_output_dir / test_mdu_model.__name__
+    output_fn = output_dir / FMModel._generate_name()
 
-    assert model.filepath.is_file()
-    assert model.geometry.frictfile[0].filepath.is_file()
-    assert model.geometry.structurefile[0].filepath.is_file()
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+
+    model.save(filepath=output_fn, recurse=True)
+
+    assert model.save_location == output_fn
+    assert model.save_location.is_file()
+
+    assert model.geometry.frictfile is not None
+    frictfile = model.geometry.frictfile[0]
+    assert model.geometry.frictfile[0] is not None
+    assert model.geometry.frictfile[0].filepath is not None
+
+    assert frictfile.save_location == output_dir / frictfile.filepath
+    assert frictfile.save_location.is_file()
+
+    assert model.geometry.structurefile is not None
+    structurefile = model.geometry.structurefile[0]
+    assert structurefile is not None
+    assert structurefile.filepath is not None
+
+    assert structurefile.save_location == output_dir / structurefile.filepath
+    assert structurefile.save_location.is_file()
 
 
 def test_model_with_duplicate_file_references_use_same_instances():
     model = ExtModel(
-        filepath=Path(
+        filepath=(
             test_data_dir
             / "input"
             / "e02"
