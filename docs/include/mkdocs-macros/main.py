@@ -7,7 +7,7 @@ def define_env(env):
     { sobek_um(anchor, linktext) }: (deep)link to SOBEK User Manual PDF.
     { dflowfm_um(anchor, linktext) }: (deep)link to D-Flow FM User Manual PDF.
     { gh_issue(number, linktext) }: link to GitHub issue page.
-    { gh_PR(number, linktext) }: link to GitHub pull request page.
+    { gh_pr(number, linktext) }: link to GitHub pull request page.
 
     """
 
@@ -49,7 +49,7 @@ def define_env(env):
         )
 
     @env.macro
-    def gh_PR(number: int, linktext: str = None):
+    def gh_pr(number: int, linktext: str = None):
         """Create Markdown link to GitHub pull request page."""
 
         return (
