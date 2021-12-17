@@ -79,6 +79,8 @@ nav:
           - "guides/contributing.md"
       - Documentation:
           - "guides/documentation.md"
+      - Support:
+          - guides/gettinghelp.md
   - Tutorials:
       - tutorials/steps.md
       - tutorials/loading_and_saving_a_model.md

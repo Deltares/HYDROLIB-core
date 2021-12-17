@@ -1,10 +1,12 @@
-## BUI files
+# BUI file
+The "bui" file contains the precipitation input data for [Rainfall Runoff](glossary.md#rainfall-runoff).
+It is represented by the classes below.
 
-### Model
+## Model
 ::: hydrolib.core.io.bui.models
 
-### Parser
+## Parser
 ::: hydrolib.core.io.bui.parser
 
-### Serializer
+## Serializer
 ::: hydrolib.core.io.bui.serializer
