@@ -116,6 +116,8 @@ class Node(BaseModel):
 
 
 class NodeFile(FileModel):
+    """Represents the file with the RR node topology data."""
+
     _parser = NetworkTopologyFileParser(enclosing_tag="node")
     node: List[Node] = Field([], alias="node")
 

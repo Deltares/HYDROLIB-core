@@ -5,3 +5,19 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Deltares_HYDROLIB-core&metric=alert_status)](https://sonarcloud.io/dashboard?id=Deltares_HYDROLIB-core)
 
 HYDROLIB-core is the core library of Python wrappers around the D-HYDRO model files (input and output) and model engines (kernel libraries).
+It can serve as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations.
+
+<div align="center">
+<img src="images/HYDROLIB_logo_paths.svg" width="50%">
+</div>
+
+## More information
+
+Some quickstarts:
+
+* First users: [Installation](guides/setup.md) and [Tutorials](tutorials/steps.md).
+* Developers: [List of supported functionalities](topics/dhydro_support.md),
+  [API reference](reference/api.md), and
+  [How to contribute](guides/contributing.md).
+* Releases: [hydrolib-core on PyPI](https://pypi.org/project/hydrolib-core/), [ChangeLog](changelog.md).
+* Known issues and requested features: via [GitHub issues](https://github.com/Deltares/HYDROLIB-core/issues).

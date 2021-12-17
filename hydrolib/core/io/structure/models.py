@@ -532,6 +532,14 @@ class GateOpeningHorizontalDirection(str, Enum):
 
 
 class GeneralStructure(Structure):
+    """
+    Hydraulic structure with `type=generalStructure`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the orifice input as described in
+    [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field(
             "Structure type; must read generalStructure", alias="type"

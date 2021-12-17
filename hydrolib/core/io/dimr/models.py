@@ -78,6 +78,8 @@ class Component(BaseModel, ABC):
 
 
 class FMComponent(Component):
+    """Component to include the D-Flow FM program in a DIMR control flow."""
+
     library: Literal["dflowfm"] = "dflowfm"
 
     @classmethod
@@ -86,6 +88,8 @@ class FMComponent(Component):
 
 
 class RRComponent(Component):
+    """Component to include the RainfallRunoff program in a DIMR control flow."""
+
     library: Literal["rr_dll"] = "rr_dll"
 
     @classmethod
