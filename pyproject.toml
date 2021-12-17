@@ -14,6 +14,7 @@ numpy = "^1.21"
 pydantic = {extras = ["dotenv"], version = "^1.8"}
 lxml = "^4.6"
 meshkernel = "^1.0.0"
+mkdocs-macros-plugin = "^0.6.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
