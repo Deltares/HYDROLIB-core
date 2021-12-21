@@ -2065,14 +2065,16 @@ class TestCulvert:
 
         assert culvert.subtype == CulvertSubType.culvert
 
-    def test_validate_bendlosscoeff_required_when_culvert_subtype(self):
+    def test_validate_bendlosscoeff_required_when_invertedsiphon_subtype(self):
         values = self._create_culvert_values(valveonoff=False)
-        del values["bendlosscoeff"]
+        values["subtype"] = CulvertSubType.invertedSiphon
 
         with pytest.raises(ValidationError) as error:
             Culvert(**values)
 
-        expected_message = f"bendlosscoeff should be provided when subtype is culvert"
+        expected_message = (
+            f"bendlosscoeff should be provided when subtype is invertedSiphon"
+        )
         assert expected_message in str(error.value)
 
     def _create_culvert_values(self, valveonoff: bool):
@@ -2089,7 +2091,6 @@ class TestCulvert:
                 valveonoff=valveonoff,
                 bedfrictiontype=FrictionType.whitecolebrook,
                 bedfriction="4.32",
-                bendlosscoeff="3.21",
             )
         )
 

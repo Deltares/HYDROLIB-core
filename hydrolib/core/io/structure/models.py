@@ -398,7 +398,7 @@ class Culvert(Structure):
     _bendlosscoeff = get_required_fields_validator(
         "bendlosscoeff",
         conditional_field_name="subtype",
-        conditional_value=CulvertSubType.culvert,
+        conditional_value=CulvertSubType.invertedSiphon,
     )
 
 
