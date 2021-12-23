@@ -7,6 +7,7 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.io.md
 
 import logging
 from enum import Enum
+from operator import eq, ne
 from pathlib import Path
 from typing import List, Literal, Optional, Set, Union
 
@@ -17,6 +18,7 @@ from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
+    get_forbidden_fields_validator,
     get_from_subclass_defaults,
     get_required_fields_validator,
     get_split_string_on_delimiter_validator,
@@ -395,10 +397,16 @@ class Culvert(Structure):
         list_required_with_length=True,
     )
 
-    _bendlosscoeff = get_required_fields_validator(
+    _bendlosscoeff_invertedsiphon = get_required_fields_validator(
         "bendlosscoeff",
         conditional_field_name="subtype",
         conditional_value=CulvertSubType.invertedSiphon,
+    )
+
+    _bendlosscoeff_culvert = get_forbidden_fields_validator(
+        "bendlosscoeff",
+        conditional_field_name="subtype",
+        conditional_value=CulvertSubType.culvert,
     )
 
 

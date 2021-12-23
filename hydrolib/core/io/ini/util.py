@@ -1,7 +1,8 @@
 """util.py provides additional utility methods related to handling ini files.
 """
 from enum import Enum
-from typing import Any, List, Optional, Type
+from operator import eq, ge, gt, le, lt, ne
+from typing import Any, Callable, List, Optional, Type
 
 from pydantic.class_validators import root_validator, validator
 from pydantic.main import BaseModel
@@ -132,25 +133,89 @@ def make_list_length_root_validator(
     return root_validator(allow_reuse=True)(validate_correct_length)
 
 
-def get_required_fields_validator(
-    *field_names, conditional_field_name: str, conditional_value: Any
+def operator_str(operator_func: Callable) -> str:
+    """
+    Make string representation of some of operator's built-in operator
+    functions, for use in prettyprinting.
+
+    Args:
+        operator_func (Callable): Typically one of operator's built-in
+            operator functions. When unsupported, the standard __str__
+            representation is returned.
+    """
+    if operator_func == eq:
+        return "is"
+    elif operator_func == ne:
+        return "is not"
+    elif operator_func == lt:
+        return "is less than"
+    elif operator_func == le:
+        return "is less than or equal to"
+    elif operator_func == gt:
+        return "is greater than"
+    elif operator_func == ge:
+        return "is greater than or equal to"
+    else:
+        return str(operator_func)
+
+
+def get_forbidden_fields_validator(
+    *field_names,
+    conditional_field_name: str,
+    conditional_value: Any,
+    comparison_func: Callable[[Any, Any], bool] = eq,
 ):
-    """Gets a validator that checks whether the fields are provided, if `conditional_field_name` is equal to `conditional_value`.
+    """
+    Gets a validator that checks whether certain fields are *not* provided, if `conditional_field_name` is equal to `conditional_value`.
+    The equality check can be overridden with another comparison operator function.
 
     Args:
         *field_names (str): Names of the instance variables that need to be validated.
         conditional_field_name (str): Name of the instance variable on which the fields are dependent.
         conditional_value (Any): Value that the conditional field should contain to perform this validation.
+        comparison_func (Callable): binary operator function, used to override the default "eq" check for the conditional field value.
+    """
+
+    def validate_forbidden_fields(cls, values: dict):
+        if not comparison_func(values.get(conditional_field_name), conditional_value):
+            return values
+
+        for field in field_names:
+            if values.get(field) != None:
+                raise ValueError(
+                    f"{field} is forbidden when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
+                )
+
+        return values
+
+    return root_validator(allow_reuse=True)(validate_forbidden_fields)
+
+
+def get_required_fields_validator(
+    *field_names,
+    conditional_field_name: str,
+    conditional_value: Any,
+    comparison_func: Callable[[Any, Any], bool] = eq,
+):
+    """
+    Gets a validator that checks whether the fields are provided, if `conditional_field_name` is equal to `conditional_value`.
+    The equality check can be overridden with another comparison operator function.
+
+    Args:
+        *field_names (str): Names of the instance variables that need to be validated.
+        conditional_field_name (str): Name of the instance variable on which the fields are dependent.
+        conditional_value (Any): Value that the conditional field should contain to perform this validation.
+        comparison_func (Callable): binary operator function, used to override the default "eq" check for the conditional field value.
     """
 
     def validate_required_fields(cls, values: dict):
-        if values.get(conditional_field_name) != conditional_value:
+        if not comparison_func(values.get(conditional_field_name), conditional_value):
             return values
 
         for field in field_names:
             if values.get(field) == None:
                 raise ValueError(
-                    f"{field} should be provided when {conditional_field_name} is {conditional_value}"
+                    f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
                 )
 
         return values

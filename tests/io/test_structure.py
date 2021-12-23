@@ -304,7 +304,7 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         losscoeff=[1],
         bedfrictiontype=FrictionType.manning,
         bedfriction="1",
-        bendlosscoeff="1",
+        bendlosscoeff="1" if input.lower() == "invertedsiphon" else None,
     )
 
     assert structure.subtype == expected
@@ -2075,6 +2075,17 @@ class TestCulvert:
         expected_message = (
             f"bendlosscoeff should be provided when subtype is invertedSiphon"
         )
+        assert expected_message in str(error.value)
+
+    def test_validate_bendlosscoeff_forbidden_when_culvert_subtype(self):
+        values = self._create_culvert_values(valveonoff=False)
+        values["subtype"] = CulvertSubType.culvert
+        values["bendlosscoeff"] = 0.1
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = f"bendlosscoeff is forbidden when subtype is culvert"
         assert expected_message in str(error.value)
 
     def _create_culvert_values(self, valveonoff: bool):
