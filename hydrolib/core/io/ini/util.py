@@ -7,7 +7,7 @@ from typing import Any, Callable, List, Optional, Type
 from pydantic.class_validators import root_validator, validator
 from pydantic.main import BaseModel
 
-from hydrolib.core import utils
+from hydrolib.core.utils import operator_str
 
 
 def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
