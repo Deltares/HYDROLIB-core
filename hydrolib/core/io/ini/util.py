@@ -1,11 +1,13 @@
 """util.py provides additional utility methods related to handling ini files.
 """
 from enum import Enum
-from operator import eq, ge, gt, le, lt, ne
+from operator import eq
 from typing import Any, Callable, List, Optional, Type
 
 from pydantic.class_validators import root_validator, validator
 from pydantic.main import BaseModel
+
+from hydrolib.core import utils
 
 
 def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
@@ -131,32 +133,6 @@ def make_list_length_root_validator(
         return values
 
     return root_validator(allow_reuse=True)(validate_correct_length)
-
-
-def operator_str(operator_func: Callable) -> str:
-    """
-    Make string representation of some of operator's built-in operator
-    functions, for use in prettyprinting.
-
-    Args:
-        operator_func (Callable): Typically one of operator's built-in
-            operator functions. When unsupported, the standard __str__
-            representation is returned.
-    """
-    if operator_func == eq:
-        return "is"
-    elif operator_func == ne:
-        return "is not"
-    elif operator_func == lt:
-        return "is less than"
-    elif operator_func == le:
-        return "is less than or equal to"
-    elif operator_func == gt:
-        return "is greater than"
-    elif operator_func == ge:
-        return "is greater than or equal to"
-    else:
-        return str(operator_func)
 
 
 def get_forbidden_fields_validator(
