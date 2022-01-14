@@ -153,7 +153,9 @@ def get_forbidden_fields_validator(
     """
 
     def validate_forbidden_fields(cls, values: dict):
-        if not comparison_func(values.get(conditional_field_name), conditional_value):
+        if (val := values.get(conditional_field_name)) is None or not comparison_func(
+            val, conditional_value
+        ):
             return values
 
         for field in field_names:
@@ -185,7 +187,9 @@ def get_required_fields_validator(
     """
 
     def validate_required_fields(cls, values: dict):
-        if not comparison_func(values.get(conditional_field_name), conditional_value):
+        if (val := values.get(conditional_field_name)) is None or not comparison_func(
+            val, conditional_value
+        ):
             return values
 
         for field in field_names:
