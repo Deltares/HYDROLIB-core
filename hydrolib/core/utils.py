@@ -1,4 +1,5 @@
-from typing import Any, List, Optional
+from operator import eq, ge, gt, le, lt, ne
+from typing import Any, Callable, List, Optional
 
 
 def example(a: float, b: float = 1.0) -> float:
@@ -69,3 +70,29 @@ def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
         return None
 
     return source[index_start:index_end]
+
+
+def operator_str(operator_func: Callable) -> str:
+    """
+    Make string representation of some of operator's built-in operator
+    functions, for use in prettyprinting.
+
+    Args:
+        operator_func (Callable): Typically one of operator's built-in
+            operator functions. When unsupported, the standard __str__
+            representation is returned.
+    """
+    if operator_func == eq:
+        return "is"
+    elif operator_func == ne:
+        return "is not"
+    elif operator_func == lt:
+        return "is less than"
+    elif operator_func == le:
+        return "is less than or equal to"
+    elif operator_func == gt:
+        return "is greater than"
+    elif operator_func == ge:
+        return "is greater than or equal to"
+    else:
+        return str(operator_func)
