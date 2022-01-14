@@ -1612,6 +1612,7 @@ class TestPump:
             range(correctlength + 1)
         )  # Intentional wrong list length
         listargs[lengthname] = correctlength
+        listargs["controlside"] = "both"
 
         with pytest.raises(ValidationError) as error:
 
@@ -1623,6 +1624,73 @@ class TestPump:
         expected_message = f"Number of values for {listname} should be equal to the {lengthname} value."
 
         assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "control_side,missing_list_name,present_list_names,should_raise_error",
+        [
+            ("suctionSide", "startlevelsuctionside", [], True),
+            (
+                "deliverySide",
+                "startlevelsuctionside",
+                ["startleveldeliveryside", "stopleveldeliveryside"],
+                False,
+            ),
+            ("both", "startlevelsuctionside", [], True),
+            ("suctionSide", "stoplevelsuctionside", [], True),
+            (
+                "deliverySide",
+                "stoplevelsuctionside",
+                ["startleveldeliveryside", "stopleveldeliveryside"],
+                False,
+            ),
+            ("both", "stoplevelsuctionside", [], True),
+            (
+                "suctionSide",
+                "startleveldeliveryside",
+                ["startlevelsuctionside", "stoplevelsuctionside"],
+                False,
+            ),
+            ("deliverySide", "startleveldeliveryside", [], True),
+            ("both", "startleveldeliveryside", [], True),
+            (
+                "suctionSide",
+                "stopleveldeliveryside",
+                ["startlevelsuctionside", "stoplevelsuctionside"],
+                False,
+            ),
+            ("deliverySide", "stopleveldeliveryside", [], True),
+            ("both", "stopleveldeliveryside", [], True),
+        ],
+    )
+    def test_dont_validate_unneeded_pump_lists(
+        self,
+        control_side: str,
+        missing_list_name: str,
+        present_list_names: List[str],
+        should_raise_error: bool,
+    ):
+        """Creates a pump with one particular list attribute missing
+        and checks for correct (i.e., no unneeded) error detection,
+        depending on the controlside attribute."""
+
+        values = self._create_required_pump_values()
+        values["id"] = "pump_controlside_" + (control_side or "none")
+
+        if control_side is not None:
+            values["controlside"] = control_side
+        else:
+            values.pop("controlside", None)
+
+        values["numstages"] = 1
+        values.pop(missing_list_name, None)
+        values.update({ln: [1.1] for ln in present_list_names})
+
+        if should_raise_error:
+            with pytest.raises(ValidationError):
+                _ = Pump(**values)
+        else:
+            # Simply create the Pump and accept no Error raised.
+            _ = Pump(**values)
 
     @pytest.mark.parametrize(
         "listname,lengthname",
@@ -1637,6 +1705,7 @@ class TestPump:
         listargs.pop(listname)  # Remove one list argument
         for (_, _lengthname) in self._pumplists:
             listargs[_lengthname] = correctlength
+        listargs["controlside"] = "both"
 
         with pytest.raises(ValidationError) as error:
 

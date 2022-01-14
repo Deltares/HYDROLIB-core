@@ -7,7 +7,7 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.io.md
 
 import logging
 from enum import Enum
-from operator import eq, ne
+from operator import eq, gt, ne
 from pathlib import Path
 from typing import List, Literal, Optional, Set, Union
 
@@ -17,6 +17,7 @@ from pydantic.class_validators import root_validator, validator
 from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    get_conditional_root_validator,
     get_enum_validator,
     get_forbidden_fields_validator,
     get_from_subclass_defaults,
@@ -444,18 +445,41 @@ class Pump(Structure):
         "head",
         "reductionfactor",
     )
+
     _orientation_validator = get_enum_validator("orientation", enum=Orientation)
 
-    _check_list_length = make_list_length_root_validator(
-        "startlevelsuctionside",
-        "stoplevelsuctionside",
-        "startleveldeliveryside",
-        "stopleveldeliveryside",
-        length_name="numstages",
-        list_required_with_length=True,
+    _control_side_check = get_required_fields_validator(
+        "controlside",
+        conditional_field_name="numstages",
+        conditional_value=0,
+        comparison_func=gt,
     )
 
-    _check_list_length2 = make_list_length_root_validator(
+    _check_list_length1 = get_conditional_root_validator(
+        make_list_length_root_validator(
+            "startlevelsuctionside",
+            "stoplevelsuctionside",
+            length_name="numstages",
+            list_required_with_length=True,
+        ),
+        "controlside",
+        "deliverySide",
+        ne,
+    )
+
+    _check_list_length2 = get_conditional_root_validator(
+        make_list_length_root_validator(
+            "startleveldeliveryside",
+            "stopleveldeliveryside",
+            length_name="numstages",
+            list_required_with_length=True,
+        ),
+        "controlside",
+        "suctionSide",
+        ne,
+    )
+
+    _check_list_length3 = make_list_length_root_validator(
         "head",
         "reductionfactor",
         length_name="numreductionlevels",
