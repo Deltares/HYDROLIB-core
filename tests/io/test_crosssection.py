@@ -128,15 +128,14 @@ class TestCrossSection:
 
     def test_create_a_rectanglecrsdef_without_frictionspec(self):
         csdefid = "Prof1"
-        with pytest.raises(ValidationError) as error:
-            _ = RectangleCrsDef(
-                id=csdefid,
-                width=3.14,
-                height=2.718,
-            )
-        expected_message = f"Cross section is missing any friction specification."
-
-        assert expected_message in str(error.value)
+        crsdef = RectangleCrsDef(
+            id=csdefid,
+            width=3.14,
+            height=2.718,
+        )
+        assert crsdef.id == csdefid
+        assert crsdef.width == 3.14
+        assert crsdef.height == 2.718
 
     def test_create_a_zwrivercrsdef_with_wrong_list_lengths(self):
         csdefid = "Prof1"
@@ -157,16 +156,16 @@ class TestCrossSection:
 
     def test_create_a_zwrivercrsdef_without_frictionspec(self):
         csdefid = "Prof1"
-        with pytest.raises(ValidationError) as error:
-            _ = ZWRiverCrsDef(
-                id=csdefid,
-                numlevels=2,
-                levels=[-2, 3],
-                flowwidths=[11, 44],
-            )
-        expected_message = f"Cross section is missing any friction specification."
-
-        assert expected_message in str(error.value)
+        crsdef = ZWRiverCrsDef(
+            id=csdefid,
+            numlevels=2,
+            levels=[-2, 3],
+            flowwidths=[11, 44],
+        )
+        assert crsdef.id == csdefid
+        assert crsdef.numlevels == 2
+        assert crsdef.levels == [-2, 3]
+        assert crsdef.flowwidths == [11, 44]
 
     def test_create_a_yzcrsdef_with_wrong_list_length_yz(self):
         csdefid = "Prof1"
@@ -206,16 +205,16 @@ class TestCrossSection:
 
     def test_create_a_yzcrsdef_without_frictionspec(self):
         csdefid = "Prof1"
-        with pytest.raises(ValidationError) as error:
-            _ = YZCrsDef(
-                id=csdefid,
-                yzcount=4,
-                ycoordinates=[-10, -2, 3, 12],
-                zcoordinates=[1, -4, -4.1, 2],
-            )
-        expected_message = f"Cross section is missing any friction specification."
-
-        assert expected_message in str(error.value)
+        crsdef = YZCrsDef(
+            id=csdefid,
+            yzcount=4,
+            ycoordinates=[-10, -2, 3, 12],
+            zcoordinates=[1, -4, -4.1, 2],
+        )
+        assert crsdef.id == csdefid
+        assert crsdef.yzcount == 4
+        assert crsdef.ycoordinates == [-10, -2, 3, 12]
+        assert crsdef.zcoordinates == [1, -4, -4.1, 2]
 
     def test_create_a_xyzcrsdef_with_wrong_list_length_yz(self):
         csdefid = "Prof1"

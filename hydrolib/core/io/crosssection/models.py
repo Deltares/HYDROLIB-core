@@ -139,9 +139,10 @@ class CrossSectionDefinition(INIBasedModel):
 
             if frictionid == "":
                 if frictiontype == "" or frictionvalue == "":
-                    raise ValueError(
-                        f"Cross section is missing any friction specification."
-                    )
+                    # No validation error: frictionid will always default to some
+                    # value (Main/FloodPlain1/FloodPlain2), but will not fill that
+                    # default here, to keep output blank upon serialization.
+                    pass
             else:
                 if frictiontype != "" or frictionvalue != "":
                     raise ValueError(
