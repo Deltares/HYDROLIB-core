@@ -284,6 +284,28 @@ class TestFileModel:
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
+    def test_construc_model_without_validation(self):
+        # First *with* validation:
+        model_validated = FMModel(self._reference_model_path)
+
+        output_dir = (
+            test_output_dir / self.test_construc_model_without_validation.__name__
+        )
+
+        model_validated.save(filepath=output_dir / "validated.mdu", recurse=False)
+
+        # Second, manually parse input and construct model, to bypass validation:
+        data = FMModel()._parse(self._reference_model_path)
+        model_unvalidated = FMModel.construct(**data)
+        model_unvalidated.save(filepath=output_dir / "unvalidated.mdu", recurse=False)
+
+        files_in_output = list(output_dir.glob("**/*"))
+        assert len(files_in_output) == 2
+        assert files_in_output[0] == output_dir / "unvalidated.mdu"
+        assert files_in_output[1] == output_dir / "validated.mdu"
+
+        # ^^ No true test here, but intended to inspect produced MDU files by developer.
+
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
