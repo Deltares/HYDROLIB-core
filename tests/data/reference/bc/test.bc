@@ -48,7 +48,7 @@
     function              = t3d
     offset                = 1.23
     factor                = 2.34
-    verticalPositions     = 3.45;4.56;5.67
+    verticalPositions     = 3.45 4.56 5.67
     verticalInterpolation = log
     verticalPositionType  = percBed
     quantity              = time

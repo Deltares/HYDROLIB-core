@@ -44,8 +44,12 @@ class INIBasedModel(BaseModel, ABC):
         return False
 
     @classmethod
-    def list_delimiter(cls) -> str:
-        return ";"
+    def get_list_delimiter(cls) -> str:
+        """List delimiter string that will be used for serializing
+        list field values for any IniBasedModel, **if** that field has
+        no custom list delimiter.
+        """
+        return " "
 
     class Comments(BaseModel, ABC):
         """Comments defines the comments of an INIBasedModel"""
@@ -93,12 +97,12 @@ class INIBasedModel(BaseModel, ABC):
     def _exclude_fields(cls) -> Set:
         return {"comments", "datablock", "_header"}
 
-    @staticmethod
-    def _convert_value(v: Any) -> str:
+    @classmethod
+    def _convert_value(cls, key: str, v: Any) -> str:
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
-            return ";".join([str(x) for x in v])
+            return cls.get_list_field_delimiter(key).join([str(x) for x in v])
         elif v is None:
             return ""
         else:
@@ -110,12 +114,13 @@ class INIBasedModel(BaseModel, ABC):
             if key in self._exclude_fields():
                 continue
 
+            field_key = key
             if key in self.__fields__:
                 key = self.__fields__[key].alias
 
             prop = Property(
                 key=key,
-                value=INIBasedModel._convert_value(value),
+                value=self.__class__._convert_value(field_key, value),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)

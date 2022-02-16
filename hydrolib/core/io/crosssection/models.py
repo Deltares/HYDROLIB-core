@@ -344,8 +344,10 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     mainwidth: Optional[float] = Field(alias="mainWidth")
     fp1width: Optional[float] = Field(alias="fp1Width")
     fp2width: Optional[float] = Field(alias="fp2Width")
-    frictionids: Optional[List[str]] = Field(alias="frictionIds")
-    frictiontypes: Optional[List[FrictionType]] = Field(alias="frictionTypes")
+    frictionids: Optional[List[str]] = Field(alias="frictionIds", delimiter=";")
+    frictiontypes: Optional[List[FrictionType]] = Field(
+        alias="frictionTypes", delimiter=";"
+    )
     frictionvalues: Optional[List[float]] = Field(alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -513,8 +515,10 @@ class YZCrsDef(CrossSectionDefinition):
     conveyance: Optional[str] = Field("segmented")
     sectioncount: Optional[int] = Field(1, alias="sectionCount")
     frictionpositions: Optional[List[float]] = Field(alias="frictionPositions")
-    frictionids: Optional[List[str]] = Field(alias="frictionIds")
-    frictiontypes: Optional[List[FrictionType]] = Field(alias="frictionTypes")
+    frictionids: Optional[List[str]] = Field(alias="frictionIds", delimiter=";")
+    frictiontypes: Optional[List[FrictionType]] = Field(
+        alias="frictionTypes", delimiter=";"
+    )
     frictionvalues: Optional[List[float]] = Field(alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(

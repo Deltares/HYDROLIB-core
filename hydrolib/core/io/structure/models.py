@@ -498,7 +498,7 @@ class Compound(Structure):
 
     type: Literal["compound"] = Field("compound", alias="type")
     numstructures: int = Field(alias="numStructures")
-    structureids: List[str] = Field(alias="structureIds")
+    structureids: List[str] = Field(alias="structureIds", delimiter=";")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "structureids", delimiter=";"

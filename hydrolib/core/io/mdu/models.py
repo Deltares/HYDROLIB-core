@@ -444,7 +444,9 @@ class Geometry(INIBasedModel):
     drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
-    structurefile: Optional[List[StructureModel]] = Field(None, alias="structureFile")
+    structurefile: Optional[List[StructureModel]] = Field(
+        None, alias="structureFile", delimiter=";"
+    )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
     waterlevinifile: Optional[Path] = Field(None, alias="waterLevIniFile")
     landboundaryfile: Optional[List[Path]] = Field(None, alias="landBoundaryFile")
@@ -453,7 +455,9 @@ class Geometry(INIBasedModel):
     pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
     usecaching: bool = Field(False, alias="useCaching")
     vertplizfile: Optional[PolyFile] = Field(None, alias="vertPlizFile")
-    frictfile: Optional[List[FrictionModel]] = Field(None, alias="frictFile")
+    frictfile: Optional[List[FrictionModel]] = Field(
+        None, alias="frictFile", delimiter=";"
+    )
     crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
     crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
     storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
@@ -492,12 +496,16 @@ class Geometry(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "frictfile",
         "structurefile",
+        delimiter=";",
+    )
+
+    _split_to_list2 = get_split_string_on_delimiter_validator(
         "drypointsfile",
         "landboundaryfile",
         "thindamfile",
         "fixedweirfile",
         "pillarfile",
-        delimiter=";",
+        delimiter=" ",
     )
 
     def is_intermediate_link(self) -> bool:
