@@ -205,7 +205,12 @@ def test_create_structure_without_type():
     ],
 )
 def test_parses_type_case_insensitive(input, expected):
-    structure = Structure(type=input, branchid="branchid", chainage="1")
+    if input.lower() != "compound":
+        locfields = {"branchid": "branchid", "chainage": 1}
+    else:
+        locfields = {}
+
+    structure = Structure(type=input, **locfields)
 
     assert structure.type == expected
 
@@ -615,7 +620,7 @@ class TestStructure:
                     return
             assert str(exc_err.value) == error_mssg
 
-        def test_check_location_given_compound_structure_raises_nothing(self):
+        def test_check_nolocation_given_compound_structure_raises_nothing(self):
             input_dict = dict(
                 notAValue="Not a relevant value",
                 numcoordinates=None,
@@ -626,6 +631,28 @@ class TestStructure:
             )
             return_value = Compound.check_location(input_dict)
             assert return_value == input_dict
+
+        def test_check_location_given_compound_structure_raises_error(self):
+            input_dict = dict(
+                notAValue="Not a relevant value",
+                numcoordinates=None,
+                xcoordinates=None,
+                ycoordinates=None,
+                branchid="branch01",
+                chainage=123.4,
+            )
+            return_value = Compound.check_location(input_dict)
+            assert return_value == input_dict
+
+            # TODO: issue 214: replace the above test code by the test
+            # code below once the D-HYDRO Suite 1D2D has fixed issue
+            # FM1D2D-1935 for compound structures.
+            # with pytest.raises(AssertionError) as exc_err:
+            #     _ = Compound.check_location(input_dict)
+            #     assert (
+            #         str(exc_err.value)
+            #         == "No `num/x/yCoordinates` nor `branchId+chainage` are allowed for a compound structure."
+            #     )
 
         @pytest.mark.parametrize(
             "dict_values",
