@@ -16,6 +16,37 @@ def example(a: float, b: float = 1.0) -> float:
 
 
 def to_key(string: str) -> str:
+    """
+    Construct a key name from a given field name.
+    The given field name may be a Pydantic Field alias, and the key name
+    is intended to be used as a BaseModel class member variable name.
+
+    Args:
+        string (str): input field name
+
+    """
+    # First replace any leading digits, because those are undesirable
+    # in variable names.
+    digitdict = {
+        "0": "zero",
+        "1": "one",
+        "2": "two",
+        "3": "three",
+        "4": "four",
+        "5": "five",
+        "6": "six",
+        "7": "seven",
+        "8": "eight",
+        "9": "nine",
+    }
+    m = re.search(r"^\d+", string)
+    if m:
+        digitstring = string[0 : m.end()]
+        for key, val in digitdict.items():
+            digitstring = digitstring.replace(key, val)
+        string = digitstring + string[m.end() :]
+
+    # Next, replace spaces and hyphens in the potential variable name.
     return string.lower().replace(" ", "_").replace("-", "")
 
 
