@@ -1,6 +1,7 @@
+import re
 from operator import eq, ge, gt, le, lt, ne
 from typing import Any, Callable, List, Optional
-import re
+
 
 def example(a: float, b: float = 1.0) -> float:
     """[summary]
