@@ -4,6 +4,7 @@ from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
+from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, FileModel
@@ -48,8 +49,31 @@ class INIBasedModel(BaseModel, ABC):
         """List delimiter string that will be used for serializing
         list field values for any IniBasedModel, **if** that field has
         no custom list delimiter.
+
+        This function should be overridden by any subclass for a particular
+        filetype that needs a specific/different list separator.
         """
         return " "
+
+    @classmethod
+    def get_list_field_delimiter(cls, field_key: str) -> str:
+        """List delimiter string that will be used for serializing
+        the given field's value.
+        The returned delimiter is either the field's custom list delimiter
+        if that was specified using Field(.., delimiter=".."), or the
+        default list delimiter for the model class that this field belongs
+        to.
+
+        Args:
+            field_key (str): the original field key (not its alias).
+        """
+        delimiter = None
+        if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
+            delimiter = field.field_info.extra.get("delimiter")
+        if not delimiter:
+            delimiter = cls.get_list_delimiter()
+
+        return delimiter
 
     class Comments(BaseModel, ABC):
         """Comments defines the comments of an INIBasedModel"""

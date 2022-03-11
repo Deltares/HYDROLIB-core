@@ -16,7 +16,7 @@ from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.fields import ModelField, PrivateAttr
+from pydantic.fields import PrivateAttr
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import to_key
@@ -106,38 +106,6 @@ class BaseModel(PydanticBaseModel):
             str: The identifier or None.
         """
         return None
-
-    @classmethod
-    def get_list_delimiter(cls) -> str:
-        """List delimiter string that will be used for serializing
-        list field values for any pydantic ModelField in this BaseModel,
-        **if** that field has no custom list delimiter.
-
-        This function should be overridden by any subclass for a particular
-        filetype that needs a specific/different list separator.
-        """
-        # Dummy default for this BaseModel class
-        return ","
-
-    @classmethod
-    def get_list_field_delimiter(cls, field_key: str) -> str:
-        """List delimiter string that will be used for serializing
-        the given field's value.
-        The returned delimiter is either the field's custom list delimiter
-        if that was specified using Field(.., delimiter=".."), or the
-        default list delimiter for the model class that this field belongs
-        to.
-
-        Args:
-            field_key (str): the original field key (not its alias).
-        """
-        delimiter = None
-        if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
-            delimiter = field.field_info.extra.get("delimiter")
-        if not delimiter:
-            delimiter = cls.get_list_delimiter()
-
-        return delimiter
 
 
 TAcc = TypeVar("TAcc")
