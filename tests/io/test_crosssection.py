@@ -166,6 +166,9 @@ class TestCrossSection:
         assert crsdef.numlevels == 2
         assert crsdef.levels == [-2, 3]
         assert crsdef.flowwidths == [11, 44]
+        assert crsdef.frictionids == None
+        assert crsdef.frictiontypes == None
+        assert crsdef.frictionvalues == None
 
     def test_create_a_yzcrsdef_with_wrong_list_length_yz(self):
         csdefid = "Prof1"
