@@ -137,12 +137,7 @@ class CrossSectionDefinition(INIBasedModel):
             frictiontype = values.get(frictiontype_attr) or ""
             frictionvalue = values.get(frictionvalue_attr) or ""
 
-            if frictionid == "":
-                if frictiontype == "" or frictionvalue == "":
-                    raise ValueError(
-                        f"Cross section is missing any friction specification."
-                    )
-            else:
+            if frictionid != "":
                 if frictiontype != "" or frictionvalue != "":
                     raise ValueError(
                         f"Cross section has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
