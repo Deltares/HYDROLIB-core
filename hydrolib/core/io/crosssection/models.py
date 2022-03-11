@@ -137,13 +137,7 @@ class CrossSectionDefinition(INIBasedModel):
             frictiontype = values.get(frictiontype_attr) or ""
             frictionvalue = values.get(frictionvalue_attr) or ""
 
-            if frictionid == "":
-                if frictiontype == "" or frictionvalue == "":
-                    # No validation error: frictionid will always default to some
-                    # value (Main/FloodPlain1/FloodPlain2), but will not fill that
-                    # default here, to keep output blank upon serialization.
-                    pass
-            else:
+            if frictionid != "":
                 if frictiontype != "" or frictionvalue != "":
                     raise ValueError(
                         f"Cross section has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
