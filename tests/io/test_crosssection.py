@@ -218,6 +218,7 @@ class TestCrossSection:
         assert crsdef.yzcount == 4
         assert crsdef.ycoordinates == [-10, -2, 3, 12]
         assert crsdef.zcoordinates == [1, -4, -4.1, 2]
+        assert crsdef.sectioncount == 1
         assert crsdef.frictionpositions == None
         assert crsdef.frictionids == None
         assert crsdef.frictiontypes == None
