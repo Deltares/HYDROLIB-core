@@ -12,7 +12,6 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_required_fields_validator,
-    get_split_string_on_delimiter_validator,
     make_list_validator,
 )
 

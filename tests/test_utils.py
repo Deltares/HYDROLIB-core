@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.io.mdu.models import Output
+from hydrolib.core.io.mdu.models import Geometry, Output
 from hydrolib.core.utils import get_substring_between, str_is_empty_or_none
 
 
@@ -15,9 +15,10 @@ class TestSplitString:
 
     def test_split_string_strip_semicolon(self):
         string_with_multiple_files = "file1 ; file2"
-        output = Output(obsfile=string_with_multiple_files)
+        output = Geometry(structurefile=string_with_multiple_files)
 
-        assert output.obsfile == [Path("file1"), Path("file2")]
+        assert output.structurefile[0].filepath == Path("file1")
+        assert output.structurefile[1].filepath == Path("file2")
 
 
 class TestStrIsEmptyOrNone:

@@ -168,7 +168,6 @@ class StorageNode(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "levels",
         "storagearea",
-        delimiter=" ",
     )
 
     _check_list_length = make_list_length_root_validator(

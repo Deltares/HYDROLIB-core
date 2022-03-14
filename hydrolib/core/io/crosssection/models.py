@@ -350,12 +350,8 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         "flowwidths",
         "totalwidths",
         "frictionvalues",
-        delimiter=" ",
-    )
-    _split_to_list2 = get_split_string_on_delimiter_validator(
         "frictionids",
         "frictiontypes",
-        delimiter=";",
     )
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
@@ -428,7 +424,6 @@ class ZWCrsDef(CrossSectionDefinition):
         "levels",
         "flowwidths",
         "totalwidths",
-        delimiter=" ",
     )
 
     _check_list_length = make_list_length_root_validator(
@@ -521,12 +516,8 @@ class YZCrsDef(CrossSectionDefinition):
         "zcoordinates",
         "frictionpositions",
         "frictionvalues",
-        delimiter=" ",
-    )
-    _split_to_list2 = get_split_string_on_delimiter_validator(
         "frictionids",
         "frictiontypes",
-        delimiter=";",
     )
 
     _check_yzlist_length = make_list_length_root_validator(
@@ -598,11 +589,10 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         alias="yzCount"
     )  # Trick to not inherit parent's yzcount required field.
     xyzcount: int = Field(alias="xyzCount")
-    xcoordinates: List[float] = Field(alias="yCoordinates")
+    xcoordinates: List[float] = Field(alias="xCoordinates")
 
     _split_to_list0 = get_split_string_on_delimiter_validator(
         "xcoordinates",
-        delimiter=" ",
     )
 
     @validator("xyzcount")

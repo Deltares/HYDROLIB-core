@@ -164,7 +164,6 @@ class FrictBranch(INIBasedModel):
         "levels",
         "chainage",
         "frictionvalues",
-        delimiter=" ",
     )
 
     _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
