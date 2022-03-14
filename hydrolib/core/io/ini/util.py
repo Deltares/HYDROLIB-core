@@ -5,6 +5,7 @@ from operator import eq
 from typing import Any, Callable, List, Optional, Type
 
 from pydantic.class_validators import root_validator, validator
+from pydantic.fields import ModelField
 from pydantic.main import BaseModel
 
 from hydrolib.core.utils import operator_str
@@ -25,9 +26,9 @@ def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = N
         the validator which splits strings on the provided delimiter.
     """
 
-    def split(v: Any):
+    def split(v: Any, field: ModelField):
         if isinstance(v, str):
-            v = v.split(delimiter)
+            v = v.split(field.field_info.extra.get("delimiter", delimiter))
             v = [item.strip() for item in v if item != ""]
         return v
 
