@@ -68,6 +68,10 @@ class Structure(INIBasedModel):
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
+    _loc_coord_fields = {"numcoordinates", "xcoordinates", "ycoordinates"}
+    _loc_branch_fields = {"branchid", "chainage"}
+    _loc_all_fields = _loc_coord_fields | _loc_branch_fields
+
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
     )
@@ -97,7 +101,6 @@ class Structure(INIBasedModel):
         filtered_values = {k: v for k, v in values.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        # TODO This seems to be a bit of a hack.
         if not (structype == "compound" or issubclass(cls, (Compound, Dambreak))):
             # Compound structure does not require a location specification.
             only_coordinates_structures = dict(
@@ -214,11 +217,13 @@ class Structure(INIBasedModel):
         return super().validate(v)
 
     def _exclude_fields(self) -> Set:
-        # exclude the unset props like coordinates or branches
-        if self.branchid is not None:
-            exclude_set = {"numcoordinates", "xcoordinates", "ycoordinates"}
+        # exclude the non-applicable, or unset props like coordinates or branches
+        if self.type is "compound":
+            exclude_set = self._loc_all_fields
+        elif self.branchid is not None:
+            exclude_set = self._loc_coord_fields
         else:
-            exclude_set = {"branchid", "chainage"}
+            exclude_set = self._loc_branch_fields
         exclude_set = super()._exclude_fields().union(exclude_set)
         return exclude_set
 
