@@ -962,6 +962,20 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel.get_list_delimiter" class="md-nav__link">
+    get_list_delimiter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel.get_list_field_delimiter" class="md-nav__link">
+    get_list_field_delimiter()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1590,6 +1604,20 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel.get_list_delimiter" class="md-nav__link">
+    get_list_delimiter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.ini.models.INIBasedModel.get_list_field_delimiter" class="md-nav__link">
+    get_list_field_delimiter()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2021,6 +2049,118 @@ Comments            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
 
 
 
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.models.INIBasedModel.get_list_delimiter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_list_delimiter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.models.INIBasedModel.get_list_delimiter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>List delimiter string that will be used for serializing
+list field values for any IniBasedModel, <strong>if</strong> that field has
+no custom list delimiter.</p>
+<p>This function should be overridden by any subclass for a particular
+filetype that needs a specific/different list separator.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">get_list_delimiter</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;List delimiter string that will be used for serializing</span>
+<span class="sd">    list field values for any IniBasedModel, **if** that field has</span>
+<span class="sd">    no custom list delimiter.</span>
+
+<span class="sd">    This function should be overridden by any subclass for a particular</span>
+<span class="sd">    filetype that needs a specific/different list separator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.ini.models.INIBasedModel.get_list_field_delimiter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_list_field_delimiter</span><span class="p">(</span><span class="n">field_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.ini.models.INIBasedModel.get_list_field_delimiter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>List delimiter string that will be used for serializing
+the given field's value.
+The returned delimiter is either the field's custom list delimiter
+if that was specified using Field(.., delimiter=".."), or the
+default list delimiter for the model class that this field belongs
+to.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>field_key</code></td>
+        <td><code>str</code></td>
+        <td><p>the original field key (not its alias).</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/ini/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">get_list_field_delimiter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;List delimiter string that will be used for serializing</span>
+<span class="sd">    the given field&#39;s value.</span>
+<span class="sd">    The returned delimiter is either the field&#39;s custom list delimiter</span>
+<span class="sd">    if that was specified using Field(.., delimiter=&quot;..&quot;), or the</span>
+<span class="sd">    default list delimiter for the model class that this field belongs</span>
+<span class="sd">    to.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        field_key (str): the original field key (not its alias).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">delimiter</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">field</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__fields__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_key</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ModelField</span><span class="p">):</span>
+        <span class="n">delimiter</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">field_info</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;delimiter&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">delimiter</span><span class="p">:</span>
+        <span class="n">delimiter</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_list_delimiter</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">delimiter</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
