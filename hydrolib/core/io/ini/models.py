@@ -4,6 +4,7 @@ from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
 from pydantic.class_validators import validator
+from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, FileModel
@@ -44,8 +45,35 @@ class INIBasedModel(BaseModel, ABC):
         return False
 
     @classmethod
-    def list_delimiter(cls) -> str:
-        return ";"
+    def get_list_delimiter(cls) -> str:
+        """List delimiter string that will be used for serializing
+        list field values for any IniBasedModel, **if** that field has
+        no custom list delimiter.
+
+        This function should be overridden by any subclass for a particular
+        filetype that needs a specific/different list separator.
+        """
+        return " "
+
+    @classmethod
+    def get_list_field_delimiter(cls, field_key: str) -> str:
+        """List delimiter string that will be used for serializing
+        the given field's value.
+        The returned delimiter is either the field's custom list delimiter
+        if that was specified using Field(.., delimiter=".."), or the
+        default list delimiter for the model class that this field belongs
+        to.
+
+        Args:
+            field_key (str): the original field key (not its alias).
+        """
+        delimiter = None
+        if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
+            delimiter = field.field_info.extra.get("delimiter")
+        if not delimiter:
+            delimiter = cls.get_list_delimiter()
+
+        return delimiter
 
     class Comments(BaseModel, ABC):
         """Comments defines the comments of an INIBasedModel"""
@@ -93,12 +121,12 @@ class INIBasedModel(BaseModel, ABC):
     def _exclude_fields(cls) -> Set:
         return {"comments", "datablock", "_header"}
 
-    @staticmethod
-    def _convert_value(v: Any) -> str:
+    @classmethod
+    def _convert_value(cls, key: str, v: Any) -> str:
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
-            return ";".join([str(x) for x in v])
+            return cls.get_list_field_delimiter(key).join([str(x) for x in v])
         elif v is None:
             return ""
         else:
@@ -110,12 +138,13 @@ class INIBasedModel(BaseModel, ABC):
             if key in self._exclude_fields():
                 continue
 
+            field_key = key
             if key in self.__fields__:
                 key = self.__fields__[key].alias
 
             prop = Property(
                 key=key,
-                value=INIBasedModel._convert_value(value),
+                value=self.__class__._convert_value(field_key, value),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)
