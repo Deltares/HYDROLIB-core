@@ -101,18 +101,7 @@ class Structure(INIBasedModel):
         filtered_values = {k: v for k, v in values.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        if structype == "compound" or issubclass(cls, Compound):
-            loc_in_model = any(
-                k.lower() in cls._loc_all_fields for k in filtered_values.keys()
-            )
-            # TODO: issue 214: enable the assert below once the D-HYDRO Suite 1D2D
-            # has fixed issue FM1D2D-1935 for compound structures.
-            # assert (
-            #     not loc_in_model
-            # ), f"No `num/x/yCoordinates` nor `branchId+chainage` are allowed for a {structype} structure."
-
-        # TODO This seems to be a bit of a hack.
-        elif not (structype == "compound" or issubclass(cls, (Compound, Dambreak))):
+        if not (structype == "compound" or issubclass(cls, (Compound, Dambreak))):
             # Compound structure does not require a location specification.
             only_coordinates_structures = dict(
                 longculvert="LongCulvert", dambreak="Dambreak"

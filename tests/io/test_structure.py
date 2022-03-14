@@ -170,23 +170,27 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     assert expected_message in str(error.value)
 
 
-def test_create_structure_without_id():
+@pytest.fixture
+def locfields_structure():
+    """example location fields for creating a regular Structure"""
+    return {"branchid": "branch", "chainage": 10}
+
+
+def test_create_structure_without_id(locfields_structure):
     field = "id"
     with pytest.raises(ValidationError) as error:
-        _ = Structure(branchid="branch", chainage=10)  # Intentionally no id+type
+        _ = Structure(**locfields_structure)  # Intentionally no id+type
 
     expected_message = f"{field}"
     assert expected_message in str(error.value)
     assert error.value.errors()[0]["type"] == "value_error.missing"
 
 
-def test_create_structure_without_type():
+def test_create_structure_without_type(locfields_structure):
     identifier = "structA"
     field = "type"
     with pytest.raises(ValidationError) as error:
-        _ = Structure(
-            id=identifier, branchid="branch", chainage=10
-        )  # Intentionally no type
+        _ = Structure(id=identifier, **locfields_structure)  # Intentionally no type
 
     expected_message = f"{identifier} -> {field}"
     assert expected_message in str(error.value)
@@ -200,17 +204,23 @@ def test_create_structure_without_type():
         ("UniversalWeir", "universalWeir"),
         ("Culvert", "culvert"),
         ("Pump", "pump"),
-        ("Compound", "compound"),
         ("Orifice", "orifice"),
     ],
 )
-def test_parses_type_case_insensitive(input, expected):
-    if input.lower() != "compound":
-        locfields = {"branchid": "branchid", "chainage": 1}
-    else:
-        locfields = {}
+def test_parses_structure_type_case_insensitive(locfields_structure, input, expected):
+    structure = Structure(type=input, **locfields_structure)
 
-    structure = Structure(type=input, **locfields)
+    assert structure.type == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("Compound", "compound"),
+    ],
+)
+def test_parses_compound_type_case_insensitive(input, expected):
+    structure = Structure(type=input)
 
     assert structure.type == expected
 
