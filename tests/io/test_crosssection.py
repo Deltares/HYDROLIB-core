@@ -17,13 +17,7 @@ from hydrolib.core.io.crosssection.models import (
 )
 from hydrolib.core.io.friction.models import FrictionType
 
-from ..utils import (
-    WrapperTest,
-    assert_files_equal,
-    test_data_dir,
-    test_output_dir,
-    test_reference_dir,
-)
+from ..utils import WrapperTest, test_data_dir, test_output_dir
 
 
 class TestCrossSection:
@@ -38,17 +32,20 @@ class TestCrossSection:
         assert m.definition[0].diameter == 2.0
         assert m.definition[0].frictionid == "Brick"
 
-    def test_crossdef_save(self):
+    def test_crossdef_list_delimiters(self):
         filepath = test_data_dir / "input/dflowfm_individual_files/crsdef1.ini"
         m = CrossDefModel(filepath)
 
         output_file = Path(test_output_dir / "fm" / "serialize_crsdef1.ini")
-        reference_file = Path(test_reference_dir / "fm" / "serialize_crsdef1.ini")
-
         m.filepath = output_file
         m.save()
 
-        assert_files_equal(output_file, reference_file, [0])
+        m2 = CrossDefModel(output_file)
+
+        assert isinstance(m.definition[3], XYZCrsDef)
+        assert isinstance(m2.definition[3], XYZCrsDef)
+        assert m.definition[3].frictionids == m2.definition[3].frictionids
+        assert m.definition[3].ycoordinates == m2.definition[3].ycoordinates
 
     circledef = {
         "id": "Prof1",
