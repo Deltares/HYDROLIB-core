@@ -5,29 +5,29 @@ from operator import eq
 from typing import Any, Callable, List, Optional, Type
 
 from pydantic.class_validators import root_validator, validator
+from pydantic.fields import ModelField
 from pydantic.main import BaseModel
 
 from hydrolib.core.utils import operator_str
 
 
-def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
+def get_split_string_on_delimiter_validator(*field_name: str):
     """Get a validator to split strings passed to the specified field_name.
 
-    Strings are split based on the provided delimeter. The validator splits
-    strings into a list of substrings before any other validation takes
-    place.
-
-    Args:
-        delimiter (str, optional):
-            The delimiter to split the string with. Defaults to None.
+    Strings are split based on an automatically selected provided delimiter.
+    The delimiter is the field's own delimiter, if that was defined using
+    Field(.., delimiter=".."). Otherwise, the delimiter is the field's parent
+    class's delimiter (which should be (subclass of) INIBasedModel.)
+    The validator splits a string value into a list of substrings before any
+    other validation takes place.
 
     Returns:
         the validator which splits strings on the provided delimiter.
     """
 
-    def split(v: Any):
+    def split(cls, v: Any, field: ModelField):
         if isinstance(v, str):
-            v = v.split(delimiter)
+            v = v.split(cls.get_list_field_delimiter(field.name))
             v = [item.strip() for item in v if item != ""]
         return v
 

@@ -407,9 +407,6 @@ class Output(INIBasedModel):
         "waterdepthclasses",
         "crsfile",
         "obsfile",
-        delimiter=";",
-    )
-    _split_to_list2 = get_split_string_on_delimiter_validator(
         "hisinterval",
         "xlsinterval",
         "mapinterval",
@@ -418,7 +415,6 @@ class Output(INIBasedModel):
         "waqinterval",
         "statsinterval",
         "timingsinterval",
-        delimiter=" ",
     )
 
     def is_intermediate_link(self) -> bool:
@@ -496,16 +492,11 @@ class Geometry(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "frictfile",
         "structurefile",
-        delimiter=";",
-    )
-
-    _split_to_list2 = get_split_string_on_delimiter_validator(
         "drypointsfile",
         "landboundaryfile",
         "thindamfile",
         "fixedweirfile",
         "pillarfile",
-        delimiter=" ",
     )
 
     def is_intermediate_link(self) -> bool:

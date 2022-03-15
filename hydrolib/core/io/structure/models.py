@@ -506,7 +506,7 @@ class Compound(Structure):
     structureids: List[str] = Field(alias="structureIds", delimiter=";")
 
     _split_to_list = get_split_string_on_delimiter_validator(
-        "structureids", delimiter=";"
+        "structureids",
     )
 
 
