@@ -29,6 +29,18 @@ from ..utils import (
 )
 
 
+def test_special():
+    from hydrolib.core.io.mdu.models import FMModel
+
+    fn = test_data_dir / Path(
+        "input/e02/f152_1d2d_projectmodels_rhu/c04_DHydamo-MGB-initialisation/fm/moergestels_broek.mdu"
+    )
+    print(fn)
+    # Read mdu model
+    fm = FMModel(fn)
+    assert fm
+
+
 class TestQuantityUnitPair:
     def test_create_quantityunitpair(self):
         pair = QuantityUnitPair(quantity="some_quantity", unit="some_unit")
