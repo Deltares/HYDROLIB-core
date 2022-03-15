@@ -41,7 +41,8 @@ version = "0.2.1"
 tag_format = "$version"
 version_files = [
     "hydrolib/core/__init__.py",
-    "pyproject.toml:version"
+    "pyproject.toml:version",
+    "tests/data/reference/dimr/test_serialize.xml:createdBy"
 ]
 changelog_file = "docs/changelog.md"
 
