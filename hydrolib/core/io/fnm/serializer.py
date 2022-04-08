@@ -2,21 +2,20 @@
 
 import inspect
 from pathlib import Path
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, Union
 
 
-def _calculate_max_value_length(data: Iterable[Optional[Path]]) -> int:
-    sizes = (len(str(v)) for v in data if v is not None)
-    return max(sizes)
+def _calculate_max_value_length(data: Iterable[str]) -> int:
+    return max(map(len, data))
 
 
-def _calculate_offset(value: str, max_len: int) -> str:
-    return (max_len - len(value)) * " "
+def _get_string_value(path_value: Optional[Union[dict, Path]]) -> str:
+    if type(path_value) is dict:
+        value = str(path_value.get("filepath", ""))
+    else:
+        value = str(path_value) if path_value is not None else ""
 
-
-def _get_formatted_value(path_value: Optional[Path], max_len: int) -> str:
-    value = str(path_value) if path_value is not None else ""
-    return f"'{value}'{_calculate_offset(value, max_len)}"
+    return f"'{value}'"
 
 
 def serialize(data: Dict) -> str:
@@ -31,8 +30,9 @@ def serialize(data: Dict) -> str:
     if "filepath" in data:
         del data["filepath"]
 
-    max_len = _calculate_max_value_length(data.values())
-    values = (_get_formatted_value(v, max_len) for v in data.values())
+    values = [_get_string_value(v) for v in data.values()]
+    max_len = _calculate_max_value_length(values)
+    padded_values = [s.ljust(max_len) for s in values]
 
     # fmt: off
     return inspect.cleandoc("""
@@ -175,7 +175,7 @@ def serialize(data: Dict) -> str:
         {}    * 125. Optional meteo NetCdf timeseries inputfile rainfall
         {}    * 126. Optional meteo NetCdf timeseries inputfile evaporation
         {}    * 127. Optional meteo NetCdf timeseries inputfile temperature (only for RR-HBV)
-        """.format(*values))
+        """.format(*padded_values))
     # fmt: on
 
 
