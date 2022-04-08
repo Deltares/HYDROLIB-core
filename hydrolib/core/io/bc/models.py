@@ -11,7 +11,7 @@ from hydrolib.core.io.ini.io_models import Property, Section
 from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
-from hydrolib.core.io.ini.util import get_enum_validator, get_from_subclass_defaults
+from hydrolib.core.io.ini.util import get_enum_validator, get_from_subclass_defaults, make_list_validator
 
 logger = logging.getLogger(__name__)
 
@@ -203,6 +203,8 @@ class ForcingGeneral(INIGeneral):
 class ForcingModel(INIModel):
     general: ForcingGeneral = ForcingGeneral()
     forcing: List[ForcingBase] = []
+
+    _split_to_list = make_list_validator("forcing")
 
     @classmethod
     def _ext(cls) -> str:
