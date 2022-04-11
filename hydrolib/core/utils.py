@@ -97,7 +97,7 @@ def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
 
     index_start += len(start)
 
-    index_end = source.find(end, index_start)
+    index_end = source.rfind(end, index_start)
     if index_end == -1:
         return None
 
