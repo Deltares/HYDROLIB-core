@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from meshkernel import GeometryList, MeshKernel
 
+from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
 from hydrolib.core.io.net.reader import NCExplorer
 
@@ -453,3 +454,27 @@ class TestNCExplorer:
         assert explorer.mesh1d_var_name_mapping == mesh1d_dict
         assert explorer.mesh2d_var_name_mapping == mesh2d_dict
         assert explorer.link1d2d_var_name_mapping == link1d2d_dict
+
+
+def test_add_short_connecting_branch():
+    fmmodel = FMModel()
+
+    network = fmmodel.geometry.netfile.network
+
+    lowerbranch = Branch(geometry=np.array([[-100, -25], [0, -25]]))
+    upperbranch = Branch(geometry=np.array([[-100, 25], [0, 25]]))
+    connectingbranch = Branch(geometry=np.array([[0, -25], [0, 25]]))
+
+    branches = [lowerbranch, upperbranch, connectingbranch]
+    for branch in branches:
+        branch.generate_nodes(mesh1d_edge_length=50)
+        network.mesh1d_add_branch(branch)
+
+    assert np.array_equiv(
+        network._mesh1d.mesh1d_node_x,
+        np.array([-100.0, -50.0, 0.0, -100.0, -50.0, 0.0, 0.0]),
+    )
+    assert np.array_equiv(
+        network._mesh1d.mesh1d_node_y,
+        np.array([-25.0, -25.0, -25.0, 25.0, 25.0, 25.0, 0.0]),
+    )

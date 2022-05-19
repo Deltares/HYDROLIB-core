@@ -757,9 +757,18 @@ class Mesh1d(BaseModel):
             )
 
         # If no points remain, add an extra halfway: each branch should have at least 1 node
+        # Adjust the branch object as well, by adding the extra point
         if len(offsets) == 0:
-            offsets = np.array([branch.length / 2.0])
+            # Add extra offset
+            extra_offset = branch.length / 2.0
+            offsets = np.array([extra_offset])
             nlinks += 1
+            # Adjust branch object
+            branch.branch_offsets = np.insert(branch.branch_offsets, 1, extra_offset)
+            branch.node_xy = np.insert(
+                branch.node_xy, 1, branch.interpolate(offsets), axis=0
+            )
+            branch.mask = np.insert(branch.mask, 1, False)
 
         # Get the index of the first and last node, add as edge_nodes
         i_from = self._network1d_node_position(first_point[0], first_point[1])
