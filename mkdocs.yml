@@ -64,7 +64,7 @@ extra:
     - icon: fontawesome/brands/gitter
       link: https://gitter.im/Deltares/hydrolib
       name: Chat with us on Gitter
-copyright: Copyright &copy; 2021 Deltares
+copyright: Copyright &copy; 2022 Deltares
 extra_css:
   - stylesheets/extra.css
 
