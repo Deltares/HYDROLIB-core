@@ -112,6 +112,6 @@ nav:
           - reference/polyfile.md
           - reference/xyz.md
       - RainfallRunoff:
-          - reference/rr.md
-          - reference/bui.md
+          - reference/rr/rr.md
+          - reference/rr/meteo.md
   - Changelog: "changelog.md"
