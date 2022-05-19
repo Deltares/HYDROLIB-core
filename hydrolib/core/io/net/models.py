@@ -847,24 +847,6 @@ class Mesh1d(BaseModel):
             self.mesh1d_node_branch_offset, offsets
         )
 
-        # self._process_edges_for_branch()
-
-    def _process_edges_for_branch(self, branch_id: str) -> None:
-
-        branch = self.branches[branch_id]
-
-        edge_coords = (branch.node_xy[:-1] + branch.node_xy[1:]) / 2.0
-        edge_offsets = (branch.branch_offsets[:-1] + branch.branch_offsets[1:]) / 2
-
-        self.mesh1d_edge_branch_id = np.append(
-            self.mesh1d_edge_branch_id, np.full(len(edge_coords), i)
-        )
-        self.mesh1d_edge_branch_offset = np.append(
-            self.mesh1d_edge_branch_offset, edge_offsets
-        )
-        self.mesh1d_edge_x = np.append(self.mesh1d_edge_x, edge_coords[:, 0])
-        self.mesh1d_edge_y = np.append(self.mesh1d_edge_y, edge_coords[:, 1])
-
     def get_node_mask(self, branchids: List[str] = None):
         """Get node mask, give a mask with True for each node that is in the given branchid list"""
 
