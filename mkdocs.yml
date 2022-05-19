@@ -111,6 +111,7 @@ nav:
           - reference/onedfield.md
           - reference/polyfile.md
           - reference/xyz.md
+          - reference/obs.md
       - RainfallRunoff:
           - reference/rr.md
           - reference/bui.md
