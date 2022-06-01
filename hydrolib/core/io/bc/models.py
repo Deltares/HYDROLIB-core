@@ -1,3 +1,13 @@
+"""Representation of a .bc file in various classes.
+
+    Most relevant classes are:
+
+    *   ForcingModel: toplevel class containing the whole .bc file contents.
+    *   ForcingBase subclasses: containing the actual data columns, for example:
+        TimeSeries, HarmonicComponent, AstronomicComponent, HarmonicCorrection,
+        AstronomicCorrection, Constant, T3D.
+
+"""
 import logging
 from enum import Enum
 from pathlib import Path
@@ -38,6 +48,8 @@ class TimeInterpolation(str, Enum):
 
 
 class QuantityUnitPair(NamedTuple):
+    """A .bc file header lines tuple containing a quantity name and its unit."""
+
     quantity: str
     unit: str
 
@@ -47,6 +59,19 @@ class QuantityUnitPair(NamedTuple):
 
 
 class ForcingBase(DataBlockINIBasedModel):
+    """
+    The base class of a single [Forcing] block in a .bc forcings file.
+
+    Typically subclassed, for the specific types of forcing data, e.g, TimeSeries.
+    This model is for example referenced under a
+    [ForcingModel][hydrolib.core.io.bc.models.ForcingModel]`.forcing[..]`.
+
+    Attributes:
+        name (str): Unique identifier that identifies the location for this forcing data.
+        function (str): Function type of the data in the actual datablock.
+        quantityunitpair (List[QuantityUnitPair]): list of header line tuples for one or
+            more quantities + their unit. Describes the columns in the actual datablock.
+    """
 
     _header: Literal["Forcing"] = "Forcing"
     name: str = Field(alias="name")
@@ -101,7 +126,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on the `function` field.
+        """Try to initialize subclass based on the `function` field.
         This field is compared to each `function` field of the derived models of `ForcingBase`.
         The derived model with an equal function type will be initialized.
 
@@ -142,6 +167,8 @@ class ForcingBase(DataBlockINIBasedModel):
 
 
 class TimeSeries(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with timeseries data."""
+
     function: Literal["timeseries"] = "timeseries"
     timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
     offset: float = Field(0.0, alias="offset")
@@ -153,24 +180,34 @@ class TimeSeries(ForcingBase):
 
 
 class Harmonic(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with harmonic components data."""
+
     function: Literal["harmonic"] = "harmonic"
     factor: float = Field(1.0, alias="factor")
 
 
 class Astronomic(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with astronomic components data."""
+
     function: Literal["astronomic"] = "astronomic"
     factor: float = Field(1.0, alias="factor")
 
 
 class HarmonicCorrection(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with harmonic components correction data."""
+
     function: Literal["harmonic-correction"] = "harmonic-correction"
 
 
 class AstronomicCorrection(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with astronomic components correction data."""
+
     function: Literal["astronomic-correction"] = "astronomic-correction"
 
 
 class T3D(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with 3D timeseries data."""
+
     function: Literal["t3d"] = "t3d"
 
     offset: float = Field(0.0, alias="offset")
@@ -189,10 +226,14 @@ class T3D(ForcingBase):
 
 
 class QHTable(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with Q-h table data."""
+
     function: Literal["qhtable"] = "qhtable"
 
 
 class Constant(ForcingBase):
+    """Subclass for a .bc file [Forcing] block with constant value data."""
+
     function: Literal["constant"] = "constant"
 
     offset: float = Field(0.0, alias="offset")
@@ -200,11 +241,26 @@ class Constant(ForcingBase):
 
 
 class ForcingGeneral(INIGeneral):
+    """`[General]` section with .bc file metadata."""
+
     fileversion: str = Field("1.01", alias="fileVersion")
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
 class ForcingModel(INIModel):
+    """
+    The overall model that contains the contents of one .bc forcings file.
+
+    This model is for example referenced under a
+    [ExtModel][hydrolib.core.io.ext.models.ExtModel]`.boundary[..].forcingfile[..]`.
+
+    Attributes:
+        general (ForcingGeneral): `[General]` block with file metadata.
+        forcing (List[ForcingBase]): List of `[Forcing]` blocks for all forcing
+            definitions in a single .bc file. Actual data is stored in
+            forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock] or [hydrolib.core.io.ini.models.DataBlockINIBasedModel].
+    """
+
     general: ForcingGeneral = ForcingGeneral()
     forcing: List[ForcingBase] = []
 
