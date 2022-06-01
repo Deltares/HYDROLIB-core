@@ -192,7 +192,7 @@ class Structure(INIBasedModel):
 
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on the `type` field.
+        """Try to initialize subclass based on the `type` field.
         This field is compared to each `type` field of the derived models of `Structure`.
         The derived model with an equal structure type will be initialized.
 
