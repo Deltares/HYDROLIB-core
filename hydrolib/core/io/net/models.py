@@ -154,8 +154,6 @@ class Mesh2d(BaseModel):
             dx (float): Horizontal distance
             dy (float): Vertical distance
 
-        TODO: Perhaps the polygon processing part should be part of Hydrolib (not core)!
-
         Raises:
             NotImplementedError: MultiPolygons
         """
@@ -174,6 +172,18 @@ class Mesh2d(BaseModel):
 
         # Process
         self._process(mesh2d_input)
+
+    def create_triangular(self, geometry_list: mk.GeometryList) -> None:
+        """Create triangular grid within GeometryList object
+
+        Args:
+            geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
+        """
+        # Call meshkernel
+        self.meshkernel.mesh2d_make_mesh_from_polygon(geometry_list)
+
+        # Process new mesh
+        self._process(self.get_mesh2d())
 
     def _process(self, mesh2d_input) -> None:
         # Add input
@@ -929,7 +939,13 @@ class Network:
         self._mesh2d.create_rectilinear(extent=extent, dx=dx, dy=dy)
 
     def mesh2d_create_triangular_within_polygon(self, polygon: mk.GeometryList) -> None:
-        raise NotImplementedError()
+        """Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular
+        directly, but is easier accessible for users.
+
+        Args:
+            geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
+        """
+        self._mesh2d.create_triangular(geometry_list=polygon)
 
     def mesh2d_clip_mesh(
         self, polygon: mk.GeometryList, deletemeshoption: int = 1
