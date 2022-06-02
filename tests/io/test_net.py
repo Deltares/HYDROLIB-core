@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from meshkernel import GeometryList, MeshKernel, DeleteMeshOption
+from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
