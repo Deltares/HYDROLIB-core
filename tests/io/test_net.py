@@ -160,19 +160,10 @@ def test_create_clip_2d(deletemeshoption, outside, nnodes, nedgenodes):
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
 
-    ax = _plot_mesh2d(mesh2d, color="C0", alpha=0.5)
-
     mesh2d.clip(polygon, deletemeshoption=deletemeshoption, outside=outside)
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == nnodes
     assert mesh2d_output.edge_nodes.size == nedgenodes
-
-    # ax = _plot_mesh2d(mesh2d, ax, color="C1", alpha=0.5)
-    # ax.plot(polygon.x_coordinates, polygon.y_coordinates)
-    # ax.set_title(
-    #     "{} - {}".format(deletemeshoption.name, "Outside" if outside else "Inside")
-    # )
-    # plt.show()
 
 
 def test_create_refine_2d():
@@ -539,3 +530,34 @@ def test_create_triangular():
         network._mesh2d.mesh2d_edge_nodes,
         np.array([[3, 0], [0, 1], [1, 3], [1, 2], [2, 3]]),
     )
+
+
+def test_add_1d2d_links():
+
+    # Create branch
+    branch = Branch(geometry=np.array([[-10, 5], [10, -5]]))
+    branch.generate_nodes(2)
+    # Create Mesh1d
+    network = NetworkModel().network
+    branchid = network.mesh1d_add_branch(branch, name="branch1")
+    # Create Mesh2d
+    network.mesh2d_create_rectilinear_within_bounds(extent=(-5, -5, 5, 5), dx=1, dy=1)
+
+    network._mesh1d._set_mesh1d()
+    network._mesh2d._set_mesh2d()
+
+    # Get required arguments
+    node_mask = network._mesh1d.get_node_mask([branchid])
+    exterior = GeometryList(
+        x_coordinates=np.array([-10, 10, 10, -10, -10], dtype=np.double),
+        y_coordinates=np.array([-10, -10, 10, 10, -10], dtype=np.double),
+    )
+
+    # Add links from 1d to 2d
+    network._link1d2d._link_from_1d_to_2d(node_mask=node_mask, polygon=exterior)
+    assert np.array_equiv(
+        network._link1d2d.link1d2d,
+        np.array([[3, 70], [4, 62], [5, 54], [6, 45], [7, 37], [8, 29]]),
+    )
+
+    

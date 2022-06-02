@@ -386,21 +386,28 @@ class Branch:
         # Add mask (all False)
         self.mask = np.full(self.branch_offsets.shape, False)
 
-    def _generate_1d_spacing(self, anchor_pts: List[float], mesh1d_edge_length: float):
+    def _generate_1d_spacing(
+        self, anchor_pts: List[float], mesh1d_edge_length: float
+    ) -> np.ndarray:
         """
         Generates 1d distances, called by function generate offsets
         """
         offsets = []
+        # Loop through anchor point pairs
         for i in range(len(anchor_pts) - 1):
+            # Determine section length between anchor point
             section_length = anchor_pts[i + 1] - anchor_pts[i]
             if section_length <= 0.0:
                 raise ValueError("Section length must be larger than 0.0")
-            nnodes = max(2, int(round(section_length / mesh1d_edge_length) + 1))
+            # Determine number of nodes
+            nnodes = max(2, int(round(section_length / mesh1d_edge_length) + 1)) - 1
+            # Add nodes
             offsets.extend(
                 np.linspace(
-                    anchor_pts[i], anchor_pts[i + 1], nnodes - 1, endpoint=False
+                    anchor_pts[i], anchor_pts[i + 1], nnodes, endpoint=False
                 ).tolist()
             )
+        # Add last node
         offsets.append(anchor_pts[-1])
 
         return np.asarray(offsets)
@@ -467,12 +474,14 @@ class Link1d2d(BaseModel):
 
     def clear(self) -> None:
         """Remove all saved links from the links administration"""
-        self.link1d2d_id = Field(default_factory=lambda: np.empty(0, object))
-        self.link1d2d_long_name = Field(default_factory=lambda: np.empty(0, object))
-        self.link1d2d_contact_type = Field(
-            default_factory=lambda: np.empty(0, np.int32)
-        )
-        self.link1d2d = Field(default_factory=lambda: np.empty((0, 2), np.int32))
+        self.link1d2d_id = np.empty(0, object)
+        self.link1d2d_long_name = np.empty(0, object)
+        self.link1d2d_contact_type = np.empty(0, np.int32)
+        self.link1d2d = np.empty((0, 2), np.int32)
+        # The meshkernel object needs to be resetted
+        self.meshkernel._deallocate_state()
+        self.meshkernel._allocate_state(self.meshkernel.is_geographic)
+        self.meshkernel.contacts_get()
 
     def _process(self) -> None:
         """
@@ -518,22 +527,30 @@ class Link1d2d(BaseModel):
 
         # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
         # a bounding polygon or the end points of the 1d mesh.
-        # self._mk.contacts_compute_multiple(self, node_mask)
 
-    def _link_from_2d_to_1d_intersecting(self):
-        raise NotImplementedError()
+    def _link_from_2d_to_1d_embedded(
+        self, node_mask: np.ndarray, points: mk.GeometryList
+    ):
+        """"""
+        self.meshkernel.contacts_compute_with_points(node_mask=node_mask, points=points)
+        self._process()
 
-    def _link_from_2d_to_1d_lateral(self):
-        raise NotImplementedError()
+        # raise NotImplementedError()
 
-        # # Computes Mesh1d-Mesh2d contacts, where a Mesh2d face per polygon is connected to the closest Mesh1d node.
-        # self._mk.contacts_compute_with_polygons(self, node_mask, polygons)
+    def _link_from_2d_to_1d_lateral(
+        self,
+        node_mask: np.ndarray,
+        # boundary_face_xy: np.ndarray,
+        polygon: mk.GeometryList = None,
+        search_radius: float = None,
+    ):
+        # TODO: Missing value double for search radius?
 
-        # # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the Mesh2d face mass centers containing the input point.
-        # self._mk.contacts_compute_with_points(self, node_mask, points)
-
-        # # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the closest Mesh2d faces at the boundary
-        # self._mk.contacts_compute_boundary(self, node_mask, polygons, search_radius)
+        # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the closest Mesh2d faces at the boundary
+        self.meshkernel.contacts_compute_boundary(
+            node_mask=node_mask, polygons=polygon, search_radius=search_radius
+        )
+        self._process()
 
 
 class Mesh1d(BaseModel):
@@ -897,6 +914,7 @@ class Mesh1d(BaseModel):
         self.mesh1d_node_branch_offset = np.append(
             self.mesh1d_node_branch_offset, offsets
         )
+        return name
 
     def get_node_mask(self, branchids: List[str] = None):
         """Get node mask, give a mask with True for each node that is in the given branchid list"""
@@ -917,8 +935,11 @@ class Mesh1d(BaseModel):
 
 
 class Network:
-    def __init__(self) -> None:
-        self.meshkernel = mk.MeshKernel()
+    def __init__(self, is_geographic: bool = False) -> None:
+        self.meshkernel = mk.MeshKernel(is_geographic=is_geographic)
+        # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
+        # otherwise, and needed for reinitializing the meshkernel
+        self.meshkernel.is_geographic = is_geographic
 
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
@@ -1003,9 +1024,10 @@ class Network:
         branch_order: int = -1,
         long_name: str = None,
     ) -> None:
-        self._mesh1d._add_branch(
+        name = self._mesh1d._add_branch(
             branch=branch, name=name, branch_order=branch_order, long_name=long_name
         )
+        return name
 
 
 class NetworkModel(FileModel):
