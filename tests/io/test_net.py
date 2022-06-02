@@ -559,5 +559,3 @@ def test_add_1d2d_links():
         network._link1d2d.link1d2d,
         np.array([[3, 70], [4, 62], [5, 54], [6, 45], [7, 37], [8, 29]]),
     )
-
-    
