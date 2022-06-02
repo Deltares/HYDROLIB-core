@@ -105,7 +105,7 @@ def test_create_1d_2d_1d2d():
     network.mesh1d_add_branch(branch, name="branch2")
 
     # Add Mesh2d
-    network.mesh2d_create_rectilinear_within_bounds(
+    network.mesh2d_create_rectilinear_within_extent(
         extent=(-22, -22, 22, 22), dx=2, dy=2
     )
     network.mesh2d_clip_mesh(polygon=get_circle_gl(22))
@@ -136,17 +136,17 @@ def test_create_2d():
 
 
 @pytest.mark.parametrize(
-    "deletemeshoption,outside,nnodes,nedgenodes",
+    "deletemeshoption,inside,nnodes,nedgenodes",
     [
-        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, True, 28, 90),
-        (DeleteMeshOption.ALL_COMPLETE_FACES, True, 23, 72),
-        (DeleteMeshOption.ALL_NODES, True, 23, 72),
-        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, False, 23, 72),
-        (DeleteMeshOption.ALL_COMPLETE_FACES, False, 31, 94),
-        (DeleteMeshOption.ALL_NODES, False, 22, 64),
+        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, False, 28, 90),
+        (DeleteMeshOption.ALL_COMPLETE_FACES, False, 23, 72),
+        (DeleteMeshOption.ALL_NODES, False, 23, 72),
+        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, True, 23, 72),
+        (DeleteMeshOption.ALL_COMPLETE_FACES, True, 31, 94),
+        (DeleteMeshOption.ALL_NODES, True, 22, 64),
     ],
 )
-def test_create_clip_2d(deletemeshoption, outside, nnodes, nedgenodes):
+def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes):
 
     # TODO: "All complete faces, outside" does not have the expected behaviour, it is similar to "All nodes, outside"
 
@@ -160,7 +160,7 @@ def test_create_clip_2d(deletemeshoption, outside, nnodes, nedgenodes):
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
 
-    mesh2d.clip(polygon, deletemeshoption=deletemeshoption, outside=outside)
+    mesh2d.clip(polygon, deletemeshoption=deletemeshoption, inside=inside)
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == nnodes
     assert mesh2d_output.edge_nodes.size == nedgenodes
@@ -541,7 +541,7 @@ def test_add_1d2d_links():
     network = NetworkModel().network
     branchid = network.mesh1d_add_branch(branch, name="branch1")
     # Create Mesh2d
-    network.mesh2d_create_rectilinear_within_bounds(extent=(-5, -5, 5, 5), dx=1, dy=1)
+    network.mesh2d_create_rectilinear_within_extent(extent=(-5, -5, 5, 5), dx=1, dy=1)
 
     network._mesh1d._set_mesh1d()
     network._mesh2d._set_mesh2d()

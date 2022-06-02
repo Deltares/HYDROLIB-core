@@ -213,7 +213,7 @@ class Mesh2d(BaseModel):
         self,
         geometrylist: mk.GeometryList,
         deletemeshoption: int = 1,
-        outside=True,
+        inside=False,
     ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
 
@@ -228,7 +228,7 @@ class Mesh2d(BaseModel):
         deletemeshoption = mk.DeleteMeshOption(deletemeshoption)
 
         # For clipping outside
-        if outside:
+        if not inside:
             # Check if a multipolygon was provided when clipping outside
             if geometrylist.geometry_separator in geometrylist.x_coordinates:
                 raise NotImplementedError(
@@ -270,7 +270,7 @@ class Mesh2d(BaseModel):
             self.meshkernel.mesh2d_delete(
                 geometry_list=exterior,
                 delete_option=deletemeshoption,
-                invert_deletion=outside,
+                invert_deletion=not inside,
             )
 
         # Delete all holes.
@@ -278,7 +278,7 @@ class Mesh2d(BaseModel):
             self.meshkernel.mesh2d_delete(
                 geometry_list=interior,
                 delete_option=deletemeshoption,
-                invert_deletion=not outside,
+                invert_deletion=inside,
             )
 
         # Process
@@ -300,19 +300,17 @@ class Mesh2d(BaseModel):
         self.meshkernel.mesh2d_set(mesh2d_input)
 
         # Check if parts are closed
-        if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
-            polygon.x_coordinates[-1],
-            polygon.y_coordinates[-1],
-        ):
-            raise ValueError(
-                "First and last coordinate of each GeometryList part should match."
-            )
+        # if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
+        #     polygon.x_coordinates[-1],
+        #     polygon.y_coordinates[-1],
+        # ):
+        #     raise ValueError("First and last coordinate of each GeometryList part should match.")
 
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
             min_face_size=10.0,  # Does nothing?
-            refinement_type=1,
+            refinement_type=1,  # No effect?
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,
             max_refinement_iterations=level,
@@ -995,7 +993,7 @@ class Network:
 
         self._link1d2d._link_from_1d_to_2d(node_mask, polygon=polygon)
 
-    def mesh2d_create_rectilinear_within_bounds(
+    def mesh2d_create_rectilinear_within_extent(
         self, extent: tuple, dx: float, dy: float
     ) -> None:
         self._mesh2d.create_rectilinear(extent=extent, dx=dx, dy=dy)
@@ -1010,9 +1008,16 @@ class Network:
         self._mesh2d.create_triangular(geometry_list=polygon)
 
     def mesh2d_clip_mesh(
-        self, polygon: mk.GeometryList, deletemeshoption: int = 1
+        self,
+        geometrylist: mk.GeometryList,
+        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.ALL_FACE_CIRCUMCENTERS,
+        inside=True,
     ) -> None:
-        self._mesh2d.clip(polygon=polygon, deletemeshoption=deletemeshoption)
+        self._mesh2d.clip(
+            geometrylist=geometrylist,
+            deletemeshoption=deletemeshoption,
+            inside=inside,
+        )
 
     def mesh2d_refine_mesh(self, polygon: mk.GeometryList, level: int = 1) -> None:
         self._mesh2d.refine(polygon=polygon, level=level)
