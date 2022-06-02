@@ -209,23 +209,54 @@ class Mesh2d(BaseModel):
         ) < npf[:, None]
         self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
 
-    def clip(self, polygon: mk.GeometryList, deletemeshoption: int = 1) -> None:
+    def clip(
+        self,
+        geometrylist: mk.GeometryList,
+        deletemeshoption: int = 1,
+        outside=True,
+    ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
 
         Args:
-            polygon (GeometryList): Polygon stored as GeometryList
+            geometrylist (GeometryList): Polygon stored as GeometryList
             deletemeshoption (int, optional): [description]. Defaults to 1.
         """
 
         # Add current mesh to Mesh2d instance
         self._set_mesh2d()
 
-        # Delete outside polygon
         deletemeshoption = mk.DeleteMeshOption(deletemeshoption)
-        parts = split_by(polygon, -998.0)
+
+        # For clipping outside
+        if outside:
+            # Check if a multipolygon was provided when clipping outside
+            if geometrylist.geometry_separator in geometrylist.x_coordinates:
+                raise NotImplementedError(
+                    "Deleting outside more than a single exterior (MultiPolygon) is not implemented."
+                )
+
+            # Get exterior and interiors
+            parts = split_by(geometrylist, geometrylist.inner_outer_separator)
+
+            exteriors = [parts[0]]
+            interiors = parts[1:]
+
+        # Inside
+        else:
+            # Check if any polygon contains holes, when clipping inside
+            if geometrylist.inner_outer_separator in geometrylist.x_coordinates:
+                raise NotImplementedError(
+                    "Deleting inside a (Multi)Polygon with holes is not implemented."
+                )
+
+            # Get exterior and interiors
+            parts = split_by(geometrylist, geometrylist.geometry_separator)
+
+            exteriors = parts[:]
+            interiors = []
 
         # Check if parts are closed
-        for part in parts:
+        for part in exteriors + interiors:
             if not (part.x_coordinates[0], part.y_coordinates[0]) == (
                 part.x_coordinates[-1],
                 part.y_coordinates[-1],
@@ -234,11 +265,21 @@ class Mesh2d(BaseModel):
                     "First and last coordinate of each GeometryList part should match."
                 )
 
-        self.meshkernel.mesh2d_delete(parts[0], deletemeshoption, True)
+        # Delete everything outside the (Multi)Polygon
+        for exterior in exteriors:
+            self.meshkernel.mesh2d_delete(
+                geometry_list=exterior,
+                delete_option=deletemeshoption,
+                invert_deletion=outside,
+            )
 
-        # Delete all holes
-        for interior in parts[1:]:
-            self.meshkernel.mesh2d_delete(interior, deletemeshoption, False)
+        # Delete all holes.
+        for interior in interiors:
+            self.meshkernel.mesh2d_delete(
+                geometry_list=interior,
+                delete_option=deletemeshoption,
+                invert_deletion=not outside,
+            )
 
         # Process
         self._process(self.meshkernel.mesh2d_get())

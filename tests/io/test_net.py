@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from meshkernel import GeometryList, MeshKernel
+from meshkernel import GeometryList, MeshKernel, DeleteMeshOption
 
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
@@ -20,6 +20,19 @@ def plot_network(network):
     network.plot(ax=ax)
     ax.autoscale()
     plt.show()
+
+
+def _plot_mesh2d(mesh2d, ax=None, **kwargs):
+    from matplotlib.collections import LineCollection
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    nodes2d = np.stack([mesh2d.mesh2d_node_x, mesh2d.mesh2d_node_y], axis=1)
+    edge_nodes = mesh2d.mesh2d_edge_nodes
+    lc_mesh2d = LineCollection(nodes2d[edge_nodes], **kwargs)
+    ax.add_collection(lc_mesh2d)
+    ax.autoscale_view()
+    return ax
 
 
 @pytest.mark.plots
@@ -122,7 +135,20 @@ def test_create_2d():
     assert mesh2d_output.edge_nodes.size == 152
 
 
-def test_create_clip_2d():
+@pytest.mark.parametrize(
+    "deletemeshoption,outside,nnodes,nedgenodes",
+    [
+        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, True, 28, 90),
+        (DeleteMeshOption.ALL_COMPLETE_FACES, True, 23, 72),
+        (DeleteMeshOption.ALL_NODES, True, 23, 72),
+        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, False, 23, 72),
+        (DeleteMeshOption.ALL_COMPLETE_FACES, False, 31, 94),
+        (DeleteMeshOption.ALL_NODES, False, 22, 64),
+    ],
+)
+def test_create_clip_2d(deletemeshoption, outside, nnodes, nedgenodes):
+
+    # TODO: "All complete faces, outside" does not have the expected behaviour, it is similar to "All nodes, outside"
 
     polygon = GeometryList(
         x_coordinates=np.array([0.0, 6.0, 4.0, 2.0, 0.0]),
@@ -133,12 +159,20 @@ def test_create_clip_2d():
     bbox = (1.0, -2.0, 3.0, 4.0)
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
-    mesh2d.clip(polygon)
 
+    ax = _plot_mesh2d(mesh2d, color="C0", alpha=0.5)
+
+    mesh2d.clip(polygon, deletemeshoption=deletemeshoption, outside=outside)
     mesh2d_output = mesh2d.get_mesh2d()
+    assert mesh2d_output.node_x.size == nnodes
+    assert mesh2d_output.edge_nodes.size == nedgenodes
 
-    assert mesh2d_output.node_x.size == 28
-    assert mesh2d_output.edge_nodes.size == 90
+    # ax = _plot_mesh2d(mesh2d, ax, color="C1", alpha=0.5)
+    # ax.plot(polygon.x_coordinates, polygon.y_coordinates)
+    # ax.set_title(
+    #     "{} - {}".format(deletemeshoption.name, "Outside" if outside else "Inside")
+    # )
+    # plt.show()
 
 
 def test_create_refine_2d():
