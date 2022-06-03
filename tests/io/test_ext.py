@@ -375,7 +375,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="fDischarge",
+                    discharge="realtime",
                     numcoordinates=2,
                 )
                 lateral_dict = {**default_values, **location_dict}
