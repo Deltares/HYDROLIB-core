@@ -1,5 +1,6 @@
+from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator, validator
 
@@ -11,6 +12,20 @@ from hydrolib.core.io.ini.util import (
     make_list_validator,
 )
 from hydrolib.core.utils import str_is_empty_or_none
+
+
+# TODO: to be moved into hydrolib.core.io.common, once PR #236 has been closed.
+class RealTime(str, Enum):
+    realtime = "realtime"
+    """str: Realtime data source, externally provided"""
+
+
+ForcingData = Union[float, RealTime, ForcingModel]
+"""Data type that selects from three different types of forcing data:
+*   a scalar float constant
+*   "realtime" keyword, indicating externally controlled.
+*   A ForcingModel coming from a .bc file.
+"""
 
 
 class Boundary(INIBasedModel):
@@ -110,7 +125,10 @@ class Lateral(INIBasedModel):
     numcoordinates: Optional[int] = Field(alias="numCoordinates")
     xcoordinates: Optional[List[int]] = Field(alias="xCoordinates")
     ycoordinates: Optional[List[int]] = Field(alias="yCoordinates")
-    discharge: str = Field(alias="discharge")
+    discharge: ForcingData = Field(alias="discharge")
+
+    def is_intermediate_link(self) -> bool:
+        return True
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
