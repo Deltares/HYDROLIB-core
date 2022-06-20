@@ -22,6 +22,7 @@ theme:
     - navigation.top
 plugins:
   - search
+  - mkdocs-jupyter
   - autorefs
   - table-reader
   - macros:
@@ -81,8 +82,9 @@ nav:
           - "guides/documentation.md"
       - Support:
           - guides/gettinghelp.md
-  - Tutorials:
-      - tutorials/steps.md
+  - Tutorials: 
+      - tutorials/tutorials.md
+      - tutorials/build_basic_model.ipynb
       - tutorials/loading_and_saving_a_model.md
       - tutorials/dataframe_handling.md
       - tutorials/plotting_a_network.md
