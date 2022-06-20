@@ -218,7 +218,7 @@ class Structure(INIBasedModel):
 
     def _exclude_fields(self) -> Set:
         # exclude the non-applicable, or unset props like coordinates or branches
-        if self.type is "compound":
+        if self.type == "compound":
             exclude_set = self._loc_all_fields
         elif self.branchid is not None:
             exclude_set = self._loc_coord_fields
