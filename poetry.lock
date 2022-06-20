@@ -870,7 +870,7 @@ mkdocs = ">=1.1,<2.0"
 name = "mkdocs-jupyter"
 version = "0.21.0"
 description = "Use Jupyter in mkdocs websites"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7.1,<4"
 
