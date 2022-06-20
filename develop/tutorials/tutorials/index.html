@@ -13,7 +13,7 @@
     
     
       
-        <title>First steps - hydrolib-core documentation</title>
+        <title>Introduction to tutorials - hydrolib-core documentation</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#first-steps" class="md-skip">
+        <a href="#introduction-to-tutorials" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@ You're not viewing the latest release version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              First steps
+              Introduction to tutorials
             
           </span>
         </div>
@@ -673,9 +673,23 @@ You're not viewing the latest release version.
       
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        First steps
+        Introduction to tutorials
       </a>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_basic_model/" class="md-nav__link">
+        Build a basic model
+      </a>
     </li>
   
 
@@ -1290,52 +1304,21 @@ You're not viewing the latest release version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/Deltares/hydrolib-core/edit/master/docs/tutorials/steps.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/Deltares/hydrolib-core/edit/master/docs/tutorials/tutorials.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
-<h1 id="first-steps">First steps<a class="headerlink" href="#first-steps" title="Permanent link">&para;</a></h1>
-<p>Let's import and create a first model.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hydrolib.core.io.structure.models</span> <span class="kn">import</span> <span class="n">FlowDirection</span><span class="p">,</span> <span class="n">StructureModel</span><span class="p">,</span> <span class="n">Weir</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
-
-<span class="n">fm</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">()</span>
-<span class="n">fm</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;test.mdu&quot;</span>
-</code></pre></div>
-<!---
-We can now add and/or manipulate features within the model.
-<div class="highlight"><pre><span></span><code><span class="c1"># Start adding geometry</span>
-<span class="n">fm</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">netfile</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">mesh1d_add_branch</span><span class="p">()</span>  <span class="c1"># TODO fix example</span>
-</code></pre></div>
--->
-
-<p>Add some structures, note this is invalid because it doesn't 
-have a branch or coordinates yet, but it will work for demo purposes</p>
-<p><div class="highlight"><pre><span></span><code><span class="n">struc</span> <span class="o">=</span> <span class="n">Weir</span><span class="p">(</span><span class="n">branchId</span><span class="o">=</span><span class="s1">&#39;someBranch&#39;</span><span class="p">,</span> <span class="n">chainage</span> <span class="o">=</span> <span class="mf">123.0</span><span class="p">,</span> <span class="n">allowedflowdir</span><span class="o">=</span><span class="n">FlowDirection</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">crestlevel</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="n">struc</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">crestlevel</span> <span class="o">=</span> <span class="s2">&quot;This is a comment&quot;</span>
-<span class="n">fm</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">structurefile</span> <span class="o">=</span> <span class="p">[</span><span class="n">StructureModel</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="p">[</span><span class="n">struc</span><span class="p">])]</span>
-</code></pre></div>
-Note that the creation of a <code>Weir</code> and other models always require
-the use of keyword arguments. A <code>ValidationError</code> will be raised
-when the model isn't correct or complete, for instance, in the case
-that <code>StructureModel</code> was assigned directly to <code>structurefile</code> instead
-of as a list.</p>
-<p>Now let's add this model to a DIMR config and save it.
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hydrolib.core.io.dimr.models</span> <span class="kn">import</span> <span class="n">DIMR</span><span class="p">,</span> <span class="n">FMComponent</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-<span class="n">dimr</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">()</span>
-<span class="n">dimr</span><span class="o">.</span><span class="n">component</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-    <span class="n">FMComponent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">workingDir</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">inputfile</span><span class="o">=</span><span class="n">fm</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">fm</span><span class="p">)</span>
-<span class="p">)</span>
-
-<span class="n">dimr</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
-The save on the top of the model hierarchy will result in saves of all child models,
-so this results in four files (<code>dimr_config.xml</code>, <code>network.nc</code>, <code>structures.ini</code>,<code>test.mdu</code>)
-in the working directory.</p>
+<h1 id="introduction-to-tutorials">Introduction to tutorials<a class="headerlink" href="#introduction-to-tutorials" title="Permanent link">&para;</a></h1>
+<p>The tutorials below can help you becoming familiar with the basics as well as the more advanced use of HYDROLIB-core:</p>
+<ul>
+<li>Tutorial: <a href="../build_basic_model/">Build a basic model</a> - iPython notebook</li>
+<li>Tutorial: <a href="../loading_and_saving_a_model/">Loading and saving a model</a> </li>
+<li>Tutorial: <a href="../dataframe_handling/">Dataframe handling</a></li>
+<li>Tutorial: <a href="../plotting_a_network/">Plotting a network</a></li>
+</ul>
+<p>To run these examples on your local machine you need a copy of the repository and an installation of HYDROLIB-core including some additional packages. The installation of HYDROLIB-core is explained in <a href="../../guides/setup/">Installation</a>. The tutorials are then located in <code>docs/tutorials/</code>.</p>
 
               
             </article>
@@ -1372,13 +1355,13 @@ in the working directory.</p>
       
       
         
-        <a href="../loading_and_saving_a_model/" class="md-footer__link md-footer__link--next" aria-label="Next: Loading and saving a model" rel="next">
+        <a href="../build_basic_model/" class="md-footer__link md-footer__link--next" aria-label="Next: Build a basic model" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Loading and saving a model
+              Build a basic model
             </div>
           </div>
           <div class="md-footer__button md-icon">
