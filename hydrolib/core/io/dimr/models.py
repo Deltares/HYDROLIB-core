@@ -9,8 +9,8 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, FileModel, file_load_context
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
 from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.rr.models import RainfallRunoffModel
 from hydrolib.core.utils import to_list
 
 

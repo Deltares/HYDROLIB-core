@@ -6,11 +6,11 @@ from typing import Callable, Dict, Iterable, Literal, Optional
 from pydantic.types import FilePath
 
 from hydrolib.core.basemodel import FileModel
-from hydrolib.core.io.bui.models import BuiModel
-from hydrolib.core.io.rr.topology.models import LinkFile, NodeFile
 
+from .meteo.models import BuiModel
 from .parser import read
 from .serializer import write
+from .topology.models import LinkFile, NodeFile
 
 
 class RainfallRunoffModel(FileModel):
