@@ -555,6 +555,18 @@ class FMModel(INIModel):
 
     @classmethod
     def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel based on the provided data.
+
+        The ResolveRelativeMode of the FMModel is determined by the
+        'pathsRelativeToParent' property of the 'General' category.
+
+
+        Args:
+            data (Dict[str, Any]): The data used to determine the ResolveRelativeMode.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
         if not (general := data.get("general", None)):
             return ResolveRelativeMode.ToParent
         if not (relative_to_parent := general.get("pathsrelativetoparent", None)):

@@ -552,6 +552,10 @@ class FileModel(BaseModel, ABC):
             data["filepath"] = filepath
             kwargs.update(data)
 
+            # Note: the relative mode needs to be obtained from the data directly
+            # because self._relative_mode has not been resolved yet (this is done as
+            # part of the __init__), however during the __init__ we need to already
+            # have pused the new parent. As such we cannot move this call later.
             relative_mode = self._get_relative_mode_from_data(data)
             context.push_new_parent(filepath.parent, relative_mode)
 
@@ -780,10 +784,18 @@ class FileModel(BaseModel, ABC):
         """Gets the ResolveRelativeMode of this FileModel.
 
         Returns:
-            ResolveRelativeMode: The ResolveRelativ
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
         """
         return ResolveRelativeMode.ToParent
 
     @classmethod
     def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel based on the provided data.
+
+        Args:
+            data (Dict[str, Any]): The data used to determine the ResolveRelativeMode.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
         return ResolveRelativeMode.ToParent
