@@ -7,6 +7,7 @@ from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
+    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -116,6 +117,8 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
+    _location_validator = get_location_specification_rootvalidator(allow_nodeid=True)
+
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
 
@@ -171,63 +174,6 @@ class Lateral(INIBasedModel):
                 )
             )
         return v
-
-    @root_validator
-    @classmethod
-    def validate_location_dependencies(cls, values: Dict) -> Dict:
-        """
-        Once all the fields have been evaluated, we verify whether the location
-        given for this Lateral matches the expectations.
-
-        Args:
-            values (Dict): Dictionary of Laterals validated fields.
-
-        Raises:
-            ValueError: When neither nodeid, branchid or coordinates have been given.
-            ValueError: When either x or y coordinates were expected but not given.
-            ValueError: When locationtype should be 1d but other was specified.
-
-        Returns:
-            Dict: Validated dictionary of Lateral fields.
-        """
-
-        def validate_coordinates(coord_name: str) -> None:
-            if values.get(coord_name.lower(), None) is None:
-                raise ValueError("{} should be given.".format(coord_name))
-
-        # If nodeid or branchid and Chainage are present
-        node_id: str = values.get("nodeid", None)
-        branch_id: str = values.get("branchid", None)
-        n_coords: int = values.get("numcoordinates", 0)
-        chainage: float = values.get("chainage", None)
-
-        # First validation - at least one of the following should be specified.
-        if str_is_empty_or_none(node_id) and (str_is_empty_or_none(branch_id)):
-            if n_coords == 0:
-                raise ValueError(
-                    "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
-                )
-            else:
-                # Second validation, coordinates should be valid.
-                validate_coordinates("xCoordinates")
-                validate_coordinates("yCoordinates")
-            return values
-        else:
-            # Third validation, chainage should be given with branchid
-            if not str_is_empty_or_none(branch_id) and chainage is None:
-                raise ValueError(
-                    "Chainage should be provided when branchId is specified."
-                )
-            # Fourth validation, when nodeid, or branchid specified, expected 1d.
-            location_type = values.get("locationtype", None)
-            if str_is_empty_or_none(location_type):
-                values["locationtype"] = "1d"
-            elif location_type.lower() != "1d":
-                raise ValueError(
-                    "LocationType should be 1d when nodeId (or branchId and chainage) is specified."
-                )
-
-        return values
 
 
 class ExtGeneral(INIGeneral):
