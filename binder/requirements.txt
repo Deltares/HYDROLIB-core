@@ -1,0 +1,8 @@
+# Auto-generated with generate_requirements.py
+# This file is required for binder and is automatically synced with pyproject.toml
+# It should *not* be adjusted by hand
+netCDF4==1.5
+numpy==1.21
+pydantic==1.8
+lxml==4.6
+meshkernel==1.0.0
