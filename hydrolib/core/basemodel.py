@@ -796,7 +796,7 @@ class FileModel(BaseModel, ABC):
         the parent. In exceptional cases, the relative mode can be dependent on the
         data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
         As such the data is provided for such classes where the relative mode is
-        dependent on the state (e.g. the FM Model).
+        dependent on the state (e.g. the [FMModel][hydrolib.core.io.mdu.models.FMModel]).
 
         Args:
             data (Dict[str, Any]):
