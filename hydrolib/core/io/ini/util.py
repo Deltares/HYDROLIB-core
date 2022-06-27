@@ -2,12 +2,12 @@
 """
 from enum import Enum
 from operator import eq
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from pydantic.class_validators import root_validator, validator
 from pydantic.main import BaseModel
 
-from hydrolib.core.utils import operator_str
+from hydrolib.core.utils import operator_str, str_is_empty_or_none
 
 
 def get_split_string_on_delimiter_validator(*field_name: str, delimiter: str = None):
@@ -249,3 +249,95 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
             return default
 
     return value
+
+
+def get_location_specification_rootvalidator(
+    allow_nodeid: bool = True,
+    numfield_name: str = "numCoordinates",
+    xfield_name: str = "xCoordinates",
+    yfield_name: str = "yCoordinates",
+):
+    """
+    Get a root validator that checks for correct location specification in
+    typical 1D2D input in an IniBasedModel class.
+
+    It checks for presence of at least one of: nodeId (if allowed),
+    branchId+chainage or num/x/yCoordinates.
+    Also, completeness of the given location is checked (e.g., no chainage
+    missing when branchId given), as well as the locationType.
+
+    Args:
+        allow_nodeid (bool): Allow nodeId in input. Defaults to True.
+        numfield_name (str): Field name (in input file) for the coordinates
+            count. Will be lowercased in values dict. Use None when this
+            class has no count field at all. Defaults to "numCoordinates".
+        xfield_name (str): Field name (in input file) for the x coordinates.
+            Will be lowercased in values dict. Defaults to "xCoordinates".
+        yfield_name (str): Field name (in input file) for the y coordinates.
+            Will be lowercased in values dict. Defaults to "yCoordinates".
+
+    """
+
+    def validate_location_specification(cls, values: Dict) -> Dict:
+        """
+        Verify whether the location given for this object matches the expectations.
+
+        Args:
+            values (Dict): Dictionary of object's validated fields.
+
+        Raises:
+            ValueError: When neither nodeid, branchid or coordinates have been given.
+            ValueError: When either x or y coordinates were expected but not given.
+            ValueError: When locationtype should be 1d but other was specified.
+
+        Returns:
+            Dict: Validated dictionary of input class fields.
+        """
+
+        def validate_coordinates(coord_name: str) -> None:
+            if values.get(coord_name.lower(), None) is None:
+                raise ValueError("{} should be given.".format(coord_name))
+
+        # If nodeid or branchid and Chainage are present
+        node_id: str = values.get("nodeid", None)
+        branch_id: str = values.get("branchid", None)
+        n_coords: int = (
+            values.get(numfield_name.lower(), 0)
+            if not str_is_empty_or_none(numfield_name)
+            else None
+        )
+
+        chainage: float = values.get("chainage", None)
+
+        # First validation - at least one of the following should be specified.
+        if str_is_empty_or_none(node_id) and (str_is_empty_or_none(branch_id)):
+            if n_coords == 0:
+                raise ValueError(
+                    f"Either {'nodeId, ' if allow_nodeid else ''}branchId (with chainage) or {numfield_name} (with {xfield_name} and {yfield_name}) are required."
+                )
+            else:
+                # Validation: when ids are absent, coordinates should be valid.
+                validate_coordinates(xfield_name)
+                validate_coordinates(yfield_name)
+            return values
+        else:
+            # Validation: nodeId only when it is allowed
+            if not str_is_empty_or_none(node_id) and not allow_nodeid:
+                raise ValueError(f"nodeId is not allowed for {cls.__name__} objects")
+            # Validation: chainage should be given with branchid
+            if not str_is_empty_or_none(branch_id) and chainage is None:
+                raise ValueError(
+                    "Chainage should be provided when branchId is specified."
+                )
+            # Validation: when nodeid, or branchid specified, expected 1d.
+            location_type = values.get("locationtype", None)
+            if str_is_empty_or_none(location_type):
+                values["locationtype"] = "1d"
+            elif location_type.lower() != "1d":
+                raise ValueError(
+                    "locationType should be 1d when nodeId (or branchId and chainage) is specified."
+                )
+
+        return values
+
+    return root_validator(allow_reuse=True)(validate_location_specification)

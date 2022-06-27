@@ -25,28 +25,45 @@ class TestObservationPoint:
         obspoint = ObservationPoint(**obsvalues)
 
         assert obspoint.name == obsvalues["name"]
-        assert obspoint.locationtype == None
+        assert obspoint.locationtype == LocationType.oned
         assert obspoint.branchid == obsvalues["branchid"]
         assert obspoint.chainage == obsvalues["chainage"]
 
     @pytest.mark.parametrize(
-        "loctype, expected_type",
+        "loctype, use_branchid, expected_type, should_validate",
         [
-            ("1d", LocationType.oned),
-            ("2d", LocationType.twod),
+            ("1d", True, LocationType.oned, True),
+            ("2d", True, None, False),
+            ("all", True, LocationType.oned, False),
+            ("1d", False, LocationType.oned, True),
+            ("2d", False, LocationType.twod, True),
+            ("all", False, LocationType.all, True),
         ],
     )
     def test_create_observationpoint_1or2d(
-        self, loctype: str, expected_type: LocationType
+        self,
+        loctype: str,
+        use_branchid: bool,
+        expected_type: LocationType,
+        should_validate: bool,
     ):
         obsvalues = _create_observation_point_values()
-        obsvalues.update({"locationType": loctype})
-        obspoint = ObservationPoint(**obsvalues)
+        obsvalues.update({"locationtype": loctype})
+        if not use_branchid:
+            del obsvalues["branchid"]
+            del obsvalues["chainage"]
+            obsvalues.update({"x": 1, "y": 10})
+        if not should_validate:
+            with pytest.raises(ValidationError) as error:
+                obspoint = ObservationPoint(**obsvalues)
+        else:
+            obspoint = ObservationPoint(**obsvalues)
 
-        assert obspoint.name == obsvalues["name"]
-        assert obspoint.locationtype == expected_type
-        assert obspoint.branchid == obsvalues["branchid"]
-        assert obspoint.chainage == obsvalues["chainage"]
+            assert obspoint.name == obsvalues["name"]
+            assert obspoint.locationtype == expected_type
+            if use_branchid:
+                assert obspoint.branchid == obsvalues["branchid"]
+                assert obspoint.chainage == obsvalues["chainage"]
 
 
 class TestObservationPointModel:
@@ -57,7 +74,7 @@ class TestObservationPointModel:
         assert m.observationpoint[1].x == -2.73750000
         assert m.observationpoint[1].y == 5.15083334e01
         assert m.observationpoint[2].name == "#St Helier Jersey#"
-        assert m.observationpoint[3].locationtype == None
+        assert m.observationpoint[3].locationtype == LocationType.oned
         assert m.observationpoint[4].locationtype == LocationType.oned
 
 

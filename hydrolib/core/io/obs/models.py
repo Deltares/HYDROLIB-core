@@ -1,11 +1,14 @@
-from enum import Enum
 from typing import List, Literal, Optional
 
 from pydantic.fields import Field
 
 from hydrolib.core.io.common.models import LocationType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import get_enum_validator, make_list_validator
+from hydrolib.core.io.ini.util import (
+    get_enum_validator,
+    get_location_specification_rootvalidator,
+    make_list_validator,
+)
 
 
 class ObservationPointGeneral(INIGeneral):
@@ -67,6 +70,9 @@ class ObservationPoint(INIBasedModel):
     y: Optional[float] = Field(None, alias="y")
 
     _type_validator = get_enum_validator("locationtype", enum=LocationType)
+    _location_validator = get_location_specification_rootvalidator(
+        allow_nodeid=False, numfield_name=None, xfield_name="x", yfield_name="y"
+    )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
