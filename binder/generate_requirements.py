@@ -1,8 +1,9 @@
+import argparse
 from pathlib import Path
 from typing import Any, Dict
 
-import argparse
 import toml
+
 
 # Based on: https://github.com/jla524/requirements/blob/main/src/convert.py
 def retrieve_packages(toml_content: Dict[str, Any]) -> Dict[str, str]:
