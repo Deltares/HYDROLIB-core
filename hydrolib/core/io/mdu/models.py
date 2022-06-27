@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import Field
 
@@ -552,3 +552,15 @@ class FMModel(INIModel):
             return ResolveRelativeMode.ToParent
         else:
             return ResolveRelativeMode.ToAnchor
+
+    @classmethod
+    def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
+        if not (general := data.get("general", None)):
+            return ResolveRelativeMode.ToParent
+        if not (relative_to_parent := general.get("pathsrelativetoparent", None)):
+            return ResolveRelativeMode.ToParent
+
+        if relative_to_parent == "0":
+            return ResolveRelativeMode.ToAnchor
+        else:
+            return ResolveRelativeMode.ToParent

@@ -546,12 +546,14 @@ class FileModel(BaseModel, ABC):
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
 
-            context.push_new_parent(filepath.parent, self._relative_mode)
             logger.info(f"Loading data from {filepath}")
 
             data = self._load(loading_path)
             data["filepath"] = filepath
             kwargs.update(data)
+
+            relative_mode = self._get_relative_mode_from_data(data)
+            context.push_new_parent(filepath.parent, relative_mode)
 
             super().__init__(*args, **kwargs)
             self._post_init_load()
@@ -780,4 +782,8 @@ class FileModel(BaseModel, ABC):
         Returns:
             ResolveRelativeMode: The ResolveRelativ
         """
+        return ResolveRelativeMode.ToParent
+
+    @classmethod
+    def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
         return ResolveRelativeMode.ToParent
