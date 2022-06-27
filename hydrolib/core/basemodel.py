@@ -546,12 +546,18 @@ class FileModel(BaseModel, ABC):
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
 
-            context.push_new_parent(filepath.parent, self._relative_mode)
             logger.info(f"Loading data from {filepath}")
 
             data = self._load(loading_path)
             data["filepath"] = filepath
             kwargs.update(data)
+
+            # Note: the relative mode needs to be obtained from the data directly
+            # because self._relative_mode has not been resolved yet (this is done as
+            # part of the __init__), however during the __init__ we need to already
+            # have pushed the new parent. As such we cannot move this call later.
+            relative_mode = self._get_relative_mode_from_data(data)
+            context.push_new_parent(filepath.parent, relative_mode)
 
             super().__init__(*args, **kwargs)
             self._post_init_load()
@@ -777,6 +783,26 @@ class FileModel(BaseModel, ABC):
         """Gets the ResolveRelativeMode of this FileModel.
 
         Returns:
-            ResolveRelativeMode: The ResolveRelativ
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
+        return ResolveRelativeMode.ToParent
+
+    @classmethod
+    def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel based on the provided data.
+
+        Note that by default, data is not used, and FileModels are always relative to
+        the parent. In exceptional cases, the relative mode can be dependent on the
+        data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
+        As such the data is provided for such classes where the relative mode is
+        dependent on the state (e.g. the [FMModel][hydrolib.core.io.mdu.models.FMModel]).
+
+        Args:
+            data (Dict[str, Any]):
+                The unvalidated/parsed data which is fed to the pydantic base model,
+                used to determine the ResolveRelativeMode.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
         """
         return ResolveRelativeMode.ToParent
