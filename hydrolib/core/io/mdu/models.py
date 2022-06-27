@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import Field
 
@@ -552,3 +552,28 @@ class FMModel(INIModel):
             return ResolveRelativeMode.ToParent
         else:
             return ResolveRelativeMode.ToAnchor
+
+    @classmethod
+    def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel based on the provided data.
+
+        The ResolveRelativeMode of the FMModel is determined by the
+        'pathsRelativeToParent' property of the 'General' category.
+
+        Args:
+            data (Dict[str, Any]):
+                The unvalidated/parsed data which is fed to the pydantic base model,
+                used to determine the ResolveRelativeMode.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
+        if not (general := data.get("general", None)):
+            return ResolveRelativeMode.ToParent
+        if not (relative_to_parent := general.get("pathsrelativetoparent", None)):
+            return ResolveRelativeMode.ToParent
+
+        if relative_to_parent == "0":
+            return ResolveRelativeMode.ToAnchor
+        else:
+            return ResolveRelativeMode.ToParent
