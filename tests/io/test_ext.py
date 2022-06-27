@@ -180,7 +180,7 @@ class TestModels:
                     Lateral._location_validator(test_dict)
                 assert (
                     str(exc_err.value)
-                    == "LocationType should be 1d when nodeId (or branchId and chainage) is specified."
+                    == "locationType should be 1d when nodeId (or branchId and chainage) is specified."
                 )
 
             @pytest.mark.parametrize(
