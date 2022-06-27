@@ -560,9 +560,10 @@ class FMModel(INIModel):
         The ResolveRelativeMode of the FMModel is determined by the
         'pathsRelativeToParent' property of the 'General' category.
 
-
         Args:
-            data (Dict[str, Any]): The data used to determine the ResolveRelativeMode.
+            data (Dict[str, Any]):
+                The unvalidated/parsed data which is fed to the pydantic base model,
+                used to determine the ResolveRelativeMode.
 
         Returns:
             ResolveRelativeMode: The ResolveRelativeMode of this FileModel

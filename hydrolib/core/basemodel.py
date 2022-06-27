@@ -792,8 +792,16 @@ class FileModel(BaseModel, ABC):
     def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
         """Gets the ResolveRelativeMode of this FileModel based on the provided data.
 
+        Note that by default, data is not used, and FileModels are always relative to 
+        the parent. In exceptional cases, the relative mode can be dependent on the 
+        data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
+        As such the data is provided for such classes where the relative mode is 
+        dependent on the state (e.g. the FM Model).
+
         Args:
-            data (Dict[str, Any]): The data used to determine the ResolveRelativeMode.
+            data (Dict[str, Any]): 
+                The unvalidated/parsed data which is fed to the pydantic base model,
+                used to determine the ResolveRelativeMode.
 
         Returns:
             ResolveRelativeMode: The ResolveRelativeMode of this FileModel
