@@ -1146,13 +1146,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.ext.models.Lateral.validate_location_dependencies" class="md-nav__link">
-    validate_location_dependencies()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#hydrolib.core.io.ext.models.Lateral.validate_location_type" class="md-nav__link">
     validate_location_type()
   </a>
@@ -1304,6 +1297,20 @@ You're not viewing the latest release version.
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../obs/" class="md-nav__link">
+        Observation point .ini files
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1345,7 +1352,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../rr/" class="md-nav__link">
+      <a href="../rr/rr/" class="md-nav__link">
         RainfallRunoff file models
       </a>
     </li>
@@ -1359,8 +1366,8 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../bui/" class="md-nav__link">
-        BUI file
+      <a href="../rr/meteo/" class="md-nav__link">
+        The Rainfall Runoff meteo layer
       </a>
     </li>
   
@@ -1488,13 +1495,6 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.ext.models.Lateral.validate_coordinates" class="md-nav__link">
     validate_coordinates()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.io.ext.models.Lateral.validate_location_dependencies" class="md-nav__link">
-    validate_location_dependencies()
   </a>
   
 </li>
@@ -2085,149 +2085,6 @@ to the expected value given for numcoordinates.</p>
         <span class="nb">len</span><span class="p">(</span><span class="n">field_value</span><span class="p">),</span> <span class="n">num_coords</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">field_value</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="hydrolib.core.io.ext.models.Lateral.validate_location_dependencies" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">validate_location_dependencies</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
-  </span>
-
-<a href="#hydrolib.core.io.ext.models.Lateral.validate_location_dependencies" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Once all the fields have been evaluated, we verify whether the location
-given for this Lateral matches the expectations.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>values</code></td>
-        <td><code>Dict</code></td>
-        <td><p>Dictionary of Laterals validated fields.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Exceptions:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>ValueError</code></td>
-        <td><p>When neither nodeid, branchid or coordinates have been given.</p></td>
-      </tr>
-      <tr>
-        <td><code>ValueError</code></td>
-        <td><p>When either x or y coordinates were expected but not given.</p></td>
-      </tr>
-      <tr>
-        <td><code>ValueError</code></td>
-        <td><p>When locationtype should be 1d but other was specified.</p></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>Dict</code></td>
-      <td><p>Validated dictionary of Lateral fields.</p></td>
-    </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>hydrolib/core/io/ext/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span>
-<span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">validate_location_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Once all the fields have been evaluated, we verify whether the location</span>
-<span class="sd">    given for this Lateral matches the expectations.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        values (Dict): Dictionary of Laterals validated fields.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: When neither nodeid, branchid or coordinates have been given.</span>
-<span class="sd">        ValueError: When either x or y coordinates were expected but not given.</span>
-<span class="sd">        ValueError: When locationtype should be 1d but other was specified.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Dict: Validated dictionary of Lateral fields.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">validate_coordinates</span><span class="p">(</span><span class="n">coord_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">coord_name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> should be given.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_name</span><span class="p">))</span>
-
-    <span class="c1"># If nodeid or branchid and Chainage are present</span>
-    <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nodeid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">branch_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">n_coords</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numcoordinates&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">chainage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chainage&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-    <span class="c1"># First validation - at least one of the following should be specified.</span>
-    <span class="k">if</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="n">branch_id</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">n_coords</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Second validation, coordinates should be valid.</span>
-            <span class="n">validate_coordinates</span><span class="p">(</span><span class="s2">&quot;xCoordinates&quot;</span><span class="p">)</span>
-            <span class="n">validate_coordinates</span><span class="p">(</span><span class="s2">&quot;yCoordinates&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">values</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Third validation, chainage should be given with branchid</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="n">branch_id</span><span class="p">)</span> <span class="ow">and</span> <span class="n">chainage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Chainage should be provided when branchId is specified.&quot;</span>
-            <span class="p">)</span>
-        <span class="c1"># Fourth validation, when nodeid, or branchid specified, expected 1d.</span>
-        <span class="n">location_type</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locationtype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="n">location_type</span><span class="p">):</span>
-            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;locationtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1d&quot;</span>
-        <span class="k">elif</span> <span class="n">location_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;1d&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;LocationType should be 1d when nodeId (or branchId and chainage) is specified.&quot;</span>
-            <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">values</span>
 </code></pre></div>
         </details>
     </div>

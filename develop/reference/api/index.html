@@ -1530,6 +1530,20 @@ You're not viewing the latest release version.
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../obs/" class="md-nav__link">
+        Observation point .ini files
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1571,7 +1585,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../rr/" class="md-nav__link">
+      <a href="../rr/rr/" class="md-nav__link">
         RainfallRunoff file models
       </a>
     </li>
@@ -1585,8 +1599,8 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../bui/" class="md-nav__link">
-        BUI file
+      <a href="../rr/meteo/" class="md-nav__link">
+        The Rainfall Runoff meteo layer
       </a>
     </li>
   
@@ -2881,12 +2895,18 @@ If the filepath is provided, it is read from disk.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_absolute_anchor_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_current_parent</span><span class="p">()</span>
         <span class="n">loading_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
-        <span class="n">context</span><span class="o">.</span><span class="n">push_new_parent</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relative_mode</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading data from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">loading_path</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filepath</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Note: the relative mode needs to be obtained from the data directly</span>
+        <span class="c1"># because self._relative_mode has not been resolved yet (this is done as</span>
+        <span class="c1"># part of the __init__), however during the __init__ we need to already</span>
+        <span class="c1"># have pushed the new parent. As such we cannot move this call later.</span>
+        <span class="n">relative_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_relative_mode_from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">push_new_parent</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">relative_mode</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_init_load</span><span class="p">()</span>
