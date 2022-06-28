@@ -1,10 +1,9 @@
-from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional
 
 from pydantic import Field, root_validator, validator
 
-from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
+from hydrolib.core.io.bc.models import ForcingBase, ForcingData, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
@@ -13,20 +12,6 @@ from hydrolib.core.io.ini.util import (
     make_list_validator,
 )
 from hydrolib.core.utils import str_is_empty_or_none
-
-
-# TODO: to be moved into hydrolib.core.io.common, once PR #236 has been closed.
-class RealTime(str, Enum):
-    realtime = "realtime"
-    """str: Realtime data source, externally provided"""
-
-
-ForcingData = Union[float, RealTime, ForcingModel]
-"""Data type that selects from three different types of forcing data:
-*   a scalar float constant
-*   "realtime" keyword, indicating externally controlled.
-*   A ForcingModel coming from a .bc file.
-"""
 
 
 class Boundary(INIBasedModel):
