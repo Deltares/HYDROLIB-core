@@ -4,6 +4,9 @@ version = "0.2.1"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
+readme="README.md"
+repository="https://github.com/Deltares/HYDROLIB-core"
+documentation="https://deltares.github.io/HYDROLIB-core"
 packages = [
     { include = "hydrolib"},
 ]
