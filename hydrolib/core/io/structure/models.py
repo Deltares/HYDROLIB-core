@@ -902,7 +902,7 @@ class Dambreak(Structure):
                 node_is_given and not x_is_given and not y_is_given):
                 return
 
-            raise ValueError(f"Either {node_key} should be specified or {x_key} and {y_key}.")
+            raise ValueError(f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`.")
 
         _validate_waterlevel_location(
             "waterLevelUpstreamLocationX", "waterLevelUpstreamLocationY", "waterLevelUpstreamNodeId")
