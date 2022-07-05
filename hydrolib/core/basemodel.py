@@ -613,8 +613,7 @@ class FileModel(BaseModel, ABC):
         if filepath.is_file():
             return self._parse(filepath)
         else:
-            warn(f"File: `{filepath}` not found, skipped parsing.")
-            return {}
+            raise ValueError(f"File: `{filepath}` not found, skipped parsing.")
 
     def save(self, filepath: Optional[Path] = None, recurse: bool = False) -> None:
         """Save the model to disk.
