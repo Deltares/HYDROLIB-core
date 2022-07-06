@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Callable, Dict, Iterable, Literal, Optional
 
+from pydantic import Field
 from pydantic.types import FilePath
 
 from hydrolib.core.basemodel import FileModel
@@ -20,8 +21,8 @@ class RainfallRunoffModel(FileModel):
 
     # Note that order is defined by the .fnm file type and is used for parsing the data.
     control_file: Optional[Path] = Path("delft_3b.ini")
-    node_data: Optional[NodeFile]
-    link_data: Optional[LinkFile]
+    node_data: Optional[NodeFile] = Field(None)
+    link_data: Optional[LinkFile] = Field(None)
     open_water_data: Optional[Path] = Path("3brunoff.tp")
     paved_area_general: Optional[Path] = Path("paved.3b")
     paved_area_storage: Optional[Path] = Path("paved.sto")
@@ -31,7 +32,7 @@ class RainfallRunoffModel(FileModel):
     pluvius: Optional[Path] = Path("pluvius.3b")
     pluvius_general: Optional[Path] = Path("pluvius.alg")
     kasklasse: Optional[Path] = Path("kasklass")
-    bui_file: Optional[BuiModel] = None
+    bui_file: Optional[BuiModel] = Field(None)
     verdampings_file: Optional[Path] = Path("default.evp")
     unpaved_area_general: Optional[Path] = Path("unpaved.3b")
     unpaved_area_storage: Optional[Path] = Path("unpaved.sto")
