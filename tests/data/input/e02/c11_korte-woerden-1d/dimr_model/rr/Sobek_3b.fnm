@@ -11,8 +11,8 @@
 *
 *
 'delft_3b.ini'                            * 1. Control file                                             I
-'3b_nod.tp'                                      * 2. Knoop data                                               I
-'3b_link.tp'                                     * 3. Tak data                                                      I
+'3B_NOD.TP'                                      * 2. Knoop data                                               I
+'3B_LINK.TP'                                     * 3. Tak data                                                      I
 '3brunoff.tp'                                    * 4. Open water data                                               I
 'paved.3b'                                       * 5. Verhard gebied algemeen                                       I
 'paved.sto'                                      * 6. Verhard gebied storage                                        I

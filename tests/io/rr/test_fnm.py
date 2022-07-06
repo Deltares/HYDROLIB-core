@@ -4,9 +4,9 @@ from typing import Callable
 
 import pytest
 
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.fnm.parser import parse
-from hydrolib.core.io.fnm.serializer import serialize
+from hydrolib.core.io.rr.models import RainfallRunoffModel
+from hydrolib.core.io.rr.parser import parse
+from hydrolib.core.io.rr.serializer import serialize
 from tests.utils import test_input_dir
 
 

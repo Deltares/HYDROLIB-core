@@ -757,9 +757,18 @@ class Mesh1d(BaseModel):
             )
 
         # If no points remain, add an extra halfway: each branch should have at least 1 node
+        # Adjust the branch object as well, by adding the extra point
         if len(offsets) == 0:
-            offsets = np.array([branch.length / 2.0])
+            # Add extra offset
+            extra_offset = branch.length / 2.0
+            offsets = np.array([extra_offset])
             nlinks += 1
+            # Adjust branch object
+            branch.branch_offsets = np.insert(branch.branch_offsets, 1, extra_offset)
+            branch.node_xy = np.insert(
+                branch.node_xy, 1, branch.interpolate(offsets), axis=0
+            )
+            branch.mask = np.insert(branch.mask, 1, False)
 
         # Get the index of the first and last node, add as edge_nodes
         i_from = self._network1d_node_position(first_point[0], first_point[1])
@@ -837,24 +846,6 @@ class Mesh1d(BaseModel):
         self.mesh1d_node_branch_offset = np.append(
             self.mesh1d_node_branch_offset, offsets
         )
-
-        # self._process_edges_for_branch()
-
-    def _process_edges_for_branch(self, branch_id: str) -> None:
-
-        branch = self.branches[branch_id]
-
-        edge_coords = (branch.node_xy[:-1] + branch.node_xy[1:]) / 2.0
-        edge_offsets = (branch.branch_offsets[:-1] + branch.branch_offsets[1:]) / 2
-
-        self.mesh1d_edge_branch_id = np.append(
-            self.mesh1d_edge_branch_id, np.full(len(edge_coords), i)
-        )
-        self.mesh1d_edge_branch_offset = np.append(
-            self.mesh1d_edge_branch_offset, edge_offsets
-        )
-        self.mesh1d_edge_x = np.append(self.mesh1d_edge_x, edge_coords[:, 0])
-        self.mesh1d_edge_y = np.append(self.mesh1d_edge_y, edge_coords[:, 1])
 
     def get_node_mask(self, branchids: List[str] = None):
         """Get node mask, give a mask with True for each node that is in the given branchid list"""

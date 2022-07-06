@@ -40,15 +40,24 @@ or we can select the  "Open a Remote Window" button, the green button in the bot
 code window, after which we can select "Reopen in container". Both will then spin up a new container in which we can work.
 Note that if it is the first time starting our repository, or if we have made changes to the Docker Images we might need to build the container, which could take a few moments.
 
-Once opened in a separate container, we can start a terminal to verify everything is working correctly. 
-When we start a new terminal, we should see the terminal of our container, e.g. something a long the lines of
+Once opened in a separate container, we can start a terminal to verify everything is 
+working correctly. First, we need to ensure the correct python interpreter is used. 
+We want to use the virtual environment created by poetry, which default resides in 
+`./.venv/`. Visual Studio Code might prompt you to select an interpreter. If it does
+press the 'Select Python Interpreter', and select the virtual environment residing in
+`./.venv/`. If it does not explicitly prompt you (or if you want to change it later on),
+press `ctrl + shift + p`, and select 'Python: Select Interpreter'. If it currently is 
+not set to the virtual environment, change it to the correct interpreter.
 
-```bash
-(.venv) root@7573572275f1:/workspaces/HYDROLIB-core# 
-```
+It should now be possible to run the HYDROLIB-Core tests within our container by opening 
+the 'Testing' tab. If the 'Testing' is not already configured in the 
+`./.vscode/settings.json`, we will need to configure the Python tests:
 
-It should now be possible to run the HYDROLIB-Core tests within our container. You might get prompted to configure either
-the python interpreter, or the python test framework. Once this is done all tests should pass as they would normally.
+1. click the 'Configure Python Tests' button in the 'Testing' tab
+2. Select 'pytest' in the pop-up window
+3. Select 'tests', this will ensure tests are located in our 'tests' directory
+
+Once this is done all tests should pass as they would normally.
 
 ##  Dockerfile configures python, poetry and other dependencies
 
