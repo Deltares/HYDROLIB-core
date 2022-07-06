@@ -9,12 +9,25 @@ def _calculate_max_value_length(data: Iterable[str]) -> int:
     return max(map(len, data))
 
 
-def _get_string_value(path_value: Optional[Union[dict, Path]]) -> str:
+def _get_string_value(path_value: Optional[Union[dict, Path, str]]) -> str:
+    """Get printable string value of the path value in a typical
+    RainfallRunoffModel.
+
+    str type as input is intentionally accepted to support file names
+    pointing to non-existent files (e.g. in incomplete model input).
+
+    Args:
+        path_value (Union[dict, Path, str]): path-like value to be printed.
+    Returns:
+        str: The str representation of input path_value.
+    """
     value = ""
     if type(path_value) is dict:
         value = str(path_value.get("filepath", ""))
     elif isinstance(path_value, Path):
         value = str(path_value)
+    elif isinstance(path_value, str):
+        value = path_value
 
     return f"'{value}'"
 
