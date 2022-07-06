@@ -1138,6 +1138,13 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingData" class="md-nav__link">
+    ForcingData
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.bc.models.ForcingGeneral" class="md-nav__link">
     ForcingGeneral
   </a>
@@ -1197,6 +1204,26 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.bc.models.QuantityUnitPair.__repr__" class="md-nav__link">
     __repr__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime" class="md-nav__link">
+    RealTime
+  </a>
+  
+    <nav class="md-nav" aria-label="RealTime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime.realtime" class="md-nav__link">
+    realtime
   </a>
   
 </li>
@@ -1548,6 +1575,13 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingData" class="md-nav__link">
+    ForcingData
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.bc.models.ForcingGeneral" class="md-nav__link">
     ForcingGeneral
   </a>
@@ -1607,6 +1641,26 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.bc.models.QuantityUnitPair.__repr__" class="md-nav__link">
     __repr__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime" class="md-nav__link">
+    RealTime
+  </a>
+  
+    <nav class="md-nav" aria-label="RealTime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime.realtime" class="md-nav__link">
+    realtime
   </a>
   
 </li>
@@ -2014,6 +2068,30 @@ The derived model with an equal function type will be initialized.</p>
 
 
 
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.ForcingData" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ForcingData</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.ForcingData" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Data type that selects from three different types of forcing data:
+*   a scalar float constant
+*   "realtime" keyword, indicating externally controlled.
+*   A ForcingModel coming from a .bc file.</p>
+    </div>
+
+  </div>
+
+
+
+
+
   <div class="doc doc-object doc-class">
 
 
@@ -2403,6 +2481,66 @@ QuantityUnitPair            (<span title="tuple">tuple</span>)
 
 
 
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.RealTime" class="doc doc-heading">
+        <code>
+RealTime            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+<a href="#hydrolib.core.io.bc.models.RealTime" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Enum class containing the valid value for the "realtime" reserved
+keyword for real-time controlled forcing data, e.g., for hydraulic
+structures.</p>
+<p>This class is used inside the ForcingData Union, to force detection
+of the realtime keyword, prior to considering it a filename.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.RealTime.realtime" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">realtime</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.RealTime.realtime" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Realtime data source, externally provided</p>
+    </div>
+
+  </div>
 
 
 
