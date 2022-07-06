@@ -4,6 +4,7 @@ import pytest
 
 from hydrolib.core.io.mdu.models import Geometry, Output
 from hydrolib.core.utils import get_substring_between, str_is_empty_or_none
+
 from .utils import test_input_dir
 
 
@@ -15,17 +16,10 @@ class TestSplitString:
         assert output.statsinterval == [1.0, 5.0]
 
     def test_split_string_strip_semicolon(self):
-        e02 = (
-            test_input_dir
-            / "e02"
-        )
+        e02 = test_input_dir / "e02"
 
         file1 = (
-            e02
-            / "c11_korte-woerden-1d"
-            / "dimr_model"
-            / "dflowfm"
-            / "structures.ini"
+            e02 / "c11_korte-woerden-1d" / "dimr_model" / "dflowfm" / "structures.ini"
         )
 
         file2 = (
@@ -35,7 +29,7 @@ class TestSplitString:
             / "fm"
             / "structure.ini"
         )
-        
+
         string_with_multiple_files = f"{file1} ; {file2}"
         output = Geometry(structurefile=string_with_multiple_files)
 
