@@ -3,7 +3,7 @@ from typing import Dict, List, Literal, Optional
 
 from pydantic import Field, root_validator, validator
 
-from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
+from hydrolib.core.io.bc.models import ForcingBase, ForcingData, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
@@ -111,7 +111,10 @@ class Lateral(INIBasedModel):
     numcoordinates: Optional[int] = Field(alias="numCoordinates")
     xcoordinates: Optional[List[int]] = Field(alias="xCoordinates")
     ycoordinates: Optional[List[int]] = Field(alias="yCoordinates")
-    discharge: str = Field(alias="discharge")
+    discharge: ForcingData = Field(alias="discharge")
+
+    def is_intermediate_link(self) -> bool:
+        return True
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
