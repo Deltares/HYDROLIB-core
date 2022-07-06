@@ -244,7 +244,7 @@ class TestModels:
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(
                         id="42",
-                        discharge="aDischarge",
+                        discharge=1.23,
                         numcoordinates=None,
                         xcoordinates=x_coord,
                         ycoordinates=y_coord,
@@ -266,7 +266,7 @@ class TestModels:
                 with pytest.raises(ValidationError):
                     Lateral(
                         id="42",
-                        discharge="bDischarge",
+                        discharge=1.23,
                         numcoordinates=2,
                         xcoordinates=x_coord,
                         ycoordinates=y_coord,
@@ -278,7 +278,7 @@ class TestModels:
             def test_given_partial_coordinates_raises(self, missing_coord: str):
                 lateral_dict = dict(
                     id="42",
-                    discharge="cDischarge",
+                    discharge=1.23,
                     numcoordinates=2,
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
@@ -295,7 +295,7 @@ class TestModels:
                     location_type = "loremIpsum"
                     Lateral(
                         id="42",
-                        discharge="dDischarge",
+                        discharge=1.23,
                         numcoordinates=2,
                         xcoordinates=[42, 24],
                         ycoordinates=[24, 42],
@@ -328,7 +328,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="eDischarge",
+                    discharge=1.23,
                     numcoordinates=2,
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
