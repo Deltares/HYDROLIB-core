@@ -29,7 +29,6 @@ def _get_string_value(path_value: Optional[Union[dict, Path, str]]) -> str:
     elif isinstance(path_value, str):
         value = path_value
 
-    return f"'{value}'"
 
 
 def serialize(data: Dict) -> str:
