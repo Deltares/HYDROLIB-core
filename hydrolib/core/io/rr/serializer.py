@@ -4,9 +4,11 @@ import inspect
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Union
 
+from hydrolib.core.utils import get_str_len
 
-def _calculate_max_value_length(data: Iterable[str]) -> int:
-    return max(map(len, data))
+
+def _calculate_max_value_length(data: Iterable) -> int:
+    return max(map(get_str_len, data))
 
 
 def _get_string_value(path_value: Optional[Union[dict, Path, str]]) -> str:
@@ -29,6 +31,7 @@ def _get_string_value(path_value: Optional[Union[dict, Path, str]]) -> str:
     elif isinstance(path_value, str):
         value = path_value
 
+    return f"'{value}'"
 
 
 def serialize(data: Dict) -> str:
@@ -45,7 +48,7 @@ def serialize(data: Dict) -> str:
 
     values = [_get_string_value(v) for v in data.values()]
     max_len = _calculate_max_value_length(values)
-    padded_values = [s.ljust(max_len) for s in values]
+    padded_values = [s.ljust(max_len) if s else " " * max_len for s in values]
 
     # fmt: off
     return inspect.cleandoc("""
