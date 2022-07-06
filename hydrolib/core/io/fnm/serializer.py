@@ -10,10 +10,11 @@ def _calculate_max_value_length(data: Iterable[str]) -> int:
 
 
 def _get_string_value(path_value: Optional[Union[dict, Path]]) -> str:
+    value = ""
     if type(path_value) is dict:
         value = str(path_value.get("filepath", ""))
-    else:
-        value = str(path_value) if path_value is not None else ""
+    elif isinstance(path_value, Path):
+        value = str(path_value)
 
     return f"'{value}'"
 
@@ -22,7 +23,7 @@ def serialize(data: Dict) -> str:
     """Serialize the specified model.
 
     Args:
-        model (RainfallRunoffModel): The model to serialize.
+        data (Dict): dict values of the RainfallRunoffModel to serialize.
 
     Returns:
         str: The serialized RainfallRunoffModel in .fnm format.
