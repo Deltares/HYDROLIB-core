@@ -2103,7 +2103,8 @@ Typically inside the structure list of a <a href="../mdu/#hydrolib.core.io.mdu.m
     <div class="doc doc-contents ">
 
       <p>Verifies whether the location for this structure contains valid values for
-numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.</p>
+numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
+Verifies whether de water level location specifications are valid.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -2135,7 +2136,7 @@ numCoordinates, xCoordinates and yCoordinates or instead is using a polyline fil
   <tbody>
       <tr>
         <td><code>ValueError</code></td>
-        <td><p>When the values dictionary does not contain valid coordinates or polyline file..</p></td>
+        <td><p>When the values dictionary does not contain valid coordinates or polyline file or when the water level location specifications are not valid.</p></td>
       </tr>
   </tbody>
 </table>
@@ -2162,16 +2163,43 @@ numCoordinates, xCoordinates and yCoordinates or instead is using a polyline fil
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies whether the location for this structure contains valid values for</span>
 <span class="sd">    numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.</span>
+<span class="sd">    Verifies whether de water level location specifications are valid.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        values (dict): Dictionary of validated values to create a Dambreak.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ValueError: When the values dictionary does not contain valid coordinates or polyline file..</span>
+<span class="sd">        ValueError: When the values dictionary does not contain valid coordinates or polyline file or when the water level location specifications are not valid.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: Dictionary of validated values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_validate_waterlevel_location</span><span class="p">(</span><span class="n">x_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">node_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">x_is_given</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x_key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">y_is_given</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">y_key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">node_is_given</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x_is_given</span> <span class="ow">and</span> <span class="n">y_is_given</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">node_is_given</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">node_is_given</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">x_is_given</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">y_is_given</span>
+        <span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Either `</span><span class="si">{</span><span class="n">node_key</span><span class="si">}</span><span class="s2">` should be specified or `</span><span class="si">{</span><span class="n">x_key</span><span class="si">}</span><span class="s2">` and `</span><span class="si">{</span><span class="n">y_key</span><span class="si">}</span><span class="s2">`.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">_validate_waterlevel_location</span><span class="p">(</span>
+        <span class="s2">&quot;waterLevelUpstreamLocationX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;waterLevelUpstreamLocationY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;waterLevelUpstreamNodeId&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_validate_waterlevel_location</span><span class="p">(</span>
+        <span class="s2">&quot;waterLevelDownstreamLocationX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;waterLevelDownstreamLocationY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;waterLevelDownstreamNodeId&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">Structure</span><span class="o">.</span><span class="n">validate_coordinates_in_model</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
         <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;polylinefile&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
