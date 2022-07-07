@@ -177,7 +177,7 @@ class SectionSerializer:
 
     def _serialize_section_header(self, section_header: str) -> Lines:
         indent = " " * (self.config.section_indent)
-        yield f"{indent}[{section_header}]"
+        return [f"{indent}[{section_header}]"]
 
     def _serialize_content(self, content: Iterable[ContentElement]) -> Lines:
         elements = (self._serialize_content_element(elem) for elem in content)
@@ -205,7 +205,7 @@ class SectionSerializer:
 
         comment = f" # {property.comment}" if property.comment is not None else ""
 
-        yield f"{indent}{key}{value}{comment}".rstrip()
+        return [f"{indent}{key}{value}{comment}".rstrip()]
 
     def _serialize_datablock(self, datablock: Optional[Datablock]) -> Lines:
         if datablock is None or self.max_length.datablock is None:
