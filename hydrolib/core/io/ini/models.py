@@ -152,7 +152,12 @@ class INIBasedModel(BaseModel, ABC):
 
 
 class DataBlockINIBasedModel(INIBasedModel):
-    """DataBlockINIBasedModel defines the base model for ini models with datablocks."""
+    """DataBlockINIBasedModel defines the base model for ini models with datablocks.
+
+    Attributes:
+        datablock (List[List[Union[float, str]]]): (class attribute) the actual data
+            columns.
+    """
 
     datablock: List[List[Union[float, str]]] = []
 

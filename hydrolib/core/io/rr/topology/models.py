@@ -12,26 +12,30 @@ from hydrolib.core.io.rr.topology.serializer import (
     NodeFileSerializer,
 )
 
-# Dictionary with `nt` mapped against the expected `mt`.
 nodetypes_netter_to_rr = {
-    43: 1,
-    44: 2,
-    45: 3,
-    46: 4,
-    None: 5,
-    34: 6,
-    35: 6,
-    47: 6,
-    48: 8,
-    49: 9,
-    50: 10,
-    51: 11,
-    52: 12,
-    56: 14,
-    55: 15,
-    54: 16,
-    69: 23,
+    43: 1,  # 1=Paved area
+    44: 2,  # 2=Unpaved area
+    45: 3,  # 3=Greenhouse
+    46: 4,  # 4=Open water
+    -5: 5,  # (5=Internally reserved for all structures)
+    34: 6,  # 6=Boundary
+    35: 6,  # 6=Boundary
+    47: 6,  # 6=Boundary
+    48: 8,  # 8=pump
+    49: 9,  # 9=weir
+    50: 10,  # 10=orifice
+    51: 11,  # 11=Manning resistance
+    52: 12,  # 12=Q-h relation
+    56: 14,  # 14=WWTP (RWZI)
+    55: 15,  # 15=Industry
+    54: 16,  # 16=Sacramento (ObId ’3B_SACRAMENTO’)
+    -21: 21,  # 21=Open water with only precipitation and evaporation (SOBEK3)
+    69: 23,  # 23= Wagmod/Walrus
 }
+""" Dictionary with `nt` mapped against the expected `mt`.
+
+Some model types `mt` do not have a related netter type; in that case the
+dict key is a dummy value of -<mt>."""
 
 
 class Node(BaseModel):
