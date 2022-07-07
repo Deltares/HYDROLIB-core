@@ -257,7 +257,7 @@ class Mesh2d(BaseModel):
 
         # Check if parts are closed
         for part in exteriors + interiors:
-            if not (part.x_coordinates[0], part.y_coordinates[0]) == (
+            if (part.x_coordinates[0], part.y_coordinates[0]) != (
                 part.x_coordinates[-1],
                 part.y_coordinates[-1],
             ):

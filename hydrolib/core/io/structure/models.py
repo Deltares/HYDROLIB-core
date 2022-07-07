@@ -3,11 +3,10 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.io.md
 """
 # TODO Implement the following structures
 # - Gate
-#
 
 import logging
 from enum import Enum
-from operator import eq, gt, ne
+from operator import gt, ne
 from pathlib import Path
 from typing import List, Literal, Optional, Set, Union
 
