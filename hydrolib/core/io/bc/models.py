@@ -11,7 +11,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Literal, NamedTuple, Optional, Set
+from typing import Callable, List, Literal, NamedTuple, Optional, Set, Union
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
@@ -295,3 +295,25 @@ class ForcingModel(INIModel):
         # We skip the passed dict for a better one.
         config = SerializerConfig(section_indent=0, property_indent=4)
         write_ini(self._resolved_filepath, self._to_document(), config=config)
+
+
+class RealTime(str, Enum):
+    """
+    Enum class containing the valid value for the "realtime" reserved
+    keyword for real-time controlled forcing data, e.g., for hydraulic
+    structures.
+
+    This class is used inside the ForcingData Union, to force detection
+    of the realtime keyword, prior to considering it a filename.
+    """
+
+    realtime = "realtime"
+    """str: Realtime data source, externally provided"""
+
+
+ForcingData = Union[float, RealTime, ForcingModel]
+"""Data type that selects from three different types of forcing data:
+*   a scalar float constant
+*   "realtime" keyword, indicating externally controlled.
+*   A ForcingModel coming from a .bc file.
+"""
