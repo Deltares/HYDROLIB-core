@@ -11,6 +11,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.io.inifield.models import IniFieldModel
 from hydrolib.core.io.net.models import NetworkModel
+from hydrolib.core.io.obs.models import ObservationPointModel
 from hydrolib.core.io.polyfile.models import PolyFile
 from hydrolib.core.io.storagenode.models import StorageNodeModel
 from hydrolib.core.io.structure.models import StructureModel
@@ -303,7 +304,7 @@ class Output(INIBasedModel):
     outputdir: Optional[Path] = Field(None, alias="outputDir")
     waqoutputdir: Optional[Path] = Field(None, alias="waqOutputDir")
     flowgeomfile: Optional[Path] = Field(None, alias="flowGeomFile")
-    obsfile: Optional[List[Path]] = Field(None, alias="obsFile")
+    obsfile: Optional[List[ObservationPointModel]] = Field(None, alias="obsFile")
     crsfile: Optional[List[Path]] = Field(None, alias="crsFile")
     hisfile: Optional[Path] = Field(None, alias="hisFile")
     hisinterval: List[float] = Field([300], alias="hisInterval")
