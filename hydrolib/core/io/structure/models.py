@@ -895,19 +895,28 @@ class Dambreak(Structure):
 
         def _validate_waterlevel_location(x_key: str, y_key: str, node_key: str):
             x_is_given = values.get(x_key.lower()) is not None
-            y_is_given = values.get(y_key.lower())  is not None
+            y_is_given = values.get(y_key.lower()) is not None
             node_is_given = values.get(node_key.lower()) is not None
 
             if (x_is_given and y_is_given and not node_is_given) or (
-                node_is_given and not x_is_given and not y_is_given):
+                node_is_given and not x_is_given and not y_is_given
+            ):
                 return
 
-            raise ValueError(f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`.")
+            raise ValueError(
+                f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
+            )
 
         _validate_waterlevel_location(
-            "waterLevelUpstreamLocationX", "waterLevelUpstreamLocationY", "waterLevelUpstreamNodeId")
+            "waterLevelUpstreamLocationX",
+            "waterLevelUpstreamLocationY",
+            "waterLevelUpstreamNodeId",
+        )
         _validate_waterlevel_location(
-            "waterLevelDownstreamLocationX", "waterLevelDownstreamLocationY", "waterLevelDownstreamNodeId")
+            "waterLevelDownstreamLocationX",
+            "waterLevelDownstreamLocationY",
+            "waterLevelDownstreamNodeId",
+        )
 
         if (
             Structure.validate_coordinates_in_model(values)

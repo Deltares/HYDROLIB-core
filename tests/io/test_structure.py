@@ -886,8 +886,8 @@ class DambreakTestCases:
     check_location_err = (
         "`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure."
     )
-    check_upstream_waterlevel_location_err="Either `waterLevelUpstreamNodeId` should be specified or `waterLevelUpstreamLocationX` and `waterLevelUpstreamLocationY`."
-    check_downstream_waterlevel_location_err="Either `waterLevelDownstreamNodeId` should be specified or `waterLevelDownstreamLocationX` and `waterLevelDownstreamLocationY`."
+    check_upstream_waterlevel_location_err = "Either `waterLevelUpstreamNodeId` should be specified or `waterLevelUpstreamLocationX` and `waterLevelUpstreamLocationY`."
+    check_downstream_waterlevel_location_err = "Either `waterLevelDownstreamNodeId` should be specified or `waterLevelDownstreamLocationX` and `waterLevelDownstreamLocationY`."
     too_few_coords = "Expected at least 2 coordinates, but only {} declared."
     mismatch_coords = (
         "Expected {} coordinates, given {} for xCoordinates and {} for yCoordinates."
@@ -1225,18 +1225,44 @@ class TestDambreak:
             "dict_values",
             [
                 pytest.param(
-                    dict(numcoordinates=2, xcoordinates=[0, 1], ycoordinates=[2, 3], waterlevelupstreamnodeid="anUpstreamNodeId", waterleveldownstreamnodeid="aDownstreamNodeId"),
+                    dict(
+                        numcoordinates=2,
+                        xcoordinates=[0, 1],
+                        ycoordinates=[2, 3],
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                    ),
                     id="With 2 coordinates and waterlevelupstreamnodeid and waterleveldownstreamnodeid",
                 ),
                 pytest.param(
                     dict(
-                        numcoordinates=3, xcoordinates=[0, 1, 2], ycoordinates=[2, 3, 4], waterlevelupstreamnodeid="anUpstreamNodeId", waterleveldownstreamlocationx=3.4, waterleveldownstreamlocationy=4.5
+                        numcoordinates=3,
+                        xcoordinates=[0, 1, 2],
+                        ycoordinates=[2, 3, 4],
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamlocationx=3.4,
+                        waterleveldownstreamlocationy=4.5,
                     ),
                     id="With 3 coordinates and waterlevelupstreamnodeid and waterleveldownstreamlocationx and waterleveldownstreamlocationy",
                 ),
-                pytest.param(dict(polylinefile=Path(), waterlevelupstreamlocationx=1.2, waterlevelupstreamlocationy=2.3, waterleveldownstreamnodeid="aDownstreamNodeId"), id="Empty path and waterlevelupstreamlocationx and waterlevelupstreamlocationy and waterleveldownstreamnodeid"),
                 pytest.param(
-                    dict(polylinefile=Path("aFilePath"), waterlevelupstreamlocationx=1.2, waterlevelupstreamlocationy=2.3, waterleveldownstreamlocationx=3.4, waterleveldownstreamlocationy=4.5), id="Path with file name and waterlevelupstreamlocationx and waterlevelupstreamlocationy and waterleveldownstreamlocationx and waterleveldownstreamlocationy"
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamlocationx=1.2,
+                        waterlevelupstreamlocationy=2.3,
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                    ),
+                    id="Empty path and waterlevelupstreamlocationx and waterlevelupstreamlocationy and waterleveldownstreamnodeid",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path("aFilePath"),
+                        waterlevelupstreamlocationx=1.2,
+                        waterlevelupstreamlocationy=2.3,
+                        waterleveldownstreamlocationx=3.4,
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    id="Path with file name and waterlevelupstreamlocationx and waterlevelupstreamlocationy and waterleveldownstreamlocationx and waterleveldownstreamlocationy",
                 ),
             ],
         )
@@ -1250,10 +1276,10 @@ class TestDambreak:
                 pytest.param(
                     dict(
                         waterlevelupstreamnodeid="anUpstreamNodeId",
-                        waterleveldownstreamnodeid="aDownstreamNodeId"
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
                     ),
-                    DambreakTestCases.check_location_err, 
-                    id="No locations specified"
+                    DambreakTestCases.check_location_err,
+                    id="No locations specified",
                 ),
                 pytest.param(
                     dict(
@@ -1262,7 +1288,7 @@ class TestDambreak:
                         ycoordinates=None,
                         polylinefile=None,
                         waterlevelupstreamnodeid="anUpstreamNodeId",
-                        waterleveldownstreamnodeid="aDownstreamNodeId"
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
                     ),
                     DambreakTestCases.check_location_err,
                     id="Specified locations None",
@@ -1270,48 +1296,28 @@ class TestDambreak:
                 pytest.param(
                     dict(
                         polylinefile=Path(),
-                        waterleveldownstreamnodeid="aDownstreamNodeId"
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
                     ),
-                    DambreakTestCases.check_upstream_waterlevel_location_err, 
-                    id="No upstream water level locations specified"
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="No upstream water level locations specified",
                 ),
                 pytest.param(
                     dict(
                         polylinefile=Path(),
                         waterleveldownstreamnodeid="aDownstreamNodeId",
-                        waterlevelupstreamlocationx=1.2
+                        waterlevelupstreamlocationx=1.2,
                     ),
-                    DambreakTestCases.check_upstream_waterlevel_location_err, 
-                    id="Only upstream water level location x specified"
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Only upstream water level location x specified",
                 ),
                 pytest.param(
                     dict(
                         polylinefile=Path(),
                         waterleveldownstreamnodeid="aDownstreamNodeId",
-                        waterlevelupstreamlocationy=2.3
+                        waterlevelupstreamlocationy=2.3,
                     ),
-                    DambreakTestCases.check_upstream_waterlevel_location_err, 
-                    id="Only upstream water level location y specified"
-                ),
-                pytest.param(
-                    dict(
-                        polylinefile=Path(),
-                        waterleveldownstreamnodeid="aDownstreamNodeId",
-                        waterlevelupstreamnodeid="anUpstreamNodeId",
-                        waterlevelupstreamlocationx=1.2
-                    ),
-                    DambreakTestCases.check_upstream_waterlevel_location_err, 
-                    id="Upstream water level location node id and x specified"
-                ),
-                pytest.param(
-                    dict(
-                        polylinefile=Path(),
-                        waterleveldownstreamnodeid="aDownstreamNodeId",
-                        waterlevelupstreamnodeid="anUpstreamNodeId",
-                        waterlevelupstreamlocationy=2.3
-                    ),
-                    DambreakTestCases.check_upstream_waterlevel_location_err, 
-                    id="Upstream water level location node id and y specified"
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Only upstream water level location y specified",
                 ),
                 pytest.param(
                     dict(
@@ -1319,56 +1325,55 @@ class TestDambreak:
                         waterleveldownstreamnodeid="aDownstreamNodeId",
                         waterlevelupstreamnodeid="anUpstreamNodeId",
                         waterlevelupstreamlocationx=1.2,
-                        waterlevelupstreamlocationy=2.3
                     ),
-                    DambreakTestCases.check_upstream_waterlevel_location_err, 
-                    id="Upstream water level location node id, x and y specified"
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Upstream water level location node id and x specified",
                 ),
                 pytest.param(
                     dict(
                         polylinefile=Path(),
-                        waterlevelupstreamnodeid="anUpstreamNodeId"
-                    ),
-                    DambreakTestCases.check_downstream_waterlevel_location_err, 
-                    id="No downstream water level locations specified"
-                ),
-                pytest.param(
-                    dict(
-                        polylinefile=Path(),
-                        waterlevelupstreamnodeid="anUpstreamNodeId",
-                        waterleveldownstreamlocationx=3.4
-                    ),
-                    DambreakTestCases.check_downstream_waterlevel_location_err, 
-                    id="Only downstream water level location x specified"
-                ),
-                pytest.param(
-                    dict(
-                        polylinefile=Path(),
-                        waterlevelupstreamnodeid="anUpstreamNodeId",
-                        waterleveldownstreamlocationy=4.5
-                    ),
-                    DambreakTestCases.check_downstream_waterlevel_location_err, 
-                    id="Only downstream water level location y specified"
-                ),
-                pytest.param(
-                    dict(
-                        polylinefile=Path(),
-                        waterlevelupstreamnodeid="anUpstreamNodeId",
                         waterleveldownstreamnodeid="aDownstreamNodeId",
-                        waterleveldownstreamlocationx=3.4
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterlevelupstreamlocationy=2.3,
                     ),
-                    DambreakTestCases.check_downstream_waterlevel_location_err, 
-                    id="Downstream water level location node id and x specified"
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Upstream water level location node id and y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterlevelupstreamlocationx=1.2,
+                        waterlevelupstreamlocationy=2.3,
+                    ),
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Upstream water level location node id, x and y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(), waterlevelupstreamnodeid="anUpstreamNodeId"
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="No downstream water level locations specified",
                 ),
                 pytest.param(
                     dict(
                         polylinefile=Path(),
                         waterlevelupstreamnodeid="anUpstreamNodeId",
-                        waterleveldownstreamnodeid="aDownstreamNodeId",
-                        waterleveldownstreamlocationy=4.5
+                        waterleveldownstreamlocationx=3.4,
                     ),
-                    DambreakTestCases.check_downstream_waterlevel_location_err, 
-                    id="Downstream water level location node id and y specified"
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Only downstream water level location x specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Only downstream water level location y specified",
                 ),
                 pytest.param(
                     dict(
@@ -1376,10 +1381,30 @@ class TestDambreak:
                         waterlevelupstreamnodeid="anUpstreamNodeId",
                         waterleveldownstreamnodeid="aDownstreamNodeId",
                         waterleveldownstreamlocationx=3.4,
-                        waterleveldownstreamlocationy=4.5
                     ),
-                    DambreakTestCases.check_downstream_waterlevel_location_err, 
-                    id="Downstream water level location node id, x and y specified"
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Downstream water level location node id and x specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Downstream water level location node id and y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterleveldownstreamlocationx=3.4,
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Downstream water level location node id, x and y specified",
                 ),
             ],
         )
