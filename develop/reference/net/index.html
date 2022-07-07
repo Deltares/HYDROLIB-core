@@ -1165,6 +1165,13 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.net.models.Mesh2d.create_triangular" class="md-nav__link">
+    create_triangular()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.net.models.Mesh2d.get_mesh2d" class="md-nav__link">
     get_mesh2d()
   </a>
@@ -1208,6 +1215,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.net.models.Network.from_file" class="md-nav__link">
     from_file()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.net.models.Network.mesh2d_create_triangular_within_polygon" class="md-nav__link">
+    mesh2d_create_triangular_within_polygon()
   </a>
   
 </li>
@@ -1628,6 +1642,13 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.net.models.Mesh2d.create_triangular" class="md-nav__link">
+    create_triangular()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.net.models.Mesh2d.get_mesh2d" class="md-nav__link">
     get_mesh2d()
   </a>
@@ -1671,6 +1692,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.net.models.Network.from_file" class="md-nav__link">
     from_file()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.net.models.Network.mesh2d_create_triangular_within_polygon" class="md-nav__link">
+    mesh2d_create_triangular_within_polygon()
   </a>
   
 </li>
@@ -1934,12 +1962,14 @@ Link1d2d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
           <summary>Source code in <code>hydrolib/core/io/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Remove all saved links from the links administration&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="c1"># The meshkernel object needs to be resetted</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">_deallocate_state</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">_allocate_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">is_geographic</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_get</span><span class="p">()</span>
 </code></pre></div>
         </details>
     </div>
@@ -2353,7 +2383,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
 
 
 <h4 id="hydrolib.core.io.net.models.Mesh2d.clip" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">deletemeshoption</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<code class="highlight language-python"><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometrylist</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">deletemeshoption</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inside</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
 
 
 <a href="#hydrolib.core.io.net.models.Mesh2d.clip" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -2374,7 +2404,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
   </thead>
   <tbody>
       <tr>
-        <td><code>polygon</code></td>
+        <td><code>geometrylist</code></td>
         <td><code>GeometryList</code></td>
         <td><p>Polygon stored as GeometryList</p></td>
         <td><em>required</em></td>
@@ -2389,23 +2419,54 @@ np.empty((0, 0), dtype=np.int32)</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/net/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">deletemeshoption</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">geometrylist</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span>
+    <span class="n">deletemeshoption</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">inside</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        polygon (GeometryList): Polygon stored as GeometryList</span>
+<span class="sd">        geometrylist (GeometryList): Polygon stored as GeometryList</span>
 <span class="sd">        deletemeshoption (int, optional): [description]. Defaults to 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Add current mesh to Mesh2d instance</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
 
-    <span class="c1"># Delete outside polygon</span>
     <span class="n">deletemeshoption</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span><span class="p">(</span><span class="n">deletemeshoption</span><span class="p">)</span>
-    <span class="n">parts</span> <span class="o">=</span> <span class="n">split_by</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="o">-</span><span class="mf">998.0</span><span class="p">)</span>
+
+    <span class="c1"># For clipping outside</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inside</span><span class="p">:</span>
+        <span class="c1"># Check if a multipolygon was provided when clipping outside</span>
+        <span class="k">if</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">geometry_separator</span> <span class="ow">in</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Deleting outside more than a single exterior (MultiPolygon) is not implemented.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Get exterior and interiors</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">split_by</span><span class="p">(</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">inner_outer_separator</span><span class="p">)</span>
+
+        <span class="n">exteriors</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">interiors</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># Inside</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Check if any polygon contains holes, when clipping inside</span>
+        <span class="k">if</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">inner_outer_separator</span> <span class="ow">in</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Deleting inside a (Multi)Polygon with holes is not implemented.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Get exterior and interiors</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">split_by</span><span class="p">(</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">geometry_separator</span><span class="p">)</span>
+
+        <span class="n">exteriors</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[:]</span>
+        <span class="n">interiors</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Check if parts are closed</span>
-    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">exteriors</span> <span class="o">+</span> <span class="n">interiors</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="p">(</span>
             <span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
             <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
@@ -2414,11 +2475,21 @@ np.empty((0, 0), dtype=np.int32)</p></td>
                 <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
             <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_delete</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">deletemeshoption</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Delete everything outside the (Multi)Polygon</span>
+    <span class="k">for</span> <span class="n">exterior</span> <span class="ow">in</span> <span class="n">exteriors</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_delete</span><span class="p">(</span>
+            <span class="n">geometry_list</span><span class="o">=</span><span class="n">exterior</span><span class="p">,</span>
+            <span class="n">delete_option</span><span class="o">=</span><span class="n">deletemeshoption</span><span class="p">,</span>
+            <span class="n">invert_deletion</span><span class="o">=</span><span class="ow">not</span> <span class="n">inside</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="c1"># Delete all holes</span>
-    <span class="k">for</span> <span class="n">interior</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_delete</span><span class="p">(</span><span class="n">interior</span><span class="p">,</span> <span class="n">deletemeshoption</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Delete all holes.</span>
+    <span class="k">for</span> <span class="n">interior</span> <span class="ow">in</span> <span class="n">interiors</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_delete</span><span class="p">(</span>
+            <span class="n">geometry_list</span><span class="o">=</span><span class="n">interior</span><span class="p">,</span>
+            <span class="n">delete_option</span><span class="o">=</span><span class="n">deletemeshoption</span><span class="p">,</span>
+            <span class="n">invert_deletion</span><span class="o">=</span><span class="n">inside</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># Process</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">())</span>
@@ -2476,8 +2547,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
         <td><em>required</em></td>
       </tr>
   </tbody>
-</table>      <p>TODO: Perhaps the polygon processing part should be part of Hydrolib (not core)!</p>
-
+</table>
 <p><strong>Exceptions:</strong></p>
 <table>
   <thead>
@@ -2503,8 +2573,6 @@ np.empty((0, 0), dtype=np.int32)</p></td>
 <span class="sd">        dx (float): Horizontal distance</span>
 <span class="sd">        dy (float): Vertical distance</span>
 
-<span class="sd">    TODO: Perhaps the polygon processing part should be part of Hydrolib (not core)!</span>
-
 <span class="sd">    Raises:</span>
 <span class="sd">        NotImplementedError: MultiPolygons</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2523,6 +2591,62 @@ np.empty((0, 0), dtype=np.int32)</p></td>
 
     <span class="c1"># Process</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="n">mesh2d_input</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.net.models.Mesh2d.create_triangular" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_triangular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry_list</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+
+<a href="#hydrolib.core.io.net.models.Mesh2d.create_triangular" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Create triangular grid within GeometryList object</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>geometry_list</code></td>
+        <td><code>mk.GeometryList</code></td>
+        <td><p>GeometryList represeting a polygon within which the mesh is generated.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/net/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_triangular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry_list</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Call meshkernel</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_make_mesh_from_polygon</span><span class="p">(</span><span class="n">geometry_list</span><span class="p">)</span>
+
+    <span class="c1"># Process new mesh</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_mesh2d</span><span class="p">())</span>
 </code></pre></div>
         </details>
     </div>
@@ -2775,19 +2899,17 @@ np.empty((0, 0), dtype=np.int32)</p></td>
     <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_set</span><span class="p">(</span><span class="n">mesh2d_input</span><span class="p">)</span>
 
     <span class="c1"># Check if parts are closed</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">polygon</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="p">(</span>
-        <span class="n">polygon</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">polygon</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
-        <span class="p">)</span>
+    <span class="c1"># if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (</span>
+    <span class="c1">#     polygon.x_coordinates[-1],</span>
+    <span class="c1">#     polygon.y_coordinates[-1],</span>
+    <span class="c1"># ):</span>
+    <span class="c1">#     raise ValueError(&quot;First and last coordinate of each GeometryList part should match.&quot;)</span>
 
     <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
         <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">min_face_size</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>  <span class="c1"># Does nothing?</span>
-        <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># No effect?</span>
         <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
@@ -2940,6 +3062,57 @@ present, and loads them one by one.</p>
 
 
 
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.net.models.Network.mesh2d_create_triangular_within_polygon" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+
+<a href="#hydrolib.core.io.net.models.Network.mesh2d_create_triangular_within_polygon" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular
+directly, but is easier accessible for users.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>geometry_list</code></td>
+        <td><code>mk.GeometryList</code></td>
+        <td><p>GeometryList represeting a polygon within which the mesh is generated.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/net/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular</span>
+<span class="sd">    directly, but is easier accessible for users.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">create_triangular</span><span class="p">(</span><span class="n">geometry_list</span><span class="o">=</span><span class="n">polygon</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
