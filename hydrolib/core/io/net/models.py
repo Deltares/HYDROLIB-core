@@ -533,7 +533,6 @@ class Link1d2d(BaseModel):
         self.meshkernel.contacts_compute_with_points(node_mask=node_mask, points=points)
         self._process()
 
-
     def _link_from_2d_to_1d_lateral(
         self,
         node_mask: np.ndarray,
