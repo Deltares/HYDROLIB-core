@@ -679,8 +679,7 @@ class CrossSection(INIBasedModel):
     x: Optional[float] = Field(None)
     y: Optional[float] = Field(None)
 
-    branchid: Optional[str] = Field(alias="branchId")
-    shift: Optional[float] = Field(None)
+    shift: Optional[float] = Field(0.0)
     definitionid: str = Field(alias="definitionId")
 
     _location_validator = get_location_specification_rootvalidator(
