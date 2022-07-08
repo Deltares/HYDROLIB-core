@@ -79,6 +79,19 @@ def str_is_empty_or_none(str_field: str) -> bool:
     return str_field is None or not str_field or str_field.isspace()
 
 
+def get_str_len(str_field: Optional[str]) -> int:
+    """
+    Get string length or 0 if input is None.
+
+    Args:
+        str_field (str): String to measure.
+
+    Returns:
+        int: Length of passed input.
+    """
+    return len(str_field) if str_field else 0
+
+
 def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
     """Finds the substring between two other strings.
 

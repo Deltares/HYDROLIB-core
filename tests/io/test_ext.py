@@ -4,9 +4,11 @@ from typing import List, Optional
 import pytest
 from pydantic import ValidationError
 
-from hydrolib.core.io.bc.models import ForcingModel
-from hydrolib.core.io.ext.models import Boundary, Lateral
+from hydrolib.core.io.bc.models import Constant, ForcingModel, RealTime
+from hydrolib.core.io.ext.models import Boundary, ExtModel, Lateral
 from hydrolib.core.io.ini.models import INIBasedModel
+
+from ..utils import test_data_dir
 
 
 class TestModels:
@@ -108,7 +110,7 @@ class TestModels:
                     Lateral._location_validator(values=dict_values)
                 assert (
                     str(exc_err.value)
-                    == "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
+                    == "Either nodeId, branchId (with chainage) or numCoordinates with xCoordinates and yCoordinates are required."
                 )
 
             @pytest.mark.parametrize(
@@ -242,7 +244,7 @@ class TestModels:
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(
                         id="42",
-                        discharge="aDischarge",
+                        discharge=1.23,
                         numcoordinates=None,
                         xcoordinates=x_coord,
                         ycoordinates=y_coord,
@@ -264,7 +266,7 @@ class TestModels:
                 with pytest.raises(ValidationError):
                     Lateral(
                         id="42",
-                        discharge="bDischarge",
+                        discharge=1.23,
                         numcoordinates=2,
                         xcoordinates=x_coord,
                         ycoordinates=y_coord,
@@ -276,7 +278,7 @@ class TestModels:
             def test_given_partial_coordinates_raises(self, missing_coord: str):
                 lateral_dict = dict(
                     id="42",
-                    discharge="cDischarge",
+                    discharge=1.23,
                     numcoordinates=2,
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
@@ -293,7 +295,7 @@ class TestModels:
                     location_type = "loremIpsum"
                     Lateral(
                         id="42",
-                        discharge="dDischarge",
+                        discharge=1.23,
                         numcoordinates=2,
                         xcoordinates=[42, 24],
                         ycoordinates=[24, 42],
@@ -326,7 +328,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="eDischarge",
+                    discharge=1.23,
                     numcoordinates=2,
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
@@ -373,7 +375,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="fDischarge",
+                    discharge="realtime",
                     numcoordinates=2,
                 )
                 lateral_dict = {**default_values, **location_dict}
@@ -384,6 +386,24 @@ class TestModels:
                 assert isinstance(lateral_cls, INIBasedModel)
                 for key, value in lateral_dict.items():
                     assert lateral_cls.dict()[key] == value
+
+        class TestValidateForcingData:
+            """
+            Class to test the different types of discharge forcings.
+            """
+
+            def test_dischargeforcings_fromfile(self):
+
+                filepath = (
+                    test_data_dir / "input/dflowfm_individual_files/FlowFM_bnd.ext"
+                )
+                m = ExtModel(filepath)
+                assert len(m.lateral) == 72
+                assert m.lateral[0].discharge == RealTime.realtime
+                assert m.lateral[1].discharge == 1.23
+                assert isinstance(m.lateral[3].discharge, ForcingModel)
+                assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
+                assert m.lateral[3].discharge.forcing[0].name == "10637"
 
     class TestBoundary:
         """Class to test all methods contained in the
