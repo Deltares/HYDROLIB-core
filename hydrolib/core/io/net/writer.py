@@ -96,7 +96,7 @@ class UgridWriter:
         ncfile.createDimension("longstrlength", self.longstrlength)
         ncfile.createDimension("mesh1d_nEdges", mesh1d.mesh1d_edge_nodes.shape[0])
         ncfile.createDimension("mesh1d_nNodes", mesh1d.mesh1d_node_id.size)
-        if not "Two" in ncfile.dimensions:
+        if "Two" not in ncfile.dimensions:
             ncfile.createDimension("Two", 2)
 
     def _init_2dmesh(self, ncfile: nc.Dataset, mesh2d: Mesh2d) -> None:  # type: ignore[import]
@@ -106,7 +106,7 @@ class UgridWriter:
         ncfile.createDimension("mesh2d_nEdges", mesh2d.mesh2d_edge_nodes.shape[0])
         ncfile.createDimension("mesh2d_nFaces", mesh2d.mesh2d_face_nodes.shape[0])
         ncfile.createDimension("mesh2d_nNodes", mesh2d.mesh2d_node_x.size)
-        if not "Two" in ncfile.dimensions:
+        if "Two" not in ncfile.dimensions:
             ncfile.createDimension("Two", 2)
 
     def _init_1d2dlinks(self, ncfile: nc.Dataset, link1d2d: Link1d2d) -> None:  # type: ignore[import]

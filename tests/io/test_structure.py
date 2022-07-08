@@ -616,7 +616,7 @@ class TestStructure:
         ):
             with expectation as exc_err:
                 input_dict = dict(
-                    notAValue="Not a relevant value",
+                    notAValue="Not a relevant value 1",
                     type=type,
                     numcoordinates=None,
                     xcoordinates=None,
@@ -632,7 +632,7 @@ class TestStructure:
 
         def test_check_nolocation_given_compound_structure_raises_nothing(self):
             input_dict = dict(
-                notAValue="Not a relevant value",
+                notAValue="Not a relevant value 2",
                 numcoordinates=None,
                 xcoordinates=None,
                 ycoordinates=None,
@@ -644,7 +644,7 @@ class TestStructure:
 
         def test_check_location_given_compound_structure_raises_error(self):
             input_dict = dict(
-                notAValue="Not a relevant value",
+                notAValue="Not a relevant value 3",
                 numcoordinates=None,
                 xcoordinates=None,
                 ycoordinates=None,
