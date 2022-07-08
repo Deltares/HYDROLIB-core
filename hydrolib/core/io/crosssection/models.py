@@ -641,9 +641,9 @@ class CrossSection(INIBasedModel):
     Attributes:
         id (str): Unique cross-section location id.
         branchid (str, optional): Branch on which the cross section is located.
-        chainage: (str, optional): Chainage on the branch (m).
-        x: (str, optional): x-coordinate of the location of the cross section.
-        y: (str, optional): y-coordinate of the location of the cross section.
+        chainage (str, optional): Chainage on the branch (m).
+        x (str, optional): x-coordinate of the location of the cross section.
+        y (str, optional): y-coordinate of the location of the cross section.
         shift (float, optional): Vertical shift of the cross section definition [m]. Defined positive upwards.
         definitionid (str): Id of cross section definition.
     """
