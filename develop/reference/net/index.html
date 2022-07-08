@@ -2467,7 +2467,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
 
     <span class="c1"># Check if parts are closed</span>
     <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">exteriors</span> <span class="o">+</span> <span class="n">interiors</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="p">(</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span>
             <span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
             <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
         <span class="p">):</span>
