@@ -7,7 +7,6 @@ license = "MIT"
 packages = [
     { include = "hydrolib"},
 ]
-readme = "README.md"
 repository = "https://github.com/deltares/hydrolib-core"
 documentation = "https://deltares.github.io/HYDROLIB-core"
 homepage = "https://deltares.github.io/HYDROLIB-core"
