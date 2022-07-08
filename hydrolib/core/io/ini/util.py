@@ -313,7 +313,7 @@ def get_location_specification_rootvalidator(
         if str_is_empty_or_none(node_id) and (str_is_empty_or_none(branch_id)):
             if n_coords == 0:
                 raise ValueError(
-                    f"Either {'nodeId, ' if allow_nodeid else ''}branchId (with chainage) or {numfield_name} (with {xfield_name} and {yfield_name}) are required."
+                    f"Either {'nodeId, ' if allow_nodeid else ''}branchId (with chainage) or {numfield_name + ' with ' if numfield_name else ''}{xfield_name} and {yfield_name} are required."
                 )
             else:
                 # Validation: when ids are absent, coordinates should be valid.

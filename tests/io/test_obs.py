@@ -54,8 +54,8 @@ class TestObservationPoint:
             del obsvalues["chainage"]
             obsvalues.update({"x": 1, "y": 10})
         if not should_validate:
-            with pytest.raises(ValidationError) as error:
-                obspoint = ObservationPoint(**obsvalues)
+            with pytest.raises(ValidationError):
+                ObservationPoint(**obsvalues)
         else:
             obspoint = ObservationPoint(**obsvalues)
 

@@ -3,11 +3,10 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.io.md
 """
 # TODO Implement the following structures
 # - Gate
-#
 
 import logging
 from enum import Enum
-from operator import eq, gt, ne
+from operator import gt, ne
 from pathlib import Path
 from typing import List, Literal, Optional, Set, Union
 
@@ -881,16 +880,43 @@ class Dambreak(Structure):
         """
         Verifies whether the location for this structure contains valid values for
         numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
+        Verifies whether de water level location specifications are valid.
 
         Args:
             values (dict): Dictionary of validated values to create a Dambreak.
 
         Raises:
-            ValueError: When the values dictionary does not contain valid coordinates or polyline file..
+            ValueError: When the values dictionary does not contain valid coordinates or polyline file or when the water level location specifications are not valid.
 
         Returns:
             dict: Dictionary of validated values.
         """
+
+        def _validate_waterlevel_location(x_key: str, y_key: str, node_key: str):
+            x_is_given = values.get(x_key.lower()) is not None
+            y_is_given = values.get(y_key.lower()) is not None
+            node_is_given = values.get(node_key.lower()) is not None
+
+            if (x_is_given and y_is_given and not node_is_given) or (
+                node_is_given and not x_is_given and not y_is_given
+            ):
+                return
+
+            raise ValueError(
+                f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
+            )
+
+        _validate_waterlevel_location(
+            "waterLevelUpstreamLocationX",
+            "waterLevelUpstreamLocationY",
+            "waterLevelUpstreamNodeId",
+        )
+        _validate_waterlevel_location(
+            "waterLevelDownstreamLocationX",
+            "waterLevelDownstreamLocationY",
+            "waterLevelDownstreamNodeId",
+        )
+
         if (
             Structure.validate_coordinates_in_model(values)
             or values.get("polylinefile", None) is not None
