@@ -464,7 +464,7 @@ class Parser:
     @staticmethod
     def _is_name(line: str) -> bool:
         stripped = line.strip()
-        return len(stripped) >= 1 and line[0] != "*" and not (" " in stripped)
+        return len(stripped) >= 1 and line[0] != "*" and " " not in stripped
 
     @staticmethod
     def _convert_to_name(line: str) -> str:

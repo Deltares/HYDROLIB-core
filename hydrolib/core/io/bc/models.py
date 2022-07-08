@@ -108,7 +108,7 @@ class ForcingBase(DataBlockINIBasedModel):
             return values
 
         if isinstance(quantities, list) and isinstance(units, list):
-            if not len(quantities) == len(units):
+            if len(quantities) != len(units):
                 raise ValueError(
                     "Number of quantities should be equal to number of units"
                 )
