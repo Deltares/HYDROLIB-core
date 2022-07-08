@@ -9,6 +9,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
+    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
     make_list_validator,
@@ -640,14 +641,52 @@ class CrossSection(INIBasedModel):
 
     Attributes:
         id (str): Unique cross-section location id.
-        branchid (str): (optional) Branch on which the cross section is located.
+        branchid (str, optional): Branch on which the cross section is located.
+        chainage: (str, optional): Chainage on the branch (m).
+        x: (str, optional): x-coordinate of the location of the cross section.
+        y: (str, optional): y-coordinate of the location of the cross section.
+        shift (float, optional): Vertical shift of the cross section definition [m]. Defined positive upwards.
+        definitionid (str): Id of cross section definition.
     """
 
-    # TODO: complete support for all crosssection fields: #172.
+    class Comments(INIBasedModel.Comments):
+        id: Optional[str] = "Unique cross-section location id."
+        branchid: Optional[str] = Field(
+            "Branch on which the cross section is located.", alias="branchId"
+        )
+        chainage: Optional[str] = "Chainage on the branch (m)."
+
+        x: Optional[str] = Field(
+            "x-coordinate of the location of the cross section.",
+        )
+        y: Optional[str] = Field(
+            "y-coordinate of the location of the cross section.",
+        )
+        shift: Optional[str] = Field(
+            "Vertical shift of the cross section definition [m]. Defined positive upwards.",
+        )
+        definitionid: Optional[str] = Field(
+            "Id of cross section definition.", alias="definitionId"
+        )
+
+    comments: Comments = Comments()
 
     _header: Literal["CrossSection"] = "CrossSection"
     id: str = Field(alias="id")
-    branchid: str = Field(alias="branchId")
+
+    branchid: Optional[str] = Field(None, alias="branchId")
+    chainage: Optional[float] = Field(None)
+
+    x: Optional[float] = Field(None)
+    y: Optional[float] = Field(None)
+
+    branchid: Optional[str] = Field(alias="branchId")
+    shift: Optional[float] = Field(None)
+    definitionid: str = Field(alias="definitionId")
+
+    _location_validator = get_location_specification_rootvalidator(
+        allow_nodeid=False, numfield_name=None, xfield_name="x", yfield_name="y"
+    )
 
 
 class CrossLocModel(INIModel):

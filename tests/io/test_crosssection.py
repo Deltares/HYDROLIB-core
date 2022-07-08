@@ -9,6 +9,8 @@ from pydantic.error_wrappers import ValidationError
 from hydrolib.core.io.crosssection.models import (
     CircleCrsDef,
     CrossDefModel,
+    CrossLocModel,
+    CrossSection,
     RectangleCrsDef,
     XYZCrsDef,
     YZCrsDef,
@@ -20,7 +22,7 @@ from hydrolib.core.io.friction.models import FrictionType
 from ..utils import WrapperTest, test_data_dir, test_output_dir
 
 
-class TestCrossSection:
+class TestCrossSectionDefinition:
     def test_crossdef_model(self):
         filepath = test_data_dir / "input/dflowfm_individual_files/crsdef1.ini"
         m = CrossDefModel(filepath)
@@ -274,3 +276,67 @@ class TestCrossSection:
         )
 
         assert expected_message in str(error.value)
+
+
+class TestCrossSectionLocation:
+    """
+    Class to test the cross section (location) input
+    """
+
+    def test_crossdef_model_from_file(self):
+        filepath = test_data_dir / "input/dflowfm_individual_files/crsloc.ini"
+        m = CrossLocModel(filepath)
+        assert len(m.crosssection) == 2
+
+        assert isinstance(m.crosssection[0], CrossSection)
+        assert m.crosssection[0].id == "Channel1_50.000"
+        assert m.crosssection[0].branchid == "Channel1"
+        assert m.crosssection[0].shift == 1.0
+        assert m.crosssection[0].definitionid == "Prof1"
+
+        assert isinstance(m.crosssection[1], CrossSection)
+        assert m.crosssection[1].id == "Channel2_300.000"
+        assert m.crosssection[1].branchid == "Channel2"
+        assert m.crosssection[1].shift == 0.0
+        assert m.crosssection[1].definitionid == "Prof2"
+
+    @pytest.mark.parametrize(
+        "dict_values",
+        [
+            pytest.param(
+                dict(branchid=None, chainage=None, x=None, y=None),
+                id="All None",
+            ),
+            pytest.param(
+                dict(branchid="", chainage=None, x=None, y=None),
+                id="All Empty",
+            ),
+        ],
+    )
+    def test_given_no_values_raises_valueerror(self, dict_values: dict):
+        with pytest.raises(ValueError) as exc_err:
+            CrossSection._location_validator(values=dict_values)
+        assert str(exc_err.value) == "x should be given."
+
+    def test_given_valid_coordinates(self):
+        test_dict = dict(
+            branchid=None,
+            chainage=None,
+            x=42,
+            y=24,
+        )
+        return_value = CrossSection._location_validator(test_dict)
+        assert return_value == test_dict
+
+    def test_given_branchid_and_no_chainage_raises_valueerror(self):
+        with pytest.raises(ValueError) as exc_err:
+            CrossSection._location_validator(
+                dict(
+                    branchid="aBranchId",
+                    chainage=None,
+                )
+            )
+        assert (
+            str(exc_err.value)
+            == "Chainage should be provided when branchId is specified."
+        )
