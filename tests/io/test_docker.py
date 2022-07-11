@@ -11,7 +11,6 @@ from tests.utils import test_input_dir, test_output_dir
 from ..utils import test_output_dir
 
 
-# @pytest.mark.skip  # skipped as long as its imcomplete
 def test_from_scratch_docker():
     # TODO Make a valid model from scratch
     dimr = DIMR()
