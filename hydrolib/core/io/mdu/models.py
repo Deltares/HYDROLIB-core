@@ -419,8 +419,7 @@ class Output(INIBasedModel):
     )
 
     def is_intermediate_link(self) -> bool:
-        # TODO set to True once we replace Paths with FileModels
-        return False
+        return True
 
 
 class Geometry(INIBasedModel):
