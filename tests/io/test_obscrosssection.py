@@ -1,9 +1,9 @@
 import pytest
 
 from hydrolib.core.io.obscrosssection.models import (
-    ObservationPointCrossSectionModel,
+    ObservationPointCrossSection,
     ObservationPointCrossSectionGeneral,
-    ObservationPointCrossSection
+    ObservationPointCrossSectionModel,
 )
 
 
