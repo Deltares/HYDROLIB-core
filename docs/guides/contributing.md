@@ -35,3 +35,41 @@ Merging a branch can only happen when a pull request is accepted through review.
 * If there is code that needs to be tested, there should be tests written for it.
 * If there are any additions or changes to the public API, the documentation should be updated. 
 * Files should be added to the appropriate folder to keep modules and objects within the correct scope.  
+
+## Releasing
+### Making a release on GitHub and PyPi
+
+When we are releasing HydroLib-core, we want to create a release on GitHub and PyPi.
+To do that please make sure you have the latest `main` branch checked out and follow the steps:
+
+ * Go to the root level your HydroLib-core checkout location
+ * Open your command line in this location
+ * Perform the following commands:
+	 * If commitzen is not installed yet:
+	 ```
+	 pip install commitizen
+	 ```
+	 * Use MAJOR, MINOR or PATCH to increment the version
+	 ```
+	 cz bump <MAJOR|MINOR|PATCH>
+	 ```
+	 * Or let commitizen detect the increment automatically
+	 ```
+	 cz bump
+	 ```
+	 * Push the tags and changes to git
+	 ```
+	 git push --tags
+	 git push
+	 ```
+	 * Build the wheels and publish the package to PyPi
+	 ```
+	 poetry build
+	 poetry publish
+	 ```
+* Go to the HydroLib-core GitHub page
+* Go to `Releases` and click on `Draft a new release`
+* Fill in the `Release title` field with `Release v<VERSION>`, for example `Release v0.3.0`
+* Choose the appropriate tag in the `Choose a tag` dropdown box
+* Click on `Generate release notes`
+* Click on `Publish release`
