@@ -46,6 +46,7 @@ class GenericFileModel(FileModel):
             # same we copy the file and update the underlying source path.
             target_file_path = self._resolved_filepath
             if self._can_copy_to(target_file_path):
+                target_file_path.parent.mkdir(parents=True, exist_ok=True)  # type: ignore[arg-type]
                 shutil.copy(self._source_file_path, target_file_path)  # type: ignore[arg-type]
             self._source_file_path = target_file_path
 
@@ -81,3 +82,6 @@ class GenericFileModel(FileModel):
     def _get_parser(cls) -> Callable[[Path], Dict]:
         # GenericFileModels do not parse anything instead they merely hold a parser.
         return lambda path: dict()
+
+    def _load(self, filepath: Path) -> Dict:
+        return dict()
