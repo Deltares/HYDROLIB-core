@@ -110,7 +110,7 @@ class TestModels:
                     Lateral._location_validator(values=dict_values)
                 assert (
                     str(exc_err.value)
-                    == "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
+                    == "Either nodeId, branchId (with chainage) or numCoordinates with xCoordinates and yCoordinates are required."
                 )
 
             @pytest.mark.parametrize(
