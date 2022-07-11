@@ -1,11 +1,12 @@
-import pytest
-from hydrolib.core.basemodel import ResolveRelativeMode, file_load_context
-
-from hydrolib.core.io.generic.models import GenericFileModel
+import filecmp
 from pathlib import Path
 
+import pytest
+
+from hydrolib.core.basemodel import ResolveRelativeMode, file_load_context
+from hydrolib.core.io.generic.models import GenericFileModel
+
 from ..utils import test_input_dir, test_output_dir
-import filecmp
 
 
 class TestGenericFileModel:
