@@ -1,9 +1,9 @@
 import pytest
 
-from hydrolib.core.io.ini.models import INIGeneral, INIBasedModel
+from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral
 from hydrolib.core.io.obscrosssection.models import (
+    ObservationPointCrossSection,
     ObservationPointCrossSectionGeneral,
-    ObservationPointCrossSection
 )
 
 
