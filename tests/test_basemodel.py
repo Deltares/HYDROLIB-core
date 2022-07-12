@@ -540,28 +540,29 @@ class TestFileLoadContext:
 
 
 class TestDiskOnlyFileModel:
+    _generic_file_model_path = Path("unsupported_file.blob")
+
     def test_constructor(self):
         # Setup file load context
         parent_path = Path.cwd() / "some" / "parent" / "directory"
-        generic_file_model_path = Path("unsupported_file.blob")
-
         with file_load_context() as context:
             context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
 
             # Call
-            model = DiskOnlyFileModel(filepath=generic_file_model_path)
+            model = DiskOnlyFileModel(filepath=self._generic_file_model_path)
 
             # Assert
-            assert model._source_file_path == (parent_path / generic_file_model_path)
+            assert model._source_file_path == (
+                parent_path / self._generic_file_model_path
+            )
 
     def test_save_as_without_file(self):
         # Setup file load context
         parent_path = Path.cwd() / "some" / "parent" / "directory"
-        generic_file_model_path = Path("unsupported_file.blob")
 
         with file_load_context() as context:
             context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
-            model = DiskOnlyFileModel(filepath=generic_file_model_path)
+            model = DiskOnlyFileModel(filepath=self._generic_file_model_path)
 
             output_path = (
                 test_output_dir
@@ -581,11 +582,10 @@ class TestDiskOnlyFileModel:
     def test_save_without_file(self):
         # Setup file load context
         parent_path = Path.cwd() / "some" / "parent" / "directory"
-        generic_file_model_path = Path("unsupported_file.blob")
 
         with file_load_context() as context:
             context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
-            model = DiskOnlyFileModel(filepath=generic_file_model_path)
+            model = DiskOnlyFileModel(filepath=self._generic_file_model_path)
 
             output_path = (
                 test_output_dir
