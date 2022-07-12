@@ -1,9 +1,9 @@
+import filecmp
 import shutil
 from pathlib import Path
 from typing import Sequence, Tuple
 
 import pytest
-import filecmp
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
