@@ -40,7 +40,7 @@ Merging a branch can only happen when a pull request is accepted through review.
 ### Making a release on GitHub and PyPi
 
 When we are releasing HydroLib-core, we want to create a release on GitHub and PyPi.
-To do that please make sure you have the latest `main` branch checked out and follow the steps:
+To do that please make sure you have a clean check out of the latest `main` branch and follow the steps:
 
  * Go to the root level your HydroLib-core checkout location
  * Open your command line in this location
@@ -73,3 +73,4 @@ To do that please make sure you have the latest `main` branch checked out and fo
 * Choose the appropriate tag in the `Choose a tag` dropdown box
 * Click on `Generate release notes`
 * Click on `Publish release`
+* Celebrate
