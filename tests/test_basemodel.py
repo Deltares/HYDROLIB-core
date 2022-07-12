@@ -3,13 +3,16 @@ from pathlib import Path
 from typing import Sequence, Tuple
 
 import pytest
+import filecmp
 
 from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
     FileLoadContext,
     FileModel,
     FileModelCache,
     FilePathResolver,
     ResolveRelativeMode,
+    SerializableFileModel,
     context_file_loading,
     file_load_context,
 )
@@ -23,10 +26,13 @@ _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_e
 class TestFileModel:
     _reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
 
+    def test_serializable_model_is_a_file_model(self):
+        assert issubclass(SerializableFileModel, FileModel)
+
     def test_dimr_model_is_a_file_model(self):
         # For the ease of testing, we use DIMR model, which implements FileModel
         # If this test fails the other tests are basically useless.
-        assert issubclass(DIMR, FileModel)
+        assert issubclass(DIMR, SerializableFileModel)
 
     def test_loading_a_file_twice_returns_different_model_instances(self) -> None:
         # If the same source file is read multiple times, we expect that
@@ -531,3 +537,120 @@ class TestFileLoadContext:
         model = DIMR()
         context.register_model(register_path, model)
         assert context.retrieve_model(retrieval_path) is model
+
+
+class TestDiskOnlyFileModel:
+    def test_constructor(self):
+        # Setup file load context
+        parent_path = Path.cwd() / "some" / "parent" / "directory"
+        generic_file_model_path = Path("unsupported_file.blob")
+
+        with file_load_context() as context:
+            context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+
+            # Call
+            model = DiskOnlyFileModel(filepath=generic_file_model_path)
+
+            # Assert
+            assert model._source_file_path == (parent_path / generic_file_model_path)
+
+    def test_save_as_without_file(self):
+        # Setup file load context
+        parent_path = Path.cwd() / "some" / "parent" / "directory"
+        generic_file_model_path = Path("unsupported_file.blob")
+
+        with file_load_context() as context:
+            context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=generic_file_model_path)
+
+            output_path = (
+                test_output_dir
+                / TestDiskOnlyFileModel.__name__
+                / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+                / "someFile.blob"
+            ).resolve()
+
+            # Call
+            model.save(filepath=output_path)
+
+            # Assert
+            assert model._source_file_path == output_path
+            assert model.filepath == output_path
+            assert not output_path.exists()
+
+    def test_save_without_file(self):
+        # Setup file load context
+        parent_path = Path.cwd() / "some" / "parent" / "directory"
+        generic_file_model_path = Path("unsupported_file.blob")
+
+        with file_load_context() as context:
+            context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=generic_file_model_path)
+
+            output_path = (
+                test_output_dir
+                / TestDiskOnlyFileModel.__name__
+                / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+                / "someFile.blob"
+            ).resolve()
+
+            # Call
+            model.filepath = output_path
+            model.save()
+
+            # Assert
+            assert model._source_file_path == output_path
+            assert model.filepath == output_path
+            assert not output_path.exists()
+
+    def test_save_as_absolute(self):
+        input_parent_path = (
+            test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+        )
+        file_name = Path("CROP_OW.PRN")
+
+        with file_load_context() as context:
+            context.push_new_parent(input_parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=file_name)
+
+        output_path = (
+            test_output_dir
+            / TestDiskOnlyFileModel.__name__
+            / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+            / file_name
+        ).resolve()
+
+        with file_load_context() as context:
+            context.push_new_parent(output_path, ResolveRelativeMode.ToParent)
+            model.save(output_path)
+
+        assert output_path.exists()
+        assert output_path.is_file()
+        assert filecmp.cmp(input_parent_path / file_name, output_path)
+
+    def test_save(self):
+        input_parent_path = (
+            test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+        )
+        input_file_name = Path("CROP_OW.PRN")
+
+        with file_load_context() as context:
+            context.push_new_parent(input_parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=input_file_name)
+
+        output_file_name = Path("CROP.PRN")
+        output_path = (
+            test_output_dir
+            / TestDiskOnlyFileModel.__name__
+            / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+            / output_file_name
+        ).resolve()
+
+        with file_load_context() as context:
+            context.push_new_parent(output_path, ResolveRelativeMode.ToParent)
+            model.filepath = output_path
+            model.save()
+
+        assert output_path.exists()
+        assert output_path.is_file()
+        assert filecmp.cmp(input_parent_path / input_file_name, output_path)

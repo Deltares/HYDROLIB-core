@@ -4,7 +4,7 @@ We can use `DataFrame`s from pandas together with hydrolib-core.
 Note that this functionality can only work on files that are in essence tables
 and are represented by a `List` of objects in hydrolib-core.
 
-Examples of such `FileModel`s with their `List` fields are:
+Examples of such `SerializableFileModel`s with their `List` fields are:
 - ForcingModel.forcing
 - CrossDefModel.definition
 - CrossLocModel.crosssection

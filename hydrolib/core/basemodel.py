@@ -5,7 +5,8 @@ also represents a file on disk.
 
 """
 import logging
-from abc import ABC, abstractclassmethod
+import shutil
+from abc import ABC, abstractclassmethod, abstractmethod
 from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
@@ -138,8 +139,8 @@ class ModelTreeTraverser(Generic[TAcc]):
         self,
         should_traverse: Optional[Callable[[BaseModel, TAcc], bool]] = None,
         should_execute: Optional[Callable[[BaseModel, TAcc], bool]] = None,
-        pre_traverse_func: Callable[[BaseModel, TAcc], TAcc] = None,
-        post_traverse_func: Callable[[BaseModel, TAcc], TAcc] = None,
+        pre_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
+        post_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
     ):
         """Creates a new ModelTreeTraverser with the given functions.
 
@@ -583,15 +584,19 @@ class FileModel(BaseModel, ABC):
             return context.resolve(self.filepath)
 
     @property
-    def save_location(self) -> Path:
+    def save_location(self) -> Optional[Path]:
         """Gets the current save location which will be used when calling `save()`
+
+        This value can be None if the filepath is None and no name can be generated.
 
         Returns:
             Path: The location at which this model will be saved.
         """
         filepath = self.filepath or self._generate_name()
 
-        if filepath.is_absolute():
+        if filepath is None:
+            return None
+        elif filepath.is_absolute():
             return filepath
         else:
             return self._absolute_anchor_path / filepath
@@ -606,14 +611,6 @@ class FileModel(BaseModel, ABC):
             # Pydantic Model init requires a dict
             value = {"filepath": Path(value)}
         return super().validate(value)
-
-    def _load(self, filepath: Path) -> Dict:
-        # TODO Make this lazy in some cases
-        # so it doesn't become slow
-        if filepath.is_file():
-            return self._parse(filepath)
-        else:
-            raise ValueError(f"File: `{filepath}` not found, skipped parsing.")
 
     def save(self, filepath: Optional[Path] = None, recurse: bool = False) -> None:
         """Save the model to disk.
@@ -660,7 +657,6 @@ class FileModel(BaseModel, ABC):
     def _save_instance(self) -> None:
         if self.filepath is None:
             self.filepath = self._generate_name()
-
         self._save()
 
     def _save_tree(self, context: FileLoadContext) -> None:
@@ -700,23 +696,6 @@ class FileModel(BaseModel, ABC):
         )
         save_traverser.traverse(self, context)
 
-    def _save(self) -> None:
-        """Save the data of this FileModel.
-
-        _save provides a hook for child models to overwrite the save behaviour as
-        called during the tree traversal.
-        """
-        self._serialize(self.dict())
-
-    def _serialize(self, data: dict) -> None:
-        path = self._resolved_filepath
-        if path is None:
-            # TODO: Do we need to add a warning / exception here
-            return
-
-        path.parent.mkdir(parents=True, exist_ok=True)
-        self._get_serializer()(path, data)
-
     def synchronize_filepaths(self) -> None:
         """Synchronize the save_location properties of all child models respective to
         this FileModel's save_location.
@@ -743,6 +722,101 @@ class FileModel(BaseModel, ABC):
         with file_load_context() as context:
             context.push_new_parent(self._absolute_anchor_path, self._relative_mode)
             traverser.traverse(self, context)
+
+    @property
+    def _relative_mode(self) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
+        return ResolveRelativeMode.ToParent
+
+    @classmethod
+    def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel based on the provided data.
+
+        Note that by default, data is not used, and FileModels are always relative to
+        the parent. In exceptional cases, the relative mode can be dependent on the
+        data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
+        As such the data is provided for such classes where the relative mode is
+        dependent on the state (e.g. the [FMModel][hydrolib.core.io.mdu.models.FMModel]).
+
+        Args:
+            data (Dict[str, Any]):
+                The unvalidated/parsed data which is fed to the pydantic base model,
+                used to determine the ResolveRelativeMode.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
+        return ResolveRelativeMode.ToParent
+
+    @abstractclassmethod
+    def _generate_name(cls) -> Optional[Path]:
+        """Generates a (default) name for this FileModel.
+
+        Note that if _generate_name in theory can return a None value,
+        if this is possible in the specific implementation, _save should
+        be able to handle filepaths set to None.
+
+        Returns:
+            Optional[Path]:
+                a relative path with the default name of the model.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _save(self) -> None:
+        """Saves this instance to disk.
+
+        This method needs to be implemented by any class deriving from
+        FileModel, and is used in both the _save_instance and _save_tree
+        methods.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _load(self, filepath: Path) -> Dict:
+        """Loads the data at filepath and returns it as a dictionary.
+
+        If a derived FileModel does not load data from disk, this should
+        return an empty dictionary.
+
+        Args:
+            filepath (Path): Path to the data to load.
+
+        Returns:
+            Dict: The data stored at filepath
+        """
+        raise NotImplementedError()
+
+
+class SerializableFileModel(FileModel):
+    def _load(self, filepath: Path) -> Dict:
+        # TODO Make this lazy in some cases
+        # so it doesn't become slow
+        if filepath.is_file():
+            return self._parse(filepath)
+        else:
+            raise ValueError(f"File: `{filepath}` not found, skipped parsing.")
+
+    def _save(self) -> None:
+        """Save the data of this FileModel.
+
+        _save provides a hook for child models to overwrite the save behaviour as
+        called during the tree traversal.
+        """
+        self._serialize(self.dict())
+
+    def _serialize(self, data: dict) -> None:
+        path = self._resolved_filepath
+        if path is None:
+            # TODO: Do we need to add a warning / exception here
+            return
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self._get_serializer()(path, data)
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
@@ -778,31 +852,57 @@ class FileModel(BaseModel, ABC):
             return filepath.name
         return None
 
-    @property
-    def _relative_mode(self) -> ResolveRelativeMode:
-        """Gets the ResolveRelativeMode of this FileModel.
 
-        Returns:
-            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
-        """
-        return ResolveRelativeMode.ToParent
+class DiskOnlyFileModel(FileModel):
+    """GenericFileModel provides a stub implementation for file based
+    models which are not explicitly implemented within hydrolib.core.
+
+    It implements the FileModel with a void parser and serializer, and a
+    save method which copies the file associated with the FileModel
+    to a new location if it exists.
+
+    We further explicitly assume that when the filepath is None, no
+    file will be written. In this case the save location filename
+    will be set to "UNDEFINED". No files will be copied.
+
+    Actual file model implementations *should not* inherit from the
+    GenericFileModel and instead inherit directly from FileModel.
+    """
+
+    _source_file_path: Optional[Path] = PrivateAttr(default=None)
+
+    def _post_init_load(self) -> None:
+        # After initialisation we retrieve the _resolved_filepath
+        # this should correspond with the actual absolute path of the
+        # underlying file. Only after saving this path will be updated.
+        super()._post_init_load()
+        self._source_file_path = self._resolved_filepath
+
+    def _load(self, filepath: Path) -> Dict:
+        # We de not load any additional data, as such we return an empty dict.
+        return dict()
+
+    def _save(self) -> None:
+        # The target_file_path contains the new path to write to, while the
+        # _source_file_path contains the original data. If these are not the
+        # same we copy the file and update the underlying source path.
+        target_file_path = self._resolved_filepath
+        if self._can_copy_to(target_file_path):
+            target_file_path.parent.mkdir(parents=True, exist_ok=True)  # type: ignore[arg-type]
+            shutil.copy(self._source_file_path, target_file_path)  # type: ignore[arg-type]
+        self._source_file_path = target_file_path
+
+    def _can_copy_to(self, target_file_path: Optional[Path]) -> bool:
+        return (
+            self._source_file_path is not None
+            and target_file_path is not None
+            and self._source_file_path != target_file_path
+            and self._source_file_path.exists()
+            and self._source_file_path.is_file()
+        )
 
     @classmethod
-    def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
-        """Gets the ResolveRelativeMode of this FileModel based on the provided data.
-
-        Note that by default, data is not used, and FileModels are always relative to
-        the parent. In exceptional cases, the relative mode can be dependent on the
-        data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
-        As such the data is provided for such classes where the relative mode is
-        dependent on the state (e.g. the [FMModel][hydrolib.core.io.mdu.models.FMModel]).
-
-        Args:
-            data (Dict[str, Any]):
-                The unvalidated/parsed data which is fed to the pydantic base model,
-                used to determine the ResolveRelativeMode.
-
-        Returns:
-            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
-        """
-        return ResolveRelativeMode.ToParent
+    def _generate_name(cls) -> Optional[Path]:
+        # There is no common name for DiskOnlyFileModel, instead we
+        # do not generate names and skip None filepaths.
+        return None

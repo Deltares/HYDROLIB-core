@@ -6,7 +6,7 @@ from typing import Callable, Dict, Iterable, Literal, Optional
 from pydantic import Field
 from pydantic.types import FilePath
 
-from hydrolib.core.basemodel import FileModel
+from hydrolib.core.basemodel import SerializableFileModel
 
 from .meteo.models import BuiModel
 from .parser import read
@@ -14,7 +14,7 @@ from .serializer import write
 from .topology.models import LinkFile, NodeFile
 
 
-class RainfallRunoffModel(FileModel):
+class RainfallRunoffModel(SerializableFileModel):
     """The RainfallRunoffModel contains all paths and sub-models related to the
     Rainfall Runoff model.
     """
