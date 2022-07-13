@@ -34,16 +34,13 @@ from hydrolib.core.io.rr.serializer import serialize
 from tests.utils import test_input_dir, test_output_dir
 
 
+rr_directory = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+rr_file_name = Path("Sobek_3b.fnm")
+
+
 class TestRainFallRunoffModel:
     def test_load_from_file(self):
-        path = Path(
-            test_input_dir
-            / "e02"
-            / "c11_korte-woerden-1d"
-            / "dimr_model"
-            / "rr"
-            / "Sobek_3b.fnm"
-        )
+        path = rr_directory / rr_file_name
 
         model = RainfallRunoffModel(filepath=path)
 
@@ -343,12 +340,9 @@ def assert_file_is_same(
         assert not input_path.exists()
 
 
-rr_directory = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
-
-
 def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
     source_path_parent = rr_directory
-    filepath = Path("Sobek_3b.fnm")
+    filepath = rr_file_name
 
     name = test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
     target_path = test_output_dir / name
@@ -377,7 +371,7 @@ def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
 
 def test_fnm_save_without_recurse_only_copies_fnm_file():
     source_path_parent = rr_directory
-    filepath = Path("Sobek_3b.fnm")
+    filepath = rr_file_name
 
     name = test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
     target_path = test_output_dir / name
