@@ -157,7 +157,7 @@ class Wind(INIBasedModel):
         [0.0, 100.0], alias="windSpeedBreakpoints"
     )
     rhoair: float = Field(1.205, alias="rhoAir")
-    relativewind: bool = Field(False, alias="relativeWind")
+    relativewind: float = Field(0.0, alias="relativeWind")
     windpartialdry: bool = Field(True, alias="windPartialDry")
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
