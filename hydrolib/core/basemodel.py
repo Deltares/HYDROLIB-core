@@ -854,7 +854,7 @@ class SerializableFileModel(FileModel):
 
 
 class DiskOnlyFileModel(FileModel):
-    """GenericFileModel provides a stub implementation for file based
+    """DiskOnlyFileModel provides a stub implementation for file based
     models which are not explicitly implemented within hydrolib.core.
 
     It implements the FileModel with a void parser and serializer, and a
@@ -862,11 +862,10 @@ class DiskOnlyFileModel(FileModel):
     to a new location if it exists.
 
     We further explicitly assume that when the filepath is None, no
-    file will be written. In this case the save location filename
-    will be set to "UNDEFINED". No files will be copied.
+    file will be written.
 
     Actual file model implementations *should not* inherit from the
-    GenericFileModel and instead inherit directly from FileModel.
+    DiskOnlyFileModel and instead inherit directly from FileModel.
     """
 
     _source_file_path: Optional[Path] = PrivateAttr(default=None)
