@@ -525,6 +525,7 @@ class InfiltrationMethod(IntEnum):
     Enum class containing the valid values for the Infiltrationmodel
     attribute in the `Grw` class.
     """
+
     NoInfiltration = 0
     InterceptionLayer = 1
     ConstantInfiltrationCapacity = 2
@@ -543,7 +544,9 @@ class Grw(INIBasedModel):
     """
 
     _header: Literal["Grw"] = "Grw"
-    infiltrationmodel: InfiltrationMethod = Field(InfiltrationMethod.NoInfiltration, alias="Infiltrationmodel")
+    infiltrationmodel: InfiltrationMethod = Field(
+        InfiltrationMethod.NoInfiltration, alias="Infiltrationmodel"
+    )
     unifinfiltrationcapacity: float = Field(0.0, alias="UnifInfiltrationCapacity")
 
 
