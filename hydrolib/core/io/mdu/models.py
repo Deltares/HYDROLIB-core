@@ -503,6 +503,22 @@ class Geometry(INIBasedModel):
         return True
 
 
+class Calibration(INIBasedModel):
+    """
+    The `[Calibration]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.calibration`.
+
+    All lowercased attributes match with the [Numerics] input as described in
+    [UM Sec.C](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
+    """
+
+    _header: Literal["Calibration"] = "Calibration"
+    usecalibration: int = Field(0, alias="UseCalibration")
+    definitionfile: Optional[Path] = Field(None, alias="DefinitionFile")
+    areafile: Optional[Path] = Field(None, alias="AreaFile")
+
+
 class FMModel(INIModel):
     """
     The overall FM model that contains the contents of the toplevel MDU file.
@@ -527,6 +543,7 @@ class FMModel(INIModel):
     hydrology: Hydrology = Field(default_factory=Hydrology)
     trachytopes: Trachytopes = Field(default_factory=Trachytopes)
     output: Output = Field(default_factory=Output)
+    calibration: Optional[Calibration] = Field(None)
 
     @classmethod
     def _ext(cls) -> str:
