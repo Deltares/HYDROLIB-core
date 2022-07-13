@@ -39,13 +39,14 @@ Merging a branch can only happen when a pull request is accepted through review.
 ## Releasing
 ### Making a release on GitHub and PyPi
 
-When we are releasing HydroLib-core, we want to create a release on GitHub and PyPi.
-To do that please make sure you have a clean check out of the latest `main` branch and follow the steps:
+When we are releasing hydrolib-core, we want to create a release on GitHub and PyPi.
+This should only be done by one of the hydrolib-core maintainers.
+To prepare for releasing, please make sure you have a clean checkout of the latest `main` branch and follow these steps:
 
- * Go to the root level your HydroLib-core checkout location
+ * Go to the root level your hydrolib-core checkout location
  * Open your command line in this location
  * Perform the following commands:
-	 * If commitzen is not installed yet:
+	 * If commitizen is not installed yet:
 	 ```
 	 pip install commitizen
 	 ```
@@ -67,10 +68,10 @@ To do that please make sure you have a clean check out of the latest `main` bran
 	 poetry build
 	 poetry publish
 	 ```
-* Go to the HydroLib-core GitHub page
-* Go to `Releases` and click on `Draft a new release`
-* Fill in the `Release title` field with `Release v<VERSION>`, for example `Release v0.3.0`
-* Choose the appropriate tag in the `Choose a tag` dropdown box
-* Click on `Generate release notes`
-* Click on `Publish release`
-* Celebrate
+* Go to the hydrolib-core GitHub page.
+* Go to `Releases` and click on `Draft a new release`.
+* Fill in the `Release title` field with `Release v<VERSION>`, with `<VERSION>` in the full format `<MAJOR>.<MINOR>.<PATCH>`, for example `Release v0.3.0`.
+* Choose the appropriate tag in the `Choose a tag` dropdown box (typically `<VERSION>`).
+* Click on `Generate release notes`.
+* Click on `Publish release`.
+* Celebrate :partying_face:
