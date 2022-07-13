@@ -906,10 +906,19 @@ class DiskOnlyFileModel(FileModel):
         return None
 
     def is_intermediate_link(self) -> bool:
+        # If the filepath is not None, there is an underlying file, and as such we need
+        # to traverse it.
         return self.filepath is not None
 
 
 def validator_set_default_disk_only_file_model_when_none() -> classmethod:
+    """Validator to ensure a default empty DiskOnlyFileModel is provided
+    for an DiskOnlyFileModel which is initialized with None.
+
+    Returns:
+        classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
+    """
+
     def adjust_none(v: Any, field: ModelField) -> Any:
         if field.type_ is DiskOnlyFileModel and v is None:
             return {"filepath": None}
