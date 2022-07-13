@@ -12,12 +12,11 @@ from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
-from warnings import warn
 from weakref import WeakValueDictionary
 
-from pydantic import BaseModel as PydanticBaseModel
+from pydantic import BaseModel as PydanticBaseModel, validator
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.fields import PrivateAttr
+from pydantic.fields import PrivateAttr, ModelField
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import to_key
@@ -908,3 +907,12 @@ class DiskOnlyFileModel(FileModel):
 
     def is_intermediate_link(self) -> bool:
         return self.filepath is not None
+
+
+def validator_set_default_disk_only_file_model_when_none() -> classmethod:
+    def adjust_none(v: Any, field: ModelField) -> Any:
+        if field.type_ is DiskOnlyFileModel and v is None:
+            return {"filepath": None}
+        return v
+
+    return validator("*", allow_reuse=True, pre=True)(adjust_none)
