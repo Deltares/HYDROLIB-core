@@ -344,16 +344,15 @@ def assert_file_is_same(
         assert not input_path.exists()
 
 
+rr_directory = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+
+
 def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
-    source_path_parent = (
-        test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
-    )
+    source_path_parent = rr_directory
     filepath = Path("Sobek_3b.fnm")
 
-    target_path = (
-        test_output_dir
-        / test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
-    )
+    name = test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
+    target_path = test_output_dir / name
 
     if target_path.exists() and target_path.is_dir():
         shutil.rmtree(target_path)
@@ -368,8 +367,38 @@ def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
     def assert_correct_subfile(path: Optional[Path]) -> None:
         assert_file_is_same(path, source_path_parent, target_path)
 
+    assert (target_path / filepath).exists()
+
     disk_only_file_models = (
         v for v in dict(model).values() if isinstance(v, DiskOnlyFileModel)
     )
     for v in disk_only_file_models:
         assert_correct_subfile(v.filepath)
+
+
+def test_fnm_save_without_recurse_only_copies_fnm_file():
+    source_path_parent = rr_directory
+    filepath = Path("Sobek_3b.fnm")
+
+    name = test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
+    target_path = test_output_dir / name
+
+    if target_path.exists() and target_path.is_dir():
+        shutil.rmtree(target_path)
+    target_path.mkdir()
+
+    with file_load_context() as context:
+        context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
+        model = RainfallRunoffModel(filepath=filepath)
+
+        model.save(filepath=target_path / filepath, recurse=False)
+
+    assert (target_path / filepath).exists()
+
+    disk_only_files = (
+        v.filepath
+        for v in dict(model).values()
+        if isinstance(v, DiskOnlyFileModel) and v.filepath is not None
+    )
+    for v in disk_only_files:
+        assert not (target_path / v).exists()
