@@ -14,9 +14,10 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
 from weakref import WeakValueDictionary
 
-from pydantic import BaseModel as PydanticBaseModel, validator
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import validator
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.fields import PrivateAttr, ModelField
+from pydantic.fields import ModelField, PrivateAttr
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import to_key
