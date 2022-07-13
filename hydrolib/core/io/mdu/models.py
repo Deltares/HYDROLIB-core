@@ -509,7 +509,7 @@ class Calibration(INIBasedModel):
 
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.calibration`.
 
-    All lowercased attributes match with the [Numerics] input as described in
+    All lowercased attributes match with the [Calibration] input as described in
     [UM Sec.C](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
     """
 
@@ -517,6 +517,22 @@ class Calibration(INIBasedModel):
     usecalibration: bool = Field(0, alias="UseCalibration")
     definitionfile: Optional[Path] = Field(None, alias="DefinitionFile")
     areafile: Optional[Path] = Field(None, alias="AreaFile")
+
+
+
+class Grw(INIBasedModel):
+    """
+    The `[Grw]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.grw`.
+
+    All lowercased attributes match with the [Grw] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A.1).
+    """
+
+    _header: Literal["Grw"] = "Grw"
+    infiltrationmodel: int = Field(0, alias="Infiltrationmodel")
+    unifinfiltrationcapacity: float = Field(0.0, alias="UnifInfiltrationCapacity")
 
 
 class FMModel(INIModel):
@@ -544,6 +560,7 @@ class FMModel(INIModel):
     trachytopes: Trachytopes = Field(default_factory=Trachytopes)
     output: Output = Field(default_factory=Output)
     calibration: Optional[Calibration] = Field(None)
+    grw: Optional[Grw] = Field(None)
 
     @classmethod
     def _ext(cls) -> str:
