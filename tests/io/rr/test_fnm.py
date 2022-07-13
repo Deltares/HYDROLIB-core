@@ -33,7 +33,6 @@ from hydrolib.core.io.rr.parser import parse
 from hydrolib.core.io.rr.serializer import serialize
 from tests.utils import test_input_dir, test_output_dir
 
-
 rr_directory = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
 rr_file_name = Path("Sobek_3b.fnm")
 
