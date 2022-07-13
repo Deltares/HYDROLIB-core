@@ -519,7 +519,6 @@ class Calibration(INIBasedModel):
     areafile: Optional[Path] = Field(None, alias="AreaFile")
 
 
-
 class Grw(INIBasedModel):
     """
     The `[Grw]` section in an MDU file.
