@@ -324,3 +324,52 @@ def test_parse_serialize_should_return_same_result():
     reserialized_model = serialize(deserialized_model)
 
     assert reserialized_model == serialized_model
+
+
+def assert_file_is_same(
+    file_path: Optional[Path],
+    read_directory: Path,
+    write_directory: Path,
+) -> None:
+    if file_path is None:
+        return
+
+    reference_path = read_directory / file_path
+    input_path = write_directory / file_path
+
+    if reference_path.exists():
+        assert input_path.exists()
+        assert filecmp.cmp(input_path, reference_path)
+    else:
+        assert not input_path.exists()
+
+
+def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
+    source_path_parent = (
+        test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+    )
+    filepath = Path("Sobek_3b.fnm")
+
+    target_path = (
+        test_output_dir
+        / test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
+    )
+
+    if target_path.exists() and target_path.is_dir():
+        shutil.rmtree(target_path)
+    target_path.mkdir()
+
+    with file_load_context() as context:
+        context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
+        model = RainfallRunoffModel(filepath=filepath)
+
+        model.save(filepath=target_path / filepath, recurse=True)
+
+    def assert_correct_subfile(path: Optional[Path]) -> None:
+        assert_file_is_same(path, source_path_parent, target_path)
+
+    disk_only_file_models = (
+        v for v in dict(model).values() if isinstance(v, DiskOnlyFileModel)
+    )
+    for v in disk_only_file_models:
+        assert_correct_subfile(v.filepath)
