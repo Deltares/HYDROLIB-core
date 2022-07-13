@@ -514,7 +514,7 @@ class Calibration(INIBasedModel):
     """
 
     _header: Literal["Calibration"] = "Calibration"
-    usecalibration: int = Field(0, alias="UseCalibration")
+    usecalibration: bool = Field(0, alias="UseCalibration")
     definitionfile: Optional[Path] = Field(None, alias="DefinitionFile")
     areafile: Optional[Path] = Field(None, alias="AreaFile")
 
