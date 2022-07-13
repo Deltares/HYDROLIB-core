@@ -634,6 +634,26 @@ You're not viewing the latest release version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#releasing" class="md-nav__link">
+    Releasing
+  </a>
+  
+    <nav class="md-nav" aria-label="Releasing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#making-a-release-on-github-and-pypi" class="md-nav__link">
+    Making a release on GitHub and PyPi
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1518,6 +1538,26 @@ You're not viewing the latest release version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#releasing" class="md-nav__link">
+    Releasing
+  </a>
+  
+    <nav class="md-nav" aria-label="Releasing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#making-a-release-on-github-and-pypi" class="md-nav__link">
+    Making a release on GitHub and PyPi
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1563,6 +1603,42 @@ We advise to use a draft pull request, to prevent the branch to be merged back b
 <li>If there is code that needs to be tested, there should be tests written for it.</li>
 <li>If there are any additions or changes to the public API, the documentation should be updated. </li>
 <li>Files should be added to the appropriate folder to keep modules and objects within the correct scope.  </li>
+</ul>
+<h2 id="releasing">Releasing<a class="headerlink" href="#releasing" title="Permanent link">&para;</a></h2>
+<h3 id="making-a-release-on-github-and-pypi">Making a release on GitHub and PyPi<a class="headerlink" href="#making-a-release-on-github-and-pypi" title="Permanent link">&para;</a></h3>
+<p>When we are releasing hydrolib-core, we want to create a release on GitHub and PyPi.
+This should only be done by one of the hydrolib-core maintainers.
+To prepare for releasing, please make sure you have a clean checkout of the latest <code>main</code> branch and follow these steps:</p>
+<ul>
+<li>Go to the root level your hydrolib-core checkout location</li>
+<li>Open your command line in this location</li>
+<li>Perform the following commands:<ul>
+<li>If commitizen is not installed yet:
+ <div class="highlight"><pre><span></span><code>pip install commitizen
+</code></pre></div></li>
+<li>Use MAJOR, MINOR or PATCH to increment the version
+ <div class="highlight"><pre><span></span><code>cz bump &lt;MAJOR|MINOR|PATCH&gt;
+</code></pre></div></li>
+<li>Or let commitizen detect the increment automatically
+ <div class="highlight"><pre><span></span><code>cz bump
+</code></pre></div></li>
+<li>Push the tags and changes to git
+ <div class="highlight"><pre><span></span><code>git push --tags
+git push
+</code></pre></div></li>
+<li>Build the wheels and publish the package to PyPi
+ <div class="highlight"><pre><span></span><code>poetry build
+poetry publish
+</code></pre></div></li>
+</ul>
+</li>
+<li>Go to the hydrolib-core GitHub page.</li>
+<li>Go to <code>Releases</code> and click on <code>Draft a new release</code>.</li>
+<li>Fill in the <code>Release title</code> field with <code>Release v&lt;VERSION&gt;</code>, with <code>&lt;VERSION&gt;</code> in the full format <code>&lt;MAJOR&gt;.&lt;MINOR&gt;.&lt;PATCH&gt;</code>, for example <code>Release v0.3.0</code>.</li>
+<li>Choose the appropriate tag in the <code>Choose a tag</code> dropdown box (typically <code>&lt;VERSION&gt;</code>).</li>
+<li>Click on <code>Generate release notes</code>.</li>
+<li>Click on <code>Publish release</code>.</li>
+<li>Celebrate <img alt="🥳" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f973.svg" title=":partying_face:" /></li>
 </ul>
 
               
