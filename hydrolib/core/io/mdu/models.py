@@ -1,3 +1,4 @@
+from enum import IntEnum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
@@ -519,6 +520,18 @@ class Calibration(INIBasedModel):
     areafile: Optional[Path] = Field(None, alias="AreaFile")
 
 
+class InfiltrationMethod(IntEnum):
+    """
+    Enum class containing the valid values for the Infiltrationmodel
+    attribute in the `Grw` class.
+    """
+    NoInfiltration = 0
+    InterceptionLayer = 1
+    ConstantInfiltrationCapacity = 2
+    ModelUnsaturatedSaturated = 3
+    Horton = 4
+
+
 class Grw(INIBasedModel):
     """
     The `[Grw]` section in an MDU file.
@@ -530,7 +543,7 @@ class Grw(INIBasedModel):
     """
 
     _header: Literal["Grw"] = "Grw"
-    infiltrationmodel: int = Field(0, alias="Infiltrationmodel")
+    infiltrationmodel: InfiltrationMethod = Field(InfiltrationMethod.NoInfiltration, alias="Infiltrationmodel")
     unifinfiltrationcapacity: float = Field(0.0, alias="UnifInfiltrationCapacity")
 
 
