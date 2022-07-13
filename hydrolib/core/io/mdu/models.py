@@ -98,7 +98,7 @@ class Physics(INIBasedModel):
     uniffricttype: int = Field(1, alias="unifFrictType")
     uniffrictcoef1d: float = Field(0.023, alias="unifFrictCoef1D")
     uniffrictcoeflin: float = Field(0.0, alias="unifFrictCoefLin")
-    umodlin: int = Field(0, alias="umodLin")
+    umodlin: float = Field(0.0, alias="umodLin")
     vicouv: float = Field(0.1, alias="vicouv")
     dicouv: float = Field(0.1, alias="dicouv")
     vicoww: float = Field(5e-05, alias="vicoww")
@@ -130,7 +130,7 @@ class Physics(INIBasedModel):
     stanton: float = Field(0.0013, alias="stanton")
     dalton: float = Field(0.0013, alias="dalton")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
-    betaspiral: int = Field(0, alias="betaSpiral")
+    betaspiral: float = Field(0.0, alias="betaSpiral")
 
 
 class Sediment(INIBasedModel):
@@ -274,8 +274,8 @@ class Trachytopes(INIBasedModel):
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Optional[int] = Field(None, alias="trtDef")  # no doc?
-    trtl: Optional[int] = Field(None, alias="trtL")  # no doc?
+    trtdef: Optional[str] = Field(None, alias="trtDef")  # no doc?
+    trtl: Optional[str] = Field(None, alias="trtL")  # no doc?
     dttrt: float = Field(60.0, alias="dtTrt")
 
 
