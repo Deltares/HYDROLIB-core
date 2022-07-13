@@ -905,3 +905,6 @@ class DiskOnlyFileModel(FileModel):
         # There is no common name for DiskOnlyFileModel, instead we
         # do not generate names and skip None filepaths.
         return None
+
+    def is_intermediate_link(self) -> bool:
+        return self.filepath is not None
