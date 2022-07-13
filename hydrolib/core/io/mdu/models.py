@@ -98,7 +98,6 @@ class Physics(INIBasedModel):
     uniffricttype: int = Field(1, alias="unifFrictType")
     uniffrictcoef1d: float = Field(0.023, alias="unifFrictCoef1D")
     uniffrictcoeflin: float = Field(0.0, alias="unifFrictCoefLin")
-    umodlin: float = Field(0.0, alias="umodLin")
     vicouv: float = Field(0.1, alias="vicouv")
     dicouv: float = Field(0.1, alias="dicouv")
     vicoww: float = Field(5e-05, alias="vicoww")
@@ -274,8 +273,8 @@ class Trachytopes(INIBasedModel):
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Optional[str] = Field(None, alias="trtDef")  # no doc?
-    trtl: Optional[str] = Field(None, alias="trtL")  # no doc?
+    trtdef: Optional[Path] = Field(None, alias="trtDef")
+    trtl: Optional[Path] = Field(None, alias="trtL")
     dttrt: float = Field(60.0, alias="dtTrt")
 
 
