@@ -565,7 +565,9 @@ class Processes(INIBasedModel):
     dtprocesses: Optional[float] = Field(None, alias="DtProcesses")
     volumedrythreshold: Optional[float] = Field(None, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(None, alias="DepthDryThreshold")
-    additionalhistoryoutputFile: Optional[Path] = Field(None, alias="AdditionalHistoryOutputFile")
+    additionalhistoryoutputFile: Optional[Path] = Field(
+        None, alias="AdditionalHistoryOutputFile"
+    )
     wriwaqbot3doutput: Optional[bool] = Field(None, alias="Wriwaqbot3Doutput")
 
 
