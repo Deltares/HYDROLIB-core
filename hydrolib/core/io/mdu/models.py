@@ -550,6 +550,25 @@ class Grw(INIBasedModel):
     unifinfiltrationcapacity: float = Field(0.0, alias="UnifInfiltrationCapacity")
 
 
+class Processes(INIBasedModel):
+    """
+    The `[Processes]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.processes`.
+
+    All lowercased attributes match with the [Processes] input as described in
+    [UM Sec.22](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.22.2.2).
+    """
+
+    _header: Literal["Processes"] = "Processes"
+    substancefile: Optional[Path] = Field(None, alias="SubstanceFile")
+    dtprocesses: Optional[float] = Field(None, alias="DtProcesses")
+    volumedrythreshold: Optional[float] = Field(None, alias="VolumeDryThreshold")
+    depthdrythreshold: Optional[float] = Field(None, alias="DepthDryThreshold")
+    additionalhistoryoutputFile: Optional[Path] = Field(None, alias="AdditionalHistoryOutputFile")
+    wriwaqbot3doutput: Optional[bool] = Field(None, alias="Wriwaqbot3Doutput")
+
+
 class FMModel(INIModel):
     """
     The overall FM model that contains the contents of the toplevel MDU file.
@@ -576,6 +595,7 @@ class FMModel(INIModel):
     output: Output = Field(default_factory=Output)
     calibration: Optional[Calibration] = Field(None)
     grw: Optional[Grw] = Field(None)
+    processes: Optional[Processes] = Field(None)
 
     @classmethod
     def _ext(cls) -> str:
