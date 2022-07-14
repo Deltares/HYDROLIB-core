@@ -11,6 +11,7 @@ from hydrolib.core.basemodel import (
     ResolveRelativeMode,
     file_load_context,
 )
+from hydrolib.core.io.dimr.models import DIMR
 from hydrolib.core.io.rr.models import (
     RainfallRunoffModel,
     _mappix_balance_name,
@@ -395,3 +396,39 @@ def test_fnm_save_without_recurse_only_copies_fnm_file():
     )
     for v in disk_only_files:
         assert not (target_path / v).exists()
+
+
+def test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files():
+    source_path_parent = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model"
+    filepath = Path("dimr_config.xml")
+
+    name = test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files.__name__
+    target_path = test_output_dir / name
+
+    if target_path.exists() and target_path.is_dir():
+        shutil.rmtree(target_path)
+    target_path.mkdir()
+
+    with file_load_context() as context:
+        context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
+        model = DIMR(filepath=filepath)
+
+        model.save(filepath=target_path / filepath, recurse=True)
+
+    rr_model = next(
+        (m.model for m in model.component if isinstance(m.model, RainfallRunoffModel)),
+        None,
+    )
+    assert rr_model is not None
+
+    def assert_correct_subfile(path: Optional[Path]) -> None:
+        assert_file_is_same(path, source_path_parent, target_path)
+
+    assert rr_model.filepath is not None
+    assert (target_path / rr_model.filepath).exists()
+
+    disk_only_file_models = (
+        v for v in dict(rr_model).values() if isinstance(v, DiskOnlyFileModel)
+    )
+    for v in disk_only_file_models:
+        assert_correct_subfile(v.filepath)
