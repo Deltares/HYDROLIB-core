@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.2.1"
+version = "0.3.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -49,7 +49,7 @@ ipykernel = "^6.15.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.2.1"
+version = "0.3.0"
 tag_format = "$version"
 version_files = [
     "hydrolib/core/__init__.py",
@@ -86,7 +86,7 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
-addopts = "-m \"not plots and not docker\""
+addopts = "-m \"not plots\""
 markers = [
     "plots",
     "docker"

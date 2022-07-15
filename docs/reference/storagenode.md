@@ -7,5 +7,4 @@ Generic parsing and serializing functionality comes from the generic hydrolib.co
 A storage node .ini file is described by the classes below.
 
 ## Model
-
 ::: hydrolib.core.io.storagenode.models
