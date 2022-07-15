@@ -559,6 +559,7 @@ class GroundWater(INIBasedModel):
     h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
     sgrwini: Optional[float] = Field(None, alias="sgrwini")
 
+
 class ProcessFluxIntegration(IntEnum):
     """
     Enum class containing the valid values for the ProcessFluxIntegration
@@ -567,6 +568,7 @@ class ProcessFluxIntegration(IntEnum):
 
     WAQ = 1
     DFlowFM = 2
+
 
 class Processes(INIBasedModel):
     """
@@ -588,7 +590,9 @@ class Processes(INIBasedModel):
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
     dtmassbalance: Optional[float] = Field(0.0, alias="DtMassBalance")
-    processfluxintegration: Optional[float] = Field(ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration")
+    processfluxintegration: Optional[float] = Field(
+        ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration"
+    )
     wriwaqbot3doutput: Optional[bool] = Field(False, alias="Wriwaqbot3Doutput")
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
