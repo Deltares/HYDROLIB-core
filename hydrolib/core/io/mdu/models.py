@@ -544,10 +544,18 @@ class Grw(INIBasedModel):
     """
 
     _header: Literal["Grw"] = "Grw"
-    infiltrationmodel: InfiltrationMethod = Field(
+
+    groundwater: Optional[bool] = Field(False, alias="GroundWater")
+    infiltrationmodel: Optional[InfiltrationMethod] = Field(
         InfiltrationMethod.NoInfiltration, alias="Infiltrationmodel"
     )
-    unifinfiltrationcapacity: float = Field(0.0, alias="UnifInfiltrationCapacity")
+    Hinterceptionlayer: Optional[float] = Field(None, alias="Hinterceptionlayer")
+    unifinfiltrationcapacity: Optional[float] = Field(0.0, alias="UnifInfiltrationCapacity")
+    Conductivity: Optional[float] = Field(0.0, alias="Conductivity")
+    h_aquiferuni: Optional[float] = Field(20.0, alias="h_aquiferuni")
+    bgrwuni: Optional[float] = Field(None, alias="bgrwuni")
+    h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
+    sgrwini: Optional[float] = Field(None, alias="sgrwini")
 
 
 class Processes(INIBasedModel):
