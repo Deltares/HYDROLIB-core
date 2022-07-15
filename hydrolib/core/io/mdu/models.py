@@ -610,6 +610,7 @@ class Particles(INIBasedModel):
     timestep: Optional[float] = Field(0.0, alias="TimeStep")
     threedtype: Optional[ThreeDType] = Field(ThreeDType.DepthAveraged, alias="3Dtype")
 
+
 class VegetationModelNr(IntEnum):
     """
     Enum class containing the valid values for the VegetationModelNr
@@ -618,6 +619,7 @@ class VegetationModelNr(IntEnum):
 
     No = 0
     BaptistDFM = 1
+
 
 class Vegetation(INIBasedModel):
     """
@@ -631,12 +633,15 @@ class Vegetation(INIBasedModel):
 
     _header: Literal["Veg"] = "Veg"
 
-    vegetationmodelnr: Optional[VegetationModelNr] = Field(VegetationModelNr.No, alias="Vegetationmodelnr")
+    vegetationmodelnr: Optional[VegetationModelNr] = Field(
+        VegetationModelNr.No, alias="Vegetationmodelnr"
+    )
     clveg: Optional[float] = Field(0.8, alias="Clveg")
     cdveg: Optional[float] = Field(0.7, alias="Cdveg")
     cbveg: Optional[float] = Field(0.7, alias="Cbveg")
     rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
     stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
+
 
 class FMModel(INIModel):
     """
