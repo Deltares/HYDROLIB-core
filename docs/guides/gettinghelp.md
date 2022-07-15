@@ -1,5 +1,5 @@
 # Getting help
-See the [How-to's](setup.md) and [Tutorials](../tutorials/steps.md) to get started using hydrolib-core.
+See the [How-to's](setup.md) and [Tutorials](../tutorials/tutorials.md) to get started using hydrolib-core.
 For building you own tools upon hydrolib-core, see the API reference for more complete documentation of all current features.
 
 If you are missing functionality, please check the [list of supported functionalities](../topics/dhydro_support.md) first.
