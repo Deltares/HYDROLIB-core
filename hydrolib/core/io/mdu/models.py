@@ -533,11 +533,11 @@ class InfiltrationMethod(IntEnum):
     Horton = 4
 
 
-class Grw(INIBasedModel):
+class GroundWater(INIBasedModel):
     """
     The `[Grw]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.grw`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.groundwater`.
 
     All lowercased attributes match with the [Grw] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
@@ -668,7 +668,7 @@ class FMModel(INIModel):
     trachytopes: Trachytopes = Field(default_factory=Trachytopes)
     output: Output = Field(default_factory=Output)
     calibration: Optional[Calibration] = Field(None)
-    grw: Optional[Grw] = Field(None)
+    groundwater: Optional[GroundWater] = Field(None)
     processes: Optional[Processes] = Field(None)
     particles: Optional[Particles] = Field(None)
     vegetation: Optional[Vegetation] = Field(None)
