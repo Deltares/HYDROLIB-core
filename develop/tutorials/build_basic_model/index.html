@@ -2414,8 +2414,9 @@ fm.filepath = "test.mdu"</div>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Add some structures, note this is invalid because it doesn't 
-have a branch or coordinates yet, but it will work for demo purposes</p>
+<p>Add a hydraulic structure; note that this is invalid because the model does not 
+have a 1D network with branches and coordinates yet, but it will work for demo purposes 
+and the network may be added later.</p>
 
 </div>
 </div>
@@ -2441,12 +2442,12 @@ have a branch or coordinates yet, but it will work for demo purposes</p>
                 </div>
             </clipboard-copy>
         </div>
-            <div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># Add weir to the model and assign structure to D-Flow FM model </span>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># Add weir to the structure set/model and add this structure set to D-Flow FM model </span>
 <span class="n">struc</span> <span class="o">=</span> <span class="n">Weir</span><span class="p">(</span><span class="n">branchId</span><span class="o">=</span><span class="s1">&#39;someBranch&#39;</span><span class="p">,</span> <span class="n">chainage</span> <span class="o">=</span> <span class="mf">123.0</span><span class="p">,</span> <span class="n">allowedflowdir</span><span class="o">=</span><span class="n">FlowDirection</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">crestlevel</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="n">struc</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">crestlevel</span> <span class="o">=</span> <span class="s2">&quot;This is a comment&quot;</span>
 <span class="n">fm</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">structurefile</span> <span class="o">=</span> <span class="p">[</span><span class="n">StructureModel</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="p">[</span><span class="n">struc</span><span class="p">])]</span>
 </pre></div>
-<div id="cell-2" class="clipboard-copy-txt"># Add weir to the model and assign structure to D-Flow FM model 
+<div id="cell-2" class="clipboard-copy-txt"># Add weir to the structure set/model and add this structure set to D-Flow FM model 
 struc = Weir(branchId='someBranch', chainage = 123.0, allowedflowdir=FlowDirection.none, crestlevel=0.0)
 struc.comments.crestlevel = "This is a comment"
 fm.geometry.structurefile = [StructureModel(structure=[struc])]</div>
