@@ -580,6 +580,7 @@ class Processes(INIBasedModel):
     )
     wriwaqbot3doutput: Optional[bool] = Field(None, alias="Wriwaqbot3Doutput")
 
+
 class ThreeDType(IntEnum):
     """
     Enum class containing the valid values for the 3Dtype
@@ -588,6 +589,7 @@ class ThreeDType(IntEnum):
 
     DepthAveraged = 0
     FreeSurface = 1
+
 
 class Particles(INIBasedModel):
     """
@@ -605,10 +607,9 @@ class Particles(INIBasedModel):
     particlesreleasefile: Optional[Path] = Field(None, alias="ParticlesReleaseFile")
     addtracer: Optional[bool] = Field(False, alias="AddTracer")
     starttime: Optional[float] = Field(0.0, alias="StartTime")
-    timestep: Optional[float] = Field(
-        0.0, alias="TimeStep"
-    )
+    timestep: Optional[float] = Field(0.0, alias="TimeStep")
     threedtype: Optional[ThreeDType] = Field(ThreeDType.DepthAveraged, alias="3Dtype")
+
 
 class FMModel(INIModel):
     """
