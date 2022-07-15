@@ -540,7 +540,7 @@ class Grw(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.grw`.
 
     All lowercased attributes match with the [Grw] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A.1).
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
     """
 
     _header: Literal["Grw"] = "Grw"
@@ -580,6 +580,35 @@ class Processes(INIBasedModel):
     )
     wriwaqbot3doutput: Optional[bool] = Field(None, alias="Wriwaqbot3Doutput")
 
+class ThreeDType(IntEnum):
+    """
+    Enum class containing the valid values for the 3Dtype
+    attribute in the `Particles` class.
+    """
+
+    DepthAveraged = 0
+    FreeSurface = 1
+
+class Particles(INIBasedModel):
+    """
+    The `[Particles]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.particles`.
+
+    All lowercased attributes match with the [Particles] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
+    _header: Literal["Particles"] = "Particles"
+
+    particlesfile: Optional[XYZModel] = Field(None, alias="ParticlesFile")
+    particlesreleasefile: Optional[Path] = Field(None, alias="ParticlesReleaseFile")
+    addtracer: Optional[bool] = Field(False, alias="AddTracer")
+    starttime: Optional[float] = Field(0.0, alias="StartTime")
+    timestep: Optional[float] = Field(
+        0.0, alias="TimeStep"
+    )
+    threedtype: Optional[ThreeDType] = Field(ThreeDType.DepthAveraged, alias="3Dtype")
 
 class FMModel(INIModel):
     """
@@ -608,6 +637,7 @@ class FMModel(INIModel):
     calibration: Optional[Calibration] = Field(None)
     grw: Optional[Grw] = Field(None)
     processes: Optional[Processes] = Field(None)
+    particles: Optional[Particles] = Field(None)
 
     @classmethod
     def _ext(cls) -> str:
