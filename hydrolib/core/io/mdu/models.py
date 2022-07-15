@@ -610,6 +610,33 @@ class Particles(INIBasedModel):
     timestep: Optional[float] = Field(0.0, alias="TimeStep")
     threedtype: Optional[ThreeDType] = Field(ThreeDType.DepthAveraged, alias="3Dtype")
 
+class VegetationModelNr(IntEnum):
+    """
+    Enum class containing the valid values for the VegetationModelNr
+    attribute in the `Vegetation` class.
+    """
+
+    No = 0
+    BaptistDFM = 1
+
+class Vegetation(INIBasedModel):
+    """
+    The `[Veg]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.vegetation`.
+
+    All lowercased attributes match with the [Veg] input as described in
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    """
+
+    _header: Literal["Veg"] = "Veg"
+
+    vegetationmodelnr: Optional[VegetationModelNr] = Field(VegetationModelNr.No, alias="Vegetationmodelnr")
+    clveg: Optional[float] = Field(0.8, alias="Clveg")
+    cdveg: Optional[float] = Field(0.7, alias="Cdveg")
+    cbveg: Optional[float] = Field(0.7, alias="Cbveg")
+    rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
+    stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
 
 class FMModel(INIModel):
     """
@@ -639,6 +666,7 @@ class FMModel(INIModel):
     grw: Optional[Grw] = Field(None)
     processes: Optional[Processes] = Field(None)
     particles: Optional[Particles] = Field(None)
+    vegetation: Optional[Vegetation] = Field(None)
 
     @classmethod
     def _ext(cls) -> str:
