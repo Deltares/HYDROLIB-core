@@ -559,6 +559,14 @@ class GroundWater(INIBasedModel):
     h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
     sgrwini: Optional[float] = Field(None, alias="sgrwini")
 
+class ProcessFluxIntegration(IntEnum):
+    """
+    Enum class containing the valid values for the ProcessFluxIntegration
+    attribute in the `Processes` class.
+    """
+
+    WAQ = 1
+    DFlowFM = 2
 
 class Processes(INIBasedModel):
     """
@@ -567,18 +575,23 @@ class Processes(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.processes`.
 
     All lowercased attributes match with the [Processes] input as described in
-    [UM Sec.22](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.22.2.2).
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
     """
 
     _header: Literal["Processes"] = "Processes"
+
     substancefile: Optional[Path] = Field(None, alias="SubstanceFile")
-    dtprocesses: Optional[float] = Field(None, alias="DtProcesses")
-    volumedrythreshold: Optional[float] = Field(None, alias="VolumeDryThreshold")
-    depthdrythreshold: Optional[float] = Field(None, alias="DepthDryThreshold")
     additionalhistoryoutputFile: Optional[Path] = Field(
         None, alias="AdditionalHistoryOutputFile"
     )
-    wriwaqbot3doutput: Optional[bool] = Field(None, alias="Wriwaqbot3Doutput")
+    statisticsfile: Optional[Path] = Field(None, alias="StatisticsFile")
+    thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
+    dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
+    dtmassbalance: Optional[float] = Field(0.0, alias="DtMassBalance")
+    processfluxintegration: Optional[float] = Field(ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration")
+    wriwaqbot3doutput: Optional[bool] = Field(False, alias="Wriwaqbot3Doutput")
+    volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
+    depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
 
 class ThreeDType(IntEnum):
