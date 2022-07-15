@@ -549,11 +549,11 @@ class Grw(INIBasedModel):
     infiltrationmodel: Optional[InfiltrationMethod] = Field(
         InfiltrationMethod.NoInfiltration, alias="Infiltrationmodel"
     )
-    Hinterceptionlayer: Optional[float] = Field(None, alias="Hinterceptionlayer")
+    hinterceptionlayer: Optional[float] = Field(None, alias="Hinterceptionlayer")
     unifinfiltrationcapacity: Optional[float] = Field(
         0.0, alias="UnifInfiltrationCapacity"
     )
-    Conductivity: Optional[float] = Field(0.0, alias="Conductivity")
+    conductivity: Optional[float] = Field(0.0, alias="Conductivity")
     h_aquiferuni: Optional[float] = Field(20.0, alias="h_aquiferuni")
     bgrwuni: Optional[float] = Field(None, alias="bgrwuni")
     h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
