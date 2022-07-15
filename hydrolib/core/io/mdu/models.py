@@ -537,7 +537,7 @@ class GroundWater(INIBasedModel):
     """
     The `[Grw]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.groundwater`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.grw`.
 
     All lowercased attributes match with the [Grw] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
@@ -642,7 +642,7 @@ class Vegetation(INIBasedModel):
     """
     The `[Veg]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.vegetation`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.veg`.
 
     All lowercased attributes match with the [Veg] input as described in
     [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
@@ -686,10 +686,10 @@ class FMModel(INIModel):
     trachytopes: Trachytopes = Field(default_factory=Trachytopes)
     output: Output = Field(default_factory=Output)
     calibration: Optional[Calibration] = Field(None)
-    groundwater: Optional[GroundWater] = Field(None)
+    grw: Optional[GroundWater] = Field(None)
     processes: Optional[Processes] = Field(None)
     particles: Optional[Particles] = Field(None)
-    vegetation: Optional[Vegetation] = Field(None)
+    veg: Optional[Vegetation] = Field(None)
 
     @classmethod
     def _ext(cls) -> str:
