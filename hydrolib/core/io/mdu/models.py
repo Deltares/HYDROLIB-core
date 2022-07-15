@@ -641,6 +641,7 @@ class Vegetation(INIBasedModel):
     cbveg: Optional[float] = Field(0.7, alias="Cbveg")
     rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
     stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
+    densvegminbap: Optional[float] = Field(0.0, alias="Densvegminbap")
 
 
 class FMModel(INIModel):
