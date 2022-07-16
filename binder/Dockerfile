@@ -22,5 +22,8 @@ USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
 
+# Make sure the README.md file exists
+RUN touch "${USER}/README.md"
+
 # Install current hydrolib-core
 RUN pip install --no-cache .
