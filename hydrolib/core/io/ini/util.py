@@ -341,3 +341,63 @@ def get_location_specification_rootvalidator(
         return values
 
     return root_validator(allow_reuse=True)(validate_location_specification)
+
+
+def get_number_of_coordinates_validator(
+    numfield_name: str = "numCoordinates",
+    xfield_name: str = "xCoordinates",
+    yfield_name: str = "yCoordinates",
+):
+    """
+    Get a validator that validates whether the given coordinates match in number
+    to the expected value given for numCoordinates.
+
+    Args:
+        numfield_name (str, optional): Field name (in input file) for the coordinates
+            count. Will be lowercased in values dict. Defaults to "numCoordinates".
+        xfield_name (str, optional): Field name (in input file) for the x coordinates.
+            Will be lowercased in values dict. Defaults to "xCoordinates".
+        yfield_name (str, optional): Field name (in input file) for the y coordinates.
+            Will be lowercased in values dict. Defaults to "yCoordinates".
+    """
+    def validate_number_of_coordinates(cls, values: Dict) -> Dict:
+        """
+        Validates whether the given coordinates match in number
+        to the expected value given for numCoordinates.
+
+        Args:
+            values (Dict): Dictionary of object's validated fields.
+
+        Raises:
+            ValueError: When numCoordinates, xCoordinates or yCoordinates has not been provided.
+            ValueError: When the number of x-coordinates or the number of y-coordinates does not
+            match the numCoordinates.
+
+        Returns:
+            Dict: Validated dictionary of input class fields.
+        """
+        numCoordinates = values.get(numfield_name, None)
+        if numCoordinates is None:
+            raise ValueError(f"{numfield_name} should be given when providing xCoordinates or yCoordinates.")
+
+        xCoordinates = values.get(xfield_name, None)
+        if xCoordinates is None:
+            raise ValueError(f"{xfield_name} should be given when providing numCoordinates.")
+
+        yCoordinates = values.get(yfield_name, None)
+        if yCoordinates is None:
+            raise ValueError(f"{yfield_name} should be given when providing numCoordinates.")
+
+        numberOfXCoordinates = len(xCoordinates)
+        if  numberOfXCoordinates != numCoordinates:
+            raise ValueError(f"Number of x-coordinates given ({numberOfXCoordinates}) not matching"
+                             f"the numCoordinates value {numCoordinates}.")
+        
+        numberOfYCoordinates = len(yCoordinates)
+        if  numberOfYCoordinates != numCoordinates:
+            raise ValueError(f"Number of y-coordinates given ({numberOfYCoordinates}) not matching"
+                             f"the numCoordinates value {numCoordinates}.")
+
+        return values
+
+    return root_validator(allow_reuse=True)(validate_number_of_coordinates)
