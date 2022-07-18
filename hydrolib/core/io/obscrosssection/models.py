@@ -3,6 +3,7 @@ from pydantic.fields import Field
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    get_split_string_on_delimiter_validator,
     get_location_specification_rootvalidator
 )
 
@@ -47,12 +48,12 @@ class ObservationPointCrossSection(INIBasedModel):
             alias="numCoordinates"
         )
         xcoordinates: Optional[str] = Field(
-            ("(optional) x-coordinates of the cross section line."
+            ("(optional) x-coordinates of the cross section line. "
              "(number of values = numCoordinates)"),
             alias="xCoordinates"
         )
         ycoordinates: Optional[str] = Field(
-            ("(optional) y-coordinates of the cross section line."
+            ("(optional) y-coordinates of the cross section line. "
              "(number of values = numCoordinates)"),
             alias="yCoordinates"
         )
@@ -62,10 +63,13 @@ class ObservationPointCrossSection(INIBasedModel):
     name: str = Field(max_length=255)
     branchid: Optional[str] = Field(alias="branchId")
     chainage: Optional[float] = Field()
-    numcoordinates: Optional[List[float]] = Field(alias="numCoordinates")
+    numcoordinates: Optional[int] = Field(alias="numCoordinates")
     xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
 
+    _split_to_list = get_split_string_on_delimiter_validator(
+        "xcoordinates", "ycoordinates")
+    
     _location_validator = get_location_specification_rootvalidator(
         allow_nodeid=False
     )
