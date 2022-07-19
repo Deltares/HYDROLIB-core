@@ -32,7 +32,7 @@ from hydrolib.core.io.rr.models import (
 )
 from hydrolib.core.io.rr.parser import parse
 from hydrolib.core.io.rr.serializer import serialize
-from tests.utils import test_input_dir, test_output_dir
+from tests.utils import test_input_dir, test_output_dir, assert_file_is_same_binary
 
 rr_directory = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
 rr_file_name = Path("Sobek_3b.fnm")
@@ -322,24 +322,6 @@ def test_parse_serialize_should_return_same_result():
     assert reserialized_model == serialized_model
 
 
-def assert_file_is_same(
-    file_path: Optional[Path],
-    read_directory: Path,
-    write_directory: Path,
-) -> None:
-    if file_path is None:
-        return
-
-    reference_path = read_directory / file_path
-    input_path = write_directory / file_path
-
-    if reference_path.exists():
-        assert input_path.exists()
-        assert filecmp.cmp(input_path, reference_path)
-    else:
-        assert not input_path.exists()
-
-
 def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
     source_path_parent = rr_directory
     filepath = rr_file_name
@@ -358,7 +340,7 @@ def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
         model.save(filepath=target_path / filepath, recurse=True)
 
     def assert_correct_subfile(path: Optional[Path]) -> None:
-        assert_file_is_same(path, source_path_parent, target_path)
+        assert_file_is_same_binary(target_path, path, source_path_parent)
 
     assert (target_path / filepath).exists()
 
@@ -421,7 +403,7 @@ def test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files():
     assert rr_model is not None
 
     def assert_correct_subfile(path: Optional[Path]) -> None:
-        assert_file_is_same(path, source_path_parent, target_path)
+        assert_file_is_same_binary(target_path, path, source_path_parent)
 
     assert rr_model.filepath is not None
     assert (target_path / rr_model.filepath).exists()
