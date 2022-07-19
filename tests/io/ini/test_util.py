@@ -1,7 +1,7 @@
-import pytest
+from typing import Dict, List, Optional
 
+import pytest
 from pydantic.error_wrappers import ValidationError
-from typing import Optional, List, Dict
 
 from hydrolib.core.io.ini.models import INIBasedModel
 from hydrolib.core.io.ini.util import get_number_of_coordinates_validator
@@ -17,7 +17,7 @@ class TestCoordinatesValidator:
 
         _number_of_coordinates_validator = get_number_of_coordinates_validator()
 
-    def test_all_values_none_does_not_throw(self):    
+    def test_all_values_none_does_not_throw(self):
         model = TestCoordinatesValidator.DummyModel()
 
         assert model.numcoordinates is None
@@ -75,9 +75,7 @@ class TestCoordinatesValidator:
 
     def _create_valid_dummy_model_values(self) -> Dict:
         values = dict(
-            numcoordinates=2,
-            xcoordinates=[1.23, 4.56],
-            ycoordinates=[9.87, 6.54]
+            numcoordinates=2, xcoordinates=[1.23, 4.56], ycoordinates=[9.87, 6.54]
         )
 
         return values
