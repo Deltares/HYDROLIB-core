@@ -404,6 +404,28 @@ def get_number_of_coordinates_validator(
         ) -> bool:
             return number_of_coordinates is not None and coordinate_field_name is None
 
+<<<<<<< HEAD
+=======
+        def validate_x_and_ycoordinate_number():
+            number_of_xcoordinates = len(xcoordinates)
+            if incorrect_number_of_coordinates_given(
+                number_of_coordinates, number_of_xcoordinates
+            ):
+                raise ValueError(
+                    f"Number of x-coordinates given ({number_of_xcoordinates}) not matching"
+                    f"the {numfield_name} value {number_of_coordinates}."
+                )
+
+            number_of_ycoordinates = len(ycoordinates)
+            if incorrect_number_of_coordinates_given(
+                number_of_coordinates, number_of_ycoordinates
+            ):
+                raise ValueError(
+                    f"Number of y-coordinates given ({number_of_ycoordinates}) not matching"
+                    f"the {numfield_name} value {number_of_coordinates}."
+                )
+
+>>>>>>> 0a170bc184d56cf4a2a9964bdc29f428dfffe31d
         def incorrect_number_of_coordinates_given(
             expected_number: int, actual_number: int
         ) -> bool:
