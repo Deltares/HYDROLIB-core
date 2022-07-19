@@ -379,24 +379,32 @@ def get_number_of_coordinates_validator(
         Returns:
             Dict: Validated dictionary of input class fields.
         """
+
         def get_value(field_name: str) -> Any:
-            return (values.get(field_name.lower(), None)
-                    if not str_is_empty_or_none(field_name)
-                    else None)
+            return (
+                values.get(field_name.lower(), None)
+                if not str_is_empty_or_none(field_name)
+                else None
+            )
 
         def all_values_are_none() -> bool:
-            return (numCoordinates is None
-                    and xCoordinates is None
-                    and yCoordinates is None)
+            return (
+                numCoordinates is None and xCoordinates is None and yCoordinates is None
+            )
 
         def coordinates_given_but_none_expected() -> bool:
-            return (numCoordinates is None
-                    and (xCoordinates is not None or yCoordinates is not None))
+            return numCoordinates is None and (
+                xCoordinates is not None or yCoordinates is not None
+            )
 
-        def no_coordinates_given_while_expected(numCoordinates: int, coordinate_field_name: str) -> bool:
+        def no_coordinates_given_while_expected(
+            numCoordinates: int, coordinate_field_name: str
+        ) -> bool:
             return numCoordinates is not None and coordinate_field_name is None
 
-        def incorrect_number_of_coordinates_given(expectedNumber: int, givenNumber: int) -> bool:
+        def incorrect_number_of_coordinates_given(
+            expectedNumber: int, givenNumber: int
+        ) -> bool:
             return expectedNumber != givenNumber
 
         numCoordinates = get_value(numfield_name)
@@ -408,27 +416,32 @@ def get_number_of_coordinates_validator(
 
         if coordinates_given_but_none_expected():
             raise ValueError(
-                f"{numfield_name} should be given when providing {xfield_name} or {yfield_name}.")
+                f"{numfield_name} should be given when providing {xfield_name} or {yfield_name}."
+            )
 
         if no_coordinates_given_while_expected(numCoordinates, xfield_name):
             raise ValueError(
-                f"{xfield_name} should be given when providing {numfield_name}.")
+                f"{xfield_name} should be given when providing {numfield_name}."
+            )
 
         if no_coordinates_given_while_expected(numCoordinates, yfield_name):
             raise ValueError(
-                f"{yfield_name} should be given when providing {numfield_name}.")
+                f"{yfield_name} should be given when providing {numfield_name}."
+            )
 
         numberOfXCoordinates = len(xCoordinates)
         if incorrect_number_of_coordinates_given(numCoordinates, numberOfXCoordinates):
             raise ValueError(
                 f"Number of x-coordinates given ({numberOfXCoordinates}) not matching"
-                f"the {numfield_name} value {numCoordinates}.")
+                f"the {numfield_name} value {numCoordinates}."
+            )
 
         numberOfYCoordinates = len(yCoordinates)
         if incorrect_number_of_coordinates_given(numCoordinates, numberOfYCoordinates):
             raise ValueError(
                 f"Number of y-coordinates given ({numberOfYCoordinates}) not matching"
-                f"the numCoordinates value {numCoordinates}.")
+                f"the numCoordinates value {numCoordinates}."
+            )
 
         return values
 

@@ -1,11 +1,12 @@
 from typing import List, Literal, Optional
+
 from pydantic.fields import Field
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
-    get_split_string_on_delimiter_validator,
     get_location_specification_rootvalidator,
     get_number_of_coordinates_validator,
+    get_split_string_on_delimiter_validator,
 )
 
 
