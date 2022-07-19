@@ -19,6 +19,14 @@ from .topology.models import LinkFile, NodeFile
 
 
 class ImmutableDiskOnlyFileModel(DiskOnlyFileModel, allow_mutation=False):
+    """
+    ImmutableDiskOnlyFileModel modifies the DiskOnlyFileModel to provide faux
+    immutablitity.
+
+    This behaviour is required for the mappix properties, which should always
+    have the same name and path and should not be modified by users.
+    """
+
     pass
 
 
