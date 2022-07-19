@@ -582,7 +582,7 @@ class Processes(INIBasedModel):
     _header: Literal["Processes"] = "Processes"
 
     substancefile: Optional[Path] = Field(None, alias="SubstanceFile")
-    additionalhistoryoutputFile: Optional[Path] = Field(
+    additionalhistoryoutputfile: Optional[Path] = Field(
         None, alias="AdditionalHistoryOutputFile"
     )
     statisticsfile: Optional[Path] = Field(None, alias="StatisticsFile")
