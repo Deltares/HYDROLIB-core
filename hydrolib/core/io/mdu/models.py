@@ -624,7 +624,9 @@ class Particles(INIBasedModel):
     addtracer: Optional[bool] = Field(False, alias="AddTracer")
     starttime: Optional[float] = Field(0.0, alias="StartTime")
     timestep: Optional[float] = Field(0.0, alias="TimeStep")
-    threedtype: Optional[ParticlesThreeDType] = Field(ParticlesThreeDType.DepthAveraged, alias="3Dtype")
+    threedtype: Optional[ParticlesThreeDType] = Field(
+        ParticlesThreeDType.DepthAveraged, alias="3Dtype"
+    )
 
 
 class VegetationModelNr(IntEnum):
