@@ -7,6 +7,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral
 from hydrolib.core.io.obscrosssection.models import (
     ObservationPointCrossSection,
     ObservationPointCrossSectionGeneral,
+    ObservationPointCrossSectionModel,
 )
 
 
@@ -135,6 +136,15 @@ class TestObservationPointCrossSection:
             assert obsPointCrossSection.numcoordinates == values["numcoordinates"]
             assert obsPointCrossSection.xcoordinates == values["xcoordinates"]
             assert obsPointCrossSection.ycoordinates == values["ycoordinates"]
+
+
+class TestObservationPointCrossSectionModel:
+    def test_create(self):
+        model = ObservationPointCrossSectionModel()
+
+        assert isinstance(model.general, ObservationPointCrossSectionGeneral)
+        assert isinstance(model.crosssections, List)
+        assert len(model.crosssections) == 0
 
 
 def _create_observation_point_cross_section_values() -> dict:
