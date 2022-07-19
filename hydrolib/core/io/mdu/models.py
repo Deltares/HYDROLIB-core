@@ -514,7 +514,7 @@ class Calibration(INIBasedModel):
     """
 
     _header: Literal["Calibration"] = "Calibration"
-    usecalibration: bool = Field(0, alias="UseCalibration")
+    usecalibration: bool = Field(False, alias="UseCalibration")
     definitionfile: Optional[Path] = Field(None, alias="DefinitionFile")
     areafile: Optional[Path] = Field(None, alias="AreaFile")
 
@@ -522,7 +522,7 @@ class Calibration(INIBasedModel):
 class InfiltrationMethod(IntEnum):
     """
     Enum class containing the valid values for the Infiltrationmodel
-    attribute in the `Grw` class.
+    attribute in the [Groundwater][hydrolib.core.io.mdu.models.Groundwater] class.
     """
 
     NoInfiltration = 0
@@ -562,7 +562,7 @@ class GroundWater(INIBasedModel):
 class ProcessFluxIntegration(IntEnum):
     """
     Enum class containing the valid values for the ProcessFluxIntegration
-    attribute in the `Processes` class.
+    attribute in the [Processes][hydrolib.core.io.mdu.models.Processes] class.
     """
 
     WAQ = 1
@@ -597,7 +597,7 @@ class Processes(INIBasedModel):
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
 
-class ThreeDType(IntEnum):
+class ParticlesThreeDType(IntEnum):
     """
     Enum class containing the valid values for the 3Dtype
     attribute in the `Particles` class.
@@ -624,13 +624,13 @@ class Particles(INIBasedModel):
     addtracer: Optional[bool] = Field(False, alias="AddTracer")
     starttime: Optional[float] = Field(0.0, alias="StartTime")
     timestep: Optional[float] = Field(0.0, alias="TimeStep")
-    threedtype: Optional[ThreeDType] = Field(ThreeDType.DepthAveraged, alias="3Dtype")
+    threedtype: Optional[ParticlesThreeDType] = Field(ParticlesThreeDType.DepthAveraged, alias="3Dtype")
 
 
 class VegetationModelNr(IntEnum):
     """
     Enum class containing the valid values for the VegetationModelNr
-    attribute in the `Vegetation` class.
+    attribute in the [Vegetation][hydrolib.core.io.mdu.models.Vegetation] class.
     """
 
     No = 0
@@ -654,7 +654,7 @@ class Vegetation(INIBasedModel):
     )
     clveg: Optional[float] = Field(0.8, alias="Clveg")
     cdveg: Optional[float] = Field(0.7, alias="Cdveg")
-    cbveg: Optional[float] = Field(0.7, alias="Cbveg")
+    cbveg: Optional[float] = Field(0.0, alias="Cbveg")
     rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
     stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
     densvegminbap: Optional[float] = Field(0.0, alias="Densvegminbap")
