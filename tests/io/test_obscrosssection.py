@@ -23,7 +23,7 @@ class TestObservationPointCrossSectionGeneral:
 
 class TestObservationPointCrossSection:
     @pytest.mark.parametrize(
-        "use_branchid, numCoordinates, xCoordinates, yCoordinates, should_validate",
+        "use_branchid, numcoordinates, xcoordinates, ycoordinates, should_validate",
         [
             pytest.param(
                 True,
@@ -102,9 +102,9 @@ class TestObservationPointCrossSection:
     def test_create(
         self,
         use_branchid: bool,
-        numCoordinates: int,
-        xCoordinates: List[float],
-        yCoordinates: List[float],
+        numcoordinates: int,
+        xcoordinates: List[float],
+        ycoordinates: List[float],
         should_validate: bool,
     ):
         values = _create_observation_point_cross_section_values()
@@ -115,9 +115,9 @@ class TestObservationPointCrossSection:
 
         values.update(
             {
-                "numcoordinates": numCoordinates,
-                "xcoordinates": xCoordinates,
-                "ycoordinates": yCoordinates,
+                "numcoordinates": numcoordinates,
+                "xcoordinates": xcoordinates,
+                "ycoordinates": ycoordinates,
             }
         )
 
@@ -125,17 +125,17 @@ class TestObservationPointCrossSection:
             with pytest.raises(ValidationError):
                 ObservationPointCrossSection(**values)
         else:
-            obsPointCrossSection = ObservationPointCrossSection(**values)
+            obspoint_crosssection = ObservationPointCrossSection(**values)
 
-            assert isinstance(obsPointCrossSection, INIBasedModel)
-            assert isinstance(obsPointCrossSection.comments, INIBasedModel.Comments)
-            assert obsPointCrossSection._header == "ObservationCrossSection"
-            assert obsPointCrossSection.name == values["name"]
-            assert obsPointCrossSection.branchid == values.get("branchid", None)
-            assert obsPointCrossSection.chainage == values.get("chainage", None)
-            assert obsPointCrossSection.numcoordinates == values["numcoordinates"]
-            assert obsPointCrossSection.xcoordinates == values["xcoordinates"]
-            assert obsPointCrossSection.ycoordinates == values["ycoordinates"]
+            assert isinstance(obspoint_crosssection, INIBasedModel)
+            assert isinstance(obspoint_crosssection.comments, INIBasedModel.Comments)
+            assert obspoint_crosssection._header == "ObservationCrossSection"
+            assert obspoint_crosssection.name == values["name"]
+            assert obspoint_crosssection.branchid == values.get("branchid", None)
+            assert obspoint_crosssection.chainage == values.get("chainage", None)
+            assert obspoint_crosssection.numcoordinates == values["numcoordinates"]
+            assert obspoint_crosssection.xcoordinates == values["xcoordinates"]
+            assert obspoint_crosssection.ycoordinates == values["ycoordinates"]
 
 
 class TestObservationPointCrossSectionModel:
