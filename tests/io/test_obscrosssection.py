@@ -22,14 +22,14 @@ class TestObservationPointCrossSectionGeneral:
 
 class TestObservationPointCrossSection:
     @pytest.mark.parametrize(
-        "use_branchid, numCoordinates, xCoordinates,yCoordinates, should_validate",
+        "use_branchid, numCoordinates, xCoordinates, yCoordinates, should_validate",
         [
             pytest.param(True, None, None, None, True, 
-                         id="Using branchId should validate without specifying numCoordinates."),
+                         id="Using branchId without specifying numCoordinates should validate."),
             pytest.param(True, 2, [1.1, 2.2], [1.1, 2.2], True,
-                         id="Using branchId should validate while also specifying numCoordinates."),
-            pytest.param(True, 2, [], [], True,
-                         id="Using branchId with incorrect number of coordinates should validate."),
+                         id="Using branchId while also specifying numCoordinates should validate."),
+            pytest.param(True, 2, [], [], False,
+                         id="Using branchId with incorrect number of coordinates should not validate."),
             pytest.param(False, 2, [1.1, 2.2], [1.1, 2.2], True,
                          id="Using numCoordinates with correct number of coordinates should validate."),
             pytest.param(False, 2, [1], [1, 2], False,
@@ -57,11 +57,12 @@ class TestObservationPointCrossSection:
         if not use_branchid:
             del values["branchid"]
             del values["chainage"]
-            values.update({
-                "numcoordinates": numCoordinates,
-                "xcoordinates": xCoordinates,
-                "ycoordinates": yCoordinates
-            })
+
+        values.update({
+            "numcoordinates": numCoordinates,
+            "xcoordinates": xCoordinates,
+            "ycoordinates": yCoordinates
+        })
 
         if not should_validate:
             with pytest.raises(ValidationError):
@@ -82,12 +83,12 @@ class TestObservationPointCrossSection:
 
 def _create_observation_point_cross_section_values() -> dict:
     values = dict(
-        name = "randomName",
-        branchid = "randomBranchName",
-        chainage = 1.234,
-        numcoordinates = None,
-        xcoordinates = None,
-        ycoordinates = None
+        name="randomName",
+        branchid="randomBranchName",
+        chainage=1.234,
+        numcoordinates=None,
+        xcoordinates=None,
+        ycoordinates=None
     )
 
     return values
