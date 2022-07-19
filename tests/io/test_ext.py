@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 import pytest
 from pydantic import ValidationError
@@ -33,7 +33,7 @@ class TestModels:
                     numcoordinates=2,
                     xcoordinates=[1.1, 2.2],
                     ycoordinates=[1.1, 2.2],
-                    discharge=1.234
+                    discharge=1.234,
                 )
 
                 return values
@@ -55,7 +55,7 @@ class TestModels:
             def test_given_correct_numcoordinates(self):
                 xcoordinates = [1, 2]
                 ycoordinates = [2, 3]
-                
+
                 values = self._create_valid_lateral_values()
                 values["xcoordinates"] = xcoordinates
                 values["ycoordinates"] = ycoordinates
