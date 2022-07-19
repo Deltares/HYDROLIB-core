@@ -422,7 +422,7 @@ def get_number_of_coordinates_validator(
                     f"Number of y-coordinates given ({number_of_ycoordinates}) not matching"
                     f"the {numfield_name} value {number_of_coordinates}."
                 )
-        
+
         def incorrect_number_of_coordinates_given(
             expected_number: int, actual_number: int
         ) -> bool:
