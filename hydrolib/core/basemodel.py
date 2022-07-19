@@ -913,8 +913,8 @@ class DiskOnlyFileModel(FileModel):
 
 
 def validator_set_default_disk_only_file_model_when_none() -> classmethod:
-    """Validator to ensure a default empty DiskOnlyFileModel is provided
-    for an DiskOnlyFileModel which is initialized with None.
+    """Validator to ensure a default empty DiskOnlyFileModel is created
+    when the corresponding field is initialized with None.
 
     Returns:
         classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
