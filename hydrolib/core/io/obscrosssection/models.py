@@ -4,7 +4,8 @@ from pydantic.fields import Field
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_split_string_on_delimiter_validator,
-    get_location_specification_rootvalidator
+    get_location_specification_rootvalidator,
+    get_number_of_coordinates_validator,
 )
 
 
@@ -16,8 +17,7 @@ class ObservationPointCrossSectionGeneral(INIGeneral):
             "File version. Do not edit this.", alias="fileVersion"
         )
         filetype: Optional[str] = Field(
-            "File type. Should be 'obsCross'. Do not edit this.",
-            alias="fileType"
+            "File type. Should be 'obsCross'. Do not edit this.", alias="fileType"
         )
 
     comments: Comments = Comments()
@@ -38,24 +38,23 @@ class ObservationPointCrossSection(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         name: Optional[str] = "Name of the cross section (max. 255 characters)."
         branchid: Optional[str] = Field(
-            "(optional) Branch on which the cross section is located.",
-            alias="branchId"
+            "(optional) Branch on which the cross section is located.", alias="branchId"
         )
         chainage: Optional[str] = "(optional) Location on the branch (m)."
         numcoordinates: Optional[str] = Field(
-            ("(optional) Number of values in xCoordinates and yCoordinates. "
-             "This value should be greater than or equal to 2."),
-            alias="numCoordinates"
+            "(optional) Number of values in xCoordinates and yCoordinates. "
+            "This value should be greater than or equal to 2.",
+            alias="numCoordinates",
         )
         xcoordinates: Optional[str] = Field(
-            ("(optional) x-coordinates of the cross section line. "
-             "(number of values = numCoordinates)"),
-            alias="xCoordinates"
+            "(optional) x-coordinates of the cross section line. "
+            "(number of values = numCoordinates)",
+            alias="xCoordinates",
         )
         ycoordinates: Optional[str] = Field(
-            ("(optional) y-coordinates of the cross section line. "
-             "(number of values = numCoordinates)"),
-            alias="yCoordinates"
+            "(optional) y-coordinates of the cross section line. "
+            "(number of values = numCoordinates)",
+            alias="yCoordinates",
         )
 
     comments: Comments = Comments()
@@ -68,11 +67,12 @@ class ObservationPointCrossSection(INIBasedModel):
     ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
 
     _split_to_list = get_split_string_on_delimiter_validator(
-        "xcoordinates", "ycoordinates")
-    
-    _location_validator = get_location_specification_rootvalidator(
-        allow_nodeid=False
+        "xcoordinates", "ycoordinates"
     )
+
+    _location_validator = get_location_specification_rootvalidator(allow_nodeid=False)
+
+    _number_of_coordinates_validator = get_number_of_coordinates_validator()
 
 
 class ObservationPointCrossSectionModel(INIModel):
