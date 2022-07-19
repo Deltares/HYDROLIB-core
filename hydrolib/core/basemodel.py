@@ -40,7 +40,7 @@ class BaseModel(PydanticBaseModel):
         alias_generator = to_key
 
     def __init__(self, **data: Any) -> None:
-        """Initializes a BaseModel with the provided data.
+        """Initialize a BaseModel with the provided data.
 
         Raises:
             ValidationError: A validation error when the data is invalid.
@@ -111,7 +111,7 @@ class BaseModel(PydanticBaseModel):
             getattr(self, f)(*args, **kwargs)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        """Gets the identifier for this model.
+        """Get the identifier for this model.
 
         Args:
             data (dict): The data from which to retrieve the identifier
@@ -142,7 +142,7 @@ class ModelTreeTraverser(Generic[TAcc]):
         pre_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
         post_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
     ):
-        """Creates a new ModelTreeTraverser with the given functions.
+        """Create a new ModelTreeTraverser with the given functions.
 
         If a predicate it is not defined, it is assumed to always be true, i.e. we will
         always traverse to the next node, or always execute the traverse functions.
@@ -255,7 +255,7 @@ class FilePathResolver:
     """
 
     def __init__(self) -> None:
-        """Creates a new empty FilePathResolver."""
+        """Create a new empty FilePathResolver."""
         self._anchors: List[Path] = []
         self._parents: List[Tuple[Path, ResolveRelativeMode]] = []
 
@@ -337,7 +337,7 @@ class FileModelCache:
     """
 
     def __init__(self):
-        """Creates a new empty FileModelCache."""
+        """Create a new empty FileModelCache."""
         self._cache_dict: Dict[Path, "FileModel"] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
@@ -368,7 +368,7 @@ class FileLoadContext:
     """
 
     def __init__(self) -> None:
-        """Creates a new empty FileLoadContext."""
+        """Create a new empty FileLoadContext."""
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
 
@@ -448,7 +448,7 @@ class FileLoadContext:
 
 @contextmanager
 def file_load_context():
-    """Provides a FileLoadingContext. If none has been created in the context of
+    """Provide a FileLoadingContext. If none has been created in the context of
     this call stack yet, a new one will be created, which will be maintained
     until it goes out of scope.
 
@@ -515,7 +515,7 @@ class FileModel(BaseModel, ABC):
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
 
     def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
-        """Creates a new model.
+        """Create a new model.
         If the file at the provided file path was already parsed, this instance is returned.
 
         Args:
@@ -531,7 +531,7 @@ class FileModel(BaseModel, ABC):
                 return super().__new__(cls)
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
-        """Creates a new FileModel from the given filepath.
+        """Create a new FileModel from the given filepath.
 
         If no filepath is provided, the model is initialized as an empty
         model with default values.
@@ -585,7 +585,7 @@ class FileModel(BaseModel, ABC):
 
     @property
     def save_location(self) -> Optional[Path]:
-        """Gets the current save location which will be used when calling `save()`
+        """Get the current save location which will be used when calling `save()`
 
         This value can be None if the filepath is None and no name can be generated.
 
@@ -725,7 +725,7 @@ class FileModel(BaseModel, ABC):
 
     @property
     def _relative_mode(self) -> ResolveRelativeMode:
-        """Gets the ResolveRelativeMode of this FileModel.
+        """Get the ResolveRelativeMode of this FileModel.
 
         Returns:
             ResolveRelativeMode: The ResolveRelativeMode of this FileModel
@@ -754,7 +754,7 @@ class FileModel(BaseModel, ABC):
 
     @abstractclassmethod
     def _generate_name(cls) -> Optional[Path]:
-        """Generates a (default) name for this FileModel.
+        """Generate a (default) name for this FileModel.
 
         Note that if _generate_name in theory can return a None value,
         if this is possible in the specific implementation, _save should
@@ -768,7 +768,7 @@ class FileModel(BaseModel, ABC):
 
     @abstractmethod
     def _save(self) -> None:
-        """Saves this instance to disk.
+        """Save this instance to disk.
 
         This method needs to be implemented by any class deriving from
         FileModel, and is used in both the _save_instance and _save_tree
@@ -778,7 +778,7 @@ class FileModel(BaseModel, ABC):
 
     @abstractmethod
     def _load(self, filepath: Path) -> Dict:
-        """Loads the data at filepath and returns it as a dictionary.
+        """Load the data at filepath and returns it as a dictionary.
 
         If a derived FileModel does not load data from disk, this should
         return an empty dictionary.
