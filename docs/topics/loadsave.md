@@ -23,7 +23,7 @@ own models. As such we will discuss the following topics:
 ## Motivation: HYDROLIB-core should not adjust files when reading and writing
 
 When implementing the model read and write behaviour of HYDROLIB-core, the main 
-design choise is to ensure models are read and written as is. Properties should
+design choice is to ensure models are read and written as is. Properties should
 not be adjusted nor dropped when reading or writing (unless there is a very 
 clear reason to do so). This behaviour should extend to the way the tree structure 
 of the models is handled. Therefor, file paths, stored in the `filepath`
@@ -162,7 +162,7 @@ Exporting is currently not implemented, but will be as part of [issue #170](http
 
 ## Inheritance hierachy of FileModels: SerializableFileModels and DiskOnlyFileModels
 
-The `FileModel` is the abstract base class for any file models. It provides the logic 
+The `FileModel` is the abstract base class for any file model. It provides the logic 
 to manage the file paths as well as the common logic to load and save models.
 In order to do so, it requires child classes to implement a `_save` and a `_load`
 method. Two child classes have been defined which extend the `FileModel`:
@@ -175,8 +175,19 @@ method. Two child classes have been defined which extend the `FileModel`:
 ### `SerializableFileModel`
 
 The `SerializableFileModel` defines an abstract base class for in-memory models, it does so by
-requiring child classes to define a parser, to read input files
+requiring child classes to define a parser, to read input files, and a serializer, to write the
+data again. This forms the basis for most of the in-memory file models.
 
+### `DiskOnlyFileModel`
+
+The `DiskOnlyFileModel` provides a file model implementation for files which do not have a 
+representation in `HYDROLIB.Core` (yet). The `DiskOnlyFileModel` ensures the underlying 
+file, specified with the `filepath` of the `FileModel`, is copied when a parent model is
+saved recursively. It does so by maintaining an internal source file path, which is initialized
+at construction of the `DiskOnlyFileModel`. When a `DiskOnlyFileModel` is saved, the underlying
+file is copied from this internal source file path to the new target path. If the file at the
+source file model does not exist, or the target path is invalid, no file is copied.
+Lastly, regardless of whether a file was copied, the internal source file path is updated.
 
 ## Extensions: Caveats to ensure your model plays nice with HYDROLIB-core
 
