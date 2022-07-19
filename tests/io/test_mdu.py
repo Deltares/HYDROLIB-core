@@ -1,5 +1,13 @@
 from tkinter import N
-from hydrolib.core.io.mdu.models import FMModel, InfiltrationMethod, Particles, ParticlesThreeDType, ProcessFluxIntegration, VegetationModelNr
+
+from hydrolib.core.io.mdu.models import (
+    FMModel,
+    InfiltrationMethod,
+    Particles,
+    ParticlesThreeDType,
+    ProcessFluxIntegration,
+    VegetationModelNr,
+)
 
 from ..utils import test_input_dir
 
@@ -25,9 +33,7 @@ class TestModels:
 
     def test_mdu_with_optional_sections(self):
         input_mdu = (
-            test_input_dir
-            / "dflowfm_individual_files"
-            / "with_optional_sections.mdu"
+            test_input_dir / "dflowfm_individual_files" / "with_optional_sections.mdu"
         )
 
         fm_model = FMModel(input_mdu)
@@ -64,7 +70,7 @@ class TestModels:
         assert fm_model.particles.starttime == 0.0
         assert fm_model.particles.timestep == 0.0
         assert fm_model.particles.threedtype == ParticlesThreeDType.DepthAveraged
-        
+
         assert fm_model.veg is not None
         assert fm_model.veg.vegetationmodelnr == VegetationModelNr.No
         assert fm_model.veg.clveg == 0.8
@@ -72,5 +78,3 @@ class TestModels:
         assert fm_model.veg.cbveg == 0.0
         assert fm_model.veg.rhoveg == 0.0
         assert fm_model.veg.stemheightstd == 0.0
-
-
