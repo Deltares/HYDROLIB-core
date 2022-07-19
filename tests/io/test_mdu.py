@@ -1,5 +1,3 @@
-from tkinter import N
-
 from hydrolib.core.io.mdu.models import (
     FMModel,
     InfiltrationMethod,
