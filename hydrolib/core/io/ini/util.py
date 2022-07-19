@@ -360,6 +360,7 @@ def get_number_of_coordinates_validator(
         yfield_name (str, optional): Field name (in input file) for the y coordinates.
             Will be lowercased in values dict. Defaults to "yCoordinates".
     """
+
     def validate_number_of_coordinates(cls, values: Dict) -> Dict:
         """
         Validates whether the given coordinates match in number
@@ -369,34 +370,65 @@ def get_number_of_coordinates_validator(
             values (Dict): Dictionary of object's validated fields.
 
         Raises:
-            ValueError: When numCoordinates, xCoordinates or yCoordinates has not been provided.
-            ValueError: When the number of x-coordinates or the number of y-coordinates does not
-            match the numCoordinates.
+            ValueError: When the number of coordinates is not specified but the coordinates are.
+            ValueError: When the number of coordinates is provided but the x-coordinates or
+                y-coordinates are not.
+            ValueError: When the number of x-coordinates or the number of y-coordinates
+                does not match the number of coordinates.
 
         Returns:
             Dict: Validated dictionary of input class fields.
         """
-        numCoordinates = values.get(numfield_name, None)
-        if numCoordinates is None:
-            raise ValueError(f"{numfield_name} should be given when providing xCoordinates or yCoordinates.")
+        def get_value(field_name: str) -> Any:
+            return (values.get(field_name.lower(), None)
+                    if not str_is_empty_or_none(field_name)
+                    else None)
 
-        xCoordinates = values.get(xfield_name, None)
-        if xCoordinates is None:
-            raise ValueError(f"{xfield_name} should be given when providing numCoordinates.")
+        def all_values_are_none() -> bool:
+            return (numCoordinates is None
+                    and xCoordinates is None
+                    and yCoordinates is None)
 
-        yCoordinates = values.get(yfield_name, None)
-        if yCoordinates is None:
-            raise ValueError(f"{yfield_name} should be given when providing numCoordinates.")
+        def coordinates_given_but_none_expected() -> bool:
+            return (numCoordinates is None
+                    and (xCoordinates is not None or yCoordinates is not None))
+
+        def no_coordinates_given_while_expected(numCoordinates: int, coordinate_field_name: str) -> bool:
+            return numCoordinates is not None and coordinate_field_name is None
+
+        def incorrect_number_of_coordinates_given(expectedNumber: int, givenNumber: int) -> bool:
+            return expectedNumber != givenNumber
+
+        numCoordinates = get_value(numfield_name)
+        xCoordinates = get_value(xfield_name)
+        yCoordinates = get_value(yfield_name)
+
+        if all_values_are_none():
+            return values
+
+        if coordinates_given_but_none_expected():
+            raise ValueError(
+                f"{numfield_name} should be given when providing {xfield_name} or {yfield_name}.")
+
+        if no_coordinates_given_while_expected(numCoordinates, xfield_name):
+            raise ValueError(
+                f"{xfield_name} should be given when providing {numfield_name}.")
+
+        if no_coordinates_given_while_expected(numCoordinates, yfield_name):
+            raise ValueError(
+                f"{yfield_name} should be given when providing {numfield_name}.")
 
         numberOfXCoordinates = len(xCoordinates)
-        if  numberOfXCoordinates != numCoordinates:
-            raise ValueError(f"Number of x-coordinates given ({numberOfXCoordinates}) not matching"
-                             f"the numCoordinates value {numCoordinates}.")
-        
+        if incorrect_number_of_coordinates_given(numCoordinates, numberOfXCoordinates):
+            raise ValueError(
+                f"Number of x-coordinates given ({numberOfXCoordinates}) not matching"
+                f"the {numfield_name} value {numCoordinates}.")
+
         numberOfYCoordinates = len(yCoordinates)
-        if  numberOfYCoordinates != numCoordinates:
-            raise ValueError(f"Number of y-coordinates given ({numberOfYCoordinates}) not matching"
-                             f"the numCoordinates value {numCoordinates}.")
+        if incorrect_number_of_coordinates_given(numCoordinates, numberOfYCoordinates):
+            raise ValueError(
+                f"Number of y-coordinates given ({numberOfYCoordinates}) not matching"
+                f"the numCoordinates value {numCoordinates}.")
 
         return values
 
