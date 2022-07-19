@@ -409,6 +409,25 @@ def get_number_of_coordinates_validator(
         ) -> bool:
             return expected_number != actual_number
 
+        def validate_x_and_ycoordinate_number():
+            number_of_xcoordinates = len(xcoordinates)
+            if incorrect_number_of_coordinates_given(
+                number_of_coordinates, number_of_xcoordinates
+            ):
+                raise ValueError(
+                    f"Number of x-coordinates given ({number_of_xcoordinates}) not matching"
+                    f"the {numfield_name} value {number_of_coordinates}."
+                )
+
+            number_of_ycoordinates = len(ycoordinates)
+            if incorrect_number_of_coordinates_given(
+                number_of_coordinates, number_of_ycoordinates
+            ):
+                raise ValueError(
+                    f"Number of y-coordinates given ({number_of_ycoordinates}) not matching"
+                    f"the {numfield_name} value {number_of_coordinates}."
+                )
+
         number_of_coordinates = get_value(numfield_name)
         xcoordinates = get_value(xfield_name)
         ycoordinates = get_value(yfield_name)
@@ -431,23 +450,7 @@ def get_number_of_coordinates_validator(
                 f"{yfield_name} should be given when providing {numfield_name}."
             )
 
-        number_of_xcoordinates = len(xcoordinates)
-        if incorrect_number_of_coordinates_given(
-            number_of_coordinates, number_of_xcoordinates
-        ):
-            raise ValueError(
-                f"Number of x-coordinates given ({number_of_xcoordinates}) not matching"
-                f"the {numfield_name} value {number_of_coordinates}."
-            )
-
-        number_of_ycoordinates = len(ycoordinates)
-        if incorrect_number_of_coordinates_given(
-            number_of_coordinates, number_of_ycoordinates
-        ):
-            raise ValueError(
-                f"Number of y-coordinates given ({number_of_ycoordinates}) not matching"
-                f"the {numfield_name} value {number_of_coordinates}."
-            )
+        validate_x_and_ycoordinate_number()
 
         return values
 
