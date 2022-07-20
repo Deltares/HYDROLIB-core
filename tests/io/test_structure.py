@@ -1623,7 +1623,7 @@ class TestWeir:
         assert weir.comments.crestwidth is None
         assert weir.comments.usevelocityheight == "My own special comment 2"
 
-    def test_weir_with_unknown_parameters(self):
+    def test_weir_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -1653,8 +1653,6 @@ class TestWeir:
 
         wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
         weir = wrapper.val
-
-        assert weir.unknown == "10.0"  # type: ignore
 
         assert weir.id == "weir_id"
         assert weir.name == "weir"
