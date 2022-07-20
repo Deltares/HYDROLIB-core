@@ -432,7 +432,7 @@ class TestBridge:
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
-    def test_bridge_with_unknown_parameters(self):
+    def test_bridge_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -466,8 +466,6 @@ class TestBridge:
 
         wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
         bridge = wrapper.val
-
-        assert bridge.bedlevel == "10.0"  # type: ignore (note: deliberately lowercase key here)
 
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
