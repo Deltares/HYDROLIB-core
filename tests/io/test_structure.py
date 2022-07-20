@@ -447,7 +447,7 @@ class TestBridge:
             csDefId = W_980.1S_0            # Id of Cross-Section Definition.
 
             # ----------------------------------------------------------------------
-            bedLevel           = 10.0        # A deliberately added unknown (in fact: old, unsupported) property
+            unknown           = 10.0        # A deliberately added unknown property
             # ----------------------------------------------------------------------
 
             shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
@@ -466,6 +466,8 @@ class TestBridge:
 
         wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
         bridge = wrapper.val
+
+        assert bridge.dict().get("unknown") is None  # type: ignore
 
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
@@ -1654,6 +1656,8 @@ class TestWeir:
         wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
         weir = wrapper.val
 
+        assert weir.dict().get("unknown") is None  # type: ignore
+
         assert weir.id == "weir_id"
         assert weir.name == "weir"
         assert weir.branchid == "branch"
@@ -2160,7 +2164,7 @@ class TestGeneralStructure:
         assert struct.comments.gateopeningwidth is None
         assert struct.comments.usevelocityheight == "My own special comment 2"
 
-    def test_weir_with_unknown_parameters(self):
+    def test_general_structure_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -2215,7 +2219,7 @@ class TestGeneralStructure:
         wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
         struct = wrapper.val
 
-        assert struct.unknown == "10.0"  # type: ignore
+        assert struct.dict().get("unknown") is None  # type: ignore
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
