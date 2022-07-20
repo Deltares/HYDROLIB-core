@@ -35,6 +35,7 @@ class Structure(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
+        polylinefile: Optional[str] = Field("*.pli; Polyline geometry definition for 2D structure.", alias="polylinefile")
         branchid: Optional[str] = Field(
             "Branch on which the structure is located.", alias="branchId"
         )
@@ -60,6 +61,8 @@ class Structure(INIBasedModel):
     name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
+    polylinefile: Optional[Path] = Field(None, alias="polylinefile")
+    
     branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = Field(None, alias="chainage")
 
