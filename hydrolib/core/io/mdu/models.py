@@ -4,7 +4,12 @@ from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import Field
 
-from hydrolib.core.basemodel import FileModel, ResolveRelativeMode
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    FileModel,
+    ResolveRelativeMode,
+    validator_set_default_disk_only_file_model_when_none,
+)
 from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
@@ -134,10 +139,14 @@ class Physics(INIBasedModel):
 
 
 class Sediment(INIBasedModel):
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Sediment"] = "Sediment"
     sedimentmodelnr: Optional[int] = Field(alias="Sedimentmodelnr")
-    morfile: Optional[str] = Field(alias="MorFile")
-    sedfile: Optional[str] = Field(alias="SedFile")
+    morfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="MorFile")
+    sedfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="SedFile")
 
 
 class Wind(INIBasedModel):
@@ -221,8 +230,12 @@ class Restart(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Restart"] = "Restart"
-    restartfile: Optional[Path] = Field(None, alias="restartFile")
+    restartfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="restartFile")
     restartdatetime: Optional[str] = Field(None, alias="restartDateTime")
 
 
@@ -289,6 +302,10 @@ class Output(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Output"] = "Output"
     wrishp_crs: bool = Field(False, alias="wrishp_crs")
     wrishp_weir: bool = Field(False, alias="wrishp_weir")
@@ -303,13 +320,15 @@ class Output(INIBasedModel):
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
     outputdir: Optional[Path] = Field(None, alias="outputDir")
     waqoutputdir: Optional[Path] = Field(None, alias="waqOutputDir")
-    flowgeomfile: Optional[Path] = Field(None, alias="flowGeomFile")
+    flowgeomfile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="flowGeomFile"
+    )
     obsfile: Optional[List[ObservationPointModel]] = Field(None, alias="obsFile")
     crsfile: Optional[List[Path]] = Field(None, alias="crsFile")
     hisfile: Optional[Path] = Field(None, alias="hisFile")
     hisinterval: List[float] = Field([300], alias="hisInterval")
     xlsinterval: List[float] = Field([0.0], alias="xlsInterval")
-    mapfile: Optional[Path] = Field(None, alias="mapFile")
+    mapfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="mapFile")
     mapinterval: List[float] = Field([1200.0], alias="mapInterval")
     rstinterval: List[float] = Field([0.0], alias="rstInterval")
     mapformat: int = Field(4, alias="mapFormat")
@@ -390,10 +409,14 @@ class Output(INIBasedModel):
         False, alias="wrimap_water_level_gradient"
     )
     wrimap_flow_analysis: bool = Field(False, alias="wrimap_flow_analysis")
-    mapoutputtimevector: Optional[Path] = Field(None, alias="mapOutputTimeVector")
+    mapoutputtimevector: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="mapOutputTimeVector"
+    )
     fullgridoutput: bool = Field(False, alias="fullGridOutput")
     eulervelocities: bool = Field(False, alias="eulerVelocities")
-    classmapfile: Optional[Path] = Field(None, alias="classMapFile")
+    classmapfile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="classMapFile"
+    )
     waterlevelclasses: List[float] = Field([0.0], alias="waterLevelClasses")
     waterdepthclasses: List[float] = Field([0.0], alias="waterDepthClasses")
     classmapinterval: List[float] = Field([0.0], alias="classMapInterval")
@@ -432,6 +455,10 @@ class Geometry(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Geometry"] = "Geometry"
     netfile: Optional[NetworkModel] = Field(
         default_factory=NetworkModel, alias="netFile"
@@ -444,7 +471,9 @@ class Geometry(INIBasedModel):
         None, alias="structureFile", delimiter=";"
     )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
-    waterlevinifile: Optional[Path] = Field(None, alias="waterLevIniFile")
+    waterlevinifile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="waterLevIniFile"
+    )
     landboundaryfile: Optional[List[Path]] = Field(None, alias="landBoundaryFile")
     thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
     fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
@@ -457,11 +486,15 @@ class Geometry(INIBasedModel):
     crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
     crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
     storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
-    oned2dlinkfile: Optional[Path] = Field(None, alias="1d2dLinkFile")
-    proflocfile: Optional[Path] = Field(None, alias="profLocFile")
-    profdeffile: Optional[Path] = Field(None, alias="profDefFile")
-    profdefxyzfile: Optional[Path] = Field(None, alias="profDefXyzFile")
-    manholefile: Optional[Path] = Field(None, alias="manholeFile")
+    oned2dlinkfile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="1d2dLinkFile"
+    )
+    proflocfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="profLocFile")
+    profdeffile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="profDefFile")
+    profdefxyzfile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="profDefXyzFile"
+    )
+    manholefile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="manholeFile")
     partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
@@ -513,10 +546,16 @@ class Calibration(INIBasedModel):
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Calibration"] = "Calibration"
     usecalibration: bool = Field(False, alias="UseCalibration")
-    definitionfile: Optional[Path] = Field(None, alias="DefinitionFile")
-    areafile: Optional[Path] = Field(None, alias="AreaFile")
+    definitionfile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="DefinitionFile"
+    )
+    areafile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="AreaFile")
 
 
 class InfiltrationMethod(IntEnum):
@@ -579,13 +618,21 @@ class Processes(INIBasedModel):
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Processes"] = "Processes"
 
-    substancefile: Optional[Path] = Field(None, alias="SubstanceFile")
-    additionalhistoryoutputfile: Optional[Path] = Field(
-        None, alias="AdditionalHistoryOutputFile"
+    substancefile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="SubstanceFile"
     )
-    statisticsfile: Optional[Path] = Field(None, alias="StatisticsFile")
+    additionalhistoryoutputfile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="AdditionalHistoryOutputFile"
+    )
+    statisticsfile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="StatisticsFile"
+    )
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
     dtmassbalance: Optional[float] = Field(0.0, alias="DtMassBalance")
@@ -617,10 +664,16 @@ class Particles(INIBasedModel):
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Particles"] = "Particles"
 
     particlesfile: Optional[XYZModel] = Field(None, alias="ParticlesFile")
-    particlesreleasefile: Optional[Path] = Field(None, alias="ParticlesReleaseFile")
+    particlesreleasefile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="ParticlesReleaseFile"
+    )
     addtracer: Optional[bool] = Field(False, alias="AddTracer")
     starttime: Optional[float] = Field(0.0, alias="StartTime")
     timestep: Optional[float] = Field(0.0, alias="TimeStep")
