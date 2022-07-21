@@ -792,20 +792,20 @@ class FileModel(BaseModel, ABC):
         raise NotImplementedError()
 
 
-class SerializableFileModel(FileModel):
-    """SerializableFileModel defines a FileModel which can be parsed
+class ParsableFileModel(FileModel):
+    """ParsableFileModel defines a FileModel which can be parsed
     and serialized with a serializer .
 
-    Each SerializableFileModel has a default _filename and _ext,
+    Each ParsableFileModel has a default _filename and _ext,
     which are used to generate the file name of any instance where
     the filepath is not (yet) set.
 
-    Children of the SerializableFileModel are expected to implement a
+    Children of the ParsableFileModel are expected to implement a
     serializer function which takes a Path and Dict and writes the
-    SerializableFileModel to disk, and a parser function which takes
+    ParsableFileModel to disk, and a parser function which takes
     a Path and outputs a Dict.
 
-    If more complicated solutions are required, a SerializableFileModel
+    If more complicated solutions are required, a ParsableFileModel
     child can also opt to overwrite the _serialize and _parse methods,
     to skip the _get_serializer and _get_parser methods respectively.
     """

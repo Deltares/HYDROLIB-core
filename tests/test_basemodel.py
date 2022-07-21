@@ -12,7 +12,7 @@ from hydrolib.core.basemodel import (
     FileModelCache,
     FilePathResolver,
     ResolveRelativeMode,
-    SerializableFileModel,
+    ParsableFileModel,
     context_file_loading,
     file_load_context,
 )
@@ -27,12 +27,12 @@ class TestFileModel:
     _reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
 
     def test_serializable_model_is_a_file_model(self):
-        assert issubclass(SerializableFileModel, FileModel)
+        assert issubclass(ParsableFileModel, FileModel)
 
     def test_dimr_model_is_a_file_model(self):
         # For the ease of testing, we use DIMR model, which implements FileModel
         # If this test fails the other tests are basically useless.
-        assert issubclass(DIMR, SerializableFileModel)
+        assert issubclass(DIMR, ParsableFileModel)
 
     def test_loading_a_file_twice_returns_different_model_instances(self) -> None:
         # If the same source file is read multiple times, we expect that

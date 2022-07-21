@@ -7,7 +7,7 @@ from pydantic.class_validators import validator
 from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
-from hydrolib.core.basemodel import BaseModel, SerializableFileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
 from .io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
@@ -179,7 +179,7 @@ class INIGeneral(INIBasedModel):
         return True
 
 
-class INIModel(SerializableFileModel):
+class INIModel(ParsableFileModel):
     """INI Model representation."""
 
     general: INIGeneral

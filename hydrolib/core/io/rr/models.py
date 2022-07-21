@@ -8,7 +8,7 @@ from pydantic.types import FilePath
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
-    SerializableFileModel,
+    ParsableFileModel,
     validator_set_default_disk_only_file_model_when_none,
 )
 
@@ -59,7 +59,7 @@ def _validator_mappix_value(field_name: str, expected: str) -> classmethod:
     return validator(field_name, allow_reuse=True, pre=True)(validate)
 
 
-class RainfallRunoffModel(SerializableFileModel):
+class RainfallRunoffModel(ParsableFileModel):
     """The RainfallRunoffModel contains all paths and sub-models related to the
     Rainfall Runoff model.
     """

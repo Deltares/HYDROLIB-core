@@ -167,14 +167,14 @@ to manage the file paths as well as the common logic to load and save models.
 In order to do so, it requires child classes to implement a `_save` and a `_load`
 method. Two child classes have been defined which extend the `FileModel`:
 
-* `SerializableFileModel`: Abstract class which defines a `FileModel` with a 
+* `ParsableFileModel`: Abstract class which defines a `FileModel` with a 
     serializer and parser. This is the base model used by most in-memory models.
 * `DiskOnlyFileModel`: A generic file model which does not read data into memory
     but does copy the underlying file when a parent `FileModel` is saved recursively.
 
-### `SerializableFileModel`
+### `ParsableFileModel`
 
-The `SerializableFileModel` defines an abstract base class for in-memory models, it does so by
+The `ParsableFileModel` defines an abstract base class for in-memory models, it does so by
 requiring child classes to define a parser, to read input files, and a serializer, to write the
 data again. This forms the basis for most of the in-memory file models.
 

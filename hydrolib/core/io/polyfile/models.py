@@ -3,7 +3,7 @@
 
 from typing import Callable, List, Optional, Sequence
 
-from hydrolib.core.basemodel import BaseModel, SerializableFileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
 
 class Description(BaseModel):
@@ -77,7 +77,7 @@ class PolyObject(BaseModel):
     points: List[Point]
 
 
-class PolyFile(SerializableFileModel):
+class PolyFile(ParsableFileModel):
     """Poly-file (.pol/.pli/.pliz) representation."""
 
     has_z_values: bool = False
