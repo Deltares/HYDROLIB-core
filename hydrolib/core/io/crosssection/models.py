@@ -278,8 +278,8 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         )
         totalwidths: Optional[str] = Field(
             "Space separated list of total widths at the selected heights [m]. "
-            + "Equal to flowWidths if not specified. If specified, the totalWidths"
-            + "should be larger than flowWidths.",
+            "Equal to flowWidths if not specified. If specified, the totalWidths"
+            "should be larger than flowWidths.",
             alias="totalWidths",
         )
         leveecrestLevel: Optional[str] = Field(
@@ -308,20 +308,20 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         )
         frictionids: Optional[str] = Field(
             "Semicolon separated list of roughness variable names associated with the roughness "
-            + "sections. Either this parameter or frictionTypes should be specified. If neither "
-            + 'parameter is specified, the frictionIds default to "Main", "FloodPlain1" '
-            + 'and "FloodPlain2".',
+            "sections. Either this parameter or frictionTypes should be specified. If neither "
+            'parameter is specified, the frictionIds default to "Main", "FloodPlain1" '
+            'and "FloodPlain2".',
             alias="frictionIds",
         )
         frictiontypes: Optional[str] = Field(
             "Semicolon separated list of roughness types associated with the roughness sections. "
-            + "Either this parameter or frictionIds should be specified. Can be specified as a "
-            + "single value if all roughness sections use the same type.",
+            "Either this parameter or frictionIds should be specified. Can be specified as a "
+            "single value if all roughness sections use the same type.",
             alias="frictionTypes",
         )
         frictionvalues: Optional[str] = Field(
             "Space separated list of roughness values; their meaning depends on the roughness "
-            + "types selected (only used if frictionTypes specified).",
+            "types selected (only used if frictionTypes specified).",
             alias="frictionValues",
         )
 
@@ -392,8 +392,8 @@ class ZWCrsDef(CrossSectionDefinition):
         )
         totalwidths: Optional[str] = Field(
             "Space separated list of total widths at the selected heights [m]. "
-            + "Equal to flowWidths if not specified. If specified, the totalWidths"
-            + "should be larger than flowWidths.",
+            "Equal to flowWidths if not specified. If specified, the totalWidths"
+            "should be larger than flowWidths.",
             alias="totalWidths",
         )
         frictionid: Optional[str] = Field(
