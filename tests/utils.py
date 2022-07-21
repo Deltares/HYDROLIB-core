@@ -1,8 +1,8 @@
+import filecmp
 from pathlib import Path
 from typing import Generic, Optional, TypeVar
 
 import pytest
-import filecmp
 from numpy import array
 from pydantic.generics import GenericModel
 
