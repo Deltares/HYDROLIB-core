@@ -793,9 +793,25 @@ class FileModel(BaseModel, ABC):
 
 
 class SerializableFileModel(FileModel):
+    """SerializableFileModel defines a FileModel which can be parsed
+    and serialized with a serializer .
+
+    Each SerializableFileModel has a default _filename and _ext,
+    which are used to generate the file name of any instance where
+    the filepath is not (yet) set.
+
+    Children of the SerializableFileModel are expected to implement a
+    serializer function which takes a Path and Dict and writes the
+    SerializableFileModel to disk, and a parser function which takes
+    a Path and outputs a Dict.
+
+    If more complicated solutions are required, a SerializableFileModel
+    child can also opt to overwrite the _serialize and _parse methods,
+    to skip the _get_serializer and _get_parser methods respectively.
+    """
+
     def _load(self, filepath: Path) -> Dict:
-        # TODO Make this lazy in some cases
-        # so it doesn't become slow
+        # TODO Make this lazy in some cases so it doesn't become slow
         if filepath.is_file():
             return self._parse(filepath)
         else:
@@ -828,19 +844,19 @@ class SerializableFileModel(FileModel):
         return Path(f"{name}{ext}")
 
     @abstractclassmethod
-    def _filename(cls):
+    def _filename(cls) -> str:
         return "test"
 
     @abstractclassmethod
-    def _ext(cls):
+    def _ext(cls) -> str:
         return ".test"
 
     @abstractclassmethod
-    def _get_serializer(cls) -> Callable:
+    def _get_serializer(cls) -> Callable[[Path, Dict], None]:
         return DummySerializer.serialize
 
     @abstractclassmethod
-    def _get_parser(cls) -> Callable:
+    def _get_parser(cls) -> Callable[[Path], Dict]:
         return DummmyParser.parse
 
     def __str__(self) -> str:
