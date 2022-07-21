@@ -1,4 +1,3 @@
-import filecmp
 import inspect
 import shutil
 from pathlib import Path

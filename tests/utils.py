@@ -54,14 +54,14 @@ def assert_file_is_same_binary(
     reference_directory: Path,
     reference_filepath: Path = ...,
 ) -> None:
-    """Assert that input_directory / input_filepath is equal to 
+    """Assert that input_directory / input_filepath is equal to
     reference_directory / reference_filepath
 
-    If input_filepath is None, nothing will be compared. 
-    
+    If input_filepath is None, nothing will be compared.
+
     If no reference_filepath is specified it will be set to input_filepath.
 
-    If the reference_directory / reference_filepath does not exist, we assert 
+    If the reference_directory / reference_filepath does not exist, we assert
     that input_directory / input_filepath does not exist.
 
     Args:
@@ -71,7 +71,7 @@ def assert_file_is_same_binary(
             The input filename relative to input_directory
         reference_directory (Path):
             The directory containing the reference file.
-        reference_filepath (Path, optional): 
+        reference_filepath (Path, optional):
             The reference filename relative to reference_directory
             Defaults to ... which is then set to input_filepath.
     """
@@ -81,9 +81,10 @@ def assert_file_is_same_binary(
         reference_filepath = input_filepath
 
     reference_path = reference_directory / reference_filepath
+
     input_path = input_directory / input_filepath
 
-    if reference_filepath.exists():
+    if reference_path.exists():
         assert input_path.exists()
         assert filecmp.cmp(input_path, reference_path)
     else:
