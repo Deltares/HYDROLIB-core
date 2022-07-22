@@ -1045,7 +1045,6 @@ class TestDambreak:
             ucrit                      = 0.001
             t0                         = 0.0001        # make it a boolean
             dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 3            
-            materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
             waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
             waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
             waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
@@ -1071,7 +1070,6 @@ class TestDambreak:
         assert dambreak_obj.ucrit == 0.001
         assert dambreak_obj.t0 == 0.0001
         assert dambreak_obj.dambreaklevelsandwidths == Path("dambreak.tim")
-        assert dambreak_obj.dict()["materialtype"] == "1"
         assert dambreak_obj.waterlevelupstreamlocationx == 1.2
         assert dambreak_obj.waterlevelupstreamlocationy == 2.3
         assert dambreak_obj.waterleveldownstreamlocationx == 3.4
