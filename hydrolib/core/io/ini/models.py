@@ -33,7 +33,7 @@ class INIBasedModel(BaseModel, ABC):
     _header: str
 
     class Config:
-        extra = Extra.allow
+        extra = Extra.ignore
         arbitrary_types_allowed = False
 
     @classmethod
