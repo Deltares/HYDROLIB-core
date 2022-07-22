@@ -6,9 +6,11 @@ also represents a file on disk.
 """
 import logging
 from abc import ABC, abstractclassmethod
+from collections.abc import Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
+from inspect import isclass
 from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
 from warnings import warn
@@ -19,7 +21,7 @@ from pydantic.error_wrappers import ErrorWrapper, ValidationError
 from pydantic.fields import PrivateAttr
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.utils import to_key
+from hydrolib.core.utils import to_key, to_list
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +68,73 @@ class BaseModel(PydanticBaseModel):
             else:
                 # If there is an identifier, include this in the ValidationError messages.
                 raise ValidationError([ErrorWrapper(e, loc=identifier)], self.__class__)
+
+    @classmethod
+    def construct(cls, _fields_set=None, **values):
+        """
+        Creates a new model setting __dict__ and __fields_set__ from trusted or pre-validated data.
+        Default values are respected, but no other validation is performed.
+        Behaves as if `Config.extra = 'allow'` was set since it adds all passed values
+        Nested model fields are supported, and recursively populated using this same construct().
+        """
+
+        # Code adapted from: https://github.com/samuelcolvin/pydantic/issues/1168#issuecomment-817742836
+        m = cls.__new__(cls)
+
+        # Start by allowing all input values
+        fields_values = values.copy()
+
+        config = cls.__config__
+
+        # For all known class fields, replace values by a nested BaseModel when necessary
+        for name, field in cls.__fields__.items():
+            key = field.alias
+            if (
+                key not in values and config.allow_population_by_field_name
+            ):  # Added this to allow population by field name
+                key = name
+
+            if key in values:
+                if (
+                    values[key] is None and not field.required
+                ):  # Moved this check since None value can be passed for Optional nested field
+                    fields_values[name] = field.get_default()
+                else:
+                    if (isclass(field.type_)) and issubclass(field.type_, BaseModel):
+                        # If field is a list of BaseModels (and given value may or may not be a list)
+                        if field.shape == 2:
+                            fields_values[name] = [
+                                field.type_.construct(**e)
+                                if isinstance(e, Mapping)
+                                else field.type_.construct(e)
+                                for e in to_list(values[key])
+                            ]
+                        else:
+                            if isinstance(values[key], Mapping):
+                                fields_values[name] = field.outer_type_.construct(
+                                    **values[key]
+                                )
+                            else:
+                                # Input value need not be a dict, some BaseModel subclass
+                                # may support this as a separate input argument.
+                                fields_values[name] = field.outer_type_.construct(
+                                    values[key]
+                                )
+                    else:
+                        # No BaseModel, simply set value
+                        fields_values[name] = values[key]
+                        if key != name:
+                            # Remove earlier set-by-key value, only leave set-by-aliasname
+                            del fields_values[key]
+            elif not field.required:
+                fields_values[name] = field.get_default()
+
+        object.__setattr__(m, "__dict__", fields_values)
+        if _fields_set is None:
+            _fields_set = set(values.keys())
+        object.__setattr__(m, "__fields_set__", _fields_set)
+        m._init_private_attributes()
+        return m
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
@@ -573,6 +642,21 @@ class FileModel(BaseModel, ABC):
         relative to this FileModel being loaded.
         """
         pass
+
+    @classmethod
+    def construct(cls, filepath: Optional[Path] = None, _fields_set=None, **values):
+        """
+        Creates a new model setting __dict__ and __fields_set__ from trusted or pre-validated data.
+        Default values are respected, but no other validation is performed.
+        Behaves as if `Config.extra = 'allow'` was set since it adds all passed values
+
+        This implementation takes specific care of a FileModel's filepath field.
+        """
+
+        # Consistent with __init__(), explicitly assign filepath input argument to the 'filepath' field.
+        values.update({"filepath": filepath})
+        m = super(FileModel, cls).construct(**values)
+        return m
 
     @property
     def _resolved_filepath(self) -> Optional[Path]:
