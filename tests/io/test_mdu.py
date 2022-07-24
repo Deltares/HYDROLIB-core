@@ -1,6 +1,8 @@
-import pytest
 from pathlib import Path
 from typing import Callable, Dict, Union
+
+import pytest
+
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.mdu.models import (
     FMModel,

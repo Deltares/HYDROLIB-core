@@ -22,15 +22,15 @@ from hydrolib.core.io.dimr.models import (
 from hydrolib.core.io.ext.models import Boundary, ExtModel
 from hydrolib.core.io.friction.models import FrictGeneral
 from hydrolib.core.io.mdu.models import (
+    Calibration,
     ExternalForcing,
     FMModel,
+    Geometry,
+    Output,
+    Particles,
+    Processes,
     Restart,
     Sediment,
-    Output,
-    Geometry,
-    Calibration,
-    Processes,
-    Particles,
 )
 from hydrolib.core.io.rr.models import RainfallRunoffModel
 from hydrolib.core.io.xyz.models import XYZModel

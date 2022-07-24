@@ -5,11 +5,11 @@ from typing import List, Literal, Optional
 
 from pydantic import Field, NonNegativeInt, PositiveInt
 from pydantic.class_validators import validator
+
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
     validator_set_default_disk_only_file_model_when_none,
 )
-
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
