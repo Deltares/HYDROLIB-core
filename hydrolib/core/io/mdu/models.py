@@ -145,8 +145,12 @@ class Sediment(INIBasedModel):
 
     _header: Literal["Sediment"] = "Sediment"
     sedimentmodelnr: Optional[int] = Field(alias="Sedimentmodelnr")
-    morfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="MorFile")
-    sedfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="SedFile")
+    morfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="MorFile"
+    )
+    sedfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile"
+    )
 
 
 class Wind(INIBasedModel):
@@ -235,7 +239,9 @@ class Restart(INIBasedModel):
     )
 
     _header: Literal["Restart"] = "Restart"
-    restartfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="restartFile")
+    restartfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="restartFile"
+    )
     restartdatetime: Optional[str] = Field(None, alias="restartDateTime")
 
 
@@ -255,7 +261,7 @@ class ExternalForcing(INIBasedModel):
 
     _header: Literal["External Forcing"] = "External Forcing"
     extforcefile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="extForceFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="extForceFile"
     )
     extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
     rainfall: Optional[bool] = Field(None, alias="rainfall")
@@ -327,14 +333,18 @@ class Output(INIBasedModel):
     outputdir: Optional[Path] = Field(None, alias="outputDir")
     waqoutputdir: Optional[Path] = Field(None, alias="waqOutputDir")
     flowgeomfile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="flowGeomFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile"
     )
     obsfile: Optional[List[ObservationPointModel]] = Field(None, alias="obsFile")
     crsfile: Optional[List[DiskOnlyFileModel]] = Field(None, alias="crsFile")
-    hisfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="hisFile")
+    hisfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
+    )
     hisinterval: List[float] = Field([300], alias="hisInterval")
     xlsinterval: List[float] = Field([0.0], alias="xlsInterval")
-    mapfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="mapFile")
+    mapfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="mapFile"
+    )
     mapinterval: List[float] = Field([1200.0], alias="mapInterval")
     rstinterval: List[float] = Field([0.0], alias="rstInterval")
     mapformat: int = Field(4, alias="mapFormat")
@@ -416,12 +426,12 @@ class Output(INIBasedModel):
     )
     wrimap_flow_analysis: bool = Field(False, alias="wrimap_flow_analysis")
     mapoutputtimevector: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="mapOutputTimeVector"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="mapOutputTimeVector"
     )
     fullgridoutput: bool = Field(False, alias="fullGridOutput")
     eulervelocities: bool = Field(False, alias="eulerVelocities")
     classmapfile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="classMapFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="classMapFile"
     )
     waterlevelclasses: List[float] = Field([0.0], alias="waterLevelClasses")
     waterdepthclasses: List[float] = Field([0.0], alias="waterDepthClasses")
@@ -478,9 +488,11 @@ class Geometry(INIBasedModel):
     )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
     waterlevinifile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="waterLevIniFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="waterLevIniFile"
     )
-    landboundaryfile: Optional[List[Path]] = Field(None, alias="landBoundaryFile")
+    landboundaryfile: Optional[List[DiskOnlyFileModel]] = Field(
+        None, alias="landBoundaryFile"
+    )
     thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
     fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
     pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
@@ -493,14 +505,20 @@ class Geometry(INIBasedModel):
     crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
     storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
     oned2dlinkfile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="1d2dLinkFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="1d2dLinkFile"
     )
-    proflocfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="profLocFile")
-    profdeffile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="profDefFile")
+    proflocfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="profLocFile"
+    )
+    profdeffile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="profDefFile"
+    )
     profdefxyzfile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="profDefXyzFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="profDefXyzFile"
     )
-    manholefile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="manholeFile")
+    manholefile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile"
+    )
     partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
@@ -559,9 +577,11 @@ class Calibration(INIBasedModel):
     _header: Literal["Calibration"] = "Calibration"
     usecalibration: bool = Field(False, alias="UseCalibration")
     definitionfile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="DefinitionFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="DefinitionFile"
     )
-    areafile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="AreaFile")
+    areafile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile"
+    )
 
 
 class InfiltrationMethod(IntEnum):
@@ -631,13 +651,14 @@ class Processes(INIBasedModel):
     _header: Literal["Processes"] = "Processes"
 
     substancefile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="SubstanceFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="SubstanceFile"
     )
     additionalhistoryoutputfile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="AdditionalHistoryOutputFile"
+        default_factory=lambda: DiskOnlyFileModel(None),
+        alias="AdditionalHistoryOutputFile",
     )
     statisticsfile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="StatisticsFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="StatisticsFile"
     )
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
@@ -678,7 +699,7 @@ class Particles(INIBasedModel):
 
     particlesfile: Optional[XYZModel] = Field(None, alias="ParticlesFile")
     particlesreleasefile: DiskOnlyFileModel = Field(
-        DiskOnlyFileModel(None), alias="ParticlesReleaseFile"
+        default_factory=lambda: DiskOnlyFileModel(None), alias="ParticlesReleaseFile"
     )
     addtracer: Optional[bool] = Field(False, alias="AddTracer")
     starttime: Optional[float] = Field(0.0, alias="StartTime")
