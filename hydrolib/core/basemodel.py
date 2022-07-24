@@ -791,6 +791,9 @@ class FileModel(BaseModel, ABC):
         """
         raise NotImplementedError()
 
+    def __str__(self) -> str:
+        return str(self.filepath if self.filepath else "")
+
 
 class ParsableFileModel(FileModel):
     """ParsableFileModel defines a FileModel which can be parsed
@@ -858,9 +861,6 @@ class ParsableFileModel(FileModel):
     @abstractclassmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return DummmyParser.parse
-
-    def __str__(self) -> str:
-        return str(self.filepath if self.filepath else "")
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         filepath = data.get("filepath")
