@@ -48,10 +48,8 @@ class Boundary(INIBasedModel):
     def _is_valid_locationfile_data(
         cls, elem: Union[None, str, Path, DiskOnlyFileModel]
     ) -> bool:
-        return (
-            isinstance(elem, str)
-            or isinstance(elem, Path)
-            or (isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None)
+        return isinstance(elem, Path) or (
+            isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
         )
 
     @root_validator
