@@ -249,8 +249,14 @@ class ExternalForcing(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: Optional[Path] = Field(None, alias="extForceFile")
+    extforcefile: DiskOnlyFileModel = Field(
+        DiskOnlyFileModel(None), alias="extForceFile"
+    )
     extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
@@ -324,8 +330,8 @@ class Output(INIBasedModel):
         DiskOnlyFileModel(None), alias="flowGeomFile"
     )
     obsfile: Optional[List[ObservationPointModel]] = Field(None, alias="obsFile")
-    crsfile: Optional[List[Path]] = Field(None, alias="crsFile")
-    hisfile: Optional[Path] = Field(None, alias="hisFile")
+    crsfile: Optional[List[DiskOnlyFileModel]] = Field(None, alias="crsFile")
+    hisfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="hisFile")
     hisinterval: List[float] = Field([300], alias="hisInterval")
     xlsinterval: List[float] = Field([0.0], alias="xlsInterval")
     mapfile: DiskOnlyFileModel = Field(DiskOnlyFileModel(None), alias="mapFile")

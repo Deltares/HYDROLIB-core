@@ -5,6 +5,10 @@ from typing import List, Literal, Optional
 
 from pydantic import Field, NonNegativeInt, PositiveInt
 from pydantic.class_validators import validator
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    validator_set_default_disk_only_file_model_when_none,
+)
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
@@ -65,7 +69,13 @@ class FrictGeneral(INIGeneral):
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.01", alias="fileVersion")
     filetype: Literal["roughness"] = Field("roughness", alias="fileType")
-    frictionvaluesfile: Optional[Path] = Field(alias="frictionValuesFile")
+    frictionvaluesfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="frictionValuesFile"
+    )
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
 
 
 class FrictGlobal(INIBasedModel):

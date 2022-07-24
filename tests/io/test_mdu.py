@@ -1,7 +1,11 @@
+import pytest
+from pathlib import Path
+from typing import Callable, Dict, Union
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.mdu.models import (
     FMModel,
     InfiltrationMethod,
-    Particles,
+    Output,
     ParticlesThreeDType,
     ProcessFluxIntegration,
     VegetationModelNr,
@@ -76,3 +80,12 @@ class TestModels:
         assert fm_model.veg.cbveg == 0.0
         assert fm_model.veg.rhoveg == 0.0
         assert fm_model.veg.stemheightstd == 0.0
+
+    def test_disk_only_file_model_list_fields_are_initialized_correctly(self):
+        data = {"crsfile": [Path("test.crs")]}
+
+        model = Output(**data)
+
+        assert model.crsfile is not None
+        assert len(model.crsfile) == 1
+        assert isinstance(model.crsfile[0], DiskOnlyFileModel)

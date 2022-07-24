@@ -1,7 +1,11 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator, validator
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    validator_set_default_disk_only_file_model_when_none,
+)
 
 from hydrolib.core.io.bc.models import ForcingBase, ForcingData, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -23,16 +27,32 @@ class Boundary(INIBasedModel):
     [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
-    locationfile: Optional[Path] = Field(alias="locationFile")
+    locationfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
+    )
     forcingfile: ForcingModel = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @classmethod
+    def _is_valid_locationfile_data(
+        cls, elem: Union[None, str, Path, DiskOnlyFileModel]
+    ) -> bool:
+        return (
+            isinstance(elem, str)
+            or isinstance(elem, Path)
+            or (isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None)
+        )
 
     @root_validator
     @classmethod
@@ -51,7 +71,9 @@ class Boundary(INIBasedModel):
         """
         node_id = values.get("nodeid", None)
         location_file = values.get("locationfile", None)
-        if str_is_empty_or_none(node_id) and not isinstance(location_file, Path):
+        if str_is_empty_or_none(node_id) and not cls._is_valid_locationfile_data(
+            location_file
+        ):
             raise ValueError(
                 "Either nodeId or locationFile fields should be specified."
             )
