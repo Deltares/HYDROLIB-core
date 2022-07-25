@@ -1004,6 +1004,26 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.DiskOnlyFileModel" class="md-nav__link">
+    DiskOnlyFileModel
+  </a>
+  
+    <nav class="md-nav" aria-label="DiskOnlyFileModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.DiskOnlyFileModel.is_intermediate_link" class="md-nav__link">
+    is_intermediate_link()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext" class="md-nav__link">
     FileLoadContext
   </a>
@@ -1237,6 +1257,13 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.ParsableFileModel" class="md-nav__link">
+    ParsableFileModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.ResolveRelativeMode" class="md-nav__link">
     ResolveRelativeMode
   </a>
@@ -1246,6 +1273,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.file_load_context" class="md-nav__link">
     file_load_context()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.validator_set_default_disk_only_file_model_when_none" class="md-nav__link">
+    validator_set_default_disk_only_file_model_when_none()
   </a>
   
 </li>
@@ -1731,6 +1765,26 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.DiskOnlyFileModel" class="md-nav__link">
+    DiskOnlyFileModel
+  </a>
+  
+    <nav class="md-nav" aria-label="DiskOnlyFileModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.DiskOnlyFileModel.is_intermediate_link" class="md-nav__link">
+    is_intermediate_link()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext" class="md-nav__link">
     FileLoadContext
   </a>
@@ -1964,6 +2018,13 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.ParsableFileModel" class="md-nav__link">
+    ParsableFileModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.ResolveRelativeMode" class="md-nav__link">
     ResolveRelativeMode
   </a>
@@ -1973,6 +2034,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.file_load_context" class="md-nav__link">
     file_load_context()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.validator_set_default_disk_only_file_model_when_none" class="md-nav__link">
+    validator_set_default_disk_only_file_model_when_none()
   </a>
   
 </li>
@@ -2195,7 +2263,7 @@ is intended to be used as a BaseModel class member variable name.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Initializes a BaseModel with the provided data.</p>
+      <p>Initialize a BaseModel with the provided data.</p>
 
 <p><strong>Exceptions:</strong></p>
 <table>
@@ -2215,7 +2283,7 @@ is intended to be used as a BaseModel class member variable name.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Initializes a BaseModel with the provided data.</span>
+    <span class="sd">&quot;&quot;&quot;Initialize a BaseModel with the provided data.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValidationError: A validation error when the data is invalid.</span>
@@ -2372,6 +2440,91 @@ is intended to be used as a BaseModel class member variable name.</p>
 
 
 
+<h3 id="hydrolib.core.basemodel.DiskOnlyFileModel" class="doc doc-heading">
+        <code>
+DiskOnlyFileModel            (<a title="hydrolib.core.basemodel.FileModel" href="#hydrolib.core.basemodel.FileModel">FileModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.basemodel.DiskOnlyFileModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>DiskOnlyFileModel provides a stub implementation for file based
+models which are not explicitly implemented within hydrolib.core.</p>
+<p>It implements the FileModel with a void parser and serializer, and a
+save method which copies the file associated with the FileModel
+to a new location if it exists.</p>
+<p>We further explicitly assume that when the filepath is None, no
+file will be written.</p>
+<p>Actual file model implementations <em>should not</em> inherit from the
+DiskOnlyFileModel and instead inherit directly from FileModel.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.DiskOnlyFileModel.is_intermediate_link" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
+
+
+<a href="#hydrolib.core.basemodel.DiskOnlyFileModel.is_intermediate_link" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Generic attribute for models that have children fields that could contain files.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="c1"># If the filepath is not None, there is an underlying file, and as such we need</span>
+    <span class="c1"># to traverse it.</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
 <h3 id="hydrolib.core.basemodel.FileLoadContext" class="doc doc-heading">
         <code>
 FileLoadContext        </code>
@@ -2409,12 +2562,12 @@ are only read once.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Creates a new empty FileLoadContext.</p>
+      <p>Create a new empty FileLoadContext.</p>
 
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new empty FileLoadContext.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Create a new empty FileLoadContext.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_path_resolver</span> <span class="o">=</span> <span class="n">FilePathResolver</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">FileModelCache</span><span class="p">()</span>
 </code></pre></div>
@@ -2871,7 +3024,7 @@ cwd / filename.extension</p></td>
 
     <div class="doc doc-contents ">
 
-      <p>Creates a new FileModel from the given filepath.</p>
+      <p>Create a new FileModel from the given filepath.</p>
 <p>If no filepath is provided, the model is initialized as an empty
 model with default values.
 If the filepath is provided, it is read from disk.</p>
@@ -2879,7 +3032,7 @@ If the filepath is provided, it is read from disk.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new FileModel from the given filepath.</span>
+    <span class="sd">&quot;&quot;&quot;Create a new FileModel from the given filepath.</span>
 
 <span class="sd">    If no filepath is provided, the model is initialized as an empty</span>
 <span class="sd">    model with default values.</span>
@@ -2941,7 +3094,7 @@ If the filepath is provided, it is read from disk.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Creates a new model.
+      <p>Create a new model.
 If the file at the provided file path was already parsed, this instance is returned.</p>
 
 <p><strong>Parameters:</strong></p>
@@ -2981,7 +3134,7 @@ If the file at the provided file path was already parsed, this instance is retur
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new model.</span>
+    <span class="sd">&quot;&quot;&quot;Create a new model.</span>
 <span class="sd">    If the file at the provided file path was already parsed, this instance is returned.</span>
 
 <span class="sd">    Args:</span>
@@ -3184,7 +3337,7 @@ or only save this model (when set to False). Defaults to False.</p></td>
 
 
 <h4 id="hydrolib.core.basemodel.FileModel.save_location" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_location</span><span class="p">:</span> <span class="n">Path</span></code>
+<code class="highlight language-python"><span class="n">save_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-property"><code>property</code></small>
@@ -3195,7 +3348,8 @@ or only save this model (when set to False). Defaults to False.</p></td>
 
     <div class="doc doc-contents ">
 
-      <p>Gets the current save location which will be used when calling <code>save()</code></p>
+      <p>Get the current save location which will be used when calling <code>save()</code></p>
+<p>This value can be None if the filepath is None and no name can be generated.</p>
 
 <p><strong>Returns:</strong></p>
 <table>
@@ -3325,12 +3479,12 @@ objects.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Creates a new empty FileModelCache.</p>
+      <p>Create a new empty FileModelCache.</p>
 
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new empty FileModelCache.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Create a new empty FileModelCache.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 </code></pre></div>
         </details>
@@ -3506,12 +3660,12 @@ latest added parent path from the FilePathResolver</p>
 
     <div class="doc doc-contents ">
 
-      <p>Creates a new empty FilePathResolver.</p>
+      <p>Create a new empty FilePathResolver.</p>
 
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new empty FilePathResolver.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Create a new empty FilePathResolver.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">ResolveRelativeMode</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 </code></pre></div>
@@ -3828,7 +3982,7 @@ functions.</p>
 
 
 <h4 id="hydrolib.core.basemodel.ModelTreeTraverser.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">should_traverse</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">should_execute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pre_traverse_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">post_traverse_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">should_traverse</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">should_execute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pre_traverse_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">post_traverse_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">basemodel</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">],</span> <span class="o">~</span><span class="n">TAcc</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -3838,7 +3992,7 @@ functions.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Creates a new ModelTreeTraverser with the given functions.</p>
+      <p>Create a new ModelTreeTraverser with the given functions.</p>
 <p>If a predicate it is not defined, it is assumed to always be true, i.e. we will
 always traverse to the next node, or always execute the traverse functions.</p>
 <p>If a traverse function is not defined, it will be skipped.</p>
@@ -3892,10 +4046,10 @@ i.e. bottom-up traversal. Defaults to None.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">should_traverse</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">should_execute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">pre_traverse_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="n">TAcc</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">post_traverse_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="n">TAcc</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pre_traverse_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="n">TAcc</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">post_traverse_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="n">TAcc</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new ModelTreeTraverser with the given functions.</span>
+    <span class="sd">&quot;&quot;&quot;Create a new ModelTreeTraverser with the given functions.</span>
 
 <span class="sd">    If a predicate it is not defined, it is assumed to always be true, i.e. we will</span>
 <span class="sd">    always traverse to the next node, or always execute the traverse functions.</span>
@@ -4054,6 +4208,64 @@ ModelTreeTraverser.</p>
 
 
 
+<h3 id="hydrolib.core.basemodel.ParsableFileModel" class="doc doc-heading">
+        <code>
+ParsableFileModel            (<a title="hydrolib.core.basemodel.FileModel" href="#hydrolib.core.basemodel.FileModel">FileModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.basemodel.ParsableFileModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>ParsableFileModel defines a FileModel which can be parsed
+and serialized with a serializer .</p>
+<p>Each ParsableFileModel has a default _filename and _ext,
+which are used to generate the file name of any instance where
+the filepath is not (yet) set.</p>
+<p>Children of the ParsableFileModel are expected to implement a
+serializer function which takes a Path and Dict and writes the
+ParsableFileModel to disk, and a parser function which takes
+a Path and outputs a Dict.</p>
+<p>If more complicated solutions are required, a ParsableFileModel
+child can also opt to overwrite the _serialize and _parse methods,
+to skip the _get_serializer and _get_parser methods respectively.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
 <h3 id="hydrolib.core.basemodel.ResolveRelativeMode" class="doc doc-heading">
         <code>
 ResolveRelativeMode            (<span title="enum.IntEnum">IntEnum</span>)
@@ -4127,7 +4339,7 @@ of subsequent parent model locations.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Provides a FileLoadingContext. If none has been created in the context of
+      <p>Provide a FileLoadingContext. If none has been created in the context of
 this call stack yet, a new one will be created, which will be maintained
 until it goes out of scope.</p>
 <div class="admonition yields">
@@ -4139,7 +4351,7 @@ until it goes out of scope.</p>
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">file_load_context</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Provides a FileLoadingContext. If none has been created in the context of</span>
+    <span class="sd">&quot;&quot;&quot;Provide a FileLoadingContext. If none has been created in the context of</span>
 <span class="sd">    this call stack yet, a new one will be created, which will be maintained</span>
 <span class="sd">    until it goes out of scope.</span>
 
@@ -4166,6 +4378,62 @@ until it goes out of scope.</p>
 
 
 
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="hydrolib.core.basemodel.validator_set_default_disk_only_file_model_when_none" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validator_set_default_disk_only_file_model_when_none</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">classmethod</span></code>
+
+
+<a href="#hydrolib.core.basemodel.validator_set_default_disk_only_file_model_when_none" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Validator to ensure a default empty DiskOnlyFileModel is created
+when the corresponding field is initialized with None.</p>
+
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>classmethod</code></td>
+      <td><p>Validator to adjust None values to empty DiskOnlyFileModel objects</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validator_set_default_disk_only_file_model_when_none</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">classmethod</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Validator to ensure a default empty DiskOnlyFileModel is created</span>
+<span class="sd">    when the corresponding field is initialized with None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">adjust_none</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="n">ModelField</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type_</span> <span class="ow">is</span> <span class="n">DiskOnlyFileModel</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filepath&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="k">return</span> <span class="n">validator</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">adjust_none</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

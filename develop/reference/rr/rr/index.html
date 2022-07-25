@@ -1272,6 +1272,13 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.rr.models.ImmutableDiskOnlyFileModel" class="md-nav__link">
+    ImmutableDiskOnlyFileModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.rr.models.RainfallRunoffModel" class="md-nav__link">
     RainfallRunoffModel
   </a>
@@ -1510,6 +1517,13 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.rr.models.ImmutableDiskOnlyFileModel" class="md-nav__link">
+    ImmutableDiskOnlyFileModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.rr.models.RainfallRunoffModel" class="md-nav__link">
     RainfallRunoffModel
   </a>
@@ -1706,9 +1720,9 @@ in the <a href="https://content.oss.deltares.nl/delft3d/manuals/SOBEK_User_Manua
 
 
 
-<h3 id="hydrolib.core.io.rr.models.RainfallRunoffModel" class="doc doc-heading">
+<h3 id="hydrolib.core.io.rr.models.ImmutableDiskOnlyFileModel" class="doc doc-heading">
         <code>
-RainfallRunoffModel            (<a title="hydrolib.core.basemodel.FileModel" href="../../api/#hydrolib.core.basemodel.FileModel">FileModel</a>)
+ImmutableDiskOnlyFileModel            (<a title="hydrolib.core.basemodel.DiskOnlyFileModel" href="../../api/#hydrolib.core.basemodel.DiskOnlyFileModel">DiskOnlyFileModel</a>)
         </code>
 
 
@@ -1716,12 +1730,14 @@ RainfallRunoffModel            (<a title="hydrolib.core.basemodel.FileModel" hre
       <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
   </span>
 
-<a href="#hydrolib.core.io.rr.models.RainfallRunoffModel" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#hydrolib.core.io.rr.models.ImmutableDiskOnlyFileModel" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
-      <p>The RainfallRunoffModel contains all paths and sub-models related to the
-Rainfall Runoff model.</p>
+      <p>ImmutableDiskOnlyFileModel modifies the DiskOnlyFileModel to provide faux
+immutablitity.</p>
+<p>This behaviour is required for the mappix properties, which should always
+have the same name and path and should not be modified by users.</p>
 
 
 
@@ -1740,38 +1756,41 @@ Rainfall Runoff model.</p>
 
 
 
+  </div>
+
+    </div>
+
+  </div>
 
 
 
 
 
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.rr.models.RainfallRunoffModel" class="doc doc-heading">
+        <code>
+RainfallRunoffModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="../../api/#hydrolib.core.basemodel.ParsableFileModel">ParsableFileModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.rr.models.RainfallRunoffModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The RainfallRunoffModel contains all paths and sub-models related to the
+Rainfall Runoff model.</p>
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <div class="doc doc-children">
 
 
 
@@ -2208,7 +2227,7 @@ Rainfall Runoff model.</p>
 
 <h3 id="hydrolib.core.io.rr.meteo.models.BuiModel" class="doc doc-heading">
         <code>
-BuiModel            (<a title="hydrolib.core.basemodel.FileModel" href="../../api/#hydrolib.core.basemodel.FileModel">FileModel</a>)
+BuiModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="../../api/#hydrolib.core.basemodel.ParsableFileModel">ParsableFileModel</a>)
         </code>
 
 
@@ -2644,7 +2663,7 @@ Link            (<a title="hydrolib.core.basemodel.BaseModel" href="../../api/#h
 
 <h3 id="hydrolib.core.io.rr.topology.models.LinkFile" class="doc doc-heading">
         <code>
-LinkFile            (<a title="hydrolib.core.basemodel.FileModel" href="../../api/#hydrolib.core.basemodel.FileModel">FileModel</a>)
+LinkFile            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="../../api/#hydrolib.core.basemodel.ParsableFileModel">ParsableFileModel</a>)
         </code>
 
 
@@ -2791,7 +2810,7 @@ Node            (<a title="hydrolib.core.basemodel.BaseModel" href="../../api/#h
 
 <h3 id="hydrolib.core.io.rr.topology.models.NodeFile" class="doc doc-heading">
         <code>
-NodeFile            (<a title="hydrolib.core.basemodel.FileModel" href="../../api/#hydrolib.core.basemodel.FileModel">FileModel</a>)
+NodeFile            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="../../api/#hydrolib.core.basemodel.ParsableFileModel">ParsableFileModel</a>)
         </code>
 
 
