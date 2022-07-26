@@ -5,15 +5,15 @@ from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral
 from hydrolib.core.io.obscrosssection.models import (
-    ObservationPointCrossSection,
-    ObservationPointCrossSectionGeneral,
-    ObservationPointCrossSectionModel,
+    ObservationCrossSection,
+    ObservationCrossSectionGeneral,
+    ObservationCrossSectionModel,
 )
 
 
-class TestObservationPointCrossSectionGeneral:
+class TestObservationCrossSectionGeneral:
     def test_create(self):
-        general = ObservationPointCrossSectionGeneral()
+        general = ObservationCrossSectionGeneral()
 
         assert isinstance(general, INIGeneral)
         assert isinstance(general.comments, INIBasedModel.Comments)
@@ -21,7 +21,7 @@ class TestObservationPointCrossSectionGeneral:
         assert general.filetype == "obsCross"
 
 
-class TestObservationPointCrossSection:
+class TestObservationCrossSection:
     @pytest.mark.parametrize(
         "use_branchid, numcoordinates, xcoordinates, ycoordinates, should_validate",
         [
@@ -107,7 +107,7 @@ class TestObservationPointCrossSection:
         ycoordinates: List[float],
         should_validate: bool,
     ):
-        values = _create_observation_point_cross_section_values()
+        values = _create_observation_cross_section_values()
 
         if not use_branchid:
             del values["branchid"]
@@ -123,31 +123,31 @@ class TestObservationPointCrossSection:
 
         if not should_validate:
             with pytest.raises(ValidationError):
-                ObservationPointCrossSection(**values)
+                ObservationCrossSection(**values)
         else:
-            obspoint_crosssection = ObservationPointCrossSection(**values)
+            obs_crosssection = ObservationCrossSection(**values)
 
-            assert isinstance(obspoint_crosssection, INIBasedModel)
-            assert isinstance(obspoint_crosssection.comments, INIBasedModel.Comments)
-            assert obspoint_crosssection._header == "ObservationCrossSection"
-            assert obspoint_crosssection.name == values["name"]
-            assert obspoint_crosssection.branchid == values.get("branchid", None)
-            assert obspoint_crosssection.chainage == values.get("chainage", None)
-            assert obspoint_crosssection.numcoordinates == values["numcoordinates"]
-            assert obspoint_crosssection.xcoordinates == values["xcoordinates"]
-            assert obspoint_crosssection.ycoordinates == values["ycoordinates"]
+            assert isinstance(obs_crosssection, INIBasedModel)
+            assert isinstance(obs_crosssection.comments, INIBasedModel.Comments)
+            assert obs_crosssection._header == "ObservationCrossSection"
+            assert obs_crosssection.name == values["name"]
+            assert obs_crosssection.branchid == values.get("branchid", None)
+            assert obs_crosssection.chainage == values.get("chainage", None)
+            assert obs_crosssection.numcoordinates == values["numcoordinates"]
+            assert obs_crosssection.xcoordinates == values["xcoordinates"]
+            assert obs_crosssection.ycoordinates == values["ycoordinates"]
 
 
-class TestObservationPointCrossSectionModel:
+class TestObservationCrossSectionModel:
     def test_create(self):
-        model = ObservationPointCrossSectionModel()
+        model = ObservationCrossSectionModel()
 
-        assert isinstance(model.general, ObservationPointCrossSectionGeneral)
+        assert isinstance(model.general, ObservationCrossSectionGeneral)
         assert isinstance(model.crosssections, List)
         assert len(model.crosssections) == 0
 
 
-def _create_observation_point_cross_section_values() -> dict:
+def _create_observation_cross_section_values() -> dict:
     values = dict(
         name="randomName",
         branchid="randomBranchName",

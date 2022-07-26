@@ -10,8 +10,8 @@ from hydrolib.core.io.ini.util import (
 )
 
 
-class ObservationPointCrossSectionGeneral(INIGeneral):
-    """The observation point cross section file's `[General]` section with file meta data."""
+class ObservationCrossSectionGeneral(INIGeneral):
+    """The observation cross section file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
         fileversion: Optional[str] = Field(
@@ -26,12 +26,12 @@ class ObservationPointCrossSectionGeneral(INIGeneral):
     filetype: Literal["obsCross"] = Field("obsCross", alias="fileType")
 
 
-class ObservationPointCrossSection(INIBasedModel):
+class ObservationCrossSection(INIBasedModel):
     """
-    The cross section of an observation point that is included in the
+    The observation cross section that is included in the
     observation cross section file.
 
-    All lowercased attributes match with the observation point cross
+    All lowercased attributes match with the observation cross
     section output as described in [UM Sec.F2.4.1]
     (https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.4.1)
     """
@@ -76,11 +76,11 @@ class ObservationPointCrossSection(INIBasedModel):
     _number_of_coordinates_validator = get_number_of_coordinates_validator()
 
 
-class ObservationPointCrossSectionModel(INIModel):
+class ObservationCrossSectionModel(INIModel):
     """
-    The overall observation point crosssection model that contains the contents
-    of one observation point crosssection file.
+    The overall observation cross section model that contains the contents
+    of one observation cross section file.
     """
 
-    general: ObservationPointCrossSectionGeneral = ObservationPointCrossSectionGeneral()
-    crosssections: List[ObservationPointCrossSection] = []
+    general: ObservationCrossSectionGeneral = ObservationCrossSectionGeneral()
+    crosssections: List[ObservationCrossSection] = []
