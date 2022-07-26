@@ -75,6 +75,9 @@ class ObservationCrossSection(INIBasedModel):
 
     _number_of_coordinates_validator = get_number_of_coordinates_validator()
 
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data.get("name")
+
 
 class ObservationCrossSectionModel(INIModel):
     """
