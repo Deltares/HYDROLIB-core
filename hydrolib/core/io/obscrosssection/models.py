@@ -62,7 +62,7 @@ class ObservationCrossSection(INIBasedModel):
     _header: Literal["ObservationCrossSection"] = "ObservationCrossSection"
     name: str = Field(max_length=255, alias="name")
     branchid: Optional[str] = Field(alias="branchId")
-    chainage: Optional[float] = Field(alias="chaiange")
+    chainage: Optional[float] = Field(alias="chainage")
     numcoordinates: Optional[int] = Field(alias="numCoordinates")
     xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
