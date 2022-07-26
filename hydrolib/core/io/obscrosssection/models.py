@@ -83,4 +83,4 @@ class ObservationCrossSectionModel(INIModel):
     """
 
     general: ObservationCrossSectionGeneral = ObservationCrossSectionGeneral()
-    crosssections: List[ObservationCrossSection] = []
+    observationcrosssection: List[ObservationCrossSection] = []
