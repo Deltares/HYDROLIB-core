@@ -66,6 +66,17 @@ class TestModels:
                 assert lateral.xcoordinates == xcoordinates
                 assert lateral.ycoordinates == ycoordinates
 
+            def test_given_fewer_coordinates_than_minimum_required_throws_valueerror(
+                self,
+            ):
+                values = self._create_valid_lateral_values()
+                values["numcoordinates"] = 0
+                values["xcoordinates"] = []
+                values["ycoordinates"] = []
+
+                with pytest.raises(ValueError):
+                    Lateral(**values)
+
         class TestValidateLocationType:
             """
             Class to test the paradigms for validate_location_type

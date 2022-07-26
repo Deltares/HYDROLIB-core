@@ -122,7 +122,9 @@ class Lateral(INIBasedModel):
     )
 
     _location_validator = get_location_specification_rootvalidator(allow_nodeid=True)
-    _number_of_coordinates_validator = get_number_of_coordinates_validator()
+    _number_of_coordinates_validator = get_number_of_coordinates_validator(
+        minimum_required_number_of_coordinates=1
+    )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")

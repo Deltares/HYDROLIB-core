@@ -97,6 +97,14 @@ class TestObservationCrossSection:
                 False,
                 id="Using zero numCoordinates should not validate.",
             ),
+            pytest.param(
+                False,
+                1,
+                [1.23],
+                [4.56],
+                False,
+                id="Using fewer than 2 coordinates should not validate.",
+            ),
         ],
     )
     def test_create(
@@ -143,8 +151,8 @@ class TestObservationCrossSectionModel:
         model = ObservationCrossSectionModel()
 
         assert isinstance(model.general, ObservationCrossSectionGeneral)
-        assert isinstance(model.crosssections, List)
-        assert len(model.crosssections) == 0
+        assert isinstance(model.observationcrosssection, List)
+        assert len(model.observationcrosssection) == 0
 
 
 def _create_observation_cross_section_values() -> dict:

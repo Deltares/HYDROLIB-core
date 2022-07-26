@@ -15,7 +15,9 @@ class TestCoordinatesValidator:
         xcoordinates: Optional[List[float]]
         ycoordinates: Optional[List[float]]
 
-        _number_of_coordinates_validator = get_number_of_coordinates_validator()
+        _number_of_coordinates_validator = get_number_of_coordinates_validator(
+            minimum_required_number_of_coordinates=2
+        )
 
     def test_all_values_none_does_not_throw(self):
         model = TestCoordinatesValidator.DummyModel()
@@ -47,35 +49,46 @@ class TestCoordinatesValidator:
 
     def test_fewer_xcoordinates_than_expected_throws_value_error(self):
         values = self._create_valid_dummy_model_values()
-        values["xcoordinates"] = [1]
+        values["xcoordinates"] = [1, 2]
 
         with pytest.raises(ValidationError):
             TestCoordinatesValidator.DummyModel(**values)
 
     def test_more_xcoordinates_than_expected_throws_value_error(self):
         values = self._create_valid_dummy_model_values()
-        values["xcoordinates"] = [1, 2, 3, 4, 5, 6, 7, 8]
+        values["xcoordinates"] = [1, 2, 3, 4]
 
         with pytest.raises(ValidationError):
             TestCoordinatesValidator.DummyModel(**values)
 
     def test_fewer_ycoordinates_than_expected_throws_value_error(self):
         values = self._create_valid_dummy_model_values()
-        values["ycoordinates"] = [1]
+        values["ycoordinates"] = [1, 2]
 
         with pytest.raises(ValidationError):
             TestCoordinatesValidator.DummyModel(**values)
 
     def test_more_ycoordinates_than_expected_throws_value_error(self):
         values = self._create_valid_dummy_model_values()
-        values["ycoordinates"] = [1, 2, 3, 4, 5, 6, 7, 8]
+        values["ycoordinates"] = [1, 2, 3, 4]
+
+        with pytest.raises(ValidationError):
+            TestCoordinatesValidator.DummyModel(**values)
+
+    def test_fewer_than_minimum_required_number_of_coordinates_throws_value_error(self):
+        values = self._create_valid_dummy_model_values()
+        values["numcoordinates"] = 1
+        values["xcoordinates"] = [1.23]
+        values["ycoordinates"] = [9.87]
 
         with pytest.raises(ValidationError):
             TestCoordinatesValidator.DummyModel(**values)
 
     def _create_valid_dummy_model_values(self) -> Dict:
         values = dict(
-            numcoordinates=2, xcoordinates=[1.23, 4.56], ycoordinates=[9.87, 6.54]
+            numcoordinates=3,
+            xcoordinates=[1.23, 4.56, 7.89],
+            ycoordinates=[9.87, 6.54, 3.21],
         )
 
         return values

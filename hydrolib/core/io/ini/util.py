@@ -347,10 +347,12 @@ def get_number_of_coordinates_validator(
     numfield_name: str = "numCoordinates",
     xfield_name: str = "xCoordinates",
     yfield_name: str = "yCoordinates",
+    minimum_required_number_of_coordinates: int = 0,
 ):
     """
     Get a validator that validates whether the given coordinates match in number
-    to the expected value given for numCoordinates.
+    to the expected value given by numCoordinates and that numCoordinates is
+    greater than or equal to the minimum required number of coordinates.
 
     Args:
         numfield_name (str, optional): Field name (in input file) for the coordinates
@@ -359,12 +361,15 @@ def get_number_of_coordinates_validator(
             Will be lowercased in values dict. Defaults to "xCoordinates".
         yfield_name (str, optional): Field name (in input file) for the y coordinates.
             Will be lowercased in values dict. Defaults to "yCoordinates".
+        minimum_required_number_of_coordinates (int, optional): Minimum number of
+            coordinates required in order to validate. Defaults to 0.
     """
 
     def validate_number_of_coordinates(cls, values: Dict) -> Dict:
         """
-        Validates whether the given coordinates match in number
-        to the expected value given for numCoordinates.
+        Validates whether the given coordinates match in number to the
+        expected value given for numCoordinates and is greater than or
+        equal to the minimum required number of coordinates.
 
         Args:
             values (Dict): Dictionary of object's validated fields.
@@ -375,6 +380,8 @@ def get_number_of_coordinates_validator(
                 y-coordinates are not.
             ValueError: When the number of x-coordinates or the number of y-coordinates
                 does not match the number of coordinates.
+            ValueError: When the number of x-coordinates or the number of y-coordinates
+                is less than the number of required coordinates.
 
         Returns:
             Dict: Validated dictionary of input class fields.
@@ -402,12 +409,17 @@ def get_number_of_coordinates_validator(
             )
 
         def validate_x_and_ycoordinate_number() -> None:
+            number_of_xcoordinates = len(xcoordinates)
+            number_of_ycoordinates = len(ycoordinates)
+
             if (
-                len(xcoordinates) != number_of_coordinates
-                or len(ycoordinates) != number_of_coordinates
+                number_of_xcoordinates != number_of_coordinates
+                or number_of_ycoordinates != number_of_coordinates
+                or number_of_xcoordinates < minimum_required_number_of_coordinates
             ):
                 raise ValueError(
-                    "Number of x-coordinates and y-coordinates should match number of coordinates."
+                    f"Number of x-coordinates and y-coordinates should match number of"
+                    "coordinates and should be atleast {minimum_required_number_of_coordinates}."
                 )
 
         number_of_coordinates = get_value(numfield_name)
