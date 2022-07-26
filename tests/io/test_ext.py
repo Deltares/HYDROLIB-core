@@ -266,7 +266,7 @@ class TestModels:
                         ycoordinates=y_coord,
                     )
 
-                expected_error_mssg = "numCoordinates should be given when providing xCoordinates or yCoordinates."
+                expected_error_mssg = "When using coordinates, the fields numCoordinates, xCoordinates and yCoordinates should be given."
                 assert expected_error_mssg in str(exc_mssg.value)
 
             @pytest.mark.parametrize(

@@ -394,38 +394,20 @@ def get_number_of_coordinates_validator(
                 and ycoordinates is None
             )
 
-        def coordinates_given_but_none_expected() -> bool:
-            return number_of_coordinates is None and (
-                xcoordinates is not None or ycoordinates is not None
+        def some_values_are_none() -> bool:
+            return (
+                number_of_coordinates is None
+                or xcoordinates is None
+                or ycoordinates is None
             )
 
-        def no_coordinates_given_while_expected(
-            number_of_coordinates: int, coordinate_field_name: str
-        ) -> bool:
-            return number_of_coordinates is not None and coordinate_field_name is None
-
-        def incorrect_number_of_coordinates_given(
-            expected_number: int, actual_number: int
-        ) -> bool:
-            return expected_number != actual_number
-
-        def validate_x_and_ycoordinate_number():
-            number_of_xcoordinates = len(xcoordinates)
-            if incorrect_number_of_coordinates_given(
-                number_of_coordinates, number_of_xcoordinates
+        def validate_x_and_ycoordinate_number() -> None:
+            if (
+                len(xcoordinates) != number_of_coordinates
+                or len(ycoordinates) != number_of_coordinates
             ):
                 raise ValueError(
-                    f"Number of x-coordinates given ({number_of_xcoordinates}) not matching"
-                    f"the {numfield_name} value {number_of_coordinates}."
-                )
-
-            number_of_ycoordinates = len(ycoordinates)
-            if incorrect_number_of_coordinates_given(
-                number_of_coordinates, number_of_ycoordinates
-            ):
-                raise ValueError(
-                    f"Number of y-coordinates given ({number_of_ycoordinates}) not matching"
-                    f"the {numfield_name} value {number_of_coordinates}."
+                    "Number of x-coordinates and y-coordinates should match number of coordinates."
                 )
 
         number_of_coordinates = get_value(numfield_name)
@@ -435,19 +417,9 @@ def get_number_of_coordinates_validator(
         if all_values_are_none():
             return values
 
-        if coordinates_given_but_none_expected():
+        if some_values_are_none():
             raise ValueError(
-                f"{numfield_name} should be given when providing {xfield_name} or {yfield_name}."
-            )
-
-        if no_coordinates_given_while_expected(number_of_coordinates, xfield_name):
-            raise ValueError(
-                f"{xfield_name} should be given when providing {numfield_name}."
-            )
-
-        if no_coordinates_given_while_expected(number_of_coordinates, yfield_name):
-            raise ValueError(
-                f"{yfield_name} should be given when providing {numfield_name}."
+                f"When using coordinates, the fields {numfield_name}, {xfield_name} and {yfield_name} should be given."
             )
 
         validate_x_and_ycoordinate_number()
