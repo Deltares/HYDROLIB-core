@@ -12,6 +12,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
     get_location_specification_rootvalidator,
+    get_number_of_coordinates_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -141,38 +142,12 @@ class Lateral(INIBasedModel):
     )
 
     _location_validator = get_location_specification_rootvalidator(allow_nodeid=True)
+    _number_of_coordinates_validator = get_number_of_coordinates_validator(
+        minimum_required_number_of_coordinates=1
+    )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
-
-    @validator("xcoordinates", "ycoordinates")
-    @classmethod
-    def validate_coordinates(cls, field_value: List[int], values: Dict) -> List[int]:
-        """
-        Method to validate whether the given coordinates match in number
-        to the expected value given for numcoordinates.
-
-        Args:
-            field_value (List[int]): Coordinates list (x or y)
-            values (Dict): Properties already 'validated' for Lateral class.
-
-        Raises:
-            ValueError: When the number of coordinates does not match expectations.
-
-        Returns:
-            List[int]: Validated list of coordinates.
-        """
-        num_coords = values.get("numcoordinates", None)
-        if num_coords is None:
-            raise ValueError(
-                "numCoordinates should be given when providing xCoordinates or yCoordinates."
-            )
-        assert num_coords == len(
-            field_value
-        ), "Number of coordinates given ({}) not matching the numCoordinates value {}.".format(
-            len(field_value), num_coords
-        )
-        return field_value
 
     @validator("locationtype")
     @classmethod
