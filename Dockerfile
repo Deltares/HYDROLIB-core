@@ -25,6 +25,7 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     # do not ask any interactive question
     POETRY_NO_INTERACTION=1 \
+    POETRY_NO_ANSI=1\
     \
     # paths
     # this is where our requirements + virtual environment will live
@@ -34,8 +35,6 @@ ENV PYTHONUNBUFFERED=1 \
 # prepend poetry and venv to path
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-# `builder-base` stage is used to build deps + create our virtual environment
-FROM python-base as builder-base
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
     # deps for installing poetry
@@ -46,32 +45,19 @@ RUN apt-get update \
 # install poetry - respects $POETRY_VERSION & $POETRY_HOME
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python
 
-# copy project requirement files here to ensure they will be cached.
-WORKDIR $PYSETUP_PATH
-COPY poetry.lock pyproject.toml ./
-
-# install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-RUN poetry install --no-dev --no-root
-
-
 # `development` image is used during development / testing
 FROM python-base as development
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-WORKDIR $PYSETUP_PATH
 
 # Install git, to ensure the git tools work within vs-code
 RUN apt-get update \
     && apt-get install git-all --no-install-recommends -y
 
+COPY --from=python-base $POETRY_HOME $POETRY_HOME
 
-# copy in our built poetry + venv
-COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-
-# quicker install as runtime deps are already installed
-RUN poetry install --no-root
-
-# will become mountpoint of our code
 WORKDIR /app
+
+# The actual 'poetry install' is called after the code is mounted. 
+# See '.devcontainer/devcontainer.json'
 
 EXPOSE 8000

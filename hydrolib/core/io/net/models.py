@@ -11,7 +11,7 @@ from meshkernel.py_structures import GeometryList
 from pydantic import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel, file_load_context
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel, file_load_context
 from hydrolib.core.io.net.reader import UgridReader
 from hydrolib.core.io.net.writer import UgridWriter
 
@@ -257,7 +257,7 @@ class Mesh2d(BaseModel):
 
         # Check if parts are closed
         for part in exteriors + interiors:
-            if not (part.x_coordinates[0], part.y_coordinates[0]) == (
+            if (part.x_coordinates[0], part.y_coordinates[0]) != (
                 part.x_coordinates[-1],
                 part.y_coordinates[-1],
             ):
@@ -1035,7 +1035,7 @@ class Network:
         return name
 
 
-class NetworkModel(FileModel):
+class NetworkModel(ParsableFileModel):
     """Network model representation."""
 
     network: Network = Field(default_factory=Network)

@@ -5,18 +5,19 @@ also represents a file on disk.
 
 """
 import logging
-from abc import ABC, abstractclassmethod
+import shutil
+from abc import ABC, abstractclassmethod, abstractmethod
 from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
-from warnings import warn
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic import validator
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.fields import PrivateAttr
+from pydantic.fields import ModelField, PrivateAttr
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import to_key
@@ -39,7 +40,7 @@ class BaseModel(PydanticBaseModel):
         alias_generator = to_key
 
     def __init__(self, **data: Any) -> None:
-        """Initializes a BaseModel with the provided data.
+        """Initialize a BaseModel with the provided data.
 
         Raises:
             ValidationError: A validation error when the data is invalid.
@@ -110,7 +111,7 @@ class BaseModel(PydanticBaseModel):
             getattr(self, f)(*args, **kwargs)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        """Gets the identifier for this model.
+        """Get the identifier for this model.
 
         Args:
             data (dict): The data from which to retrieve the identifier
@@ -138,10 +139,10 @@ class ModelTreeTraverser(Generic[TAcc]):
         self,
         should_traverse: Optional[Callable[[BaseModel, TAcc], bool]] = None,
         should_execute: Optional[Callable[[BaseModel, TAcc], bool]] = None,
-        pre_traverse_func: Callable[[BaseModel, TAcc], TAcc] = None,
-        post_traverse_func: Callable[[BaseModel, TAcc], TAcc] = None,
+        pre_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
+        post_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
     ):
-        """Creates a new ModelTreeTraverser with the given functions.
+        """Create a new ModelTreeTraverser with the given functions.
 
         If a predicate it is not defined, it is assumed to always be true, i.e. we will
         always traverse to the next node, or always execute the traverse functions.
@@ -254,7 +255,7 @@ class FilePathResolver:
     """
 
     def __init__(self) -> None:
-        """Creates a new empty FilePathResolver."""
+        """Create a new empty FilePathResolver."""
         self._anchors: List[Path] = []
         self._parents: List[Tuple[Path, ResolveRelativeMode]] = []
 
@@ -336,7 +337,7 @@ class FileModelCache:
     """
 
     def __init__(self):
-        """Creates a new empty FileModelCache."""
+        """Create a new empty FileModelCache."""
         self._cache_dict: Dict[Path, "FileModel"] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
@@ -367,7 +368,7 @@ class FileLoadContext:
     """
 
     def __init__(self) -> None:
-        """Creates a new empty FileLoadContext."""
+        """Create a new empty FileLoadContext."""
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
 
@@ -447,7 +448,7 @@ class FileLoadContext:
 
 @contextmanager
 def file_load_context():
-    """Provides a FileLoadingContext. If none has been created in the context of
+    """Provide a FileLoadingContext. If none has been created in the context of
     this call stack yet, a new one will be created, which will be maintained
     until it goes out of scope.
 
@@ -514,7 +515,7 @@ class FileModel(BaseModel, ABC):
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
 
     def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
-        """Creates a new model.
+        """Create a new model.
         If the file at the provided file path was already parsed, this instance is returned.
 
         Args:
@@ -530,7 +531,7 @@ class FileModel(BaseModel, ABC):
                 return super().__new__(cls)
 
     def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
-        """Creates a new FileModel from the given filepath.
+        """Create a new FileModel from the given filepath.
 
         If no filepath is provided, the model is initialized as an empty
         model with default values.
@@ -546,12 +547,18 @@ class FileModel(BaseModel, ABC):
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
 
-            context.push_new_parent(filepath.parent, self._relative_mode)
             logger.info(f"Loading data from {filepath}")
 
             data = self._load(loading_path)
             data["filepath"] = filepath
             kwargs.update(data)
+
+            # Note: the relative mode needs to be obtained from the data directly
+            # because self._relative_mode has not been resolved yet (this is done as
+            # part of the __init__), however during the __init__ we need to already
+            # have pushed the new parent. As such we cannot move this call later.
+            relative_mode = self._get_relative_mode_from_data(data)
+            context.push_new_parent(filepath.parent, relative_mode)
 
             super().__init__(*args, **kwargs)
             self._post_init_load()
@@ -577,15 +584,19 @@ class FileModel(BaseModel, ABC):
             return context.resolve(self.filepath)
 
     @property
-    def save_location(self) -> Path:
-        """Gets the current save location which will be used when calling `save()`
+    def save_location(self) -> Optional[Path]:
+        """Get the current save location which will be used when calling `save()`
+
+        This value can be None if the filepath is None and no name can be generated.
 
         Returns:
             Path: The location at which this model will be saved.
         """
         filepath = self.filepath or self._generate_name()
 
-        if filepath.is_absolute():
+        if filepath is None:
+            return None
+        elif filepath.is_absolute():
             return filepath
         else:
             return self._absolute_anchor_path / filepath
@@ -600,15 +611,6 @@ class FileModel(BaseModel, ABC):
             # Pydantic Model init requires a dict
             value = {"filepath": Path(value)}
         return super().validate(value)
-
-    def _load(self, filepath: Path) -> Dict:
-        # TODO Make this lazy in some cases
-        # so it doesn't become slow
-        if filepath.is_file():
-            return self._parse(filepath)
-        else:
-            warn(f"File: `{filepath}` not found, skipped parsing.")
-            return {}
 
     def save(self, filepath: Optional[Path] = None, recurse: bool = False) -> None:
         """Save the model to disk.
@@ -655,7 +657,6 @@ class FileModel(BaseModel, ABC):
     def _save_instance(self) -> None:
         if self.filepath is None:
             self.filepath = self._generate_name()
-
         self._save()
 
     def _save_tree(self, context: FileLoadContext) -> None:
@@ -695,23 +696,6 @@ class FileModel(BaseModel, ABC):
         )
         save_traverser.traverse(self, context)
 
-    def _save(self) -> None:
-        """Save the data of this FileModel.
-
-        _save provides a hook for child models to overwrite the save behaviour as
-        called during the tree traversal.
-        """
-        self._serialize(self.dict())
-
-    def _serialize(self, data: dict) -> None:
-        path = self._resolved_filepath
-        if path is None:
-            # TODO: Do we need to add a warning / exception here
-            return
-
-        path.parent.mkdir(parents=True, exist_ok=True)
-        self._get_serializer()(path, data)
-
     def synchronize_filepaths(self) -> None:
         """Synchronize the save_location properties of all child models respective to
         this FileModel's save_location.
@@ -739,6 +723,120 @@ class FileModel(BaseModel, ABC):
             context.push_new_parent(self._absolute_anchor_path, self._relative_mode)
             traverser.traverse(self, context)
 
+    @property
+    def _relative_mode(self) -> ResolveRelativeMode:
+        """Get the ResolveRelativeMode of this FileModel.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
+        return ResolveRelativeMode.ToParent
+
+    @classmethod
+    def _get_relative_mode_from_data(cls, data: Dict[str, Any]) -> ResolveRelativeMode:
+        """Gets the ResolveRelativeMode of this FileModel based on the provided data.
+
+        Note that by default, data is not used, and FileModels are always relative to
+        the parent. In exceptional cases, the relative mode can be dependent on the
+        data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
+        As such the data is provided for such classes where the relative mode is
+        dependent on the state (e.g. the [FMModel][hydrolib.core.io.mdu.models.FMModel]).
+
+        Args:
+            data (Dict[str, Any]):
+                The unvalidated/parsed data which is fed to the pydantic base model,
+                used to determine the ResolveRelativeMode.
+
+        Returns:
+            ResolveRelativeMode: The ResolveRelativeMode of this FileModel
+        """
+        return ResolveRelativeMode.ToParent
+
+    @abstractclassmethod
+    def _generate_name(cls) -> Optional[Path]:
+        """Generate a (default) name for this FileModel.
+
+        Note that if _generate_name in theory can return a None value,
+        if this is possible in the specific implementation, _save should
+        be able to handle filepaths set to None.
+
+        Returns:
+            Optional[Path]:
+                a relative path with the default name of the model.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _save(self) -> None:
+        """Save this instance to disk.
+
+        This method needs to be implemented by any class deriving from
+        FileModel, and is used in both the _save_instance and _save_tree
+        methods.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _load(self, filepath: Path) -> Dict:
+        """Load the data at filepath and returns it as a dictionary.
+
+        If a derived FileModel does not load data from disk, this should
+        return an empty dictionary.
+
+        Args:
+            filepath (Path): Path to the data to load.
+
+        Returns:
+            Dict: The data stored at filepath
+        """
+        raise NotImplementedError()
+
+    def __str__(self) -> str:
+        return str(self.filepath if self.filepath else "")
+
+
+class ParsableFileModel(FileModel):
+    """ParsableFileModel defines a FileModel which can be parsed
+    and serialized with a serializer .
+
+    Each ParsableFileModel has a default _filename and _ext,
+    which are used to generate the file name of any instance where
+    the filepath is not (yet) set.
+
+    Children of the ParsableFileModel are expected to implement a
+    serializer function which takes a Path and Dict and writes the
+    ParsableFileModel to disk, and a parser function which takes
+    a Path and outputs a Dict.
+
+    If more complicated solutions are required, a ParsableFileModel
+    child can also opt to overwrite the _serialize and _parse methods,
+    to skip the _get_serializer and _get_parser methods respectively.
+    """
+
+    def _load(self, filepath: Path) -> Dict:
+        # TODO Make this lazy in some cases so it doesn't become slow
+        if filepath.is_file():
+            return self._parse(filepath)
+        else:
+            raise ValueError(f"File: `{filepath}` not found, skipped parsing.")
+
+    def _save(self) -> None:
+        """Save the data of this FileModel.
+
+        _save provides a hook for child models to overwrite the save behaviour as
+        called during the tree traversal.
+        """
+        self._serialize(self.dict())
+
+    def _serialize(self, data: dict) -> None:
+        path = self._resolved_filepath
+        if path is None:
+            # TODO: Do we need to add a warning / exception here
+            return
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self._get_serializer()(path, data)
+
     @classmethod
     def _parse(cls, path: Path) -> Dict:
         return cls._get_parser()(path)
@@ -749,23 +847,20 @@ class FileModel(BaseModel, ABC):
         return Path(f"{name}{ext}")
 
     @abstractclassmethod
-    def _filename(cls):
+    def _filename(cls) -> str:
         return "test"
 
     @abstractclassmethod
-    def _ext(cls):
+    def _ext(cls) -> str:
         return ".test"
 
     @abstractclassmethod
-    def _get_serializer(cls) -> Callable:
+    def _get_serializer(cls) -> Callable[[Path, Dict], None]:
         return DummySerializer.serialize
 
     @abstractclassmethod
-    def _get_parser(cls) -> Callable:
+    def _get_parser(cls) -> Callable[[Path], Dict]:
         return DummmyParser.parse
-
-    def __str__(self) -> str:
-        return str(self.filepath if self.filepath else "")
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         filepath = data.get("filepath")
@@ -773,11 +868,77 @@ class FileModel(BaseModel, ABC):
             return filepath.name
         return None
 
-    @property
-    def _relative_mode(self) -> ResolveRelativeMode:
-        """Gets the ResolveRelativeMode of this FileModel.
 
-        Returns:
-            ResolveRelativeMode: The ResolveRelativ
-        """
-        return ResolveRelativeMode.ToParent
+class DiskOnlyFileModel(FileModel):
+    """DiskOnlyFileModel provides a stub implementation for file based
+    models which are not explicitly implemented within hydrolib.core.
+
+    It implements the FileModel with a void parser and serializer, and a
+    save method which copies the file associated with the FileModel
+    to a new location if it exists.
+
+    We further explicitly assume that when the filepath is None, no
+    file will be written.
+
+    Actual file model implementations *should not* inherit from the
+    DiskOnlyFileModel and instead inherit directly from FileModel.
+    """
+
+    _source_file_path: Optional[Path] = PrivateAttr(default=None)
+
+    def _post_init_load(self) -> None:
+        # After initialisation we retrieve the _resolved_filepath
+        # this should correspond with the actual absolute path of the
+        # underlying file. Only after saving this path will be updated.
+        super()._post_init_load()
+        self._source_file_path = self._resolved_filepath
+
+    def _load(self, filepath: Path) -> Dict:
+        # We de not load any additional data, as such we return an empty dict.
+        return dict()
+
+    def _save(self) -> None:
+        # The target_file_path contains the new path to write to, while the
+        # _source_file_path contains the original data. If these are not the
+        # same we copy the file and update the underlying source path.
+        target_file_path = self._resolved_filepath
+        if self._can_copy_to(target_file_path):
+            target_file_path.parent.mkdir(parents=True, exist_ok=True)  # type: ignore[arg-type]
+            shutil.copy(self._source_file_path, target_file_path)  # type: ignore[arg-type]
+        self._source_file_path = target_file_path
+
+    def _can_copy_to(self, target_file_path: Optional[Path]) -> bool:
+        return (
+            self._source_file_path is not None
+            and target_file_path is not None
+            and self._source_file_path != target_file_path
+            and self._source_file_path.exists()
+            and self._source_file_path.is_file()
+        )
+
+    @classmethod
+    def _generate_name(cls) -> Optional[Path]:
+        # There is no common name for DiskOnlyFileModel, instead we
+        # do not generate names and skip None filepaths.
+        return None
+
+    def is_intermediate_link(self) -> bool:
+        # If the filepath is not None, there is an underlying file, and as such we need
+        # to traverse it.
+        return self.filepath is not None
+
+
+def validator_set_default_disk_only_file_model_when_none() -> classmethod:
+    """Validator to ensure a default empty DiskOnlyFileModel is created
+    when the corresponding field is initialized with None.
+
+    Returns:
+        classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
+    """
+
+    def adjust_none(v: Any, field: ModelField) -> Any:
+        if field.type_ is DiskOnlyFileModel and v is None:
+            return {"filepath": None}
+        return v
+
+    return validator("*", allow_reuse=True, pre=True)(adjust_none)

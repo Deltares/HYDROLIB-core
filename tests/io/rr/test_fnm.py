@@ -1,25 +1,45 @@
 import inspect
+import shutil
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Optional
 
 import pytest
 
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.fnm.parser import parse
-from hydrolib.core.io.fnm.serializer import serialize
-from tests.utils import test_input_dir
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    ResolveRelativeMode,
+    file_load_context,
+)
+from hydrolib.core.io.dimr.models import DIMR
+from hydrolib.core.io.rr.models import (
+    RainfallRunoffModel,
+    _mappix_balance_name,
+    _mappix_cumulative_balance_name,
+    _mappix_exceedance_time_reference_levels_name,
+    _mappix_flow_rates_over_structures_name,
+    _mappix_flow_rates_to_edge_name,
+    _mappix_green_house_bassins_results_name,
+    _mappix_green_house_bassins_storage_name,
+    _mappix_ground_water_levels_name,
+    _mappix_open_water_details_name,
+    _mappix_paved_area_flow_rates_name,
+    _mappix_paved_area_sewage_storage_name,
+    _mappix_pluvius_max_flow_rates_name,
+    _mappix_pluvius_max_sewage_storage_name,
+    _mappix_salt_concentrations_name,
+    _mappix_unpaved_area_flow_rates_name,
+)
+from hydrolib.core.io.rr.parser import parse
+from hydrolib.core.io.rr.serializer import serialize
+from tests.utils import assert_file_is_same_binary, test_input_dir, test_output_dir
+
+rr_directory = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+rr_file_name = Path("Sobek_3b.fnm")
 
 
 class TestRainFallRunoffModel:
     def test_load_from_file(self):
-        path = Path(
-            test_input_dir
-            / "e02"
-            / "c11_korte-woerden-1d"
-            / "dimr_model"
-            / "rr"
-            / "Sobek_3b.fnm"
-        )
+        path = rr_directory / rr_file_name
 
         model = RainfallRunoffModel(filepath=path)
 
@@ -38,87 +58,106 @@ class TestRainFallRunoffModel:
         assert result[-3] == "meteo_input_file_rainfall"
 
     @pytest.mark.parametrize(
-        "get_name,get_prop",
+        "name,get_prop",
         [
             (
-                (lambda m: m.mappix_paved_area_sewage_storage_name),
-                (lambda m: m.mappix_paved_area_sewage_storage),
+                (_mappix_paved_area_sewage_storage_name),
+                (lambda m: m.mappix_paved_area_sewage_storage.filepath),
             ),
             (
-                (lambda m: m.mappix_paved_area_flow_rates_name),
-                (lambda m: m.mappix_paved_area_flow_rates),
+                (_mappix_paved_area_flow_rates_name),
+                (lambda m: m.mappix_paved_area_flow_rates.filepath),
             ),
             (
-                (lambda m: m.mappix_unpaved_area_flow_rates_name),
-                (lambda m: m.mappix_unpaved_area_flow_rates),
+                (_mappix_unpaved_area_flow_rates_name),
+                (lambda m: m.mappix_unpaved_area_flow_rates.filepath),
             ),
             (
-                (lambda m: m.mappix_ground_water_levels_name),
-                (lambda m: m.mappix_ground_water_levels),
+                (_mappix_ground_water_levels_name),
+                (lambda m: m.mappix_ground_water_levels.filepath),
             ),
             (
-                (lambda m: m.mappix_green_house_bassins_storage_name),
-                (lambda m: m.mappix_green_house_bassins_storage),
+                (_mappix_green_house_bassins_storage_name),
+                (lambda m: m.mappix_green_house_bassins_storage.filepath),
             ),
             (
-                (lambda m: m.mappix_green_house_bassins_results_name),
-                (lambda m: m.mappix_green_house_bassins_results),
+                (_mappix_green_house_bassins_results_name),
+                (lambda m: m.mappix_green_house_bassins_results.filepath),
             ),
             (
-                (lambda m: m.mappix_open_water_details_name),
-                (lambda m: m.mappix_open_water_details),
+                (_mappix_open_water_details_name),
+                (lambda m: m.mappix_open_water_details.filepath),
             ),
             (
-                (lambda m: m.mappix_exceedance_time_reference_levels_name),
-                (lambda m: m.mappix_exceedance_time_reference_levels),
+                (_mappix_exceedance_time_reference_levels_name),
+                (lambda m: m.mappix_exceedance_time_reference_levels.filepath),
             ),
             (
-                (lambda m: m.mappix_flow_rates_over_structures_name),
-                (lambda m: m.mappix_flow_rates_over_structures),
+                (_mappix_flow_rates_over_structures_name),
+                (lambda m: m.mappix_flow_rates_over_structures.filepath),
             ),
             (
-                (lambda m: m.mappix_flow_rates_to_edge_name),
-                (lambda m: m.mappix_flow_rates_to_edge),
+                (_mappix_flow_rates_to_edge_name),
+                (lambda m: m.mappix_flow_rates_to_edge.filepath),
             ),
             (
-                (lambda m: m.mappix_pluvius_max_sewage_storage_name),
-                (lambda m: m.mappix_pluvius_max_sewage_storage),
+                (_mappix_pluvius_max_sewage_storage_name),
+                (lambda m: m.mappix_pluvius_max_sewage_storage.filepath),
             ),
             (
-                (lambda m: m.mappix_pluvius_max_flow_rates_name),
-                (lambda m: m.mappix_pluvius_max_flow_rates),
+                (_mappix_pluvius_max_flow_rates_name),
+                (lambda m: m.mappix_pluvius_max_flow_rates.filepath),
             ),
             (
-                (lambda m: m.mappix_balance_name),
-                (lambda m: m.mappix_balance),
+                (_mappix_balance_name),
+                (lambda m: m.mappix_balance.filepath),
             ),
             (
-                (lambda m: m.mappix_cumulative_balance_name),
-                (lambda m: m.mappix_cumulative_balance),
+                (_mappix_cumulative_balance_name),
+                (lambda m: m.mappix_cumulative_balance.filepath),
             ),
             (
-                (lambda m: m.mappix_salt_concentrations_name),
-                (lambda m: m.mappix_salt_concentrations),
+                (_mappix_salt_concentrations_name),
+                (lambda m: m.mappix_salt_concentrations.filepath),
             ),
         ],
     )
     def test_mappix_property_returns_path_equal_to_name(
         self,
-        get_name: Callable[[RainfallRunoffModel], str],
+        name: str,
         get_prop: Callable[[RainfallRunoffModel], Path],
     ):
         model = RainfallRunoffModel()
-        assert str(get_prop(model)) == get_name(model)
+        assert str(get_prop(model)) == name
+
+
+def assert_same_fnm_model(
+    input_model: RainfallRunoffModel, reference_model: RainfallRunoffModel
+) -> None:
+    input_values = input_model.dict()
+    reference_values = reference_model.dict()
+
+    assert len(input_values) == len(reference_values)
+
+    for key, value in input_values.items():
+        assert key in reference_values
+        reference_value = reference_values[key]
+
+        if isinstance(reference_value, DiskOnlyFileModel):
+            assert isinstance(value, DiskOnlyFileModel)
+            assert value.filepath == reference_value.filepath
+        else:
+            assert value == reference_value
 
 
 def test_serialize_parse_should_return_same_result():
     model = RainfallRunoffModel()
 
     # Scramble some values to ensure we're not just getting the default.
-    model.open_water_data = Path("somewhere_else")
-    model.green_house_general = Path("greenhouse.general")
-    model.restart_file_input = Path("aa_res.res")
-    model.meteo_input_file_rainfall = Path("some_path.ini")
+    model.open_water_data.filepath = Path("somewhere_else")
+    model.green_house_general.filepath = Path("greenhouse.general")
+    model.restart_file_input.filepath = Path("aa_res.res")
+    model.meteo_input_file_rainfall.filepath = Path("some_path.ini")
 
     serialized_model = serialize(model.dict())
     deserialized_model = parse(
@@ -126,7 +165,7 @@ def test_serialize_parse_should_return_same_result():
     )
     result = RainfallRunoffModel.parse_obj(deserialized_model)
 
-    assert result == model
+    assert_same_fnm_model(result, model)
 
 
 def test_parse_serialize_should_return_same_result():
@@ -280,3 +319,96 @@ def test_parse_serialize_should_return_same_result():
     reserialized_model = serialize(deserialized_model)
 
     assert reserialized_model == serialized_model
+
+
+def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
+    source_path_parent = rr_directory
+    filepath = rr_file_name
+
+    name = test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
+    target_path = test_output_dir / name
+
+    if target_path.exists() and target_path.is_dir():
+        shutil.rmtree(target_path)
+    target_path.mkdir()
+
+    with file_load_context() as context:
+        context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
+        model = RainfallRunoffModel(filepath=filepath)
+
+        model.save(filepath=target_path / filepath, recurse=True)
+
+    def assert_correct_subfile(path: Optional[Path]) -> None:
+        assert_file_is_same_binary(target_path, path, source_path_parent)
+
+    assert (target_path / filepath).exists()
+
+    disk_only_file_models = (
+        v for v in dict(model).values() if isinstance(v, DiskOnlyFileModel)
+    )
+    for v in disk_only_file_models:
+        assert_correct_subfile(v.filepath)
+
+
+def test_fnm_save_without_recurse_only_copies_fnm_file():
+    source_path_parent = rr_directory
+    filepath = rr_file_name
+
+    name = test_fnm_save_as_with_recurse_correctly_copies_subfiles.__name__
+    target_path = test_output_dir / name
+
+    if target_path.exists() and target_path.is_dir():
+        shutil.rmtree(target_path)
+    target_path.mkdir()
+
+    with file_load_context() as context:
+        context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
+        model = RainfallRunoffModel(filepath=filepath)
+
+        model.save(filepath=target_path / filepath, recurse=False)
+
+    assert (target_path / filepath).exists()
+
+    disk_only_files = (
+        v.filepath
+        for v in dict(model).values()
+        if isinstance(v, DiskOnlyFileModel) and v.filepath is not None
+    )
+    for v in disk_only_files:
+        assert not (target_path / v).exists()
+
+
+def test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files():
+    source_path_parent = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model"
+    filepath = Path("dimr_config.xml")
+
+    name = test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files.__name__
+    target_path = test_output_dir / name
+
+    if target_path.exists() and target_path.is_dir():
+        shutil.rmtree(target_path)
+    target_path.mkdir()
+
+    with file_load_context() as context:
+        context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
+        model = DIMR(filepath=filepath)
+
+        model.save(filepath=target_path / filepath, recurse=True)
+
+    rr_model = next(
+        (m.model for m in model.component if isinstance(m.model, RainfallRunoffModel)),
+        None,
+    )
+    assert rr_model is not None
+
+    def assert_correct_subfile(path: Optional[Path]) -> None:
+        assert_file_is_same_binary(target_path, path, source_path_parent)
+
+    assert rr_model.filepath is not None
+    assert (target_path / rr_model.filepath).exists()
+
+    disk_only_file_models = (
+        v for v in dict(rr_model).values() if isinstance(v, DiskOnlyFileModel)
+    )
+    for v in disk_only_file_models:
+        assert_correct_subfile(v.filepath)

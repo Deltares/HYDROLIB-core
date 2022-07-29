@@ -9,6 +9,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
+    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
     make_list_validator,
@@ -81,7 +82,7 @@ class CrossSectionDefinition(INIBasedModel):
 
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on the `type` field.
+        """Try to initialize subclass based on the `type` field.
         This field is compared to each `type` field of the derived models of `CrossSectionDefinition`.
         The derived model with an equal crosssection definition type will be initialized.
 
@@ -137,11 +138,10 @@ class CrossSectionDefinition(INIBasedModel):
             frictiontype = values.get(frictiontype_attr) or ""
             frictionvalue = values.get(frictionvalue_attr) or ""
 
-            if frictionid != "":
-                if frictiontype != "" or frictionvalue != "":
-                    raise ValueError(
-                        f"Cross section has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
-                    )
+            if frictionid != "" and (frictiontype != "" or frictionvalue != ""):
+                raise ValueError(
+                    f"Cross section has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
+                )
 
             return values
 
@@ -278,8 +278,8 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         )
         totalwidths: Optional[str] = Field(
             "Space separated list of total widths at the selected heights [m]. "
-            + "Equal to flowWidths if not specified. If specified, the totalWidths"
-            + "should be larger than flowWidths.",
+            "Equal to flowWidths if not specified. If specified, the totalWidths"
+            "should be larger than flowWidths.",
             alias="totalWidths",
         )
         leveecrestLevel: Optional[str] = Field(
@@ -308,20 +308,20 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         )
         frictionids: Optional[str] = Field(
             "Semicolon separated list of roughness variable names associated with the roughness "
-            + "sections. Either this parameter or frictionTypes should be specified. If neither "
-            + 'parameter is specified, the frictionIds default to "Main", "FloodPlain1" '
-            + 'and "FloodPlain2".',
+            "sections. Either this parameter or frictionTypes should be specified. If neither "
+            'parameter is specified, the frictionIds default to "Main", "FloodPlain1" '
+            'and "FloodPlain2".',
             alias="frictionIds",
         )
         frictiontypes: Optional[str] = Field(
             "Semicolon separated list of roughness types associated with the roughness sections. "
-            + "Either this parameter or frictionIds should be specified. Can be specified as a "
-            + "single value if all roughness sections use the same type.",
+            "Either this parameter or frictionIds should be specified. Can be specified as a "
+            "single value if all roughness sections use the same type.",
             alias="frictionTypes",
         )
         frictionvalues: Optional[str] = Field(
             "Space separated list of roughness values; their meaning depends on the roughness "
-            + "types selected (only used if frictionTypes specified).",
+            "types selected (only used if frictionTypes specified).",
             alias="frictionValues",
         )
 
@@ -392,8 +392,8 @@ class ZWCrsDef(CrossSectionDefinition):
         )
         totalwidths: Optional[str] = Field(
             "Space separated list of total widths at the selected heights [m]. "
-            + "Equal to flowWidths if not specified. If specified, the totalWidths"
-            + "should be larger than flowWidths.",
+            "Equal to flowWidths if not specified. If specified, the totalWidths"
+            "should be larger than flowWidths.",
             alias="totalWidths",
         )
         frictionid: Optional[str] = Field(
@@ -640,14 +640,51 @@ class CrossSection(INIBasedModel):
 
     Attributes:
         id (str): Unique cross-section location id.
-        branchid (str): (optional) Branch on which the cross section is located.
+        branchid (str, optional): Branch on which the cross section is located.
+        chainage (str, optional): Chainage on the branch (m).
+        x (str, optional): x-coordinate of the location of the cross section.
+        y (str, optional): y-coordinate of the location of the cross section.
+        shift (float, optional): Vertical shift of the cross section definition [m]. Defined positive upwards.
+        definitionid (str): Id of cross section definition.
     """
 
-    # TODO: complete support for all crosssection fields: #172.
+    class Comments(INIBasedModel.Comments):
+        id: Optional[str] = "Unique cross-section location id."
+        branchid: Optional[str] = Field(
+            "Branch on which the cross section is located.", alias="branchId"
+        )
+        chainage: Optional[str] = "Chainage on the branch (m)."
+
+        x: Optional[str] = Field(
+            "x-coordinate of the location of the cross section.",
+        )
+        y: Optional[str] = Field(
+            "y-coordinate of the location of the cross section.",
+        )
+        shift: Optional[str] = Field(
+            "Vertical shift of the cross section definition [m]. Defined positive upwards.",
+        )
+        definitionid: Optional[str] = Field(
+            "Id of cross section definition.", alias="definitionId"
+        )
+
+    comments: Comments = Comments()
 
     _header: Literal["CrossSection"] = "CrossSection"
     id: str = Field(alias="id")
-    branchid: str = Field(alias="branchId")
+
+    branchid: Optional[str] = Field(None, alias="branchId")
+    chainage: Optional[float] = Field(None)
+
+    x: Optional[float] = Field(None)
+    y: Optional[float] = Field(None)
+
+    shift: Optional[float] = Field(0.0)
+    definitionid: str = Field(alias="definitionId")
+
+    _location_validator = get_location_specification_rootvalidator(
+        allow_nodeid=False, numfield_name=None, xfield_name="x", yfield_name="y"
+    )
 
 
 class CrossLocModel(INIModel):

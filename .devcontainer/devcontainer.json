@@ -13,7 +13,7 @@
 	// Additional extensions can be added here according to personal taste.
 	"extensions": [
 		"ms-python.python",
-		"littlefoxteam.vscode-python-test-adapter",
+		"ms-vscode.test-adapter-converter",
 		"oderwat.indent-rainbow",
 		"njpwerner.autodocstring",
 		"njqdev.vscode-python-typehint"
@@ -21,4 +21,6 @@
 	"mounts": [
 		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
 	],
+	// This ensures the HYDROLIB environment is properly installed. 
+	"postCreateCommand": "poetry install --no-root --no-interaction --no-ansi"
 }

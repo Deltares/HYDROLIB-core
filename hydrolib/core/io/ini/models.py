@@ -7,7 +7,7 @@ from pydantic.class_validators import validator
 from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
 from .io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
@@ -152,7 +152,12 @@ class INIBasedModel(BaseModel, ABC):
 
 
 class DataBlockINIBasedModel(INIBasedModel):
-    """DataBlockINIBasedModel defines the base model for ini models with datablocks."""
+    """DataBlockINIBasedModel defines the base model for ini models with datablocks.
+
+    Attributes:
+        datablock (List[List[Union[float, str]]]): (class attribute) the actual data
+            columns.
+    """
 
     datablock: List[List[Union[float, str]]] = []
 
@@ -174,7 +179,7 @@ class INIGeneral(INIBasedModel):
         return True
 
 
-class INIModel(FileModel):
+class INIModel(ParsableFileModel):
     """INI Model representation."""
 
     general: INIGeneral

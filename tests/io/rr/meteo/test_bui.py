@@ -4,9 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.io.bui.models import BuiModel, BuiPrecipitationEvent
-from hydrolib.core.io.bui.parser import BuiEventListParser, BuiEventParser, BuiParser
-from hydrolib.core.io.bui.serializer import (
+from hydrolib.core.io.rr.meteo.models import BuiModel, BuiPrecipitationEvent
+from hydrolib.core.io.rr.meteo.parser import (
+    BuiEventListParser,
+    BuiEventParser,
+    BuiParser,
+)
+from hydrolib.core.io.rr.meteo.serializer import (
     BuiEventSerializer,
     BuiSerializer,
     write_bui_file,
@@ -72,7 +76,7 @@ class BuiTestData:
 
 class TestModel:
     """
-    Test class pointing to hydrolib.core.io.bui.models to test
+    Test class pointing to hydrolib.core.io.rr.meteo.models to test
     all its classes and methods.
     """
 
@@ -112,7 +116,7 @@ class TestModel:
 
     class TestBuiModel:
         """
-        Test class pointing to hydrolib.core.io.bui.models to test
+        Test class pointing to hydrolib.core.io.rr.meteo.models to test
         all the methods in the BuiModel class.
         """
 
@@ -214,7 +218,7 @@ class TestModel:
 
     class TestBuiPrecipitationEvent:
         """
-        Test class pointing to hydrolib.core.io.bui.models to test
+        Test class pointing to hydrolib.core.io.rr.meteo.models to test
         all the methods in the BuiPrecipitationEvent class.
         """
 
@@ -237,13 +241,13 @@ class TestModel:
 
 class TestParser:
     """
-    Test class pointing to hydrolib.core.io.bui.parser to test
+    Test class pointing to hydrolib.core.io.rr.meteo.parser to test
     all its classes and methods.
     """
 
     class TestBuiParser:
         """
-        Test class pointing to hydrolib.core.io.bui.parser to test
+        Test class pointing to hydrolib.core.io.rr.meteo.parser to test
         all the methods in the BuiParser class.
         """
 
@@ -282,7 +286,7 @@ class TestParser:
 
     class TestBuiEventParser:
         """
-        Test class pointing to hydrolib.core.io.bui.parser to test
+        Test class pointing to hydrolib.core.io.rr.meteo.parser to test
         all the methods in the BuiEventParser class.
         """
 
@@ -327,7 +331,7 @@ class TestParser:
 
     class TestBuiEventListParser:
         """
-        Test class pointing to hydrolib.core.io.bui.parser to test
+        Test class pointing to hydrolib.core.io.rr.meteo.parser to test
         all the methods in the BuiEventListParser class.
         """
 
@@ -395,13 +399,13 @@ class TestParser:
 
 class TestSerializer:
     """
-    Test class pointing to hydrolib.core.io.bui.serializer to test
+    Test class pointing to hydrolib.core.io.rr.meteo.serializer to test
     all its classes and methods.
     """
 
     class TestBuiSerializer:
         """
-        Test class pointing to hydrolib.core.io.bui.serializer to test
+        Test class pointing to hydrolib.core.io.rr.meteo.serializer to test
         all the methods in the BuiSerializer class.
         """
 
@@ -529,7 +533,7 @@ class TestSerializer:
 
     class TestBuiEventSerializer:
         """
-        Test class pointing to hydrolib.core.io.bui.serializer to test
+        Test class pointing to hydrolib.core.io.rr.meteo.serializer to test
         all the methods in the BuiEventSerializer class.
         """
 

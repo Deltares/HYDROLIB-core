@@ -1,11 +1,12 @@
 import shutil
 from datetime import datetime
 from pathlib import Path
+from typing import Callable, Dict, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.basemodel import FileModel
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
@@ -19,11 +20,22 @@ from hydrolib.core.io.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.io.ext.models import Boundary, ExtModel
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.friction.models import FrictGeneral
+from hydrolib.core.io.mdu.models import (
+    Calibration,
+    ExternalForcing,
+    FMModel,
+    Geometry,
+    Output,
+    Particles,
+    Processes,
+    Restart,
+    Sediment,
+)
+from hydrolib.core.io.rr.models import RainfallRunoffModel
 from hydrolib.core.io.xyz.models import XYZModel
 
-from .io.test_bui import BuiTestData
+from .io.rr.meteo.test_bui import BuiTestData
 from .utils import (
     assert_files_equal,
     invalid_test_data_dir,
@@ -75,13 +87,13 @@ def test_parse_rr_model_returns_correct_model():
     assert isinstance(model, RainfallRunoffModel)
 
     # verify some non-default names altered in the source file.
-    assert model.control_file == Path("not-delft_3b.ini")
+    assert model.control_file.filepath == Path("not-delft_3b.ini")
 
     expected_bui_model = BuiTestData.bui_model()
     # we expect the path to not be absolute, as such we need to adjust that.
     expected_bui_model.filepath = Path(expected_bui_model.filepath.name)
     assert model.bui_file == expected_bui_model
-    assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
+    assert model.rr_ascii_restart_openda.filepath == Path("ASCIIRestartOpenDA.txt")
 
 
 def test_dimr_validate():
@@ -338,3 +350,172 @@ def test_boundary_with_forcing_file_without_match_returns_none():
 
 def _create_forcing(name: str, quantity: str) -> ForcingBase:
     return ForcingBase(name=name, quantityunitpair=[(quantity, "")], function="")
+
+
+def _create_boundary(data: Dict) -> Boundary:
+    data["quantity"] = ""
+    data["forcingfile"] = ForcingModel()
+
+    if data["locationfile"] is None:
+        data["nodeid"] = "id"
+
+    return Boundary(**data)
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        pytest.param(None, id="None"),
+        pytest.param(Path("some/path/extforce.file"), id="Path"),
+        pytest.param(
+            DiskOnlyFileModel(Path("some/other/path/extforce.file")), id="Model"
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "input_field, create_model, retrieve_field",
+    [
+        pytest.param(
+            "extforcefile",
+            lambda d: ExternalForcing(**d),
+            lambda m: m.extforcefile,
+            id="extforcefile",
+        ),
+        pytest.param(
+            "restartfile",
+            lambda d: Restart(**d),
+            lambda m: m.restartfile,
+            id="restartfile",
+        ),
+        pytest.param(
+            "morfile", lambda d: Sediment(**d), lambda m: m.morfile, id="morfile"
+        ),
+        pytest.param(
+            "sedfile", lambda d: Sediment(**d), lambda m: m.sedfile, id="sedfile"
+        ),
+        pytest.param(
+            "flowgeomfile",
+            lambda d: Output(**d),
+            lambda m: m.flowgeomfile,
+            id="flowgeomfile",
+        ),
+        pytest.param(
+            "hisfile", lambda d: Output(**d), lambda m: m.hisfile, id="hisfile"
+        ),
+        pytest.param(
+            "mapfile", lambda d: Output(**d), lambda m: m.mapfile, id="mapfile"
+        ),
+        pytest.param(
+            "mapoutputtimevector",
+            lambda d: Output(**d),
+            lambda m: m.mapoutputtimevector,
+            id="mapoutputtimevector",
+        ),
+        pytest.param(
+            "classmapfile",
+            lambda d: Output(**d),
+            lambda m: m.classmapfile,
+            id="classmapfile",
+        ),
+        pytest.param(
+            "waterlevinifile",
+            lambda d: Geometry(**d),
+            lambda m: m.waterlevinifile,
+            id="waterlevinifile",
+        ),
+        pytest.param(
+            "oned2dlinkfile",
+            lambda d: Geometry(**d),
+            lambda m: m.oned2dlinkfile,
+            id="oned2dlinkfile",
+        ),
+        pytest.param(
+            "proflocfile",
+            lambda d: Geometry(**d),
+            lambda m: m.proflocfile,
+            id="proflocfile",
+        ),
+        pytest.param(
+            "profdeffile",
+            lambda d: Geometry(**d),
+            lambda m: m.profdeffile,
+            id="profdeffile",
+        ),
+        pytest.param(
+            "profdefxyzfile",
+            lambda d: Geometry(**d),
+            lambda m: m.profdefxyzfile,
+            id="profdefxyzfile",
+        ),
+        pytest.param(
+            "manholefile",
+            lambda d: Geometry(**d),
+            lambda m: m.manholefile,
+            id="manholefile",
+        ),
+        pytest.param(
+            "definitionfile",
+            lambda d: Calibration(**d),
+            lambda m: m.definitionfile,
+            id="definitionfile",
+        ),
+        pytest.param(
+            "areafile",
+            lambda d: Calibration(**d),
+            lambda m: m.areafile,
+            id="definitionfile",
+        ),
+        pytest.param(
+            "substancefile",
+            lambda d: Processes(**d),
+            lambda m: m.substancefile,
+            id="substancefile",
+        ),
+        pytest.param(
+            "additionalhistoryoutputfile",
+            lambda d: Processes(**d),
+            lambda m: m.additionalhistoryoutputfile,
+            id="additionalhistoryoutputfile",
+        ),
+        pytest.param(
+            "statisticsfile",
+            lambda d: Processes(**d),
+            lambda m: m.statisticsfile,
+            id="statisticsfile",
+        ),
+        pytest.param(
+            "particlesreleasefile",
+            lambda d: Particles(**d),
+            lambda m: m.particlesreleasefile,
+            id="particlesreleasefile",
+        ),
+        pytest.param(
+            "locationfile",
+            _create_boundary,
+            lambda m: m.locationfile,
+            id="locationfile",
+        ),
+        pytest.param(
+            "frictionvaluesfile",
+            lambda d: FrictGeneral(**d),
+            lambda m: m.frictionvaluesfile,
+            id="frictionvaluesfile",
+        ),
+    ],
+)
+def test_model_diskonlyfilemodel_field_is_constructed_correctly(
+    input: Union[None, Path, DiskOnlyFileModel],
+    input_field: str,
+    create_model: Callable[[Dict], object],
+    retrieve_field: Callable[[object], DiskOnlyFileModel],
+):
+    data = {input_field: input}
+    model = create_model(data)
+    relevant_field = retrieve_field(model)
+
+    assert isinstance(relevant_field, DiskOnlyFileModel)
+
+    if isinstance(input, DiskOnlyFileModel):
+        assert relevant_field == input
+    else:
+        assert relevant_field.filepath == input

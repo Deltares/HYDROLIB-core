@@ -4,9 +4,11 @@ from typing import List, Optional
 import pytest
 from pydantic import ValidationError
 
-from hydrolib.core.io.bc.models import ForcingModel
-from hydrolib.core.io.ext.models import Boundary, Lateral
+from hydrolib.core.io.bc.models import Constant, ForcingModel, RealTime
+from hydrolib.core.io.ext.models import Boundary, ExtModel, Lateral
 from hydrolib.core.io.ini.models import INIBasedModel
+
+from ..utils import test_data_dir
 
 
 class TestModels:
@@ -105,10 +107,10 @@ class TestModels:
             )
             def test_given_no_values_raises_valueerror(self, dict_values: dict):
                 with pytest.raises(ValueError) as exc_err:
-                    Lateral.validate_location_dependencies(values=dict_values)
+                    Lateral._location_validator(values=dict_values)
                 assert (
                     str(exc_err.value)
-                    == "Either nodeId, branchId (with chainage) or numCoordinates (with xCoordinates and yCoordinates) are required."
+                    == "Either nodeId, branchId (with chainage) or numCoordinates with xCoordinates and yCoordinates are required."
                 )
 
             @pytest.mark.parametrize(
@@ -127,7 +129,7 @@ class TestModels:
                 )
                 test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
-                    Lateral.validate_location_dependencies(test_dict)
+                    Lateral._location_validator(test_dict)
                 assert str(exc_error.value) == f"{missing_coordinates} should be given."
 
             def test_given_numcoordinates_and_valid_coordinates(self):
@@ -139,12 +141,12 @@ class TestModels:
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
                 )
-                return_value = Lateral.validate_location_dependencies(test_dict)
+                return_value = Lateral._location_validator(test_dict)
                 assert return_value == test_dict
 
             def test_given_branchid_and_no_chainage_raises_valueerror(self):
                 with pytest.raises(ValueError) as exc_err:
-                    Lateral.validate_location_dependencies(
+                    Lateral._location_validator(
                         dict(
                             nodeid=None,
                             branchid="aBranchId",
@@ -177,10 +179,10 @@ class TestModels:
                 )
                 test_dict = {**dict_values, **test_values}
                 with pytest.raises(ValueError) as exc_err:
-                    Lateral.validate_location_dependencies(test_dict)
+                    Lateral._location_validator(test_dict)
                 assert (
                     str(exc_err.value)
-                    == "LocationType should be 1d when nodeId (or branchId and chainage) is specified."
+                    == "locationType should be 1d when nodeId (or branchId and chainage) is specified."
                 )
 
             @pytest.mark.parametrize(
@@ -201,7 +203,7 @@ class TestModels:
                     locationtype="1d",
                 )
                 test_dict = {**dict_values, **test_values}
-                return_value = Lateral.validate_location_dependencies(test_dict)
+                return_value = Lateral._location_validator(test_dict)
                 assert return_value == test_dict
 
             @pytest.mark.parametrize(
@@ -225,7 +227,7 @@ class TestModels:
                 self, test_dict: dict, location_type: str
             ):
                 test_dict["locationtype"] = location_type
-                return_value = Lateral.validate_location_dependencies(test_dict)
+                return_value = Lateral._location_validator(test_dict)
                 assert return_value["locationtype"] == "1d"
 
         class TestValidateFromCtor:
@@ -242,7 +244,7 @@ class TestModels:
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(
                         id="42",
-                        discharge="aDischarge",
+                        discharge=1.23,
                         numcoordinates=None,
                         xcoordinates=x_coord,
                         ycoordinates=y_coord,
@@ -264,7 +266,7 @@ class TestModels:
                 with pytest.raises(ValidationError):
                     Lateral(
                         id="42",
-                        discharge="bDischarge",
+                        discharge=1.23,
                         numcoordinates=2,
                         xcoordinates=x_coord,
                         ycoordinates=y_coord,
@@ -276,7 +278,7 @@ class TestModels:
             def test_given_partial_coordinates_raises(self, missing_coord: str):
                 lateral_dict = dict(
                     id="42",
-                    discharge="cDischarge",
+                    discharge=1.23,
                     numcoordinates=2,
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
@@ -293,7 +295,7 @@ class TestModels:
                     location_type = "loremIpsum"
                     Lateral(
                         id="42",
-                        discharge="dDischarge",
+                        discharge=1.23,
                         numcoordinates=2,
                         xcoordinates=[42, 24],
                         ycoordinates=[24, 42],
@@ -326,7 +328,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="eDischarge",
+                    discharge=1.23,
                     numcoordinates=2,
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
@@ -373,7 +375,7 @@ class TestModels:
                 # 1. Define test data.
                 default_values = dict(
                     id="42",
-                    discharge="fDischarge",
+                    discharge="realtime",
                     numcoordinates=2,
                 )
                 lateral_dict = {**default_values, **location_dict}
@@ -384,6 +386,24 @@ class TestModels:
                 assert isinstance(lateral_cls, INIBasedModel)
                 for key, value in lateral_dict.items():
                     assert lateral_cls.dict()[key] == value
+
+        class TestValidateForcingData:
+            """
+            Class to test the different types of discharge forcings.
+            """
+
+            def test_dischargeforcings_fromfile(self):
+
+                filepath = (
+                    test_data_dir / "input/dflowfm_individual_files/FlowFM_bnd.ext"
+                )
+                m = ExtModel(filepath)
+                assert len(m.lateral) == 72
+                assert m.lateral[0].discharge == RealTime.realtime
+                assert m.lateral[1].discharge == 1.23
+                assert isinstance(m.lateral[3].discharge, ForcingModel)
+                assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
+                assert m.lateral[3].discharge.forcing[0].name == "10637"
 
     class TestBoundary:
         """Class to test all methods contained in the
@@ -404,8 +424,18 @@ class TestModels:
             created_boundary = Boundary(**dict_values)
 
             # 3. Verify boundary values as expected.
-            for key, value in dict_values.items():
-                assert created_boundary.dict()[key] == value
+            created_boundary_dict = created_boundary.dict()
+
+            compare_data = dict(dict_values)
+            expected_location_path = compare_data.pop("locationfile")
+
+            for key, value in compare_data.items():
+                assert created_boundary_dict[key] == value
+
+            assert (
+                created_boundary_dict["locationfile"]["filepath"]
+                == expected_location_path
+            )
 
         def test_given_args_as_alias_expected_values(self):
             # 1. Explicit declaration of parameters (to validate keys as they are written)
@@ -424,7 +454,10 @@ class TestModels:
             # 3. Verify boundary values as expected.
             assert boundary_as_dict["quantity"] == dict_values["quantity"]
             assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
-            assert boundary_as_dict["locationfile"] == dict_values["locationfile"]
+            assert (
+                boundary_as_dict["locationfile"]["filepath"]
+                == dict_values["locationfile"]
+            )
             assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
             assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1D"]
             assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
@@ -522,7 +555,15 @@ class TestModels:
                 required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
                 test_values = {**dict_values, **required_values}
                 created_boundary = Boundary(**test_values)
+
+                expected_locationfile = test_values.pop("locationfile", None)
+
                 for key, value in test_values.items():
                     if key == "forcing_file":
                         value = value.dict()
                     assert created_boundary.dict()[key] == value
+
+                assert (
+                    created_boundary.dict()["locationfile"]["filepath"]
+                    == expected_locationfile
+                )
