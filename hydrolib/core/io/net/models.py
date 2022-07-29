@@ -723,7 +723,7 @@ class Mesh1d(BaseModel):
         Returns:
             Union[np.int32, None]: The index of the coordinate. None if not found
         """
-        pos = np.where(np.isclose(arrx, x, rtol = 0.0) & np.isclose(arry, y, rtol = 0.0))[0]
+        pos = np.where(np.isclose(arrx, x, rtol=0.0) & np.isclose(arry, y, rtol=0.0))[0]
         if pos.size == 0:
             return None
         elif pos.size == 1:
@@ -737,7 +737,7 @@ class Mesh1d(BaseModel):
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
-        force_midpoint: bool = True, # argument to control if a midpoint will be forced on the branch
+        force_midpoint: bool = True,  # argument to control if a midpoint will be forced on the branch
     ):
 
         # Check if branch had coordinate discretization
@@ -1031,7 +1031,12 @@ class Network:
         force_midpoint: bool = True,
     ) -> None:
         name = self._mesh1d._add_branch(
-            branch=branch, name=name, branch_order=branch_order, long_name=long_name, force_midpoint=force_midpoint)
+            branch=branch,
+            name=name,
+            branch_order=branch_order,
+            long_name=long_name,
+            force_midpoint=force_midpoint,
+        )
         return name
 
 
