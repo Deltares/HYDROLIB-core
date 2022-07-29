@@ -737,8 +737,20 @@ class Mesh1d(BaseModel):
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
-        force_midpoint: bool = True,  # argument to control if a midpoint will be forced on the branch
+        force_midpoint: bool = True,
     ):
+        """Add the branch to mesh1d
+
+        Args:
+            branch (Branch): branch to add to the mesh1d
+            name (str): id of the branch
+            branch_order (int): interpolation order of the branch
+            long_name (str): long name of the branch
+            force_midpoint(bool): argument to control if a midpoint will be forced on the branch, use False for pipes
+
+        Returns:
+            Str: name of the branch.
+        """
 
         # Check if branch had coordinate discretization
         if branch.branch_offsets.size == 0:
