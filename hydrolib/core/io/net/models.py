@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -14,8 +15,6 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel, file_load_context
 from hydrolib.core.io.net.reader import UgridReader
 from hydrolib.core.io.net.writer import UgridWriter
-
-import logging
 
 logger = logging.getLogger(__name__)
 
