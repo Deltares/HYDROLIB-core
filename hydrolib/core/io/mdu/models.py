@@ -438,7 +438,6 @@ class Output(INIBasedModel):
     classmapinterval: List[float] = Field([0.0], alias="classMapInterval")
     waqinterval: List[float] = Field([0.0], alias="waqInterval")
     statsinterval: List[float] = Field([0.0], alias="statsInterval")
-    writebalancefile: bool = Field(False, alias="writeBalanceFile")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
     richardsononoutput: bool = Field(True, alias="richardsonOnOutput")
 
