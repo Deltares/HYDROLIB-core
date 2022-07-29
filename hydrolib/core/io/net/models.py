@@ -723,7 +723,7 @@ class Mesh1d(BaseModel):
         Returns:
             Union[np.int32, None]: The index of the coordinate. None if not found
         """
-        pos = np.where(np.isclose(arrx, x) & np.isclose(arry, y))[0]
+        pos = np.where(np.isclose(arrx, x, rtol = 0.0) & np.isclose(arry, y, rtol = 0.0))[0]
         if pos.size == 0:
             return None
         elif pos.size == 1:
@@ -737,6 +737,7 @@ class Mesh1d(BaseModel):
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
+        force_midpoint: bool = True, # argument to control if a midpoint will be forced on the branch
     ):
 
         # Check if branch had coordinate discretization
@@ -822,7 +823,7 @@ class Mesh1d(BaseModel):
 
         # If no points remain, add an extra halfway: each branch should have at least 1 node
         # Adjust the branch object as well, by adding the extra point
-        if len(offsets) == 0:
+        if len(offsets) == 0 and force_midpoint:
             # Add extra offset
             extra_offset = branch.length / 2.0
             offsets = np.array([extra_offset])
@@ -849,6 +850,7 @@ class Mesh1d(BaseModel):
         )
 
         # Mesh1d edge node administration
+
         # -------------------------------
         # First determine the start index. This is equal to the number of already present points
         start_index = len(self.mesh1d_node_branch_id)
@@ -1026,10 +1028,10 @@ class Network:
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
+        force_midpoint: bool = True,
     ) -> None:
         name = self._mesh1d._add_branch(
-            branch=branch, name=name, branch_order=branch_order, long_name=long_name
-        )
+            branch=branch, name=name, branch_order=branch_order, long_name=long_name, force_midpoint=force_midpoint)
         return name
 
 
