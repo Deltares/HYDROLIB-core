@@ -790,6 +790,7 @@ class Mesh1d(BaseModel):
 
         # Network edge node administration
         # -------------------------------
+        
         first_point = branch.geometry[0]
         last_point = branch.geometry[-1]
 
@@ -810,10 +811,10 @@ class Mesh1d(BaseModel):
             self.network1d_node_y = np.append(self.network1d_node_y, first_point[1])
 
             self.network1d_node_id = np.append(
-                self.network1d_node_id, "{:.0f}_{:.0f}".format(*first_point)
+                self.network1d_node_id, "{:.6f}_{:.6f}".format(*first_point)
             )
             self.network1d_node_long_name = np.append(
-                self.network1d_node_long_name, "x={:.0f}_y={:.0f}".format(*first_point)
+                self.network1d_node_long_name, "x={:.6f}_y={:.6f}".format(*first_point)
             )
 
         last_present = self._network1d_node_position(*last_point) is not None
@@ -827,10 +828,10 @@ class Mesh1d(BaseModel):
             self.network1d_node_y = np.append(self.network1d_node_y, last_point[1])
 
             self.network1d_node_id = np.append(
-                self.network1d_node_id, "{:.0f}_{:.0f}".format(*last_point)
+                self.network1d_node_id, "{:.6f}_{:.6f}".format(*last_point)
             )
             self.network1d_node_long_name = np.append(
-                self.network1d_node_long_name, "x={:.0f}_y={:.0f}".format(*last_point)
+                self.network1d_node_long_name, "x={:.6f}_y={:.6f}".format(*last_point)
             )
 
         # If no points remain, add an extra halfway: each branch should have at least 1 node
