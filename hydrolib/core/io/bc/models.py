@@ -293,7 +293,9 @@ class ForcingModel(INIModel):
 
     def _serialize(self, _: dict) -> None:
         # We skip the passed dict for a better one.
-        config = SerializerConfig(section_indent=0, property_indent=4)
+        config = SerializerConfig(
+            section_indent=0, property_indent=0, datablock_indent=0
+        )
         write_ini(self._resolved_filepath, self._to_document(), config=config)
 
 
