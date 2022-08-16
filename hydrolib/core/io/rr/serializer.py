@@ -24,8 +24,8 @@ def _get_string_value(path_value: Optional[Union[dict, Path, str]]) -> str:
         str: The str representation of input path_value.
     """
     value = ""
-    if type(path_value) is dict:
-        value = str(path_value.get("filepath", ""))
+    if isinstance(path_value, dict) and (file_path := path_value.get("filepath", None)):
+        value = file_path
     elif isinstance(path_value, Path):
         value = str(path_value)
     elif isinstance(path_value, str):

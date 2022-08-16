@@ -2,7 +2,7 @@ from typing import Callable, List, Optional
 
 from pydantic import Field
 
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
 from .parser import XYZParser
 from .serializer import XYZSerializer
@@ -32,7 +32,7 @@ class XYZPoint(BaseModel):
         return f"x:{x} y:{y} z:{z}"
 
 
-class XYZModel(FileModel):
+class XYZModel(ParsableFileModel):
     """Sample or forcing file.
 
     Attributes:

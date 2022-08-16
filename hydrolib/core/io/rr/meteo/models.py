@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Callable, Dict, List, Tuple
 
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
 from .parser import BuiParser
 from .serializer import write_bui_file
@@ -43,7 +43,7 @@ class BuiPrecipitationEvent(BaseModel):
         )
 
 
-class BuiModel(FileModel):
+class BuiModel(ParsableFileModel):
     """
     Model that represents the file structure of a .bui file.
     """
