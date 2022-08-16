@@ -8,6 +8,7 @@ from pydantic import Field
 from pydantic.class_validators import validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
@@ -160,7 +161,8 @@ class AbstractSpatialField(INIBasedModel, ABC):
     comments: Comments = Comments()
 
     quantity: str = Field(alias="quantity")
-    datafile: Path = Field(alias="dataFile")
+    datafile: DiskOnlyFileModel = Field(alias="dataFile")
+
     datafiletype: DataFileType = Field(alias="dataFileType")
     interpolationmethod: Optional[InterpolationMethod] = Field(
         alias="interpolationMethod"

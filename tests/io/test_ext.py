@@ -424,8 +424,18 @@ class TestModels:
             created_boundary = Boundary(**dict_values)
 
             # 3. Verify boundary values as expected.
-            for key, value in dict_values.items():
-                assert created_boundary.dict()[key] == value
+            created_boundary_dict = created_boundary.dict()
+
+            compare_data = dict(dict_values)
+            expected_location_path = compare_data.pop("locationfile")
+
+            for key, value in compare_data.items():
+                assert created_boundary_dict[key] == value
+
+            assert (
+                created_boundary_dict["locationfile"]["filepath"]
+                == expected_location_path
+            )
 
         def test_given_args_as_alias_expected_values(self):
             # 1. Explicit declaration of parameters (to validate keys as they are written)
@@ -444,7 +454,10 @@ class TestModels:
             # 3. Verify boundary values as expected.
             assert boundary_as_dict["quantity"] == dict_values["quantity"]
             assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
-            assert boundary_as_dict["locationfile"] == dict_values["locationfile"]
+            assert (
+                boundary_as_dict["locationfile"]["filepath"]
+                == dict_values["locationfile"]
+            )
             assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
             assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1D"]
             assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
@@ -542,7 +555,15 @@ class TestModels:
                 required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
                 test_values = {**dict_values, **required_values}
                 created_boundary = Boundary(**test_values)
+
+                expected_locationfile = test_values.pop("locationfile", None)
+
                 for key, value in test_values.items():
                     if key == "forcing_file":
                         value = value.dict()
                     assert created_boundary.dict()[key] == value
+
+                assert (
+                    created_boundary.dict()["locationfile"]["filepath"]
+                    == expected_locationfile
+                )
