@@ -790,7 +790,7 @@ class Mesh1d(BaseModel):
 
         # Network edge node administration
         # -------------------------------
-        
+
         first_point = branch.geometry[0]
         last_point = branch.geometry[-1]
 
