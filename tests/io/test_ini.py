@@ -391,7 +391,30 @@ class TestParser:
     ):
         p = tmp_path / "test.ini"
         p.write_text("[sectionA]\n" + line)
-        result = Parser.parse(p)
+        result = Parser.parse(p).flatten()
+        assert result["sectiona"][expected_key] == expected_value
+
+    @pytest.mark.parametrize(
+        "line,expected_key,expected_value",
+        [
+            ("someParam = foo # comment text", "someparam", "foo"),
+            ("someParam = ", "someparam", None),
+            ("someParam = # comment text", "someparam", None),
+            ("someParam = #value A# ", "someparam", "#value A#"),
+            ("someParam = #value A# # some comment", "someparam", "#value A#"),
+            (
+                "someParam = value A # some comment with hash #2 in it",
+                "someparam",
+                "value A",
+            ),
+        ],
+    )
+    def test_string_values(
+        self, tmp_path, line: str, expected_key: str, expected_value: str
+    ):
+        p = tmp_path / "test.ini"
+        p.write_text("[sectionA]\n" + line)
+        result = Parser.parse(p).flatten()
         assert result["sectiona"][expected_key] == expected_value
 
     def test_feed_comment_at_the_beginning_of_the_document_gets_added_to_the_header(

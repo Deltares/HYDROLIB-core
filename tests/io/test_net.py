@@ -5,8 +5,9 @@ from typing import Dict, List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from meshkernel import GeometryList, MeshKernel
+from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
+from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
 from hydrolib.core.io.net.reader import NCExplorer
 
@@ -19,6 +20,19 @@ def plot_network(network):
     network.plot(ax=ax)
     ax.autoscale()
     plt.show()
+
+
+def _plot_mesh2d(mesh2d, ax=None, **kwargs):
+    from matplotlib.collections import LineCollection
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    nodes2d = np.stack([mesh2d.mesh2d_node_x, mesh2d.mesh2d_node_y], axis=1)
+    edge_nodes = mesh2d.mesh2d_edge_nodes
+    lc_mesh2d = LineCollection(nodes2d[edge_nodes], **kwargs)
+    ax.add_collection(lc_mesh2d)
+    ax.autoscale_view()
+    return ax
 
 
 @pytest.mark.plots
@@ -91,7 +105,7 @@ def test_create_1d_2d_1d2d():
     network.mesh1d_add_branch(branch, name="branch2")
 
     # Add Mesh2d
-    network.mesh2d_create_rectilinear_within_bounds(
+    network.mesh2d_create_rectilinear_within_extent(
         extent=(-22, -22, 22, 22), dx=2, dy=2
     )
     network.mesh2d_clip_mesh(polygon=get_circle_gl(22))
@@ -121,7 +135,20 @@ def test_create_2d():
     assert mesh2d_output.edge_nodes.size == 152
 
 
-def test_create_clip_2d():
+@pytest.mark.parametrize(
+    "deletemeshoption,inside,nnodes,nedgenodes",
+    [
+        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, False, 28, 90),
+        (DeleteMeshOption.ALL_COMPLETE_FACES, False, 23, 72),
+        (DeleteMeshOption.ALL_NODES, False, 23, 72),
+        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, True, 23, 72),
+        (DeleteMeshOption.ALL_COMPLETE_FACES, True, 31, 94),
+        (DeleteMeshOption.ALL_NODES, True, 22, 64),
+    ],
+)
+def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes):
+
+    # TODO: "All complete faces, outside" does not have the expected behaviour, it is similar to "All nodes, outside"
 
     polygon = GeometryList(
         x_coordinates=np.array([0.0, 6.0, 4.0, 2.0, 0.0]),
@@ -132,12 +159,11 @@ def test_create_clip_2d():
     bbox = (1.0, -2.0, 3.0, 4.0)
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
-    mesh2d.clip(polygon)
 
+    mesh2d.clip(polygon, deletemeshoption=deletemeshoption, inside=inside)
     mesh2d_output = mesh2d.get_mesh2d()
-
-    assert mesh2d_output.node_x.size == 28
-    assert mesh2d_output.edge_nodes.size == 90
+    assert mesh2d_output.node_x.size == nnodes
+    assert mesh2d_output.edge_nodes.size == nedgenodes
 
 
 def test_create_refine_2d():
@@ -192,8 +218,12 @@ def test_read_write_read_compare(filepath):
     network1 = NetworkModel(filepath=filepath)
 
     # Save to temporary location
-    tmppath = test_output_dir
-    network1.save(tmppath)
+    save_path = (
+        test_output_dir
+        / test_read_write_read_compare.__name__
+        / network1._generate_name()
+    )
+    network1.save(filepath=save_path)
 
     # Read a second network from this location
     network2 = NetworkModel(filepath=network1.filepath)
@@ -202,6 +232,7 @@ def test_read_write_read_compare(filepath):
     path = Path(__file__).parent.parent.parent.joinpath(
         "hydrolib/core/io/net/ugrid_conventions.json"
     )
+
     with open(path, "r") as f:
         conventions = json.load(f)
 
@@ -448,3 +479,83 @@ class TestNCExplorer:
         assert explorer.mesh1d_var_name_mapping == mesh1d_dict
         assert explorer.mesh2d_var_name_mapping == mesh2d_dict
         assert explorer.link1d2d_var_name_mapping == link1d2d_dict
+
+
+def test_add_short_connecting_branch():
+    fmmodel = FMModel()
+
+    network = fmmodel.geometry.netfile.network
+
+    lowerbranch = Branch(geometry=np.array([[-100, -25], [0, -25]]))
+    upperbranch = Branch(geometry=np.array([[-100, 25], [0, 25]]))
+    connectingbranch = Branch(geometry=np.array([[0, -25], [0, 25]]))
+
+    branches = [lowerbranch, upperbranch, connectingbranch]
+    for branch in branches:
+        branch.generate_nodes(mesh1d_edge_length=50)
+        network.mesh1d_add_branch(branch)
+
+    assert np.array_equiv(
+        network._mesh1d.mesh1d_node_x,
+        np.array([-100.0, -50.0, 0.0, -100.0, -50.0, 0.0, 0.0]),
+    )
+    assert np.array_equiv(
+        network._mesh1d.mesh1d_node_y,
+        np.array([-25.0, -25.0, -25.0, 25.0, 25.0, 25.0, 0.0]),
+    )
+
+
+def test_create_triangular():
+
+    fmmodel = FMModel()
+
+    network = fmmodel.geometry.netfile.network
+
+    polygon = GeometryList(
+        x_coordinates=np.array([0.0, 6.0, 4.0, 2.0, 0.0]),
+        y_coordinates=np.array([0.0, 2.0, 7.0, 6.0, 0.0]),
+    )
+
+    network.mesh2d_create_triangular_within_polygon(polygon)
+
+    assert np.array_equiv(
+        network._mesh2d.mesh2d_node_x,
+        np.array([0.0, 6.0, 4.0, 2.0]),
+    )
+    assert np.array_equiv(
+        network._mesh2d.mesh2d_node_y,
+        np.array([0.0, 2.0, 7.0, 6.0]),
+    )
+    assert np.array_equiv(
+        network._mesh2d.mesh2d_edge_nodes,
+        np.array([[3, 0], [0, 1], [1, 3], [1, 2], [2, 3]]),
+    )
+
+
+def test_add_1d2d_links():
+
+    # Create branch
+    branch = Branch(geometry=np.array([[-10, 5], [10, -5]]))
+    branch.generate_nodes(2)
+    # Create Mesh1d
+    network = NetworkModel().network
+    branchid = network.mesh1d_add_branch(branch, name="branch1")
+    # Create Mesh2d
+    network.mesh2d_create_rectilinear_within_extent(extent=(-5, -5, 5, 5), dx=1, dy=1)
+
+    network._mesh1d._set_mesh1d()
+    network._mesh2d._set_mesh2d()
+
+    # Get required arguments
+    node_mask = network._mesh1d.get_node_mask([branchid])
+    exterior = GeometryList(
+        x_coordinates=np.array([-10, 10, 10, -10, -10], dtype=np.double),
+        y_coordinates=np.array([-10, -10, 10, 10, -10], dtype=np.double),
+    )
+
+    # Add links from 1d to 2d
+    network._link1d2d._link_from_1d_to_2d(node_mask=node_mask, polygon=exterior)
+    assert np.array_equiv(
+        network._link1d2d.link1d2d,
+        np.array([[3, 70], [4, 62], [5, 54], [6, 45], [7, 37], [8, 29]]),
+    )

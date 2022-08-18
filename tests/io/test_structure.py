@@ -1,20 +1,24 @@
 import inspect
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import Any, Callable, List, Union
+from typing import Any, List, Union
 
 import pytest
-from attr.validators import optional
 from pydantic.error_wrappers import ValidationError
 
+from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.structure.models import (
     Bridge,
     Compound,
     Culvert,
+    CulvertSubType,
     Dambreak,
     DambreakAlgorithm,
     FlowDirection,
+    GateOpeningHorizontalDirection,
+    GeneralStructure,
+    Orientation,
     Orifice,
     Pump,
     Structure,
@@ -166,6 +170,33 @@ def test_read_structures_missing_structure_field_raises_correct_error():
     assert expected_message in str(error.value)
 
 
+@pytest.fixture
+def locfields_structure():
+    """example location fields for creating a regular Structure"""
+    return {"branchid": "branch", "chainage": 10}
+
+
+def test_create_structure_without_id(locfields_structure):
+    field = "id"
+    with pytest.raises(ValidationError) as error:
+        _ = Structure(**locfields_structure)  # Intentionally no id+type
+
+    expected_message = f"{field}"
+    assert expected_message in str(error.value)
+    assert error.value.errors()[0]["type"] == "value_error.missing"
+
+
+def test_create_structure_without_type(locfields_structure):
+    identifier = "structA"
+    field = "type"
+    with pytest.raises(ValidationError) as error:
+        _ = Structure(id=identifier, **locfields_structure)  # Intentionally no type
+
+    expected_message = f"{identifier} -> {field}"
+    assert expected_message in str(error.value)
+    assert error.value.errors()[0]["type"] == "value_error.missing"
+
+
 @pytest.mark.parametrize(
     "input,expected",
     [
@@ -173,12 +204,23 @@ def test_read_structures_missing_structure_field_raises_correct_error():
         ("UniversalWeir", "universalWeir"),
         ("Culvert", "culvert"),
         ("Pump", "pump"),
-        ("Compound", "compound"),
         ("Orifice", "orifice"),
     ],
 )
-def test_parses_type_case_insensitive(input, expected):
-    structure = Structure(type=input, branchid="branchid", chainage="1")
+def test_parses_structure_type_case_insensitive(locfields_structure, input, expected):
+    structure = Structure(type=input, **locfields_structure)
+
+    assert structure.type == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("Compound", "compound"),
+    ],
+)
+def test_parses_compound_type_case_insensitive(input, expected):
+    structure = Structure(type=input)
 
     assert structure.type == expected
 
@@ -189,6 +231,13 @@ def _get_allowedflowdir_cases() -> List:
         ("Positive", "positive"),
         ("NEGATIVE", "negative"),
         ("Both", "both"),
+    ]
+
+
+def _get_orientation_cases() -> List:
+    return [
+        ("Positive", "positive"),
+        ("NEGATIVE", "negative"),
     ]
 
 
@@ -233,9 +282,9 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
-        relopening=[],
-        losscoeff=[],
-        bedfrictiontype="",
+        relopening=[1],
+        losscoeff=[1],
+        bedfrictiontype=FrictionType.manning,
         bedfriction="1",
         subtype="invertedSiphon",
         bendlosscoeff="1",
@@ -266,14 +315,25 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
-        relopening=[],
-        losscoeff=[],
-        bedfrictiontype="",
+        relopening=[1],
+        losscoeff=[1],
+        bedfrictiontype=FrictionType.manning,
         bedfriction="1",
-        bendlosscoeff="1",
+        bendlosscoeff="1" if input.lower() == "invertedsiphon" else None,
     )
 
     assert structure.subtype == expected
+
+
+def create_structure_values(type: str) -> dict:
+    """Create a dict with example field values for all common structure attributes."""
+    return dict(
+        id="structure_id",
+        name="structure_name",
+        type=type,
+        branchid="branch_id",
+        chainage="1.23",
+    )
 
 
 class TestBridge:
@@ -293,7 +353,7 @@ class TestBridge:
             shift=-1.23,
             inletlosscoeff=1,
             outletlosscoeff=1,
-            frictiontype="Strickler",
+            frictiontype=FrictionType.strickler,
             friction=70,
             length=100,
             comments=Bridge.Comments(
@@ -314,7 +374,7 @@ class TestBridge:
         assert bridge.shift == -1.23
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == "Strickler"
+        assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
         assert bridge.length == 100
         assert (
@@ -368,7 +428,7 @@ class TestBridge:
         assert bridge.shift == 0.0
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == "Strickler"
+        assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
@@ -419,7 +479,7 @@ class TestBridge:
         assert bridge.shift == 0.0
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == "Strickler"
+        assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
@@ -556,7 +616,7 @@ class TestStructure:
         ):
             with expectation as exc_err:
                 input_dict = dict(
-                    notAValue="Not a relevant value",
+                    notAValue="Not a relevant value 1",
                     type=type,
                     numcoordinates=None,
                     xcoordinates=None,
@@ -570,9 +630,9 @@ class TestStructure:
                     return
             assert str(exc_err.value) == error_mssg
 
-        def test_check_location_given_compound_structure_raises_nothing(self):
+        def test_check_nolocation_given_compound_structure_raises_nothing(self):
             input_dict = dict(
-                notAValue="Not a relevant value",
+                notAValue="Not a relevant value 2",
                 numcoordinates=None,
                 xcoordinates=None,
                 ycoordinates=None,
@@ -581,6 +641,28 @@ class TestStructure:
             )
             return_value = Compound.check_location(input_dict)
             assert return_value == input_dict
+
+        def test_check_location_given_compound_structure_raises_error(self):
+            input_dict = dict(
+                notAValue="Not a relevant value 3",
+                numcoordinates=None,
+                xcoordinates=None,
+                ycoordinates=None,
+                branchid="branch01",
+                chainage=123.4,
+            )
+            return_value = Compound.check_location(input_dict)
+            assert return_value == input_dict
+
+            # TODO: issue 214: replace the above test code by the test
+            # code below once the D-HYDRO Suite 1D2D has fixed issue
+            # FM1D2D-1935 for compound structures.
+            # with pytest.raises(AssertionError) as exc_err:
+            #     _ = Compound.check_location(input_dict)
+            #     assert (
+            #         str(exc_err.value)
+            #         == "No `num/x/yCoordinates` nor `branchId+chainage` are allowed for a compound structure."
+            #     )
 
         @pytest.mark.parametrize(
             "dict_values",
@@ -804,6 +886,8 @@ class DambreakTestCases:
     check_location_err = (
         "`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure."
     )
+    check_upstream_waterlevel_location_err = "Either `waterLevelUpstreamNodeId` should be specified or `waterLevelUpstreamLocationX` and `waterLevelUpstreamLocationY`."
+    check_downstream_waterlevel_location_err = "Either `waterLevelDownstreamNodeId` should be specified or `waterLevelDownstreamLocationX` and `waterLevelDownstreamLocationY`."
     too_few_coords = "Expected at least 2 coordinates, but only {} declared."
     mismatch_coords = (
         "Expected {} coordinates, given {} for xCoordinates and {} for yCoordinates."
@@ -833,10 +917,6 @@ class TestDambreak:
             f1=22.4,
             f2=44.2,
             ucrit=44.22,
-            waterlevelupstreamlocationx=1.2,
-            waterlevelupstreamlocationy=2.3,
-            waterleveldownstreamlocationx=3.4,
-            waterleveldownstreamlocationy=4.5,
             waterlevelupstreamnodeid="anUpstreamNodeId",
             waterleveldownstreamnodeid="aDownstreamNodeId",
         )
@@ -938,10 +1018,6 @@ class TestDambreak:
             f1 = 22.4                       # Factor f1.
             f2 = 44.2                       # Factor f2.
             uCrit = 44.22                   # Critical flow velocity uc for erosion [m/s].
-            waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
-            waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
-            waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
-            waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
             waterLevelUpstreamNodeId = anUpstreamNodeId # Node Id of custom upstream water level point.
             waterLevelDownstreamNodeId = aDownstreamNodeId # Node Id of custom downstream water level point.
             """
@@ -970,6 +1046,10 @@ class TestDambreak:
             t0                         = 0.0001        # make it a boolean
             dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 3            
             materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
+            waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
+            waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
+            waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
+            waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
             """
         )
 
@@ -992,6 +1072,12 @@ class TestDambreak:
         assert dambreak_obj.t0 == 0.0001
         assert dambreak_obj.dambreaklevelsandwidths == Path("dambreak.tim")
         assert dambreak_obj.dict()["materialtype"] == "1"
+        assert dambreak_obj.waterlevelupstreamlocationx == 1.2
+        assert dambreak_obj.waterlevelupstreamlocationy == 2.3
+        assert dambreak_obj.waterleveldownstreamlocationx == 3.4
+        assert dambreak_obj.waterleveldownstreamlocationy == 4.5
+        assert dambreak_obj.waterlevelupstreamnodeid == None
+        assert dambreak_obj.waterleveldownstreamnodeid == None
 
     def parse_dambreak_from_text(self, structure_text: str) -> Dambreak:
         """
@@ -1039,10 +1125,10 @@ class TestDambreak:
         assert dambreak.numcoordinates == 2
         assert dambreak.xcoordinates == [4.2, 2.4]
         assert dambreak.ycoordinates == [2.4, 4.2]
-        assert dambreak.waterlevelupstreamlocationx == 1.2
-        assert dambreak.waterlevelupstreamlocationy == 2.3
-        assert dambreak.waterleveldownstreamlocationx == 3.4
-        assert dambreak.waterleveldownstreamlocationy == 4.5
+        assert dambreak.waterlevelupstreamlocationx == None
+        assert dambreak.waterlevelupstreamlocationy == None
+        assert dambreak.waterleveldownstreamlocationx == None
+        assert dambreak.waterleveldownstreamlocationy == None
         assert dambreak.waterlevelupstreamnodeid == "anUpstreamNodeId"
         assert dambreak.waterleveldownstreamnodeid == "aDownstreamNodeId"
 
@@ -1139,18 +1225,44 @@ class TestDambreak:
             "dict_values",
             [
                 pytest.param(
-                    dict(numcoordinates=2, xcoordinates=[0, 1], ycoordinates=[2, 3]),
-                    id="With 2 coordinates",
+                    dict(
+                        numcoordinates=2,
+                        xcoordinates=[0, 1],
+                        ycoordinates=[2, 3],
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                    ),
+                    id="With 2 coordinates and waterlevelupstreamnodeid and waterleveldownstreamnodeid",
                 ),
                 pytest.param(
                     dict(
-                        numcoordinates=3, xcoordinates=[0, 1, 2], ycoordinates=[2, 3, 4]
+                        numcoordinates=3,
+                        xcoordinates=[0, 1, 2],
+                        ycoordinates=[2, 3, 4],
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamlocationx=3.4,
+                        waterleveldownstreamlocationy=4.5,
                     ),
-                    id="With 3 coordinates",
+                    id="With 3 coordinates and waterlevelupstreamnodeid and waterleveldownstreamlocationx and waterleveldownstreamlocationy",
                 ),
-                pytest.param(dict(polylinefile=Path()), id="Empty path"),
                 pytest.param(
-                    dict(polylinefile=Path("aFilePath")), id="Path with file name"
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamlocationx=1.2,
+                        waterlevelupstreamlocationy=2.3,
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                    ),
+                    id="Empty path and waterlevelupstreamlocationx and waterlevelupstreamlocationy and waterleveldownstreamnodeid",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path("aFilePath"),
+                        waterlevelupstreamlocationx=1.2,
+                        waterlevelupstreamlocationy=2.3,
+                        waterleveldownstreamlocationx=3.4,
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    id="Path with file name and waterlevelupstreamlocationx and waterlevelupstreamlocationy and waterleveldownstreamlocationx and waterleveldownstreamlocationy",
                 ),
             ],
         )
@@ -1162,7 +1274,12 @@ class TestDambreak:
             "invalid_values, expected_err",
             [
                 pytest.param(
-                    dict(), DambreakTestCases.check_location_err, id="Empty dict."
+                    dict(
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                    ),
+                    DambreakTestCases.check_location_err,
+                    id="No locations specified",
                 ),
                 pytest.param(
                     dict(
@@ -1170,9 +1287,124 @@ class TestDambreak:
                         xcoordinates=None,
                         ycoordinates=None,
                         polylinefile=None,
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
                     ),
                     DambreakTestCases.check_location_err,
-                    id="Dict with Nones.",
+                    id="Specified locations None",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                    ),
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="No upstream water level locations specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterlevelupstreamlocationx=1.2,
+                    ),
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Only upstream water level location x specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterlevelupstreamlocationy=2.3,
+                    ),
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Only upstream water level location y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterlevelupstreamlocationx=1.2,
+                    ),
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Upstream water level location node id and x specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterlevelupstreamlocationy=2.3,
+                    ),
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Upstream water level location node id and y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterlevelupstreamlocationx=1.2,
+                        waterlevelupstreamlocationy=2.3,
+                    ),
+                    DambreakTestCases.check_upstream_waterlevel_location_err,
+                    id="Upstream water level location node id, x and y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(), waterlevelupstreamnodeid="anUpstreamNodeId"
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="No downstream water level locations specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamlocationx=3.4,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Only downstream water level location x specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Only downstream water level location y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterleveldownstreamlocationx=3.4,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Downstream water level location node id and x specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Downstream water level location node id and y specified",
+                ),
+                pytest.param(
+                    dict(
+                        polylinefile=Path(),
+                        waterlevelupstreamnodeid="anUpstreamNodeId",
+                        waterleveldownstreamnodeid="aDownstreamNodeId",
+                        waterleveldownstreamlocationx=3.4,
+                        waterleveldownstreamlocationy=4.5,
+                    ),
+                    DambreakTestCases.check_downstream_waterlevel_location_err,
+                    id="Downstream water level location node id, x and y specified",
                 ),
             ],
         )
@@ -1474,11 +1706,669 @@ class TestWeir:
         return weir_values
 
 
-def create_structure_values(type: str) -> dict:
-    return dict(
-        id="structure_id",
-        name="structure_name",
-        type=type,
-        branchid="branch_id",
-        chainage="1.23",
+class TestPump:
+    _pumplists = [
+        ("startlevelsuctionside", "numstages"),
+        ("stoplevelsuctionside", "numstages"),
+        ("startleveldeliveryside", "numstages"),
+        ("stopleveldeliveryside", "numstages"),
+        ("head", "numreductionlevels"),
+        ("reductionfactor", "numreductionlevels"),
+    ]
+
+    def test_create_a_pump_from_scratch(self):
+        pump = Pump(
+            **self._create_pump_values(),
+            comments=Pump.Comments(
+                name="P stands for pump, 003 because we expect to have at most 999 pumps"
+            ),
+        )
+
+        assert pump.id == "structure_id"
+        assert pump.name == "structure_name"
+        assert pump.branchid == "branch_id"
+        assert pump.capacity == 2.34
+        assert pump.orientation == Orientation.negative
+        assert pump.numreductionlevels == 2
+        assert pump.head == [0, 2]
+        assert pump.reductionfactor == [0, 0.1]
+        assert (
+            pump.comments.name
+            == "P stands for pump, 003 because we expect to have at most 999 pumps"
+        )
+
+        assert pump.comments.id == uniqueid_str
+
+    def test_pump_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                = pump_id     # Unique structure id (max. 256 characters).
+            name              = pump_nm     # Given name in the user interface.
+            branchId          = branch      # (optional) Branch on which the structure is located.
+            chainage          = 3.0         # (optional) Chainage on the branch (m)
+            type              = pump        # Structure type
+            orientation       = positive    # Possible values: positive, negative.
+            capacity          = 10.5        # Crest level of weir (m AD)
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Pump].parse_obj({"val": document.sections[0]})
+        structure = wrapper.val
+
+        assert structure.id == "pump_id"
+        assert structure.name == "pump_nm"
+        assert structure.branchid == "branch"
+        assert structure.chainage == 3.0
+        assert structure.type == "pump"
+        assert structure.orientation == Orientation.positive
+        assert structure.capacity == 10.5
+
+    @pytest.mark.parametrize(
+        "input,expected",
+        _get_orientation_cases(),
     )
+    def test_pump_parses_orientation_case_insensitive(self, input, expected):
+        structure = Pump(
+            **self._create_required_pump_values(),
+            orientation=input,
+        )
+
+        assert structure.orientation == expected
+
+    @pytest.mark.parametrize(
+        "listname,lengthname",
+        _pumplists,
+    )
+    def test_create_a_pump_with_wrong_list_lengths(
+        self, listname: str, lengthname: str
+    ):
+        """Creates a pump with one start/stop/reduction attribute with wrong list length
+        and checks for correct error detection."""
+        correctlength = 3  # just a test value
+        correctlist = list(range(correctlength))
+        listargs = {key: correctlist for (key, _) in self._pumplists}
+        listargs[listname] = list(
+            range(correctlength + 1)
+        )  # Intentional wrong list length
+        listargs[lengthname] = correctlength
+        listargs["controlside"] = "both"
+
+        with pytest.raises(ValidationError) as error:
+
+            _ = Pump(
+                **self._create_required_pump_values(),
+                **listargs,
+            )
+
+        expected_message = f"Number of values for {listname} should be equal to the {lengthname} value."
+
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "control_side,missing_list_name,present_list_names,should_raise_error",
+        [
+            ("suctionSide", "startlevelsuctionside", [], True),
+            (
+                "deliverySide",
+                "startlevelsuctionside",
+                ["startleveldeliveryside", "stopleveldeliveryside"],
+                False,
+            ),
+            ("both", "startlevelsuctionside", [], True),
+            ("suctionSide", "stoplevelsuctionside", [], True),
+            (
+                "deliverySide",
+                "stoplevelsuctionside",
+                ["startleveldeliveryside", "stopleveldeliveryside"],
+                False,
+            ),
+            ("both", "stoplevelsuctionside", [], True),
+            (
+                "suctionSide",
+                "startleveldeliveryside",
+                ["startlevelsuctionside", "stoplevelsuctionside"],
+                False,
+            ),
+            ("deliverySide", "startleveldeliveryside", [], True),
+            ("both", "startleveldeliveryside", [], True),
+            (
+                "suctionSide",
+                "stopleveldeliveryside",
+                ["startlevelsuctionside", "stoplevelsuctionside"],
+                False,
+            ),
+            ("deliverySide", "stopleveldeliveryside", [], True),
+            ("both", "stopleveldeliveryside", [], True),
+        ],
+    )
+    def test_dont_validate_unneeded_pump_lists(
+        self,
+        control_side: str,
+        missing_list_name: str,
+        present_list_names: List[str],
+        should_raise_error: bool,
+    ):
+        """Creates a pump with one particular list attribute missing
+        and checks for correct (i.e., no unneeded) error detection,
+        depending on the controlside attribute."""
+
+        values = self._create_required_pump_values()
+        values["id"] = "pump_controlside_" + (control_side or "none")
+
+        if control_side is not None:
+            values["controlside"] = control_side
+        else:
+            values.pop("controlside", None)
+
+        values["numstages"] = 1
+        values.pop(missing_list_name, None)
+        values.update({ln: [1.1] for ln in present_list_names})
+
+        if should_raise_error:
+            with pytest.raises(ValidationError):
+                _ = Pump(**values)
+        else:
+            # Simply create the Pump and accept no Error raised.
+            _ = Pump(**values)
+
+    @pytest.mark.parametrize(
+        "listname,lengthname",
+        _pumplists,
+    )
+    def test_create_a_pump_with_missing_list(self, listname: str, lengthname: int):
+        """Creates a pump with one start/stop/reduction attribute list missing
+        and checks for correct error detection."""
+        correctlength = 3  # just a test value
+        correctlist = list(range(correctlength))
+        listargs = {key: correctlist for (key, _) in self._pumplists}
+        listargs.pop(listname)  # Remove one list argument
+        for (_, _lengthname) in self._pumplists:
+            listargs[_lengthname] = correctlength
+        listargs["controlside"] = "both"
+
+        with pytest.raises(ValidationError) as error:
+
+            _ = Pump(
+                **self._create_required_pump_values(),
+                **listargs,
+            )
+
+        expected_message = (
+            f"List {listname} cannot be missing if {lengthname} is given."
+        )
+
+        assert expected_message in str(error.value)
+
+    def _create_required_pump_values(self) -> dict:
+        pump_values = dict(
+            capacity="2.34",
+        )
+
+        pump_values.update(create_structure_values("pump"))
+        return pump_values
+
+    def _create_pump_values(self) -> dict:
+        pump_values = dict(
+            orientation="negative",
+            numreductionlevels=2,
+            head=[0, 2],
+            reductionfactor=[0, 0.1],
+        )
+
+        pump_values.update(self._create_required_pump_values())
+        return pump_values
+
+
+class TestGeneralStructure:
+    def test_create_a_general_structure_from_scratch(self):
+        name_comment = "Generic name comment"
+        struct = GeneralStructure(
+            **self._create_general_structure_values(),
+            comments=GeneralStructure.Comments(name=name_comment),
+        )
+
+        assert struct.id == "structure_id"
+        assert struct.name == "structure_name"
+        assert struct.branchid == "branch_id"
+        assert struct.chainage == 1.23
+
+        assert struct.allowedflowdir == FlowDirection.positive
+        assert struct.upstream1width == 1.0
+        assert struct.upstream1level == 2.0
+        assert struct.upstream2width == 3.0
+        assert struct.upstream2level == 4.0
+        assert struct.crestwidth == 5.0
+        assert struct.crestlevel == 6.0
+        assert struct.crestlength == 7.0
+        assert struct.downstream1width == 8.0
+        assert struct.downstream1level == 9.0
+        assert struct.downstream2width == 9.1
+        assert struct.downstream2level == 9.2
+        assert struct.gateloweredgelevel == 9.3
+        assert struct.posfreegateflowcoeff == 9.4
+        assert struct.posdrowngateflowcoeff == 9.5
+        assert struct.posfreeweirflowcoeff == 9.6
+        assert struct.posdrownweirflowcoeff == 9.7
+        assert struct.poscontrcoeffreegate == 9.8
+        assert struct.negfreegateflowcoeff == 9.9
+        assert struct.negdrowngateflowcoeff == 8.1
+        assert struct.negfreeweirflowcoeff == 8.2
+        assert struct.negdrownweirflowcoeff == 8.3
+        assert struct.negcontrcoeffreegate == 8.4
+        assert struct.extraresistance == 8.5
+        assert struct.gateheight == 8.6
+        assert struct.gateopeningwidth == 8.7
+        assert (
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_left
+        )
+        assert struct.usevelocityheight == False
+
+        assert struct.comments is not None
+        assert struct.comments.name == name_comment
+
+        assert struct.comments.id == uniqueid_str
+
+    def test_id_comment_has_correct_default(self):
+        struct = GeneralStructure(**self._create_general_structure_values())
+        assert struct.comments is not None
+        assert struct.comments.id == uniqueid_str
+
+    def test_add_comment_to_general_structure(self):
+        struct = GeneralStructure(**self._create_general_structure_values())
+
+        assert struct.comments is not None
+
+        new_comment = "a very different value"
+
+        struct.comments.usevelocityheight = new_comment
+        assert struct.comments.usevelocityheight == new_comment
+
+    def test_general_structure_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = potato_id        # Unique structure id (max. 256 characters).
+            name                           = structure_potato # Given name in the user interface.
+            type                           = generalStructure # Structure type; must read generalStructure
+            branchId                       = branch           # Branch on which the structure is located.
+            chainage                       = 3.53             # Chainage on the branch (m).
+            allowedFlowDir                 = positive         # Possible values: both, positive, negative, none.
+            upstream1Width                 = 11.0             # w_u1 [m]
+            upstream1Level                 = 12.0             # z_u1 [m AD]
+            upstream2Width                 = 13.0             # w_u2 [m]
+            upstream2Level                 = 14.0             # z_u2 [m D]
+            crestWidth                     = 15.0             # w_s [m]
+            crestLevel                     = 16.0             # z_s [m AD]
+            crestLength                    = 17.0             # The crest length across the general structure [m]. When the crest length > 0, the extra resistance for this structure will be ls * g/(C2 * waterdepth)
+            downstream1Width               = 18.0             # w_d1 [m]
+            downstream1Level               = 19.0             # z_d1 [m AD]
+            downstream2Width               = 19.1             # w_d1 [m]
+            downstream2Level               = 19.2             # z_d1 [m AD]
+            gateLowerEdgeLevel             = 19.3             # Position of gate door’s lower edge [m AD]
+            posFreeGateFlowCoeff           = 19.4             # Positive free gate flow corr.coeff. cgf [-]
+            posDrownGateFlowCoeff          = 19.5             # Positive drowned gate flow corr.coeff. cgd [-]
+            posFreeWeirFlowCoeff           = 19.6             # Positive free weir flow corr.coeff. cwf [-]
+            posDrownWeirFlowCoeff          = 19.7             # Positive drowned weir flow corr.coeff. cwd [-]
+            posContrCoefFreeGate           = 19.8             # Positive gate flow contraction coefficient µgf [-]
+            negFreeGateFlowCoeff           = 19.9             # Negative free gate flow corr.coeff. cgf [-]
+            negDrownGateFlowCoeff          = 18.1             # Negative drowned gate flow corr.coeff. cgd [-]
+            negFreeWeirFlowCoeff           = 18.2             # Negative free weir flow corr.coeff. cwf [-]
+            negDrownWeirFlowCoeff          = 18.3             # Negative drowned weir flow corr.coeff. cwd [-]
+            negContrCoefFreeGate           = 18.4             # Negative gate flow contraction coefficient mu gf [-]
+            extraResistance                = 18.5             # Extra resistance [-]
+            gateHeight                     = 18.6
+            gateOpeningWidth               = 18.7             # Opening width between gate doors [m], should be smaller than (or equal to) crestWidth
+            gateOpeningHorizontalDirection = fromLeft         # Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight
+            useVelocityHeight              = 0                # Flag indicates whether the velocity height is to be calculated or not
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
+        struct = wrapper.val
+
+        assert struct.id == "potato_id"
+        assert struct.name == "structure_potato"
+        assert struct.branchid == "branch"
+        assert struct.chainage == 3.53
+        assert struct.type == "generalStructure"
+        assert struct.allowedflowdir == FlowDirection.positive
+        assert struct.upstream1width == 11.0
+        assert struct.upstream1level == 12.0
+        assert struct.upstream2width == 13.0
+        assert struct.upstream2level == 14.0
+        assert struct.crestwidth == 15.0
+        assert struct.crestlevel == 16.0
+        assert struct.crestlength == 17.0
+        assert struct.downstream1width == 18.0
+        assert struct.downstream1level == 19.0
+        assert struct.downstream2width == 19.1
+        assert struct.downstream2level == 19.2
+        assert struct.gateloweredgelevel == 19.3
+        assert struct.posfreegateflowcoeff == 19.4
+        assert struct.posdrowngateflowcoeff == 19.5
+        assert struct.posfreeweirflowcoeff == 19.6
+        assert struct.posdrownweirflowcoeff == 19.7
+        assert struct.poscontrcoeffreegate == 19.8
+        assert struct.negfreegateflowcoeff == 19.9
+        assert struct.negdrowngateflowcoeff == 18.1
+        assert struct.negfreeweirflowcoeff == 18.2
+        assert struct.negdrownweirflowcoeff == 18.3
+        assert struct.negcontrcoeffreegate == 18.4
+        assert struct.extraresistance == 18.5
+        assert struct.gateheight == 18.6
+        assert struct.gateopeningwidth == 18.7
+        assert (
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_left
+        )
+        assert struct.usevelocityheight == False
+
+    def test_weir_comments_construction_with_parser(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = potato_id        
+            name                           = structure_potato 
+            type                           = generalStructure 
+            branchId                       = branch           
+            chainage                       = 3.53   # My own special comment 1
+            allowedFlowDir                 = positive         
+            upstream1Width                 = 11.0             
+            upstream1Level                 = 12.0             
+            upstream2Width                 = 13.0             
+            upstream2Level                 = 14.0             
+            crestWidth                     = 15.0             
+            crestLevel                     = 16.0             
+            crestLength                    = 17.0             
+            downstream1Width               = 18.0             
+            downstream1Level               = 19.0             
+            downstream2Width               = 19.1             
+            downstream2Level               = 19.2             
+            gateLowerEdgeLevel             = 19.3             
+            posFreeGateFlowCoeff           = 19.4             
+            posDrownGateFlowCoeff          = 19.5             
+            posFreeWeirFlowCoeff           = 19.6             
+            posDrownWeirFlowCoeff          = 19.7             
+            posContrCoefFreeGate           = 19.8             
+            negFreeGateFlowCoeff           = 19.9             
+            negDrownGateFlowCoeff          = 18.1             
+            negFreeWeirFlowCoeff           = 18.2             
+            negDrownWeirFlowCoeff          = 18.3             
+            negContrCoefFreeGate           = 18.4             
+            extraResistance                = 18.5             
+            gateHeight                     = 18.6
+            gateOpeningWidth               = 18.7              
+            gateOpeningHorizontalDirection = fromLeft         
+            useVelocityHeight              = 0    # My own special comment 2            
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
+        struct = wrapper.val
+
+        assert struct.comments is not None
+        assert struct.comments.id is None
+        assert struct.comments.name is None
+        assert struct.comments.branchid is None
+        assert struct.comments.chainage == "My own special comment 1"
+        assert struct.comments.type is None
+
+        assert struct.comments.allowedflowdir is None
+        assert struct.comments.upstream1width is None
+        assert struct.comments.upstream1level is None
+        assert struct.comments.upstream2width is None
+        assert struct.comments.upstream2level is None
+        assert struct.comments.crestwidth is None
+        assert struct.comments.crestlevel is None
+        assert struct.comments.crestlength is None
+        assert struct.comments.downstream1width is None
+        assert struct.comments.downstream1level is None
+        assert struct.comments.downstream2width is None
+        assert struct.comments.downstream2level is None
+        assert struct.comments.gateloweredgelevel is None
+        assert struct.comments.posfreegateflowcoeff is None
+        assert struct.comments.posdrowngateflowcoeff is None
+        assert struct.comments.posfreeweirflowcoeff is None
+        assert struct.comments.posdrownweirflowcoeff is None
+        assert struct.comments.poscontrcoeffreegate is None
+        assert struct.comments.negfreegateflowcoeff is None
+        assert struct.comments.negdrowngateflowcoeff is None
+        assert struct.comments.negfreeweirflowcoeff is None
+        assert struct.comments.negdrownweirflowcoeff is None
+        assert struct.comments.negcontrcoeffreegate is None
+        assert struct.comments.extraresistance is None
+        assert struct.comments.gateheight is None
+        assert struct.comments.gateopeningwidth is None
+        assert struct.comments.usevelocityheight == "My own special comment 2"
+
+    def test_weir_with_unknown_parameters(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = id        
+            name                           = extravagante_waarde
+
+            # ----------------------------------------------------------------------
+            unknown           = 10.0        # A deliberately added unknown property
+            # ----------------------------------------------------------------------
+
+            type                           = generalStructure 
+            branchId                       = stump
+            chainage                       = 13.53  
+            allowedFlowDir                 = positive         
+            upstream1Width                 = 111.0             
+            upstream1Level                 = 112.0             
+            upstream2Width                 = 113.0             
+            upstream2Level                 = 114.0             
+            crestWidth                     = 115.0             
+            crestLevel                     = 116.0             
+            crestLength                    = 117.0             
+            downstream1Width               = 118.0             
+            downstream1Level               = 119.0             
+            downstream2Width               = 119.1             
+            downstream2Level               = 119.2             
+            gateLowerEdgeLevel             = 119.3             
+            posFreeGateFlowCoeff           = 119.4             
+            posDrownGateFlowCoeff          = 119.5             
+            posFreeWeirFlowCoeff           = 119.6             
+            posDrownWeirFlowCoeff          = 119.7             
+            posContrCoefFreeGate           = 119.8             
+            negFreeGateFlowCoeff           = 119.9             
+            negDrownGateFlowCoeff          = 118.1             
+            negFreeWeirFlowCoeff           = 118.2             
+            negDrownWeirFlowCoeff          = 118.3             
+            negContrCoefFreeGate           = 118.4             
+            extraResistance                = 118.5             
+            gateHeight                     = 118.6
+            gateOpeningWidth               = 118.7              
+            gateOpeningHorizontalDirection = fromRight
+            useVelocityHeight              = 0
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
+        struct = wrapper.val
+
+        assert struct.unknown == "10.0"  # type: ignore
+
+        assert struct.id == "id"
+        assert struct.name == "extravagante_waarde"
+        assert struct.branchid == "stump"
+        assert struct.chainage == 13.53
+        assert struct.type == "generalStructure"
+        assert struct.allowedflowdir == FlowDirection.positive
+        assert struct.upstream1width == 111.0
+        assert struct.upstream1level == 112.0
+        assert struct.upstream2width == 113.0
+        assert struct.upstream2level == 114.0
+        assert struct.crestwidth == 115.0
+        assert struct.crestlevel == 116.0
+        assert struct.crestlength == 117.0
+        assert struct.downstream1width == 118.0
+        assert struct.downstream1level == 119.0
+        assert struct.downstream2width == 119.1
+        assert struct.downstream2level == 119.2
+        assert struct.gateloweredgelevel == 119.3
+        assert struct.posfreegateflowcoeff == 119.4
+        assert struct.posdrowngateflowcoeff == 119.5
+        assert struct.posfreeweirflowcoeff == 119.6
+        assert struct.posdrownweirflowcoeff == 119.7
+        assert struct.poscontrcoeffreegate == 119.8
+        assert struct.negfreegateflowcoeff == 119.9
+        assert struct.negdrowngateflowcoeff == 118.1
+        assert struct.negfreeweirflowcoeff == 118.2
+        assert struct.negdrownweirflowcoeff == 118.3
+        assert struct.negcontrcoeffreegate == 118.4
+        assert struct.extraresistance == 118.5
+        assert struct.gateheight == 118.6
+        assert struct.gateopeningwidth == 118.7
+        assert (
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_right
+        )
+        assert struct.usevelocityheight == False
+
+    def _create_required_general_structure_values(self) -> dict:
+        general_structure_values = dict()
+        general_structure_values.update(create_structure_values("generalStructure"))
+        return general_structure_values
+
+    def _create_general_structure_values(self) -> dict:
+        general_structure_values = dict(
+            allowedflowdir=FlowDirection.positive,
+            upstream1width=1.0,
+            upstream1level=2.0,
+            upstream2width=3.0,
+            upstream2level=4.0,
+            crestwidth=5.0,
+            crestlevel=6.0,
+            crestlength=7.0,
+            downstream1width=8.0,
+            downstream1level=9.0,
+            downstream2width=9.1,
+            downstream2level=9.2,
+            gateloweredgelevel=9.3,
+            posfreegateflowcoeff=9.4,
+            posdrowngateflowcoeff=9.5,
+            posfreeweirflowcoeff=9.6,
+            posdrownweirflowcoeff=9.7,
+            poscontrcoeffreegate=9.8,
+            negfreegateflowcoeff=9.9,
+            negdrowngateflowcoeff=8.1,
+            negfreeweirflowcoeff=8.2,
+            negdrownweirflowcoeff=8.3,
+            negcontrcoeffreegate=8.4,
+            extraresistance=8.5,
+            gateheight=8.6,
+            gateopeningwidth=8.7,
+            gateopeninghorizontaldirection=GateOpeningHorizontalDirection.from_left,
+            usevelocityheight=False,
+        )
+
+        general_structure_values.update(
+            self._create_required_general_structure_values()
+        )
+        return general_structure_values
+
+
+class TestCulvert:
+    @pytest.mark.parametrize(
+        "missing_field",
+        ["valveopeningheight", "numlosscoeff", "relopening", "losscoeff"],
+    )
+    def test_validate_required_fields_based_on_valveonoff(self, missing_field: str):
+        values = self._create_culvert_values(valveonoff=True)
+        del values[missing_field]
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = f"{missing_field} should be provided when valveonoff is True"
+        assert expected_message in str(error.value)
+
+    def test_validate_default_subtype(self):
+        culvert = Culvert(**self._create_culvert_values(valveonoff=False))
+
+        assert culvert.subtype == CulvertSubType.culvert
+
+    def test_validate_bendlosscoeff_required_when_invertedsiphon_subtype(self):
+        values = self._create_culvert_values(valveonoff=False)
+        values["subtype"] = CulvertSubType.invertedSiphon
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = (
+            f"bendlosscoeff should be provided when subtype is invertedSiphon"
+        )
+        assert expected_message in str(error.value)
+
+    def test_validate_bendlosscoeff_forbidden_when_culvert_subtype(self):
+        values = self._create_culvert_values(valveonoff=False)
+        values["subtype"] = CulvertSubType.culvert
+        values["bendlosscoeff"] = 0.1
+
+        with pytest.raises(ValidationError) as error:
+            Culvert(**values)
+
+        expected_message = f"bendlosscoeff is forbidden when subtype is culvert"
+        assert expected_message in str(error.value)
+
+    def _create_culvert_values(self, valveonoff: bool):
+        values = create_structure_values("culvert")
+        values.update(
+            dict(
+                allowedflowdir="both",
+                leftlevel="1.23",
+                rightlevel="2.34",
+                csdefid="cs_def_id",
+                length="3.45",
+                inletlosscoeff="4.56",
+                outletlosscoeff="5.67",
+                valveonoff=valveonoff,
+                bedfrictiontype=FrictionType.whitecolebrook,
+                bedfriction="4.32",
+            )
+        )
+
+        if valveonoff:
+            values.update(
+                dict(
+                    valveopeningheight="6.78",
+                    numlosscoeff="10",
+                    relopening="7.89 9.87 8.76",
+                    losscoeff="7.65 6.54 5.43",
+                )
+            )
+
+        return values

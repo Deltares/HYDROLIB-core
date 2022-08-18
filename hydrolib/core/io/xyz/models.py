@@ -2,7 +2,7 @@ from typing import Callable, List, Optional
 
 from pydantic import Field
 
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
 from .parser import XYZParser
 from .serializer import XYZSerializer
@@ -25,8 +25,14 @@ class XYZPoint(BaseModel):
         None, alias="group", description="comment or group name"
     )
 
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        x = data.get("x")
+        y = data.get("y")
+        z = data.get("z")
+        return f"x:{x} y:{y} z:{z}"
 
-class XYZModel(FileModel):
+
+class XYZModel(ParsableFileModel):
     """Sample or forcing file.
 
     Attributes:

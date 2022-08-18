@@ -1,10 +1,12 @@
-## DIMR xml files
+# DIMR xml files
+The input to the Deltares Integrated Model Runner ([DIMR](glossary.md#dimr)) is a single XML file,
+represented by the classes below.
 
-### Model
+## Model
 ::: hydrolib.core.io.dimr.models
 
-### Parser
+## Parser
 ::: hydrolib.core.io.dimr.parser
 
-### Serializer
+## Serializer
 ::: hydrolib.core.io.dimr.serializer

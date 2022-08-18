@@ -1,19 +1,56 @@
 import logging
+from enum import Enum
 from pathlib import Path
 from typing import List, Literal, Optional
 
 from pydantic import Field, NonNegativeInt, PositiveInt
 from pydantic.class_validators import validator
 
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    validator_set_default_disk_only_file_model_when_none,
+)
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
-
-from ..ini.util import make_list_validator
+from hydrolib.core.io.ini.util import (
+    get_enum_validator,
+    get_split_string_on_delimiter_validator,
+    make_list_validator,
+)
 
 logger = logging.getLogger(__name__)
 
 
+class FrictionType(str, Enum):
+    """
+    Enum class containing the valid values for the frictionType
+    attribute in several subclasses of Structure/CrossSection/friction.models.
+    """
+
+    chezy = "Chezy"
+    """str: Chézy C [m 1/2 /s]"""
+
+    manning = "Manning"
+    """str: Manning n [s/m 1/3 ]"""
+
+    walllawnikuradse = "wallLawNikuradse"
+    """str: Nikuradse k_n [m]"""
+
+    whitecolebrook = "WhiteColebrook"
+    """str: Nikuradse k_n [m]"""
+
+    stricklernikuradse = "StricklerNikuradse"
+    """str: Nikuradse k_n [m]"""
+
+    strickler = "Strickler"
+    """str: Strickler k_s [m 1/3 /s]"""
+
+    debosbijkerk = "deBosBijkerk"
+    """str: De Bos-Bijkerk γ [1/s]"""
+
+
 class FrictGeneral(INIGeneral):
+    """The friction file's `[General]` section with file meta data."""
+
     class Comments(INIBasedModel.Comments):
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
@@ -32,10 +69,21 @@ class FrictGeneral(INIGeneral):
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.01", alias="fileVersion")
     filetype: Literal["roughness"] = Field("roughness", alias="fileType")
-    frictionvaluesfile: Optional[Path] = Field(alias="frictionValuesFile")
+    frictionvaluesfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="frictionValuesFile"
+    )
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
 
 
 class FrictGlobal(INIBasedModel):
+    """A `[Global]` block for use inside a friction file.
+
+    Multiple of such blocks may be present to define multiple frictionId classes.
+    """
+
     class Comments(INIBasedModel.Comments):
         frictionid: Optional[str] = Field(
             "Name of the roughness variable.", alias="frictionId"
@@ -53,11 +101,21 @@ class FrictGlobal(INIBasedModel):
     comments: Comments = Comments()
     _header: Literal["Global"] = "Global"
     frictionid: str = Field(alias="frictionId")
-    frictiontype: str = Field(alias="frictionType")
+    frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
+
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data.get("frictionid")
 
 
 class FrictBranch(INIBasedModel):
+    """A `[Branch]` block for use inside a friction file.
+
+    Each block can define the roughness value(s) on a particular branch.
+    """
+
     class Comments(INIBasedModel.Comments):
         branchid: Optional[str] = Field("The name of the branch.", alias="branchId")
         frictiontype: Optional[str] = Field(
@@ -101,7 +159,7 @@ class FrictBranch(INIBasedModel):
     comments: Comments = Comments()
     _header: Literal["Branch"] = "Branch"
     branchid: str = Field(alias="branchId")
-    frictiontype: str = Field(alias="frictionType")
+    frictiontype: FrictionType = Field(alias="frictionType")
     functiontype: Optional[str] = Field("constant", alias="functionType")
     timeseriesid: Optional[str] = Field(alias="timeSeriesId")
     numlevels: Optional[PositiveInt] = Field(alias="numLevels")
@@ -116,13 +174,16 @@ class FrictBranch(INIBasedModel):
         "levels",
         "chainage",
         "frictionvalues",
-        delimiter=" ",
     )
+
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        return data.get("branchid")
 
     @validator("levels", always=True)
     @classmethod
     def _validate_levels(cls, v, values):
-        foo = "bar"
         if v is not None and (
             values["numlevels"] is None or len(v) != values["numlevels"]
         ):
@@ -165,6 +226,17 @@ class FrictBranch(INIBasedModel):
 
 
 class FrictionModel(INIModel):
+    """
+    The overall friction model that contains the contents of one friction file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.frictfile[..]`.
+
+    Attributes:
+        general (FrictGeneral): `[General]` block with file metadata.
+        global_ (List[FrictGlobal]): Definitions of `[Global]` friction classes.
+        branch (List[FrictBranch]): Definitions of `[Branch]` friction values.
+    """
+
     general: FrictGeneral = FrictGeneral()
     global_: List[FrictGlobal] = Field([], alias="global")  # to circumvent built-in kw
     branch: List[FrictBranch] = []

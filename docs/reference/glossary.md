@@ -140,7 +140,7 @@ See [grid](#grid).
 Or grid file. Input file for [D-Flow FM](#d-flow-fm) containing the computational model grid. Format is NetCDF, adhering to [CF](#cf-conventions)- and [UGRID](#ugrid-conventions)-conventions, and optionally also the [Deltares-extension](#deltares-conventions) for 1D network topology and geometry.
 
 ### NetCDF
-File format used by HYDROLIB-core and Delft3D Flexible Mesh for the model input grid and for model results in output files. These files typically adhere to the [CF conventions](#CF-conventions) and sometimes [UGRID conventions](#UGRID-conventions).
+File format used by HYDROLIB-core and Delft3D Flexible Mesh for the model input grid and for model results in output files. These files typically adhere to the [CF conventions](#cf-conventions) and sometimes [UGRID conventions](#ugrid-conventions).
 
 ### Node (mesh)
 A geometrical "point" in a 1D, 2D or 3D mesh. Defined by x- and y-coordinate, in 3D also a z-coordinate. Can be connected by [mesh edges](#edge-mesh), and can form the vertices of a [mesh face](#face-mesh). Building block of the [UGRID-conventions](#ugrid-conventions).
@@ -171,12 +171,12 @@ See [polyline file](#polyline-file). The point sequences are interpreted as clos
 
 ## R
 ---
-### Rainfall runoff
-RR for short. The computational backend that solves lumped rainfall runoff, offering various runoff concepts. Toplevel input is the ``sobek_3b.fnm`` file. Part of the D-Hydrology software module. More details on: https://www.deltares.nl/en/software/module/d-hydrology.
+### Rainfall Runoff
+RR for short. The computational backend that solves lumped rainfall runoff, offering various runoff concepts. Toplevel input is the ``sobek_3b.fnm`` file. Part of the D-Hydrology software module. More details on: <https://www.deltares.nl/en/software/module/d-hydrology>.
 
 ### Real Time Control
 RTC for short. The computational backend for real-time control of hydraulic model components (typically hydraulic structures).
-Toplevel input is in various ``rtc*.xml`` files. Part of the D-Real Time Control software module. More details on: https://www.deltares.nl/en/software/module/d-real-time-control.
+Toplevel input is in various ``rtc*.xml`` files. Part of the D-Real Time Control software module. More details on: <https://www.deltares.nl/en/software/module/d-real-time-control>.
 
 ### Roughness file
 Input file for [D-Flow FM](#d-flow-fm) describing roughness values on the 1D network.
@@ -200,7 +200,7 @@ Input file for [D-Flow FM](#d-flow-fm) containing the hydraulic structures. Form
 ---
 
 ### UGRID conventions
-Metadata conventions for storing unstructured grids in NetCDF files. More details on: http://ugrid-conventions.github.io/ugrid-conventions/.
+Metadata conventions for storing unstructured grids in NetCDF files. More details on: <http://ugrid-conventions.github.io/ugrid-conventions/>.
 
 ## V
 ---

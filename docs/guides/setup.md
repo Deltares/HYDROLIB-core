@@ -31,4 +31,4 @@ conda install hydrolib-core -c conda-forge
 
 -->
 
-After successful installation, you should be able to do the ["First steps" tutorial](../tutorials/steps.md). 
+After successful installation, you should be able to do the ["Basic Model" tutorial](../tutorials/build_basic_model.ipynb).

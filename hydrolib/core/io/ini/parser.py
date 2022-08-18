@@ -224,8 +224,11 @@ class Parser:
         self._current_section.add_comment(comment, self._line_index)  # type: ignore
 
     def _handle_property(self, line: str) -> None:
-        comment, line = self._retrieve_property_comment(line.strip())
-        key, value = self._retrieve_key_value(line)
+        key, valuepart = self._retrieve_key_value(line)
+        if valuepart is not None:
+            comment, value = self._retrieve_property_comment(valuepart.strip())
+        else:
+            comment, value = None, None
 
         prop = Property(key=key, value=value, comment=comment)
         self._current_section.add_property(prop)  # type: ignore
@@ -268,23 +271,29 @@ class Parser:
             numhash = line.count(self._config.comment_delimiter)
             if numhash == 1:
                 # normal value, simple comment: "key =  somevalue # and a comment "
-                return parts[-1].strip(), parts[0].strip()
+                comment = parts[-1]
+                value = parts[0]
             elif line.startswith(self._config.comment_delimiter):
                 # hashed value, possible with comment: "key = #somevalue# ..."
-                return (
-                    self._config.comment_delimiter.join(parts[3:]).strip()
+                comment = (
+                    self._config.comment_delimiter.join(parts[3:])
                     if numhash >= 3
-                    else None,
-                    self._config.comment_delimiter.join(parts[0:3]).strip(),
+                    else ""
                 )
+
+                value = self._config.comment_delimiter.join(parts[0:3])
             else:
                 # normal value, comment with maybe more hashes: "key = somevalue #This is comment #2, or two "
-                return (
-                    self._config.comment_delimiter.join(parts[1:]).strip(),
-                    parts[0].strip(),
-                )
+                comment = self._config.comment_delimiter.join(parts[1:])
+                value = parts[0]
         else:
-            return None, line.strip()
+            comment = ""
+            value = line
+
+        return (
+            comment if len(comment := comment.strip()) > 0 else None,
+            value if len(value := value.strip()) > 0 else None,
+        )
 
     def _retrieve_key_value(self, line: str) -> Tuple[str, Optional[str]]:
         if "=" in line:
@@ -329,7 +338,31 @@ class Parser:
         return self._config.parse_datablocks
 
     @classmethod
-    def parse(cls, filepath: Path, config: ParserConfig = None):
+    def parse_as_dict(cls, filepath: Path, config: ParserConfig = None) -> dict:
+        """
+        Parses an INI file without a specific model type and returns it as a dictionary.
+
+        Args:
+            filepath (Path): File path to the INI-format file.
+            config (ParserConfig, optional): Parser configuration to use. Defaults to None.
+
+        Returns:
+            dict: Representation of the parsed INI-file.
+        """
+        return cls.parse(filepath, config).flatten()
+
+    @classmethod
+    def parse(cls, filepath: Path, config: ParserConfig = None) -> Document:
+        """
+        Parses an INI file without a specific model type and returns it as a Document.
+
+        Args:
+            filepath (Path): File path to the INI-format file.
+            config (ParserConfig, optional): Parser configuration to use. Defaults to None.
+
+        Returns:
+            Document: Representation of the parsed INI-file.
+        """
         if not config:
             config = ParserConfig()
         parser = cls(config)
@@ -357,4 +390,4 @@ class Parser:
 
                 parser.feed_line(line)
 
-        return parser.finalize().flatten()
+        return parser.finalize()

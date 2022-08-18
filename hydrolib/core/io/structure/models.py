@@ -1,26 +1,28 @@
 """
-TODO Implement the following structures
-- Bridge
-- Generalstructure
-- Long culvert
-- Gate
-
-Add comments for these structures. Maybe link them to descriptions of `Field`s?
+structure namespace for storing the contents of an [FMModel][hydrolib.core.io.mdu.models.FMModel]'s structure file.
 """
+# TODO Implement the following structures
+# - Gate
 
 import logging
 from enum import Enum
+from operator import gt, ne
 from pathlib import Path
 from typing import List, Literal, Optional, Set, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
 
+from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    get_conditional_root_validator,
     get_enum_validator,
+    get_forbidden_fields_validator,
     get_from_subclass_defaults,
+    get_required_fields_validator,
     get_split_string_on_delimiter_validator,
+    make_list_length_root_validator,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
@@ -65,6 +67,10 @@ class Structure(INIBasedModel):
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
+    _loc_coord_fields = {"numcoordinates", "xcoordinates", "ycoordinates"}
+    _loc_branch_fields = {"branchid", "chainage"}
+    _loc_all_fields = _loc_coord_fields | _loc_branch_fields
+
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
     )
@@ -94,7 +100,6 @@ class Structure(INIBasedModel):
         filtered_values = {k: v for k, v in values.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        # TODO This seems to be a bit of a hack.
         if not (structype == "compound" or issubclass(cls, (Compound, Dambreak))):
             # Compound structure does not require a location specification.
             only_coordinates_structures = dict(
@@ -186,7 +191,7 @@ class Structure(INIBasedModel):
 
     @classmethod
     def validate(cls, v):
-        """Try to iniatialize subclass based on the `type` field.
+        """Try to initialize subclass based on the `type` field.
         This field is compared to each `type` field of the derived models of `Structure`.
         The derived model with an equal structure type will be initialized.
 
@@ -211,19 +216,26 @@ class Structure(INIBasedModel):
         return super().validate(v)
 
     def _exclude_fields(self) -> Set:
-        # exclude the unset props like coordinates or branches
-        if self.branchid is not None:
-            exclude_set = {"numcoordinates", "xcoordinates", "ycoordinates"}
+        # exclude the non-applicable, or unset props like coordinates or branches
+        if self.type == "compound":
+            exclude_set = self._loc_all_fields
+        elif self.branchid is not None:
+            exclude_set = self._loc_coord_fields
         else:
-            exclude_set = {"branchid", "chainage"}
+            exclude_set = self._loc_branch_fields
         exclude_set = super()._exclude_fields().union(exclude_set)
         return exclude_set
 
     def _get_identifier(self, data: dict) -> Optional[str]:
-        return data["id"]
+        return data.get("id") or data.get("name")
 
 
 class FlowDirection(str, Enum):
+    """
+    Enum class containing the valid values for the allowedFlowDirection
+    attribute in several subclasses of Structure.
+    """
+
     none = "none"
     positive = "positive"
     negative = "negative"
@@ -231,7 +243,26 @@ class FlowDirection(str, Enum):
     allowedvaluestext = "Possible values: both, positive, negative, none."
 
 
+class Orientation(str, Enum):
+    """
+    Enum class containing the valid values for the orientation
+    attribute in several subclasses of Structure.
+    """
+
+    positive = "positive"
+    negative = "negative"
+    allowedvaluestext = "Possible values: positive, negative."
+
+
 class Weir(Structure):
+    """
+    Hydraulic structure with `type=weir`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the weir input as described in
+    [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field("Structure type; must read weir", alias="type")
         allowedflowdir: Optional[str] = Field(
@@ -254,7 +285,7 @@ class Weir(Structure):
 
     type: Literal["weir"] = Field("weir", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
-        FlowDirection.both, alias="allowedFlowDir"
+        FlowDirection.both.value, alias="allowedFlowDir"
     )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
@@ -266,6 +297,14 @@ class Weir(Structure):
 
 
 class UniversalWeir(Structure):
+    """
+    Hydraulic structure with `type=universalWeir`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the universal weir input as described in
+    [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field(
             "Structure type; must read universalWeir", alias="type"
@@ -306,11 +345,20 @@ class UniversalWeir(Structure):
 
 
 class CulvertSubType(str, Enum):
+    """Enum class to store a [Culvert][hydrolib.core.io.structure.models.Culvert]'s subType."""
+
     culvert = "culvert"
     invertedSiphon = "invertedSiphon"
 
 
 class Culvert(Structure):
+    """
+    Hydraulic structure with `type=culvert`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the culvert input as described in
+    [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
+    """
 
     type: Literal["culvert"] = Field("culvert", alias="type")
     allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
@@ -322,36 +370,76 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Union[float, Path] = Field(alias="valveOpeningHeight")
-    numlosscoeff: int = Field(alias="numLossCoeff")
-    relopening: List[float] = Field(alias="relOpening")
-    losscoeff: List[float] = Field(alias="lossCoeff")
-    bedfrictiontype: str = Field(alias="bedFrictionType")
-    bedfriction: float = Field(alias="bedFriction")
-    subtype: CulvertSubType = Field(alias="subType")
-    bendlosscoeff: float = Field(alias="bendLossCoeff")
+    valveopeningheight: Optional[Union[float, Path]] = Field(alias="valveOpeningHeight")
+    numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
+    relopening: Optional[List[float]] = Field(alias="relOpening")
+    losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
+    bedfrictiontype: Optional[FrictionType] = Field(alias="bedFrictionType")
+    bedfriction: Optional[float] = Field(alias="bedFriction")
+    subtype: Optional[CulvertSubType] = Field(
+        CulvertSubType.culvert.value, alias="subType"
+    )
+    bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
+    _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
+
+    _valveonoff_validator = get_required_fields_validator(
+        "valveopeningheight",
+        "numlosscoeff",
+        "relopening",
+        "losscoeff",
+        conditional_field_name="valveonoff",
+        conditional_value=True,
+    )
+
+    _check_list_length = make_list_length_root_validator(
+        "relopening",
+        "losscoeff",
+        length_name="numlosscoeff",
+        list_required_with_length=True,
+    )
+
+    _bendlosscoeff_invertedsiphon = get_required_fields_validator(
+        "bendlosscoeff",
+        conditional_field_name="subtype",
+        conditional_value=CulvertSubType.invertedSiphon,
+    )
+
+    _bendlosscoeff_culvert = get_forbidden_fields_validator(
+        "bendlosscoeff",
+        conditional_field_name="subtype",
+        conditional_value=CulvertSubType.culvert,
+    )
 
 
 class Pump(Structure):
+    """
+    Hydraulic structure with `type=pump`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the pump input as described in
+    [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
+    """
 
     type: Literal["pump"] = Field("pump", alias="type")
 
-    orientation: str = Field(alias="orientation")
-    controlside: str = Field(alias="controlSide")  # TODO Enum
-    numstages: int = Field(0, alias="numStages")
+    orientation: Optional[Orientation] = Field(alias="orientation")
+    controlside: Optional[str] = Field(alias="controlSide")  # TODO Enum
+    numstages: Optional[int] = Field(alias="numStages")
     capacity: Union[float, Path] = Field(alias="capacity")
 
-    startlevelsuctionside: List[float] = Field(alias="startLevelSuctionSide")
-    stoplevelsuctionside: List[float] = Field(alias="stopLevelSuctionSide")
-    startleveldeliveryside: List[float] = Field(alias="startLevelDeliverySide")
-    stopleveldeliveryside: List[float] = Field(alias="stopLevelDeliverySide")
-    numreductionlevels: int = Field(0, alias="numReductionLevels")
-    head: List[float] = Field(alias="head")
-    reductionfactor: List[float] = Field(alias="reductionFactor")
+    startlevelsuctionside: Optional[List[float]] = Field(alias="startLevelSuctionSide")
+    stoplevelsuctionside: Optional[List[float]] = Field(alias="stopLevelSuctionSide")
+    startleveldeliveryside: Optional[List[float]] = Field(
+        alias="startLevelDeliverySide"
+    )
+    stopleveldeliveryside: Optional[List[float]] = Field(alias="stopLevelDeliverySide")
+    numreductionlevels: Optional[int] = Field(alias="numReductionLevels")
+    head: Optional[List[float]] = Field(alias="head")
+    reductionfactor: Optional[List[float]] = Field(alias="reductionFactor")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "startlevelsuctionside",
@@ -362,23 +450,77 @@ class Pump(Structure):
         "reductionfactor",
     )
 
+    _orientation_validator = get_enum_validator("orientation", enum=Orientation)
+
+    _control_side_check = get_required_fields_validator(
+        "controlside",
+        conditional_field_name="numstages",
+        conditional_value=0,
+        comparison_func=gt,
+    )
+
+    _check_list_length1 = get_conditional_root_validator(
+        make_list_length_root_validator(
+            "startlevelsuctionside",
+            "stoplevelsuctionside",
+            length_name="numstages",
+            list_required_with_length=True,
+        ),
+        "controlside",
+        "deliverySide",
+        ne,
+    )
+
+    _check_list_length2 = get_conditional_root_validator(
+        make_list_length_root_validator(
+            "startleveldeliveryside",
+            "stopleveldeliveryside",
+            length_name="numstages",
+            list_required_with_length=True,
+        ),
+        "controlside",
+        "suctionSide",
+        ne,
+    )
+
+    _check_list_length3 = make_list_length_root_validator(
+        "head",
+        "reductionfactor",
+        length_name="numreductionlevels",
+        list_required_with_length=True,
+    )
+
 
 class Compound(Structure):
+    """
+    Hydraulic structure with `type=compound`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the compound input as described in
+    [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
+    """
 
     type: Literal["compound"] = Field("compound", alias="type")
     numstructures: int = Field(alias="numStructures")
-    structureids: List[str] = Field(alias="structureIds")
+    structureids: List[str] = Field(alias="structureIds", delimiter=";")
 
     _split_to_list = get_split_string_on_delimiter_validator(
-        "structureids", delimiter=";"
+        "structureids",
     )
 
 
 class Orifice(Structure):
+    """
+    Hydraulic structure with `type=orifice`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the orifice input as described in
+    [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
+    """
 
     type: Literal["orifice"] = Field("orifice", alias="type")
     allowedflowdir: Optional[FlowDirection] = Field(
-        FlowDirection.both, alias="allowedFlowDir"
+        FlowDirection.both.value, alias="allowedFlowDir"
     )
 
     crestlevel: Union[float, Path] = Field(alias="crestLevel")
@@ -416,6 +558,147 @@ class Orifice(Structure):
         return v
 
 
+class GateOpeningHorizontalDirection(str, Enum):
+    """Horizontal opening direction of gate door[s]."""
+
+    symmetric = "symmetric"
+    from_left = "fromLeft"
+    from_right = "fromRight"
+    allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
+
+
+class GeneralStructure(Structure):
+    """
+    Hydraulic structure with `type=generalStructure`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the orifice input as described in
+    [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
+    """
+
+    class Comments(Structure.Comments):
+        type: Optional[str] = Field(
+            "Structure type; must read generalStructure", alias="type"
+        )
+        allowedflowdir: Optional[str] = Field(
+            FlowDirection.allowedvaluestext, alias="allowedFlowDir"
+        )
+
+        upstream1width: Optional[str] = Field("w_u1 [m]", alias="upstream1Width")
+        upstream1level: Optional[str] = Field("z_u1 [m AD]", alias="upstream1Level")
+        upstream2width: Optional[str] = Field("w_u2 [m]", alias="upstream2Width")
+        upstream2level: Optional[str] = Field("z_u2 [m D]", alias="upstream2Level")
+
+        crestwidth: Optional[str] = Field("w_s [m]", alias="crestWidth")
+        crestlevel: Optional[str] = Field("z_s [m AD]", alias="crestLevel")
+        crestlength: Optional[str] = Field(
+            "The crest length across the general structure [m]. When the crest length > 0, the extra resistance for this structure will be ls * g/(C2 * waterdepth)",
+            alias="crestLength",
+        )
+
+        downstream1width: Optional[str] = Field("w_d1 [m]", alias="downstream1Width")
+        downstream1level: Optional[str] = Field("z_d1 [m AD]", alias="downstream1Level")
+        downstream2width: Optional[str] = Field("w_d2 [m]", alias="downstream2Width")
+        downstream2level: Optional[str] = Field("z_d2 [m AD]", alias="downstream2Level")
+
+        gateloweredgelevel: Optional[str] = Field(
+            "Position of gate door’s lower edge [m AD]", alias="gateLowerEdgeLevel"
+        )
+        posfreegateflowcoeff: Optional[str] = Field(
+            "Positive free gate flow corr.coeff. cgf [-]", alias="posFreeGateFlowCoeff"
+        )
+        posdrowngateflowcoeff: Optional[str] = Field(
+            "Positive drowned gate flow corr.coeff. cgd [-]",
+            alias="posDrownGateFlowCoeff",
+        )
+        posfreeweirflowcoeff: Optional[str] = Field(
+            "Positive free weir flow corr.coeff. cwf [-]", alias="posFreeWeirFlowCoeff"
+        )
+        posdrownweirflowcoeff: Optional[str] = Field(
+            "Positive drowned weir flow corr.coeff. cwd [-]",
+            alias="posDrownWeirFlowCoeff",
+        )
+        poscontrcoeffreegate: Optional[str] = Field(
+            "Positive gate flow contraction coefficient µgf [-]",
+            alias="posContrCoefFreeGate",
+        )
+        negfreegateflowcoeff: Optional[str] = Field(
+            "Negative free gate flow corr.coeff. cgf [-]", alias="negFreeGateFlowCoeff"
+        )
+        negdrowngateflowcoeff: Optional[str] = Field(
+            "Negative drowned gate flow corr.coeff. cgd [-]",
+            alias="negDrownGateFlowCoeff",
+        )
+        negfreeweirflowcoeff: Optional[str] = Field(
+            "Negative free weir flow corr.coeff. cwf [-]", alias="negFreeWeirFlowCoeff"
+        )
+        negdrownweirflowcoeff: Optional[str] = Field(
+            "Negative drowned weir flow corr.coeff. cwd [-]",
+            alias="negDrownWeirFlowCoeff",
+        )
+        negcontrcoeffreegate: Optional[str] = Field(
+            "Negative gate flow contraction coefficient mu gf [-]",
+            alias="negContrCoefFreeGate",
+        )
+        extraresistance: Optional[str] = Field(
+            "Extra resistance [-]", alias="extraResistance"
+        )
+        gateheight: Optional[str] = Field(None, alias="gateHeight")
+        gateopeningwidth: Optional[str] = Field(
+            "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
+            alias="gateOpeningWidth",
+        )
+        gateopeninghorizontaldirection: Optional[str] = Field(
+            "Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight",
+            alias="gateOpeningHorizontalDirection",
+        )
+        usevelocityheight: Optional[str] = Field(
+            "Flag indicates whether the velocity height is to be calculated or not",
+            alias="useVelocityHeight",
+        )
+
+    comments: Optional[Comments] = Comments()
+
+    type: Literal["generalStructure"] = Field("generalStructure", alias="type")
+    allowedflowdir: Optional[FlowDirection] = Field(
+        FlowDirection.both.value, alias="allowedFlowDir"
+    )
+
+    upstream1width: Optional[float] = Field(10.0, alias="upstream1Width")
+    upstream1level: Optional[float] = Field(0.0, alias="upstream1Level")
+    upstream2width: Optional[float] = Field(10.0, alias="upstream2Width")
+    upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
+
+    crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
+    crestlevel: Optional[float] = Field(0.0, alias="crestLevel")
+    crestlength: Optional[float] = Field(0.0, alias="crestLength")
+
+    downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
+    downstream1level: Optional[float] = Field(0.0, alias="downstream1Level")
+    downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
+    downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
+
+    gateloweredgelevel: Optional[float] = Field(11.0, alias="gateLowerEdgeLevel")
+    posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
+    posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
+    posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
+    posdrownweirflowcoeff: Optional[float] = Field(1.0, alias="posDrownWeirFlowCoeff")
+    poscontrcoeffreegate: Optional[float] = Field(1.0, alias="posContrCoefFreeGate")
+    negfreegateflowcoeff: Optional[float] = Field(1.0, alias="negFreeGateFlowCoeff")
+    negdrowngateflowcoeff: Optional[float] = Field(1.0, alias="negDrownGateFlowCoeff")
+    negfreeweirflowcoeff: Optional[float] = Field(1.0, alias="negFreeWeirFlowCoeff")
+    negdrownweirflowcoeff: Optional[float] = Field(1.0, alias="negDrownWeirFlowCoeff")
+    negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
+    extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
+    gateheight: Optional[float] = Field(1e10, alias="gateHeight")
+    gateopeningwidth: Optional[float] = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
+    )
+    usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
+
+
 class DambreakAlgorithm(int, Enum):
     van_der_knaap = 1  # "van der Knaap, 2000"
     verheij_van_der_knaap = 2  # "Verheij-van der Knaap, 2002"
@@ -439,6 +722,14 @@ class DambreakAlgorithm(int, Enum):
 
 
 class Dambreak(Structure):
+    """
+    Hydraulic structure with `type=dambreak`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the dambreak input as described in
+    [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field("Structure type; must read dambreak", alias="type")
         startlocationx: Optional[str] = Field(
@@ -589,16 +880,43 @@ class Dambreak(Structure):
         """
         Verifies whether the location for this structure contains valid values for
         numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
+        Verifies whether de water level location specifications are valid.
 
         Args:
             values (dict): Dictionary of validated values to create a Dambreak.
 
         Raises:
-            ValueError: When the values dictionary does not contain valid coordinates or polyline file..
+            ValueError: When the values dictionary does not contain valid coordinates or polyline file or when the water level location specifications are not valid.
 
         Returns:
             dict: Dictionary of validated values.
         """
+
+        def _validate_waterlevel_location(x_key: str, y_key: str, node_key: str):
+            x_is_given = values.get(x_key.lower()) is not None
+            y_is_given = values.get(y_key.lower()) is not None
+            node_is_given = values.get(node_key.lower()) is not None
+
+            if (x_is_given and y_is_given and not node_is_given) or (
+                node_is_given and not x_is_given and not y_is_given
+            ):
+                return
+
+            raise ValueError(
+                f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
+            )
+
+        _validate_waterlevel_location(
+            "waterLevelUpstreamLocationX",
+            "waterLevelUpstreamLocationY",
+            "waterLevelUpstreamNodeId",
+        )
+        _validate_waterlevel_location(
+            "waterLevelDownstreamLocationX",
+            "waterLevelDownstreamLocationY",
+            "waterLevelDownstreamNodeId",
+        )
+
         if (
             Structure.validate_coordinates_in_model(values)
             or values.get("polylinefile", None) is not None
@@ -611,6 +929,14 @@ class Dambreak(Structure):
 
 
 class Bridge(Structure):
+    """
+    Hydraulic structure with `type=bridge`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the bridge input as described in
+    [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
+    """
+
     class Comments(Structure.Comments):
         type: Optional[str] = Field("Structure type; must read bridge", alias="type")
         allowedflowdir: Optional[str] = Field(
@@ -650,18 +976,32 @@ class Bridge(Structure):
     shift: float
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
-    frictiontype: str = Field(alias="frictionType")
+    frictiontype: FrictionType = Field(alias="frictionType")
     friction: float
     length: float
 
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+
 
 class StructureGeneral(INIGeneral):
+    """`[General]` section with structure file metadata."""
+
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
 class StructureModel(INIModel):
+    """
+    The overall structure model that contains the contents of one structure file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.structurefile[..]`.
+
+    Attributes:
+        general (StructureGeneral): `[General]` block with file metadata.
+        branch (List[Structure]): List of `[Structure]` blocks for all hydraulic structures.
+    """
+
     general: StructureGeneral = StructureGeneral()
     structure: List[Structure] = []
 

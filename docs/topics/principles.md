@@ -39,40 +39,36 @@ You can see this tree structure if you call `show_tree`.
 
 # Program flow while recursively creating FileModels
 ## In short:
-- The root folder is stored in the global variable `context_dir`, so that referenced files can be found.
-- Parsed data from files will be cached in the class variable `FileModel._file_models_cache`, so that duplicate references do not lead to duplicate parsing and multiple object instances. For all duplicate references, the same cached `FileModel` instance is used.
+
+- The file resolver and the model cache are stored in context variable `context_file_loading`, such that referenced files can be found.
+- During loading, the parsed data from files are cached in the `FileLoadContext` to ensure multiple references to the same model will not result in duplicate parsing and instances.
 - Pydantic first calls the `FileModel.validate` and then the initializer (`FileModel.__new__` and `FileModel.__init__`).
 
 ## In detail:
-=> **User initializes a new root FileModel from file**:
+
+**User initializes a new root FileModel from file**:
+
 1. `FileModel.__new__(cls, filepath: str/Path)`
 	- Returns the result of the default `__new__` function
 2. `FileModel.__init__(self, filepath: str/Path)`
-	- `self` holds the FileModel instance that was returned in step 1.
-	- `filepath` is *assumed* to hold the absolute file path to the root file.
-	- Updates the global variable `context_dir` with the parent directory of `filepath`. 
-	- Caches this FileModel instance (`self`) in the static class variable `FileModel._file_models_cache` with the `filepath`.
+	- `self` holds the FileModel instance that was returned in step 1.  
+	- `filepath` is holds the file path to the root file.
+	- Registers this model in the `FileLoadContext` with the file path.
+	- Resolves the absolute path to this model.
+	- Adds the folder of this model to the file resolver, such that the children can be resolved as well.
 	- Loads the data (`dict`) from the file.
 	- Initialize `self` with the data.
-	- => **Pydantic tries to convert the data to objects, a.o. sub FileModels**:
+	- **Pydantic tries to convert the data to objects, a.o. sub FileModels**:
 3. `FileModel.validate(value: str)`
 	- `value` holds a relative or absolute file path to the referenced file.
-	- If `value` is not an absolute file path, resolves the absolute path by using the directory stored in the `context_dir`, previously set in step 2.
-	- Calls `super().validate(value)` with the absolute file path stored in `value`.
-	- => **Pydantic create a new FileModel with the data**:
+	- If `value` is not an absolute file path, resolves the absolute path by using the `FileLoadContext` stored in the `context_file_loading`, previously set in step 2.
+	- Calls `super().validate(value)` with the file path stored in `value`.
+	- **Pydantic create a new FileModel with the data**:
 4. `FileModel.__new__(cls, filepath: str)`
-	- `filepath` holds the absolute file path that was resolved in step 3.
+	- `filepath` holds the file path.
 	- If `FileModel._file_models_cache` already contains a FileModel instance with this `filepath`, returns the cached instance,
 		- Otherwise, returns the result of the default `__new__` function.
-5. `FileModel.__init__(self, filepath: str)`
-	- `self` holds the FileModel instance that was returned in step 4.
-	- `filepath` holds the absolute file path that was resolved in step 3.
-	- If `FileModel._file_models_cache` already contains a FileModel instance with this `filepath`, returns immediately: no initialization is done.
-	- Else, caches this FileModel instance (`self`) in the static class variable `FileModel._file_models_cache` with the `filepath`.
-	- Loads the data (`dict`) from the file.
-	- Initialize `self` with the data.
-	- => **Pydantic tries to convert the data to objects, a.o. sub FileModels**:
-6. Repeat steps 3-5
+6. Repeat steps 2-4
 
 # Parsing and serializing `INIBasedModels`
 Parsing an INI file should be case-insensitive. To achieve this, the parsable field names of each `INIBasedModel` should be equal to the expected key in the file in lower case. 

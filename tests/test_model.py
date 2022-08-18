@@ -1,17 +1,16 @@
-from dataclasses import dataclass
+import shutil
 from datetime import datetime
 from pathlib import Path
+from typing import Callable, Dict, Union
 
 import pytest
-from devtools import debug
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.basemodel import FileModel
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
-    Control,
     CoupledItem,
     Coupler,
     FMComponent,
@@ -21,11 +20,22 @@ from hydrolib.core.io.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.io.ext.models import Boundary, ExtModel
-from hydrolib.core.io.fnm.models import RainfallRunoffModel
-from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.friction.models import FrictGeneral
+from hydrolib.core.io.mdu.models import (
+    Calibration,
+    ExternalForcing,
+    FMModel,
+    Geometry,
+    Output,
+    Particles,
+    Processes,
+    Restart,
+    Sediment,
+)
+from hydrolib.core.io.rr.models import RainfallRunoffModel
 from hydrolib.core.io.xyz.models import XYZModel
 
-from .io.test_bui import BuiTestData
+from .io.rr.meteo.test_bui import BuiTestData
 from .utils import (
     assert_files_equal,
     invalid_test_data_dir,
@@ -45,8 +55,10 @@ def test_dimr_model():
         / "dimr_model"
         / "dimr_config.xml"
     )
+
     # Confirm parsing results in correct
     # components for each type of submodel
+
     d = DIMR(filepath=test_file)
     assert len(d.component) == 2
     assert isinstance(d.component[0], RRComponent)
@@ -54,9 +66,15 @@ def test_dimr_model():
 
     # Confirm saving creates new files and
     # files for child model
-    d.save(folder=test_output_dir / "tmp")
-    assert d.filepath.is_file()
-    assert d.component[1].model.filepath.is_file()
+    save_path = test_output_dir / test_dimr_model.__name__ / DIMR._generate_name()
+
+    d.save(filepath=save_path, recurse=True)
+
+    assert d.save_location == save_path
+    assert d.save_location.is_file()
+
+    assert d.component[1].model is not None
+    assert d.component[1].model.save_location.is_file()
 
 
 def test_parse_rr_model_returns_correct_model():
@@ -69,9 +87,13 @@ def test_parse_rr_model_returns_correct_model():
     assert isinstance(model, RainfallRunoffModel)
 
     # verify some non-default names altered in the source file.
-    assert model.control_file == Path("not-delft_3b.ini")
-    assert model.bui_file == BuiTestData.bui_model()
-    assert model.rr_ascii_restart_openda == Path("ASCIIRestartOpenDA.txt")
+    assert model.control_file.filepath == Path("not-delft_3b.ini")
+
+    expected_bui_model = BuiTestData.bui_model()
+    # we expect the path to not be absolute, as such we need to adjust that.
+    expected_bui_model.filepath = Path(expected_bui_model.filepath.name)
+    assert model.bui_file == expected_bui_model
+    assert model.rr_ascii_restart_openda.filepath == Path("ASCIIRestartOpenDA.txt")
 
 
 def test_dimr_validate():
@@ -97,8 +119,7 @@ def test_dimr_model_save():
 
     dimr = DIMR()
     dimr.documentation.creationDate = datetime(2021, 7, 29, 12, 45)
-    dimr.control = Control()
-    dimr.control.parallel.append(
+    dimr.control.append(
         Parallel(
             startGroup=StartGroup(
                 time="0 60 7200",
@@ -172,10 +193,6 @@ def test_xyz_model():
 
 
 def test_mdu_model():
-    output_fn = Path(test_output_dir / "test.mdu")
-    if output_fn.is_file():
-        output_fn.unlink()
-
     model = FMModel(
         filepath=Path(
             test_data_dir
@@ -189,17 +206,37 @@ def test_mdu_model():
     )
     assert model.geometry.comments.uniformwidth1d == "test"
 
-    model.filepath = output_fn
-    model.save()
+    output_dir = test_output_dir / test_mdu_model.__name__
+    output_fn = output_dir / FMModel._generate_name()
 
-    assert model.filepath.is_file()
-    assert model.geometry.frictfile[0].filepath.is_file()
-    assert model.geometry.structurefile[0].filepath.is_file()
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+
+    model.save(filepath=output_fn, recurse=True)
+
+    assert model.save_location == output_fn
+    assert model.save_location.is_file()
+
+    assert model.geometry.frictfile is not None
+    frictfile = model.geometry.frictfile[0]
+    assert model.geometry.frictfile[0] is not None
+    assert model.geometry.frictfile[0].filepath is not None
+
+    assert frictfile.save_location == output_dir / frictfile.filepath
+    assert frictfile.save_location.is_file()
+
+    assert model.geometry.structurefile is not None
+    structurefile = model.geometry.structurefile[0]
+    assert structurefile is not None
+    assert structurefile.filepath is not None
+
+    assert structurefile.save_location == output_dir / structurefile.filepath
+    assert structurefile.save_location.is_file()
 
 
 def test_model_with_duplicate_file_references_use_same_instances():
     model = ExtModel(
-        filepath=Path(
+        filepath=(
             test_data_dir
             / "input"
             / "e02"
@@ -313,3 +350,172 @@ def test_boundary_with_forcing_file_without_match_returns_none():
 
 def _create_forcing(name: str, quantity: str) -> ForcingBase:
     return ForcingBase(name=name, quantityunitpair=[(quantity, "")], function="")
+
+
+def _create_boundary(data: Dict) -> Boundary:
+    data["quantity"] = ""
+    data["forcingfile"] = ForcingModel()
+
+    if data["locationfile"] is None:
+        data["nodeid"] = "id"
+
+    return Boundary(**data)
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        pytest.param(None, id="None"),
+        pytest.param(Path("some/path/extforce.file"), id="Path"),
+        pytest.param(
+            DiskOnlyFileModel(Path("some/other/path/extforce.file")), id="Model"
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "input_field, create_model, retrieve_field",
+    [
+        pytest.param(
+            "extforcefile",
+            lambda d: ExternalForcing(**d),
+            lambda m: m.extforcefile,
+            id="extforcefile",
+        ),
+        pytest.param(
+            "restartfile",
+            lambda d: Restart(**d),
+            lambda m: m.restartfile,
+            id="restartfile",
+        ),
+        pytest.param(
+            "morfile", lambda d: Sediment(**d), lambda m: m.morfile, id="morfile"
+        ),
+        pytest.param(
+            "sedfile", lambda d: Sediment(**d), lambda m: m.sedfile, id="sedfile"
+        ),
+        pytest.param(
+            "flowgeomfile",
+            lambda d: Output(**d),
+            lambda m: m.flowgeomfile,
+            id="flowgeomfile",
+        ),
+        pytest.param(
+            "hisfile", lambda d: Output(**d), lambda m: m.hisfile, id="hisfile"
+        ),
+        pytest.param(
+            "mapfile", lambda d: Output(**d), lambda m: m.mapfile, id="mapfile"
+        ),
+        pytest.param(
+            "mapoutputtimevector",
+            lambda d: Output(**d),
+            lambda m: m.mapoutputtimevector,
+            id="mapoutputtimevector",
+        ),
+        pytest.param(
+            "classmapfile",
+            lambda d: Output(**d),
+            lambda m: m.classmapfile,
+            id="classmapfile",
+        ),
+        pytest.param(
+            "waterlevinifile",
+            lambda d: Geometry(**d),
+            lambda m: m.waterlevinifile,
+            id="waterlevinifile",
+        ),
+        pytest.param(
+            "oned2dlinkfile",
+            lambda d: Geometry(**d),
+            lambda m: m.oned2dlinkfile,
+            id="oned2dlinkfile",
+        ),
+        pytest.param(
+            "proflocfile",
+            lambda d: Geometry(**d),
+            lambda m: m.proflocfile,
+            id="proflocfile",
+        ),
+        pytest.param(
+            "profdeffile",
+            lambda d: Geometry(**d),
+            lambda m: m.profdeffile,
+            id="profdeffile",
+        ),
+        pytest.param(
+            "profdefxyzfile",
+            lambda d: Geometry(**d),
+            lambda m: m.profdefxyzfile,
+            id="profdefxyzfile",
+        ),
+        pytest.param(
+            "manholefile",
+            lambda d: Geometry(**d),
+            lambda m: m.manholefile,
+            id="manholefile",
+        ),
+        pytest.param(
+            "definitionfile",
+            lambda d: Calibration(**d),
+            lambda m: m.definitionfile,
+            id="definitionfile",
+        ),
+        pytest.param(
+            "areafile",
+            lambda d: Calibration(**d),
+            lambda m: m.areafile,
+            id="definitionfile",
+        ),
+        pytest.param(
+            "substancefile",
+            lambda d: Processes(**d),
+            lambda m: m.substancefile,
+            id="substancefile",
+        ),
+        pytest.param(
+            "additionalhistoryoutputfile",
+            lambda d: Processes(**d),
+            lambda m: m.additionalhistoryoutputfile,
+            id="additionalhistoryoutputfile",
+        ),
+        pytest.param(
+            "statisticsfile",
+            lambda d: Processes(**d),
+            lambda m: m.statisticsfile,
+            id="statisticsfile",
+        ),
+        pytest.param(
+            "particlesreleasefile",
+            lambda d: Particles(**d),
+            lambda m: m.particlesreleasefile,
+            id="particlesreleasefile",
+        ),
+        pytest.param(
+            "locationfile",
+            _create_boundary,
+            lambda m: m.locationfile,
+            id="locationfile",
+        ),
+        pytest.param(
+            "frictionvaluesfile",
+            lambda d: FrictGeneral(**d),
+            lambda m: m.frictionvaluesfile,
+            id="frictionvaluesfile",
+        ),
+    ],
+)
+def test_model_diskonlyfilemodel_field_is_constructed_correctly(
+    input: Union[None, Path, DiskOnlyFileModel],
+    input_field: str,
+    create_model: Callable[[Dict], object],
+    retrieve_field: Callable[[object], DiskOnlyFileModel],
+):
+    data = {input_field: input}
+    model = create_model(data)
+    relevant_field = retrieve_field(model)
+
+    assert isinstance(relevant_field, DiskOnlyFileModel)
+
+    if isinstance(input, DiskOnlyFileModel):
+        assert relevant_field == input
+    else:
+        assert relevant_field.filepath == input

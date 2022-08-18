@@ -11,7 +11,7 @@ from meshkernel.py_structures import GeometryList
 from pydantic import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel, file_load_context
 from hydrolib.core.io.net.reader import UgridReader
 from hydrolib.core.io.net.writer import UgridWriter
 
@@ -154,8 +154,6 @@ class Mesh2d(BaseModel):
             dx (float): Horizontal distance
             dy (float): Vertical distance
 
-        TODO: Perhaps the polygon processing part should be part of Hydrolib (not core)!
-
         Raises:
             NotImplementedError: MultiPolygons
         """
@@ -174,6 +172,18 @@ class Mesh2d(BaseModel):
 
         # Process
         self._process(mesh2d_input)
+
+    def create_triangular(self, geometry_list: mk.GeometryList) -> None:
+        """Create triangular grid within GeometryList object
+
+        Args:
+            geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
+        """
+        # Call meshkernel
+        self.meshkernel.mesh2d_make_mesh_from_polygon(geometry_list)
+
+        # Process new mesh
+        self._process(self.get_mesh2d())
 
     def _process(self, mesh2d_input) -> None:
         # Add input
@@ -199,24 +209,55 @@ class Mesh2d(BaseModel):
         ) < npf[:, None]
         self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
 
-    def clip(self, polygon: mk.GeometryList, deletemeshoption: int = 1) -> None:
+    def clip(
+        self,
+        geometrylist: mk.GeometryList,
+        deletemeshoption: int = 1,
+        inside=False,
+    ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
 
         Args:
-            polygon (GeometryList): Polygon stored as GeometryList
+            geometrylist (GeometryList): Polygon stored as GeometryList
             deletemeshoption (int, optional): [description]. Defaults to 1.
         """
 
         # Add current mesh to Mesh2d instance
         self._set_mesh2d()
 
-        # Delete outside polygon
         deletemeshoption = mk.DeleteMeshOption(deletemeshoption)
-        parts = split_by(polygon, -998.0)
+
+        # For clipping outside
+        if not inside:
+            # Check if a multipolygon was provided when clipping outside
+            if geometrylist.geometry_separator in geometrylist.x_coordinates:
+                raise NotImplementedError(
+                    "Deleting outside more than a single exterior (MultiPolygon) is not implemented."
+                )
+
+            # Get exterior and interiors
+            parts = split_by(geometrylist, geometrylist.inner_outer_separator)
+
+            exteriors = [parts[0]]
+            interiors = parts[1:]
+
+        # Inside
+        else:
+            # Check if any polygon contains holes, when clipping inside
+            if geometrylist.inner_outer_separator in geometrylist.x_coordinates:
+                raise NotImplementedError(
+                    "Deleting inside a (Multi)Polygon with holes is not implemented."
+                )
+
+            # Get exterior and interiors
+            parts = split_by(geometrylist, geometrylist.geometry_separator)
+
+            exteriors = parts[:]
+            interiors = []
 
         # Check if parts are closed
-        for part in parts:
-            if not (part.x_coordinates[0], part.y_coordinates[0]) == (
+        for part in exteriors + interiors:
+            if (part.x_coordinates[0], part.y_coordinates[0]) != (
                 part.x_coordinates[-1],
                 part.y_coordinates[-1],
             ):
@@ -224,11 +265,21 @@ class Mesh2d(BaseModel):
                     "First and last coordinate of each GeometryList part should match."
                 )
 
-        self.meshkernel.mesh2d_delete(parts[0], deletemeshoption, True)
+        # Delete everything outside the (Multi)Polygon
+        for exterior in exteriors:
+            self.meshkernel.mesh2d_delete(
+                geometry_list=exterior,
+                delete_option=deletemeshoption,
+                invert_deletion=not inside,
+            )
 
-        # Delete all holes
-        for interior in parts[1:]:
-            self.meshkernel.mesh2d_delete(interior, deletemeshoption, False)
+        # Delete all holes.
+        for interior in interiors:
+            self.meshkernel.mesh2d_delete(
+                geometry_list=interior,
+                delete_option=deletemeshoption,
+                invert_deletion=inside,
+            )
 
         # Process
         self._process(self.meshkernel.mesh2d_get())
@@ -249,19 +300,17 @@ class Mesh2d(BaseModel):
         self.meshkernel.mesh2d_set(mesh2d_input)
 
         # Check if parts are closed
-        if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
-            polygon.x_coordinates[-1],
-            polygon.y_coordinates[-1],
-        ):
-            raise ValueError(
-                "First and last coordinate of each GeometryList part should match."
-            )
+        # if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
+        #     polygon.x_coordinates[-1],
+        #     polygon.y_coordinates[-1],
+        # ):
+        #     raise ValueError("First and last coordinate of each GeometryList part should match.")
 
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
             min_face_size=10.0,  # Does nothing?
-            refinement_type=1,
+            refinement_type=1,  # No effect?
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,
             max_refinement_iterations=level,
@@ -335,21 +384,28 @@ class Branch:
         # Add mask (all False)
         self.mask = np.full(self.branch_offsets.shape, False)
 
-    def _generate_1d_spacing(self, anchor_pts: List[float], mesh1d_edge_length: float):
+    def _generate_1d_spacing(
+        self, anchor_pts: List[float], mesh1d_edge_length: float
+    ) -> np.ndarray:
         """
         Generates 1d distances, called by function generate offsets
         """
         offsets = []
+        # Loop through anchor point pairs
         for i in range(len(anchor_pts) - 1):
+            # Determine section length between anchor point
             section_length = anchor_pts[i + 1] - anchor_pts[i]
             if section_length <= 0.0:
                 raise ValueError("Section length must be larger than 0.0")
-            nnodes = max(2, int(round(section_length / mesh1d_edge_length) + 1))
+            # Determine number of nodes
+            nnodes = max(2, int(round(section_length / mesh1d_edge_length) + 1)) - 1
+            # Add nodes
             offsets.extend(
                 np.linspace(
-                    anchor_pts[i], anchor_pts[i + 1], nnodes - 1, endpoint=False
+                    anchor_pts[i], anchor_pts[i + 1], nnodes, endpoint=False
                 ).tolist()
             )
+        # Add last node
         offsets.append(anchor_pts[-1])
 
         return np.asarray(offsets)
@@ -416,12 +472,14 @@ class Link1d2d(BaseModel):
 
     def clear(self) -> None:
         """Remove all saved links from the links administration"""
-        self.link1d2d_id = Field(default_factory=lambda: np.empty(0, object))
-        self.link1d2d_long_name = Field(default_factory=lambda: np.empty(0, object))
-        self.link1d2d_contact_type = Field(
-            default_factory=lambda: np.empty(0, np.int32)
-        )
-        self.link1d2d = Field(default_factory=lambda: np.empty((0, 2), np.int32))
+        self.link1d2d_id = np.empty(0, object)
+        self.link1d2d_long_name = np.empty(0, object)
+        self.link1d2d_contact_type = np.empty(0, np.int32)
+        self.link1d2d = np.empty((0, 2), np.int32)
+        # The meshkernel object needs to be resetted
+        self.meshkernel._deallocate_state()
+        self.meshkernel._allocate_state(self.meshkernel.is_geographic)
+        self.meshkernel.contacts_get()
 
     def _process(self) -> None:
         """
@@ -467,22 +525,28 @@ class Link1d2d(BaseModel):
 
         # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
         # a bounding polygon or the end points of the 1d mesh.
-        # self._mk.contacts_compute_multiple(self, node_mask)
 
-    def _link_from_2d_to_1d_intersecting(self):
-        raise NotImplementedError()
+    def _link_from_2d_to_1d_embedded(
+        self, node_mask: np.ndarray, points: mk.GeometryList
+    ):
+        """"""
+        self.meshkernel.contacts_compute_with_points(node_mask=node_mask, points=points)
+        self._process()
 
-    def _link_from_2d_to_1d_lateral(self):
-        raise NotImplementedError()
+    def _link_from_2d_to_1d_lateral(
+        self,
+        node_mask: np.ndarray,
+        # boundary_face_xy: np.ndarray,
+        polygon: mk.GeometryList = None,
+        search_radius: float = None,
+    ):
+        # TODO: Missing value double for search radius?
 
-        # # Computes Mesh1d-Mesh2d contacts, where a Mesh2d face per polygon is connected to the closest Mesh1d node.
-        # self._mk.contacts_compute_with_polygons(self, node_mask, polygons)
-
-        # # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the Mesh2d face mass centers containing the input point.
-        # self._mk.contacts_compute_with_points(self, node_mask, points)
-
-        # # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the closest Mesh2d faces at the boundary
-        # self._mk.contacts_compute_boundary(self, node_mask, polygons, search_radius)
+        # Computes Mesh1d-Mesh2d contacts, where Mesh1d nodes are connected to the closest Mesh2d faces at the boundary
+        self.meshkernel.contacts_compute_boundary(
+            node_mask=node_mask, polygons=polygon, search_radius=search_radius
+        )
+        self._process()
 
 
 class Mesh1d(BaseModel):
@@ -659,7 +723,7 @@ class Mesh1d(BaseModel):
         Returns:
             Union[np.int32, None]: The index of the coordinate. None if not found
         """
-        pos = np.where(np.isclose(arrx, x) & np.isclose(arry, y))[0]
+        pos = np.where(np.isclose(arrx, x, rtol=0.0) & np.isclose(arry, y, rtol=0.0))[0]
         if pos.size == 0:
             return None
         elif pos.size == 1:
@@ -673,7 +737,20 @@ class Mesh1d(BaseModel):
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
+        force_midpoint: bool = True,
     ):
+        """Add the branch to mesh1d
+
+        Args:
+            branch (Branch): branch to add to the mesh1d
+            name (str): id of the branch
+            branch_order (int): interpolation order of the branch
+            long_name (str): long name of the branch
+            force_midpoint(bool): argument to control if a midpoint will be forced on the branch, use False for pipes
+
+        Returns:
+            Str: name of the branch.
+        """
 
         # Check if branch had coordinate discretization
         if branch.branch_offsets.size == 0:
@@ -713,6 +790,7 @@ class Mesh1d(BaseModel):
 
         # Network edge node administration
         # -------------------------------
+
         first_point = branch.geometry[0]
         last_point = branch.geometry[-1]
 
@@ -733,10 +811,10 @@ class Mesh1d(BaseModel):
             self.network1d_node_y = np.append(self.network1d_node_y, first_point[1])
 
             self.network1d_node_id = np.append(
-                self.network1d_node_id, "{:.0f}_{:.0f}".format(*first_point)
+                self.network1d_node_id, "{:.6f}_{:.6f}".format(*first_point)
             )
             self.network1d_node_long_name = np.append(
-                self.network1d_node_long_name, "x={:.0f}_y={:.0f}".format(*first_point)
+                self.network1d_node_long_name, "x={:.6f}_y={:.6f}".format(*first_point)
             )
 
         last_present = self._network1d_node_position(*last_point) is not None
@@ -750,16 +828,25 @@ class Mesh1d(BaseModel):
             self.network1d_node_y = np.append(self.network1d_node_y, last_point[1])
 
             self.network1d_node_id = np.append(
-                self.network1d_node_id, "{:.0f}_{:.0f}".format(*last_point)
+                self.network1d_node_id, "{:.6f}_{:.6f}".format(*last_point)
             )
             self.network1d_node_long_name = np.append(
-                self.network1d_node_long_name, "x={:.0f}_y={:.0f}".format(*last_point)
+                self.network1d_node_long_name, "x={:.6f}_y={:.6f}".format(*last_point)
             )
 
         # If no points remain, add an extra halfway: each branch should have at least 1 node
-        if len(offsets) == 0:
-            offsets = np.array([branch.length / 2.0])
+        # Adjust the branch object as well, by adding the extra point
+        if len(offsets) == 0 and force_midpoint:
+            # Add extra offset
+            extra_offset = branch.length / 2.0
+            offsets = np.array([extra_offset])
             nlinks += 1
+            # Adjust branch object
+            branch.branch_offsets = np.insert(branch.branch_offsets, 1, extra_offset)
+            branch.node_xy = np.insert(
+                branch.node_xy, 1, branch.interpolate(offsets), axis=0
+            )
+            branch.mask = np.insert(branch.mask, 1, False)
 
         # Get the index of the first and last node, add as edge_nodes
         i_from = self._network1d_node_position(first_point[0], first_point[1])
@@ -776,6 +863,7 @@ class Mesh1d(BaseModel):
         )
 
         # Mesh1d edge node administration
+
         # -------------------------------
         # First determine the start index. This is equal to the number of already present points
         start_index = len(self.mesh1d_node_branch_id)
@@ -837,24 +925,7 @@ class Mesh1d(BaseModel):
         self.mesh1d_node_branch_offset = np.append(
             self.mesh1d_node_branch_offset, offsets
         )
-
-        # self._process_edges_for_branch()
-
-    def _process_edges_for_branch(self, branch_id: str) -> None:
-
-        branch = self.branches[branch_id]
-
-        edge_coords = (branch.node_xy[:-1] + branch.node_xy[1:]) / 2.0
-        edge_offsets = (branch.branch_offsets[:-1] + branch.branch_offsets[1:]) / 2
-
-        self.mesh1d_edge_branch_id = np.append(
-            self.mesh1d_edge_branch_id, np.full(len(edge_coords), i)
-        )
-        self.mesh1d_edge_branch_offset = np.append(
-            self.mesh1d_edge_branch_offset, edge_offsets
-        )
-        self.mesh1d_edge_x = np.append(self.mesh1d_edge_x, edge_coords[:, 0])
-        self.mesh1d_edge_y = np.append(self.mesh1d_edge_y, edge_coords[:, 1])
+        return name
 
     def get_node_mask(self, branchids: List[str] = None):
         """Get node mask, give a mask with True for each node that is in the given branchid list"""
@@ -875,8 +946,11 @@ class Mesh1d(BaseModel):
 
 
 class Network:
-    def __init__(self) -> None:
-        self.meshkernel = mk.MeshKernel()
+    def __init__(self, is_geographic: bool = False) -> None:
+        self.meshkernel = mk.MeshKernel(is_geographic=is_geographic)
+        # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
+        # otherwise, and needed for reinitializing the meshkernel
+        self.meshkernel.is_geographic = is_geographic
 
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
@@ -891,7 +965,7 @@ class Network:
         present, and loads them one by one.
 
         Args:
-            file (Path): path to netcdf file with network data
+            file_path (Path): path to netcdf file with network data
 
         Returns:
             Network: The instance of the class itself that is returned
@@ -932,18 +1006,31 @@ class Network:
 
         self._link1d2d._link_from_1d_to_2d(node_mask, polygon=polygon)
 
-    def mesh2d_create_rectilinear_within_bounds(
+    def mesh2d_create_rectilinear_within_extent(
         self, extent: tuple, dx: float, dy: float
     ) -> None:
         self._mesh2d.create_rectilinear(extent=extent, dx=dx, dy=dy)
 
     def mesh2d_create_triangular_within_polygon(self, polygon: mk.GeometryList) -> None:
-        raise NotImplementedError()
+        """Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular
+        directly, but is easier accessible for users.
+
+        Args:
+            geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
+        """
+        self._mesh2d.create_triangular(geometry_list=polygon)
 
     def mesh2d_clip_mesh(
-        self, polygon: mk.GeometryList, deletemeshoption: int = 1
+        self,
+        geometrylist: mk.GeometryList,
+        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.ALL_FACE_CIRCUMCENTERS,
+        inside=True,
     ) -> None:
-        self._mesh2d.clip(polygon=polygon, deletemeshoption=deletemeshoption)
+        self._mesh2d.clip(
+            geometrylist=geometrylist,
+            deletemeshoption=deletemeshoption,
+            inside=inside,
+        )
 
     def mesh2d_refine_mesh(self, polygon: mk.GeometryList, level: int = 1) -> None:
         self._mesh2d.refine(polygon=polygon, level=level)
@@ -954,22 +1041,38 @@ class Network:
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
+        force_midpoint: bool = True,
     ) -> None:
-        self._mesh1d._add_branch(
-            branch=branch, name=name, branch_order=branch_order, long_name=long_name
+        name = self._mesh1d._add_branch(
+            branch=branch,
+            name=name,
+            branch_order=branch_order,
+            long_name=long_name,
+            force_midpoint=force_midpoint,
         )
+        return name
 
 
-class NetworkModel(FileModel):
+class NetworkModel(ParsableFileModel):
     """Network model representation."""
 
     network: Network = Field(default_factory=Network)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def _post_init_load(self) -> None:
+        """
+        Load the network file if the filepath exists relative to the
+        current FileLoadContext.
+        """
+        super()._post_init_load()
 
-        if self.filepath and self.filepath.is_file():
-            self.network = Network.from_file(self.filepath)
+        if self.filepath is None:
+            return
+
+        with file_load_context() as context:
+            network_path = context.resolve(self.filepath)
+
+            if network_path.is_file():
+                self.network = Network.from_file(network_path)
 
     @property
     def _mesh1d(self):
@@ -991,7 +1094,14 @@ class NetworkModel(FileModel):
     def _filename(cls) -> str:
         return "network"
 
-    def _save(self, folder: Path):
+    def _save(self):
+        with file_load_context() as context:
+            write_path = context.resolve(self.filepath)  # type: ignore[arg-type]
+
+            write_path.parent.mkdir(parents=True, exist_ok=True)
+            self.network.to_file(write_path)
+
+    def _export(self, folder: Path) -> None:
         filename = Path(self.filepath.name) if self.filepath else self._generate_name()
         self.filepath = folder / filename
         folder.mkdir(parents=True, exist_ok=True)

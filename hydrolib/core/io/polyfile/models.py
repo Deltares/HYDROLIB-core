@@ -3,7 +3,7 @@
 
 from typing import Callable, List, Optional, Sequence
 
-from hydrolib.core.basemodel import BaseModel, FileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
 
 class Description(BaseModel):
@@ -48,6 +48,12 @@ class Point(BaseModel):
     z: Optional[float]
     data: Sequence[float]
 
+    def _get_identifier(self, data: dict) -> Optional[str]:
+        x = data.get("x")
+        y = data.get("y")
+        z = data.get("z")
+        return f"x:{x} y:{y} z:{z}"
+
 
 class PolyObject(BaseModel):
     """PolyObject describing a single block in a poly file.
@@ -71,7 +77,7 @@ class PolyObject(BaseModel):
     points: List[Point]
 
 
-class PolyFile(FileModel):
+class PolyFile(ParsableFileModel):
     """Poly-file (.pol/.pli/.pliz) representation."""
 
     has_z_values: bool = False
