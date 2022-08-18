@@ -3361,7 +3361,7 @@ StateType            (<span title="enum.IntEnum">IntEnum</span>)
 
 
 <h3 id="hydrolib.core.io.polyfile.parser.read_polyfile" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
+<code class="highlight language-python"><span class="n">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
 
 
 <a href="#hydrolib.core.io.polyfile.parser.read_polyfile" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3426,7 +3426,7 @@ be reported as warnings.</p>
         <td><code>has_z_values</code></td>
         <td><code>bool</code></td>
         <td><p>Whether to create points containing a z-value. Defaults to None.</p></td>
-        <td><em>required</em></td>
+        <td><code>None</code></td>
       </tr>
   </tbody>
 </table>
@@ -3447,7 +3447,7 @@ be reported as warnings.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/polyfile/parser.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Read the specified file and return the corresponding data.</span>
 
 <span class="sd">    The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol</span>
