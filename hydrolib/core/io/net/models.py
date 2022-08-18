@@ -11,7 +11,7 @@ from meshkernel.py_structures import GeometryList
 from pydantic import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel, file_load_context
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel, file_load_context
 from hydrolib.core.io.net.reader import UgridReader
 from hydrolib.core.io.net.writer import UgridWriter
 
@@ -723,7 +723,7 @@ class Mesh1d(BaseModel):
         Returns:
             Union[np.int32, None]: The index of the coordinate. None if not found
         """
-        pos = np.where(np.isclose(arrx, x) & np.isclose(arry, y))[0]
+        pos = np.where(np.isclose(arrx, x, rtol=0.0) & np.isclose(arry, y, rtol=0.0))[0]
         if pos.size == 0:
             return None
         elif pos.size == 1:
@@ -737,7 +737,20 @@ class Mesh1d(BaseModel):
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
+        force_midpoint: bool = True,
     ):
+        """Add the branch to mesh1d
+
+        Args:
+            branch (Branch): branch to add to the mesh1d
+            name (str): id of the branch
+            branch_order (int): interpolation order of the branch
+            long_name (str): long name of the branch
+            force_midpoint(bool): argument to control if a midpoint will be forced on the branch, use False for pipes
+
+        Returns:
+            Str: name of the branch.
+        """
 
         # Check if branch had coordinate discretization
         if branch.branch_offsets.size == 0:
@@ -777,6 +790,7 @@ class Mesh1d(BaseModel):
 
         # Network edge node administration
         # -------------------------------
+
         first_point = branch.geometry[0]
         last_point = branch.geometry[-1]
 
@@ -797,10 +811,10 @@ class Mesh1d(BaseModel):
             self.network1d_node_y = np.append(self.network1d_node_y, first_point[1])
 
             self.network1d_node_id = np.append(
-                self.network1d_node_id, "{:.0f}_{:.0f}".format(*first_point)
+                self.network1d_node_id, "{:.6f}_{:.6f}".format(*first_point)
             )
             self.network1d_node_long_name = np.append(
-                self.network1d_node_long_name, "x={:.0f}_y={:.0f}".format(*first_point)
+                self.network1d_node_long_name, "x={:.6f}_y={:.6f}".format(*first_point)
             )
 
         last_present = self._network1d_node_position(*last_point) is not None
@@ -814,15 +828,15 @@ class Mesh1d(BaseModel):
             self.network1d_node_y = np.append(self.network1d_node_y, last_point[1])
 
             self.network1d_node_id = np.append(
-                self.network1d_node_id, "{:.0f}_{:.0f}".format(*last_point)
+                self.network1d_node_id, "{:.6f}_{:.6f}".format(*last_point)
             )
             self.network1d_node_long_name = np.append(
-                self.network1d_node_long_name, "x={:.0f}_y={:.0f}".format(*last_point)
+                self.network1d_node_long_name, "x={:.6f}_y={:.6f}".format(*last_point)
             )
 
         # If no points remain, add an extra halfway: each branch should have at least 1 node
         # Adjust the branch object as well, by adding the extra point
-        if len(offsets) == 0:
+        if len(offsets) == 0 and force_midpoint:
             # Add extra offset
             extra_offset = branch.length / 2.0
             offsets = np.array([extra_offset])
@@ -849,6 +863,7 @@ class Mesh1d(BaseModel):
         )
 
         # Mesh1d edge node administration
+
         # -------------------------------
         # First determine the start index. This is equal to the number of already present points
         start_index = len(self.mesh1d_node_branch_id)
@@ -1026,14 +1041,19 @@ class Network:
         name: str = None,
         branch_order: int = -1,
         long_name: str = None,
+        force_midpoint: bool = True,
     ) -> None:
         name = self._mesh1d._add_branch(
-            branch=branch, name=name, branch_order=branch_order, long_name=long_name
+            branch=branch,
+            name=name,
+            branch_order=branch_order,
+            long_name=long_name,
+            force_midpoint=force_midpoint,
         )
         return name
 
 
-class NetworkModel(FileModel):
+class NetworkModel(ParsableFileModel):
     """Network model representation."""
 
     network: Network = Field(default_factory=Network)

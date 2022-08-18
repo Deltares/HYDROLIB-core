@@ -1,13 +1,18 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator, validator
 
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    validator_set_default_disk_only_file_model_when_none,
+)
 from hydrolib.core.io.bc.models import ForcingBase, ForcingData, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
     get_location_specification_rootvalidator,
+    get_number_of_coordinates_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -23,16 +28,30 @@ class Boundary(INIBasedModel):
     [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
-    locationfile: Optional[Path] = Field(alias="locationFile")
+    locationfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
+    )
     forcingfile: ForcingModel = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @classmethod
+    def _is_valid_locationfile_data(
+        cls, elem: Union[None, str, Path, DiskOnlyFileModel]
+    ) -> bool:
+        return isinstance(elem, Path) or (
+            isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
+        )
 
     @root_validator
     @classmethod
@@ -51,7 +70,9 @@ class Boundary(INIBasedModel):
         """
         node_id = values.get("nodeid", None)
         location_file = values.get("locationfile", None)
-        if str_is_empty_or_none(node_id) and not isinstance(location_file, Path):
+        if str_is_empty_or_none(node_id) and not cls._is_valid_locationfile_data(
+            location_file
+        ):
             raise ValueError(
                 "Either nodeId or locationFile fields should be specified."
             )
@@ -121,38 +142,12 @@ class Lateral(INIBasedModel):
     )
 
     _location_validator = get_location_specification_rootvalidator(allow_nodeid=True)
+    _number_of_coordinates_validator = get_number_of_coordinates_validator(
+        minimum_required_number_of_coordinates=1
+    )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
-
-    @validator("xcoordinates", "ycoordinates")
-    @classmethod
-    def validate_coordinates(cls, field_value: List[int], values: Dict) -> List[int]:
-        """
-        Method to validate whether the given coordinates match in number
-        to the expected value given for numcoordinates.
-
-        Args:
-            field_value (List[int]): Coordinates list (x or y)
-            values (Dict): Properties already 'validated' for Lateral class.
-
-        Raises:
-            ValueError: When the number of coordinates does not match expectations.
-
-        Returns:
-            List[int]: Validated list of coordinates.
-        """
-        num_coords = values.get("numcoordinates", None)
-        if num_coords is None:
-            raise ValueError(
-                "numCoordinates should be given when providing xCoordinates or yCoordinates."
-            )
-        assert num_coords == len(
-            field_value
-        ), "Number of coordinates given ({}) not matching the numCoordinates value {}.".format(
-            len(field_value), num_coords
-        )
-        return field_value
 
     @validator("locationtype")
     @classmethod

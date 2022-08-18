@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pytest
 from pydantic import ValidationError
@@ -24,31 +24,58 @@ class TestModels:
             Class to test the paradigms for validate_coordinates.
             """
 
-            def test_given_no_numcoordinates_raises_valueerror(self):
-                with pytest.raises(ValueError) as exc_mssg:
-                    Lateral.validate_coordinates(
-                        field_value=[42, 24], values=dict(numcoordinates=None)
-                    )
-                assert (
-                    str(exc_mssg.value)
-                    == "numCoordinates should be given when providing xCoordinates or yCoordinates."
+            def _create_valid_lateral_values(self) -> Dict:
+                values = dict(
+                    id="randomId",
+                    name="randomName",
+                    branchid="randomBranchName",
+                    chainage=1.234,
+                    numcoordinates=2,
+                    xcoordinates=[1.1, 2.2],
+                    ycoordinates=[1.1, 2.2],
+                    discharge=1.234,
                 )
+
+                return values
+
+            def test_given_no_numcoordinates_raises_valueerror(self):
+                values = self._create_valid_lateral_values()
+                del values["numcoordinates"]
+
+                with pytest.raises(ValueError):
+                    Lateral(**values)
 
             def test_given_wrong_numcoordinates_raises_assertionerror(self):
-                with pytest.raises(AssertionError) as exc_mssg:
-                    Lateral.validate_coordinates(
-                        field_value=[42, 24], values=dict(numcoordinates=1)
-                    )
-                assert (
-                    str(exc_mssg.value)
-                    == "Number of coordinates given (2) not matching the numCoordinates value 1."
-                )
+                values = self._create_valid_lateral_values()
+                values["numcoordinates"] = 999
+
+                with pytest.raises(ValueError):
+                    Lateral(**values)
 
             def test_given_correct_numcoordinates(self):
-                return_value = Lateral.validate_coordinates(
-                    field_value=[42, 24], values=dict(numcoordinates=2)
-                )
-                assert return_value == [42, 24]
+                xcoordinates = [1, 2]
+                ycoordinates = [2, 3]
+
+                values = self._create_valid_lateral_values()
+                values["xcoordinates"] = xcoordinates
+                values["ycoordinates"] = ycoordinates
+                values["numcoordinates"] = len(xcoordinates)
+
+                lateral = Lateral(**values)
+
+                assert lateral.xcoordinates == xcoordinates
+                assert lateral.ycoordinates == ycoordinates
+
+            def test_given_fewer_coordinates_than_minimum_required_throws_valueerror(
+                self,
+            ):
+                values = self._create_valid_lateral_values()
+                values["numcoordinates"] = 0
+                values["xcoordinates"] = []
+                values["ycoordinates"] = []
+
+                with pytest.raises(ValueError):
+                    Lateral(**values)
 
         class TestValidateLocationType:
             """
@@ -250,7 +277,7 @@ class TestModels:
                         ycoordinates=y_coord,
                     )
 
-                expected_error_mssg = "numCoordinates should be given when providing xCoordinates or yCoordinates."
+                expected_error_mssg = "When using coordinates, the fields numCoordinates, xCoordinates and yCoordinates should be given."
                 assert expected_error_mssg in str(exc_mssg.value)
 
             @pytest.mark.parametrize(
@@ -358,6 +385,7 @@ class TestModels:
                             locationtype="2d",
                             xcoordinates=[42, 24],
                             ycoordinates=[24, 42],
+                            numcoordinates=2,
                         ),
                         id="2D-With coordinates",
                     ),
@@ -366,6 +394,7 @@ class TestModels:
                             locationtype="all",
                             xcoordinates=[42, 24],
                             ycoordinates=[24, 42],
+                            numcoordinates=2,
                         ),
                         id="All-With coordinates",
                     ),
@@ -376,7 +405,6 @@ class TestModels:
                 default_values = dict(
                     id="42",
                     discharge="realtime",
-                    numcoordinates=2,
                 )
                 lateral_dict = {**default_values, **location_dict}
                 # 2. Run test.
@@ -424,8 +452,18 @@ class TestModels:
             created_boundary = Boundary(**dict_values)
 
             # 3. Verify boundary values as expected.
-            for key, value in dict_values.items():
-                assert created_boundary.dict()[key] == value
+            created_boundary_dict = created_boundary.dict()
+
+            compare_data = dict(dict_values)
+            expected_location_path = compare_data.pop("locationfile")
+
+            for key, value in compare_data.items():
+                assert created_boundary_dict[key] == value
+
+            assert (
+                created_boundary_dict["locationfile"]["filepath"]
+                == expected_location_path
+            )
 
         def test_given_args_as_alias_expected_values(self):
             # 1. Explicit declaration of parameters (to validate keys as they are written)
@@ -444,7 +482,10 @@ class TestModels:
             # 3. Verify boundary values as expected.
             assert boundary_as_dict["quantity"] == dict_values["quantity"]
             assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
-            assert boundary_as_dict["locationfile"] == dict_values["locationfile"]
+            assert (
+                boundary_as_dict["locationfile"]["filepath"]
+                == dict_values["locationfile"]
+            )
             assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
             assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1D"]
             assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
@@ -542,7 +583,15 @@ class TestModels:
                 required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
                 test_values = {**dict_values, **required_values}
                 created_boundary = Boundary(**test_values)
+
+                expected_locationfile = test_values.pop("locationfile", None)
+
                 for key, value in test_values.items():
                     if key == "forcing_file":
                         value = value.dict()
                     assert created_boundary.dict()[key] == value
+
+                assert (
+                    created_boundary.dict()["locationfile"]["filepath"]
+                    == expected_locationfile
+                )

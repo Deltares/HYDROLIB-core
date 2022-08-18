@@ -3,9 +3,7 @@ from typing import Callable, List, Optional
 from pydantic.class_validators import root_validator
 from pydantic.fields import Field
 
-from hydrolib.core.basemodel import BaseModel, FileModel
-from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.io.net.models import Network
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 from hydrolib.core.io.rr.topology.parser import NetworkTopologyFileParser
 from hydrolib.core.io.rr.topology.serializer import (
     LinkFileSerializer,
@@ -119,7 +117,7 @@ class Node(BaseModel):
             )
 
 
-class NodeFile(FileModel):
+class NodeFile(ParsableFileModel):
     """Represents the file with the RR node topology data."""
 
     _parser = NetworkTopologyFileParser(enclosing_tag="node")
@@ -162,7 +160,7 @@ class Link(BaseModel):
         return super().dict(*args, **kwargs)
 
 
-class LinkFile(FileModel):
+class LinkFile(ParsableFileModel):
     """Represents the file with the RR link topology data."""
 
     _parser = NetworkTopologyFileParser(enclosing_tag="brch")
