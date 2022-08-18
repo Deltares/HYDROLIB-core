@@ -12,8 +12,8 @@ from typing import List, Literal, Optional, Set, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
-from hydrolib.core.basemodel import DiskOnlyFileModel
 
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
