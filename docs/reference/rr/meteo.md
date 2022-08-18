@@ -1,6 +1,6 @@
 # The Rainfall Runoff meteo layer
 The meteo layer currently contains only support for the BUI file.
-The "bui" file contains the precipitation input data for [Rainfall Runoff](glossary.md#rainfall-runoff).
+The "bui" file contains the precipitation input data for [Rainfall Runoff](../glossary.md#rainfall-runoff).
 It is represented by the classes below.
 
 ## Model

@@ -15,7 +15,7 @@ It can serve as the basis for various pre- and postprocessing tools for a modell
 
 Some quickstarts:
 
-* First users: [Installation](guides/setup.md) and [Tutorials](tutorials/steps.md).
+* First users: [Installation](guides/setup.md) and [Tutorials](tutorials/tutorials.md).
 * Developers: [List of supported functionalities](topics/dhydro_support.md),
   [API reference](reference/api.md), and
   [How to contribute](guides/contributing.md).

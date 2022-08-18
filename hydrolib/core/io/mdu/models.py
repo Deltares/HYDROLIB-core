@@ -1,9 +1,15 @@
+from enum import IntEnum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import Field
 
-from hydrolib.core.basemodel import FileModel, ResolveRelativeMode
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    FileModel,
+    ResolveRelativeMode,
+    validator_set_default_disk_only_file_model_when_none,
+)
 from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
@@ -35,7 +41,7 @@ class Numerics(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.numerics`.
 
     All lowercased attributes match with the [Numerics] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["Numerics"] = "Numerics"
@@ -74,7 +80,7 @@ class VolumeTables(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.volumetables`.
 
     All lowercased attributes match with the [VolumeTables] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["VolumeTables"] = "VolumeTables"
@@ -90,7 +96,7 @@ class Physics(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.physics`.
 
     All lowercased attributes match with the [Physics] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["Physics"] = "Physics"
@@ -98,7 +104,6 @@ class Physics(INIBasedModel):
     uniffricttype: int = Field(1, alias="unifFrictType")
     uniffrictcoef1d: float = Field(0.023, alias="unifFrictCoef1D")
     uniffrictcoeflin: float = Field(0.0, alias="unifFrictCoefLin")
-    umodlin: int = Field(0, alias="umodLin")
     vicouv: float = Field(0.1, alias="vicouv")
     dicouv: float = Field(0.1, alias="dicouv")
     vicoww: float = Field(5e-05, alias="vicoww")
@@ -130,14 +135,22 @@ class Physics(INIBasedModel):
     stanton: float = Field(0.0013, alias="stanton")
     dalton: float = Field(0.0013, alias="dalton")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
-    betaspiral: int = Field(0, alias="betaSpiral")
+    betaspiral: float = Field(0.0, alias="betaSpiral")
 
 
 class Sediment(INIBasedModel):
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Sediment"] = "Sediment"
     sedimentmodelnr: Optional[int] = Field(alias="Sedimentmodelnr")
-    morfile: Optional[str] = Field(alias="MorFile")
-    sedfile: Optional[str] = Field(alias="SedFile")
+    morfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="MorFile"
+    )
+    sedfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile"
+    )
 
 
 class Wind(INIBasedModel):
@@ -147,7 +160,7 @@ class Wind(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.wind`.
 
     All lowercased attributes match with the [Wind] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["Wind"] = "Wind"
@@ -157,7 +170,7 @@ class Wind(INIBasedModel):
         [0.0, 100.0], alias="windSpeedBreakpoints"
     )
     rhoair: float = Field(1.205, alias="rhoAir")
-    relativewind: bool = Field(False, alias="relativeWind")
+    relativewind: float = Field(0.0, alias="relativeWind")
     windpartialdry: bool = Field(True, alias="windPartialDry")
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
@@ -179,7 +192,7 @@ class Waves(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.waves`.
 
     All lowercased attributes match with the [Waves] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["Waves"] = "Waves"
@@ -195,7 +208,7 @@ class Time(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.time`.
 
     All lowercased attributes match with the [Time] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["Time"] = "Time"
@@ -218,11 +231,17 @@ class Restart(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.restart`.
 
     All lowercased attributes match with the [Restart] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["Restart"] = "Restart"
-    restartfile: Optional[Path] = Field(None, alias="restartFile")
+    restartfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="restartFile"
+    )
     restartdatetime: Optional[str] = Field(None, alias="restartDateTime")
 
 
@@ -233,11 +252,17 @@ class ExternalForcing(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.external_forcing`.
 
     All lowercased attributes match with the [External Forcing] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: Optional[Path] = Field(None, alias="extForceFile")
+    extforcefile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="extForceFile"
+    )
     extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
@@ -255,7 +280,7 @@ class Hydrology(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.hydrology`.
 
     All lowercased attributes match with the [Hydrology] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["Hydrology"] = "Hydrology"
@@ -269,13 +294,13 @@ class Trachytopes(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.trachytopes`.
 
     All lowercased attributes match with the [Trachytopes] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Optional[int] = Field(None, alias="trtDef")  # no doc?
-    trtl: Optional[int] = Field(None, alias="trtL")  # no doc?
+    trtdef: Optional[Path] = Field(None, alias="trtDef")
+    trtl: Optional[Path] = Field(None, alias="trtL")
     dttrt: float = Field(60.0, alias="dtTrt")
 
 
@@ -286,8 +311,12 @@ class Output(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.output`.
 
     All lowercased attributes match with the [Output] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
 
     _header: Literal["Output"] = "Output"
     wrishp_crs: bool = Field(False, alias="wrishp_crs")
@@ -303,13 +332,19 @@ class Output(INIBasedModel):
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
     outputdir: Optional[Path] = Field(None, alias="outputDir")
     waqoutputdir: Optional[Path] = Field(None, alias="waqOutputDir")
-    flowgeomfile: Optional[Path] = Field(None, alias="flowGeomFile")
+    flowgeomfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile"
+    )
     obsfile: Optional[List[ObservationPointModel]] = Field(None, alias="obsFile")
-    crsfile: Optional[List[Path]] = Field(None, alias="crsFile")
-    hisfile: Optional[Path] = Field(None, alias="hisFile")
+    crsfile: Optional[List[DiskOnlyFileModel]] = Field(None, alias="crsFile")
+    hisfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
+    )
     hisinterval: List[float] = Field([300], alias="hisInterval")
     xlsinterval: List[float] = Field([0.0], alias="xlsInterval")
-    mapfile: Optional[Path] = Field(None, alias="mapFile")
+    mapfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="mapFile"
+    )
     mapinterval: List[float] = Field([1200.0], alias="mapInterval")
     rstinterval: List[float] = Field([0.0], alias="rstInterval")
     mapformat: int = Field(4, alias="mapFormat")
@@ -390,16 +425,19 @@ class Output(INIBasedModel):
         False, alias="wrimap_water_level_gradient"
     )
     wrimap_flow_analysis: bool = Field(False, alias="wrimap_flow_analysis")
-    mapoutputtimevector: Optional[Path] = Field(None, alias="mapOutputTimeVector")
+    mapoutputtimevector: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="mapOutputTimeVector"
+    )
     fullgridoutput: bool = Field(False, alias="fullGridOutput")
     eulervelocities: bool = Field(False, alias="eulerVelocities")
-    classmapfile: Optional[Path] = Field(None, alias="classMapFile")
+    classmapfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="classMapFile"
+    )
     waterlevelclasses: List[float] = Field([0.0], alias="waterLevelClasses")
     waterdepthclasses: List[float] = Field([0.0], alias="waterDepthClasses")
     classmapinterval: List[float] = Field([0.0], alias="classMapInterval")
     waqinterval: List[float] = Field([0.0], alias="waqInterval")
     statsinterval: List[float] = Field([0.0], alias="statsInterval")
-    writebalancefile: bool = Field(False, alias="writeBalanceFile")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
     richardsononoutput: bool = Field(True, alias="richardsonOnOutput")
 
@@ -429,8 +467,12 @@ class Geometry(INIBasedModel):
     This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry`.
 
     All lowercased attributes match with the [Geometry] input as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
 
     _header: Literal["Geometry"] = "Geometry"
     netfile: Optional[NetworkModel] = Field(
@@ -444,8 +486,12 @@ class Geometry(INIBasedModel):
         None, alias="structureFile", delimiter=";"
     )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
-    waterlevinifile: Optional[Path] = Field(None, alias="waterLevIniFile")
-    landboundaryfile: Optional[List[Path]] = Field(None, alias="landBoundaryFile")
+    waterlevinifile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="waterLevIniFile"
+    )
+    landboundaryfile: Optional[List[DiskOnlyFileModel]] = Field(
+        None, alias="landBoundaryFile"
+    )
     thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
     fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
     pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
@@ -457,11 +503,21 @@ class Geometry(INIBasedModel):
     crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
     crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
     storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
-    oned2dlinkfile: Optional[Path] = Field(None, alias="1d2dLinkFile")
-    proflocfile: Optional[Path] = Field(None, alias="profLocFile")
-    profdeffile: Optional[Path] = Field(None, alias="profDefFile")
-    profdefxyzfile: Optional[Path] = Field(None, alias="profDefXyzFile")
-    manholefile: Optional[Path] = Field(None, alias="manholeFile")
+    oned2dlinkfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="1d2dLinkFile"
+    )
+    proflocfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="profLocFile"
+    )
+    profdeffile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="profDefFile"
+    )
+    profdefxyzfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="profDefXyzFile"
+    )
+    manholefile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile"
+    )
     partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
@@ -503,12 +559,194 @@ class Geometry(INIBasedModel):
         return True
 
 
+class Calibration(INIBasedModel):
+    """
+    The `[Calibration]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.calibration`.
+
+    All lowercased attributes match with the [Calibration] input as described in
+    [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
+    """
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
+    _header: Literal["Calibration"] = "Calibration"
+    usecalibration: bool = Field(False, alias="UseCalibration")
+    definitionfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="DefinitionFile"
+    )
+    areafile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile"
+    )
+
+
+class InfiltrationMethod(IntEnum):
+    """
+    Enum class containing the valid values for the Infiltrationmodel
+    attribute in the [Groundwater][hydrolib.core.io.mdu.models.Groundwater] class.
+    """
+
+    NoInfiltration = 0
+    InterceptionLayer = 1
+    ConstantInfiltrationCapacity = 2
+    ModelUnsaturatedSaturated = 3
+    Horton = 4
+
+
+class GroundWater(INIBasedModel):
+    """
+    The `[Grw]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.grw`.
+
+    All lowercased attributes match with the [Grw] input as described in
+    [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
+    """
+
+    _header: Literal["Grw"] = "Grw"
+
+    groundwater: Optional[bool] = Field(False, alias="GroundWater")
+    infiltrationmodel: Optional[InfiltrationMethod] = Field(
+        InfiltrationMethod.NoInfiltration, alias="Infiltrationmodel"
+    )
+    hinterceptionlayer: Optional[float] = Field(None, alias="Hinterceptionlayer")
+    unifinfiltrationcapacity: Optional[float] = Field(
+        0.0, alias="UnifInfiltrationCapacity"
+    )
+    conductivity: Optional[float] = Field(0.0, alias="Conductivity")
+    h_aquiferuni: Optional[float] = Field(20.0, alias="h_aquiferuni")
+    bgrwuni: Optional[float] = Field(None, alias="bgrwuni")
+    h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
+    sgrwini: Optional[float] = Field(None, alias="sgrwini")
+
+
+class ProcessFluxIntegration(IntEnum):
+    """
+    Enum class containing the valid values for the ProcessFluxIntegration
+    attribute in the [Processes][hydrolib.core.io.mdu.models.Processes] class.
+    """
+
+    WAQ = 1
+    DFlowFM = 2
+
+
+class Processes(INIBasedModel):
+    """
+    The `[Processes]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.processes`.
+
+    All lowercased attributes match with the [Processes] input as described in
+    [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
+    """
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
+    _header: Literal["Processes"] = "Processes"
+
+    substancefile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="SubstanceFile"
+    )
+    additionalhistoryoutputfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None),
+        alias="AdditionalHistoryOutputFile",
+    )
+    statisticsfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="StatisticsFile"
+    )
+    thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
+    dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
+    dtmassbalance: Optional[float] = Field(0.0, alias="DtMassBalance")
+    processfluxintegration: Optional[float] = Field(
+        ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration"
+    )
+    wriwaqbot3doutput: Optional[bool] = Field(False, alias="Wriwaqbot3Doutput")
+    volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
+    depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
+
+
+class ParticlesThreeDType(IntEnum):
+    """
+    Enum class containing the valid values for the 3Dtype
+    attribute in the `Particles` class.
+    """
+
+    DepthAveraged = 0
+    FreeSurface = 1
+
+
+class Particles(INIBasedModel):
+    """
+    The `[Particles]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.particles`.
+
+    All lowercased attributes match with the [Particles] input as described in
+    [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
+    """
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
+    _header: Literal["Particles"] = "Particles"
+
+    particlesfile: Optional[XYZModel] = Field(None, alias="ParticlesFile")
+    particlesreleasefile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="ParticlesReleaseFile"
+    )
+    addtracer: Optional[bool] = Field(False, alias="AddTracer")
+    starttime: Optional[float] = Field(0.0, alias="StartTime")
+    timestep: Optional[float] = Field(0.0, alias="TimeStep")
+    threedtype: Optional[ParticlesThreeDType] = Field(
+        ParticlesThreeDType.DepthAveraged, alias="3Dtype"
+    )
+
+
+class VegetationModelNr(IntEnum):
+    """
+    Enum class containing the valid values for the VegetationModelNr
+    attribute in the [Vegetation][hydrolib.core.io.mdu.models.Vegetation] class.
+    """
+
+    No = 0
+    BaptistDFM = 1
+
+
+class Vegetation(INIBasedModel):
+    """
+    The `[Veg]` section in an MDU file.
+
+    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.veg`.
+
+    All lowercased attributes match with the [Veg] input as described in
+    [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
+    """
+
+    _header: Literal["Veg"] = "Veg"
+
+    vegetationmodelnr: Optional[VegetationModelNr] = Field(
+        VegetationModelNr.No, alias="Vegetationmodelnr"
+    )
+    clveg: Optional[float] = Field(0.8, alias="Clveg")
+    cdveg: Optional[float] = Field(0.7, alias="Cdveg")
+    cbveg: Optional[float] = Field(0.0, alias="Cbveg")
+    rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
+    stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
+    densvegminbap: Optional[float] = Field(0.0, alias="Densvegminbap")
+
+
 class FMModel(INIModel):
     """
     The overall FM model that contains the contents of the toplevel MDU file.
 
     All lowercased attributes match with the supported "[section]"s as described in
-    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.A).
+    [UM Sec.A](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#appendix.A).
 
     Each of these class attributes refers to an underlying model class for that particular section.
     """
@@ -527,6 +765,11 @@ class FMModel(INIModel):
     hydrology: Hydrology = Field(default_factory=Hydrology)
     trachytopes: Trachytopes = Field(default_factory=Trachytopes)
     output: Output = Field(default_factory=Output)
+    calibration: Optional[Calibration] = Field(None)
+    grw: Optional[GroundWater] = Field(None)
+    processes: Optional[Processes] = Field(None)
+    particles: Optional[Particles] = Field(None)
+    veg: Optional[Vegetation] = Field(None)
 
     @classmethod
     def _ext(cls) -> str:

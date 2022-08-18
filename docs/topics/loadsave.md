@@ -23,22 +23,22 @@ own models. As such we will discuss the following topics:
 ## Motivation: HYDROLIB-core should not adjust files when reading and writing
 
 When implementing the model read and write behaviour of HYDROLIB-core, the main 
-motivation is to ensure models are read and written as is. Properties should
+design choice is to ensure models are read and written as is. Properties should
 not be adjusted nor dropped when reading or writing (unless there is a very 
 clear reason to do so). This behaviour should extend to the way the tree structure 
 of the models is handled. Therefor, file paths, stored in the `filepath`
 property, which are not explicitly set to be absolute are kept relative and resolved
 while reading or writing. 
 
-This comes at the cost that the file location of a child model is not explicitly
+This has the drawback that the file location of a child model is not explicitly
 defined without the root model it is part of. Within the current implementation,
-child models have no reference to their parent. This eases the bookkeeping when
-building your models in memory, however it also means that it is not possible 
+child models have no reference to their parent. This simplifies the bookkeeping when
+building models in memory, however it also means that it is not possible 
 to resolve the absolute path of a child model without also providing the root
 model it is part of. This behaviour is further documented in the following sections.
-In order to alleviate this shortcoming, each file model keeps track of its save
-location, which can be synchronized with the file path of the root model, if this
-is required.
+In order to alleviate this shortcoming, each file model internally keeps track of its 
+resolved save location, which can be explicitly synchronized with the file path of the
+root model, if this is required.
 
 ## Loading Models: Resolving the tree structure with the `FileLoadContext`
 
@@ -62,14 +62,14 @@ have the same relative paths as within the original file.
 In order to properly resolve the model tree, we need to be able to keep track of the
 current parent of a model, as well as a way to store and retrieve read models. Both
 of these tasks are handled by the `FileLoadContext`. The context can be used to resolve
-relative paths by keeping track of the current parent folder of a model. It also provides
-a cache for read models, which files are not read more than once. 
+relative paths by keeping track of the current parent folder of a model. It also 
+provides a cache for read models, which ensures files are not read more than once. 
 
 A single `FileLoadContext` is created at the start of the constructor of the root
 model as a context variable. Subsequent child models can then reference this 
 `FileLoadContext`, by retrieving this same `FileLoadContext`. A convenience
 context manager is provided through the `file_load_context()` method in the 
-`basemodel.py`. 
+`basemodel.py`.
 
 The constructor of the filepath performs the following tasks:
 
@@ -159,6 +159,35 @@ will be written to disk at the current `save_location`.
 ### Exporting / Save as
 
 Exporting is currently not implemented, but will be as part of [issue #170](https://github.com/Deltares/HYDROLIB-core/issues/170).
+
+## Inheritance hierachy of FileModels: SerializableFileModels and DiskOnlyFileModels
+
+The `FileModel` is the abstract base class for any file model. It provides the logic 
+to manage the file paths as well as the common logic to load and save models.
+In order to do so, it requires child classes to implement a `_save` and a `_load`
+method. Two child classes have been defined which extend the `FileModel`:
+
+* `ParsableFileModel`: Abstract class which defines a `FileModel` with a 
+    serializer and parser. This is the base model used by most in-memory models.
+* `DiskOnlyFileModel`: A generic file model which does not read data into memory
+    but does copy the underlying file when a parent `FileModel` is saved recursively.
+
+### `ParsableFileModel`
+
+The `ParsableFileModel` defines an abstract base class for in-memory models, it does so by
+requiring child classes to define a parser, to read input files, and a serializer, to write the
+data again. This forms the basis for most of the in-memory file models.
+
+### `DiskOnlyFileModel`
+
+The `DiskOnlyFileModel` provides a file model implementation for files which do not have a 
+representation in `HYDROLIB.Core` (yet). The `DiskOnlyFileModel` ensures the underlying 
+file, specified with the `filepath` of the `FileModel`, is copied when a parent model is
+saved recursively. It does so by maintaining an internal source file path, which is initialized
+at construction of the `DiskOnlyFileModel`. When a `DiskOnlyFileModel` is saved, the underlying
+file is copied from this internal source file path to the new target path. If the file at the
+source file model does not exist, or the target path is invalid, no file is copied.
+Lastly, regardless of whether a file was copied, the internal source file path is updated.
 
 ## Extensions: Caveats to ensure your model plays nice with HYDROLIB-core
 
