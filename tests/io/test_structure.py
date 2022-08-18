@@ -1058,6 +1058,7 @@ class TestDambreak:
         assert isinstance(dambreak_obj, Structure)
         assert dambreak_obj.type == "dambreak"
         assert dambreak_obj.id == "dambreak"
+        assert dambreak_obj.polylinefile.filepath == Path("dambreak2ddrybreach.pli")
         assert dambreak_obj.startlocationx == 1.2
         assert dambreak_obj.startlocationy == 4.0
         assert dambreak_obj.algorithm == 3

@@ -12,6 +12,7 @@ from typing import List, Literal, Optional, Set, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
+from hydrolib.core.basemodel import DiskOnlyFileModel
 
 from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -64,7 +65,7 @@ class Structure(INIBasedModel):
     name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
-    polylinefile: Optional[Path] = Field(None, alias="polylinefile")
+    polylinefile: Optional[DiskOnlyFileModel] = Field(None, alias="polylinefile")
 
     branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = Field(None, alias="chainage")
