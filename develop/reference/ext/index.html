@@ -1146,13 +1146,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.ext.models.Lateral.validate_coordinates" class="md-nav__link">
-    validate_coordinates()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#hydrolib.core.io.ext.models.Lateral.validate_location_type" class="md-nav__link">
     validate_location_type()
   </a>
@@ -1502,13 +1495,6 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.io.ext.models.Lateral.is_intermediate_link" class="md-nav__link">
     is_intermediate_link()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.io.ext.models.Lateral.validate_coordinates" class="md-nav__link">
-    validate_coordinates()
   </a>
   
 </li>
@@ -2021,119 +2007,6 @@ i.e., a <a href="#hydrolib.core.io.ext.models.ExtModel">ExtModel</a>.</p>
 
 
 
-
-
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="hydrolib.core.io.ext.models.Lateral.validate_coordinates" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">validate_coordinates</span><span class="p">(</span><span class="n">field_value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
-  </span>
-
-<a href="#hydrolib.core.io.ext.models.Lateral.validate_coordinates" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Method to validate whether the given coordinates match in number
-to the expected value given for numcoordinates.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>field_value</code></td>
-        <td><code>List[int]</code></td>
-        <td><p>Coordinates list (x or y)</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>values</code></td>
-        <td><code>Dict</code></td>
-        <td><p>Properties already 'validated' for Lateral class.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Exceptions:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>ValueError</code></td>
-        <td><p>When the number of coordinates does not match expectations.</p></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>List[int]</code></td>
-      <td><p>Validated list of coordinates.</p></td>
-    </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>hydrolib/core/io/ext/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;xcoordinates&quot;</span><span class="p">,</span> <span class="s2">&quot;ycoordinates&quot;</span><span class="p">)</span>
-<span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">validate_coordinates</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method to validate whether the given coordinates match in number</span>
-<span class="sd">    to the expected value given for numcoordinates.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        field_value (List[int]): Coordinates list (x or y)</span>
-<span class="sd">        values (Dict): Properties already &#39;validated&#39; for Lateral class.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: When the number of coordinates does not match expectations.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        List[int]: Validated list of coordinates.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">num_coords</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numcoordinates&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">num_coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;numCoordinates should be given when providing xCoordinates or yCoordinates.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">assert</span> <span class="n">num_coords</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
-        <span class="n">field_value</span>
-    <span class="p">),</span> <span class="s2">&quot;Number of coordinates given (</span><span class="si">{}</span><span class="s2">) not matching the numCoordinates value </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="nb">len</span><span class="p">(</span><span class="n">field_value</span><span class="p">),</span> <span class="n">num_coords</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">field_value</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
 
 
 
