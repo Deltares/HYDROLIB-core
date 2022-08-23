@@ -287,7 +287,7 @@ def _create_t3d_values():
         function="t3d",
         offset="1.23",
         factor="2.34",
-        verticalpositions=["3.45", "4.56", "5.67"],
+        verticalpositions="3.45 4.56 5.67",
         verticalinterpolation="log",
         verticalpositiontype="percBed",
         quantityunitpair=[
