@@ -24,6 +24,7 @@ from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
+    get_split_string_on_delimiter_validator,
     make_list_validator,
 )
 
@@ -216,6 +217,10 @@ class T3D(ForcingBase):
     verticalpositions: List[float] = Field(alias="verticalPositions")
     verticalinterpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
     verticalpositiontype: VerticalPositionType = Field(alias="verticalPositionType")
+
+    _split_to_list = get_split_string_on_delimiter_validator(
+        "verticalpositions",
+    )
 
     _verticalinterpolation_validator = get_enum_validator(
         "verticalinterpolation", enum=VerticalInterpolation
