@@ -17,6 +17,8 @@ from hydrolib.core.io.bc.models import (
     QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
+    VerticalInterpolation,
+    VerticalPositionType,
 )
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
@@ -229,6 +231,56 @@ class TestForcingModel:
             pytest.fail(
                 f"No validation error should be raised when creating an {cls.__name__}"
             )
+
+
+class TestT3D:
+    @pytest.mark.parametrize(
+        "vertical_position_type, exp_vertical_position_type",
+        [
+            ("percBed", VerticalPositionType.percentage_bed),
+            ("ZBed", VerticalPositionType.z_bed),
+            ("ZDatum", VerticalPositionType.z_datum),
+        ],
+    )
+    def test_initialize_t3d(
+        self,
+        vertical_position_type: str,
+        exp_vertical_position_type: VerticalPositionType,
+    ):
+        values = _create_t3d_values()
+        values["verticalpositiontype"] = vertical_position_type
+
+        t3d = T3D(**values)
+
+        assert t3d.name == "boundary_t3d"
+        assert t3d.function == "t3d"
+        assert t3d.offset == 1.23
+        assert t3d.factor == 2.34
+
+        assert len(t3d.verticalpositions) == 3
+        assert t3d.verticalpositions[0] == 3.45
+        assert t3d.verticalpositions[1] == 4.56
+        assert t3d.verticalpositions[2] == 5.67
+
+        assert t3d.verticalinterpolation == VerticalInterpolation.log
+        assert t3d.verticalpositiontype == exp_vertical_position_type
+
+        assert len(t3d.quantityunitpair) == 4
+        assert t3d.quantityunitpair[0] == QuantityUnitPair(quantity="time", unit="m")
+        assert t3d.quantityunitpair[1] == QuantityUnitPair(
+            quantity="salinitybnd", unit="ppt"
+        )
+        assert t3d.quantityunitpair[2] == QuantityUnitPair(
+            quantity="salinitybnd", unit="ppt"
+        )
+        assert t3d.quantityunitpair[3] == QuantityUnitPair(
+            quantity="salinitybnd", unit="ppt"
+        )
+
+        assert len(t3d.datablock) == 3
+        assert t3d.datablock[0] == [0, 1, 2, 3]
+        assert t3d.datablock[1] == [60, 4, 5, 6]
+        assert t3d.datablock[2] == [120, 7, 8, 9]
 
 
 def _create_time_series_values():

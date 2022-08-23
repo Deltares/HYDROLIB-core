@@ -38,8 +38,16 @@ class VerticalInterpolation(str, Enum):
 
 
 class VerticalPositionType(str, Enum):
+    """Enum class containing the valid values for the vertical position type."""
+
     percentage_bed = "percBed"
+    """str: Percentage with respect to the water depth from the bed upward."""
+
     z_bed = "ZBed"
+    """str: Absolute distance from the bed upward."""
+
+    z_datum = "ZDatum"
+    """str: z-coordinate with respect to the reference level of the model."""
 
 
 class TimeInterpolation(str, Enum):
