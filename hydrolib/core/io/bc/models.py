@@ -40,7 +40,7 @@ class VerticalPositionType(str, Enum):
     """Enum class containing the valid values for the vertical position type."""
 
     percentage_bed = "percBed"
-    """str: Percentage w.r.t. water depth from the bed upward."""
+    """str: Percentage with respect to the water depth from the bed upward."""
 
     z_bed = "ZBed"
     """str: Absolute distance from the bed upward."""
