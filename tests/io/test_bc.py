@@ -232,8 +232,8 @@ class TestForcingModel:
                 f"No validation error should be raised when creating an {cls.__name__}"
             )
 
-class TestT3D:
 
+class TestT3D:
     @pytest.mark.parametrize(
         "vertical_position_type, exp_vertical_position_type",
         [
@@ -242,7 +242,11 @@ class TestT3D:
             ("ZDatum", VerticalPositionType.z_datum),
         ],
     )
-    def test_initialize_t3d(self, vertical_position_type: str, exp_vertical_position_type: VerticalPositionType):
+    def test_initialize_t3d(
+        self,
+        vertical_position_type: str,
+        exp_vertical_position_type: VerticalPositionType,
+    ):
         values = _create_t3d_values()
         values["verticalpositiontype"] = vertical_position_type
 
@@ -262,17 +266,21 @@ class TestT3D:
         assert t3d.verticalpositiontype == exp_vertical_position_type
 
         assert len(t3d.quantityunitpair) == 4
-        assert t3d.quantityunitpair[0] == QuantityUnitPair(quantity='time', unit='m')
-        assert t3d.quantityunitpair[1] == QuantityUnitPair(quantity='salinitybnd', unit='ppt')
-        assert t3d.quantityunitpair[2] == QuantityUnitPair(quantity='salinitybnd', unit='ppt')
-        assert t3d.quantityunitpair[3] == QuantityUnitPair(quantity='salinitybnd', unit='ppt')
+        assert t3d.quantityunitpair[0] == QuantityUnitPair(quantity="time", unit="m")
+        assert t3d.quantityunitpair[1] == QuantityUnitPair(
+            quantity="salinitybnd", unit="ppt"
+        )
+        assert t3d.quantityunitpair[2] == QuantityUnitPair(
+            quantity="salinitybnd", unit="ppt"
+        )
+        assert t3d.quantityunitpair[3] == QuantityUnitPair(
+            quantity="salinitybnd", unit="ppt"
+        )
 
         assert len(t3d.datablock) == 3
         assert t3d.datablock[0] == [0, 1, 2, 3]
         assert t3d.datablock[1] == [60, 4, 5, 6]
         assert t3d.datablock[2] == [120, 7, 8, 9]
-
-        
 
 
 def _create_time_series_values():

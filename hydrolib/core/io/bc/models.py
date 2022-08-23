@@ -44,7 +44,7 @@ class VerticalPositionType(str, Enum):
 
     z_bed = "ZBed"
     """str: Absolute distance from the bed upward."""
-    
+
     z_datum = "ZDatum"
     """str: z-coordinate with respect to the reference level of the model."""
 
