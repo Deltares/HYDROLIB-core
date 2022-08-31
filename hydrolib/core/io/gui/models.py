@@ -4,14 +4,15 @@ namespace for storing the branches as branches.gui file
 # TODO reconsider the definition and/or filename of the branches.gui (from Prisca)
 
 import logging
-
 from typing import List, Literal, Optional
+
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import make_list_validator
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+
 logger = logging.getLogger(__name__)
 
 # FIXME: GUI does not recongnize this section yet
@@ -32,6 +33,7 @@ class BranchGeneral(INIGeneral):
     fileversion: str = Field("2.00", alias="fileVersion")
     filetype: Literal["branches"] = Field("branches", alias="fileType")
 
+
 class Branch(INIBasedModel):
     """
     A branch that is included in the branches.gui file.
@@ -39,14 +41,24 @@ class Branch(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         name: Optional[str] = "Unique branch id."
-        branchtype: Optional[str] = Field("Channel = 0, SewerConnection = 1, Pipe = 2.", alias="branchType")
+        branchtype: Optional[str] = Field(
+            "Channel = 0, SewerConnection = 1, Pipe = 2.", alias="branchType"
+        )
         islengthcustom: Optional[str] = Field(
             "branch length specified by user.", alias="isLengthCustom"
         )
-        sourcecompartmentname: Optional[str] = Field("Source compartment name this sewer connection is beginning.", alias="sourceCompartmentName")
-        targetcompartmentname: Optional[str] = Field("Source compartment name this sewer connection is beginning.", alias="targetCompartmentName")
-        material: Optional[str] = Field("0 = Unknown, 1 = Concrete, 2 = CastIron, 3 = StoneWare, 4 = Hdpe, "
-                                        "5 = Masonry, 6 = SheetMetal, 7 = Polyester, 8 = Polyvinylchlorid, 9 = Steel")
+        sourcecompartmentname: Optional[str] = Field(
+            "Source compartment name this sewer connection is beginning.",
+            alias="sourceCompartmentName",
+        )
+        targetcompartmentname: Optional[str] = Field(
+            "Source compartment name this sewer connection is beginning.",
+            alias="targetCompartmentName",
+        )
+        material: Optional[str] = Field(
+            "0 = Unknown, 1 = Concrete, 2 = CastIron, 3 = StoneWare, 4 = Hdpe, "
+            "5 = Masonry, 6 = SheetMetal, 7 = Polyester, 8 = Polyvinylchlorid, 9 = Steel"
+        )
 
     comments: Comments = Comments()
 
@@ -54,9 +66,7 @@ class Branch(INIBasedModel):
 
     name: str = Field("name", max_length=255, alias="name")
     branchtype: int = Field(0, alias="branchType")
-    islengthcustom: Optional[bool] = Field(
-        True, alias="isLengthCustom"
-    )
+    islengthcustom: Optional[bool] = Field(True, alias="isLengthCustom")
     sourcecompartmentname: Optional[str] = Field(None, alias="sourceCompartmentName")
     targetcompartmentname: Optional[str] = Field(None, alias="targetCompartmentName")
     material: Optional[int] = Field(None, alias="material")
@@ -75,6 +85,7 @@ class Branch(INIBasedModel):
         if material not in [range(10)]:
             raise ValueError("material is not allowed")
         return material
+
 
 class BranchModel(INIModel):
     """
@@ -101,18 +112,14 @@ class BranchModel(INIModel):
 
     @validator("branch", each_item=True)
     def _validate(cls, branch: Branch):
-        """Validates for each pipe whether the compartment info is filled in
-        """
+        """Validates for each pipe whether the compartment info is filled in"""
 
-        if (
-            branch.branchtype == 2
-            and (branch.sourcecompartmentname is None
-            and branch.targetcompartmentname is None)
+        if branch.branchtype == 2 and (
+            branch.sourcecompartmentname is None
+            and branch.targetcompartmentname is None
         ):
             raise ValueError(
                 f"Either source or target compartment name should be provided when branchtype is 2 for branch id {branch.name}"
             )
 
         return branch
-
-
