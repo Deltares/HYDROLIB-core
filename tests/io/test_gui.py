@@ -1,6 +1,7 @@
 import pytest
-from hydrolib.core.io.gui.models import Branch
 from pydantic.error_wrappers import ValidationError
+
+from hydrolib.core.io.gui.models import Branch
 
 
 def _create_branch_values():
@@ -14,6 +15,7 @@ def _create_branch_values():
         material="3",
     )
 
+
 class TestBranch:
     def test_create_branch(self):
         branch = Branch(**_create_branch_values())
@@ -24,31 +26,25 @@ class TestBranch:
         assert branch.sourcecompartmentname == "some_source_comp_name"
         assert branch.targetcompartmentname == "some_target_comp_name"
         assert branch.material == 3
-    
-    
+
     def test_create_branch_invalid_material_raises_error(self):
         values = _create_branch_values()
-        values['material']  = 10
+        values["material"] = 10
 
         with pytest.raises(ValidationError) as error:
             _ = Branch(**values)
-        
-        expected_message = (
-            f"material (10) is not allowed. Allowed values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
-        )
+
+        expected_message = f"material (10) is not allowed. Allowed values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
 
         assert expected_message in str(error.value)
 
-
     def test_create_branch_invalid_branchtype_raises_error(self):
         values = _create_branch_values()
-        values['branchtype']  = 3
+        values["branchtype"] = 3
 
         with pytest.raises(ValidationError) as error:
             _ = Branch(**values)
 
-        expected_message = (
-            f"branchType (3) is not allowed. Allowed values: 0, 1, 2"
-        )
+        expected_message = f"branchType (3) is not allowed. Allowed values: 0, 1, 2"
 
         assert expected_message in str(error.value)
