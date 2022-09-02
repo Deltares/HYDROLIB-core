@@ -772,7 +772,9 @@ class Mesh1d(BaseModel):
         self.branches[name] = branch
 
         # Add branch administration
-        self.network1d_branch_order = np.append(self.network1d_branch_order, branch_order)
+        self.network1d_branch_order = np.append(
+            self.network1d_branch_order, branch_order
+        )
         self.network1d_branch_length = np.append(
             self.network1d_branch_length, branch.length
         )
