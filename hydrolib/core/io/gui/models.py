@@ -9,7 +9,6 @@ from typing import List, Literal, Optional
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import make_list_validator
 
@@ -115,6 +114,7 @@ class BranchModel(INIModel):
     This model is not referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel].
 
     Attributes:
+        general (BranchGeneral): `[General]` block with file metadata.
         branch(List[Branch]): List of `[Branch]` blocks for all branches.
     """
 
