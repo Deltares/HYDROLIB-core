@@ -27,6 +27,7 @@ class TestBranch:
         assert branch.targetcompartmentname == "some_target_comp_name"
         assert branch.material == 3
 
+
     def test_create_branch_invalid_material_raises_error(self):
         values = _create_branch_values()
         values["material"] = 10
@@ -38,6 +39,7 @@ class TestBranch:
 
         assert expected_message in str(error.value)
 
+
     def test_create_branch_invalid_branchtype_raises_error(self):
         values = _create_branch_values()
         values["branchtype"] = 3
@@ -46,5 +48,20 @@ class TestBranch:
             _ = Branch(**values)
 
         expected_message = f"branchType (3) is not allowed. Allowed values: 0, 1, 2"
+
+        assert expected_message in str(error.value)
+
+
+    def test_create_branch_with_branchtype_2_without_compartment_data_raises_error(self):
+        values = _create_branch_values()
+        del values['sourcecompartmentname']
+        del values['targetcompartmentname']
+
+        with pytest.raises(ValidationError) as error:
+            _ = Branch(**values)
+
+        expected_message = (
+            "Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."
+        )
 
         assert expected_message in str(error.value)

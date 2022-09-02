@@ -74,6 +74,16 @@ class Branch(INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
+    @root_validator
+    @classmethod
+    def _validate_branch(cls, values: dict):
+        if values.get('branchtype') == 2 and (values.get("sourcecompartmentname") is None and values.get("targetcompartmentname") is None):
+            raise ValueError(
+                "Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."
+            )
+
+        return values
+
     @validator("branchtype")
     def _validate_branchtype(cls, branchtype: int):
         allowed_branchtypes = [0, 1, 2]
@@ -81,6 +91,7 @@ class Branch(INIBasedModel):
             str_allowed_branchtypes = [str(i) for i in allowed_branchtypes]
             error_msg = f"branchType ({branchtype}) is not allowed. Allowed values: {', '.join(str_allowed_branchtypes)}"
             raise ValueError(error_msg)
+
         return branchtype
 
     @validator("material")
@@ -90,6 +101,7 @@ class Branch(INIBasedModel):
             str_allowed_materials = [str(i) for i in allowed_materials]
             error_msg = f"material ({material}) is not allowed. Allowed values: {', '.join(str_allowed_materials)}"
             raise ValueError(error_msg)
+
         return material
 
 
@@ -115,17 +127,3 @@ class BranchModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "branches"
-
-    @validator("branch", each_item=True)
-    def _validate(cls, branch: Branch):
-        """Validates for each pipe whether the compartment info is filled in"""
-
-        if branch.branchtype == 2 and (
-            branch.sourcecompartmentname is None
-            and branch.targetcompartmentname is None
-        ):
-            raise ValueError(
-                f"Either source or target compartment name should be provided when branchtype is 2 for branch id {branch.name}"
-            )
-
-        return branch
