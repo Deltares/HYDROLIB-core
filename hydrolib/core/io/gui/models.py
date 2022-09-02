@@ -76,14 +76,20 @@ class Branch(INIBasedModel):
 
     @validator("branchtype")
     def _validate_branchtype(cls, branchtype: int):
-        if branchtype not in [0, 1, 2]:
-            raise ValueError(f"branchtype is not allowed {branchtype}")
+        allowed_branchtypes = [0, 1, 2]
+        if branchtype not in allowed_branchtypes:
+            str_allowed_branchtypes = [str(i) for i in allowed_branchtypes]
+            error_msg = f"branchType ({branchtype}) is not allowed. Allowed values: {', '.join(str_allowed_branchtypes)}"
+            raise ValueError(error_msg)
         return branchtype
 
     @validator("material")
     def _validate_material(cls, material: int):
-        if material not in [range(10)]:
-            raise ValueError("material is not allowed")
+        allowed_materials = range(10)
+        if material not in allowed_materials:
+            str_allowed_materials = [str(i) for i in allowed_materials]
+            error_msg = f"material ({material}) is not allowed. Allowed values: {', '.join(str_allowed_materials)}"
+            raise ValueError(error_msg)
         return material
 
 
