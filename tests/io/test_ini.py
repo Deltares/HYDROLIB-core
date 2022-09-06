@@ -1592,6 +1592,52 @@ class TestSerializer:
                     "      1.0     16.0    81.0    256.0",
                 ],
             ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key1", value="value", comment="comment1"),
+                        Property(key="key2", value="", comment="comment2"),
+                        Property(key="key3", value=None, comment="comment3"),
+                    ],
+                    datablock=[],
+                ),
+                SerializerConfig(
+                    section_indent=0,
+                    property_indent=4,
+                    datablock_indent=6,
+                    datablock_spacing=4,
+                    skip_empty_properties=False
+                ),
+                [
+                    "[header]",
+                    "    key1 = value # comment1",
+                    "    key2 =       # comment2",
+                    "    key3 =       # comment3",
+                ],
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key1", value="value", comment="comment1"),
+                        Property(key="key2", value="", comment="comment2"),
+                        Property(key="key3", value=None, comment="comment3"),
+                    ],
+                    datablock=[],
+                ),
+                SerializerConfig(
+                    section_indent=0,
+                    property_indent=4,
+                    datablock_indent=6,
+                    datablock_spacing=4,
+                    skip_empty_properties=True
+                ),
+                [
+                    "[header]",
+                    "    key1 = value # comment1"
+                ],
+            ),
         ],
     )
     def test_serialize_section(

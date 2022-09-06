@@ -12,6 +12,7 @@ from hydrolib.core.io.ini.io_models import (
     Property,
     Section,
 )
+from hydrolib.core.utils import str_is_empty_or_none
 
 
 class SerializerConfig(BaseModel):
@@ -195,6 +196,9 @@ class SectionSerializer:
             return _serialize_comment_block(elem, delimiter, indent)
 
     def _serialize_property(self, property: Property) -> Lines:
+        if self.config.skip_empty_properties and str_is_empty_or_none(property.value):
+            return
+        
         indent = " " * (self._config.total_property_indent)
         key_ws = _get_offset_whitespace(property.key, self.max_length.key)
         key = f"{property.key}{key_ws} = "
