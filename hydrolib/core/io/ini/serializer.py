@@ -36,7 +36,7 @@ class SerializerConfig(BaseModel):
         comment_delimiter (str):
             The character used to delimit comments. Defaults to '#'.
         skip_empty_properties (bool):
-            Whether or not to skip properties with a value that is empty or None. Defaults to False. 
+            Whether or not to skip properties with a value that is empty or None. Defaults to False.
     """
 
     section_indent: int = 0
@@ -198,7 +198,7 @@ class SectionSerializer:
     def _serialize_property(self, property: Property) -> Lines:
         if self.config.skip_empty_properties and str_is_empty_or_none(property.value):
             return
-        
+
         indent = " " * (self._config.total_property_indent)
         key_ws = _get_offset_whitespace(property.key, self.max_length.key)
         key = f"{property.key}{key_ws} = "

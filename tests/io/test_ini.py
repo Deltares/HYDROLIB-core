@@ -1607,7 +1607,7 @@ class TestSerializer:
                     property_indent=4,
                     datablock_indent=6,
                     datablock_spacing=4,
-                    skip_empty_properties=False
+                    skip_empty_properties=False,
                 ),
                 [
                     "[header]",
@@ -1631,12 +1631,9 @@ class TestSerializer:
                     property_indent=4,
                     datablock_indent=6,
                     datablock_spacing=4,
-                    skip_empty_properties=True
+                    skip_empty_properties=True,
                 ),
-                [
-                    "[header]",
-                    "    key1 = value # comment1"
-                ],
+                ["[header]", "    key1 = value # comment1"],
             ),
         ],
     )
