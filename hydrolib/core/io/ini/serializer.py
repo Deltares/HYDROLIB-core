@@ -34,6 +34,8 @@ class SerializerConfig(BaseModel):
             additional offset to ensure . is lined out. Defaults to 4.
         comment_delimiter (str):
             The character used to delimit comments. Defaults to '#'.
+        skip_empty_properties (bool):
+            Whether or not to skip properties with a value that is empty or None. Defaults to False. 
     """
 
     section_indent: int = 0
@@ -41,6 +43,7 @@ class SerializerConfig(BaseModel):
     datablock_indent: int = 8
     datablock_spacing: int = 4
     comment_delimiter: str = "#"
+    skip_empty_properties: bool = False
 
     @property
     def total_property_indent(self) -> int:

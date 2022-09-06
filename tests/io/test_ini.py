@@ -803,6 +803,15 @@ class TestSerializerConfig:
         config = SerializerConfig(section_indent=3, datablock_indent=10)
         assert config.total_datablock_indent == 13
 
+    def test_default_serializer_config(self):
+        config = SerializerConfig()
+        assert config.section_indent == 0
+        assert config.property_indent == 4
+        assert config.datablock_indent == 8
+        assert config.datablock_spacing == 4
+        assert config.comment_delimiter == "#"
+        assert config.skip_empty_properties == False
+
 
 class TestLengths:
     @pytest.mark.parametrize(
