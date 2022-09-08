@@ -44,7 +44,7 @@ class SerializerConfig(BaseModel):
     datablock_indent: int = 8
     datablock_spacing: int = 4
     comment_delimiter: str = "#"
-    skip_empty_properties: bool = False
+    skip_empty_properties: bool = True
 
     @property
     def total_property_indent(self) -> int:

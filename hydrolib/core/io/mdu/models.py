@@ -14,6 +14,7 @@ from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.io.inifield.models import IniFieldModel
 from hydrolib.core.io.net.models import NetworkModel
@@ -820,3 +821,7 @@ class FMModel(INIModel):
             return ResolveRelativeMode.ToAnchor
         else:
             return ResolveRelativeMode.ToParent
+
+    def _serialize(self, _: dict) -> None:
+        config = SerializerConfig(skip_empty_properties=False)
+        write_ini(self._resolved_filepath, self._to_document(), config=config)

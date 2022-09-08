@@ -810,7 +810,7 @@ class TestSerializerConfig:
         assert config.datablock_indent == 8
         assert config.datablock_spacing == 4
         assert config.comment_delimiter == "#"
-        assert config.skip_empty_properties == False
+        assert config.skip_empty_properties == True
 
 
 class TestLengths:
@@ -1269,13 +1269,13 @@ class TestSerializer:
             (
                 Property(key="key", value=None, comment=None),
                 MaxLengths(key=3, value=0),
-                SerializerConfig(section_indent=0, property_indent=0),
+                SerializerConfig(section_indent=0, property_indent=0, skip_empty_properties=False),
                 "key =",
             ),
             (
                 Property(key="key", value=None, comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=0),
+                SerializerConfig(section_indent=0, property_indent=0, skip_empty_properties=False),
                 "key =       # comment",
             ),
             (
@@ -1678,7 +1678,7 @@ class TestSerializer:
 
         document = parser.finalize()
 
-        serializer = Serializer(config=SerializerConfig())
+        serializer = Serializer(config=SerializerConfig(skip_empty_properties=False))
         result = "\n".join(serializer.serialize(document))
 
         assert result == input_str
@@ -1772,7 +1772,7 @@ def test_serialize_deserialize_should_give_the_same_result():
     )
 
     path = test_output_dir / "tmp" / "test.pliz"
-    write_ini(path, document)
+    write_ini(path, document, config=SerializerConfig(skip_empty_properties=False))
 
     parser = Parser(config=ParserConfig(parse_datablocks=True))
     with path.open("r") as f:
