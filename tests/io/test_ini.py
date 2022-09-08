@@ -1269,13 +1269,17 @@ class TestSerializer:
             (
                 Property(key="key", value=None, comment=None),
                 MaxLengths(key=3, value=0),
-                SerializerConfig(section_indent=0, property_indent=0, skip_empty_properties=False),
+                SerializerConfig(
+                    section_indent=0, property_indent=0, skip_empty_properties=False
+                ),
                 "key =",
             ),
             (
                 Property(key="key", value=None, comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=0, skip_empty_properties=False),
+                SerializerConfig(
+                    section_indent=0, property_indent=0, skip_empty_properties=False
+                ),
                 "key =       # comment",
             ),
             (
