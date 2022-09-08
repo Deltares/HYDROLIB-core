@@ -36,7 +36,7 @@ class SerializerConfig(BaseModel):
         comment_delimiter (str):
             The character used to delimit comments. Defaults to '#'.
         skip_empty_properties (bool):
-            Whether or not to skip properties with a value that is empty or None. Defaults to False.
+            Whether or not to skip properties with a value that is empty or None. Defaults to True.
     """
 
     section_indent: int = 0
