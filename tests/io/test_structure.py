@@ -432,7 +432,7 @@ class TestBridge:
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
-    def test_bridge_with_unknown_parameters(self):
+    def test_bridge_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -447,7 +447,7 @@ class TestBridge:
             csDefId = W_980.1S_0            # Id of Cross-Section Definition.
 
             # ----------------------------------------------------------------------
-            bedLevel           = 10.0        # A deliberately added unknown (in fact: old, unsupported) property
+            unknown           = 10.0        # A deliberately added unknown property
             # ----------------------------------------------------------------------
 
             shift = 0.0                     # Vertical shift of the cross section definition [m]. Defined positive upwards.
@@ -467,7 +467,7 @@ class TestBridge:
         wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
         bridge = wrapper.val
 
-        assert bridge.bedlevel == "10.0"  # type: ignore (note: deliberately lowercase key here)
+        assert bridge.dict().get("unknown") is None  # type: ignore
 
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
@@ -1045,7 +1045,6 @@ class TestDambreak:
             ucrit                      = 0.001
             t0                         = 0.0001        # make it a boolean
             dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 3            
-            materialtype               = 1             #1 clay 2 sand, used only in algorithm 1 
             waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
             waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
             waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
@@ -1059,6 +1058,7 @@ class TestDambreak:
         assert isinstance(dambreak_obj, Structure)
         assert dambreak_obj.type == "dambreak"
         assert dambreak_obj.id == "dambreak"
+        assert dambreak_obj.polylinefile.filepath == Path("dambreak2ddrybreach.pli")
         assert dambreak_obj.startlocationx == 1.2
         assert dambreak_obj.startlocationy == 4.0
         assert dambreak_obj.algorithm == 3
@@ -1071,7 +1071,6 @@ class TestDambreak:
         assert dambreak_obj.ucrit == 0.001
         assert dambreak_obj.t0 == 0.0001
         assert dambreak_obj.dambreaklevelsandwidths == Path("dambreak.tim")
-        assert dambreak_obj.dict()["materialtype"] == "1"
         assert dambreak_obj.waterlevelupstreamlocationx == 1.2
         assert dambreak_obj.waterlevelupstreamlocationy == 2.3
         assert dambreak_obj.waterleveldownstreamlocationx == 3.4
@@ -1625,7 +1624,7 @@ class TestWeir:
         assert weir.comments.crestwidth is None
         assert weir.comments.usevelocityheight == "My own special comment 2"
 
-    def test_weir_with_unknown_parameters(self):
+    def test_weir_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -1656,7 +1655,7 @@ class TestWeir:
         wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
         weir = wrapper.val
 
-        assert weir.unknown == "10.0"  # type: ignore
+        assert weir.dict().get("unknown") is None  # type: ignore
 
         assert weir.id == "weir_id"
         assert weir.name == "weir"
@@ -2164,7 +2163,7 @@ class TestGeneralStructure:
         assert struct.comments.gateopeningwidth is None
         assert struct.comments.usevelocityheight == "My own special comment 2"
 
-    def test_weir_with_unknown_parameters(self):
+    def test_general_structure_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -2219,7 +2218,7 @@ class TestGeneralStructure:
         wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
         struct = wrapper.val
 
-        assert struct.unknown == "10.0"  # type: ignore
+        assert struct.dict().get("unknown") is None  # type: ignore
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
