@@ -13,437 +13,437 @@ from . import _
 
 
 class RtcAggregationTypeEnumStringType(Enum):
-    BLOCK = 'BLOCK'
-    LINEAR = 'LINEAR'
+    BLOCK = "BLOCK"
+    LINEAR = "LINEAR"
 
 
 class RtcEnsembleModeEnumStringType(Enum):
-    JOINT = 'JOINT'
-    TREE = 'TREE'
-    INDEPENDENT = 'INDEPENDENT'
+    JOINT = "JOINT"
+    TREE = "TREE"
+    INDEPENDENT = "INDEPENDENT"
 
 
 class RtcExternalBooleanSimpleType(BaseModel):
-    __root__: Union[bool, constr(regex=r'^([\$][\(-_a-z]+[\$])$')]
+    __root__: Union[bool, constr(regex=r"^([\$][\(-_a-z]+[\$])$")]
 
 
 class RtcExternalIntegerSimpleType(BaseModel):
-    __root__: Union[int, constr(regex=r'^([\$][\(-_a-z]+[\$])$')]
+    __root__: Union[int, constr(regex=r"^([\$][\(-_a-z]+[\$])$")]
 
 
 class RtcExternalParameterSimpleType(BaseModel):
-    __root__: Union[float, constr(regex=r'^([#-\$][\(-_a-z]+[#-\$])$')]
+    __root__: Union[float, constr(regex=r"^([#-\$][\(-_a-z]+[#-\$])$")]
 
 
 class RtcFunctionOutputEnumStringType(Enum):
-    NONE = 'NONE'
-    VALUE = 'VALUE'
-    DERIVATIVE = 'DERIVATIVE'
-    VALUE_DERIVATIVE = 'VALUE+DERIVATIVE'
+    NONE = "NONE"
+    VALUE = "VALUE"
+    DERIVATIVE = "DERIVATIVE"
+    VALUE_DERIVATIVE = "VALUE+DERIVATIVE"
 
 
 class _1(Enum):
-    ipopt = 'ipopt'
-    ipopth = 'ipopth'
-    conopt = 'conopt'
+    ipopt = "ipopt"
+    ipopth = "ipopth"
+    conopt = "conopt"
 
 
 class RtcAlgorithm(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_1] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_1] = Field(None, alias="$")
 
 
 class RtcGAMSComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_algorithm: Optional[RtcAlgorithm] = Field(None, alias='rtc:algorithm')
+    _: Optional[str] = Field(None, alias="#")
+    rtc_algorithm: Optional[RtcAlgorithm] = Field(None, alias="rtc:algorithm")
 
 
 class _11(Enum):
-    kkt_error = 'kkt-error'
-    obj_constr_filter = 'obj-constr-filter'
-    never_monotone_mode = 'never-monotone-mode'
+    kkt_error = "kkt-error"
+    obj_constr_filter = "obj-constr-filter"
+    never_monotone_mode = "never-monotone-mode"
 
 
 class RtcAdaptiveMuGlobalization(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_11] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_11] = Field(None, alias="$")
 
 
 class _12(Enum):
-    probing = 'probing'
-    loqo = 'loqo'
-    quality_function = 'quality-function'
-    average_compl = 'average_compl'
+    probing = "probing"
+    loqo = "loqo"
+    quality_function = "quality-function"
+    average_compl = "average_compl"
 
 
 class RtcFixedMuOracle(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_12] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_12] = Field(None, alias="$")
 
 
 class _13(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcMehrotraAlgorithm(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_13] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_13] = Field(None, alias="$")
 
 
 class _14(Enum):
-    probing = 'probing'
-    loqo = 'loqo'
-    quality_function = 'quality-function'
+    probing = "probing"
+    loqo = "loqo"
+    quality_function = "quality-function"
 
 
 class RtcMuOracle(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_14] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_14] = Field(None, alias="$")
 
 
 class _15(Enum):
-    monotone = 'monotone'
-    adaptive = 'adaptive'
+    monotone = "monotone"
+    adaptive = "adaptive"
 
 
 class RtcMuStrategy(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_15] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_15] = Field(None, alias="$")
 
 
 class _16(Enum):
-    none = 'none'
-    first_order = 'first-order'
+    none = "none"
+    first_order = "first-order"
 
 
 class RtcDerivativeTest(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_16] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_16] = Field(None, alias="$")
 
 
 class RtcDerivativeTestPerturbation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[PositiveFloat] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[PositiveFloat] = Field(None, alias="$")
 
 
 class _17(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcDerivativeTestPrintAll(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_17] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_17] = Field(None, alias="$")
 
 
 class RtcDerivativeTestTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[PositiveFloat] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[PositiveFloat] = Field(None, alias="$")
 
 
 class RtcFindiffPerturbation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[PositiveFloat] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[PositiveFloat] = Field(None, alias="$")
 
 
 class _18(Enum):
-    exact = 'exact'
-    finite_difference_values = 'finite-difference-values'
+    exact = "exact"
+    finite_difference_values = "finite-difference-values"
 
 
 class RtcJacobianApproximation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_18] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_18] = Field(None, alias="$")
 
 
 class RtcIPOPTDerivativeCheckerComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_derivative_test: Optional[RtcDerivativeTest] = Field(
-        None, alias='rtc:derivative_test', description='Enable derivative checker'
+        None, alias="rtc:derivative_test", description="Enable derivative checker"
     )
     rtc_derivative_test_perturbation: Optional[RtcDerivativeTestPerturbation] = Field(
         None,
-        alias='rtc:derivative_test_perturbation',
-        description='Size of the finite difference perturbation in derivative test',
+        alias="rtc:derivative_test_perturbation",
+        description="Size of the finite difference perturbation in derivative test",
     )
     rtc_derivative_test_print_all: Optional[RtcDerivativeTestPrintAll] = Field(
         None,
-        alias='rtc:derivative_test_print_all',
-        description='Indicates whether information for all estimated derivatives should be\n   printed',
+        alias="rtc:derivative_test_print_all",
+        description="Indicates whether information for all estimated derivatives should be\n   printed",
     )
     rtc_derivative_test_tol: Optional[RtcDerivativeTestTol] = Field(
         None,
-        alias='rtc:derivative_test_tol',
-        description='Threshold for indicating wrong derivative',
+        alias="rtc:derivative_test_tol",
+        description="Threshold for indicating wrong derivative",
     )
     rtc_findiff_perturbation: Optional[RtcFindiffPerturbation] = Field(
         None,
-        alias='rtc:findiff_perturbation',
-        description='Size of the finite difference perturbation for derivative approximation',
+        alias="rtc:findiff_perturbation",
+        description="Size of the finite difference perturbation for derivative approximation",
     )
     rtc_jacobian_approximation: Optional[RtcJacobianApproximation] = Field(
         None,
-        alias='rtc:jacobian_approximation',
-        description='Specifies technique to compute constraint Jacobian',
+        alias="rtc:jacobian_approximation",
+        description="Specifies technique to compute constraint Jacobian",
     )
 
 
 class _19(Enum):
-    constant = 'constant'
-    mu_based = 'mu-based'
+    constant = "constant"
+    mu_based = "mu-based"
 
 
 class RtcBoundMultInitMethod(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_19] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_19] = Field(None, alias="$")
 
 
 class _110(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcAcceptEveryTrialStep(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_110] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_110] = Field(None, alias="$")
 
 
 class _111(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcLinearScalingOnDemand(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_111] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_111] = Field(None, alias="$")
 
 
 class _112(Enum):
-    ma27 = 'ma27'
-    ma57 = 'ma57'
-    ma77 = 'ma77'
-    ma86 = 'ma86'
-    ma97 = 'ma97'
-    mumps = 'mumps'
-    pardiso = 'pardiso'
+    ma27 = "ma27"
+    ma57 = "ma57"
+    ma77 = "ma77"
+    ma86 = "ma86"
+    ma97 = "ma97"
+    mumps = "mumps"
+    pardiso = "pardiso"
 
 
 class RtcLinearSolver(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_112] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_112] = Field(None, alias="$")
 
 
 class _113(Enum):
-    none = 'none'
-    mc19 = 'mc19'
-    slack_based = 'slack-based'
+    none = "none"
+    mc19 = "mc19"
+    slack_based = "slack-based"
 
 
 class RtcLinearSystemScaling(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_113] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_113] = Field(None, alias="$")
 
 
 class _114(Enum):
-    primal = 'primal'
-    bound_mult = 'bound-mult'
-    min = 'min'
-    max = 'max'
-    full = 'full'
-    min_dual_infeas = 'min-dual-infeas'
-    safer_min_dual_infeas = 'safer-min-dual-infeas'
-    primal_and_full = 'primal-and-full'
-    dual_and_full = 'dual-and-full'
-    acceptor = 'acceptor'
+    primal = "primal"
+    bound_mult = "bound-mult"
+    min = "min"
+    max = "max"
+    full = "full"
+    min_dual_infeas = "min-dual-infeas"
+    safer_min_dual_infeas = "safer-min-dual-infeas"
+    primal_and_full = "primal-and-full"
+    dual_and_full = "dual-and-full"
+    acceptor = "acceptor"
 
 
 class RtcAlphaForY(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_114] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_114] = Field(None, alias="$")
 
 
 class _115(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcRecalcY(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_115] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_115] = Field(None, alias="$")
 
 
 class RtcBoundRelaxFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[confloat(ge=0.0)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[confloat(ge=0.0)] = Field(None, alias="$")
 
 
 class _116(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcCheckDerivativesForNaninf(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_116] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_116] = Field(None, alias="$")
 
 
 class _117(Enum):
-    make_parameter = 'make_parameter'
-    make_constraint = 'make_constraint'
-    relax_bounds = 'relax_bounds'
+    make_parameter = "make_parameter"
+    make_constraint = "make_constraint"
+    relax_bounds = "relax_bounds"
 
 
 class RtcFixedVariableTreatment(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_117] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_117] = Field(None, alias="$")
 
 
 class _118(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcHonorOriginalBounds(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_118] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_118] = Field(None, alias="$")
 
 
 class _119(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcJacCConstant(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_119] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_119] = Field(None, alias="$")
 
 
 class _120(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcJacDConstant(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_120] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_120] = Field(None, alias="$")
 
 
 class RtcIPOPTNLPComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_bound_relax_factor: Optional[RtcBoundRelaxFactor] = Field(
         None,
-        alias='rtc:bound_relax_factor',
-        description='Factor for initial relaxation of the bounds',
+        alias="rtc:bound_relax_factor",
+        description="Factor for initial relaxation of the bounds",
     )
     rtc_check_derivatives_for_naninf: Optional[RtcCheckDerivativesForNaninf] = Field(
         None,
-        alias='rtc:check_derivatives_for_naninf',
-        description='Indicates whether it is desired to check for Nan/Inf in derivative matrices [no/yes]',
+        alias="rtc:check_derivatives_for_naninf",
+        description="Indicates whether it is desired to check for Nan/Inf in derivative matrices [no/yes]",
     )
     rtc_fixed_variable_treatment: Optional[RtcFixedVariableTreatment] = Field(
         None,
-        alias='rtc:fixed_variable_treatment',
-        description='Determines how fixed variables should be handled',
+        alias="rtc:fixed_variable_treatment",
+        description="Determines how fixed variables should be handled",
     )
     rtc_honor_original_bounds: Optional[RtcHonorOriginalBounds] = Field(
         None,
-        alias='rtc:honor_original_bounds',
-        description='Indicates whether final points should be projected into original bounds [no/yes]',
+        alias="rtc:honor_original_bounds",
+        description="Indicates whether final points should be projected into original bounds [no/yes]",
     )
     rtc_jac_c_constant: Optional[RtcJacCConstant] = Field(
         None,
-        alias='rtc:jac_c_constant',
-        description='Indicates whether all equality constraints are linear [no/yes]',
+        alias="rtc:jac_c_constant",
+        description="Indicates whether all equality constraints are linear [no/yes]",
     )
     rtc_jac_d_constant: Optional[RtcJacDConstant] = Field(
         None,
-        alias='rtc:jac_d_constant',
-        description='Indicates whether all inequality constraints are linear [no/yes]',
+        alias="rtc:jac_d_constant",
+        description="Indicates whether all inequality constraints are linear [no/yes]",
     )
 
 
@@ -451,64 +451,64 @@ class RtcNlpScalingMaxGradient(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[PositiveFloat] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[PositiveFloat] = Field(None, alias="$")
 
 
 class _121(Enum):
-    none = 'none'
-    user_scaling = 'user-scaling'
-    gradient_based = 'gradient-based'
+    none = "none"
+    user_scaling = "user-scaling"
+    gradient_based = "gradient-based"
 
 
 class RtcNlpScalingMethod(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_121] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_121] = Field(None, alias="$")
 
 
 class RtcNlpScalingMinValue(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[confloat(ge=0.0)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[confloat(ge=0.0)] = Field(None, alias="$")
 
 
 class RtcObjScalingFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcIPOPTNLPScalingComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_nlp_scaling_max_gradient: Optional[RtcNlpScalingMaxGradient] = Field(
         None,
-        alias='rtc:nlp_scaling_max_gradient',
-        description='Maximum gradient after NLP scaling',
+        alias="rtc:nlp_scaling_max_gradient",
+        description="Maximum gradient after NLP scaling",
     )
     rtc_nlp_scaling_method: Optional[RtcNlpScalingMethod] = Field(
         None,
-        alias='rtc:nlp_scaling_method',
-        description='Select the technique used for scaling the NLP',
+        alias="rtc:nlp_scaling_method",
+        description="Select the technique used for scaling the NLP",
     )
     rtc_nlp_scaling_min_value: Optional[RtcNlpScalingMinValue] = Field(
         None,
-        alias='rtc:nlp_scaling_min_value',
-        description='Maximum gradient after NLP scaling',
+        alias="rtc:nlp_scaling_min_value",
+        description="Maximum gradient after NLP scaling",
     )
     rtc_obj_scaling_factor: Optional[RtcObjScalingFactor] = Field(
         None,
-        alias='rtc:obj_scaling_factor',
-        description='Scaling factor for the objective function',
+        alias="rtc:obj_scaling_factor",
+        description="Scaling factor for the objective function",
     )
 
 
@@ -516,86 +516,86 @@ class RtcFilePrintLevel(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=0, le=12)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=0, le=12)] = Field(None, alias="$")
 
 
 class RtcPrintLevel(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=0, le=12)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=0, le=12)] = Field(None, alias="$")
 
 
 class _122(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcPrintOptionsDocumentation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_122] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_122] = Field(None, alias="$")
 
 
 class _123(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcPrintTimingStatistics(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_123] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_123] = Field(None, alias="$")
 
 
 class _124(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcPrintUserOptions(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_124] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_124] = Field(None, alias="$")
 
 
 class RtcIPOPTOutputComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_file_print_level: Optional[RtcFilePrintLevel] = Field(
         None,
-        alias='rtc:file_print_level',
-        description='Verbosity level for output file 0-12                                   NONE=0\n     ERROR=1\n     STRONGWARNING=2\n     SUMMARY=3\n     WARNING=4\n     ITERSUMMARY=5\n     DETAILED=6\n     MOREDETAILED=7\n     VECTOR=8\n     MOREVECTOR=9\n     MATRIX=10\n     MOREMATRIX=11\n     ALL=12',
+        alias="rtc:file_print_level",
+        description="Verbosity level for output file 0-12                                   NONE=0\n     ERROR=1\n     STRONGWARNING=2\n     SUMMARY=3\n     WARNING=4\n     ITERSUMMARY=5\n     DETAILED=6\n     MOREDETAILED=7\n     VECTOR=8\n     MOREVECTOR=9\n     MATRIX=10\n     MOREMATRIX=11\n     ALL=12",
     )
     rtc_print_level: Optional[RtcPrintLevel] = Field(
         None,
-        alias='rtc:print_level',
-        description='Output verbosity level 0-12,      NONE=0\n     ERROR=1\n     STRONGWARNING=2\n     SUMMARY=3\n     WARNING=4\n     ITERSUMMARY=5\n     DETAILED=6\n     MOREDETAILED=7\n     VECTOR=8\n     MOREVECTOR=9\n     MATRIX=10\n     MOREMATRIX=11\n     ALL=12',
+        alias="rtc:print_level",
+        description="Output verbosity level 0-12,      NONE=0\n     ERROR=1\n     STRONGWARNING=2\n     SUMMARY=3\n     WARNING=4\n     ITERSUMMARY=5\n     DETAILED=6\n     MOREDETAILED=7\n     VECTOR=8\n     MOREVECTOR=9\n     MATRIX=10\n     MOREMATRIX=11\n     ALL=12",
     )
     rtc_print_options_documentation: Optional[RtcPrintOptionsDocumentation] = Field(
         None,
-        alias='rtc:print_options_documentation',
-        description='Switch to print all algorithmic options [no/yes]',
+        alias="rtc:print_options_documentation",
+        description="Switch to print all algorithmic options [no/yes]",
     )
     rtc_print_timing_statistics: Optional[RtcPrintTimingStatistics] = Field(
         None,
-        alias='rtc:print_timing_statistics',
-        description='Switch to print timing statistics [no/yes]',
+        alias="rtc:print_timing_statistics",
+        description="Switch to print timing statistics [no/yes]",
     )
     rtc_print_user_options: Optional[RtcPrintUserOptions] = Field(
         None,
-        alias='rtc:print_user_options',
-        description='Print all options set by the user [no/yes]',
+        alias="rtc:print_user_options",
+        description="Print all options set by the user [no/yes]",
     )
 
 
@@ -603,663 +603,663 @@ class RtcLimitedMemoryMaxHistory(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias="$")
 
 
 class RtcLimitedMemoryMaxSkipping(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias="$")
 
 
 class RtcIPOPTQuasiNewtonComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_limited_memory_max_history: Optional[RtcLimitedMemoryMaxHistory] = Field(
         None,
-        alias='rtc:limited_memory_max_history',
-        description='Maximum size of the history for the limited quasi-Newton Hessian\napproximation',
+        alias="rtc:limited_memory_max_history",
+        description="Maximum size of the history for the limited quasi-Newton Hessian\napproximation",
     )
     rtc_limited_memory_max_skipping: Optional[RtcLimitedMemoryMaxSkipping] = Field(
         None,
-        alias='rtc:limited_memory_max_skipping',
-        description='Threshold for successive iterations where update is skipped',
+        alias="rtc:limited_memory_max_skipping",
+        description="Threshold for successive iterations where update is skipped",
     )
 
 
 class _125(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcEvaluateOrigObjAtRestoTrial(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_125] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_125] = Field(None, alias="$")
 
 
 class _126(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcExpectInfeasibleProblem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_126] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_126] = Field(None, alias="$")
 
 
 class _127(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcStartWithResto(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_127] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_127] = Field(None, alias="$")
 
 
 class RtcAcceptableComplInfTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcAcceptableConstrViolTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcAcceptableDualInfTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcAcceptableIter(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias="$")
 
 
 class RtcAcceptableObjChangeTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcAcceptableTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcComplInfTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcConstrViolTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcDivergingIteratesTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcDualInfTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcMaxCpuTime(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcMaxIter(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias="$")
 
 
 class RtcTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcTreatUnsuccessAsError(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalBooleanSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalBooleanSimpleType] = Field(None, alias="$")
 
 
 class RtcIPOPTTerminationComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_acceptable_compl_inf_tol: Optional[RtcAcceptableComplInfTol] = Field(
         None,
-        alias='rtc:acceptable_compl_inf_tol',
+        alias="rtc:acceptable_compl_inf_tol",
         description='"Acceptance" threshold for the complementarity conditions',
     )
     rtc_acceptable_constr_viol_tol: Optional[RtcAcceptableConstrViolTol] = Field(
         None,
-        alias='rtc:acceptable_constr_viol_tol',
+        alias="rtc:acceptable_constr_viol_tol",
         description='"Acceptance" threshold for the constraint violation',
     )
     rtc_acceptable_dual_inf_tol: Optional[RtcAcceptableDualInfTol] = Field(
         None,
-        alias='rtc:acceptable_dual_inf_tol',
+        alias="rtc:acceptable_dual_inf_tol",
         description='"Acceptance" threshold for the dual infeasibility',
     )
     rtc_acceptable_iter: Optional[RtcAcceptableIter] = Field(
         None,
-        alias='rtc:acceptable_iter',
+        alias="rtc:acceptable_iter",
         description='Number of "acceptable" iterates before triggering termination',
     )
     rtc_acceptable_obj_change_tol: Optional[RtcAcceptableObjChangeTol] = Field(
         None,
-        alias='rtc:acceptable_obj_change_tol',
+        alias="rtc:acceptable_obj_change_tol",
         description='"Acceptance" stopping criterion based on objective function change',
     )
     rtc_acceptable_tol: Optional[RtcAcceptableTol] = Field(
         None,
-        alias='rtc:acceptable_tol',
+        alias="rtc:acceptable_tol",
         description='"Acceptable" convergence tolerance (relative)',
     )
     rtc_compl_inf_tol: Optional[RtcComplInfTol] = Field(
         None,
-        alias='rtc:compl_inf_tol',
-        description='Desired threshold for the complementarity conditions',
+        alias="rtc:compl_inf_tol",
+        description="Desired threshold for the complementarity conditions",
     )
     rtc_constr_viol_tol: Optional[RtcConstrViolTol] = Field(
         None,
-        alias='rtc:constr_viol_tol',
-        description='Desired threshold for the constraint violation',
+        alias="rtc:constr_viol_tol",
+        description="Desired threshold for the constraint violation",
     )
     rtc_diverging_iterates_tol: Optional[RtcDivergingIteratesTol] = Field(
         None,
-        alias='rtc:diverging_iterates_tol',
-        description='Threshold for maximal value of primal iterates',
+        alias="rtc:diverging_iterates_tol",
+        description="Threshold for maximal value of primal iterates",
     )
     rtc_dual_inf_tol: Optional[RtcDualInfTol] = Field(
         None,
-        alias='rtc:dual_inf_tol',
-        description='Desired threshold for the dual infeasibility',
+        alias="rtc:dual_inf_tol",
+        description="Desired threshold for the dual infeasibility",
     )
     rtc_max_cpu_time: Optional[RtcMaxCpuTime] = Field(
-        None, alias='rtc:max_cpu_time', description='Maximum number of CPU seconds'
+        None, alias="rtc:max_cpu_time", description="Maximum number of CPU seconds"
     )
     rtc_max_iter: Optional[RtcMaxIter] = Field(
-        None, alias='rtc:max_iter', description='Maximum number of iterations'
+        None, alias="rtc:max_iter", description="Maximum number of iterations"
     )
     rtc_tol: Optional[RtcTol] = Field(
-        None, alias='rtc:tol', description='Desired convergence tolerance (relative)'
+        None, alias="rtc:tol", description="Desired convergence tolerance (relative)"
     )
     rtc_treat_unsuccess_as_error: Optional[RtcTreatUnsuccessAsError] = Field(
         None,
-        alias='rtc:treat_unsuccess_as_error',
-        description='Other return codes than SUCESS are treated as error message',
+        alias="rtc:treat_unsuccess_as_error",
+        description="Other return codes than SUCESS are treated as error message",
     )
 
 
 class _128(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcWarmStartInitPoint(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_128] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_128] = Field(None, alias="$")
 
 
 class RtcConstraintViolationTolerance(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcEventCode(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalBooleanSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalBooleanSimpleType] = Field(None, alias="$")
 
 
 class RtcFlushing(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalBooleanSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalBooleanSimpleType] = Field(None, alias="$")
 
 
 class RtcLogLevel(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalIntegerSimpleType] = Field(None, alias="$")
 
 
 class RtcOutputConstraints(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcFunctionOutputEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcFunctionOutputEnumStringType] = Field(None, alias="$")
 
 
 class RtcOutputObjectiveFunction(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcFunctionOutputEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcFunctionOutputEnumStringType] = Field(None, alias="$")
 
 
 class RtcReportConstraintViolation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _level: Optional[RtcExternalIntegerSimpleType] = Field(None, alias='@level')
+    _: Optional[str] = Field(None, alias="#")
+    _level: Optional[RtcExternalIntegerSimpleType] = Field(None, alias="@level")
 
 
 class RtcLoggingComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_constraintViolationTolerance: Optional[RtcConstraintViolationTolerance] = Field(
         None,
-        alias='rtc:constraintViolationTolerance',
-        description='tolerance for scaled constraints for which a constraint violation is detected',
+        alias="rtc:constraintViolationTolerance",
+        description="tolerance for scaled constraints for which a constraint violation is detected",
     )
-    rtc_eventCode: Optional[RtcEventCode] = Field(None, alias='rtc:eventCode')
+    rtc_eventCode: Optional[RtcEventCode] = Field(None, alias="rtc:eventCode")
     rtc_flushing: RtcFlushing = Field(
         ...,
-        alias='rtc:flushing',
-        description='set flushing of the diagnostics file after each new message (=true) or at the end of the program execution (=false)',
+        alias="rtc:flushing",
+        description="set flushing of the diagnostics file after each new message (=true) or at the end of the program execution (=false)",
     )
     rtc_logLevel: RtcLogLevel = Field(
         ...,
-        alias='rtc:logLevel',
-        description='definition of the logging level, 0 = fatal error, 1 = error, 2 = warning, 3 = info, 4 = debug messages',
+        alias="rtc:logLevel",
+        description="definition of the logging level, 0 = fatal error, 1 = error, 2 = warning, 3 = info, 4 = debug messages",
     )
     rtc_outputConstraints: Optional[RtcOutputConstraints] = Field(
-        None, alias='rtc:outputConstraints'
+        None, alias="rtc:outputConstraints"
     )
     rtc_outputObjectiveFunction: Optional[RtcOutputObjectiveFunction] = Field(
-        None, alias='rtc:outputObjectiveFunction'
+        None, alias="rtc:outputObjectiveFunction"
     )
     rtc_reportConstraintViolation: Optional[RtcReportConstraintViolation] = Field(
         None,
-        alias='rtc:reportConstraintViolation',
-        description='report constraint violation in diagnostics',
+        alias="rtc:reportConstraintViolation",
+        description="report constraint violation in diagnostics",
     )
 
 
 class _129(Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class RtcMa57AutomaticScaling(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_129] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_129] = Field(None, alias="$")
 
 
 class _130(Enum):
-    amd = 'amd'
-    metis = 'metis'
+    amd = "amd"
+    metis = "metis"
 
 
 class RtcMa77Order(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_130] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_130] = Field(None, alias="$")
 
 
 class _131(Enum):
-    auto = 'auto'
-    amd = 'amd'
-    metis = 'metis'
+    auto = "auto"
+    amd = "amd"
+    metis = "metis"
 
 
 class RtcMa86Order(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_131] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_131] = Field(None, alias="$")
 
 
 class _132(Enum):
-    mone = 'mone'
-    mc64 = 'mc64'
-    mc77 = 'mc77'
+    mone = "mone"
+    mc64 = "mc64"
+    mc77 = "mc77"
 
 
 class RtcMa86Scaling(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_132] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_132] = Field(None, alias="$")
 
 
 class _133(Enum):
-    auto = 'auto'
-    best = 'best'
-    amd = 'amd'
-    metis = 'metis'
-    matched_auto = 'matched-auto'
-    matched_metis = 'matched-metis'
-    matched_amd = 'matched-amd'
+    auto = "auto"
+    best = "best"
+    amd = "amd"
+    metis = "metis"
+    matched_auto = "matched-auto"
+    matched_metis = "matched-metis"
+    matched_amd = "matched-amd"
 
 
 class RtcMa97Order(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_133] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_133] = Field(None, alias="$")
 
 
 class _134(Enum):
-    none = 'none'
-    mc30 = 'mc30'
-    mc64 = 'mc64'
-    mc77 = 'mc77'
-    dynamic = 'dynamic'
+    none = "none"
+    mc30 = "mc30"
+    mc64 = "mc64"
+    mc77 = "mc77"
+    dynamic = "dynamic"
 
 
 class RtcMa97Scaling(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_134] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_134] = Field(None, alias="$")
 
 
 class _135(Enum):
-    none = 'none'
-    mc30 = 'mc30'
-    mc64 = 'mc64'
-    mc77 = 'mc77'
+    none = "none"
+    mc30 = "mc30"
+    mc64 = "mc64"
+    mc77 = "mc77"
 
 
 class RtcMa97Scaling1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_135] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_135] = Field(None, alias="$")
 
 
 class _136(Enum):
-    none = 'none'
-    mc30 = 'mc30'
-    mc64 = 'mc64'
-    mc77 = 'mc77'
+    none = "none"
+    mc30 = "mc30"
+    mc64 = "mc64"
+    mc77 = "mc77"
 
 
 class RtcMa97Scaling2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_136] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_136] = Field(None, alias="$")
 
 
 class _137(Enum):
-    none = 'none'
-    mc30 = 'mc30'
-    mc64 = 'mc64'
-    mc77 = 'mc77'
+    none = "none"
+    mc30 = "mc30"
+    mc64 = "mc64"
+    mc77 = "mc77"
 
 
 class RtcMa97Scaling3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_137] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_137] = Field(None, alias="$")
 
 
 class _138(Enum):
-    no = 'no'
-    yes = 'yes'
+    no = "no"
+    yes = "yes"
 
 
 class RtcMa97SolveBlas3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_138] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_138] = Field(None, alias="$")
 
 
 class _139(Enum):
-    never = 'never'
-    at_start = 'at_start'
-    at_start_reuse = 'at_start_reuse'
-    on_demand = 'on_demand'
-    on_demand_reuse = 'on_demand_reuse'
-    high_delay = 'high_delay'
-    high_delay_reuse = 'high_delay_reuse'
-    od_hd = 'od_hd'
-    od_hd_reuse = 'od_hd_reuse'
+    never = "never"
+    at_start = "at_start"
+    at_start_reuse = "at_start_reuse"
+    on_demand = "on_demand"
+    on_demand_reuse = "on_demand_reuse"
+    high_delay = "high_delay"
+    high_delay_reuse = "high_delay_reuse"
+    od_hd = "od_hd"
+    od_hd_reuse = "od_hd_reuse"
 
 
 class RtcMa97Switch1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_139] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_139] = Field(None, alias="$")
 
 
 class _140(Enum):
-    never = 'never'
-    at_start = 'at_start'
-    at_start_reuse = 'at_start_reuse'
-    on_demand = 'on_demand'
-    on_demand_reuse = 'on_demand_reuse'
-    high_delay = 'high_delay'
-    high_delay_reuse = 'high_delay_reuse'
-    od_hd = 'od_hd'
-    od_hd_reuse = 'od_hd_reuse'
+    never = "never"
+    at_start = "at_start"
+    at_start_reuse = "at_start_reuse"
+    on_demand = "on_demand"
+    on_demand_reuse = "on_demand_reuse"
+    high_delay = "high_delay"
+    high_delay_reuse = "high_delay_reuse"
+    od_hd = "od_hd"
+    od_hd_reuse = "od_hd_reuse"
 
 
 class RtcMa97Switch2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_140] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_140] = Field(None, alias="$")
 
 
 class _141(Enum):
-    never = 'never'
-    at_start = 'at_start'
-    at_start_reuse = 'at_start_reuse'
-    on_demand = 'on_demand'
-    on_demand_reuse = 'on_demand_reuse'
-    high_delay = 'high_delay'
-    high_delay_reuse = 'high_delay_reuse'
-    od_hd = 'od_hd'
-    od_hd_reuse = 'od_hd_reuse'
+    never = "never"
+    at_start = "at_start"
+    at_start_reuse = "at_start_reuse"
+    on_demand = "on_demand"
+    on_demand_reuse = "on_demand_reuse"
+    high_delay = "high_delay"
+    high_delay_reuse = "high_delay_reuse"
+    od_hd = "od_hd"
+    od_hd_reuse = "od_hd_reuse"
 
 
 class RtcMa97Switch3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_141] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_141] = Field(None, alias="$")
 
 
 class RtcOptimizerModeEnumStringType(Enum):
-    SEQUENTIAL = 'SEQUENTIAL'
-    PARALLEL = 'PARALLEL'
+    SEQUENTIAL = "SEQUENTIAL"
+    PARALLEL = "PARALLEL"
 
 
 class RtcParallelModeEnumStringType(Enum):
-    NONE = 'NONE'
-    ENSEMBLE = 'ENSEMBLE'
-    INTERNAL = 'INTERNAL'
-    ENSEMBLE_INTERNAL = 'ENSEMBLE+INTERNAL'
+    NONE = "NONE"
+    ENSEMBLE = "ENSEMBLE"
+    INTERNAL = "INTERNAL"
+    ENSEMBLE_INTERNAL = "ENSEMBLE+INTERNAL"
 
 
 class RtcConstraints(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcParallelModeEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcParallelModeEnumStringType] = Field(None, alias="$")
 
 
 class RtcSimulation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcParallelModeEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcParallelModeEnumStringType] = Field(None, alias="$")
 
 
 class RtcParameterFilePrefixEnumStringType(Enum):
-    NONE = 'NONE'
-    LOCATIONID = 'LOCATIONID'
+    NONE = "NONE"
+    LOCATIONID = "LOCATIONID"
 
 
 class RtcParameterFileTypeEnumStringType(Enum):
-    TREEVECTOR = 'TREEVECTOR'
-    PIMODELPARAMETERS = 'PIMODELPARAMETERS'
+    TREEVECTOR = "TREEVECTOR"
+    PIMODELPARAMETERS = "PIMODELPARAMETERS"
 
 
 class _142(Enum):
-    complete = 'complete'
-    complete_2x2 = 'complete+2x2'
-    constraints = 'constraints'
+    complete = "complete"
+    complete_2x2 = "complete+2x2"
+    constraints = "constraints"
 
 
 class RtcPardisoMatchingStrategy(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_142] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_142] = Field(None, alias="$")
 
 
 class _143(Enum):
-    amd = 'amd'
-    one = 'one'
-    metis = 'metis'
-    pmetis = 'pmetis'
-    four = 'four'
-    five = 'five'
+    amd = "amd"
+    one = "one"
+    metis = "metis"
+    pmetis = "pmetis"
+    four = "four"
+    five = "five"
 
 
 class RtcPardisoOrder(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[_143] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[_143] = Field(None, alias="$")
 
 
 class RtcPeriodEnumStringType(Enum):
-    COMPLETE = 'COMPLETE'
-    UPDATE = 'UPDATE'
-    FORECAST = 'FORECAST'
+    COMPLETE = "COMPLETE"
+    UPDATE = "UPDATE"
+    FORECAST = "FORECAST"
 
 
 class RtcDels(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcFtoll(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcMaxCpuTime1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcTimeSeriesSimpleType(BaseModel):
@@ -1269,35 +1269,35 @@ class RtcTimeSeriesSimpleType(BaseModel):
 class RtcTimeZoneSimpleType(BaseModel):
     __root__: float = Field(
         ...,
-        description='The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed',
+        description="The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed",
     )
 
 
 class RtcVariableTypeEnumStringType(Enum):
-    CONTINUOUS = 'CONTINUOUS'
-    INTEGER = 'INTEGER'
-    TIMEINSTANCE = 'TIMEINSTANCE'
+    CONTINUOUS = "CONTINUOUS"
+    INTEGER = "INTEGER"
+    TIMEINSTANCE = "TIMEINSTANCE"
 
 
 class RtcDateType(BaseModel):
-    __root__: constr(regex=r'^([\d][\d][\d][\d]\-[\d][\d]\-[\d][\d])$')
+    __root__: constr(regex=r"^([\d][\d][\d][\d]\-[\d][\d]\-[\d][\d])$")
 
 
 class RtcTimeSeriesType(Enum):
-    accumulative = 'accumulative'
-    instantaneous = 'instantaneous'
+    accumulative = "accumulative"
+    instantaneous = "instantaneous"
 
 
 class RtcTimeStepUnitEnumStringType(Enum):
-    second = 'second'
-    minute = 'minute'
-    hour = 'hour'
-    day = 'day'
-    week = 'week'
+    second = "second"
+    minute = "minute"
+    hour = "hour"
+    day = "day"
+    week = "week"
 
 
 class RtcTimeType(BaseModel):
-    __root__: constr(regex=r'^([\d][\d]\:[\d][\d]\:[\d][\d])$')
+    __root__: constr(regex=r"^([\d][\d]\:[\d][\d]\:[\d][\d])$")
 
 
 class XsBoolean(BaseModel):
@@ -1328,202 +1328,202 @@ class RtcDateTimeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _date: RtcDateType = Field(..., alias='@date')
-    _time: RtcTimeType = Field(..., alias='@time')
+    _: Optional[str] = Field(None, alias="#")
+    _date: RtcDateType = Field(..., alias="@date")
+    _time: RtcTimeType = Field(..., alias="@time")
 
 
 class RtcFileDataComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _name: XsString = Field(..., alias='@name')
+    _: Optional[str] = Field(None, alias="#")
+    _name: XsString = Field(..., alias="@name")
 
 
 class RtcFileObjectiveComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _name: XsString = Field(..., alias='@name')
+    _: Optional[str] = Field(None, alias="#")
+    _name: XsString = Field(..., alias="@name")
 
 
 class RtcFileParameterComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _name: XsString = Field(..., alias='@name')
+    _: Optional[str] = Field(None, alias="#")
+    _name: XsString = Field(..., alias="@name")
     _prefix: Optional[RtcParameterFilePrefixEnumStringType] = Field(
-        None, alias='@prefix'
+        None, alias="@prefix"
     )
-    _type: RtcParameterFileTypeEnumStringType = Field(..., alias='@type')
+    _type: RtcParameterFileTypeEnumStringType = Field(..., alias="@type")
 
 
 class RtcFileScenarioTreeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _name: XsString = Field(..., alias='@name')
+    _: Optional[str] = Field(None, alias="#")
+    _name: XsString = Field(..., alias="@name")
 
 
 class RtcFileToolsComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _name: XsString = Field(..., alias='@name')
+    _: Optional[str] = Field(None, alias="#")
+    _name: XsString = Field(..., alias="@name")
 
 
 class RtcBarrierTolFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMuInit(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMuLinearDecreaseFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMuMax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMuMaxFact(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMuMin(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMuSuperlinearDecreasePower(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMuTarget(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcQualityFunctionMaxSectionSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcIPOPTBarrierParameterComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_adaptive_mu_globalization: Optional[RtcAdaptiveMuGlobalization] = Field(
         None,
-        alias='rtc:adaptive_mu_globalization',
+        alias="rtc:adaptive_mu_globalization",
         description='Globalization strategy for the adaptive mu selection mode. \nTo achieve global convergence of the adaptive version, the algorithm has to switch to the monotone mode (Fiacco-McCormick approach) when convergence does not seem to appear. This option sets the criterion used to decide when to do this switch. (Only used if option "mu_strategy" is chosen as "adaptive".) The default value for this string option is "obj-constr-filter". \nPossible values:\nkkt-error: nonmonotone decrease of kkt-error\nobj-constr-filter: 2-dim filter for objective and constraint violation\nnever-monotone-mode: disables globalization',
     )
     rtc_barrier_tol_factor: Optional[RtcBarrierTolFactor] = Field(
         None,
-        alias='rtc:barrier_tol_factor',
+        alias="rtc:barrier_tol_factor",
         description='Factor for mu in barrier stop test. \nThe convergence tolerance for each barrier problem in the monotone mode is the value of the barrier parameter times "barrier_tol_factor". This option is also used in the adaptive mu strategy during the monotone mode. (This is kappa_epsilon in implementation paper). The valid range for this real option is [0, inf]and its default value is 10.',
     )
     rtc_fixed_mu_oracle: Optional[RtcFixedMuOracle] = Field(
         None,
-        alias='rtc:fixed_mu_oracle',
+        alias="rtc:fixed_mu_oracle",
         description='Oracle for the barrier parameter when switching to fixed mode. \nDetermines how the first value of the barrier parameter should be computed when switching to the "monotone mode" in the adaptive strategy. (Only considered if "adaptive" is selected for option "mu_strategy".) The default value for this string option is "average_compl". \nPossible values:\nprobing: Mehrotra\'s probing heuristic\nloqo: LOQO\'s centrality rule\nquality-function: minimize a quality function\naverage_compl: base on current average complementarity',
     )
     rtc_mehrotra_algorithm: Optional[RtcMehrotraAlgorithm] = Field(
         None,
-        alias='rtc:mehrotra_algorithm',
+        alias="rtc:mehrotra_algorithm",
         description='Indicates if we want to do Mehrotra\'s algorithm. \nIf set to yes, Ipopt runs as Mehrotra\'s predictor-corrector algorithm. This works usually very well for LPs and convex QPs. This automatically disables the line search, and chooses the (unglobalized) adaptive mu strategy with the "probing" oracle, and uses "corrector_type=affine" without any safeguards; you should not set any of those options explicitly in addition. Also, unless otherwise specified, the values of "bound_push", "bound_frac", and "bound_mult_init_val" are set more aggressive, and sets "alpha_for_y=bound_mult". The default value for this string option is "no". \nPossible values:\nno: Do the usual Ipopt algorithm.\nyes: Do Mehrotra\'s predictor-corrector algorithm.',
     )
     rtc_mu_init: Optional[RtcMuInit] = Field(
         None,
-        alias='rtc:mu_init',
+        alias="rtc:mu_init",
         description='Initial value for the barrier parameter. \nThis option determines the initial value for the barrier parameter (mu). It is only relevant in the monotone, Fiacco-McCormick version of the algorithm. (i.e., if "mu_strategy" is chosen as "monotone") The valid range for this real option is [0,inf] and its default value is0.1..',
     )
     rtc_mu_linear_decrease_factor: Optional[RtcMuLinearDecreaseFactor] = Field(
         None,
-        alias='rtc:mu_linear_decrease_factor',
+        alias="rtc:mu_linear_decrease_factor",
         description='Determines linear decrease rate of barrier parameter. \nFor the Fiacco-McCormick update procedure the new barrier parameter mu is obtained by taking the minimum of mu*"mu_linear_decrease_factor" and mu"superlinear_decrease_power". (This is kappa_mu in implementation paper.) This option is also used in the adaptive mu strategy during the monotone mode. The valid range for this real option is[0,1] and its default value is 0.2',
     )
     rtc_mu_max: Optional[RtcMuMax] = Field(
         None,
-        alias='rtc:mu_max',
+        alias="rtc:mu_max",
         description='Maximum value for barrier parameter. \nThis option specifies an upper bound on the barrier parameter in the adaptive mu selection mode. If this option is set, it overwrites the effect of mu_max_fact. (Only used if option "mu_strategy" is chosen as "adaptive".) The valid range for this real option is [0, inf] and its default value is 100000.',
     )
     rtc_mu_max_fact: Optional[RtcMuMaxFact] = Field(
         None,
-        alias='rtc:mu_max_fact',
+        alias="rtc:mu_max_fact",
         description='Factor for initialization of maximum value for barrier parameter. \nThis option determines the upper bound on the barrier parameter. This upper bound is computed as the average complementarity at the initial point times the value of this option. (Only used if option "mu_strategy" is chosen as "adaptive".) The valid range for this real option is [0, inf] and its default value is 1000.',
     )
     rtc_mu_min: Optional[RtcMuMin] = Field(
         None,
-        alias='rtc:mu_min',
+        alias="rtc:mu_min",
         description='Minimum value for barrier parameter. \nThis option specifies the lower bound on the barrier parameter in the adaptive mu selection mode. By default, it is set to the minimum of 1e-11 and min("tol","compl_inf_tol")/("barrier_tol_factor"+1), which should be a reasonable value. (Only used if option "mu_strategy" is chosen as "adaptive".) The valid range for this real option is  [0, inf] and its default value is 1e-11.',
     )
     rtc_mu_oracle: Optional[RtcMuOracle] = Field(
         None,
-        alias='rtc:mu_oracle',
+        alias="rtc:mu_oracle",
         description='Oracle for a new barrier parameter in the adaptive strategy. \nDetermines how a new barrier parameter is computed in each "free-mode" iteration of the adaptive barrier parameter strategy. (Only considered if "adaptive" is selected for option "mu_strategy"). The default value for this string option is "quality-function". \nPossible values:\nprobing: Mehrotra\'s probing heuristic\nloqo: LOQO\'s centrality rule\nquality-function: minimize a quality function',
     )
     rtc_mu_strategy: Optional[RtcMuStrategy] = Field(
         None,
-        alias='rtc:mu_strategy',
+        alias="rtc:mu_strategy",
         description='Update strategy for barrier parameter. \nDetermines which barrier parameter update strategy is to be used. The default value for this string option is "monotone". \nPossible values:\nmonotone: use the monotone (Fiacco-McCormick) strategy\nadaptive: use the adaptive update strategy',
     )
     rtc_mu_superlinear_decrease_power: Optional[RtcMuSuperlinearDecreasePower] = Field(
         None,
-        alias='rtc:mu_superlinear_decrease_power',
+        alias="rtc:mu_superlinear_decrease_power",
         description='Determines superlinear decrease rate of barrier parameter. \nFor the Fiacco-McCormick update procedure the new barrier parameter mu is obtained by taking the minimum of mu*"mu_linear_decrease_factor" and mu"superlinear_decrease_power". (This is theta_mu in implementation paper.) This option is also used in the adaptive mu strategy during the monotone mode. The valid range for this real option is  [1,2] and its default value is 1.5.',
     )
     rtc_mu_target: Optional[RtcMuTarget] = Field(
         None,
-        alias='rtc:mu_target',
+        alias="rtc:mu_target",
         description='Desired value of complementarity. \nUsually, the barrier parameter is driven to zero and the termination test for complementarity is measured with respect to zero complementarity. However, in some cases it might be desired to have Ipopt solve barrier problem for strictly positive value of the barrier parameter. In this case, the value of "mu_target" specifies the final value of the barrier parameter, and the termination tests are then defined with respect to the barrier problem for this value of the barrier parameter. The valid range for this real option is [0, inf] and its default value is 0.',
     )
     rtc_quality_function_max_section_steps: Optional[
         RtcQualityFunctionMaxSectionSteps
     ] = Field(
         None,
-        alias='rtc:quality_function_max_section_steps',
+        alias="rtc:quality_function_max_section_steps",
         description='Maximum number of search steps during direct search procedure determining the optimal centering parameter. \nThe golden section search is performed for the quality function based mu oracle. (Only used if option "mu_oracle" is set to "quality-function".) The valid range for this integer option is [0, inf] and its default value is 8.',
     )
 
@@ -1532,97 +1532,97 @@ class RtcFirstHessianPerturbation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcJacobianRegularizationValue(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMaxHessianPerturbation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMinHessianPerturbation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcPerturbDecFact(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcPerturbIncFact(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcPerturbIncFactFirst(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcIPOPTHessianPermutationComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_first_hessian_perturbation: Optional[RtcFirstHessianPerturbation] = Field(
         None,
-        alias='rtc:first_hessian_perturbation',
-        description='Size of first x-s perturbation tried. \nThe first value tried for the x-s perturbation in the inertia correction scheme.(This is delta_0 in the implementation paper.) The valid range for this real option is  [0, inf] and its default value is 1e4.',
+        alias="rtc:first_hessian_perturbation",
+        description="Size of first x-s perturbation tried. \nThe first value tried for the x-s perturbation in the inertia correction scheme.(This is delta_0 in the implementation paper.) The valid range for this real option is  [0, inf] and its default value is 1e4.",
     )
     rtc_jacobian_regularization_value: Optional[RtcJacobianRegularizationValue] = Field(
         None,
-        alias='rtc:jacobian_regularization_value',
-        description='Size of the regularization for rank-deficient constraint Jacobians. \n(This is bar delta_c in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 1e-8. .',
+        alias="rtc:jacobian_regularization_value",
+        description="Size of the regularization for rank-deficient constraint Jacobians. \n(This is bar delta_c in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 1e-8. .",
     )
     rtc_max_hessian_perturbation: Optional[RtcMaxHessianPerturbation] = Field(
         None,
-        alias='rtc:max_hessian_perturbation',
-        description='This parameter gives the maximum value of the regularization parameter. If a regularization of that size is not enough, the algorithm skips this iteration and goes to the restoration phase. (This is delta_wmax in the implementation paper.) The valid range for this real option is [0,+inf] and its default value is 1e+20.',
+        alias="rtc:max_hessian_perturbation",
+        description="This parameter gives the maximum value of the regularization parameter. If a regularization of that size is not enough, the algorithm skips this iteration and goes to the restoration phase. (This is delta_wmax in the implementation paper.) The valid range for this real option is [0,+inf] and its default value is 1e+20.",
     )
     rtc_min_hessian_perturbation: Optional[RtcMinHessianPerturbation] = Field(
         None,
-        alias='rtc:min_hessian_perturbation',
-        description='Smallest perturbation of the Hessian block. \nThe size of the perturbation of the Hessian block is never selected smaller than this value, unless no perturbation is necessary. (This is delta_wmin in implementation paper.) The valid range for this real option is  [0, +inf] and its default value is  1e-20',
+        alias="rtc:min_hessian_perturbation",
+        description="Smallest perturbation of the Hessian block. \nThe size of the perturbation of the Hessian block is never selected smaller than this value, unless no perturbation is necessary. (This is delta_wmin in implementation paper.) The valid range for this real option is  [0, +inf] and its default value is  1e-20",
     )
     rtc_perturb_dec_fact: Optional[RtcPerturbDecFact] = Field(
         None,
-        alias='rtc:perturb_dec_fact',
-        description='Decrease factor for x-s perturbation. \nThe factor by which the perturbation is decreased when a trial value is deduced from the size of the most recent successful perturbation. (This is kappa_w- in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 0.333333.',
+        alias="rtc:perturb_dec_fact",
+        description="Decrease factor for x-s perturbation. \nThe factor by which the perturbation is decreased when a trial value is deduced from the size of the most recent successful perturbation. (This is kappa_w- in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 0.333333.",
     )
     rtc_perturb_inc_fact: Optional[RtcPerturbIncFact] = Field(
         None,
-        alias='rtc:perturb_inc_fact',
-        description='Increase factor for x-s perturbation. \nThe factor by which the perturbation is increased when a trial value was not sufficient - this value is used for the computation of all perturbations except for the first. (This is kappa_w+ in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 8.',
+        alias="rtc:perturb_inc_fact",
+        description="Increase factor for x-s perturbation. \nThe factor by which the perturbation is increased when a trial value was not sufficient - this value is used for the computation of all perturbations except for the first. (This is kappa_w+ in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 8.",
     )
     rtc_perturb_inc_fact_first: Optional[RtcPerturbIncFactFirst] = Field(
         None,
-        alias='rtc:perturb_inc_fact_first',
-        description='Increase factor for x-s perturbation for very first perturbation. \nThe factor by which the perturbation is increased when a trial value was not sufficient - this value is used for the computation of the very first perturbation and allows a different value for for the first perturbation than that used for the remaining perturbations. (This is bar_kappa_w+ in the implementation paper.) The valid range for this real option is [1,inf] and its default value is100.',
+        alias="rtc:perturb_inc_fact_first",
+        description="Increase factor for x-s perturbation for very first perturbation. \nThe factor by which the perturbation is increased when a trial value was not sufficient - this value is used for the computation of the very first perturbation and allows a different value for for the first perturbation than that used for the remaining perturbations. (This is bar_kappa_w+ in the implementation paper.) The valid range for this real option is [1,inf] and its default value is100.",
     )
 
 
@@ -1630,88 +1630,88 @@ class RtcBoundFrac(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcBoundMultInitVal(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcBoundPush(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcConstrMultInitMax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcSlackBoundFrac(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcSlackBoundPush(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcIPOPTInitializationComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_bound_frac: Optional[RtcBoundFrac] = Field(
         None,
-        alias='rtc:bound_frac',
+        alias="rtc:bound_frac",
         description='Desired minimum relative distance from the initial point to bound. \nDetermines how much the initial point might have to be modified in order to be sufficiently inside the bounds (together with "bound_push"). (This is kappa_2 in Section 3.6 of implementation paper.) The valid range for this real option is [0, 0.5]and its default value is 0.01..',
     )
     rtc_bound_mult_init_method: Optional[RtcBoundMultInitMethod] = Field(
         None,
-        alias='rtc:bound_mult_init_method',
+        alias="rtc:bound_mult_init_method",
         description='Initialization method for bound multipliers \nThis option defines how the iterates for the bound multipliers are initialized. If "constant" is chosen, then all bound multipliers are initialized to the value of "bound_mult_init_val". If "mu-based" is chosen, the each value is initialized to the the value of "mu_init" divided by the corresponding slack variable. This latter option might be useful if the starting point is close to the optimal solution. The default value for this string option is "constant". \nPossible values:\nconstant: set all bound multipliers to the value of bound_mult_init_val\nmu-based: initialize to mu_init/x_slack',
     )
     rtc_bound_mult_init_val: Optional[RtcBoundMultInitVal] = Field(
         None,
-        alias='rtc:bound_mult_init_val',
-        description='Initial value for the bound multipliers. \nAll dual variables corresponding to bound constraints are initialized to this value. The valid range for this real option is  [0, inf] and its default value is 1.',
+        alias="rtc:bound_mult_init_val",
+        description="Initial value for the bound multipliers. \nAll dual variables corresponding to bound constraints are initialized to this value. The valid range for this real option is  [0, inf] and its default value is 1.",
     )
     rtc_bound_push: Optional[RtcBoundPush] = Field(
         None,
-        alias='rtc:bound_push',
+        alias="rtc:bound_push",
         description='Desired minimum absolute distance from the initial point to bound. \nDetermines how much the initial point might have to be modified in order to be sufficiently inside the bounds (together with "bound_frac"). (This is kappa_1 in Section 3.6 of implementation paper.) The valid range for this real option is [0, inf] and its default value is 0.01.',
     )
     rtc_constr_mult_init_max: Optional[RtcConstrMultInitMax] = Field(
         None,
-        alias='rtc:constr_mult_init_max',
+        alias="rtc:constr_mult_init_max",
         description='Maximum allowed least-square guess of constraint multipliers. \nDetermines how large the initial least-square guesses of the constraint multipliers are allowed to be (in max-norm). If the guess is larger than this value, it is discarded and all constraint multipliers are set to zero. This options is also used when initializing the restoration phase. By default, "resto.constr_mult_init_max" (the one used in RestoIterateInitializer) is set to zero. The valid range for this real option is [0, inf] and its default value is 1000.',
     )
     rtc_slack_bound_frac: Optional[RtcSlackBoundFrac] = Field(
         None,
-        alias='rtc:slack_bound_frac',
+        alias="rtc:slack_bound_frac",
         description='Desired minimum relative distance from the initial slack to bound. \nDetermines how much the initial slack variables might have to be modified in order to be sufficiently inside the inequality bounds (together with "slack_bound_push"). (This is kappa_2 in Section 3.6 of implementation paper.) The valid range for this real option is  [0, 0.5] and its default value is 0.01.',
     )
     rtc_slack_bound_push: Optional[RtcSlackBoundPush] = Field(
         None,
-        alias='rtc:slack_bound_push',
+        alias="rtc:slack_bound_push",
         description='Desired minimum absolute distance from the initial slack to bound. \nDetermines how much the initial slack variables might have to be modified in order to be sufficiently inside the inequality bounds (together with "slack_bound_frac"). (This is kappa_1 in Section 3.6 of implementation paper.) The valid range for this real option is  [0, inf] and its default value is 0.01.',
     )
 
@@ -1720,52 +1720,52 @@ class RtcMaxSoc(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcWatchdogShortenedIterTrigger(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcWatchdogTrialIterMax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcIPOPTLineSearchComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_accept_every_trial_step: Optional[RtcAcceptEveryTrialStep] = Field(
         None,
-        alias='rtc:accept_every_trial_step',
+        alias="rtc:accept_every_trial_step",
         description='Always accept the first trial step. \nSetting this option to "yes" essentially disables the line search and makes the algorithm take aggressive steps, without global convergence guarantees. The default value for this string option is "no". \nPossible values:\nno: don\'t arbitrarily accept the full step\nyes: always accept the full step',
     )
     rtc_max_soc: Optional[RtcMaxSoc] = Field(
         None,
-        alias='rtc:max_soc',
-        description='Maximum number of second order correction trial steps at each iteration. \nChoosing 0 disables the second order corrections. (This is pmax of Step A-5.9 of Algorithm A in the implementation paper.) The valid range for this integer option is  [0, inf] and its default value is 4 .',
+        alias="rtc:max_soc",
+        description="Maximum number of second order correction trial steps at each iteration. \nChoosing 0 disables the second order corrections. (This is pmax of Step A-5.9 of Algorithm A in the implementation paper.) The valid range for this integer option is  [0, inf] and its default value is 4 .",
     )
     rtc_watchdog_shortened_iter_trigger: Optional[
         RtcWatchdogShortenedIterTrigger
     ] = Field(
         None,
-        alias='rtc:watchdog_shortened_iter_trigger',
+        alias="rtc:watchdog_shortened_iter_trigger",
         description='Number of shortened iterations that trigger the watchdog. \nIf the number of successive iterations in which the backtracking line search did not accept the first trial point exceeds this number, the watchdog procedure is activated. Choosing "0" here disables the watchdog procedure. The valid range for this integer option is  [0,inf] and its default value is 10.',
     )
     rtc_watchdog_trial_iter_max: Optional[RtcWatchdogTrialIterMax] = Field(
         None,
-        alias='rtc:watchdog_trial_iter_max',
-        description='Maximum number of watchdog iterations. \nThis option determines the number of trial iterations allowed before the watchdog procedure is aborted and the algorithm returns to the stored point. The valid range for this integer option is [1, inf] and its default value is 3. ',
+        alias="rtc:watchdog_trial_iter_max",
+        description="Maximum number of watchdog iterations. \nThis option determines the number of trial iterations allowed before the watchdog procedure is aborted and the algorithm returns to the stored point. The valid range for this integer option is [1, inf] and its default value is 3. ",
     )
 
 
@@ -1773,58 +1773,58 @@ class RtcMaxRefinementSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMinRefinementSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcAlphaForYTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcRecalcYFeasTol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcIPOPTMultiplierUpdatesComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_alpha_for_y: Optional[RtcAlphaForY] = Field(
         None,
-        alias='rtc:alpha_for_y',
+        alias="rtc:alpha_for_y",
         description='Method to determine the step size for constraint multipliers. \nThis option determines how the step size (alpha_y) will be calculated when updating the constraint multipliers. The default value for this string option is "primal". \nPossible values:\nprimal: use primal step size\nbound-mult: use step size for the bound multipliers (good for LPs)\nmin: use the min of primal and bound multipliers\nmax: use the max of primal and bound multipliers\nfull: take a full step of size one\nmin-dual-infeas: choose step size minimizing new dual infeasibility\nsafer-min-dual-infeas: like "min_dual_infeas", but safeguarded by "min" and "max"\nprimal-and-full: use the primal step size, and full step if delta_x smaller or equal than alpha_for_y_tol\ndual-and-full: use the dual step size, and full step if delta_x smaller or equal than alpha_for_y_tol\nacceptor: Call LSAcceptor to get step size for y',
     )
     rtc_alpha_for_y_tol: Optional[RtcAlphaForYTol] = Field(
         None,
-        alias='rtc:alpha_for_y_tol',
+        alias="rtc:alpha_for_y_tol",
         description='Tolerance for switching to full equality multiplier steps. \nThis is only relevant if "alpha_for_y" is chosen "primal-and-full" or "dual-and-full". The step size for the equality constraint multipliers is taken to be one if the max-norm of the primal step is less than this tolerance. The valid range for this real option is  [0, inf] and its default value is 10.',
     )
     rtc_recalc_y: Optional[RtcRecalcY] = Field(
         None,
-        alias='rtc:recalc_y',
+        alias="rtc:recalc_y",
         description='Tells the algorithm to recalculate the equality and inequality multipliers as least square estimates. \nThis asks the algorithm to recompute the multipliers, whenever the current infeasibility is less than recalc_y_feas_tol. Choosing yes might be helpful in the quasi-Newton option. However, each recalculation requires an extra factorization of the linear system. If a limited memory quasi-Newton option is chosen, this is used by default. The default value for this string option is "no". \nPossible values:\nno: use the Newton step to update the multipliers\nyes: use least-square multiplier estimates',
     )
     rtc_recalc_y_feas_tol: Optional[RtcRecalcYFeasTol] = Field(
         None,
-        alias='rtc:recalc_y_feas_tol',
-        description='Feasibility threshold for recomputation of multipliers. \nIf recalc_y is chosen and the current infeasibility is less than this value, then the multipliers are recomputed. The valid range for this real option is [0, inf] and its default value is 1e-6.',
+        alias="rtc:recalc_y_feas_tol",
+        description="Feasibility threshold for recomputation of multipliers. \nIf recalc_y is chosen and the current infeasibility is less than this value, then the multipliers are recomputed. The valid range for this real option is [0, inf] and its default value is 1e-6.",
     )
 
 
@@ -1832,108 +1832,108 @@ class RtcBoundMultResetThreshold(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcConstrMultResetThreshold(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcExpectInfeasibleProblemCtol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcExpectInfeasibleProblemYtol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcRequiredInfeasibilityReduction(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcSoftRestoPderrorReductionFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcIPOPTRestorationPhaseComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_bound_mult_reset_threshold: Optional[RtcBoundMultResetThreshold] = Field(
         None,
-        alias='rtc:bound_mult_reset_threshold',
-        description='Threshold for resetting bound multipliers after the restoration phase. \nAfter returning from the restoration phase, the bound multipliers are updated with a Newton step for complementarity. Here, the change in the primal variables during the entire restoration phase is taken to be the corresponding primal Newton step. However, if after the update the largest bound multiplier exceeds the threshold specified by this option, the multipliers are all reset to 1. The valid range for this real option is [0, inf] and its default value is 1000 .',
+        alias="rtc:bound_mult_reset_threshold",
+        description="Threshold for resetting bound multipliers after the restoration phase. \nAfter returning from the restoration phase, the bound multipliers are updated with a Newton step for complementarity. Here, the change in the primal variables during the entire restoration phase is taken to be the corresponding primal Newton step. However, if after the update the largest bound multiplier exceeds the threshold specified by this option, the multipliers are all reset to 1. The valid range for this real option is [0, inf] and its default value is 1000 .",
     )
     rtc_constr_mult_reset_threshold: Optional[RtcConstrMultResetThreshold] = Field(
         None,
-        alias='rtc:constr_mult_reset_threshold',
-        description='Threshold for resetting equality and inequality multipliers after restoration phase. \nAfter returning from the restoration phase, the constraint multipliers are recomputed by a least square estimate. This option triggers when those least-square estimates should be ignored. The valid range for this real option is  [0, inf] and its default value is 0 .',
+        alias="rtc:constr_mult_reset_threshold",
+        description="Threshold for resetting equality and inequality multipliers after restoration phase. \nAfter returning from the restoration phase, the constraint multipliers are recomputed by a least square estimate. This option triggers when those least-square estimates should be ignored. The valid range for this real option is  [0, inf] and its default value is 0 .",
     )
     rtc_evaluate_orig_obj_at_resto_trial: Optional[
         RtcEvaluateOrigObjAtRestoTrial
     ] = Field(
         None,
-        alias='rtc:evaluate_orig_obj_at_resto_trial',
+        alias="rtc:evaluate_orig_obj_at_resto_trial",
         description='Determines if the original objective function should be evaluated at restoration phase trial points. \nSetting this option to "yes" makes the restoration phase algorithm evaluate the objective function of the original problem at every trial point encountered during the restoration phase, even if this value is not required. In this way, it is guaranteed that the original objective function can be evaluated without error at all accepted iterates; otherwise the algorithm might fail at a point where the restoration phase accepts an iterate that is good for the restoration phase problem, but not the original problem. On the other hand, if the evaluation of the original objective is expensive, this might be costly. The default value for this string option is "yes". \nPossible values:\nno: skip evaluation\nyes: evaluate at every trial point',
     )
     rtc_expect_infeasible_problem: Optional[RtcExpectInfeasibleProblem] = Field(
         None,
-        alias='rtc:expect_infeasible_problem',
+        alias="rtc:expect_infeasible_problem",
         description='Enable heuristics to quickly detect an infeasible problem. \nThis options is meant to activate heuristics that may speed up the infeasibility determination if you expect that there is a good chance for the problem to be infeasible. In the filter line search procedure, the restoration phase is called more quickly than usually, and more reduction in the constraint violation is enforced before the restoration phase is left. If the problem is square, this option is enabled automatically. The default value for this string option is "no". \nPossible values:\nno: the problem probably be feasible\nyes: the problem has a good chance to be infeasible',
     )
     rtc_expect_infeasible_problem_ctol: Optional[
         RtcExpectInfeasibleProblemCtol
     ] = Field(
         None,
-        alias='rtc:expect_infeasible_problem_ctol',
+        alias="rtc:expect_infeasible_problem_ctol",
         description='Threshold for disabling "expect_infeasible_problem" option. \nIf the constraint violation becomes smaller than this threshold, the "expect_infeasible_problem" heuristics in the filter line search are disabled. If the problem is square, this options is set to 0. The valid range for this real option is [0, inf] and its default value is 0.001.',
     )
     rtc_expect_infeasible_problem_ytol: Optional[
         RtcExpectInfeasibleProblemYtol
     ] = Field(
         None,
-        alias='rtc:expect_infeasible_problem_ytol',
+        alias="rtc:expect_infeasible_problem_ytol",
         description='Multiplier threshold for activating "expect_infeasible_problem" option. \nIf the max norm of the constraint multipliers becomes larger than this value and "expect_infeasible_problem" is chosen, then the restoration phase is entered. The valid range for this real option is [0, inf] and its default value is  1e8.',
     )
     rtc_required_infeasibility_reduction: Optional[
         RtcRequiredInfeasibilityReduction
     ] = Field(
         None,
-        alias='rtc:required_infeasibility_reduction',
-        description='Required reduction of infeasibility before leaving restoration phase. \nThe restoration phase algorithm is performed, until a point is found that is acceptable to the filter and the infeasibility has been reduced by at least the fraction given by this option. The valid range for this real option is [0, inf] and its default value is 0.9 .',
+        alias="rtc:required_infeasibility_reduction",
+        description="Required reduction of infeasibility before leaving restoration phase. \nThe restoration phase algorithm is performed, until a point is found that is acceptable to the filter and the infeasibility has been reduced by at least the fraction given by this option. The valid range for this real option is [0, inf] and its default value is 0.9 .",
     )
     rtc_soft_resto_pderror_reduction_factor: Optional[
         RtcSoftRestoPderrorReductionFactor
     ] = Field(
         None,
-        alias='rtc:soft_resto_pderror_reduction_factor',
+        alias="rtc:soft_resto_pderror_reduction_factor",
         description='Required reduction in primal-dual error in the soft restoration phase. \nThe soft restoration phase attempts to reduce the primal-dual error with regular steps. If the damped primal-dual step (damped only to satisfy the fraction-to-the-boundary rule) is not decreasing the primal-dual error by at least this factor, then the regular restoration phase is called. Choosing "0" here disables the soft restoration phase. The valid range for this real option is [0, inf] and its default value is 0.9999 .',
     )
     rtc_start_with_resto: Optional[RtcStartWithResto] = Field(
         None,
-        alias='rtc:start_with_resto',
+        alias="rtc:start_with_resto",
         description='Tells algorithm to switch to restoration phase in first iteration. \nSetting this option to "yes" forces the algorithm to switch to the feasibility restoration phase in the first iteration. If the initial point is feasible, the algorithm will abort with a failure. The default value for this string option is "no". \nPossible values:\nno: don\'t force start in restoration phase\nyes: force start in restoration phase',
     )
 
@@ -1942,89 +1942,89 @@ class RtcWarmStartBoundFrac(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcWarmStartBoundPush(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcWarmStartMultBoundPush(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcWarmStartMultInitMax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcWarmStartSlackBoundFrac(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcWarmStartSlackBoundPush(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcIPOPTWarmStartComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_warm_start_bound_frac: Optional[RtcWarmStartBoundFrac] = Field(
         None,
-        alias='rtc:warm_start_bound_frac',
-        description='same as bound_frac for the regular initializer. \nThe valid range for this real option is [0,0.5] and its default value is 0.001.',
+        alias="rtc:warm_start_bound_frac",
+        description="same as bound_frac for the regular initializer. \nThe valid range for this real option is [0,0.5] and its default value is 0.001.",
     )
     rtc_warm_start_bound_push: Optional[RtcWarmStartBoundPush] = Field(
         None,
-        alias='rtc:warm_start_bound_push',
-        description='same as bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001.',
+        alias="rtc:warm_start_bound_push",
+        description="same as bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001.",
     )
     rtc_warm_start_init_point: Optional[RtcWarmStartInitPoint] = Field(
         None,
-        alias='rtc:warm_start_init_point',
+        alias="rtc:warm_start_init_point",
         description='Warm-start for initial point \nIndicates whether this optimization should use a warm start initialization, where values of primal and dual variables are given (e.g., from a previous optimization of a related problem.) The default value for this string option is "no". \nPossible values:\nno: do not use the warm start initialization\nyes: use the warm start initialization',
     )
     rtc_warm_start_mult_bound_push: Optional[RtcWarmStartMultBoundPush] = Field(
         None,
-        alias='rtc:warm_start_mult_bound_push',
-        description='same as mult_bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001.',
+        alias="rtc:warm_start_mult_bound_push",
+        description="same as mult_bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001.",
     )
     rtc_warm_start_mult_init_max: Optional[RtcWarmStartMultInitMax] = Field(
         None,
-        alias='rtc:warm_start_mult_init_max',
-        description='Maximum initial value for the equality multipliers. \nThe valid range for this real option is [-inf, +inf] and its default value is  1e6.',
+        alias="rtc:warm_start_mult_init_max",
+        description="Maximum initial value for the equality multipliers. \nThe valid range for this real option is [-inf, +inf] and its default value is  1e6.",
     )
     rtc_warm_start_slack_bound_frac: Optional[RtcWarmStartSlackBoundFrac] = Field(
         None,
-        alias='rtc:warm_start_slack_bound_frac',
-        description='same as slack_bound_frac for the regular initializer. \nThe valid range for this real option is   [0,0.5] and its default value is 0.001.',
+        alias="rtc:warm_start_slack_bound_frac",
+        description="same as slack_bound_frac for the regular initializer. \nThe valid range for this real option is   [0,0.5] and its default value is 0.001.",
     )
     rtc_warm_start_slack_bound_push: Optional[RtcWarmStartSlackBoundPush] = Field(
         None,
-        alias='rtc:warm_start_slack_bound_push',
-        description='same as slack_bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001.',
+        alias="rtc:warm_start_slack_bound_push",
+        description="same as slack_bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001.",
     )
 
 
@@ -2032,71 +2032,71 @@ class RtcMa27LaInitFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa27LiwInitFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa27MemincFactor(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa27Pivtol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa27Pivtolmax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMA27ComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_ma27_la_init_factor: Optional[RtcMa27LaInitFactor] = Field(
         None,
-        alias='rtc:ma27_la_init_factor',
-        description='Real workspace memory for MA27. \nThe initial real workspace memory = la_init_factor * memory required by unfactored system. Ipopt will increase the workspace size by meminc_factor if required. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is  [1, inf] and its default value is 5.',
+        alias="rtc:ma27_la_init_factor",
+        description="Real workspace memory for MA27. \nThe initial real workspace memory = la_init_factor * memory required by unfactored system. Ipopt will increase the workspace size by meminc_factor if required. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is  [1, inf] and its default value is 5.",
     )
     rtc_ma27_liw_init_factor: Optional[RtcMa27LiwInitFactor] = Field(
         None,
-        alias='rtc:ma27_liw_init_factor',
-        description='Integer workspace memory for MA27. \nThe initial integer workspace memory = liw_init_factor * memory required by unfactored system. Ipopt will increase the workspace size by meminc_factor if required. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [1, inf] and its default value is 5.',
+        alias="rtc:ma27_liw_init_factor",
+        description="Integer workspace memory for MA27. \nThe initial integer workspace memory = liw_init_factor * memory required by unfactored system. Ipopt will increase the workspace size by meminc_factor if required. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [1, inf] and its default value is 5.",
     )
     rtc_ma27_meminc_factor: Optional[RtcMa27MemincFactor] = Field(
         None,
-        alias='rtc:ma27_meminc_factor',
-        description='Increment factor for workspace size for MA27. \nIf the integer or real workspace is not large enough, Ipopt will increase its size by this factor. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [1, inf] and its default value is 2.',
+        alias="rtc:ma27_meminc_factor",
+        description="Increment factor for workspace size for MA27. \nIf the integer or real workspace is not large enough, Ipopt will increase its size by this factor. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [1, inf] and its default value is 2.",
     )
     rtc_ma27_pivtol: Optional[RtcMa27Pivtol] = Field(
         None,
-        alias='rtc:ma27_pivtol',
-        description='Pivot tolerance for the linear solver MA27. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [0,1] and its default value is  1e-8.',
+        alias="rtc:ma27_pivtol",
+        description="Pivot tolerance for the linear solver MA27. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [0,1] and its default value is  1e-8.",
     )
     rtc_ma27_pivtolmax: Optional[RtcMa27Pivtolmax] = Field(
         None,
-        alias='rtc:ma27_pivtolmax',
-        description='Maximum pivot tolerance for the linear solver MA27. \nIpopt may increase pivtol as high as ma27_pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is  [0,1] and its default value is 0.0001.',
+        alias="rtc:ma27_pivtolmax",
+        description="Maximum pivot tolerance for the linear solver MA27. \nIpopt may increase pivtol as high as ma27_pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is  [0,1] and its default value is 0.0001.",
     )
 
 
@@ -2104,102 +2104,102 @@ class RtcMa57BlockSize(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa57NodeAmalgamation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa57PivotOrder(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa57Pivtol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa57Pivtolmax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa57PreAlloc(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa57SmallPivotFlag(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMA57ComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_ma57_automatic_scaling: Optional[RtcMa57AutomaticScaling] = Field(
         None,
-        alias='rtc:ma57_automatic_scaling',
+        alias="rtc:ma57_automatic_scaling",
         description='Controls MA57 automatic scaling \nThis option controls the internal scaling option of MA57. For higher reliability of the MA57 solver, you may want to set this option to yes. This is ICNTL(15) in MA57. The default value for this string option is "no". \nPossible values:\nno: Do not scale the linear system matrix\nyes: Scale the linear system matrix',
     )
     rtc_ma57_block_size: Optional[RtcMa57BlockSize] = Field(
         None,
-        alias='rtc:ma57_block_size',
-        description='Controls block size used by Level 3 BLAS in MA57BD \nThis is ICNTL(11) in MA57. The valid range for this integer option is [1, inf] and its default value is 16. .',
+        alias="rtc:ma57_block_size",
+        description="Controls block size used by Level 3 BLAS in MA57BD \nThis is ICNTL(11) in MA57. The valid range for this integer option is [1, inf] and its default value is 16. .",
     )
     rtc_ma57_node_amalgamation: Optional[RtcMa57NodeAmalgamation] = Field(
         None,
-        alias='rtc:ma57_node_amalgamation',
-        description='Node amalgamation parameter \nThis is ICNTL(12) in MA57. The valid range for this integer option is  [1, inf] and its default value is 16.',
+        alias="rtc:ma57_node_amalgamation",
+        description="Node amalgamation parameter \nThis is ICNTL(12) in MA57. The valid range for this integer option is  [1, inf] and its default value is 16.",
     )
     rtc_ma57_pivot_order: Optional[RtcMa57PivotOrder] = Field(
         None,
-        alias='rtc:ma57_pivot_order',
-        description='Controls pivot order in MA57 \nThis is ICNTL(6) in MA57. The valid range for this integer option is [0,5] and its default value is 5.',
+        alias="rtc:ma57_pivot_order",
+        description="Controls pivot order in MA57 \nThis is ICNTL(6) in MA57. The valid range for this integer option is [0,5] and its default value is 5.",
     )
     rtc_ma57_pivtol: Optional[RtcMa57Pivtol] = Field(
         None,
-        alias='rtc:ma57_pivtol',
-        description='Pivot tolerance for the linear solver MA57. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is [0,1] and its default value is  1e-8.',
+        alias="rtc:ma57_pivtol",
+        description="Pivot tolerance for the linear solver MA57. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is [0,1] and its default value is  1e-8.",
     )
     rtc_ma57_pivtolmax: Optional[RtcMa57Pivtolmax] = Field(
         None,
-        alias='rtc:ma57_pivtolmax',
-        description='Maximum pivot tolerance for the linear solver MA57. \nIpopt may increase pivtol as high as ma57_pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is  [0,1] and its default value is 0.0001.',
+        alias="rtc:ma57_pivtolmax",
+        description="Maximum pivot tolerance for the linear solver MA57. \nIpopt may increase pivtol as high as ma57_pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is  [0,1] and its default value is 0.0001.",
     )
     rtc_ma57_pre_alloc: Optional[RtcMa57PreAlloc] = Field(
         None,
-        alias='rtc:ma57_pre_alloc',
-        description='Safety factor for work space memory allocation for the linear solver MA57. \nIf 1 is chosen, the suggested amount of work space is used. However, choosing a larger number might avoid reallocation if the suggest values do not suffice. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is  [1, inf]  and its default value is 1.05.',
+        alias="rtc:ma57_pre_alloc",
+        description="Safety factor for work space memory allocation for the linear solver MA57. \nIf 1 is chosen, the suggested amount of work space is used. However, choosing a larger number might avoid reallocation if the suggest values do not suffice. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is  [1, inf]  and its default value is 1.05.",
     )
     rtc_ma57_small_pivot_flag: Optional[RtcMa57SmallPivotFlag] = Field(
         None,
-        alias='rtc:ma57_small_pivot_flag',
-        description='If set to 1, then when small entries defined by CNTL(2) are detected they are removed and the corresponding pivots placed at the end of the factorization. This can be particularly efficient if the matrix is highly rank deficient. \nThis is ICNTL(16) in MA57. The valid range for this integer option is  [0,1] and its default value is 0.',
+        alias="rtc:ma57_small_pivot_flag",
+        description="If set to 1, then when small entries defined by CNTL(2) are detected they are removed and the corresponding pivots placed at the end of the factorization. This can be particularly efficient if the matrix is highly rank deficient. \nThis is ICNTL(16) in MA57. The valid range for this integer option is  [0,1] and its default value is 0.",
     )
 
 
@@ -2207,141 +2207,141 @@ class RtcMa77BufferLpage(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa77BufferNpage(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa77FileSize(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa77Maxstore(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa77Nemin(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa77PrintLevel(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa77Small(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa77Static(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa77U(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa77Umax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMA77ComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_ma77_buffer_lpage: Optional[RtcMa77BufferLpage] = Field(
         None,
-        alias='rtc:ma77_buffer_lpage',
-        description='Number of scalars per MA77 buffer page \nNumber of scalars per an in-core buffer in the out-of-core solver MA77. Must be at most ma77_file_size. The valid range for this integer option is [1, inf] and its default value is 4096.',
+        alias="rtc:ma77_buffer_lpage",
+        description="Number of scalars per MA77 buffer page \nNumber of scalars per an in-core buffer in the out-of-core solver MA77. Must be at most ma77_file_size. The valid range for this integer option is [1, inf] and its default value is 4096.",
     )
     rtc_ma77_buffer_npage: Optional[RtcMa77BufferNpage] = Field(
         None,
-        alias='rtc:ma77_buffer_npage',
-        description='Number of pages that make up MA77 buffer \nNumber of pages of size buffer_lpage that exist in-core for the out-of-core solver MA77. The valid range for this integer option is [1, inf] and its default value is 1600.',
+        alias="rtc:ma77_buffer_npage",
+        description="Number of pages that make up MA77 buffer \nNumber of pages of size buffer_lpage that exist in-core for the out-of-core solver MA77. The valid range for this integer option is [1, inf] and its default value is 1600.",
     )
     rtc_ma77_file_size: Optional[RtcMa77FileSize] = Field(
         None,
-        alias='rtc:ma77_file_size',
-        description='Target size of each temporary file for MA77, scalars per type \nMA77 uses many temporary files, this option controls the size of each one. It is measured in the number of entries (int or double), NOT bytes. The valid range for this integer option is [1, inf] and its default value is 2097152.',
+        alias="rtc:ma77_file_size",
+        description="Target size of each temporary file for MA77, scalars per type \nMA77 uses many temporary files, this option controls the size of each one. It is measured in the number of entries (int or double), NOT bytes. The valid range for this integer option is [1, inf] and its default value is 2097152.",
     )
     rtc_ma77_maxstore: Optional[RtcMa77Maxstore] = Field(
         None,
-        alias='rtc:ma77_maxstore',
-        description='Maximum storage size for MA77 in-core mode \nIf greater than zero, the maximum size of factors stored in core before out-of-core mode is invoked. The valid range for this integer option is [0, inf] and its default value is 0',
+        alias="rtc:ma77_maxstore",
+        description="Maximum storage size for MA77 in-core mode \nIf greater than zero, the maximum size of factors stored in core before out-of-core mode is invoked. The valid range for this integer option is [0, inf] and its default value is 0",
     )
     rtc_ma77_nemin: Optional[RtcMa77Nemin] = Field(
         None,
-        alias='rtc:ma77_nemin',
-        description='Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma77_nemin variables. The valid range for this integer option is [1, inf] and its default value is 8.',
+        alias="rtc:ma77_nemin",
+        description="Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma77_nemin variables. The valid range for this integer option is [1, inf] and its default value is 8.",
     )
     rtc_ma77_order: Optional[RtcMa77Order] = Field(
         None,
-        alias='rtc:ma77_order',
+        alias="rtc:ma77_order",
         description='Controls type of ordering used by HSL_MA77 \nThis option controls ordering for the solver HSL_MA77. The default value for this string option is "metis". \nPossible values:\namd: Use the HSL_MC68 approximate minimum degree algorithm\nmetis: Use the MeTiS nested dissection algorithm (if available)',
     )
     rtc_ma77_print_level: Optional[RtcMa77PrintLevel] = Field(
         None,
-        alias='rtc:ma77_print_level',
-        description='Debug printing level for the linear solver MA77 \nThe valid range for this integer option is  [-inf, +inf] and its default value is -1.',
+        alias="rtc:ma77_print_level",
+        description="Debug printing level for the linear solver MA77 \nThe valid range for this integer option is  [-inf, +inf] and its default value is -1.",
     )
     rtc_ma77_small: Optional[RtcMa77Small] = Field(
         None,
-        alias='rtc:ma77_small',
-        description='Zero Pivot Threshold \nAny pivot less than ma77_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20.',
+        alias="rtc:ma77_small",
+        description="Zero Pivot Threshold \nAny pivot less than ma77_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20.",
     )
     rtc_ma77_static: Optional[RtcMa77Static] = Field(
         None,
-        alias='rtc:ma77_static',
-        description='Static Pivoting Threshold \nSee MA77 documentation. Either ma77_static=0.0 or ma77_static>ma77_small. ma77_static=0.0 disables static pivoting. The valid range for this real option is [0, inf] and its default value is 0 .',
+        alias="rtc:ma77_static",
+        description="Static Pivoting Threshold \nSee MA77 documentation. Either ma77_static=0.0 or ma77_static>ma77_small. ma77_static=0.0 disables static pivoting. The valid range for this real option is [0, inf] and its default value is 0 .",
     )
     rtc_ma77_u: Optional[RtcMa77U] = Field(
         None,
-        alias='rtc:ma77_u',
-        description='Pivoting Threshold \nSee MA77 documentation. The valid range for this real option is  [0, 0.5] and its default value is 1e-8.',
+        alias="rtc:ma77_u",
+        description="Pivoting Threshold \nSee MA77 documentation. The valid range for this real option is  [0, 0.5] and its default value is 1e-8.",
     )
     rtc_ma77_umax: Optional[RtcMa77Umax] = Field(
         None,
-        alias='rtc:ma77_umax',
-        description='Maximum Pivoting Threshold \nMaximum value to which u will be increased to improve quality. The valid range for this real option is  [0, 0.5]and its default value is 0.0001.',
+        alias="rtc:ma77_umax",
+        description="Maximum Pivoting Threshold \nMaximum value to which u will be increased to improve quality. The valid range for this real option is  [0, 0.5]and its default value is 0.0001.",
     )
 
 
@@ -2349,94 +2349,94 @@ class RtcMa86Nemin(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa86PrintLevel(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa86Small(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa86Static(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa86U(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa86Umax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMA86ComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_ma86_nemin: Optional[RtcMa86Nemin] = Field(
         None,
-        alias='rtc:ma86_nemin',
-        description='Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma86_nemin variables. The valid range for this integer option is [1, inf] and its default value is 32.',
+        alias="rtc:ma86_nemin",
+        description="Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma86_nemin variables. The valid range for this integer option is [1, inf] and its default value is 32.",
     )
     rtc_ma86_order: Optional[RtcMa86Order] = Field(
         None,
-        alias='rtc:ma86_order',
+        alias="rtc:ma86_order",
         description='CControls type of ordering used by HSL_MA86 \nThis option controls ordering for the solver HSL_MA86. The default value for this string option is "auto". \nPossible values:\nauto: Try both AMD and MeTiS, pick best\namd: Use the HSL_MC68 approximate minimum degree algorithm\nmetis: Use the MeTiS nested dissection algorithm (if available)',
     )
     rtc_ma86_print_level: Optional[RtcMa86PrintLevel] = Field(
         None,
-        alias='rtc:ma86_print_level',
-        description='Debug printing level for the linear solver ma86 \nThe valid range for this integer option is  [-inf, +inf] and its default value is -1.',
+        alias="rtc:ma86_print_level",
+        description="Debug printing level for the linear solver ma86 \nThe valid range for this integer option is  [-inf, +inf] and its default value is -1.",
     )
     rtc_ma86_scaling: Optional[RtcMa86Scaling] = Field(
         None,
-        alias='rtc:ma86_scaling',
+        alias="rtc:ma86_scaling",
         description='Controls scaling of matrix \nThis option controls scaling for the solver HSL_MA86. The default value for this string option is "mc64". \nPossible values:\nnone: Do not scale the linear system matrix\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]',
     )
     rtc_ma86_small: Optional[RtcMa86Small] = Field(
         None,
-        alias='rtc:ma86_small',
-        description='Zero Pivot Threshold \nAny pivot less than ma86_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20.',
+        alias="rtc:ma86_small",
+        description="Zero Pivot Threshold \nAny pivot less than ma86_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20.",
     )
     rtc_ma86_static: Optional[RtcMa86Static] = Field(
         None,
-        alias='rtc:ma86_static',
-        description='Static Pivoting Threshold \nSee ma86 documentation. Either ma86_static=0.0 or ma86_static>ma86_small. ma86_static=0.0 disables static pivoting. The valid range for this real option is [0, inf] and its default value is 0 .',
+        alias="rtc:ma86_static",
+        description="Static Pivoting Threshold \nSee ma86 documentation. Either ma86_static=0.0 or ma86_static>ma86_small. ma86_static=0.0 disables static pivoting. The valid range for this real option is [0, inf] and its default value is 0 .",
     )
     rtc_ma86_u: Optional[RtcMa86U] = Field(
         None,
-        alias='rtc:ma86_u',
-        description='Pivoting Threshold \nSee ma86 documentation. The valid range for this real option is  [0, 0.5] and its default value is 1e-8.',
+        alias="rtc:ma86_u",
+        description="Pivoting Threshold \nSee ma86 documentation. The valid range for this real option is  [0, 0.5] and its default value is 1e-8.",
     )
     rtc_ma86_umax: Optional[RtcMa86Umax] = Field(
         None,
-        alias='rtc:ma86_umax',
-        description='Maximum Pivoting Threshold \nMaximum value to which u will be increased to improve quality. The valid range for this real option is  [0, 0.5] and its default value is 0.0001.',
+        alias="rtc:ma86_umax",
+        description="Maximum Pivoting Threshold \nMaximum value to which u will be increased to improve quality. The valid range for this real option is  [0, 0.5] and its default value is 0.0001.",
     )
 
 
@@ -2444,116 +2444,116 @@ class RtcMa97Nemin(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa97PrintLevel(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMa97Small(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa97U(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMa97Umax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMA97ComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_ma97_nemin: Optional[RtcMa97Nemin] = Field(
         None,
-        alias='rtc:ma97_nemin',
-        description='Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma97_nemin variables. The valid range for this integer option is [1, inf] and its default value is 8.',
+        alias="rtc:ma97_nemin",
+        description="Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma97_nemin variables. The valid range for this integer option is [1, inf] and its default value is 8.",
     )
     rtc_ma97_order: Optional[RtcMa97Order] = Field(
         None,
-        alias='rtc:ma97_order',
+        alias="rtc:ma97_order",
         description='Controls type of ordering used by HSL_MA97 \nThe default value for this string option is "auto". \nPossible values:\nauto: Use HSL_MA97 heuristic to guess best of AMD and METIS\nbest: Try both AMD and MeTiS, pick best\namd: Use the HSL_MC68 approximate minimum degree algorithm\nmetis: Use the MeTiS nested dissection algorithm\nmatched-auto: Use the HSL_MC80 matching with heuristic choice of AMD or METIS\nmatched-metis: Use the HSL_MC80 matching based ordering with METIS\nmatched-amd: Use the HSL_MC80 matching based ordering with AMD',
     )
     rtc_ma97_print_level: Optional[RtcMa97PrintLevel] = Field(
         None,
-        alias='rtc:ma97_print_level',
-        description='Debug printing level for the linear solver MA97 \nThe valid range for this integer option is  [-inf, +inf] and its default value is 0.',
+        alias="rtc:ma97_print_level",
+        description="Debug printing level for the linear solver MA97 \nThe valid range for this integer option is  [-inf, +inf] and its default value is 0.",
     )
     rtc_ma97_scaling: Optional[RtcMa97Scaling] = Field(
         None,
-        alias='rtc:ma97_scaling',
+        alias="rtc:ma97_scaling",
         description='Specifies strategy for scaling in HSL_MA97 linear solver \nThe default value for this string option is "dynamic". \nPossible values:\nnone: Do not scale the linear system matrix\nmc30: Scale all linear system matrices using MC30\nmc64: Scale all linear system matrices using MC64\nmc77: Scale all linear system matrices using MC77 [1,3,0]\ndynamic: Dynamically select scaling according to rules specified by ma97_scalingX and ma97_switchX options.',
     )
     rtc_ma97_scaling1: Optional[RtcMa97Scaling1] = Field(
         None,
-        alias='rtc:ma97_scaling1',
+        alias="rtc:ma97_scaling1",
         description='First scaling. \nIf ma97_scaling=dynamic, this scaling is used according to the trigger ma97_switch1. If ma97_switch2 is triggered it is disabled. The default value for this string option is "mc64". \nPossible values:\nnone: No scaling\nmc30: Scale linear system matrix using MC30\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]',
     )
     rtc_ma97_scaling2: Optional[RtcMa97Scaling2] = Field(
         None,
-        alias='rtc:ma97_scaling2',
+        alias="rtc:ma97_scaling2",
         description='Second scaling. \nIf ma97_scaling=dynamic, this scaling is used according to the trigger ma97_switch2. If ma97_switch3 is triggered it is disabled. The default value for this string option is "mc64". \nPossible values:\nnone: No scaling\nmc30: Scale linear system matrix using MC30\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]',
     )
     rtc_ma97_scaling3: Optional[RtcMa97Scaling3] = Field(
         None,
-        alias='rtc:ma97_scaling3',
+        alias="rtc:ma97_scaling3",
         description='Third scaling. \nIf ma97_scaling=dynamic, this scaling is used according to the trigger ma97_switch3. The default value for this string option is "mc64". \nPossible values:\nnone: No scaling\nmc30: Scale linear system matrix using MC30\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]',
     )
     rtc_ma97_small: Optional[RtcMa97Small] = Field(
         None,
-        alias='rtc:ma97_small',
-        description='Zero Pivot Threshold \nAny pivot less than ma77_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20.',
+        alias="rtc:ma97_small",
+        description="Zero Pivot Threshold \nAny pivot less than ma77_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20.",
     )
     rtc_ma97_solve_blas3: Optional[RtcMa97SolveBlas3] = Field(
         None,
-        alias='rtc:ma97_solve_blas3',
+        alias="rtc:ma97_solve_blas3",
         description='Controls if blas2 or blas3 routines are used for solve \nThe default value for this string option is "no". \nPossible values:\nno: Use BLAS2 (faster, some implementations bit incompatible)\nyes: Use BLAS3 (slower)',
     )
     rtc_ma97_switch1: Optional[RtcMa97Switch1] = Field(
         None,
-        alias='rtc:ma97_switch1',
+        alias="rtc:ma97_switch1",
         description='First switch, determine when ma97_scaling1 is enabled. \nIf ma97_scaling=dynamic, ma97_scaling1 is enabled according to this condition. If ma97_switch2 occurs this option is henceforth ignored. The default value for this string option is "od_hd_reuse". \nPossible values:\nnever: Scaling is never enabled.\nat_start: Scaling to be used from the very start.\nat_start_reuse: Scaling to be used on first iteration, then reused thereafter.\non_demand: Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).\non_demand_reuse: As on_demand, but reuse scaling from previous itr\nhigh_delay: Scaling to be used after more than 0.05*n delays are present\nhigh_delay_reuse: Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr\nod_hd: Combination of on_demand and high_delay\nod_hd_reuse: Combination of on_demand_reuse and high_delay_reuse',
     )
     rtc_ma97_switch2: Optional[RtcMa97Switch2] = Field(
         None,
-        alias='rtc:ma97_switch2',
+        alias="rtc:ma97_switch2",
         description='Second switch, determine when ma97_scaling2 is enabled. \nIf ma97_scaling=dynamic, ma97_scaling2 is enabled according to this condition. If ma97_switch3 occurs this option is henceforth ignored. The default value for this string option is "never". \nPossible values:\nnever: Scaling is never enabled.\nat_start: Scaling to be used from the very start.\nat_start_reuse: Scaling to be used on first iteration, then reused thereafter.\non_demand: Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).\non_demand_reuse: As on_demand, but reuse scaling from previous itr\nhigh_delay: Scaling to be used after more than 0.05*n delays are present\nhigh_delay_reuse: Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr\nod_hd: Combination of on_demand and high_delay\nod_hd_reuse: Combination of on_demand_reuse and high_delay_reuse',
     )
     rtc_ma97_switch3: Optional[RtcMa97Switch3] = Field(
         None,
-        alias='rtc:ma97_switch3',
+        alias="rtc:ma97_switch3",
         description='Third switch, determine when ma97_scaling3 is enabled. \nIf ma97_scaling=dynamic, ma97_scaling3 is enabled according to this condition. The default value for this string option is "never". \nPossible values:\nnever: Scaling is never enabled.\nat_start: Scaling to be used from the very start.\nat_start_reuse: Scaling to be used on first iteration, then reused thereafter.\non_demand: Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).\non_demand_reuse: As on_demand, but reuse scaling from previous itr\nhigh_delay: Scaling to be used after more than 0.05*n delays are present\nhigh_delay_reuse: Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr\nod_hd: Combination of on_demand and high_delay\nod_hd_reuse: Combination of on_demand_reuse and high_delay_reuse',
     )
     rtc_ma97_u: Optional[RtcMa97U] = Field(
         None,
-        alias='rtc:ma97_u',
-        description='Pivoting Threshold \nSee MA97 documentation. The valid range for this real option is  [0, 0.5] and its default value is  1e-8.',
+        alias="rtc:ma97_u",
+        description="Pivoting Threshold \nSee MA97 documentation. The valid range for this real option is  [0, 0.5] and its default value is  1e-8.",
     )
     rtc_ma97_umax: Optional[RtcMa97Umax] = Field(
         None,
-        alias='rtc:ma97_umax',
-        description='Maximum Pivoting Threshold \nSee MA97 documentation. The valid range for this real option is  [0, 0.5] and its default value is 0.0001.',
+        alias="rtc:ma97_umax",
+        description="Maximum Pivoting Threshold \nSee MA97 documentation. The valid range for this real option is  [0, 0.5] and its default value is 0.0001.",
     )
 
 
@@ -2561,84 +2561,84 @@ class RtcMumpsMemPercent(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMumpsPermutingScaling(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMumpsPivotOrder(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMumpsPivtol(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMumpsPivtolmax(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcMumpsScaling(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcMUMPSComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_mumps_mem_percent: Optional[RtcMumpsMemPercent] = Field(
         None,
-        alias='rtc:mumps_mem_percent',
-        description='Percentage increase in the estimated working space for MUMPS. \nIn MUMPS when significant extra fill-in is caused by numerical pivoting, larger values of mumps_mem_percent may help use the workspace more efficiently. On the other hand, if memory requirement are too large at the very beginning of the optimization, choosing a much smaller value for this option, such as 5, might reduce memory requirements. The valid range for this integer option is [0, inf] and its default value is 1000.',
+        alias="rtc:mumps_mem_percent",
+        description="Percentage increase in the estimated working space for MUMPS. \nIn MUMPS when significant extra fill-in is caused by numerical pivoting, larger values of mumps_mem_percent may help use the workspace more efficiently. On the other hand, if memory requirement are too large at the very beginning of the optimization, choosing a much smaller value for this option, such as 5, might reduce memory requirements. The valid range for this integer option is [0, inf] and its default value is 1000.",
     )
     rtc_mumps_permuting_scaling: Optional[RtcMumpsPermutingScaling] = Field(
         None,
-        alias='rtc:mumps_permuting_scaling',
-        description='Controls permuting and scaling in MUMPS \nThis is ICNTL(6) in MUMPS. The valid range for this integer option is  [0,7] and its default value is 7.',
+        alias="rtc:mumps_permuting_scaling",
+        description="Controls permuting and scaling in MUMPS \nThis is ICNTL(6) in MUMPS. The valid range for this integer option is  [0,7] and its default value is 7.",
     )
     rtc_mumps_pivot_order: Optional[RtcMumpsPivotOrder] = Field(
         None,
-        alias='rtc:mumps_pivot_order',
-        description='Controls pivot order in MUMPS \nThis is ICNTL(7) in MUMPS. The valid range for this integer option is [0, 7] and its default value is 7.',
+        alias="rtc:mumps_pivot_order",
+        description="Controls pivot order in MUMPS \nThis is ICNTL(7) in MUMPS. The valid range for this integer option is [0, 7] and its default value is 7.",
     )
     rtc_mumps_pivtol: Optional[RtcMumpsPivtol] = Field(
         None,
-        alias='rtc:mumps_pivtol',
-        description='Pivot tolerance for the linear solver MUMPS. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MUMPS. The valid range for this real option is [0,1] and its default value is  1e-6.',
+        alias="rtc:mumps_pivtol",
+        description="Pivot tolerance for the linear solver MUMPS. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MUMPS. The valid range for this real option is [0,1] and its default value is  1e-6.",
     )
     rtc_mumps_pivtolmax: Optional[RtcMumpsPivtolmax] = Field(
         None,
-        alias='rtc:mumps_pivtolmax',
-        description='Maximum pivot tolerance for the linear solver MUMPS. \nIpopt may increase pivtol as high as pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MUMPS. The valid range for this real option is  [0,1] and its default value is 0.1',
+        alias="rtc:mumps_pivtolmax",
+        description="Maximum pivot tolerance for the linear solver MUMPS. \nIpopt may increase pivtol as high as pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MUMPS. The valid range for this real option is  [0,1] and its default value is 0.1",
     )
     rtc_mumps_scaling: Optional[RtcMumpsScaling] = Field(
         None,
-        alias='rtc:mumps_scaling',
-        description='Controls scaling in MUMPS \nThis is ICNTL(8) in MUMPS. The valid range for this integer option is [-2,77] and its default value is 77.',
+        alias="rtc:mumps_scaling",
+        description="Controls scaling in MUMPS \nThis is ICNTL(8) in MUMPS. The valid range for this integer option is [-2,77] and its default value is 77.",
     )
 
 
@@ -2646,127 +2646,127 @@ class RtcForecastHorizon(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInteger] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInteger] = Field(None, alias="$")
 
 
 class RtcRecedingHorizon(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInteger] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInteger] = Field(None, alias="$")
 
 
 class RtcFirstOrderSensitivity(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsString] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsString] = Field(None, alias="$")
 
 
 class RtcPostprocessing(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsString] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsString] = Field(None, alias="$")
 
 
 class RtcOptimizerMode(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcOptimizerModeEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcOptimizerModeEnumStringType] = Field(None, alias="$")
 
 
 class RtcPeriod(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcPeriodEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcPeriodEnumStringType] = Field(None, alias="$")
 
 
 class RtcExecuteConstraints(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcExecuteObjectiveFunction(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcLimitedMemory(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcPeriod1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcPeriodEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcPeriodEnumStringType] = Field(None, alias="$")
 
 
 class RtcModeSimulationComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_executeConstraints: Optional[RtcExecuteConstraints] = Field(
-        None, alias='rtc:executeConstraints'
+        None, alias="rtc:executeConstraints"
     )
     rtc_executeObjectiveFunction: Optional[RtcExecuteObjectiveFunction] = Field(
-        None, alias='rtc:executeObjectiveFunction'
+        None, alias="rtc:executeObjectiveFunction"
     )
     rtc_limitedMemory: Optional[RtcLimitedMemory] = Field(
         None,
-        alias='rtc:limitedMemory',
-        description='limited-memory option for time series matrix',
+        alias="rtc:limitedMemory",
+        description="limited-memory option for time series matrix",
     )
-    rtc_period: Optional[RtcPeriod1] = Field(None, alias='rtc:period')
+    rtc_period: Optional[RtcPeriod1] = Field(None, alias="rtc:period")
 
 
 class RtcFile(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsString] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsString] = Field(None, alias="$")
 
 
 class RtcNumberEnsembles(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcPIInputRuntimeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_file: RtcFile = Field(..., alias='rtc:file')
+    _: Optional[str] = Field(None, alias="#")
+    rtc_file: RtcFile = Field(..., alias="rtc:file")
     rtc_numberEnsembles: Optional[RtcNumberEnsembles] = Field(
         None,
-        alias='rtc:numberEnsembles',
-        description='optional number of ensemble, if not provides one ensemble member is assumed',
+        alias="rtc:numberEnsembles",
+        description="optional number of ensemble, if not provides one ensemble member is assumed",
     )
 
 
@@ -2774,77 +2774,77 @@ class RtcFile1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsString] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsString] = Field(None, alias="$")
 
 
 class RtcNumberEnsembles1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcNThread(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcParallelizationComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_constraints: Optional[RtcConstraints] = Field(None, alias='rtc:constraints')
-    rtc_nThread: Optional[RtcNThread] = Field(None, alias='rtc:nThread')
-    rtc_simulation: Optional[RtcSimulation] = Field(None, alias='rtc:simulation')
+    _: Optional[str] = Field(None, alias="#")
+    rtc_constraints: Optional[RtcConstraints] = Field(None, alias="rtc:constraints")
+    rtc_nThread: Optional[RtcNThread] = Field(None, alias="rtc:nThread")
+    rtc_simulation: Optional[RtcSimulation] = Field(None, alias="rtc:simulation")
 
 
 class RtcPardisoMaxIterativeRefinementSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcPardisoMsglvl(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcPardisoComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_pardiso_matching_strategy: Optional[RtcPardisoMatchingStrategy] = Field(
         None,
-        alias='rtc:pardiso_matching_strategy',
+        alias="rtc:pardiso_matching_strategy",
         description='Matching strategy to be used by Pardiso \nThis is IPAR(13) in Pardiso manual. The default value for this string option is "complete+2x2". \nPossible values:\ncomplete: Match complete (IPAR(13)=1)\ncomplete+2x2: Match complete+2x2 (IPAR(13)=2)\nconstraints: Match constraints (IPAR(13)=3)',
     )
     rtc_pardiso_max_iterative_refinement_steps: Optional[
         RtcPardisoMaxIterativeRefinementSteps
     ] = Field(
         None,
-        alias='rtc:pardiso_max_iterative_refinement_steps',
-        description='Limit on number of iterative refinement steps. \nThe solver does not perform more than the absolute value of this value steps of iterative refinement and stops the process if a satisfactory level of accuracy of the solution in terms of backward error is achieved. If negative, the accumulation of the residue uses extended precision real and complex data types. Perturbed pivots result in iterative refinement. The solver automatically performs two steps of iterative refinements when perturbed pivots are obtained during the numerical factorization and this option is set to 0. The valid range for this integer option is [-inf, inf] and its default value is 0 .',
+        alias="rtc:pardiso_max_iterative_refinement_steps",
+        description="Limit on number of iterative refinement steps. \nThe solver does not perform more than the absolute value of this value steps of iterative refinement and stops the process if a satisfactory level of accuracy of the solution in terms of backward error is achieved. If negative, the accumulation of the residue uses extended precision real and complex data types. Perturbed pivots result in iterative refinement. The solver automatically performs two steps of iterative refinements when perturbed pivots are obtained during the numerical factorization and this option is set to 0. The valid range for this integer option is [-inf, inf] and its default value is 0 .",
     )
     rtc_pardiso_msglvl: Optional[RtcPardisoMsglvl] = Field(
         None,
-        alias='rtc:pardiso_msglvl',
-        description='Pardiso message level \nThis determines the amount of analysis output from the Pardiso solver. This is MSGLVL in the Pardiso manual. The valid range for this integer option is  [0, inf] and its default value is 0 .',
+        alias="rtc:pardiso_msglvl",
+        description="Pardiso message level \nThis determines the amount of analysis output from the Pardiso solver. This is MSGLVL in the Pardiso manual. The valid range for this integer option is  [0, inf] and its default value is 0 .",
     )
     rtc_pardiso_order: Optional[RtcPardisoOrder] = Field(
         None,
-        alias='rtc:pardiso_order',
+        alias="rtc:pardiso_order",
         description='Controls the fill-in reduction ordering algorithm for the input matrix. \nThe default value for this string option is "five". \nPossible values:\namd: minimum degree algorithm\none: undocumented\nmetis: MeTiS nested dissection algorithm\npmetis: parallel (OpenMP) version of MeTiS nested dissection algorithm\nfour: undocumented\nfive: undocumented',
     )
 
@@ -2853,24 +2853,24 @@ class RtcMaxIter1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInteger] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInteger] = Field(None, alias="$")
 
 
 class RtcSAComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_dels: Optional[RtcDels] = Field(None, alias='rtc:dels', description='???')
-    rtc_ftoll: Optional[RtcFtoll] = Field(None, alias='rtc:ftoll', description='???')
+    _: Optional[str] = Field(None, alias="#")
+    rtc_dels: Optional[RtcDels] = Field(None, alias="rtc:dels", description="???")
+    rtc_ftoll: Optional[RtcFtoll] = Field(None, alias="rtc:ftoll", description="???")
     rtc_max_cpu_time: Optional[RtcMaxCpuTime1] = Field(
         None,
-        alias='rtc:max_cpu_time',
-        description='maximum cpu time for executing the optimization',
+        alias="rtc:max_cpu_time",
+        description="maximum cpu time for executing the optimization",
     )
     rtc_max_iter: Optional[RtcMaxIter1] = Field(
-        None, alias='rtc:max_iter', description='Maximum number of iterations'
+        None, alias="rtc:max_iter", description="Maximum number of iterations"
     )
 
 
@@ -2878,45 +2878,45 @@ class RtcTimeStepComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _divider: Optional[XsPositiveInteger] = Field(None, alias='@divider')
-    _multiplier: Optional[XsPositiveInteger] = Field(None, alias='@multiplier')
-    _unit: RtcTimeStepUnitEnumStringType = Field(..., alias='@unit')
+    _: Optional[str] = Field(None, alias="#")
+    _divider: Optional[XsPositiveInteger] = Field(None, alias="@divider")
+    _multiplier: Optional[XsPositiveInteger] = Field(None, alias="@multiplier")
+    _unit: RtcTimeStepUnitEnumStringType = Field(..., alias="@unit")
 
 
 class RtcNumberEnsembles2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcUserDefinedRuntimeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_endDate: RtcDateTimeComplexType = Field(
-        ..., alias='rtc:endDate', description='End date and time of the simulation.'
+        ..., alias="rtc:endDate", description="End date and time of the simulation."
     )
     rtc_forecastDate: Optional[RtcDateTimeComplexType] = Field(
         None,
-        alias='rtc:forecastDate',
-        description='Forecast date and time of the simulation.',
+        alias="rtc:forecastDate",
+        description="Forecast date and time of the simulation.",
     )
     rtc_numberEnsembles: Optional[RtcNumberEnsembles2] = Field(
         None,
-        alias='rtc:numberEnsembles',
-        description='Optional number of ensemble of the simulation. If not provided, one ensemble member is assumed.',
+        alias="rtc:numberEnsembles",
+        description="Optional number of ensemble of the simulation. If not provided, one ensemble member is assumed.",
     )
     rtc_startDate: RtcDateTimeComplexType = Field(
-        ..., alias='rtc:startDate', description='Start date and time of the similation.'
+        ..., alias="rtc:startDate", description="Start date and time of the similation."
     )
     rtc_timeStep: RtcTimeStepComplexType = Field(
         ...,
-        alias='rtc:timeStep',
-        description='Time step of the simulation (till now, the model supports only equidistant time steps)',
+        alias="rtc:timeStep",
+        description="Time step of the simulation (till now, the model supports only equidistant time steps)",
     )
 
 
@@ -2924,29 +2924,29 @@ class RtcStateTimeStep(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcUserDefinedStateExportComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_endDate: RtcDateTimeComplexType = Field(
         ...,
-        alias='rtc:endDate',
-        description='End date and time for exporting state files.',
+        alias="rtc:endDate",
+        description="End date and time for exporting state files.",
     )
     rtc_startDate: RtcDateTimeComplexType = Field(
         ...,
-        alias='rtc:startDate',
-        description='Start date and time for exporting state files.',
+        alias="rtc:startDate",
+        description="Start date and time for exporting state files.",
     )
     rtc_stateTimeStep: Optional[RtcStateTimeStep] = Field(
         None,
-        alias='rtc:stateTimeStep',
-        description='Step in seconds for exporting state files',
+        alias="rtc:stateTimeStep",
+        description="Step in seconds for exporting state files",
     )
 
 
@@ -2954,29 +2954,29 @@ class RtcFileComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_rtcDataConfig: RtcFileDataComplexType = Field(
         ...,
-        alias='rtc:rtcDataConfig',
-        description='File with the time series model definition',
+        alias="rtc:rtcDataConfig",
+        description="File with the time series model definition",
     )
     rtc_rtcObjectiveConfig: Optional[RtcFileObjectiveComplexType] = Field(
         None,
-        alias='rtc:rtcObjectiveConfig',
-        description='Optional file with the definition of an optimization problem including optimization variables, constraints and objective function terms',
+        alias="rtc:rtcObjectiveConfig",
+        description="Optional file with the definition of an optimization problem including optimization variables, constraints and objective function terms",
     )
     rtc_rtcParameterConfig: Optional[List[RtcFileParameterComplexType]] = Field(
-        None, alias='rtc:rtcParameterConfig'
+        None, alias="rtc:rtcParameterConfig"
     )
     rtc_rtcScenarioTreeConfig: Optional[RtcFileScenarioTreeComplexType] = Field(
         None,
-        alias='rtc:rtcScenarioTreeConfig',
-        description='Optional file with the definition of a scenario tree for the control trajectory in case of multi-stage stochastic optimization problems',
+        alias="rtc:rtcScenarioTreeConfig",
+        description="Optional file with the definition of a scenario tree for the control trajectory in case of multi-stage stochastic optimization problems",
     )
     rtc_rtcToolsConfig: RtcFileToolsComplexType = Field(
         ...,
-        alias='rtc:rtcToolsConfig',
-        description='File with the schematization of the process model, i.e. the model of the water resources systems',
+        alias="rtc:rtcToolsConfig",
+        description="File with the schematization of the process model, i.e. the model of the water resources systems",
     )
 
 
@@ -2984,56 +2984,56 @@ class RtcIPOPTLinearSolverComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_linear_scaling_on_demand: Optional[RtcLinearScalingOnDemand] = Field(
         None,
-        alias='rtc:linear_scaling_on_demand',
+        alias="rtc:linear_scaling_on_demand",
         description='Flag indicating that linear scaling is only done if it seems required. \nThis option is only important if a linear scaling method (e.g., mc19) is used. If you choose "no", then the scaling factors are computed for every linear system from the start. This can be quite expensive. Choosing "yes" means that the algorithm will start the scaling method only when the solutions to the linear system seem not good, and then use it until the end. The default value for this string option is "yes". ',
     )
     rtc_linear_solver: Optional[RtcLinearSolver] = Field(
         None,
-        alias='rtc:linear_solver',
-        description='Linear solver used for step computations',
+        alias="rtc:linear_solver",
+        description="Linear solver used for step computations",
     )
     rtc_linear_system_scaling: Optional[RtcLinearSystemScaling] = Field(
         None,
-        alias='rtc:linear_system_scaling',
+        alias="rtc:linear_system_scaling",
         description='Method for scaling the linear system. \nDetermines the method used to compute symmetric scaling factors for the augmented system (see also the "linear_scaling_on_demand" option). This scaling is independent of the NLP problem scaling. By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. This value is only available if Ipopt has been compiled with MC19. The default value for this string option is "mc19". ',
     )
-    rtc_ma27: Optional[RtcMA27ComplexType] = Field(None, alias='rtc:ma27')
-    rtc_ma57: Optional[RtcMA57ComplexType] = Field(None, alias='rtc:ma57')
-    rtc_ma77: Optional[RtcMA77ComplexType] = Field(None, alias='rtc:ma77')
-    rtc_ma86: Optional[RtcMA86ComplexType] = Field(None, alias='rtc:ma86')
-    rtc_ma97: Optional[RtcMA97ComplexType] = Field(None, alias='rtc:ma97')
+    rtc_ma27: Optional[RtcMA27ComplexType] = Field(None, alias="rtc:ma27")
+    rtc_ma57: Optional[RtcMA57ComplexType] = Field(None, alias="rtc:ma57")
+    rtc_ma77: Optional[RtcMA77ComplexType] = Field(None, alias="rtc:ma77")
+    rtc_ma86: Optional[RtcMA86ComplexType] = Field(None, alias="rtc:ma86")
+    rtc_ma97: Optional[RtcMA97ComplexType] = Field(None, alias="rtc:ma97")
     rtc_max_refinement_steps: Optional[RtcMaxRefinementSteps] = Field(
         None,
-        alias='rtc:max_refinement_steps',
+        alias="rtc:max_refinement_steps",
         description='Maximum number of iterative refinement steps per linear system solve. \nIterative refinement (on the full unsymmetric system) is performed for each right hand side. This option determines the maximum number of iterative refinements (i.e. at least "min_refinement_steps" iterative refinement steps are enforced per right hand side.) The valid range for this integer option is  [0,+inf] and its default value is 1.\n\t\t\t\t ',
     )
     rtc_min_refinement_steps: Optional[RtcMinRefinementSteps] = Field(
         None,
-        alias='rtc:min_refinement_steps',
+        alias="rtc:min_refinement_steps",
         description='Minimum number of iterative refinement steps per linear system solve. \nIterative refinement (on the full unsymmetric system) is performed for each right hand side. This option determines the minimum number of iterative refinements (i.e. at least "min_refinement_steps" iterative refinement steps are enforced per right hand side.) The valid range for this integer option is  [0,+inf] and its default value is 10.\n\t\t\t\t ',
     )
-    rtc_mumps: Optional[RtcMUMPSComplexType] = Field(None, alias='rtc:mumps')
-    rtc_pardiso: Optional[RtcPardisoComplexType] = Field(None, alias='rtc:pardiso')
+    rtc_mumps: Optional[RtcMUMPSComplexType] = Field(None, alias="rtc:mumps")
+    rtc_pardiso: Optional[RtcPardisoComplexType] = Field(None, alias="rtc:pardiso")
 
 
 class RtcPIRunFileRuntimeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_file: RtcFile1 = Field(..., alias='rtc:file')
+    _: Optional[str] = Field(None, alias="#")
+    rtc_file: RtcFile1 = Field(..., alias="rtc:file")
     rtc_numberEnsembles: Optional[RtcNumberEnsembles1] = Field(
         None,
-        alias='rtc:numberEnsembles',
-        description='optional number of ensemble, if not provides one ensemble member is assumed',
+        alias="rtc:numberEnsembles",
+        description="optional number of ensemble, if not provides one ensemble member is assumed",
     )
     rtc_timeStep: RtcTimeStepComplexType = Field(
         ...,
-        alias='rtc:timeStep',
-        description='Time step of the simulation (till now, the model supports only equidistant time steps)',
+        alias="rtc:timeStep",
+        description="Time step of the simulation (till now, the model supports only equidistant time steps)",
     )
 
 
@@ -3041,21 +3041,21 @@ class RtcPeriodComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_PIInput: Optional[RtcPIInputRuntimeComplexType] = Field(
         None,
-        alias='rtc:PIInput',
-        description='The execution period is defined by the first time series of the referred PI-XML file.',
+        alias="rtc:PIInput",
+        description="The execution period is defined by the first time series of the referred PI-XML file.",
     )
     rtc_PIRunFile: Optional[RtcPIRunFileRuntimeComplexType] = Field(
         None,
-        alias='rtc:PIRunFile',
-        description='The execution period is defined in the PI-XML run file.',
+        alias="rtc:PIRunFile",
+        description="The execution period is defined in the PI-XML run file.",
     )
     rtc_userDefined: Optional[RtcUserDefinedRuntimeComplexType] = Field(
         None,
-        alias='rtc:userDefined',
-        description='The execution period is user-defined by start and end time, time step and optionally the number of ensembles.',
+        alias="rtc:userDefined",
+        description="The execution period is user-defined by start and end time, time step and optionally the number of ensembles.",
     )
 
 
@@ -3063,70 +3063,70 @@ class RtcIPOPTComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_barrierParameter: RtcIPOPTBarrierParameterComplexType = Field(
-        ..., alias='rtc:barrierParameter'
+        ..., alias="rtc:barrierParameter"
     )
     rtc_derivativeChecker: RtcIPOPTDerivativeCheckerComplexType = Field(
-        ..., alias='rtc:derivativeChecker', description='Optional derivative checker'
+        ..., alias="rtc:derivativeChecker", description="Optional derivative checker"
     )
     rtc_hessianPermutation: RtcIPOPTHessianPermutationComplexType = Field(
-        ..., alias='rtc:hessianPermutation', description='Optional hessian settings'
+        ..., alias="rtc:hessianPermutation", description="Optional hessian settings"
     )
     rtc_initialization: RtcIPOPTInitializationComplexType = Field(
-        ..., alias='rtc:initialization'
+        ..., alias="rtc:initialization"
     )
-    rtc_lineSearch: RtcIPOPTLineSearchComplexType = Field(..., alias='rtc:lineSearch')
+    rtc_lineSearch: RtcIPOPTLineSearchComplexType = Field(..., alias="rtc:lineSearch")
     rtc_linearSolver: RtcIPOPTLinearSolverComplexType = Field(
         ...,
-        alias='rtc:linearSolver',
-        description='Settings and selection of the integrated linear equation solver ',
+        alias="rtc:linearSolver",
+        description="Settings and selection of the integrated linear equation solver ",
     )
     rtc_multiplierUpdates: RtcIPOPTMultiplierUpdatesComplexType = Field(
-        ..., alias='rtc:multiplierUpdates'
+        ..., alias="rtc:multiplierUpdates"
     )
     rtc_nlp: RtcIPOPTNLPComplexType = Field(
-        ..., alias='rtc:nlp', description='Settings of the nonlinear optimizer'
+        ..., alias="rtc:nlp", description="Settings of the nonlinear optimizer"
     )
     rtc_nlpScaling: RtcIPOPTNLPScalingComplexType = Field(
         ...,
-        alias='rtc:nlpScaling',
-        description='Scaling options for the optimization problem',
+        alias="rtc:nlpScaling",
+        description="Scaling options for the optimization problem",
     )
     rtc_output: RtcIPOPTOutputComplexType = Field(
-        ..., alias='rtc:output', description='Output options'
+        ..., alias="rtc:output", description="Output options"
     )
     rtc_quasiNewton: RtcIPOPTQuasiNewtonComplexType = Field(
-        ..., alias='rtc:quasiNewton'
+        ..., alias="rtc:quasiNewton"
     )
     rtc_restorationPhase: RtcIPOPTRestorationPhaseComplexType = Field(
-        ..., alias='rtc:restorationPhase'
+        ..., alias="rtc:restorationPhase"
     )
     rtc_termination: RtcIPOPTTerminationComplexType = Field(
-        ..., alias='rtc:termination', description='Termination criteria'
+        ..., alias="rtc:termination", description="Termination criteria"
     )
-    rtc_warmStart: RtcIPOPTWarmStartComplexType = Field(..., alias='rtc:warmStart')
+    rtc_warmStart: RtcIPOPTWarmStartComplexType = Field(..., alias="rtc:warmStart")
 
 
 class RtcOptimizerComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_GAMS: Optional[RtcGAMSComplexType] = Field(
         None,
-        alias='rtc:GAMS',
-        description='This option generates a GAMS optimization problem with an external model in RTC-Tools. Note that you need to run the optimization in GAMS after executing the stand alone RTC-Tools.',
+        alias="rtc:GAMS",
+        description="This option generates a GAMS optimization problem with an external model in RTC-Tools. Note that you need to run the optimization in GAMS after executing the stand alone RTC-Tools.",
     )
     rtc_IPOPT: Optional[RtcIPOPTComplexType] = Field(
         None,
-        alias='rtc:IPOPT',
-        description='Optimization by the IPOPT optimizer, check also the related documentation on the COIN-OR website',
+        alias="rtc:IPOPT",
+        description="Optimization by the IPOPT optimizer, check also the related documentation on the COIN-OR website",
     )
     rtc_SA: Optional[RtcSAComplexType] = Field(
         None,
-        alias='rtc:SA',
-        description='Optimization by a simulated annealing optimizer (NOT FULLY IMPLEMENTED right now)',
+        alias="rtc:SA",
+        description="Optimization by a simulated annealing optimizer (NOT FULLY IMPLEMENTED right now)",
     )
 
 
@@ -3134,35 +3134,35 @@ class RtcModeOptimizationComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_optimizer: Optional[List[RtcOptimizerComplexType]] = Field(
-        None, alias='rtc:optimizer'
+        None, alias="rtc:optimizer"
     )
     rtc_optimizerMode: Optional[RtcOptimizerMode] = Field(
         None,
-        alias='rtc:optimizerMode',
-        description='Mode for defining more robust hybrid optimizer settings for running optimizations sequentially (optimimum of the first is input for the next) or parallel (independent optimization, best one is returned), STILL NOT IMPLEMENTED',
+        alias="rtc:optimizerMode",
+        description="Mode for defining more robust hybrid optimizer settings for running optimizations sequentially (optimimum of the first is input for the next) or parallel (independent optimization, best one is returned), STILL NOT IMPLEMENTED",
     )
-    rtc_period: Optional[RtcPeriod] = Field(None, alias='rtc:period')
+    rtc_period: Optional[RtcPeriod] = Field(None, alias="rtc:period")
 
 
 class RtcModeClosedLoopComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_forecastHorizon: RtcForecastHorizon = Field(
         ...,
-        alias='rtc:forecastHorizon',
-        description='Number of time steps of forecasts in the predictive control mode',
+        alias="rtc:forecastHorizon",
+        description="Number of time steps of forecasts in the predictive control mode",
     )
     rtc_optimization: RtcModeOptimizationComplexType = Field(
-        ..., alias='rtc:optimization'
+        ..., alias="rtc:optimization"
     )
     rtc_recedingHorizon: RtcRecedingHorizon = Field(
         ...,
-        alias='rtc:recedingHorizon',
-        description='Number of time steps after which the optimization is repeated',
+        alias="rtc:recedingHorizon",
+        description="Number of time steps after which the optimization is repeated",
     )
 
 
@@ -3170,27 +3170,27 @@ class RtcModeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_closedLoop: Optional[RtcModeClosedLoopComplexType] = Field(
         None,
-        alias='rtc:closedLoop',
-        description='Closed loop mode with an alternating switch between simulation and optimization',
+        alias="rtc:closedLoop",
+        description="Closed loop mode with an alternating switch between simulation and optimization",
     )
     rtc_firstOrderSensitivity: Optional[RtcFirstOrderSensitivity] = Field(
         None,
-        alias='rtc:firstOrderSensitivity',
-        description='Calculation of first-order model sensitivities of an objective function value with respect to inputs, states and outputs (requires the definition of an objective function in the rtcObjectiveConfig.xml)',
+        alias="rtc:firstOrderSensitivity",
+        description="Calculation of first-order model sensitivities of an objective function value with respect to inputs, states and outputs (requires the definition of an objective function in the rtcObjectiveConfig.xml)",
     )
     rtc_optimization: Optional[RtcModeOptimizationComplexType] = Field(
         None,
-        alias='rtc:optimization',
-        description='Optimization mode (requires the definition of an optimization problem in the rtcObjectiveConfig.xml)',
+        alias="rtc:optimization",
+        description="Optimization mode (requires the definition of an optimization problem in the rtcObjectiveConfig.xml)",
     )
     rtc_postprocessing: Optional[RtcPostprocessing] = Field(
-        None, alias='rtc:postprocessing'
+        None, alias="rtc:postprocessing"
     )
     rtc_simulation: Optional[RtcModeSimulationComplexType] = Field(
-        None, alias='rtc:simulation', description='Simulation mode (default)'
+        None, alias="rtc:simulation", description="Simulation mode (default)"
     )
 
 
@@ -3198,43 +3198,43 @@ class RtcModesComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_mode: List[RtcModeComplexType] = Field(..., alias='rtc:mode', min_items=1)
+    _: Optional[str] = Field(None, alias="#")
+    rtc_mode: List[RtcModeComplexType] = Field(..., alias="rtc:mode", min_items=1)
 
 
 class RtcRtcRuntimeConfigComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_files: Optional[RtcFileComplexType] = Field(
         None,
-        alias='rtc:files',
-        description='Optional provision of input files, if provided ALL relevant input files needs to be defined, if not, the program will check for files with default naming in the current working folder',
+        alias="rtc:files",
+        description="Optional provision of input files, if provided ALL relevant input files needs to be defined, if not, the program will check for files with default naming in the current working folder",
     )
     rtc_logging: Optional[RtcLoggingComplexType] = Field(
-        None, alias='rtc:logging', description='Logging'
+        None, alias="rtc:logging", description="Logging"
     )
     rtc_mode: Optional[RtcModeComplexType] = Field(
         None,
-        alias='rtc:mode',
-        description='Optional definition of the execution mode of the application, default = simulation if not provided',
+        alias="rtc:mode",
+        description="Optional definition of the execution mode of the application, default = simulation if not provided",
     )
-    rtc_modes: Optional[RtcModesComplexType] = Field(None, alias='rtc:modes')
+    rtc_modes: Optional[RtcModesComplexType] = Field(None, alias="rtc:modes")
     rtc_parallelization: Optional[RtcParallelizationComplexType] = Field(
         None,
-        alias='rtc:parallelization',
-        description='Optional parallelization settings',
+        alias="rtc:parallelization",
+        description="Optional parallelization settings",
     )
     rtc_period: RtcPeriodComplexType = Field(
         ...,
-        alias='rtc:period',
-        description='Execution period of the simulation or optimization',
+        alias="rtc:period",
+        description="Execution period of the simulation or optimization",
     )
     rtc_stateFiles: Optional[RtcUserDefinedStateExportComplexType] = Field(
         None,
-        alias='rtc:stateFiles',
-        description='Optional definition for saving periodic state files',
+        alias="rtc:stateFiles",
+        description="Optional definition for saving periodic state files",
     )
 
 
@@ -3242,11 +3242,11 @@ class Model(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _xmlns_rtc: Optional[Any] = Field('http://www.wldelft.nl/fews', alias='@xmlns:rtc')
+    _: Optional[str] = Field(None, alias="#")
+    _xmlns_rtc: Optional[Any] = Field("http://www.wldelft.nl/fews", alias="@xmlns:rtc")
     _xmlns_xs: Optional[Any] = Field(
-        'http://www.w3.org/2001/XMLSchema', alias='@xmlns:xs'
+        "http://www.w3.org/2001/XMLSchema", alias="@xmlns:xs"
     )
     rtc_rtcRuntimeConfig: Optional[_.RtcRtcRuntimeConfig] = Field(
-        None, alias='rtc:rtcRuntimeConfig'
+        None, alias="rtc:rtcRuntimeConfig"
     )

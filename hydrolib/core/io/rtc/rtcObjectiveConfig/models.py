@@ -13,140 +13,140 @@ from . import _
 
 
 class RtcAggregationTypeEnumStringType(Enum):
-    BLOCK = 'BLOCK'
-    LINEAR = 'LINEAR'
+    BLOCK = "BLOCK"
+    LINEAR = "LINEAR"
 
 
 class RtcNStep(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=1)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=1)] = Field(None, alias="$")
 
 
 class RtcNStep1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=1)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=1)] = Field(None, alias="$")
 
 
 class RtcNStep2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=1)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=1)] = Field(None, alias="$")
 
 
 class RtcStepIndexItem1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=0, le=2147483647)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=0, le=2147483647)] = Field(None, alias="$")
 
 
 class RtcBoundStateStepIndicesComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_stepIndex: List[RtcStepIndexItem1] = Field(
-        ..., alias='rtc:stepIndex', min_items=1
+        ..., alias="rtc:stepIndex", min_items=1
     )
 
 
 class RtcEnsembleModeEnumStringType(Enum):
-    JOINT = 'JOINT'
-    TREE = 'TREE'
-    INDEPENDENT = 'INDEPENDENT'
+    JOINT = "JOINT"
+    TREE = "TREE"
+    INDEPENDENT = "INDEPENDENT"
 
 
 class RtcExternalBooleanSimpleType(BaseModel):
-    __root__: Union[bool, constr(regex=r'^([\$][\(-_a-z]+[\$])$')]
+    __root__: Union[bool, constr(regex=r"^([\$][\(-_a-z]+[\$])$")]
 
 
 class RtcExternalIntegerSimpleType(BaseModel):
-    __root__: Union[int, constr(regex=r'^([\$][\(-_a-z]+[\$])$')]
+    __root__: Union[int, constr(regex=r"^([\$][\(-_a-z]+[\$])$")]
 
 
 class RtcExternalParameterSimpleType(BaseModel):
-    __root__: Union[float, constr(regex=r'^([#-\$][\(-_a-z]+[#-\$])$')]
+    __root__: Union[float, constr(regex=r"^([#-\$][\(-_a-z]+[#-\$])$")]
 
 
 class RtcNStep3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=1)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=1)] = Field(None, alias="$")
 
 
 class RtcNStep4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[conint(ge=1)] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[conint(ge=1)] = Field(None, alias="$")
 
 
 class RtcSetPoint(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorItem1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorFinalItem1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcSetPoint1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorItem2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorFinalItem2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorItem3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcTimeSeriesSimpleType(BaseModel):
@@ -156,40 +156,40 @@ class RtcTimeSeriesSimpleType(BaseModel):
 class RtcTimeZoneSimpleType(BaseModel):
     __root__: float = Field(
         ...,
-        description='The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed',
+        description="The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed",
     )
 
 
 class RtcVariableTypeEnumStringType(Enum):
-    CONTINUOUS = 'CONTINUOUS'
-    INTEGER = 'INTEGER'
-    TIMEINSTANCE = 'TIMEINSTANCE'
+    CONTINUOUS = "CONTINUOUS"
+    INTEGER = "INTEGER"
+    TIMEINSTANCE = "TIMEINSTANCE"
 
 
 class RtcDateType(BaseModel):
-    __root__: constr(regex=r'^([\d][\d][\d][\d]\-[\d][\d]\-[\d][\d])$')
+    __root__: constr(regex=r"^([\d][\d][\d][\d]\-[\d][\d]\-[\d][\d])$")
 
 
 class RtcNStepModeEnum(Enum):
-    CONTINUOUS = 'CONTINUOUS'
-    STEP = 'STEP'
+    CONTINUOUS = "CONTINUOUS"
+    STEP = "STEP"
 
 
 class RtcTimeSeriesType(Enum):
-    accumulative = 'accumulative'
-    instantaneous = 'instantaneous'
+    accumulative = "accumulative"
+    instantaneous = "instantaneous"
 
 
 class RtcTimeStepUnitEnumStringType(Enum):
-    second = 'second'
-    minute = 'minute'
-    hour = 'hour'
-    day = 'day'
-    week = 'week'
+    second = "second"
+    minute = "minute"
+    hour = "hour"
+    day = "day"
+    week = "week"
 
 
 class RtcTimeType(BaseModel):
-    __root__: constr(regex=r'^([\d][\d]\:[\d][\d]\:[\d][\d])$')
+    __root__: constr(regex=r"^([\d][\d]\:[\d][\d]\:[\d][\d])$")
 
 
 class XsAnySimpleType(BaseModel):
@@ -224,38 +224,38 @@ class RtcConstant(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsAnySimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsAnySimpleType] = Field(None, alias="$")
 
 
 class RtcNAggregationSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInteger] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInteger] = Field(None, alias="$")
 
 
 class RtcType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcAggregationTypeEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcAggregationTypeEnumStringType] = Field(None, alias="$")
 
 
 class RtcAggregationEquidistantComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_nAggregationSteps: RtcNAggregationSteps = Field(
         ...,
-        alias='rtc:nAggregationSteps',
-        description='aggregation, simulation time nOutputSteps (simulation) = nInputSteps (optimizer) * nAggregationSteps',
+        alias="rtc:nAggregationSteps",
+        description="aggregation, simulation time nOutputSteps (simulation) = nInputSteps (optimizer) * nAggregationSteps",
     )
     rtc_type: RtcType = Field(
-        ..., alias='rtc:type', description='interpolation type: block or linear'
+        ..., alias="rtc:type", description="interpolation type: block or linear"
     )
 
 
@@ -263,50 +263,50 @@ class RtcNInputSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInteger] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInteger] = Field(None, alias="$")
 
 
 class RtcNOutputSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInteger] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInteger] = Field(None, alias="$")
 
 
 class RtcStepIndexItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInteger] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInteger] = Field(None, alias="$")
 
 
 class RtcType1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcAggregationTypeEnumStringType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcAggregationTypeEnumStringType] = Field(None, alias="$")
 
 
 class RtcAggregationNonEquidistantComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_nInputSteps: RtcNInputSteps = Field(
-        ..., alias='rtc:nInputSteps', description='number of input time steps'
+        ..., alias="rtc:nInputSteps", description="number of input time steps"
     )
     rtc_nOutputSteps: RtcNOutputSteps = Field(
-        ..., alias='rtc:nOutputSteps', description='number of output time steps'
+        ..., alias="rtc:nOutputSteps", description="number of output time steps"
     )
     rtc_stepIndex: List[RtcStepIndexItem] = Field(
-        ..., alias='rtc:stepIndex', min_items=1
+        ..., alias="rtc:stepIndex", min_items=1
     )
     rtc_type: RtcType1 = Field(
-        ..., alias='rtc:type', description='interpolation type: block or linear'
+        ..., alias="rtc:type", description="interpolation type: block or linear"
     )
 
 
@@ -314,33 +314,33 @@ class RtcInputDelayVector(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsString] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsString] = Field(None, alias="$")
 
 
 class RtcNStepSeries(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcAverageComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_inputDelayVector: Optional[RtcInputDelayVector] = Field(
-        None, alias='rtc:inputDelayVector'
+        None, alias="rtc:inputDelayVector"
     )
     rtc_nStep: Optional[RtcNStep] = Field(
-        None, alias='rtc:nStep', description='fixed value for nStep'
+        None, alias="rtc:nStep", description="fixed value for nStep"
     )
     rtc_nStepSeries: Optional[RtcNStepSeries] = Field(
         None,
-        alias='rtc:nStepSeries',
-        description='nStep value is provided as a time series, the average is computed if the value is a positive integer',
+        alias="rtc:nStepSeries",
+        description="nStep value is provided as a time series, the average is computed if the value is a positive integer",
     )
 
 
@@ -348,35 +348,35 @@ class RtcNStepSeries1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcVariableDelayVector(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcBoundAverageComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_nStep: Optional[RtcNStep1] = Field(
-        None, alias='rtc:nStep', description='fixed value for nStep'
+        None, alias="rtc:nStep", description="fixed value for nStep"
     )
     rtc_nStepSeries: Optional[RtcNStepSeries1] = Field(
         None,
-        alias='rtc:nStepSeries',
-        description='nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer',
+        alias="rtc:nStepSeries",
+        description="nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer",
     )
     rtc_variableDelayVector: Optional[RtcVariableDelayVector] = Field(
         None,
-        alias='rtc:variableDelayVector',
-        description='optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element ',
+        alias="rtc:variableDelayVector",
+        description="optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element ",
     )
 
 
@@ -384,57 +384,57 @@ class RtcLowerBound(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBoundSeries(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcState(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBound(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBoundSeries(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcComponentItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsString] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsString] = Field(None, alias="$")
 
 
 class RtcBoundStateComponentsComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_component: List[RtcComponentItem] = Field(
-        ..., alias='rtc:component', min_items=1
+        ..., alias="rtc:component", min_items=1
     )
 
 
@@ -442,85 +442,85 @@ class RtcVariableItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcBoundStateVariablesComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_variable: List[RtcVariableItem] = Field(..., alias='rtc:variable', min_items=1)
+    _: Optional[str] = Field(None, alias="#")
+    rtc_variable: List[RtcVariableItem] = Field(..., alias="rtc:variable", min_items=1)
 
 
 class RtcLowerBound1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBoundSeries1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBound1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBoundSeries1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcVariable(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcBoundVariableAverageComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    _name: Optional[XsString] = Field(None, alias='@name')
-    rtc_average: RtcBoundAverageComplexType = Field(..., alias='rtc:average')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    _name: Optional[XsString] = Field(None, alias="@name")
+    rtc_average: RtcBoundAverageComplexType = Field(..., alias="rtc:average")
     rtc_lowerBound: Optional[RtcLowerBound1] = Field(
-        None, alias='rtc:lowerBound', description='lower bound as a scalar'
+        None, alias="rtc:lowerBound", description="lower bound as a scalar"
     )
     rtc_lowerBoundSeries: Optional[RtcLowerBoundSeries1] = Field(
         None,
-        alias='rtc:lowerBoundSeries',
-        description='lower bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:lowerBoundSeries",
+        description="lower bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_upperBound: Optional[RtcUpperBound1] = Field(
-        None, alias='rtc:upperBound', description='upper bound as a scalar value'
+        None, alias="rtc:upperBound", description="upper bound as a scalar value"
     )
     rtc_upperBoundSeries: Optional[RtcUpperBoundSeries1] = Field(
         None,
-        alias='rtc:upperBoundSeries',
-        description='upper bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:upperBoundSeries",
+        description="upper bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_variable: RtcVariable = Field(
         ...,
-        alias='rtc:variable',
+        alias="rtc:variable",
         description="reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')",
     )
 
@@ -529,68 +529,68 @@ class RtcLowerBound2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBoundSeries2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBound2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBoundSeries2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcVariable1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcBoundVariableComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    _name: Optional[XsString] = Field(None, alias='@name')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    _name: Optional[XsString] = Field(None, alias="@name")
     rtc_lowerBound: Optional[RtcLowerBound2] = Field(
-        None, alias='rtc:lowerBound', description='lower bound as a scalar'
+        None, alias="rtc:lowerBound", description="lower bound as a scalar"
     )
     rtc_lowerBoundSeries: Optional[RtcLowerBoundSeries2] = Field(
         None,
-        alias='rtc:lowerBoundSeries',
-        description='lower bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:lowerBoundSeries",
+        description="lower bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_upperBound: Optional[RtcUpperBound2] = Field(
-        None, alias='rtc:upperBound', description='upper bound as a scalar value'
+        None, alias="rtc:upperBound", description="upper bound as a scalar value"
     )
     rtc_upperBoundSeries: Optional[RtcUpperBoundSeries2] = Field(
         None,
-        alias='rtc:upperBoundSeries',
-        description='upper bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:upperBoundSeries",
+        description="upper bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_variable: RtcVariable1 = Field(
         ...,
-        alias='rtc:variable',
+        alias="rtc:variable",
         description="reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')",
     )
 
@@ -599,155 +599,155 @@ class RtcLowerBound3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBoundSeries3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBound3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBoundSeries3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcVariable2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcF(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcInput(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBound4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBoundSeries4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcOrder(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcUpperBound4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBoundSeries4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorFinalItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorSeries(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcChanceConstraintComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_f: RtcF = Field(..., alias='rtc:f')
-    rtc_input: RtcInput = Field(..., alias='rtc:input')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_f: RtcF = Field(..., alias="rtc:f")
+    rtc_input: RtcInput = Field(..., alias="rtc:input")
     rtc_lowerBound: Optional[RtcLowerBound4] = Field(
-        None, alias='rtc:lowerBound', description='lower bound as a scalar'
+        None, alias="rtc:lowerBound", description="lower bound as a scalar"
     )
     rtc_lowerBoundSeries: Optional[RtcLowerBoundSeries4] = Field(
         None,
-        alias='rtc:lowerBoundSeries',
-        description='lower bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:lowerBoundSeries",
+        description="lower bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
-    rtc_order: RtcOrder = Field(..., alias='rtc:order')
+    rtc_order: RtcOrder = Field(..., alias="rtc:order")
     rtc_upperBound: Optional[RtcUpperBound4] = Field(
-        None, alias='rtc:upperBound', description='upper bound as a scalar value'
+        None, alias="rtc:upperBound", description="upper bound as a scalar value"
     )
     rtc_upperBoundSeries: Optional[RtcUpperBoundSeries4] = Field(
         None,
-        alias='rtc:upperBoundSeries',
-        description='upper bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:upperBoundSeries",
+        description="upper bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_weightingFactor: Optional[List[RtcWeightingFactorItem]] = Field(
-        None, alias='rtc:weightingFactor'
+        None, alias="rtc:weightingFactor"
     )
     rtc_weightingFactorFinal: Optional[List[RtcWeightingFactorFinalItem]] = Field(
-        None, alias='rtc:weightingFactorFinal'
+        None, alias="rtc:weightingFactorFinal"
     )
     rtc_weightingFactorSeries: Optional[RtcWeightingFactorSeries] = Field(
-        None, alias='rtc:weightingFactorSeries'
+        None, alias="rtc:weightingFactorSeries"
     )
 
 
@@ -755,77 +755,77 @@ class RtcF1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcLowerBound5(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBoundSeries5(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBound5(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcExternalParameterSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBoundSeries5(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcVariable3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcChanceVariableComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    _name: Optional[XsString] = Field(None, alias='@name')
-    rtc_f: RtcF1 = Field(..., alias='rtc:f')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    _name: Optional[XsString] = Field(None, alias="@name")
+    rtc_f: RtcF1 = Field(..., alias="rtc:f")
     rtc_lowerBound: Optional[RtcLowerBound5] = Field(
-        None, alias='rtc:lowerBound', description='lower bound as a scalar'
+        None, alias="rtc:lowerBound", description="lower bound as a scalar"
     )
     rtc_lowerBoundSeries: Optional[RtcLowerBoundSeries5] = Field(
         None,
-        alias='rtc:lowerBoundSeries',
-        description='lower bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:lowerBoundSeries",
+        description="lower bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_upperBound: Optional[RtcUpperBound5] = Field(
-        None, alias='rtc:upperBound', description='upper bound as a scalar value'
+        None, alias="rtc:upperBound", description="upper bound as a scalar value"
     )
     rtc_upperBoundSeries: Optional[RtcUpperBoundSeries5] = Field(
         None,
-        alias='rtc:upperBoundSeries',
-        description='upper bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:upperBoundSeries",
+        description="upper bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_variable: RtcVariable3 = Field(
         ...,
-        alias='rtc:variable',
+        alias="rtc:variable",
         description="reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')",
     )
 
@@ -834,70 +834,70 @@ class RtcDateTimeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _date: RtcDateType = Field(..., alias='@date')
-    _time: RtcTimeType = Field(..., alias='@time')
+    _: Optional[str] = Field(None, alias="#")
+    _date: RtcDateType = Field(..., alias="@date")
+    _time: RtcTimeType = Field(..., alias="@time")
 
 
 class RtcNStepCorrection(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcNStepMode(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcNStepModeEnum] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcNStepModeEnum] = Field(None, alias="$")
 
 
 class RtcNStepSeries2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcVariableDelayVector1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcMultipleDelayComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_nStep: Optional[RtcNStep3] = Field(
-        None, alias='rtc:nStep', description='fixed value for nStep'
+        None, alias="rtc:nStep", description="fixed value for nStep"
     )
     rtc_nStepCorrection: Optional[RtcNStepCorrection] = Field(
         None,
-        alias='rtc:nStepCorrection',
-        description='if TRUE, the rate-of-change bounds are given as change per time step, if FALSE, the bounds represent the total change over all time steps, default is FALSE ',
+        alias="rtc:nStepCorrection",
+        description="if TRUE, the rate-of-change bounds are given as change per time step, if FALSE, the bounds represent the total change over all time steps, default is FALSE ",
     )
     rtc_nStepMode: Optional[RtcNStepMode] = Field(
         None,
-        alias='rtc:nStepMode',
-        description='STEP only computes the difference between T0-nStep and T0, CONTINUOUS computes the differences also at all intermediate steps',
+        alias="rtc:nStepMode",
+        description="STEP only computes the difference between T0-nStep and T0, CONTINUOUS computes the differences also at all intermediate steps",
     )
     rtc_nStepSeries: Optional[RtcNStepSeries2] = Field(
         None,
-        alias='rtc:nStepSeries',
-        description='nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer',
+        alias="rtc:nStepSeries",
+        description="nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer",
     )
     rtc_variableDelayVector: Optional[RtcVariableDelayVector1] = Field(
         None,
-        alias='rtc:variableDelayVector',
-        description='optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element ',
+        alias="rtc:variableDelayVector",
+        description="optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element ",
     )
 
 
@@ -905,32 +905,32 @@ class RtcJAcc(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcJInc(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcOutputComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_JAcc: RtcJAcc = Field(
         ...,
-        alias='rtc:JAcc',
-        description='time series reference for accumulating objective function value',
+        alias="rtc:JAcc",
+        description="time series reference for accumulating objective function value",
     )
     rtc_JInc: RtcJInc = Field(
         ...,
-        alias='rtc:JInc',
-        description='time series reference for incremental objective function value',
+        alias="rtc:JInc",
+        description="time series reference for incremental objective function value",
     )
 
 
@@ -938,35 +938,35 @@ class RtcNStepSeries3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcStateDelayVector(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcStateAverageComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_nStep: Optional[RtcNStep4] = Field(
-        None, alias='rtc:nStep', description='fixed value for nStep'
+        None, alias="rtc:nStep", description="fixed value for nStep"
     )
     rtc_nStepSeries: Optional[RtcNStepSeries3] = Field(
         None,
-        alias='rtc:nStepSeries',
-        description='nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer',
+        alias="rtc:nStepSeries",
+        description="nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer",
     )
     rtc_stateDelayVector: RtcStateDelayVector = Field(
         ...,
-        alias='rtc:stateDelayVector',
-        description='optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element ',
+        alias="rtc:stateDelayVector",
+        description="optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element ",
     )
 
 
@@ -974,77 +974,77 @@ class RtcInput1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBranch(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcOrder1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcSetPointSeries(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBranch(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcWeightingFactorSeries1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcTermAbsoluteComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
     rtc_average: Optional[RtcAverageComplexType] = Field(
         None,
-        alias='rtc:average',
-        description='optional definition of an aggregation period over several time steps',
+        alias="rtc:average",
+        description="optional definition of an aggregation period over several time steps",
     )
-    rtc_input: RtcInput1 = Field(..., alias='rtc:input')
-    rtc_lowerBranch: Optional[RtcLowerBranch] = Field(None, alias='rtc:lowerBranch')
-    rtc_order: RtcOrder1 = Field(..., alias='rtc:order')
-    rtc_setPoint: Optional[RtcSetPoint] = Field(None, alias='rtc:setPoint')
+    rtc_input: RtcInput1 = Field(..., alias="rtc:input")
+    rtc_lowerBranch: Optional[RtcLowerBranch] = Field(None, alias="rtc:lowerBranch")
+    rtc_order: RtcOrder1 = Field(..., alias="rtc:order")
+    rtc_setPoint: Optional[RtcSetPoint] = Field(None, alias="rtc:setPoint")
     rtc_setPointSeries: Optional[RtcSetPointSeries] = Field(
-        None, alias='rtc:setPointSeries'
+        None, alias="rtc:setPointSeries"
     )
-    rtc_upperBranch: Optional[RtcUpperBranch] = Field(None, alias='rtc:upperBranch')
+    rtc_upperBranch: Optional[RtcUpperBranch] = Field(None, alias="rtc:upperBranch")
     rtc_weightingFactor: Optional[List[RtcWeightingFactorItem1]] = Field(
-        None, alias='rtc:weightingFactor'
+        None, alias="rtc:weightingFactor"
     )
     rtc_weightingFactorFinal: Optional[List[RtcWeightingFactorFinalItem1]] = Field(
-        None, alias='rtc:weightingFactorFinal'
+        None, alias="rtc:weightingFactorFinal"
     )
     rtc_weightingFactorSeries: Optional[RtcWeightingFactorSeries1] = Field(
-        None, alias='rtc:weightingFactorSeries'
+        None, alias="rtc:weightingFactorSeries"
     )
 
 
@@ -1052,10 +1052,10 @@ class RtcTermEnsembleChoiceComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias='@active')
+    _: Optional[str] = Field(None, alias="#")
+    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias="@active")
     rtc_chanceConstraint: Optional[RtcChanceConstraintComplexType] = Field(
-        None, alias='rtc:chanceConstraint'
+        None, alias="rtc:chanceConstraint"
     )
 
 
@@ -1063,9 +1063,9 @@ class RtcTermEnsembleComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_termEnsemble: List[RtcTermEnsembleChoiceComplexType] = Field(
-        ..., alias='rtc:termEnsemble', min_items=1
+        ..., alias="rtc:termEnsemble", min_items=1
     )
 
 
@@ -1073,45 +1073,45 @@ class RtcInput2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSetPointSeries1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcWeightingFactorSeries2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcTermLinearComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_input: RtcInput2 = Field(..., alias='rtc:input')
-    rtc_setPoint: Optional[RtcSetPoint1] = Field(None, alias='rtc:setPoint')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_input: RtcInput2 = Field(..., alias="rtc:input")
+    rtc_setPoint: Optional[RtcSetPoint1] = Field(None, alias="rtc:setPoint")
     rtc_setPointSeries: Optional[RtcSetPointSeries1] = Field(
-        None, alias='rtc:setPointSeries'
+        None, alias="rtc:setPointSeries"
     )
     rtc_weightingFactor: Optional[List[RtcWeightingFactorItem2]] = Field(
-        None, alias='rtc:weightingFactor'
+        None, alias="rtc:weightingFactor"
     )
     rtc_weightingFactorFinal: Optional[List[RtcWeightingFactorFinalItem2]] = Field(
-        None, alias='rtc:weightingFactorFinal'
+        None, alias="rtc:weightingFactorFinal"
     )
     rtc_weightingFactorSeries: Optional[RtcWeightingFactorSeries2] = Field(
-        None, alias='rtc:weightingFactorSeries'
+        None, alias="rtc:weightingFactorSeries"
     )
 
 
@@ -1119,97 +1119,97 @@ class RtcFlag(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcObservation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSimulation(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcTermMSEComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_flag: Optional[RtcFlag] = Field(None, alias='rtc:flag')
-    rtc_observation: RtcObservation = Field(..., alias='rtc:observation')
-    rtc_simulation: RtcSimulation = Field(..., alias='rtc:simulation')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_flag: Optional[RtcFlag] = Field(None, alias="rtc:flag")
+    rtc_observation: RtcObservation = Field(..., alias="rtc:observation")
+    rtc_simulation: RtcSimulation = Field(..., alias="rtc:simulation")
 
 
 class RtcInput3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcTermMaxComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_input: RtcInput3 = Field(..., alias='rtc:input')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_input: RtcInput3 = Field(..., alias="rtc:input")
 
 
 class RtcFlag1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcObservation1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSimulation1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSkipNFirstSteps(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcTermNSEComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_flag: Optional[RtcFlag1] = Field(None, alias='rtc:flag')
-    rtc_observation: RtcObservation1 = Field(..., alias='rtc:observation')
-    rtc_simulation: RtcSimulation1 = Field(..., alias='rtc:simulation')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_flag: Optional[RtcFlag1] = Field(None, alias="rtc:flag")
+    rtc_observation: RtcObservation1 = Field(..., alias="rtc:observation")
+    rtc_simulation: RtcSimulation1 = Field(..., alias="rtc:simulation")
     rtc_skipNFirstSteps: Optional[RtcSkipNFirstSteps] = Field(
-        None, alias='rtc:skipNFirstSteps'
+        None, alias="rtc:skipNFirstSteps"
     )
 
 
@@ -1217,170 +1217,170 @@ class RtcFlag2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcObservation2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSimulation2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcTermRMSEComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_flag: Optional[RtcFlag2] = Field(None, alias='rtc:flag')
-    rtc_observation: RtcObservation2 = Field(..., alias='rtc:observation')
-    rtc_simulation: RtcSimulation2 = Field(..., alias='rtc:simulation')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_flag: Optional[RtcFlag2] = Field(None, alias="rtc:flag")
+    rtc_observation: RtcObservation2 = Field(..., alias="rtc:observation")
+    rtc_simulation: RtcSimulation2 = Field(..., alias="rtc:simulation")
 
 
 class RtcFlag3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcObservation3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSimulation3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSkipNFirstSteps1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcW(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcTermRVComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_flag: Optional[RtcFlag3] = Field(None, alias='rtc:flag')
-    rtc_observation: RtcObservation3 = Field(..., alias='rtc:observation')
-    rtc_simulation: RtcSimulation3 = Field(..., alias='rtc:simulation')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_flag: Optional[RtcFlag3] = Field(None, alias="rtc:flag")
+    rtc_observation: RtcObservation3 = Field(..., alias="rtc:observation")
+    rtc_simulation: RtcSimulation3 = Field(..., alias="rtc:simulation")
     rtc_skipNFirstSteps: Optional[RtcSkipNFirstSteps1] = Field(
-        None, alias='rtc:skipNFirstSteps'
+        None, alias="rtc:skipNFirstSteps"
     )
-    rtc_w: RtcW = Field(..., alias='rtc:w')
+    rtc_w: RtcW = Field(..., alias="rtc:w")
 
 
 class RtcInput4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcLowerBranch1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcOrder2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcSetPoint2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsDouble] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsDouble] = Field(None, alias="$")
 
 
 class RtcSetPointSeries2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcUpperBranch1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsBoolean] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsBoolean] = Field(None, alias="$")
 
 
 class RtcWeightingFactorSeries3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcTermRateOfChangeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_input: RtcInput4 = Field(..., alias='rtc:input')
-    rtc_lowerBranch: Optional[RtcLowerBranch1] = Field(None, alias='rtc:lowerBranch')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_input: RtcInput4 = Field(..., alias="rtc:input")
+    rtc_lowerBranch: Optional[RtcLowerBranch1] = Field(None, alias="rtc:lowerBranch")
     rtc_multipleDelay: Optional[RtcMultipleDelayComplexType] = Field(
-        None, alias='rtc:multipleDelay'
+        None, alias="rtc:multipleDelay"
     )
-    rtc_order: RtcOrder2 = Field(..., alias='rtc:order')
-    rtc_setPoint: Optional[RtcSetPoint2] = Field(None, alias='rtc:setPoint')
+    rtc_order: RtcOrder2 = Field(..., alias="rtc:order")
+    rtc_setPoint: Optional[RtcSetPoint2] = Field(None, alias="rtc:setPoint")
     rtc_setPointSeries: Optional[RtcSetPointSeries2] = Field(
-        None, alias='rtc:setPointSeries'
+        None, alias="rtc:setPointSeries"
     )
-    rtc_upperBranch: Optional[RtcUpperBranch1] = Field(None, alias='rtc:upperBranch')
+    rtc_upperBranch: Optional[RtcUpperBranch1] = Field(None, alias="rtc:upperBranch")
     rtc_weightingFactor: Optional[List[RtcWeightingFactorItem3]] = Field(
-        None, alias='rtc:weightingFactor'
+        None, alias="rtc:weightingFactor"
     )
     rtc_weightingFactorSeries: Optional[RtcWeightingFactorSeries3] = Field(
-        None, alias='rtc:weightingFactorSeries'
+        None, alias="rtc:weightingFactorSeries"
     )
 
 
@@ -1388,45 +1388,45 @@ class RtcFlag4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcObservation4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSimulation4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSkipNFirstSteps2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[XsInt] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[XsInt] = Field(None, alias="$")
 
 
 class RtcTermRelativeVolumeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_flag: Optional[RtcFlag4] = Field(None, alias='rtc:flag')
-    rtc_observation: RtcObservation4 = Field(..., alias='rtc:observation')
-    rtc_simulation: RtcSimulation4 = Field(..., alias='rtc:simulation')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_flag: Optional[RtcFlag4] = Field(None, alias="rtc:flag")
+    rtc_observation: RtcObservation4 = Field(..., alias="rtc:observation")
+    rtc_simulation: RtcSimulation4 = Field(..., alias="rtc:simulation")
     rtc_skipNFirstSteps: Optional[RtcSkipNFirstSteps2] = Field(
-        None, alias='rtc:skipNFirstSteps'
+        None, alias="rtc:skipNFirstSteps"
     )
 
 
@@ -1434,51 +1434,51 @@ class RtcFlag5(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcSimulation5(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias='$')
+    _: Optional[str] = Field(None, alias="#")
+    __1: Optional[RtcTimeSeriesSimpleType] = Field(None, alias="$")
 
 
 class RtcTermSumComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    rtc_flag: Optional[RtcFlag5] = Field(None, alias='rtc:flag')
-    rtc_simulation: RtcSimulation5 = Field(..., alias='rtc:simulation')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    rtc_flag: Optional[RtcFlag5] = Field(None, alias="rtc:flag")
+    rtc_simulation: RtcSimulation5 = Field(..., alias="rtc:simulation")
 
 
 class RtcTimeStepComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _divider: Optional[XsPositiveInteger] = Field(None, alias='@divider')
-    _multiplier: Optional[XsPositiveInteger] = Field(None, alias='@multiplier')
-    _unit: RtcTimeStepUnitEnumStringType = Field(..., alias='@unit')
+    _: Optional[str] = Field(None, alias="#")
+    _divider: Optional[XsPositiveInteger] = Field(None, alias="@divider")
+    _multiplier: Optional[XsPositiveInteger] = Field(None, alias="@multiplier")
+    _unit: RtcTimeStepUnitEnumStringType = Field(..., alias="@unit")
 
 
 class RtcAggregationComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_constant: Optional[RtcConstant] = Field(None, alias='rtc:constant')
+    _: Optional[str] = Field(None, alias="#")
+    rtc_constant: Optional[RtcConstant] = Field(None, alias="rtc:constant")
     rtc_equidistant: Optional[RtcAggregationEquidistantComplexType] = Field(
         None,
-        alias='rtc:equidistant',
-        description='aggregation with equidistent steps, note that the number of time steps in the model needs to be a multiple of the aggregation step, i.e. 2,4,6,8 steps in case of an aggregation step of 2',
+        alias="rtc:equidistant",
+        description="aggregation with equidistent steps, note that the number of time steps in the model needs to be a multiple of the aggregation step, i.e. 2,4,6,8 steps in case of an aggregation step of 2",
     )
     rtc_non_equidistant: Optional[RtcAggregationNonEquidistantComplexType] = Field(
-        None, alias='rtc:non-equidistant', description='still not implemented'
+        None, alias="rtc:non-equidistant", description="still not implemented"
     )
 
 
@@ -1486,43 +1486,43 @@ class RtcBoundStateComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    _name: Optional[XsString] = Field(None, alias='@name')
-    _scalingFactor: Optional[XsDouble] = Field(None, alias='@scalingFactor')
-    rtc_average: Optional[RtcStateAverageComplexType] = Field(None, alias='rtc:average')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    _name: Optional[XsString] = Field(None, alias="@name")
+    _scalingFactor: Optional[XsDouble] = Field(None, alias="@scalingFactor")
+    rtc_average: Optional[RtcStateAverageComplexType] = Field(None, alias="rtc:average")
     rtc_components: RtcBoundStateComponentsComplexType = Field(
         ...,
-        alias='rtc:components',
-        description='simulation components (in the order of the simulation model) which compute the state based on the variables (both defined below)',
+        alias="rtc:components",
+        description="simulation components (in the order of the simulation model) which compute the state based on the variables (both defined below)",
     )
     rtc_lowerBound: Optional[RtcLowerBound] = Field(
-        None, alias='rtc:lowerBound', description='lower bound as a scalar'
+        None, alias="rtc:lowerBound", description="lower bound as a scalar"
     )
     rtc_lowerBoundSeries: Optional[RtcLowerBoundSeries] = Field(
         None,
-        alias='rtc:lowerBoundSeries',
-        description='lower bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:lowerBoundSeries",
+        description="lower bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
-    rtc_nStep: Optional[RtcNStep2] = Field(None, alias='rtc:nStep')
+    rtc_nStep: Optional[RtcNStep2] = Field(None, alias="rtc:nStep")
     rtc_state: RtcState = Field(
-        ..., alias='rtc:state', description='reference to the state to constrain'
+        ..., alias="rtc:state", description="reference to the state to constrain"
     )
     rtc_stepIndices: Optional[RtcBoundStateStepIndicesComplexType] = Field(
-        None, alias='rtc:stepIndices'
+        None, alias="rtc:stepIndices"
     )
     rtc_upperBound: Optional[RtcUpperBound] = Field(
-        None, alias='rtc:upperBound', description='upper bound as a scalar value'
+        None, alias="rtc:upperBound", description="upper bound as a scalar value"
     )
     rtc_upperBoundSeries: Optional[RtcUpperBoundSeries] = Field(
         None,
-        alias='rtc:upperBoundSeries',
-        description='upper bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:upperBoundSeries",
+        description="upper bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_variables: RtcBoundStateVariablesComplexType = Field(
         ...,
-        alias='rtc:variables',
-        description='references to the optimization variable which contribute to the computation of the state',
+        alias="rtc:variables",
+        description="references to the optimization variable which contribute to the computation of the state",
     )
 
 
@@ -1530,33 +1530,33 @@ class RtcBoundVariableRateOfChangeComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _id: XsString = Field(..., alias='@id')
-    _name: Optional[XsString] = Field(None, alias='@name')
+    _: Optional[str] = Field(None, alias="#")
+    _id: XsString = Field(..., alias="@id")
+    _name: Optional[XsString] = Field(None, alias="@name")
     rtc_lowerBound: Optional[RtcLowerBound3] = Field(
-        None, alias='rtc:lowerBound', description='lower bound as a scalar'
+        None, alias="rtc:lowerBound", description="lower bound as a scalar"
     )
     rtc_lowerBoundSeries: Optional[RtcLowerBoundSeries3] = Field(
         None,
-        alias='rtc:lowerBoundSeries',
-        description='lower bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:lowerBoundSeries",
+        description="lower bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_multipleDelay: Optional[RtcMultipleDelayComplexType] = Field(
         None,
-        alias='rtc:multipleDelay',
-        description='option to look back more than a single time step',
+        alias="rtc:multipleDelay",
+        description="option to look back more than a single time step",
     )
     rtc_upperBound: Optional[RtcUpperBound3] = Field(
-        None, alias='rtc:upperBound', description='upper bound as a scalar value'
+        None, alias="rtc:upperBound", description="upper bound as a scalar value"
     )
     rtc_upperBoundSeries: Optional[RtcUpperBoundSeries3] = Field(
         None,
-        alias='rtc:upperBoundSeries',
-        description='upper bound from a times series, a missing value will switch out the constraint for this specific time step',
+        alias="rtc:upperBoundSeries",
+        description="upper bound from a times series, a missing value will switch out the constraint for this specific time step",
     )
     rtc_variable: RtcVariable2 = Field(
         ...,
-        alias='rtc:variable',
+        alias="rtc:variable",
         description="reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')",
     )
 
@@ -1565,34 +1565,34 @@ class RtcConstraintChoiceComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias='@active')
+    _: Optional[str] = Field(None, alias="#")
+    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias="@active")
     rtc_boundState: Optional[RtcBoundStateComplexType] = Field(
         None,
-        alias='rtc:boundState',
-        description='implements bounds on states or model outputs',
+        alias="rtc:boundState",
+        description="implements bounds on states or model outputs",
     )
     rtc_boundVariable: Optional[RtcBoundVariableComplexType] = Field(
         None,
-        alias='rtc:boundVariable',
-        description='implement bounds on the optimization variable',
+        alias="rtc:boundVariable",
+        description="implement bounds on the optimization variable",
     )
     rtc_boundVariableAverage: Optional[RtcBoundVariableAverageComplexType] = Field(
         None,
-        alias='rtc:boundVariableAverage',
-        description='defines a bound on an average value of an optimization variable for example to enable min/max bounds on aggregated time series',
+        alias="rtc:boundVariableAverage",
+        description="defines a bound on an average value of an optimization variable for example to enable min/max bounds on aggregated time series",
     )
     rtc_boundVariableRateOfChange: Optional[
         RtcBoundVariableRateOfChangeComplexType
     ] = Field(
         None,
-        alias='rtc:boundVariableRateOfChange',
-        description='implements bounds on the rate-of-change of an optimization variable',
+        alias="rtc:boundVariableRateOfChange",
+        description="implements bounds on the rate-of-change of an optimization variable",
     )
     rtc_chanceBoundVariable: Optional[RtcChanceVariableComplexType] = Field(
         None,
-        alias='rtc:chanceBoundVariable',
-        description='implement chance constraints on the optimization variable',
+        alias="rtc:chanceBoundVariable",
+        description="implement chance constraints on the optimization variable",
     )
 
 
@@ -1600,9 +1600,9 @@ class RtcConstraintsComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_constraint: List[RtcConstraintChoiceComplexType] = Field(
-        ..., alias='rtc:constraint', min_items=1
+        ..., alias="rtc:constraint", min_items=1
     )
 
 
@@ -1610,50 +1610,50 @@ class RtcTermChoiceComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias='@active')
+    _: Optional[str] = Field(None, alias="#")
+    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias="@active")
     rtc_absolute: Optional[RtcTermAbsoluteComplexType] = Field(
-        None, alias='rtc:absolute'
+        None, alias="rtc:absolute"
     )
-    rtc_linear: Optional[RtcTermLinearComplexType] = Field(None, alias='rtc:linear')
-    rtc_max: Optional[RtcTermMaxComplexType] = Field(None, alias='rtc:max')
-    rtc_mse: Optional[RtcTermMSEComplexType] = Field(None, alias='rtc:mse')
-    rtc_nse: Optional[RtcTermNSEComplexType] = Field(None, alias='rtc:nse')
+    rtc_linear: Optional[RtcTermLinearComplexType] = Field(None, alias="rtc:linear")
+    rtc_max: Optional[RtcTermMaxComplexType] = Field(None, alias="rtc:max")
+    rtc_mse: Optional[RtcTermMSEComplexType] = Field(None, alias="rtc:mse")
+    rtc_nse: Optional[RtcTermNSEComplexType] = Field(None, alias="rtc:nse")
     rtc_rateOfChange: Optional[RtcTermRateOfChangeComplexType] = Field(
-        None, alias='rtc:rateOfChange'
+        None, alias="rtc:rateOfChange"
     )
     rtc_relativeVolume: Optional[RtcTermRelativeVolumeComplexType] = Field(
-        None, alias='rtc:relativeVolume'
+        None, alias="rtc:relativeVolume"
     )
-    rtc_rmse: Optional[RtcTermRMSEComplexType] = Field(None, alias='rtc:rmse')
-    rtc_rv: Optional[RtcTermRVComplexType] = Field(None, alias='rtc:rv')
-    rtc_sum: Optional[RtcTermSumComplexType] = Field(None, alias='rtc:sum')
+    rtc_rmse: Optional[RtcTermRMSEComplexType] = Field(None, alias="rtc:rmse")
+    rtc_rv: Optional[RtcTermRVComplexType] = Field(None, alias="rtc:rv")
+    rtc_sum: Optional[RtcTermSumComplexType] = Field(None, alias="rtc:sum")
 
 
 class RtcTermComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    rtc_term: List[RtcTermChoiceComplexType] = Field(..., alias='rtc:term', min_items=1)
+    _: Optional[str] = Field(None, alias="#")
+    rtc_term: List[RtcTermChoiceComplexType] = Field(..., alias="rtc:term", min_items=1)
 
 
 class RtcVariableComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias='@active')
+    _: Optional[str] = Field(None, alias="#")
+    _active: Optional[RtcExternalBooleanSimpleType] = Field(None, alias="@active")
     _ensembleMode: Optional[RtcEnsembleModeEnumStringType] = Field(
-        None, alias='@ensembleMode'
+        None, alias="@ensembleMode"
     )
-    _id: RtcTimeSeriesSimpleType = Field(..., alias='@id')
-    _max: Optional[RtcExternalParameterSimpleType] = Field(None, alias='@max')
-    _min: Optional[RtcExternalParameterSimpleType] = Field(None, alias='@min')
-    _scalingFactor: Optional[XsDouble] = Field(None, alias='@scalingFactor')
-    _type: RtcVariableTypeEnumStringType = Field(..., alias='@type')
+    _id: RtcTimeSeriesSimpleType = Field(..., alias="@id")
+    _max: Optional[RtcExternalParameterSimpleType] = Field(None, alias="@max")
+    _min: Optional[RtcExternalParameterSimpleType] = Field(None, alias="@min")
+    _scalingFactor: Optional[XsDouble] = Field(None, alias="@scalingFactor")
+    _type: RtcVariableTypeEnumStringType = Field(..., alias="@type")
     rtc_aggregation: Optional[RtcAggregationComplexType] = Field(
-        None, alias='rtc:aggregation'
+        None, alias="rtc:aggregation"
     )
 
 
@@ -1661,12 +1661,12 @@ class RtcVariablesComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_aggregation: Optional[RtcAggregationComplexType] = Field(
-        None, alias='rtc:aggregation'
+        None, alias="rtc:aggregation"
     )
     rtc_variable: List[RtcVariableComplexType] = Field(
-        ..., alias='rtc:variable', min_items=1
+        ..., alias="rtc:variable", min_items=1
     )
 
 
@@ -1674,17 +1674,17 @@ class RtcRtcObjectiveConfigComplexType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
+    _: Optional[str] = Field(None, alias="#")
     rtc_constraints: Optional[RtcConstraintsComplexType] = Field(
-        None, alias='rtc:constraints'
+        None, alias="rtc:constraints"
     )
-    rtc_output: Optional[RtcOutputComplexType] = Field(None, alias='rtc:output')
-    rtc_terms: Optional[RtcTermComplexType] = Field(None, alias='rtc:terms')
+    rtc_output: Optional[RtcOutputComplexType] = Field(None, alias="rtc:output")
+    rtc_terms: Optional[RtcTermComplexType] = Field(None, alias="rtc:terms")
     rtc_termsEnsemble: Optional[RtcTermEnsembleComplexType] = Field(
-        None, alias='rtc:termsEnsemble'
+        None, alias="rtc:termsEnsemble"
     )
     rtc_variables: Optional[RtcVariablesComplexType] = Field(
-        None, alias='rtc:variables'
+        None, alias="rtc:variables"
     )
 
 
@@ -1692,11 +1692,11 @@ class Model(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    _: Optional[str] = Field(None, alias='#')
-    _xmlns_rtc: Optional[Any] = Field('http://www.wldelft.nl/fews', alias='@xmlns:rtc')
+    _: Optional[str] = Field(None, alias="#")
+    _xmlns_rtc: Optional[Any] = Field("http://www.wldelft.nl/fews", alias="@xmlns:rtc")
     _xmlns_xs: Optional[Any] = Field(
-        'http://www.w3.org/2001/XMLSchema', alias='@xmlns:xs'
+        "http://www.w3.org/2001/XMLSchema", alias="@xmlns:xs"
     )
     rtc_rtcObjectiveConfig: Optional[_.RtcRtcObjectiveConfig] = Field(
-        None, alias='rtc:rtcObjectiveConfig'
+        None, alias="rtc:rtcObjectiveConfig"
     )
