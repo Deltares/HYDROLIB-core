@@ -9,8 +9,6 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Extra, Field, conint, constr
 
-from . import _
-
 
 class FewsGeoDatumEnumStringType(Enum):
     LOCAL = "LOCAL"
@@ -1109,6 +1107,8 @@ class FewsTimeSeriesCollectionComplexType(BaseModel):
     )
     fews_timeZone: Optional[FewsTimeZone1] = Field(None, alias="fews:timeZone")
 
+class FewsTimeSeries(BaseModel):
+    __root__: FewsTimeSeriesCollectionComplexType
 
 class Model(BaseModel):
     class Config:
@@ -1121,4 +1121,4 @@ class Model(BaseModel):
     _xmlns_xs: Optional[Any] = Field(
         "http://www.w3.org/2001/XMLSchema", alias="@xmlns:xs"
     )
-    fews_TimeSeries: Optional[_.FewsTimeSeries] = Field(None, alias="fews:TimeSeries")
+    fews_TimeSeries: Optional[FewsTimeSeries] = Field(None, alias="fews:TimeSeries")

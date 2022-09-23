@@ -9,8 +9,6 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Extra, Field, conint, constr
 
-from . import _
-
 
 class RtcAggregationTypeEnumStringType(Enum):
     BLOCK = "BLOCK"
@@ -427,6 +425,8 @@ class RtcRTCDataConfigComplexType(BaseModel):
         description="Import time series RTC-Tools imports from XML files or other interfaces",
     )
 
+class RtcRtcDataConfig(BaseModel):
+    __root__: RtcRTCDataConfigComplexType
 
 class Model(BaseModel):
     class Config:
@@ -437,6 +437,6 @@ class Model(BaseModel):
     _xmlns_xs: Optional[Any] = Field(
         "http://www.w3.org/2001/XMLSchema", alias="@xmlns:xs"
     )
-    rtc_rtcDataConfig: Optional[_.RtcRtcDataConfig] = Field(
+    rtc_rtcDataConfig: Optional[RtcRtcDataConfig] = Field(
         None, alias="rtc:rtcDataConfig"
     )

@@ -9,7 +9,6 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Extra, Field, conint, constr
 
-from . import _
 from ._._ import rtc_ExternalParameterSimpleType, rtc_TimeSeriesSimpleType, xs_string
 
 
@@ -8575,6 +8574,8 @@ class RtcComponentsComplexType(BaseModel):
         ..., alias="rtc:component", min_items=1
     )
 
+class RtcRtcToolsConfig(BaseModel):
+    __root__: RtcRtcToolsConfigComplexType
 
 class Model(BaseModel):
     class Config:
@@ -8585,7 +8586,7 @@ class Model(BaseModel):
     _xmlns_xs: Optional[Any] = Field(
         "http://www.w3.org/2001/XMLSchema", alias="@xmlns:xs"
     )
-    rtc_rtcToolsConfig: Optional[_.RtcRtcToolsConfig] = Field(
+    rtc_rtcToolsConfig: Optional[RtcRtcToolsConfig] = Field(
         None, alias="rtc:rtcToolsConfig"
     )
 

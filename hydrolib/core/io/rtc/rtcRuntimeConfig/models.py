@@ -9,8 +9,6 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Extra, Field, PositiveFloat, confloat, conint, constr
 
-from . import _
-
 
 class RtcAggregationTypeEnumStringType(Enum):
     BLOCK = "BLOCK"
@@ -3237,6 +3235,8 @@ class RtcRtcRuntimeConfigComplexType(BaseModel):
         description="Optional definition for saving periodic state files",
     )
 
+class RtcRtcRuntimeConfig(BaseModel):
+    __root__: RtcRtcRuntimeConfigComplexType
 
 class Model(BaseModel):
     class Config:
@@ -3247,6 +3247,6 @@ class Model(BaseModel):
     _xmlns_xs: Optional[Any] = Field(
         "http://www.w3.org/2001/XMLSchema", alias="@xmlns:xs"
     )
-    rtc_rtcRuntimeConfig: Optional[_.RtcRtcRuntimeConfig] = Field(
+    rtc_rtcRuntimeConfig: Optional[RtcRtcRuntimeConfig] = Field(
         None, alias="rtc:rtcRuntimeConfig"
     )

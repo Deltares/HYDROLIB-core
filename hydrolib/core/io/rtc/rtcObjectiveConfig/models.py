@@ -9,8 +9,6 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Extra, Field, conint, constr
 
-from . import _
-
 
 class RtcAggregationTypeEnumStringType(Enum):
     BLOCK = "BLOCK"
@@ -1687,6 +1685,8 @@ class RtcRtcObjectiveConfigComplexType(BaseModel):
         None, alias="rtc:variables"
     )
 
+class RtcRtcObjectiveConfig(BaseModel):
+    __root__: RtcRtcObjectiveConfigComplexType
 
 class Model(BaseModel):
     class Config:
@@ -1697,6 +1697,6 @@ class Model(BaseModel):
     _xmlns_xs: Optional[Any] = Field(
         "http://www.w3.org/2001/XMLSchema", alias="@xmlns:xs"
     )
-    rtc_rtcObjectiveConfig: Optional[_.RtcRtcObjectiveConfig] = Field(
+    rtc_rtcObjectiveConfig: Optional[RtcRtcObjectiveConfig] = Field(
         None, alias="rtc:rtcObjectiveConfig"
     )
