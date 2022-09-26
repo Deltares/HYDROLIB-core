@@ -1,0 +1,408 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"additionalProperties": false,
+	"definitions": {
+		".rtcDataConfig": {
+			"$ref": "#/definitions/rtcDataConfigComplexType"
+		},
+		"AggregationTypeEnumStringType": {
+			"enum": [
+				"BLOCK",
+				"LINEAR"
+			],
+			"type": "string"
+		},
+		"CSVTimeSeriesFileComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_adjointOutput": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"attr_decimalSeparator": {
+					"$ref": "#/definitions/SeparatorEnumStringType"
+				},
+				"attr_delimiter": {
+					"$ref": "#/definitions/SeparatorEnumStringType"
+				}
+			},
+			"type": "object"
+		},
+		"DateTimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_date": {
+					"$ref": "#/definitions/dateType"
+				},
+				"attr_time": {
+					"$ref": "#/definitions/timeType"
+				}
+			},
+			"required": [
+				"attr_date",
+				"attr_time"
+			],
+			"type": "object"
+		},
+		"EnsembleModeEnumStringType": {
+			"enum": [
+				"JOINT",
+				"TREE",
+				"INDEPENDENT"
+			],
+			"type": "string"
+		},
+		"ExternalBooleanSimpleType": {
+			"anyOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"ExternalIntegerSimpleType": {
+			"anyOf": [
+				{
+					"type": "integer"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"ExternalParameterSimpleType": {
+			"anyOf": [
+				{
+					"type": "number"
+				},
+				{
+					"pattern": "^([#-\\$][\\(-_a-z]+[#-\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"OpenMIExchangeItemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"elementId": {
+					"$ref": "#/definitions/xs:string",
+					"description": "OpenMI element ID, corresponds to the locationId"
+				},
+				"quantityId": {
+					"$ref": "#/definitions/xs:string",
+					"description": "OpenMI quantity ID, corresponds to the parameterId"
+				},
+				"unit": {
+					"$ref": "#/definitions/UnitEnumStringType",
+					"description": "Selection of supported units"
+				}
+			},
+			"required": [
+				"elementId",
+				"quantityId",
+				"unit"
+			],
+			"type": "object"
+		},
+		"PIExtrapolationOptionEnumStringType": {
+			"enum": [
+				"BLOCK",
+				"PERIODIC"
+			],
+			"type": "string"
+		},
+		"PIInterpolationOptionEnumStringType": {
+			"enum": [
+				"BLOCK",
+				"LINEAR"
+			],
+			"type": "string"
+		},
+		"PITimeSeriesComplexType": {
+			"additionalProperties": false,
+			"description": "The header is used to specify the link to the location\n                and the contents",
+			"properties": {
+				"extrapolationOption": {
+					"$ref": "#/definitions/PIExtrapolationOptionEnumStringType",
+					"description": "Extrapolation option in data import"
+				},
+				"interpolationOption": {
+					"$ref": "#/definitions/PIInterpolationOptionEnumStringType",
+					"description": "Interpolation option in data import"
+				},
+				"locationId": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Location ID in Delft-FEWS PI-XML file"
+				},
+				"parameterId": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Parameter ID in Delft-FEWS PI-XML file"
+				},
+				"qualifierId": {
+					"items": {
+						"$ref": "#/definitions/xs:string",
+						"description": "Optional qualifier ID in Delft-FEWS PI-XML file"
+					},
+					"type": "array"
+				},
+				"timeStep": {
+					"$ref": "#/definitions/TimeStepComplexType",
+					"description": "Equidistant time step of time series with optional multiplier of divider"
+				},
+				"unit": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Optional check for this unit during import, write this unit optionally when export the time series"
+				}
+			},
+			"required": [
+				"locationId",
+				"parameterId"
+			],
+			"type": "object"
+		},
+		"PITimeSeriesExportFileComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"adjointOutput": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"timeSeriesFile": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Name of the file containing timeseries data. "
+				},
+				"useBinFile": {
+					"$ref": "#/definitions/xs:boolean",
+					"description": "When true the events in the PI time series file are read from / written into a binairy file instead of the xml file.\nThe xml file only contains the time series headers and optionally a time zone.\nThe binairy file has the same name as the xml file only the extension is \"bin\" instead of \"xml\". The byte order in the bin file is always Intel x86.\n                "
+				}
+			},
+			"required": [
+				"timeSeriesFile"
+			],
+			"type": "object"
+		},
+		"PITimeSeriesImportFileComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"timeSeriesFile": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Name of the file containing timeseries data. "
+				},
+				"useBinFile": {
+					"$ref": "#/definitions/xs:boolean",
+					"description": "OBSOLETE. Still here for backwards compatibility. Remove after next release."
+				}
+			},
+			"required": [
+				"timeSeriesFile"
+			],
+			"type": "object"
+		},
+		"rtcDataConfigComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"exportSeries": {
+					"$ref": "#/definitions/rtcSeriesExportComplexType",
+					"description": "Export time series RTC-Tools genenerates and exports to XML or csv files or supplies to other applications via other interfaces"
+				},
+				"importSeries": {
+					"$ref": "#/definitions/rtcSeriesImportComplexType",
+					"description": "Import time series RTC-Tools imports from XML files or other interfaces"
+				}
+			},
+			"required": [
+				"exportSeries",
+				"importSeries"
+			],
+			"type": "object"
+		},
+		"rtcSeriesExportComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"CSVTimeSeriesFile": {
+					"$ref": "#/definitions/CSVTimeSeriesFileComplexType",
+					"description": "Comma-separated file for data exports. Note that this option is only used in the exportSeries element. If selected, all available time series will be exported."
+				},
+				"PITimeSeriesFile": {
+					"$ref": "#/definitions/PITimeSeriesExportFileComplexType"
+				},
+				"timeSeries": {
+					"items": {
+						"$ref": "#/definitions/rtcTimeSeriesComplexType",
+						"description": "Time series for importing and exporting optionally including the mapping from to Delft-FEWS or OpenMI "
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"timeSeries"
+			],
+			"type": "object"
+		},
+		"rtcSeriesImportComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"PITimeSeriesFile": {
+					"$ref": "#/definitions/PITimeSeriesImportFileComplexType"
+				},
+				"timeSeries": {
+					"items": {
+						"$ref": "#/definitions/rtcTimeSeriesComplexType",
+						"description": "Time series for importing and exporting optionally including the mapping from to Delft-FEWS or OpenMI "
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"timeSeries"
+			],
+			"type": "object"
+		},
+		"rtcTimeSeriesComplexType": {
+			"additionalProperties": false,
+			"description": "The header is used to specify the link to the location\n                and the contents",
+			"properties": {
+				"attr_id": {
+					"minLength": 1,
+					"type": "string"
+				},
+				"attr_validation": {
+					"enum": [
+						"NO",
+						"STATE",
+						"UPDATE",
+						"UPDATE_EXCEPT_STATE",
+						"FORECAST",
+						"FORECAST_EXCEPT_T0",
+						"ALL",
+						"ALL_EXCEPT_STATE"
+					],
+					"type": "string"
+				},
+				"attr_vectorLength": {
+					"maximum": 2147483647,
+					"minimum": 1,
+					"type": "integer"
+				},
+				"OpenMIExchangeItem": {
+					"$ref": "#/definitions/OpenMIExchangeItemComplexType",
+					"description": "Time series definition of the OpenMI format for the online coupling of models during runtime"
+				},
+				"PITimeSeries": {
+					"$ref": "#/definitions/PITimeSeriesComplexType",
+					"description": "Time series definition of the PI XML time series format of Delft-FEWS"
+				}
+			},
+			"required": [
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"SeparatorEnumStringType": {
+			"enum": [
+				".",
+				",",
+				";"
+			],
+			"type": "string"
+		},
+		"TimeSeriesSimpleType": {
+			"minLength": 1,
+			"type": "string"
+		},
+		"TimeStepComplexType": {
+			"additionalProperties": false,
+			"description": "The timeunit element has three attributes, unit and devider and multiplier.\n            the unit is second, minute, hour, week, month year.\n            The divider attribute is optional (default = 1).",
+			"properties": {
+				"attr_divider": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"attr_multiplier": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"attr_unit": {
+					"$ref": "#/definitions/timeStepUnitEnumStringType"
+				}
+			},
+			"required": [
+				"attr_unit"
+			],
+			"type": "object"
+		},
+		"TimeZoneSimpleType": {
+			"description": "The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed",
+			"type": "number"
+		},
+		"UnitEnumStringType": {
+			"enum": [
+				"m",
+				"m^2",
+				"m^3",
+				"m^3/s",
+				"s"
+			],
+			"type": "string"
+		},
+		"VariableTypeEnumStringType": {
+			"enum": [
+				"CONTINUOUS",
+				"INTEGER",
+				"TIMEINSTANCE"
+			],
+			"type": "string"
+		},
+		"dateType": {
+			"pattern": "^([\\d][\\d][\\d][\\d]\\-[\\d][\\d]\\-[\\d][\\d])$",
+			"type": "string"
+		},
+		"timeSeriesType": {
+			"description": "Type of data, either accumulative or instantaneous.\n                        For accumulative data the time/date of the event is\n                        the moment at which the data was gathered.\n            ",
+			"enum": [
+				"accumulative",
+				"instantaneous"
+			],
+			"type": "string"
+		},
+		"timeStepUnitEnumStringType": {
+			"enum": [
+				"second",
+				"minute",
+				"hour",
+				"day",
+				"week"
+			],
+			"type": "string"
+		},
+		"timeType": {
+			"pattern": "^([\\d][\\d]\\:[\\d][\\d]\\:[\\d][\\d])$",
+			"type": "string"
+		},
+		"xs:boolean": {
+			"type": "boolean"
+		},
+		"xs:positiveInteger": {
+			"minimum": 1,
+			"type": "integer"
+		},
+		"xs:string": {
+			"type": "string"
+		}
+	},
+	"description": "JSON Schema generated by XMLSpy v2019 rel. 3 sp1 (x64) (http://www.altova.com)",
+	"properties": {
+		"attr_xmlns": {
+			"default": "http://www.wldelft.nl/fews"
+		},
+		"attr_xmlns:xs": {
+			"default": "http://www.w3.org/2001/XMLSchema"
+		},
+		"rtcDataConfig": {
+			"$ref": "#/definitions/.rtcDataConfig"
+		}
+	},
+	"type": "object"
+}
