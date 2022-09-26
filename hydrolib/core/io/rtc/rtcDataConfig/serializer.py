@@ -34,7 +34,7 @@ class RtcDataConfigSerializer:
             nsmap=namespaces,
         )
 
-        serialization_data = model.rtcDataConfig.dict(by_alias=True)
+        serialization_data = model.rtcDataConfig.dict()
         RtcDataConfigSerializer._build_tree(root, serialization_data)
 
         to_string = minidom.parseString(e.tostring(root))
@@ -51,7 +51,7 @@ class RtcDataConfigSerializer:
 
             elif key.startswith('attr_'):
                 attribute_key = key.lstrip('attr_')
-                root.set(attribute_key, val)
+                root.set(attribute_key, str(val))
 
             elif key == "__root__":
                 RtcDataConfigSerializer._build_tree(root, val)
@@ -69,5 +69,5 @@ class RtcDataConfigSerializer:
 
             else:
                 c = e.Element(key)
-                c.text = val
+                c.text = str(val)
                 root.append(c)
