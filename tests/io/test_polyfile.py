@@ -4,7 +4,13 @@ from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
 
-from hydrolib.core.io.polyfile.models import Description, Metadata, Point, PolyObject
+from hydrolib.core.io.polyfile.models import (
+    Description,
+    Metadata,
+    Point,
+    PolyObject,
+    PolyFile,
+)
 from hydrolib.core.io.polyfile.parser import (
     Block,
     ErrorBuilder,
@@ -16,7 +22,7 @@ from hydrolib.core.io.polyfile.parser import (
 )
 from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 
-from ..utils import test_output_dir
+from ..utils import test_output_dir, assert_files_equal, test_data_dir
 
 
 class TestSerializer:
@@ -712,6 +718,14 @@ name
             found_msg = warning.message.args[0]
             expected_msg = f"{reason}\n{block_suffix}\nFile: {self.file_path}"
             assert found_msg == expected_msg
+
+    def test_polyfile_can_be_saved_without_errors(self):
+        infile = Path(test_data_dir / "input/test.pli")
+        outfile = Path(test_output_dir / "test.pli")
+
+        polyfile = PolyFile(filepath=infile)
+        polyfile.save(filepath=outfile)
+        assert_files_equal(infile, outfile)
 
 
 @pytest.mark.parametrize(
