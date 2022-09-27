@@ -99,6 +99,7 @@ class PolyFile(ParsableFileModel):
 
     @classmethod
     def _get_serializer(cls) -> Callable:
+        # Unused, but requires abstract implementation
         pass
 
     @classmethod
