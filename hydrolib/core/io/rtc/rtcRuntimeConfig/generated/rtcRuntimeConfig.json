@@ -1,0 +1,1733 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"additionalProperties": false,
+	"definitions": {
+		".rtcRuntimeConfig": {
+			"$ref": "#/definitions/RtcRuntimeConfigComplexType"
+		},
+		"AggregationTypeEnumStringType": {
+			"enum": [
+				"BLOCK",
+				"LINEAR"
+			],
+			"type": "string"
+		},
+		"DateTimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_date": {
+					"$ref": "#/definitions/dateType"
+				},
+				"attr_time": {
+					"$ref": "#/definitions/timeType"
+				}
+			},
+			"required": [
+				"attr_date",
+				"attr_time"
+			],
+			"type": "object"
+		},
+		"EnsembleModeEnumStringType": {
+			"enum": [
+				"JOINT",
+				"TREE",
+				"INDEPENDENT"
+			],
+			"type": "string"
+		},
+		"ExternalBooleanSimpleType": {
+			"anyOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"ExternalIntegerSimpleType": {
+			"anyOf": [
+				{
+					"type": "integer"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"ExternalParameterSimpleType": {
+			"anyOf": [
+				{
+					"type": "number"
+				},
+				{
+					"pattern": "^([#-\\$][\\(-_a-z]+[#-\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"FileComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtcDataConfig": {
+					"$ref": "#/definitions/FileDataComplexType",
+					"description": "File with the time series model definition"
+				},
+				"rtcObjectiveConfig": {
+					"$ref": "#/definitions/FileObjectiveComplexType",
+					"description": "Optional file with the definition of an optimization problem including optimization variables, constraints and objective function terms"
+				},
+				"rtcParameterConfig": {
+					"items": {
+						"$ref": "#/definitions/FileParameterComplexType",
+						"description": "Optional file with externalized (scalar) parameters"
+					},
+					"type": "array"
+				},
+				"rtcScenarioTreeConfig": {
+					"$ref": "#/definitions/FileScenarioTreeComplexType",
+					"description": "Optional file with the definition of a scenario tree for the control trajectory in case of multi-stage stochastic optimization problems"
+				},
+				"rtcToolsConfig": {
+					"$ref": "#/definitions/FileToolsComplexType",
+					"description": "File with the schematization of the process model, i.e. the model of the water resources systems"
+				}
+			},
+			"required": [
+				"rtcDataConfig",
+				"rtcToolsConfig"
+			],
+			"type": "object"
+		},
+		"FileDataComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_name"
+			],
+			"type": "object"
+		},
+		"FileObjectiveComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_name"
+			],
+			"type": "object"
+		},
+		"FileParameterComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_prefix": {
+					"$ref": "#/definitions/ParameterFilePrefixEnumStringType"
+				},
+				"attr_type": {
+					"$ref": "#/definitions/ParameterFileTypeEnumStringType"
+				}
+			},
+			"required": [
+				"attr_name",
+				"attr_type"
+			],
+			"type": "object"
+		},
+		"FileScenarioTreeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_name"
+			],
+			"type": "object"
+		},
+		"FileToolsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_name"
+			],
+			"type": "object"
+		},
+		"FunctionOutputEnumStringType": {
+			"enum": [
+				"NONE",
+				"VALUE",
+				"DERIVATIVE",
+				"VALUE+DERIVATIVE"
+			],
+			"type": "string"
+		},
+		"GAMSComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"algorithm": {
+					"enum": [
+						"ipopt",
+						"ipopth",
+						"conopt"
+					],
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTBarrierParameterComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"adaptive_mu_globalization": {
+					"description": "Globalization strategy for the adaptive mu selection mode. \nTo achieve global convergence of the adaptive version, the algorithm has to switch to the monotone mode (Fiacco-McCormick approach) when convergence does not seem to appear. This option sets the criterion used to decide when to do this switch. (Only used if option \"mu_strategy\" is chosen as \"adaptive\".) The default value for this string option is \"obj-constr-filter\". \nPossible values:\nkkt-error: nonmonotone decrease of kkt-error\nobj-constr-filter: 2-dim filter for objective and constraint violation\nnever-monotone-mode: disables globalization",
+					"enum": [
+						"kkt-error",
+						"obj-constr-filter",
+						"never-monotone-mode"
+					],
+					"type": "string"
+				},
+				"barrier_tol_factor": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Factor for mu in barrier stop test. \nThe convergence tolerance for each barrier problem in the monotone mode is the value of the barrier parameter times \"barrier_tol_factor\". This option is also used in the adaptive mu strategy during the monotone mode. (This is kappa_epsilon in implementation paper). The valid range for this real option is [0, inf]and its default value is 10."
+				},
+				"fixed_mu_oracle": {
+					"description": "Oracle for the barrier parameter when switching to fixed mode. \nDetermines how the first value of the barrier parameter should be computed when switching to the \"monotone mode\" in the adaptive strategy. (Only considered if \"adaptive\" is selected for option \"mu_strategy\".) The default value for this string option is \"average_compl\". \nPossible values:\nprobing: Mehrotra's probing heuristic\nloqo: LOQO's centrality rule\nquality-function: minimize a quality function\naverage_compl: base on current average complementarity",
+					"enum": [
+						"probing",
+						"loqo",
+						"quality-function",
+						"average_compl"
+					],
+					"type": "string"
+				},
+				"mehrotra_algorithm": {
+					"description": "Indicates if we want to do Mehrotra's algorithm. \nIf set to yes, Ipopt runs as Mehrotra's predictor-corrector algorithm. This works usually very well for LPs and convex QPs. This automatically disables the line search, and chooses the (unglobalized) adaptive mu strategy with the \"probing\" oracle, and uses \"corrector_type=affine\" without any safeguards; you should not set any of those options explicitly in addition. Also, unless otherwise specified, the values of \"bound_push\", \"bound_frac\", and \"bound_mult_init_val\" are set more aggressive, and sets \"alpha_for_y=bound_mult\". The default value for this string option is \"no\". \nPossible values:\nno: Do the usual Ipopt algorithm.\nyes: Do Mehrotra's predictor-corrector algorithm.",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				},
+				"mu_init": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Initial value for the barrier parameter. \nThis option determines the initial value for the barrier parameter (mu). It is only relevant in the monotone, Fiacco-McCormick version of the algorithm. (i.e., if \"mu_strategy\" is chosen as \"monotone\") The valid range for this real option is [0,inf] and its default value is0.1.."
+				},
+				"mu_linear_decrease_factor": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Determines linear decrease rate of barrier parameter. \nFor the Fiacco-McCormick update procedure the new barrier parameter mu is obtained by taking the minimum of mu*\"mu_linear_decrease_factor\" and mu\"superlinear_decrease_power\". (This is kappa_mu in implementation paper.) This option is also used in the adaptive mu strategy during the monotone mode. The valid range for this real option is[0,1] and its default value is 0.2"
+				},
+				"mu_max": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum value for barrier parameter. \nThis option specifies an upper bound on the barrier parameter in the adaptive mu selection mode. If this option is set, it overwrites the effect of mu_max_fact. (Only used if option \"mu_strategy\" is chosen as \"adaptive\".) The valid range for this real option is [0, inf] and its default value is 100000."
+				},
+				"mu_max_fact": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Factor for initialization of maximum value for barrier parameter. \nThis option determines the upper bound on the barrier parameter. This upper bound is computed as the average complementarity at the initial point times the value of this option. (Only used if option \"mu_strategy\" is chosen as \"adaptive\".) The valid range for this real option is [0, inf] and its default value is 1000."
+				},
+				"mu_min": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Minimum value for barrier parameter. \nThis option specifies the lower bound on the barrier parameter in the adaptive mu selection mode. By default, it is set to the minimum of 1e-11 and min(\"tol\",\"compl_inf_tol\")/(\"barrier_tol_factor\"+1), which should be a reasonable value. (Only used if option \"mu_strategy\" is chosen as \"adaptive\".) The valid range for this real option is  [0, inf] and its default value is 1e-11."
+				},
+				"mu_oracle": {
+					"description": "Oracle for a new barrier parameter in the adaptive strategy. \nDetermines how a new barrier parameter is computed in each \"free-mode\" iteration of the adaptive barrier parameter strategy. (Only considered if \"adaptive\" is selected for option \"mu_strategy\"). The default value for this string option is \"quality-function\". \nPossible values:\nprobing: Mehrotra's probing heuristic\nloqo: LOQO's centrality rule\nquality-function: minimize a quality function",
+					"enum": [
+						"probing",
+						"loqo",
+						"quality-function"
+					],
+					"type": "string"
+				},
+				"mu_strategy": {
+					"description": "Update strategy for barrier parameter. \nDetermines which barrier parameter update strategy is to be used. The default value for this string option is \"monotone\". \nPossible values:\nmonotone: use the monotone (Fiacco-McCormick) strategy\nadaptive: use the adaptive update strategy",
+					"enum": [
+						"monotone",
+						"adaptive"
+					],
+					"type": "string"
+				},
+				"mu_superlinear_decrease_power": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Determines superlinear decrease rate of barrier parameter. \nFor the Fiacco-McCormick update procedure the new barrier parameter mu is obtained by taking the minimum of mu*\"mu_linear_decrease_factor\" and mu\"superlinear_decrease_power\". (This is theta_mu in implementation paper.) This option is also used in the adaptive mu strategy during the monotone mode. The valid range for this real option is  [1,2] and its default value is 1.5."
+				},
+				"mu_target": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Desired value of complementarity. \nUsually, the barrier parameter is driven to zero and the termination test for complementarity is measured with respect to zero complementarity. However, in some cases it might be desired to have Ipopt solve barrier problem for strictly positive value of the barrier parameter. In this case, the value of \"mu_target\" specifies the final value of the barrier parameter, and the termination tests are then defined with respect to the barrier problem for this value of the barrier parameter. The valid range for this real option is [0, inf] and its default value is 0."
+				},
+				"quality_function_max_section_steps": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Maximum number of search steps during direct search procedure determining the optimal centering parameter. \nThe golden section search is performed for the quality function based mu oracle. (Only used if option \"mu_oracle\" is set to \"quality-function\".) The valid range for this integer option is [0, inf] and its default value is 8."
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"barrierParameter": {
+					"$ref": "#/definitions/IPOPTBarrierParameterComplexType"
+				},
+				"derivativeChecker": {
+					"$ref": "#/definitions/IPOPTDerivativeCheckerComplexType",
+					"description": "Optional derivative checker"
+				},
+				"hessianPermutation": {
+					"$ref": "#/definitions/IPOPTHessianPermutationComplexType",
+					"description": "Optional hessian settings"
+				},
+				"initialization": {
+					"$ref": "#/definitions/IPOPTInitializationComplexType"
+				},
+				"lineSearch": {
+					"$ref": "#/definitions/IPOPTLineSearchComplexType"
+				},
+				"linearSolver": {
+					"$ref": "#/definitions/IPOPTLinearSolverComplexType",
+					"description": "Settings and selection of the integrated linear equation solver "
+				},
+				"multiplierUpdates": {
+					"$ref": "#/definitions/IPOPTMultiplierUpdatesComplexType"
+				},
+				"nlp": {
+					"$ref": "#/definitions/IPOPTNLPComplexType",
+					"description": "Settings of the nonlinear optimizer"
+				},
+				"nlpScaling": {
+					"$ref": "#/definitions/IPOPTNLPScalingComplexType",
+					"description": "Scaling options for the optimization problem"
+				},
+				"output": {
+					"$ref": "#/definitions/IPOPTOutputComplexType",
+					"description": "Output options"
+				},
+				"quasiNewton": {
+					"$ref": "#/definitions/IPOPTQuasiNewtonComplexType"
+				},
+				"restorationPhase": {
+					"$ref": "#/definitions/IPOPTRestorationPhaseComplexType"
+				},
+				"termination": {
+					"$ref": "#/definitions/IPOPTTerminationComplexType",
+					"description": "Termination criteria"
+				},
+				"warmStart": {
+					"$ref": "#/definitions/IPOPTWarmStartComplexType"
+				}
+			},
+			"required": [
+				"barrierParameter",
+				"derivativeChecker",
+				"hessianPermutation",
+				"initialization",
+				"lineSearch",
+				"linearSolver",
+				"multiplierUpdates",
+				"nlp",
+				"nlpScaling",
+				"output",
+				"quasiNewton",
+				"restorationPhase",
+				"termination",
+				"warmStart"
+			],
+			"type": "object"
+		},
+		"IPOPTDerivativeCheckerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"derivative_test": {
+					"description": "Enable derivative checker",
+					"enum": [
+						"none",
+						"first-order"
+					],
+					"type": "string"
+				},
+				"derivative_test_perturbation": {
+					"description": "Size of the finite difference perturbation in derivative test",
+					"exclusiveMinimum": 0,
+					"type": "number"
+				},
+				"derivative_test_print_all": {
+					"description": "Indicates whether information for all estimated derivatives should be\n   printed",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"derivative_test_tol": {
+					"description": "Threshold for indicating wrong derivative",
+					"exclusiveMinimum": 0,
+					"type": "number"
+				},
+				"findiff_perturbation": {
+					"description": "Size of the finite difference perturbation for derivative approximation",
+					"exclusiveMinimum": 0,
+					"type": "number"
+				},
+				"jacobian_approximation": {
+					"description": "Specifies technique to compute constraint Jacobian",
+					"enum": [
+						"exact",
+						"finite-difference-values"
+					],
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTHessianPermutationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"first_hessian_perturbation": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Size of first x-s perturbation tried. \nThe first value tried for the x-s perturbation in the inertia correction scheme.(This is delta_0 in the implementation paper.) The valid range for this real option is  [0, inf] and its default value is 1e4."
+				},
+				"jacobian_regularization_value": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Size of the regularization for rank-deficient constraint Jacobians. \n(This is bar delta_c in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 1e-8. ."
+				},
+				"max_hessian_perturbation": {
+					"$ref": "#/definitions/xs:double",
+					"description": "This parameter gives the maximum value of the regularization parameter. If a regularization of that size is not enough, the algorithm skips this iteration and goes to the restoration phase. (This is delta_wmax in the implementation paper.) The valid range for this real option is [0,+inf] and its default value is 1e+20."
+				},
+				"min_hessian_perturbation": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Smallest perturbation of the Hessian block. \nThe size of the perturbation of the Hessian block is never selected smaller than this value, unless no perturbation is necessary. (This is delta_wmin in implementation paper.) The valid range for this real option is  [0, +inf] and its default value is  1e-20"
+				},
+				"perturb_dec_fact": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Decrease factor for x-s perturbation. \nThe factor by which the perturbation is decreased when a trial value is deduced from the size of the most recent successful perturbation. (This is kappa_w- in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 0.333333."
+				},
+				"perturb_inc_fact": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Increase factor for x-s perturbation. \nThe factor by which the perturbation is increased when a trial value was not sufficient - this value is used for the computation of all perturbations except for the first. (This is kappa_w+ in the implementation paper.) The valid range for this real option is [0, inf] and its default value is 8."
+				},
+				"perturb_inc_fact_first": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Increase factor for x-s perturbation for very first perturbation. \nThe factor by which the perturbation is increased when a trial value was not sufficient - this value is used for the computation of the very first perturbation and allows a different value for for the first perturbation than that used for the remaining perturbations. (This is bar_kappa_w+ in the implementation paper.) The valid range for this real option is [1,inf] and its default value is100."
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTInitializationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"bound_frac": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Desired minimum relative distance from the initial point to bound. \nDetermines how much the initial point might have to be modified in order to be sufficiently inside the bounds (together with \"bound_push\"). (This is kappa_2 in Section 3.6 of implementation paper.) The valid range for this real option is [0, 0.5]and its default value is 0.01.."
+				},
+				"bound_mult_init_method": {
+					"description": "Initialization method for bound multipliers \nThis option defines how the iterates for the bound multipliers are initialized. If \"constant\" is chosen, then all bound multipliers are initialized to the value of \"bound_mult_init_val\". If \"mu-based\" is chosen, the each value is initialized to the the value of \"mu_init\" divided by the corresponding slack variable. This latter option might be useful if the starting point is close to the optimal solution. The default value for this string option is \"constant\". \nPossible values:\nconstant: set all bound multipliers to the value of bound_mult_init_val\nmu-based: initialize to mu_init/x_slack",
+					"enum": [
+						"constant",
+						"mu-based"
+					],
+					"type": "string"
+				},
+				"bound_mult_init_val": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Initial value for the bound multipliers. \nAll dual variables corresponding to bound constraints are initialized to this value. The valid range for this real option is  [0, inf] and its default value is 1."
+				},
+				"bound_push": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Desired minimum absolute distance from the initial point to bound. \nDetermines how much the initial point might have to be modified in order to be sufficiently inside the bounds (together with \"bound_frac\"). (This is kappa_1 in Section 3.6 of implementation paper.) The valid range for this real option is [0, inf] and its default value is 0.01."
+				},
+				"constr_mult_init_max": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum allowed least-square guess of constraint multipliers. \nDetermines how large the initial least-square guesses of the constraint multipliers are allowed to be (in max-norm). If the guess is larger than this value, it is discarded and all constraint multipliers are set to zero. This options is also used when initializing the restoration phase. By default, \"resto.constr_mult_init_max\" (the one used in RestoIterateInitializer) is set to zero. The valid range for this real option is [0, inf] and its default value is 1000."
+				},
+				"slack_bound_frac": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Desired minimum relative distance from the initial slack to bound. \nDetermines how much the initial slack variables might have to be modified in order to be sufficiently inside the inequality bounds (together with \"slack_bound_push\"). (This is kappa_2 in Section 3.6 of implementation paper.) The valid range for this real option is  [0, 0.5] and its default value is 0.01."
+				},
+				"slack_bound_push": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Desired minimum absolute distance from the initial slack to bound. \nDetermines how much the initial slack variables might have to be modified in order to be sufficiently inside the inequality bounds (together with \"slack_bound_frac\"). (This is kappa_1 in Section 3.6 of implementation paper.) The valid range for this real option is  [0, inf] and its default value is 0.01."
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTLineSearchComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"accept_every_trial_step": {
+					"description": "Always accept the first trial step. \nSetting this option to \"yes\" essentially disables the line search and makes the algorithm take aggressive steps, without global convergence guarantees. The default value for this string option is \"no\". \nPossible values:\nno: don't arbitrarily accept the full step\nyes: always accept the full step",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				},
+				"max_soc": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Maximum number of second order correction trial steps at each iteration. \nChoosing 0 disables the second order corrections. (This is pmax of Step A-5.9 of Algorithm A in the implementation paper.) The valid range for this integer option is  [0, inf] and its default value is 4 ."
+				},
+				"watchdog_shortened_iter_trigger": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Number of shortened iterations that trigger the watchdog. \nIf the number of successive iterations in which the backtracking line search did not accept the first trial point exceeds this number, the watchdog procedure is activated. Choosing \"0\" here disables the watchdog procedure. The valid range for this integer option is  [0,inf] and its default value is 10."
+				},
+				"watchdog_trial_iter_max": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Maximum number of watchdog iterations. \nThis option determines the number of trial iterations allowed before the watchdog procedure is aborted and the algorithm returns to the stored point. The valid range for this integer option is [1, inf] and its default value is 3. "
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTLinearSolverComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"linear_scaling_on_demand": {
+					"description": "Flag indicating that linear scaling is only done if it seems required. \nThis option is only important if a linear scaling method (e.g., mc19) is used. If you choose \"no\", then the scaling factors are computed for every linear system from the start. This can be quite expensive. Choosing \"yes\" means that the algorithm will start the scaling method only when the solutions to the linear system seem not good, and then use it until the end. The default value for this string option is \"yes\". ",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"linear_solver": {
+					"description": "Linear solver used for step computations",
+					"enum": [
+						"ma27",
+						"ma57",
+						"ma77",
+						"ma86",
+						"ma97",
+						"mumps",
+						"pardiso"
+					],
+					"type": "string"
+				},
+				"linear_system_scaling": {
+					"description": "Method for scaling the linear system. \nDetermines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option). This scaling is independent of the NLP problem scaling. By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. This value is only available if Ipopt has been compiled with MC19. The default value for this string option is \"mc19\". ",
+					"enum": [
+						"none",
+						"mc19",
+						"slack-based"
+					],
+					"type": "string"
+				},
+				"ma27": {
+					"$ref": "#/definitions/MA27ComplexType"
+				},
+				"ma57": {
+					"$ref": "#/definitions/MA57ComplexType"
+				},
+				"ma77": {
+					"$ref": "#/definitions/MA77ComplexType"
+				},
+				"ma86": {
+					"$ref": "#/definitions/MA86ComplexType"
+				},
+				"ma97": {
+					"$ref": "#/definitions/MA97ComplexType"
+				},
+				"max_refinement_steps": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Maximum number of iterative refinement steps per linear system solve. \nIterative refinement (on the full unsymmetric system) is performed for each right hand side. This option determines the maximum number of iterative refinements (i.e. at least \"min_refinement_steps\" iterative refinement steps are enforced per right hand side.) The valid range for this integer option is  [0,+inf] and its default value is 1.\n\t\t\t\t "
+				},
+				"min_refinement_steps": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Minimum number of iterative refinement steps per linear system solve. \nIterative refinement (on the full unsymmetric system) is performed for each right hand side. This option determines the minimum number of iterative refinements (i.e. at least \"min_refinement_steps\" iterative refinement steps are enforced per right hand side.) The valid range for this integer option is  [0,+inf] and its default value is 10.\n\t\t\t\t "
+				},
+				"mumps": {
+					"$ref": "#/definitions/MUMPSComplexType"
+				},
+				"pardiso": {
+					"$ref": "#/definitions/PardisoComplexType"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTMultiplierUpdatesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"alpha_for_y": {
+					"description": "Method to determine the step size for constraint multipliers. \nThis option determines how the step size (alpha_y) will be calculated when updating the constraint multipliers. The default value for this string option is \"primal\". \nPossible values:\nprimal: use primal step size\nbound-mult: use step size for the bound multipliers (good for LPs)\nmin: use the min of primal and bound multipliers\nmax: use the max of primal and bound multipliers\nfull: take a full step of size one\nmin-dual-infeas: choose step size minimizing new dual infeasibility\nsafer-min-dual-infeas: like \"min_dual_infeas\", but safeguarded by \"min\" and \"max\"\nprimal-and-full: use the primal step size, and full step if delta_x smaller or equal than alpha_for_y_tol\ndual-and-full: use the dual step size, and full step if delta_x smaller or equal than alpha_for_y_tol\nacceptor: Call LSAcceptor to get step size for y",
+					"enum": [
+						"primal",
+						"bound-mult",
+						"min",
+						"max",
+						"full",
+						"min-dual-infeas",
+						"safer-min-dual-infeas",
+						"primal-and-full",
+						"dual-and-full",
+						"acceptor"
+					],
+					"type": "string"
+				},
+				"alpha_for_y_tol": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Tolerance for switching to full equality multiplier steps. \nThis is only relevant if \"alpha_for_y\" is chosen \"primal-and-full\" or \"dual-and-full\". The step size for the equality constraint multipliers is taken to be one if the max-norm of the primal step is less than this tolerance. The valid range for this real option is  [0, inf] and its default value is 10."
+				},
+				"recalc_y": {
+					"description": "Tells the algorithm to recalculate the equality and inequality multipliers as least square estimates. \nThis asks the algorithm to recompute the multipliers, whenever the current infeasibility is less than recalc_y_feas_tol. Choosing yes might be helpful in the quasi-Newton option. However, each recalculation requires an extra factorization of the linear system. If a limited memory quasi-Newton option is chosen, this is used by default. The default value for this string option is \"no\". \nPossible values:\nno: use the Newton step to update the multipliers\nyes: use least-square multiplier estimates",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				},
+				"recalc_y_feas_tol": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Feasibility threshold for recomputation of multipliers. \nIf recalc_y is chosen and the current infeasibility is less than this value, then the multipliers are recomputed. The valid range for this real option is [0, inf] and its default value is 1e-6."
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTNLPComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"bound_relax_factor": {
+					"description": "Factor for initial relaxation of the bounds",
+					"minimum": 0,
+					"type": "number"
+				},
+				"check_derivatives_for_naninf": {
+					"description": "Indicates whether it is desired to check for Nan/Inf in derivative matrices [no/yes]",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"fixed_variable_treatment": {
+					"description": "Determines how fixed variables should be handled",
+					"enum": [
+						"make_parameter",
+						"make_constraint",
+						"relax_bounds"
+					],
+					"type": "string"
+				},
+				"honor_original_bounds": {
+					"description": "Indicates whether final points should be projected into original bounds [no/yes]",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"jac_c_constant": {
+					"description": "Indicates whether all equality constraints are linear [no/yes]",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"jac_d_constant": {
+					"description": "Indicates whether all inequality constraints are linear [no/yes]",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTNLPScalingComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"nlp_scaling_max_gradient": {
+					"description": "Maximum gradient after NLP scaling",
+					"exclusiveMinimum": 0,
+					"type": "number"
+				},
+				"nlp_scaling_method": {
+					"description": "Select the technique used for scaling the NLP",
+					"enum": [
+						"none",
+						"user-scaling",
+						"gradient-based"
+					],
+					"type": "string"
+				},
+				"nlp_scaling_min_value": {
+					"description": "Maximum gradient after NLP scaling",
+					"minimum": 0,
+					"type": "number"
+				},
+				"obj_scaling_factor": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "Scaling factor for the objective function"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"file_print_level": {
+					"description": "Verbosity level for output file 0-12                                   NONE=0\n     ERROR=1\n     STRONGWARNING=2\n     SUMMARY=3\n     WARNING=4\n     ITERSUMMARY=5\n     DETAILED=6\n     MOREDETAILED=7\n     VECTOR=8\n     MOREVECTOR=9\n     MATRIX=10\n     MOREMATRIX=11\n     ALL=12",
+					"maximum": 12,
+					"minimum": 0,
+					"type": "integer"
+				},
+				"print_level": {
+					"description": "Output verbosity level 0-12,      NONE=0\n     ERROR=1\n     STRONGWARNING=2\n     SUMMARY=3\n     WARNING=4\n     ITERSUMMARY=5\n     DETAILED=6\n     MOREDETAILED=7\n     VECTOR=8\n     MOREVECTOR=9\n     MATRIX=10\n     MOREMATRIX=11\n     ALL=12",
+					"maximum": 12,
+					"minimum": 0,
+					"type": "integer"
+				},
+				"print_options_documentation": {
+					"description": "Switch to print all algorithmic options [no/yes]",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"print_timing_statistics": {
+					"description": "Switch to print timing statistics [no/yes]",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"print_user_options": {
+					"description": "Print all options set by the user [no/yes]",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTQuasiNewtonComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"limited_memory_max_history": {
+					"$ref": "#/definitions/ExternalIntegerSimpleType",
+					"description": "Maximum size of the history for the limited quasi-Newton Hessian\napproximation"
+				},
+				"limited_memory_max_skipping": {
+					"$ref": "#/definitions/ExternalIntegerSimpleType",
+					"description": "Threshold for successive iterations where update is skipped"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTRestorationPhaseComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"bound_mult_reset_threshold": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Threshold for resetting bound multipliers after the restoration phase. \nAfter returning from the restoration phase, the bound multipliers are updated with a Newton step for complementarity. Here, the change in the primal variables during the entire restoration phase is taken to be the corresponding primal Newton step. However, if after the update the largest bound multiplier exceeds the threshold specified by this option, the multipliers are all reset to 1. The valid range for this real option is [0, inf] and its default value is 1000 ."
+				},
+				"constr_mult_reset_threshold": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Threshold for resetting equality and inequality multipliers after restoration phase. \nAfter returning from the restoration phase, the constraint multipliers are recomputed by a least square estimate. This option triggers when those least-square estimates should be ignored. The valid range for this real option is  [0, inf] and its default value is 0 ."
+				},
+				"evaluate_orig_obj_at_resto_trial": {
+					"description": "Determines if the original objective function should be evaluated at restoration phase trial points. \nSetting this option to \"yes\" makes the restoration phase algorithm evaluate the objective function of the original problem at every trial point encountered during the restoration phase, even if this value is not required. In this way, it is guaranteed that the original objective function can be evaluated without error at all accepted iterates; otherwise the algorithm might fail at a point where the restoration phase accepts an iterate that is good for the restoration phase problem, but not the original problem. On the other hand, if the evaluation of the original objective is expensive, this might be costly. The default value for this string option is \"yes\". \nPossible values:\nno: skip evaluation\nyes: evaluate at every trial point",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				},
+				"expect_infeasible_problem": {
+					"description": "Enable heuristics to quickly detect an infeasible problem. \nThis options is meant to activate heuristics that may speed up the infeasibility determination if you expect that there is a good chance for the problem to be infeasible. In the filter line search procedure, the restoration phase is called more quickly than usually, and more reduction in the constraint violation is enforced before the restoration phase is left. If the problem is square, this option is enabled automatically. The default value for this string option is \"no\". \nPossible values:\nno: the problem probably be feasible\nyes: the problem has a good chance to be infeasible",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				},
+				"expect_infeasible_problem_ctol": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Threshold for disabling \"expect_infeasible_problem\" option. \nIf the constraint violation becomes smaller than this threshold, the \"expect_infeasible_problem\" heuristics in the filter line search are disabled. If the problem is square, this options is set to 0. The valid range for this real option is [0, inf] and its default value is 0.001."
+				},
+				"expect_infeasible_problem_ytol": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Multiplier threshold for activating \"expect_infeasible_problem\" option. \nIf the max norm of the constraint multipliers becomes larger than this value and \"expect_infeasible_problem\" is chosen, then the restoration phase is entered. The valid range for this real option is [0, inf] and its default value is  1e8."
+				},
+				"required_infeasibility_reduction": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Required reduction of infeasibility before leaving restoration phase. \nThe restoration phase algorithm is performed, until a point is found that is acceptable to the filter and the infeasibility has been reduced by at least the fraction given by this option. The valid range for this real option is [0, inf] and its default value is 0.9 ."
+				},
+				"soft_resto_pderror_reduction_factor": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Required reduction in primal-dual error in the soft restoration phase. \nThe soft restoration phase attempts to reduce the primal-dual error with regular steps. If the damped primal-dual step (damped only to satisfy the fraction-to-the-boundary rule) is not decreasing the primal-dual error by at least this factor, then the regular restoration phase is called. Choosing \"0\" here disables the soft restoration phase. The valid range for this real option is [0, inf] and its default value is 0.9999 ."
+				},
+				"start_with_resto": {
+					"description": "Tells algorithm to switch to restoration phase in first iteration. \nSetting this option to \"yes\" forces the algorithm to switch to the feasibility restoration phase in the first iteration. If the initial point is feasible, the algorithm will abort with a failure. The default value for this string option is \"no\". \nPossible values:\nno: don't force start in restoration phase\nyes: force start in restoration phase",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTTerminationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"acceptable_compl_inf_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "\"Acceptance\" threshold for the complementarity conditions"
+				},
+				"acceptable_constr_viol_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "\"Acceptance\" threshold for the constraint violation"
+				},
+				"acceptable_dual_inf_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "\"Acceptance\" threshold for the dual infeasibility"
+				},
+				"acceptable_iter": {
+					"$ref": "#/definitions/ExternalIntegerSimpleType",
+					"description": "Number of \"acceptable\" iterates before triggering termination"
+				},
+				"acceptable_obj_change_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "\"Acceptance\" stopping criterion based on objective function change"
+				},
+				"acceptable_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "\"Acceptable\" convergence tolerance (relative)"
+				},
+				"compl_inf_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "Desired threshold for the complementarity conditions"
+				},
+				"constr_viol_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "Desired threshold for the constraint violation"
+				},
+				"diverging_iterates_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "Threshold for maximal value of primal iterates"
+				},
+				"dual_inf_tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "Desired threshold for the dual infeasibility"
+				},
+				"max_cpu_time": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "Maximum number of CPU seconds"
+				},
+				"max_iter": {
+					"$ref": "#/definitions/ExternalIntegerSimpleType",
+					"description": "Maximum number of iterations"
+				},
+				"tol": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "Desired convergence tolerance (relative)"
+				},
+				"treat_unsuccess_as_error": {
+					"$ref": "#/definitions/ExternalBooleanSimpleType",
+					"description": "Other return codes than SUCESS are treated as error message"
+				}
+			},
+			"type": "object"
+		},
+		"IPOPTWarmStartComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"warm_start_bound_frac": {
+					"$ref": "#/definitions/xs:double",
+					"description": "same as bound_frac for the regular initializer. \nThe valid range for this real option is [0,0.5] and its default value is 0.001."
+				},
+				"warm_start_bound_push": {
+					"$ref": "#/definitions/xs:double",
+					"description": "same as bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001."
+				},
+				"warm_start_init_point": {
+					"description": "Warm-start for initial point \nIndicates whether this optimization should use a warm start initialization, where values of primal and dual variables are given (e.g., from a previous optimization of a related problem.) The default value for this string option is \"no\". \nPossible values:\nno: do not use the warm start initialization\nyes: use the warm start initialization",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				},
+				"warm_start_mult_bound_push": {
+					"$ref": "#/definitions/xs:double",
+					"description": "same as mult_bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001."
+				},
+				"warm_start_mult_init_max": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum initial value for the equality multipliers. \nThe valid range for this real option is [-inf, +inf] and its default value is  1e6."
+				},
+				"warm_start_slack_bound_frac": {
+					"$ref": "#/definitions/xs:double",
+					"description": "same as slack_bound_frac for the regular initializer. \nThe valid range for this real option is   [0,0.5] and its default value is 0.001."
+				},
+				"warm_start_slack_bound_push": {
+					"$ref": "#/definitions/xs:double",
+					"description": "same as slack_bound_push for the regular initializer. \nThe valid range for this real option is [0, inf] and its default value is 0.001."
+				}
+			},
+			"type": "object"
+		},
+		"LoggingComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"constraintViolationTolerance": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "tolerance for scaled constraints for which a constraint violation is detected"
+				},
+				"eventCode": {
+					"$ref": "#/definitions/ExternalBooleanSimpleType"
+				},
+				"flushing": {
+					"$ref": "#/definitions/ExternalBooleanSimpleType",
+					"description": "set flushing of the diagnostics file after each new message (=true) or at the end of the program execution (=false)"
+				},
+				"logLevel": {
+					"$ref": "#/definitions/ExternalIntegerSimpleType",
+					"description": "definition of the logging level, 0 = fatal error, 1 = error, 2 = warning, 3 = info, 4 = debug messages"
+				},
+				"outputConstraints": {
+					"$ref": "#/definitions/FunctionOutputEnumStringType"
+				},
+				"outputObjectiveFunction": {
+					"$ref": "#/definitions/FunctionOutputEnumStringType"
+				},
+				"reportConstraintViolation": {
+					"additionalProperties": false,
+					"description": "report constraint violation in diagnostics",
+					"properties": {
+						"attr_level": {
+							"$ref": "#/definitions/ExternalIntegerSimpleType"
+						}
+					},
+					"type": "object"
+				}
+			},
+			"required": [
+				"flushing",
+				"logLevel"
+			],
+			"type": "object"
+		},
+		"MA27ComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"ma27_la_init_factor": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Real workspace memory for MA27. \nThe initial real workspace memory = la_init_factor * memory required by unfactored system. Ipopt will increase the workspace size by meminc_factor if required. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is  [1, inf] and its default value is 5."
+				},
+				"ma27_liw_init_factor": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Integer workspace memory for MA27. \nThe initial integer workspace memory = liw_init_factor * memory required by unfactored system. Ipopt will increase the workspace size by meminc_factor if required. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [1, inf] and its default value is 5."
+				},
+				"ma27_meminc_factor": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Increment factor for workspace size for MA27. \nIf the integer or real workspace is not large enough, Ipopt will increase its size by this factor. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [1, inf] and its default value is 2."
+				},
+				"ma27_pivtol": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Pivot tolerance for the linear solver MA27. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is [0,1] and its default value is  1e-8."
+				},
+				"ma27_pivtolmax": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum pivot tolerance for the linear solver MA27. \nIpopt may increase pivtol as high as ma27_pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MA27. The valid range for this real option is  [0,1] and its default value is 0.0001."
+				}
+			},
+			"type": "object"
+		},
+		"MA57ComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"ma57_automatic_scaling": {
+					"description": "Controls MA57 automatic scaling \nThis option controls the internal scaling option of MA57. For higher reliability of the MA57 solver, you may want to set this option to yes. This is ICNTL(15) in MA57. The default value for this string option is \"no\". \nPossible values:\nno: Do not scale the linear system matrix\nyes: Scale the linear system matrix",
+					"enum": [
+						"yes",
+						"no"
+					],
+					"type": "string"
+				},
+				"ma57_block_size": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Controls block size used by Level 3 BLAS in MA57BD \nThis is ICNTL(11) in MA57. The valid range for this integer option is [1, inf] and its default value is 16. ."
+				},
+				"ma57_node_amalgamation": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Node amalgamation parameter \nThis is ICNTL(12) in MA57. The valid range for this integer option is  [1, inf] and its default value is 16."
+				},
+				"ma57_pivot_order": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Controls pivot order in MA57 \nThis is ICNTL(6) in MA57. The valid range for this integer option is [0,5] and its default value is 5."
+				},
+				"ma57_pivtol": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Pivot tolerance for the linear solver MA57. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is [0,1] and its default value is  1e-8."
+				},
+				"ma57_pivtolmax": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum pivot tolerance for the linear solver MA57. \nIpopt may increase pivtol as high as ma57_pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is  [0,1] and its default value is 0.0001."
+				},
+				"ma57_pre_alloc": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Safety factor for work space memory allocation for the linear solver MA57. \nIf 1 is chosen, the suggested amount of work space is used. However, choosing a larger number might avoid reallocation if the suggest values do not suffice. This option is only available if Ipopt has been compiled with MA57. The valid range for this real option is  [1, inf]  and its default value is 1.05."
+				},
+				"ma57_small_pivot_flag": {
+					"$ref": "#/definitions/xs:int",
+					"description": "If set to 1, then when small entries defined by CNTL(2) are detected they are removed and the corresponding pivots placed at the end of the factorization. This can be particularly efficient if the matrix is highly rank deficient. \nThis is ICNTL(16) in MA57. The valid range for this integer option is  [0,1] and its default value is 0."
+				}
+			},
+			"type": "object"
+		},
+		"MA77ComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"ma77_buffer_lpage": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Number of scalars per MA77 buffer page \nNumber of scalars per an in-core buffer in the out-of-core solver MA77. Must be at most ma77_file_size. The valid range for this integer option is [1, inf] and its default value is 4096."
+				},
+				"ma77_buffer_npage": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Number of pages that make up MA77 buffer \nNumber of pages of size buffer_lpage that exist in-core for the out-of-core solver MA77. The valid range for this integer option is [1, inf] and its default value is 1600."
+				},
+				"ma77_file_size": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Target size of each temporary file for MA77, scalars per type \nMA77 uses many temporary files, this option controls the size of each one. It is measured in the number of entries (int or double), NOT bytes. The valid range for this integer option is [1, inf] and its default value is 2097152."
+				},
+				"ma77_maxstore": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Maximum storage size for MA77 in-core mode \nIf greater than zero, the maximum size of factors stored in core before out-of-core mode is invoked. The valid range for this integer option is [0, inf] and its default value is 0"
+				},
+				"ma77_nemin": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma77_nemin variables. The valid range for this integer option is [1, inf] and its default value is 8."
+				},
+				"ma77_order": {
+					"description": "Controls type of ordering used by HSL_MA77 \nThis option controls ordering for the solver HSL_MA77. The default value for this string option is \"metis\". \nPossible values:\namd: Use the HSL_MC68 approximate minimum degree algorithm\nmetis: Use the MeTiS nested dissection algorithm (if available)",
+					"enum": [
+						"amd",
+						"metis"
+					],
+					"type": "string"
+				},
+				"ma77_print_level": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Debug printing level for the linear solver MA77 \nThe valid range for this integer option is  [-inf, +inf] and its default value is -1."
+				},
+				"ma77_small": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Zero Pivot Threshold \nAny pivot less than ma77_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20."
+				},
+				"ma77_static": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Static Pivoting Threshold \nSee MA77 documentation. Either ma77_static=0.0 or ma77_static>ma77_small. ma77_static=0.0 disables static pivoting. The valid range for this real option is [0, inf] and its default value is 0 ."
+				},
+				"ma77_u": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Pivoting Threshold \nSee MA77 documentation. The valid range for this real option is  [0, 0.5] and its default value is 1e-8."
+				},
+				"ma77_umax": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum Pivoting Threshold \nMaximum value to which u will be increased to improve quality. The valid range for this real option is  [0, 0.5]and its default value is 0.0001."
+				}
+			},
+			"type": "object"
+		},
+		"MA86ComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"ma86_nemin": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma86_nemin variables. The valid range for this integer option is [1, inf] and its default value is 32."
+				},
+				"ma86_order": {
+					"description": "CControls type of ordering used by HSL_MA86 \nThis option controls ordering for the solver HSL_MA86. The default value for this string option is \"auto\". \nPossible values:\nauto: Try both AMD and MeTiS, pick best\namd: Use the HSL_MC68 approximate minimum degree algorithm\nmetis: Use the MeTiS nested dissection algorithm (if available)",
+					"enum": [
+						"auto",
+						"amd",
+						"metis"
+					],
+					"type": "string"
+				},
+				"ma86_print_level": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Debug printing level for the linear solver ma86 \nThe valid range for this integer option is  [-inf, +inf] and its default value is -1."
+				},
+				"ma86_scaling": {
+					"description": "Controls scaling of matrix \nThis option controls scaling for the solver HSL_MA86. The default value for this string option is \"mc64\". \nPossible values:\nnone: Do not scale the linear system matrix\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]",
+					"enum": [
+						"mone",
+						"mc64",
+						"mc77"
+					],
+					"type": "string"
+				},
+				"ma86_small": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Zero Pivot Threshold \nAny pivot less than ma86_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20."
+				},
+				"ma86_static": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Static Pivoting Threshold \nSee ma86 documentation. Either ma86_static=0.0 or ma86_static>ma86_small. ma86_static=0.0 disables static pivoting. The valid range for this real option is [0, inf] and its default value is 0 ."
+				},
+				"ma86_u": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Pivoting Threshold \nSee ma86 documentation. The valid range for this real option is  [0, 0.5] and its default value is 1e-8."
+				},
+				"ma86_umax": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum Pivoting Threshold \nMaximum value to which u will be increased to improve quality. The valid range for this real option is  [0, 0.5] and its default value is 0.0001."
+				}
+			},
+			"type": "object"
+		},
+		"MA97ComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"ma97_nemin": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Node Amalgamation parameter \nTwo nodes in elimination tree are merged if result has fewer than ma97_nemin variables. The valid range for this integer option is [1, inf] and its default value is 8."
+				},
+				"ma97_order": {
+					"description": "Controls type of ordering used by HSL_MA97 \nThe default value for this string option is \"auto\". \nPossible values:\nauto: Use HSL_MA97 heuristic to guess best of AMD and METIS\nbest: Try both AMD and MeTiS, pick best\namd: Use the HSL_MC68 approximate minimum degree algorithm\nmetis: Use the MeTiS nested dissection algorithm\nmatched-auto: Use the HSL_MC80 matching with heuristic choice of AMD or METIS\nmatched-metis: Use the HSL_MC80 matching based ordering with METIS\nmatched-amd: Use the HSL_MC80 matching based ordering with AMD",
+					"enum": [
+						"auto",
+						"best",
+						"amd",
+						"metis",
+						"matched-auto",
+						"matched-metis",
+						"matched-amd"
+					],
+					"type": "string"
+				},
+				"ma97_print_level": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Debug printing level for the linear solver MA97 \nThe valid range for this integer option is  [-inf, +inf] and its default value is 0."
+				},
+				"ma97_scaling": {
+					"description": "Specifies strategy for scaling in HSL_MA97 linear solver \nThe default value for this string option is \"dynamic\". \nPossible values:\nnone: Do not scale the linear system matrix\nmc30: Scale all linear system matrices using MC30\nmc64: Scale all linear system matrices using MC64\nmc77: Scale all linear system matrices using MC77 [1,3,0]\ndynamic: Dynamically select scaling according to rules specified by ma97_scalingX and ma97_switchX options.",
+					"enum": [
+						"none",
+						"mc30",
+						"mc64",
+						"mc77",
+						"dynamic"
+					],
+					"type": "string"
+				},
+				"ma97_scaling1": {
+					"description": "First scaling. \nIf ma97_scaling=dynamic, this scaling is used according to the trigger ma97_switch1. If ma97_switch2 is triggered it is disabled. The default value for this string option is \"mc64\". \nPossible values:\nnone: No scaling\nmc30: Scale linear system matrix using MC30\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]",
+					"enum": [
+						"none",
+						"mc30",
+						"mc64",
+						"mc77"
+					],
+					"type": "string"
+				},
+				"ma97_scaling2": {
+					"description": "Second scaling. \nIf ma97_scaling=dynamic, this scaling is used according to the trigger ma97_switch2. If ma97_switch3 is triggered it is disabled. The default value for this string option is \"mc64\". \nPossible values:\nnone: No scaling\nmc30: Scale linear system matrix using MC30\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]",
+					"enum": [
+						"none",
+						"mc30",
+						"mc64",
+						"mc77"
+					],
+					"type": "string"
+				},
+				"ma97_scaling3": {
+					"description": "Third scaling. \nIf ma97_scaling=dynamic, this scaling is used according to the trigger ma97_switch3. The default value for this string option is \"mc64\". \nPossible values:\nnone: No scaling\nmc30: Scale linear system matrix using MC30\nmc64: Scale linear system matrix using MC64\nmc77: Scale linear system matrix using MC77 [1,3,0]",
+					"enum": [
+						"none",
+						"mc30",
+						"mc64",
+						"mc77"
+					],
+					"type": "string"
+				},
+				"ma97_small": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Zero Pivot Threshold \nAny pivot less than ma77_small is treated as zero. The valid range for this real option is  [0, inf] and its default value is 1e-20."
+				},
+				"ma97_solve_blas3": {
+					"description": "Controls if blas2 or blas3 routines are used for solve \nThe default value for this string option is \"no\". \nPossible values:\nno: Use BLAS2 (faster, some implementations bit incompatible)\nyes: Use BLAS3 (slower)",
+					"enum": [
+						"no",
+						"yes"
+					],
+					"type": "string"
+				},
+				"ma97_switch1": {
+					"description": "First switch, determine when ma97_scaling1 is enabled. \nIf ma97_scaling=dynamic, ma97_scaling1 is enabled according to this condition. If ma97_switch2 occurs this option is henceforth ignored. The default value for this string option is \"od_hd_reuse\". \nPossible values:\nnever: Scaling is never enabled.\nat_start: Scaling to be used from the very start.\nat_start_reuse: Scaling to be used on first iteration, then reused thereafter.\non_demand: Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).\non_demand_reuse: As on_demand, but reuse scaling from previous itr\nhigh_delay: Scaling to be used after more than 0.05*n delays are present\nhigh_delay_reuse: Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr\nod_hd: Combination of on_demand and high_delay\nod_hd_reuse: Combination of on_demand_reuse and high_delay_reuse",
+					"enum": [
+						"never",
+						"at_start",
+						"at_start_reuse",
+						"on_demand",
+						"on_demand_reuse",
+						"high_delay",
+						"high_delay_reuse",
+						"od_hd",
+						"od_hd_reuse"
+					],
+					"type": "string"
+				},
+				"ma97_switch2": {
+					"description": "Second switch, determine when ma97_scaling2 is enabled. \nIf ma97_scaling=dynamic, ma97_scaling2 is enabled according to this condition. If ma97_switch3 occurs this option is henceforth ignored. The default value for this string option is \"never\". \nPossible values:\nnever: Scaling is never enabled.\nat_start: Scaling to be used from the very start.\nat_start_reuse: Scaling to be used on first iteration, then reused thereafter.\non_demand: Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).\non_demand_reuse: As on_demand, but reuse scaling from previous itr\nhigh_delay: Scaling to be used after more than 0.05*n delays are present\nhigh_delay_reuse: Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr\nod_hd: Combination of on_demand and high_delay\nod_hd_reuse: Combination of on_demand_reuse and high_delay_reuse",
+					"enum": [
+						"never",
+						"at_start",
+						"at_start_reuse",
+						"on_demand",
+						"on_demand_reuse",
+						"high_delay",
+						"high_delay_reuse",
+						"od_hd",
+						"od_hd_reuse"
+					],
+					"type": "string"
+				},
+				"ma97_switch3": {
+					"description": "Third switch, determine when ma97_scaling3 is enabled. \nIf ma97_scaling=dynamic, ma97_scaling3 is enabled according to this condition. The default value for this string option is \"never\". \nPossible values:\nnever: Scaling is never enabled.\nat_start: Scaling to be used from the very start.\nat_start_reuse: Scaling to be used on first iteration, then reused thereafter.\non_demand: Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).\non_demand_reuse: As on_demand, but reuse scaling from previous itr\nhigh_delay: Scaling to be used after more than 0.05*n delays are present\nhigh_delay_reuse: Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr\nod_hd: Combination of on_demand and high_delay\nod_hd_reuse: Combination of on_demand_reuse and high_delay_reuse",
+					"enum": [
+						"never",
+						"at_start",
+						"at_start_reuse",
+						"on_demand",
+						"on_demand_reuse",
+						"high_delay",
+						"high_delay_reuse",
+						"od_hd",
+						"od_hd_reuse"
+					],
+					"type": "string"
+				},
+				"ma97_u": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Pivoting Threshold \nSee MA97 documentation. The valid range for this real option is  [0, 0.5] and its default value is  1e-8."
+				},
+				"ma97_umax": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum Pivoting Threshold \nSee MA97 documentation. The valid range for this real option is  [0, 0.5] and its default value is 0.0001."
+				}
+			},
+			"type": "object"
+		},
+		"MUMPSComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"mumps_mem_percent": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Percentage increase in the estimated working space for MUMPS. \nIn MUMPS when significant extra fill-in is caused by numerical pivoting, larger values of mumps_mem_percent may help use the workspace more efficiently. On the other hand, if memory requirement are too large at the very beginning of the optimization, choosing a much smaller value for this option, such as 5, might reduce memory requirements. The valid range for this integer option is [0, inf] and its default value is 1000."
+				},
+				"mumps_permuting_scaling": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Controls permuting and scaling in MUMPS \nThis is ICNTL(6) in MUMPS. The valid range for this integer option is  [0,7] and its default value is 7."
+				},
+				"mumps_pivot_order": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Controls pivot order in MUMPS \nThis is ICNTL(7) in MUMPS. The valid range for this integer option is [0, 7] and its default value is 7."
+				},
+				"mumps_pivtol": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Pivot tolerance for the linear solver MUMPS. \nA smaller number pivots for sparsity, a larger number pivots for stability. This option is only available if Ipopt has been compiled with MUMPS. The valid range for this real option is [0,1] and its default value is  1e-6."
+				},
+				"mumps_pivtolmax": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum pivot tolerance for the linear solver MUMPS. \nIpopt may increase pivtol as high as pivtolmax to get a more accurate solution to the linear system. This option is only available if Ipopt has been compiled with MUMPS. The valid range for this real option is  [0,1] and its default value is 0.1"
+				},
+				"mumps_scaling": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Controls scaling in MUMPS \nThis is ICNTL(8) in MUMPS. The valid range for this integer option is [-2,77] and its default value is 77."
+				}
+			},
+			"type": "object"
+		},
+		"ModeClosedLoopComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"forecastHorizon": {
+					"$ref": "#/definitions/xs:integer",
+					"description": "Number of time steps of forecasts in the predictive control mode"
+				},
+				"optimization": {
+					"$ref": "#/definitions/ModeOptimizationComplexType"
+				},
+				"recedingHorizon": {
+					"$ref": "#/definitions/xs:integer",
+					"description": "Number of time steps after which the optimization is repeated"
+				}
+			},
+			"required": [
+				"forecastHorizon",
+				"optimization",
+				"recedingHorizon"
+			],
+			"type": "object"
+		},
+		"ModeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"closedLoop": {
+					"$ref": "#/definitions/ModeClosedLoopComplexType",
+					"description": "Closed loop mode with an alternating switch between simulation and optimization"
+				},
+				"firstOrderSensitivity": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Calculation of first-order model sensitivities of an objective function value with respect to inputs, states and outputs (requires the definition of an objective function in the rtcObjectiveConfig.xml)"
+				},
+				"optimization": {
+					"$ref": "#/definitions/ModeOptimizationComplexType",
+					"description": "Optimization mode (requires the definition of an optimization problem in the rtcObjectiveConfig.xml)"
+				},
+				"postprocessing": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"simulation": {
+					"$ref": "#/definitions/ModeSimulationComplexType",
+					"description": "Simulation mode (default)"
+				}
+			},
+			"type": "object"
+		},
+		"ModeOptimizationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"optimizer": {
+					"items": {
+						"$ref": "#/definitions/OptimizerComplexType",
+						"description": "Selection of one or more optimizer settings for solving the optimization problem"
+					},
+					"type": "array"
+				},
+				"optimizerMode": {
+					"$ref": "#/definitions/OptimizerModeEnumStringType",
+					"description": "Mode for defining more robust hybrid optimizer settings for running optimizations sequentially (optimimum of the first is input for the next) or parallel (independent optimization, best one is returned), STILL NOT IMPLEMENTED"
+				},
+				"period": {
+					"$ref": "#/definitions/PeriodEnumStringType"
+				}
+			},
+			"type": "object"
+		},
+		"ModeSimulationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"executeConstraints": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"executeObjectiveFunction": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"limitedMemory": {
+					"$ref": "#/definitions/xs:boolean",
+					"description": "limited-memory option for time series matrix"
+				},
+				"period": {
+					"$ref": "#/definitions/PeriodEnumStringType"
+				}
+			},
+			"type": "object"
+		},
+		"ModesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"mode": {
+					"items": {
+						"$ref": "#/definitions/ModeComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"mode"
+			],
+			"type": "object"
+		},
+		"OptimizerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"GAMS": {
+					"$ref": "#/definitions/GAMSComplexType",
+					"description": "This option generates a GAMS optimization problem with an external model in RTC-Tools. Note that you need to run the optimization in GAMS after executing the stand alone RTC-Tools."
+				},
+				"IPOPT": {
+					"$ref": "#/definitions/IPOPTComplexType",
+					"description": "Optimization by the IPOPT optimizer, check also the related documentation on the COIN-OR website"
+				},
+				"SA": {
+					"$ref": "#/definitions/SAComplexType",
+					"description": "Optimization by a simulated annealing optimizer (NOT FULLY IMPLEMENTED right now)"
+				}
+			},
+			"type": "object"
+		},
+		"OptimizerModeEnumStringType": {
+			"enum": [
+				"SEQUENTIAL",
+				"PARALLEL"
+			],
+			"type": "string"
+		},
+		"PIInputRuntimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"file": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"numberEnsembles": {
+					"$ref": "#/definitions/xs:int",
+					"description": "optional number of ensemble, if not provides one ensemble member is assumed"
+				}
+			},
+			"required": [
+				"file"
+			],
+			"type": "object"
+		},
+		"PIRunFileRuntimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"file": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"numberEnsembles": {
+					"$ref": "#/definitions/xs:int",
+					"description": "optional number of ensemble, if not provides one ensemble member is assumed"
+				},
+				"timeStep": {
+					"$ref": "#/definitions/TimeStepComplexType",
+					"description": "Time step of the simulation (till now, the model supports only equidistant time steps)"
+				}
+			},
+			"required": [
+				"file",
+				"timeStep"
+			],
+			"type": "object"
+		},
+		"ParallelModeEnumStringType": {
+			"enum": [
+				"NONE",
+				"ENSEMBLE",
+				"INTERNAL",
+				"ENSEMBLE+INTERNAL"
+			],
+			"type": "string"
+		},
+		"ParallelizationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"constraints": {
+					"$ref": "#/definitions/ParallelModeEnumStringType"
+				},
+				"nThread": {
+					"$ref": "#/definitions/xs:int"
+				},
+				"simulation": {
+					"$ref": "#/definitions/ParallelModeEnumStringType"
+				}
+			},
+			"type": "object"
+		},
+		"ParameterFilePrefixEnumStringType": {
+			"enum": [
+				"NONE",
+				"LOCATIONID"
+			],
+			"type": "string"
+		},
+		"ParameterFileTypeEnumStringType": {
+			"enum": [
+				"TREEVECTOR",
+				"PIMODELPARAMETERS"
+			],
+			"type": "string"
+		},
+		"PardisoComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"pardiso_matching_strategy": {
+					"description": "Matching strategy to be used by Pardiso \nThis is IPAR(13) in Pardiso manual. The default value for this string option is \"complete+2x2\". \nPossible values:\ncomplete: Match complete (IPAR(13)=1)\ncomplete+2x2: Match complete+2x2 (IPAR(13)=2)\nconstraints: Match constraints (IPAR(13)=3)",
+					"enum": [
+						"complete",
+						"complete+2x2",
+						"constraints"
+					],
+					"type": "string"
+				},
+				"pardiso_max_iterative_refinement_steps": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Limit on number of iterative refinement steps. \nThe solver does not perform more than the absolute value of this value steps of iterative refinement and stops the process if a satisfactory level of accuracy of the solution in terms of backward error is achieved. If negative, the accumulation of the residue uses extended precision real and complex data types. Perturbed pivots result in iterative refinement. The solver automatically performs two steps of iterative refinements when perturbed pivots are obtained during the numerical factorization and this option is set to 0. The valid range for this integer option is [-inf, inf] and its default value is 0 ."
+				},
+				"pardiso_msglvl": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Pardiso message level \nThis determines the amount of analysis output from the Pardiso solver. This is MSGLVL in the Pardiso manual. The valid range for this integer option is  [0, inf] and its default value is 0 ."
+				},
+				"pardiso_order": {
+					"description": "Controls the fill-in reduction ordering algorithm for the input matrix. \nThe default value for this string option is \"five\". \nPossible values:\namd: minimum degree algorithm\none: undocumented\nmetis: MeTiS nested dissection algorithm\npmetis: parallel (OpenMP) version of MeTiS nested dissection algorithm\nfour: undocumented\nfive: undocumented",
+					"enum": [
+						"amd",
+						"one",
+						"metis",
+						"pmetis",
+						"four",
+						"five"
+					],
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"PeriodComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"PIInput": {
+					"$ref": "#/definitions/PIInputRuntimeComplexType",
+					"description": "The execution period is defined by the first time series of the referred PI-XML file."
+				},
+				"PIRunFile": {
+					"$ref": "#/definitions/PIRunFileRuntimeComplexType",
+					"description": "The execution period is defined in the PI-XML run file."
+				},
+				"userDefined": {
+					"$ref": "#/definitions/UserDefinedRuntimeComplexType",
+					"description": "The execution period is user-defined by start and end time, time step and optionally the number of ensembles."
+				}
+			},
+			"type": "object"
+		},
+		"PeriodEnumStringType": {
+			"enum": [
+				"COMPLETE",
+				"UPDATE",
+				"FORECAST"
+			],
+			"type": "string"
+		},
+		"RtcRuntimeConfigComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"files": {
+					"$ref": "#/definitions/FileComplexType",
+					"description": "Optional provision of input files, if provided ALL relevant input files needs to be defined, if not, the program will check for files with default naming in the current working folder"
+				},
+				"logging": {
+					"$ref": "#/definitions/LoggingComplexType",
+					"description": "Logging"
+				},
+				"mode": {
+					"$ref": "#/definitions/ModeComplexType",
+					"description": "Optional definition of the execution mode of the application, default = simulation if not provided"
+				},
+				"modes": {
+					"$ref": "#/definitions/ModesComplexType"
+				},
+				"parallelization": {
+					"$ref": "#/definitions/ParallelizationComplexType",
+					"description": "Optional parallelization settings"
+				},
+				"period": {
+					"$ref": "#/definitions/PeriodComplexType",
+					"description": "Execution period of the simulation or optimization"
+				},
+				"stateFiles": {
+					"$ref": "#/definitions/UserDefinedStateExportComplexType",
+					"description": "Optional definition for saving periodic state files"
+				}
+			},
+			"required": [
+				"period"
+			],
+			"type": "object"
+		},
+		"SAComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"dels": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "???"
+				},
+				"ftoll": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "???"
+				},
+				"max_cpu_time": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "maximum cpu time for executing the optimization"
+				},
+				"max_iter": {
+					"$ref": "#/definitions/xs:integer",
+					"description": "Maximum number of iterations"
+				}
+			},
+			"type": "object"
+		},
+		"TimeSeriesSimpleType": {
+			"minLength": 1,
+			"type": "string"
+		},
+		"TimeStepComplexType": {
+			"additionalProperties": false,
+			"description": "The timeunit element has three attributes, unit and devider and multiplier.\n            the unit is second, minute, hour, week, month year.\n            The divider attribute is optional (default = 1).",
+			"properties": {
+				"attr_divider": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"attr_multiplier": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"attr_unit": {
+					"$ref": "#/definitions/timeStepUnitEnumStringType"
+				}
+			},
+			"required": [
+				"attr_unit"
+			],
+			"type": "object"
+		},
+		"TimeZoneSimpleType": {
+			"description": "The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed",
+			"type": "number"
+		},
+		"UserDefinedRuntimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"endDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "End date and time of the simulation."
+				},
+				"forecastDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "Forecast date and time of the simulation."
+				},
+				"numberEnsembles": {
+					"$ref": "#/definitions/xs:int",
+					"description": "Optional number of ensemble of the simulation. If not provided, one ensemble member is assumed."
+				},
+				"startDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "Start date and time of the similation."
+				},
+				"timeStep": {
+					"$ref": "#/definitions/TimeStepComplexType",
+					"description": "Time step of the simulation (till now, the model supports only equidistant time steps)"
+				}
+			},
+			"required": [
+				"endDate",
+				"startDate",
+				"timeStep"
+			],
+			"type": "object"
+		},
+		"UserDefinedStateExportComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"endDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "End date and time for exporting state files."
+				},
+				"startDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "Start date and time for exporting state files."
+				},
+				"stateTimeStep": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Step in seconds for exporting state files"
+				}
+			},
+			"required": [
+				"endDate",
+				"startDate"
+			],
+			"type": "object"
+		},
+		"VariableTypeEnumStringType": {
+			"enum": [
+				"CONTINUOUS",
+				"INTEGER",
+				"TIMEINSTANCE"
+			],
+			"type": "string"
+		},
+		"dateType": {
+			"pattern": "^([\\d][\\d][\\d][\\d]\\-[\\d][\\d]\\-[\\d][\\d])$",
+			"type": "string"
+		},
+		"timeSeriesType": {
+			"description": "Type of data, either accumulative or instantaneous.\n                        For accumulative data the time/date of the event is\n                        the moment at which the data was gathered.\n            ",
+			"enum": [
+				"accumulative",
+				"instantaneous"
+			],
+			"type": "string"
+		},
+		"timeStepUnitEnumStringType": {
+			"enum": [
+				"second",
+				"minute",
+				"hour",
+				"day",
+				"week"
+			],
+			"type": "string"
+		},
+		"timeType": {
+			"pattern": "^([\\d][\\d]\\:[\\d][\\d]\\:[\\d][\\d])$",
+			"type": "string"
+		},
+		"xs:boolean": {
+			"type": "boolean"
+		},
+		"xs:double": {
+			"type": "number"
+		},
+		"xs:int": {
+			"maximum": 2147483647,
+			"minimum": -2147483648,
+			"type": "integer"
+		},
+		"xs:integer": {
+			"type": "integer"
+		},
+		"xs:positiveInteger": {
+			"minimum": 1,
+			"type": "integer"
+		},
+		"xs:string": {
+			"type": "string"
+		}
+	},
+	"description": "JSON Schema generated by XMLSpy v2019 rel. 3 sp1 (x64) (http://www.altova.com)",
+	"properties": {
+		"attr_xmlns:rtc": {
+			"default": "http://www.wldelft.nl/fews"
+		},
+		"attr_xmlns:xs": {
+			"default": "http://www.w3.org/2001/XMLSchema"
+		},
+		"rtcRuntimeConfig": {
+			"$ref": "#/definitions/.rtcRuntimeConfig"
+		}
+	},
+	"type": "object"
+}
