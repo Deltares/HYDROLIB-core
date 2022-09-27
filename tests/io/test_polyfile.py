@@ -22,7 +22,7 @@ from hydrolib.core.io.polyfile.parser import (
 )
 from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 
-from ..utils import test_output_dir, assert_files_equal, test_data_dir
+from ..utils import test_output_dir, assert_files_equal, test_input_dir
 
 
 class TestSerializer:
@@ -720,7 +720,7 @@ name
             assert found_msg == expected_msg
 
     def test_polyfile_can_be_saved_without_errors_and_is_same_as_input(self):
-        infile = test_data_dir / "input" / "test.pli"
+        infile = test_input_dir / "test.pli"
         outfile = test_output_dir / "test.pli"
 
         polyfile = PolyFile(filepath=infile)
