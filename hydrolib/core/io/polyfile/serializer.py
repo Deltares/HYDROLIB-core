@@ -67,7 +67,7 @@ def write_polyfile(path: Path, data: Sequence[PolyObject]) -> None:
 
     Args:
         path (Path): The path to write the data to
-        data (PolyFile): The data to write
+        data (Sequence[PolyObject]): The poly objects to write
     """
     serialized_data = chain.from_iterable(map(Serializer.serialize_poly_object, data))
 
