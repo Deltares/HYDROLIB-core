@@ -1,0 +1,1173 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"additionalProperties": false,
+	"definitions": {
+		".rtcObjectiveConfig": {
+			"$ref": "#/definitions/RtcObjectiveConfigComplexType"
+		},
+		"AggregationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"constant": {
+					"$ref": "#/definitions/xs:anySimpleType"
+				},
+				"equidistant": {
+					"$ref": "#/definitions/AggregationEquidistantComplexType",
+					"description": "aggregation with equidistent steps, note that the number of time steps in the model needs to be a multiple of the aggregation step, i.e. 2,4,6,8 steps in case of an aggregation step of 2"
+				},
+				"non-equidistant": {
+					"$ref": "#/definitions/AggregationNonEquidistantComplexType",
+					"description": "still not implemented"
+				}
+			},
+			"type": "object"
+		},
+		"AggregationEquidistantComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"nAggregationSteps": {
+					"$ref": "#/definitions/xs:integer",
+					"description": "aggregation, simulation time nOutputSteps (simulation) = nInputSteps (optimizer) * nAggregationSteps"
+				},
+				"type": {
+					"$ref": "#/definitions/AggregationTypeEnumStringType",
+					"description": "interpolation type: block or linear"
+				}
+			},
+			"required": [
+				"nAggregationSteps",
+				"type"
+			],
+			"type": "object"
+		},
+		"AggregationNonEquidistantComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"nInputSteps": {
+					"$ref": "#/definitions/xs:integer",
+					"description": "number of input time steps"
+				},
+				"nOutputSteps": {
+					"$ref": "#/definitions/xs:integer",
+					"description": "number of output time steps"
+				},
+				"stepIndex": {
+					"items": {
+						"$ref": "#/definitions/xs:integer",
+						"description": "time step indices (indexing starts from 1) on which input data is located, the has to be data on the last time step!"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"type": {
+					"$ref": "#/definitions/AggregationTypeEnumStringType",
+					"description": "interpolation type: block or linear"
+				}
+			},
+			"required": [
+				"nInputSteps",
+				"nOutputSteps",
+				"stepIndex",
+				"type"
+			],
+			"type": "object"
+		},
+		"AggregationTypeEnumStringType": {
+			"enum": [
+				"BLOCK",
+				"LINEAR"
+			],
+			"type": "string"
+		},
+		"AverageComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"inputDelayVector": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"nStep": {
+					"description": "fixed value for nStep",
+					"minimum": 1,
+					"type": "integer"
+				},
+				"nStepSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "nStep value is provided as a time series, the average is computed if the value is a positive integer"
+				}
+			},
+			"type": "object"
+		},
+		"BoundAverageComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"nStep": {
+					"description": "fixed value for nStep",
+					"minimum": 1,
+					"type": "integer"
+				},
+				"nStepSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer"
+				},
+				"variableDelayVector": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element "
+				}
+			},
+			"type": "object"
+		},
+		"BoundStateComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_scalingFactor": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"average": {
+					"$ref": "#/definitions/StateAverageComplexType"
+				},
+				"components": {
+					"$ref": "#/definitions/BoundStateComponentsComplexType",
+					"description": "simulation components (in the order of the simulation model) which compute the state based on the variables (both defined below)"
+				},
+				"lowerBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "lower bound as a scalar"
+				},
+				"lowerBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "lower bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"nStep": {
+					"minimum": 1,
+					"type": "integer"
+				},
+				"state": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "reference to the state to constrain"
+				},
+				"stepIndices": {
+					"$ref": "#/definitions/BoundStateStepIndicesComplexType"
+				},
+				"upperBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "upper bound as a scalar value"
+				},
+				"upperBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "upper bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"variables": {
+					"$ref": "#/definitions/BoundStateVariablesComplexType",
+					"description": "references to the optimization variable which contribute to the computation of the state"
+				}
+			},
+			"required": [
+				"components",
+				"state",
+				"variables",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"BoundStateComponentsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"component": {
+					"items": {
+						"$ref": "#/definitions/xs:string"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"component"
+			],
+			"type": "object"
+		},
+		"BoundStateStepIndicesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"stepIndex": {
+					"items": {
+						"maximum": 2147483647,
+						"minimum": 0,
+						"type": "integer"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"stepIndex"
+			],
+			"type": "object"
+		},
+		"BoundStateVariablesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"variable": {
+					"items": {
+						"$ref": "#/definitions/TimeSeriesSimpleType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"variable"
+			],
+			"type": "object"
+		},
+		"BoundVariableAverageComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"average": {
+					"$ref": "#/definitions/BoundAverageComplexType"
+				},
+				"lowerBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "lower bound as a scalar"
+				},
+				"lowerBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "lower bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"upperBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "upper bound as a scalar value"
+				},
+				"upperBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "upper bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"variable": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')"
+				}
+			},
+			"required": [
+				"average",
+				"variable",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"BoundVariableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"lowerBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "lower bound as a scalar"
+				},
+				"lowerBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "lower bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"upperBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "upper bound as a scalar value"
+				},
+				"upperBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "upper bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"variable": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')"
+				}
+			},
+			"required": [
+				"variable",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"BoundVariableRateOfChangeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"lowerBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "lower bound as a scalar"
+				},
+				"lowerBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "lower bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"multipleDelay": {
+					"$ref": "#/definitions/MultipleDelayComplexType",
+					"description": "option to look back more than a single time step"
+				},
+				"upperBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "upper bound as a scalar value"
+				},
+				"upperBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "upper bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"variable": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')"
+				}
+			},
+			"required": [
+				"variable",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"ChanceConstraintComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"f": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"input": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"lowerBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "lower bound as a scalar"
+				},
+				"lowerBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "lower bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"order": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"upperBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "upper bound as a scalar value"
+				},
+				"upperBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "upper bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"weightingFactor": {
+					"items": {
+						"$ref": "#/definitions/ExternalParameterSimpleType"
+					},
+					"type": "array"
+				},
+				"weightingFactorFinal": {
+					"items": {
+						"$ref": "#/definitions/ExternalParameterSimpleType",
+						"description": "optional final weighting factor, only considered if a weighting factor is defined, works NOT in combination with the weighting factor time series"
+					},
+					"type": "array"
+				},
+				"weightingFactorSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"f",
+				"input",
+				"order",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"ChanceVariableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"f": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"lowerBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "lower bound as a scalar"
+				},
+				"lowerBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "lower bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"upperBound": {
+					"$ref": "#/definitions/ExternalParameterSimpleType",
+					"description": "upper bound as a scalar value"
+				},
+				"upperBoundSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "upper bound from a times series, a missing value will switch out the constraint for this specific time step"
+				},
+				"variable": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "reference to the time series in the time series database (refers to the file 'rtcDataConfig.xml')"
+				}
+			},
+			"required": [
+				"f",
+				"variable",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"ConstraintChoiceComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_active": {
+					"$ref": "#/definitions/ExternalBooleanSimpleType"
+				},
+				"boundState": {
+					"$ref": "#/definitions/BoundStateComplexType",
+					"description": "implements bounds on states or model outputs"
+				},
+				"boundVariable": {
+					"$ref": "#/definitions/BoundVariableComplexType",
+					"description": "implement bounds on the optimization variable"
+				},
+				"boundVariableAverage": {
+					"$ref": "#/definitions/BoundVariableAverageComplexType",
+					"description": "defines a bound on an average value of an optimization variable for example to enable min/max bounds on aggregated time series"
+				},
+				"boundVariableRateOfChange": {
+					"$ref": "#/definitions/BoundVariableRateOfChangeComplexType",
+					"description": "implements bounds on the rate-of-change of an optimization variable"
+				},
+				"chanceBoundVariable": {
+					"$ref": "#/definitions/ChanceVariableComplexType",
+					"description": "implement chance constraints on the optimization variable"
+				}
+			},
+			"type": "object"
+		},
+		"ConstraintsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"constraint": {
+					"items": {
+						"$ref": "#/definitions/ConstraintChoiceComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"constraint"
+			],
+			"type": "object"
+		},
+		"DateTimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_date": {
+					"$ref": "#/definitions/dateType"
+				},
+				"attr_time": {
+					"$ref": "#/definitions/timeType"
+				}
+			},
+			"required": [
+				"attr_date",
+				"attr_time"
+			],
+			"type": "object"
+		},
+		"EnsembleModeEnumStringType": {
+			"enum": [
+				"JOINT",
+				"TREE",
+				"INDEPENDENT"
+			],
+			"type": "string"
+		},
+		"ExternalBooleanSimpleType": {
+			"anyOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"ExternalIntegerSimpleType": {
+			"anyOf": [
+				{
+					"type": "integer"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"ExternalParameterSimpleType": {
+			"anyOf": [
+				{
+					"type": "number"
+				},
+				{
+					"pattern": "^([#-\\$][\\(-_a-z]+[#-\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"MultipleDelayComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"nStep": {
+					"description": "fixed value for nStep",
+					"minimum": 1,
+					"type": "integer"
+				},
+				"nStepCorrection": {
+					"$ref": "#/definitions/xs:boolean",
+					"description": "if TRUE, the rate-of-change bounds are given as change per time step, if FALSE, the bounds represent the total change over all time steps, default is FALSE "
+				},
+				"nStepMode": {
+					"$ref": "#/definitions/nStepModeEnum",
+					"description": "STEP only computes the difference between T0-nStep and T0, CONTINUOUS computes the differences also at all intermediate steps"
+				},
+				"nStepSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer"
+				},
+				"variableDelayVector": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element "
+				}
+			},
+			"type": "object"
+		},
+		"OutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"JAcc": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "time series reference for accumulating objective function value"
+				},
+				"JInc": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "time series reference for incremental objective function value"
+				}
+			},
+			"required": [
+				"JAcc",
+				"JInc"
+			],
+			"type": "object"
+		},
+		"RtcObjectiveConfigComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"constraints": {
+					"$ref": "#/definitions/ConstraintsComplexType"
+				},
+				"output": {
+					"$ref": "#/definitions/OutputComplexType"
+				},
+				"terms": {
+					"$ref": "#/definitions/TermComplexType"
+				},
+				"termsEnsemble": {
+					"$ref": "#/definitions/TermEnsembleComplexType"
+				},
+				"variables": {
+					"$ref": "#/definitions/VariablesComplexType"
+				}
+			},
+			"type": "object"
+		},
+		"StateAverageComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"nStep": {
+					"description": "fixed value for nStep",
+					"minimum": 1,
+					"type": "integer"
+				},
+				"nStepSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "nStep value is provided as a time series, the rate-of-change is computed if the value is a positive integer"
+				},
+				"stateDelayVector": {
+					"$ref": "#/definitions/TimeSeriesSimpleType",
+					"description": "optional vector with historical values (t less T0) to look into the past, it is required for nStep>1, in case of the nStepSeries the user may ensure to not refer to historical value and omit this element "
+				}
+			},
+			"required": [
+				"stateDelayVector"
+			],
+			"type": "object"
+		},
+		"TermAbsoluteComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"average": {
+					"$ref": "#/definitions/AverageComplexType",
+					"description": "optional definition of an aggregation period over several time steps"
+				},
+				"input": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"lowerBranch": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"order": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"setPoint": {
+					"$ref": "#/definitions/ExternalParameterSimpleType"
+				},
+				"setPointSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"upperBranch": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"weightingFactor": {
+					"items": {
+						"$ref": "#/definitions/ExternalParameterSimpleType"
+					},
+					"type": "array"
+				},
+				"weightingFactorFinal": {
+					"items": {
+						"$ref": "#/definitions/ExternalParameterSimpleType",
+						"description": "optional final weighting factor, only considered if a weighting factor is defined, works NOT in combination with the weighting factor time series"
+					},
+					"type": "array"
+				},
+				"weightingFactorSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"input",
+				"order",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermChoiceComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_active": {
+					"$ref": "#/definitions/ExternalBooleanSimpleType"
+				},
+				"absolute": {
+					"$ref": "#/definitions/TermAbsoluteComplexType"
+				},
+				"linear": {
+					"$ref": "#/definitions/TermLinearComplexType"
+				},
+				"max": {
+					"$ref": "#/definitions/TermMaxComplexType"
+				},
+				"mse": {
+					"$ref": "#/definitions/TermMSEComplexType"
+				},
+				"nse": {
+					"$ref": "#/definitions/TermNSEComplexType"
+				},
+				"rateOfChange": {
+					"$ref": "#/definitions/TermRateOfChangeComplexType"
+				},
+				"relativeVolume": {
+					"$ref": "#/definitions/TermRelativeVolumeComplexType"
+				},
+				"rmse": {
+					"$ref": "#/definitions/TermRMSEComplexType"
+				},
+				"rv": {
+					"$ref": "#/definitions/TermRVComplexType"
+				},
+				"sum": {
+					"$ref": "#/definitions/TermSumComplexType"
+				}
+			},
+			"type": "object"
+		},
+		"TermComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"term": {
+					"items": {
+						"$ref": "#/definitions/TermChoiceComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"term"
+			],
+			"type": "object"
+		},
+		"TermEnsembleChoiceComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_active": {
+					"$ref": "#/definitions/ExternalBooleanSimpleType"
+				},
+				"chanceConstraint": {
+					"$ref": "#/definitions/ChanceConstraintComplexType"
+				}
+			},
+			"type": "object"
+		},
+		"TermEnsembleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"termEnsemble": {
+					"items": {
+						"$ref": "#/definitions/TermEnsembleChoiceComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"termEnsemble"
+			],
+			"type": "object"
+		},
+		"TermLinearComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"input": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"setPoint": {
+					"$ref": "#/definitions/ExternalParameterSimpleType"
+				},
+				"setPointSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"weightingFactor": {
+					"items": {
+						"$ref": "#/definitions/ExternalParameterSimpleType"
+					},
+					"type": "array"
+				},
+				"weightingFactorFinal": {
+					"items": {
+						"$ref": "#/definitions/ExternalParameterSimpleType",
+						"description": "optional final weighting factor, only considered if a weighting factor is defined, works NOT in combination with the weighting factor time series"
+					},
+					"type": "array"
+				},
+				"weightingFactorSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"input",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermMSEComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"flag": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"observation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"simulation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"observation",
+				"simulation",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermMaxComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"input": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"input",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermNSEComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"flag": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"observation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"simulation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"skipNFirstSteps": {
+					"$ref": "#/definitions/xs:int"
+				}
+			},
+			"required": [
+				"observation",
+				"simulation",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermRMSEComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"flag": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"observation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"simulation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"observation",
+				"simulation",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermRVComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"flag": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"observation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"simulation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"skipNFirstSteps": {
+					"$ref": "#/definitions/xs:int"
+				},
+				"w": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"observation",
+				"simulation",
+				"w",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermRateOfChangeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"input": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"lowerBranch": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"multipleDelay": {
+					"$ref": "#/definitions/MultipleDelayComplexType"
+				},
+				"order": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"setPoint": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"setPointSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"upperBranch": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"weightingFactor": {
+					"items": {
+						"$ref": "#/definitions/ExternalParameterSimpleType"
+					},
+					"type": "array"
+				},
+				"weightingFactorSeries": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"input",
+				"order",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermRelativeVolumeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"flag": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"observation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"simulation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"skipNFirstSteps": {
+					"$ref": "#/definitions/xs:int"
+				}
+			},
+			"required": [
+				"observation",
+				"simulation",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TermSumComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"flag": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"simulation": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"simulation",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"TimeSeriesSimpleType": {
+			"minLength": 1,
+			"type": "string"
+		},
+		"TimeStepComplexType": {
+			"additionalProperties": false,
+			"description": "The timeunit element has three attributes, unit and devider and multiplier.\n            the unit is second, minute, hour, week, month year.\n            The divider attribute is optional (default = 1).",
+			"properties": {
+				"attr_divider": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"attr_multiplier": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"attr_unit": {
+					"$ref": "#/definitions/timeStepUnitEnumStringType"
+				}
+			},
+			"required": [
+				"attr_unit"
+			],
+			"type": "object"
+		},
+		"TimeZoneSimpleType": {
+			"description": "The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed",
+			"type": "number"
+		},
+		"VariableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_active": {
+					"$ref": "#/definitions/ExternalBooleanSimpleType"
+				},
+				"attr_ensembleMode": {
+					"$ref": "#/definitions/EnsembleModeEnumStringType"
+				},
+				"attr_id": {
+					"$ref": "#/definitions/TimeSeriesSimpleType"
+				},
+				"attr_max": {
+					"$ref": "#/definitions/ExternalParameterSimpleType"
+				},
+				"attr_min": {
+					"$ref": "#/definitions/ExternalParameterSimpleType"
+				},
+				"attr_scalingFactor": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"attr_type": {
+					"$ref": "#/definitions/VariableTypeEnumStringType"
+				},
+				"aggregation": {
+					"$ref": "#/definitions/AggregationComplexType"
+				}
+			},
+			"required": [
+				"attr_type",
+				"attr_id"
+			],
+			"type": "object"
+		},
+		"VariableTypeEnumStringType": {
+			"enum": [
+				"CONTINUOUS",
+				"INTEGER",
+				"TIMEINSTANCE"
+			],
+			"type": "string"
+		},
+		"VariablesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"aggregation": {
+					"$ref": "#/definitions/AggregationComplexType"
+				},
+				"variable": {
+					"items": {
+						"$ref": "#/definitions/VariableComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"variable"
+			],
+			"type": "object"
+		},
+		"dateType": {
+			"pattern": "^([\\d][\\d][\\d][\\d]\\-[\\d][\\d]\\-[\\d][\\d])$",
+			"type": "string"
+		},
+		"nStepModeEnum": {
+			"enum": [
+				"CONTINUOUS",
+				"STEP"
+			],
+			"type": "string"
+		},
+		"timeSeriesType": {
+			"description": "Type of data, either accumulative or instantaneous.\n                        For accumulative data the time/date of the event is\n                        the moment at which the data was gathered.\n            ",
+			"enum": [
+				"accumulative",
+				"instantaneous"
+			],
+			"type": "string"
+		},
+		"timeStepUnitEnumStringType": {
+			"enum": [
+				"second",
+				"minute",
+				"hour",
+				"day",
+				"week"
+			],
+			"type": "string"
+		},
+		"timeType": {
+			"pattern": "^([\\d][\\d]\\:[\\d][\\d]\\:[\\d][\\d])$",
+			"type": "string"
+		},
+		"xs:anySimpleType": {
+			"type": [
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"xs:boolean": {
+			"type": "boolean"
+		},
+		"xs:double": {
+			"type": "number"
+		},
+		"xs:int": {
+			"maximum": 2147483647,
+			"minimum": -2147483648,
+			"type": "integer"
+		},
+		"xs:integer": {
+			"type": "integer"
+		},
+		"xs:positiveInteger": {
+			"minimum": 1,
+			"type": "integer"
+		},
+		"xs:string": {
+			"type": "string"
+		}
+	},
+	"description": "JSON Schema generated by XMLSpy v2019 rel. 3 sp1 (x64) (http://www.altova.com)",
+	"properties": {
+		"attr_xmlns:rtc": {
+			"default": "http://www.wldelft.nl/fews"
+		},
+		"attr_xmlns:xs": {
+			"default": "http://www.w3.org/2001/XMLSchema"
+		},
+		"rtcObjectiveConfig": {
+			"$ref": "#/definitions/.rtcObjectiveConfig"
+		}
+	},
+	"type": "object"
+}

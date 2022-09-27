@@ -1,0 +1,1260 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"additionalProperties": false,
+	"definitions": {
+		".TimeSeries": {
+			"$ref": "#/definitions/TimeSeriesCollectionComplexType",
+			"description": "Time series data represent data collected over a given period of time at a specific location"
+		},
+		"ArchiveTimeSeriesSetComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"ensembleId": {
+					"$ref": "#/definitions/idStringType",
+					"description": "Optional field for running ensembles. Ensemble id's in a time series set will override ensemble id's defined in the workflow."
+				},
+				"locationId": {
+					"items": {
+						"$ref": "#/definitions/idStringType"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"moduleInstanceId": {
+					"$ref": "#/definitions/idStringType"
+				},
+				"parameterId": {
+					"$ref": "#/definitions/idStringType"
+				},
+				"qualifierId": {
+					"items": {
+						"$ref": "#/definitions/idStringType",
+						"description": "Id that references an qualifier listed in the regionConfigFiles/Qualifiers.xsd\n\t\t\t\t\t"
+					},
+					"type": "array"
+				},
+				"timeSeriesType": {
+					"$ref": "#/definitions/timeSeriesTypeEnumStringType"
+				},
+				"timeStep": {
+					"$ref": "#/definitions/TimeStepComplexType"
+				}
+			},
+			"required": [
+				"locationId",
+				"moduleInstanceId",
+				"parameterId",
+				"timeSeriesType",
+				"timeStep"
+			],
+			"type": "object"
+		},
+		"BoolPropertyComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_key": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_value": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"description": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_key",
+				"attr_value"
+			],
+			"type": "object"
+		},
+		"ColumnIdsComplexType": {
+			"additionalProperties": false,
+			"description": "Column names for columns A through Z.",
+			"properties": {
+				"attr_A": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_B": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_C": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_D": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_E": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_F": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_G": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_H": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_I": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_J": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_K": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_L": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_M": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_N": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_O": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_P": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Q": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_R": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_S": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_T": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_U": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_V": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_W": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_X": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Y": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Z": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_A"
+			],
+			"type": "object"
+		},
+		"ColumnMetaDataComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_A": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_B": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_C": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_D": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_E": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_F": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_G": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_H": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_I": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_J": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_K": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_L": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_M": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_N": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_O": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_P": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Q": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_R": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_S": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_T": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_U": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_V": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_W": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_X": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Y": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Z": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_type": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				}
+			},
+			"required": [
+				"attr_A"
+			],
+			"type": "object"
+		},
+		"ColumnTypesComplexType": {
+			"additionalProperties": false,
+			"description": "Value-types in the columns A through Z. If no type specified, type 'String' is assumed.",
+			"properties": {
+				"attr_A": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_B": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_C": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_D": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_E": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_F": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_G": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_H": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_I": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_J": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_K": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_L": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_M": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_N": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_O": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_P": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_Q": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_R": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_S": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_T": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_U": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_V": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_W": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_X": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_Y": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				},
+				"attr_Z": {
+					"$ref": "#/definitions/ValueTypeEnumStringType"
+				}
+			},
+			"required": [
+				"attr_A"
+			],
+			"type": "object"
+		},
+		"DateTimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_date": {
+					"$ref": "#/definitions/dateType"
+				},
+				"attr_time": {
+					"$ref": "#/definitions/timeType"
+				}
+			},
+			"required": [
+				"attr_date",
+				"attr_time"
+			],
+			"type": "object"
+		},
+		"DateTimePropertyComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_date": {
+					"$ref": "#/definitions/dateType"
+				},
+				"attr_key": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_time": {
+					"$ref": "#/definitions/timeType"
+				},
+				"description": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_time",
+				"attr_key",
+				"attr_date"
+			],
+			"type": "object"
+		},
+		"DoublePropertyComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_key": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_value": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"description": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_key",
+				"attr_value"
+			],
+			"type": "object"
+		},
+		"EnsembleMemberComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_index": {
+					"$ref": "#/definitions/xs:nonNegativeInteger"
+				},
+				"attr_weight": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"attr_index"
+			],
+			"type": "object"
+		},
+		"EnsembleMemberRangeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_end": {
+					"$ref": "#/definitions/xs:nonNegativeInteger"
+				},
+				"attr_start": {
+					"$ref": "#/definitions/xs:nonNegativeInteger"
+				},
+				"attr_weight": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"attr_start"
+			],
+			"type": "object"
+		},
+		"EventComplexType": {
+			"additionalProperties": false,
+			"description": "unlimited number of events with a constant timeStep.\n                Each TimeSeries should contain at least one element (records).\n                The date, time and value attributes are required, the\n                quality flag is optional. ",
+			"properties": {
+				"attr_comment": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_date": {
+					"$ref": "#/definitions/dateType"
+				},
+				"attr_flag": {
+					"$ref": "#/definitions/xs:int"
+				},
+				"attr_flagSource": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_time": {
+					"$ref": "#/definitions/timeType"
+				},
+				"attr_user": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_value": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"attr_date",
+				"attr_time",
+				"attr_value"
+			],
+			"type": "object"
+		},
+		"FloatPropertyComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_key": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_value": {
+					"$ref": "#/definitions/xs:float"
+				},
+				"description": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_key",
+				"attr_value"
+			],
+			"type": "object"
+		},
+		"GeoDatumEnumStringType": {
+			"description": "The geographical datum for the location data. Presently only WGS-1984, OS 1936 and LOCAL are recognised. LOCAL indicates a local grid.",
+			"enum": [
+				"LOCAL",
+				"WGS 1984",
+				"Ordnance Survey Great Britain 1936",
+				"TWD 1967",
+				"Gauss Krueger Meridian2",
+				"Gauss Krueger Meridian3",
+				"Gauss Krueger Austria M34",
+				"Gauss Krueger Austria M31",
+				"Rijks Driehoekstelsel",
+				"JRC",
+				"DWD",
+				"KNMI Radar",
+				"CH1903",
+				"PAK1",
+				"PAK2",
+				"SVY21"
+			],
+			"type": "string"
+		},
+		"GeoDatumStringType": {
+			"anyOf": [
+				{
+					"description": "The geographical datum for the location data. Presently only WGS-1984, OS 1936 and LOCAL are recognised. LOCAL indicates a local grid.",
+					"enum": [
+						"LOCAL",
+						"WGS 1984",
+						"Ordnance Survey Great Britain 1936",
+						"TWD 1967",
+						"Gauss Krueger Meridian2",
+						"Gauss Krueger Meridian3",
+						"Gauss Krueger Austria M34",
+						"Gauss Krueger Austria M31",
+						"Rijks Driehoekstelsel",
+						"JRC",
+						"DWD",
+						"KNMI Radar",
+						"CH1903",
+						"PAK1",
+						"PAK2",
+						"SVY21"
+					],
+					"type": "string"
+				},
+				{
+					"pattern": "^(UTM((0[1-9])|([1-5][0-9])|(UTM60))[NS])$",
+					"type": "string"
+				}
+			]
+		},
+		"GlobalTableComplexType": {
+			"additionalProperties": false,
+			"description": "Intended for the configuration of any table",
+			"properties": {
+				"columnIds": {
+					"$ref": "#/definitions/ColumnIdsComplexType"
+				},
+				"columnMetaData": {
+					"items": {
+						"$ref": "#/definitions/ColumnMetaDataComplexType"
+					},
+					"type": "array"
+				},
+				"columnTypes": {
+					"$ref": "#/definitions/ColumnTypesComplexType"
+				},
+				"columnUnits": {
+					"$ref": "#/definitions/ColumnIdsComplexType"
+				},
+				"row": {
+					"items": {
+						"$ref": "#/definitions/RowComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"row"
+			],
+			"type": "object"
+		},
+		"HeaderComplexType": {
+			"additionalProperties": false,
+			"description": "The header is used to specify the link to the location\n                and the contents",
+			"properties": {
+				"creationDate": {
+					"$ref": "#/definitions/xs:date",
+					"description": "Date on which this TimeSeries was\n                        created"
+				},
+				"creationTime": {
+					"$ref": "#/definitions/xs:time",
+					"description": "Time on which this TimeSeries was\n                        created"
+				},
+				"endDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "date/time of the last event"
+				},
+				"ensembleId": {
+					"$ref": "#/definitions/idString",
+					"description": "\n\t\t\t\t\t\t\tSince version 1.4\n\t\t\t\t\t\t\tAn ensemble forecast consists of a number of simulations made by making small changes to the\n\t\t\t\t\t\t\testimate of the current state used to initialize the simulation. These small changes are\n\t\t\t\t\t\t\tdesigned to reflect the uncertainty in the estimate. Every simulation has it's own ensembleMemberIndex\n\t\t\t\t\t\t\tWhen specified the ensembleMemberIndex is required\n\t\t\t\t\t\t"
+				},
+				"ensembleMemberId": {
+					"$ref": "#/definitions/idString",
+					"description": "\n\t\t\t\t\t\t\t\tSince version 1.10 An ensemble forecast consists of a number of simulations made by making small changes to the estimate of the current state used to initialize the simulation. These small changes are designed to reflect the uncertainty in the estimate. Every simulation has it's own ensembleMemberId. Ensemble id is not required when the ensembleMemberId is specified\n\t\t\t\t\t\t\t"
+				},
+				"ensembleMemberIndex": {
+					"$ref": "#/definitions/xs:nonNegativeInteger",
+					"description": "\n\t\t\t\t\t\t\t\tSince version 1.4 An ensemble forecast consists of a number of simulations made by making small changes to the estimate of the current state used to initialize the simulation. These small changes are designed to reflect the uncertainty in the estimate. Every simulation has it's own ensembleMemberIndex. Ensemble id is not required when the ensembleMemberIndex is specified\n\t\t\t\t\t\t\t"
+				},
+				"fileDescription": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Description of (the content of)\n                        this file"
+				},
+				"forecastDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "\n\t\t\t\t\t\tSince version 1.5\n\t\t\t\t\t\tdate/time of the forecast. By default the forecastDate equals the start time"
+				},
+				"lat": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Latitude of station"
+				},
+				"locationId": {
+					"$ref": "#/definitions/LocationIdSimpleType"
+				},
+				"lon": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Longitude of station"
+				},
+				"longName": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Optional long (descriptive) name"
+				},
+				"missVal": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Missing value definition for this TimeSeries. Defaults to NaN if left empty"
+				},
+				"parameterId": {
+					"$ref": "#/definitions/ParameterSimpleType"
+				},
+				"qualifierId": {
+					"items": {
+						"$ref": "#/definitions/idString",
+						"description": "\n\t\t\t\t\t\tSince version 1.4\n\t\t\t\t\t\tFurther clarification of the time series, when the parameter, location and time step are not enough to\n\t\t\t\t\t\tidentify a time series.\n\t\t\t\t\t\tMultiple qualifiers are allowed, the order of the qualifiers is insignificant.\n\t\t\t\t\t\tA different order of the qualifier ids should not map to the an other time series.\n\t\t\t\t\t"
+					},
+					"type": "array"
+				},
+				"region": {
+					"$ref": "#/definitions/xs:string",
+					"description": "code/description of the region. Needed if the id's\n                        can be the same in different regions."
+				},
+				"sourceOrganisation": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"sourceSystem": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"startDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "date/time of the first event"
+				},
+				"stationName": {
+					"$ref": "#/definitions/nameString",
+					"description": "Station name"
+				},
+				"thresholds": {
+					"$ref": "#/definitions/ThresholdComplexType"
+				},
+				"timeStep": {
+					"$ref": "#/definitions/TimeStepComplexType",
+					"description": "The timeStep element provides three choices"
+				},
+				"type": {
+					"$ref": "#/definitions/timeSeriesType",
+					"description": "\n                        Type of data, either accumulative or instantaneous.\n                        For accumulative data the time/date of the event is\n                        the moment at which the data was gathered.\n                    "
+				},
+				"units": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Optional string that identifies the units used"
+				},
+				"x": {
+					"$ref": "#/definitions/xs:double",
+					"description": "X coordinate of station"
+				},
+				"y": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Y coordinate of station"
+				},
+				"z": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Z coordinate of station"
+				}
+			},
+			"required": [
+				"endDate",
+				"locationId",
+				"missVal",
+				"parameterId",
+				"startDate",
+				"timeStep",
+				"type"
+			],
+			"type": "object"
+		},
+		"HighLevelThresholdsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_groupId": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_groupName": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_value": {
+					"$ref": "#/definitions/xs:float"
+				}
+			},
+			"required": [
+				"attr_id",
+				"attr_value"
+			],
+			"type": "object"
+		},
+		"IntPropertyComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_key": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_value": {
+					"$ref": "#/definitions/xs:int"
+				},
+				"description": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_key",
+				"attr_value"
+			],
+			"type": "object"
+		},
+		"LocationIdSimpleType": {
+			"description": "Location ID, defined by the model",
+			"type": "string"
+		},
+		"ParameterSimpleType": {
+			"description": "Content of the data (Discharge, Precipitation, VPD); defined by the model",
+			"type": "string"
+		},
+		"PeriodConditionComplexType": {
+			"additionalProperties": false,
+			"description": "A period condition. If a date is specified without a timezone, e.g. 2002-10-10T12:00:00, then it is assumed to be in UTC.",
+			"properties": {
+				"day": {
+					"items": {
+						"$ref": "#/definitions/xs:gDay",
+						"description": "Day of the month such as the 5th of the month that is repeated every year\n\t\t\t\t\t\t"
+					},
+					"type": "array"
+				},
+				"endDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "End date and time for this period."
+				},
+				"endMonthDay": {
+					"$ref": "#/definitions/xs:gMonthDay",
+					"description": "End month and day of this season."
+				},
+				"month": {
+					"items": {
+						"$ref": "#/definitions/xs:gMonth",
+						"description": "Month that is repeated every year"
+					},
+					"type": "array"
+				},
+				"monthDay": {
+					"items": {
+						"$ref": "#/definitions/xs:gMonthDay",
+						"description": "Day of the year (e.g. third of May) that is repeated every year"
+					},
+					"type": "array"
+				},
+				"startDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "Start date and time for this period."
+				},
+				"startMonthDay": {
+					"$ref": "#/definitions/xs:gMonthDay",
+					"description": "Start month and day of this season."
+				},
+				"timeZone": {
+					"$ref": "#/definitions/TimeZoneSimpleType",
+					"description": "Timezone"
+				},
+				"validAfterDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "Valid for entire period after this date and time."
+				},
+				"validBeforeDate": {
+					"$ref": "#/definitions/DateTimeComplexType",
+					"description": "Valid for entire period prior to this date and time."
+				}
+			},
+			"type": "object"
+		},
+		"PropertiesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"bool": {
+					"items": {
+						"$ref": "#/definitions/BoolPropertyComplexType"
+					},
+					"type": "array"
+				},
+				"dateTime": {
+					"items": {
+						"$ref": "#/definitions/DateTimePropertyComplexType",
+						"description": "Since 2014.01"
+					},
+					"type": "array"
+				},
+				"description": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"double": {
+					"items": {
+						"$ref": "#/definitions/DoublePropertyComplexType",
+						"description": "Since 2014.01"
+					},
+					"type": "array"
+				},
+				"float": {
+					"items": {
+						"$ref": "#/definitions/FloatPropertyComplexType"
+					},
+					"type": "array"
+				},
+				"int": {
+					"items": {
+						"$ref": "#/definitions/IntPropertyComplexType"
+					},
+					"type": "array"
+				},
+				"string": {
+					"items": {
+						"$ref": "#/definitions/StringPropertyComplexType"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"RowComplexType": {
+			"additionalProperties": false,
+			"description": "Values in the columns A through Z. The values are entered as strings, however the value-type in each column should match the type as specified with columnTypes for this column. This wil be checked while reading the xml-file. If no column-type specified, 'String' type is assumed.",
+			"properties": {
+				"attr_A": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_B": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_C": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_D": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_E": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_F": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_G": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_H": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_I": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_J": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_K": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_L": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_M": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_N": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_O": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_P": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Q": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_R": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_S": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_T": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_U": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_V": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_W": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_X": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Y": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_Z": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_A"
+			],
+			"type": "object"
+		},
+		"StringPropertyComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"attr_key": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"attr_value": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"description": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"attr_key",
+				"attr_value"
+			],
+			"type": "object"
+		},
+		"ThresholdComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"highLevelThreshold": {
+					"items": {
+						"$ref": "#/definitions/HighLevelThresholdsComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"highLevelThreshold"
+			],
+			"type": "object"
+		},
+		"TimeSeriesCollectionComplexType": {
+			"additionalProperties": false,
+			"description": "Time series data represent data collected over a given period of time at a specific location",
+			"properties": {
+				"attr_version": {
+					"$ref": "#/definitions/versionString"
+				},
+				"series": {
+					"items": {
+						"$ref": "#/definitions/TimeSeriesComplexType",
+						"description": "Time series data represent data collected over a given\n                        period of time at a specific location"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"timeZone": {
+					"$ref": "#/definitions/TimeZoneSimpleType"
+				}
+			},
+			"required": [
+				"series"
+			],
+			"type": "object"
+		},
+		"TimeSeriesComplexType": {
+			"additionalProperties": false,
+			"description": "Time series data represent data collected over a given\n                period of time at a specific location",
+			"properties": {
+				"comment": {
+					"$ref": "#/definitions/commentString",
+					"description": "use this field as a notebook to add comments, suggestions\n                        description of data entered etc."
+				},
+				"event": {
+					"items": {
+						"$ref": "#/definitions/EventComplexType",
+						"description": "unlimited number of events with a constant timeStep.\n                        The date, time and value attributes are required, the\n                        quality flag is optional. When no events exists the event values are stored in a bin file.\n                        The binary file has the same name as the xml file only the extension is \"bin\" instead of \"xml\".\n                        The bin file contains only IEEE 32 bit reals. The length of the bin file is 4 times the number of events for all time series in the file.\n                        The byte order in the bin file is always Intel x86. The bin file is only allowed for equidistant time steps.\n                    "
+					},
+					"type": "array"
+				},
+				"header": {
+					"$ref": "#/definitions/HeaderComplexType",
+					"description": "\n                        The header is used to specify the link to the location\n                        and the contents"
+				},
+				"properties": {
+					"items": {
+						"$ref": "#/definitions/PropertiesComplexType",
+						"description": "Since 2014.01. Properties that are applicable to the events following\n                    "
+					},
+					"type": "array"
+				}
+			},
+			"required": [
+				"header"
+			],
+			"type": "object"
+		},
+		"TimeStepComplexType": {
+			"additionalProperties": false,
+			"description": "The time unit element has three attributes, unit and divider and multiplier. the unit is second, minute, hour, week, month year. The divider attribute is optional (default = 1).",
+			"properties": {
+				"attr_divider": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"attr_multiplier": {
+					"$ref": "#/definitions/xs:nonNegativeInteger"
+				},
+				"attr_unit": {
+					"$ref": "#/definitions/timeStepUnitEnumStringType"
+				}
+			},
+			"required": [
+				"attr_unit"
+			],
+			"type": "object"
+		},
+		"TimeStepUnitComplexType": {
+			"additionalProperties": false,
+			"description": "The time unit element has two attributes, unit and divider. the unit is required and can be 1, 2, 3, or 4 meaning: year, month, day and hour. The divider attribute is optional (default = 1).",
+			"properties": {
+				"attr_divider": {
+					"$ref": "#/definitions/xs:int"
+				},
+				"attr_unit": {
+					"enum": [
+						1,
+						2,
+						3,
+						4
+					],
+					"maximum": 2147483647,
+					"minimum": -2147483648,
+					"type": "integer"
+				}
+			},
+			"required": [
+				"attr_unit"
+			],
+			"type": "object"
+		},
+		"TimeZoneSimpleType": {
+			"description": "The timeZone (in decimal hours shift from GMT) e.g. -1.0 or 3.5. If not present the default timezone configured in the general adapter or import module is used. Always written when exported from FEWS",
+			"type": "number"
+		},
+		"UtmGeoDatumStringType": {
+			"pattern": "^(UTM((0[1-9])|([1-5][0-9])|(UTM60))[NS])$",
+			"type": "string"
+		},
+		"ValueTypeEnumStringType": {
+			"enum": [
+				"boolean",
+				"int",
+				"float",
+				"double",
+				"string"
+			],
+			"type": "string"
+		},
+		"booleanStringType": {
+			"anyOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"pattern": "^([\\w\\D]*[@][\\w\\D]*)$",
+					"type": "string"
+				}
+			],
+			"description": " \n\t\t\t\tBoolean that allows (global) properties\n\t\t\t"
+		},
+		"commentString": {
+			"type": "string"
+		},
+		"dateType": {
+			"pattern": "^([\\d][\\d][\\d][\\d]\\-[\\d][\\d]\\-[\\d][\\d])$",
+			"type": "string"
+		},
+		"doubleStringType": {
+			"anyOf": [
+				{
+					"type": "number"
+				},
+				{
+					"pattern": "^([\\w\\D]*[@][\\w\\D]*)$",
+					"type": "string"
+				}
+			],
+			"description": "\n\t\t\t\tDouble that allows use of location attributes\n\t\t\t"
+		},
+		"eventCodeString": {
+			"pattern": "^(\\^\\:)$",
+			"type": "string"
+		},
+		"idString": {
+			"type": "string"
+		},
+		"idStringType": {
+			"maxLength": 64,
+			"minLength": 1,
+			"type": "string"
+		},
+		"intStringType": {
+			"anyOf": [
+				{
+					"maximum": 2147483647,
+					"minimum": -2147483648,
+					"type": "integer"
+				},
+				{
+					"pattern": "^([\\w\\D]*[@][\\w\\D]*)$",
+					"type": "string"
+				}
+			],
+			"description": "\n\t\t\t\tInteger that allows (global) properties\n\t\t\t"
+		},
+		"nameString": {
+			"type": "string"
+		},
+		"nonEmptyStringType": {
+			"minLength": 1,
+			"type": "string"
+		},
+		"propertyReferenceString": {
+			"pattern": "^([\\w\\D]*[@][\\w\\D]*)$",
+			"type": "string"
+		},
+		"timeSeriesType": {
+			"description": "Type of data, either accumulative or instantaneous. For accumulative data the time/date of the event is the moment at which the data was gathered.\n\t\t\t",
+			"enum": [
+				"accumulative",
+				"instantaneous",
+				"mean"
+			],
+			"type": "string"
+		},
+		"timeSeriesTypeEnumStringType": {
+			"enum": [
+				"external historical",
+				"external forecasting",
+				"simulated historical",
+				"simulated forecasting",
+				"temporary"
+			],
+			"type": "string"
+		},
+		"timeStepUnitEnumStringType": {
+			"enum": [
+				"second",
+				"minute",
+				"hour",
+				"day",
+				"week",
+				"month",
+				"year",
+				"nonequidistant"
+			],
+			"type": "string"
+		},
+		"timeType": {
+			"pattern": "^([\\d][\\d]\\:[\\d][\\d]\\:[\\d][\\d])$",
+			"type": "string"
+		},
+		"versionString": {
+			"enum": [
+				"1.2",
+				"1.3",
+				"1.4",
+				"1.5",
+				"1.6",
+				"1.7",
+				"1.8",
+				"1.9",
+				"1.10",
+				"1.11",
+				"1.12",
+				"1.13",
+				"1.14"
+			],
+			"type": "string"
+		},
+		"xs:boolean": {
+			"type": "boolean"
+		},
+		"xs:date": {
+			"type": "string"
+		},
+		"xs:double": {
+			"type": "number"
+		},
+		"xs:float": {
+			"type": "number"
+		},
+		"xs:gDay": {
+			"type": "string"
+		},
+		"xs:gMonth": {
+			"type": "string"
+		},
+		"xs:gMonthDay": {
+			"type": "string"
+		},
+		"xs:int": {
+			"maximum": 2147483647,
+			"minimum": -2147483648,
+			"type": "integer"
+		},
+		"xs:nonNegativeInteger": {
+			"minimum": 0,
+			"type": "integer"
+		},
+		"xs:positiveInteger": {
+			"minimum": 1,
+			"type": "integer"
+		},
+		"xs:string": {
+			"type": "string"
+		},
+		"xs:time": {
+			"type": "string"
+		}
+	},
+	"description": "JSON Schema generated by XMLSpy v2019 rel. 3 sp1 (x64) (http://www.altova.com)",
+	"properties": {
+		"attr_xmlns:fews": {
+			"default": "http://www.wldelft.nl/fews/PI"
+		},
+		"attr_xmlns:xs": {
+			"default": "http://www.w3.org/2001/XMLSchema"
+		},
+		"TimeSeries": {
+			"$ref": "#/definitions/.TimeSeries"
+		}
+	},
+	"type": "object"
+}
