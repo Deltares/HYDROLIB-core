@@ -1627,6 +1627,7 @@ class TestSerializer:
                         Property(key="key1", value="value", comment="comment1"),
                         Property(key="key2", value="", comment="comment2"),
                         Property(key="key3", value=None, comment="comment3"),
+                        Property(key="key4", value="   ", comment="comment4"),
                     ],
                     datablock=[],
                 ),
