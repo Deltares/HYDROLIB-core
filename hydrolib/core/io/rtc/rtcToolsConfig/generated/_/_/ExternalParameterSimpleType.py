@@ -9,7 +9,7 @@ from typing import Optional
 from hydrolib.core.io.rtc.basemodel import RtcBaseModel
 from pydantic import Extra, Field
 
-from ... import ExternalParameterSimpleType, XsString
+from ... import ExternalParameterSimpleType, XsBoolean
 
 
 class Field1(RtcBaseModel):
@@ -17,14 +17,5 @@ class Field1(RtcBaseModel):
         extra = Extra.forbid
         allow_population_by_field_name = True
 
-    _: Optional[XsString] = Field(None, alias='$')
-    attr_weight: ExternalParameterSimpleType
-
-
-class Field2(RtcBaseModel):
-    class Config:
-        extra = Extra.forbid
-        allow_population_by_field_name = True
-
-    _: Optional[XsString] = Field(None, alias='$')
-    attr_weight: ExternalParameterSimpleType
+    _: Optional[ExternalParameterSimpleType] = Field(None, alias='$')
+    attr_useAbsoluteAsSpillCap: Optional[XsBoolean] = None
