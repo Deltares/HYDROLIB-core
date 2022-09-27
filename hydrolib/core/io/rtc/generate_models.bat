@@ -9,7 +9,8 @@ pause
 EXIT /B
 
 :CONVERT
-	SET file_to_convert=%~1
-	datamodel-codegen --input %file_to_convert%\generated\%file_to_convert%.json --input-file-type jsonschema --output %file_to_convert% --field-constraints --use-subclass-enum --use-schema-description --base-class hydrolib.core.io.rtc.basemodel.RtcBaseModel  
+	SET file=%~1
+	SET folder=%rtc_file%\generated
+	datamodel-codegen --input %folder%\%file%.json --input-file-type jsonschema --output %file% --field-constraints --use-subclass-enum --use-schema-description --base-class hydrolib.core.io.rtc.basemodel.RtcBaseModel
 
 	EXIT /B
