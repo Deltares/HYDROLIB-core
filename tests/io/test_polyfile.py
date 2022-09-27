@@ -720,7 +720,7 @@ name
             assert found_msg == expected_msg
 
     def test_polyfile_can_be_saved_without_errors_and_is_same_as_input(self):
-        infile = Path(test_data_dir / "input/test.pli")
+        infile = Path(test_data_dir / "input" / "test.pli")
         outfile = Path(test_output_dir / "test.pli")
 
         polyfile = PolyFile(filepath=infile)
