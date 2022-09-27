@@ -3361,7 +3361,7 @@ StateType            (<span title="enum.IntEnum">IntEnum</span>)
 
 
 <h3 id="hydrolib.core.io.polyfile.parser.read_polyfile" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
+<code class="highlight language-python"><span class="n">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
 
 
 <a href="#hydrolib.core.io.polyfile.parser.read_polyfile" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3424,7 +3424,7 @@ be reported as warnings.</p>
       </tr>
       <tr>
         <td><code>has_z_values</code></td>
-        <td><code>bool</code></td>
+        <td><code>Optional[bool]</code></td>
         <td><p>Whether to create points containing a z-value. Defaults to None.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -3447,7 +3447,7 @@ be reported as warnings.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/polyfile/parser.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_polyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Read the specified file and return the corresponding data.</span>
 
 <span class="sd">    The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol</span>
@@ -3811,7 +3811,7 @@ separated by 4 spaces as well.</p>
 
 
 <h3 id="hydrolib.core.io.polyfile.serializer.write_polyfile" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">write_polyfile</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<code class="highlight language-python"><span class="n">write_polyfile</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">polyfile</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">PolyObject</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
 
 
 <a href="#hydrolib.core.io.polyfile.serializer.write_polyfile" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3839,24 +3839,22 @@ separated by 4 spaces as well.</p>
       </tr>
       <tr>
         <td><code>data</code></td>
-        <td><code>PolyFile</code></td>
-        <td><p>The data to write</p></td>
+        <td><code>Sequence[PolyObject]</code></td>
+        <td><p>The poly objects to write</p></td>
         <td><em>required</em></td>
       </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/polyfile/serializer.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_polyfile</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_polyfile</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">PolyObject</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Write the data to a new file at path</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (Path): The path to write the data to</span>
-<span class="sd">        data (PolyFile): The data to write</span>
+<span class="sd">        data (Sequence[PolyObject]): The poly objects to write</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">serialized_data</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
-        <span class="nb">map</span><span class="p">(</span><span class="n">Serializer</span><span class="o">.</span><span class="n">serialize_poly_object</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;objects&quot;</span><span class="p">])</span>
-    <span class="p">)</span>
+    <span class="n">serialized_data</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">Serializer</span><span class="o">.</span><span class="n">serialize_poly_object</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
 
     <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
