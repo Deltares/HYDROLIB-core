@@ -719,12 +719,13 @@ name
             expected_msg = f"{reason}\n{block_suffix}\nFile: {self.file_path}"
             assert found_msg == expected_msg
 
-    def test_polyfile_can_be_saved_without_errors(self):
+    def test_polyfile_can_be_saved_without_errors_and_is_same_as_input(self):
         infile = Path(test_data_dir / "input/test.pli")
         outfile = Path(test_output_dir / "test.pli")
 
         polyfile = PolyFile(filepath=infile)
         polyfile.save(filepath=outfile)
+
         assert_files_equal(infile, outfile)
 
 
