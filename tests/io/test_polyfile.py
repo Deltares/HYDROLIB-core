@@ -780,7 +780,7 @@ def test_write_read_write_should_have_the_same_data():
         ),
     ]
 
-    write_polyfile(path, {"objects": objects})
+    write_polyfile(path, objects)
     read_result = read_polyfile(path, has_z_values=True)
 
     assert read_result["objects"] == objects
