@@ -1,0 +1,7582 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"additionalProperties": false,
+	"definitions": {
+		"..rtc:ExternalParameterSimpleType.1": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"@useAbsoluteAsSpillCap": {
+					"$ref": "#/definitions/xs:boolean"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.1": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@selectingColumnId": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"@id"
+			],
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.10": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.11": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.12": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.13": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.14": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.15": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.16": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.17": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@factor": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.18": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@nStepSeries": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@nStepSeriesStart": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.19": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@factor": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.2": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.20": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.21": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.22": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.23": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.24": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.25": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.3": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.4": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.5": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.6": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@factor": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.7": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@useAbsoluteAsSpillCap": {
+					"$ref": "#/definitions/xs:boolean"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.8": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@factor": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..rtc:TimeSeriesSimpleType.9": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@ref": {
+					"$ref": "#/definitions/rtc:inputReferenceEnumStringType"
+				}
+			},
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..xs:string.1": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@weight": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"@weight"
+			],
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		"..xs:string.2": {
+			"additionalProperties": false,
+			"properties": {
+				"$": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@weight": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"@weight"
+			],
+			"type": [
+				"object",
+				"string",
+				"number",
+				"boolean"
+			]
+		},
+		".rtc:rtcToolsConfig": {
+			"$ref": "#/definitions/rtc:RtcToolsConfigComplexType"
+		},
+		"rtc:ATableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:row": {
+					"items": {
+						"additionalProperties": false,
+						"properties": {
+							"@id": {
+								"$ref": "#/definitions/xs:string"
+							},
+							"@value": {
+								"$ref": "#/definitions/xs:double"
+							}
+						},
+						"required": [
+							"@id",
+							"@value"
+						],
+						"type": "object"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:row"
+			],
+			"type": "object"
+		},
+		"rtc:AccumulationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:AccumulationInputComplexType",
+					"description": "input variable"
+				},
+				"rtc:multiplier": {
+					"$ref": "#/definitions/xs:double",
+					"description": "optional multiplier"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:AccumulationOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:AccumulationInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:AccumulationOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:AebiRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:FactorRTG": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:LangeteFall": {
+					"$ref": "#/definitions/rtc:caseLangetenEnumStringType"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:AebiRuleInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:AebiRuleOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:FactorRTG",
+				"rtc:LangeteFall",
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:AebiRuleInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AareBruegg": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:AareBrueggMin2": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:AareMurg": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:AbflussReglementPort": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:Emenmatt": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:EmenmattMin4": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:Langeten": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:LangetenMin4": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:PegelBielersee": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:AareBruegg",
+				"rtc:AareBrueggMin2",
+				"rtc:AareMurg",
+				"rtc:AbflussReglementPort",
+				"rtc:Emenmatt",
+				"rtc:EmenmattMin4",
+				"rtc:Langeten",
+				"rtc:LangetenMin4",
+				"rtc:PegelBielersee"
+			],
+			"type": "object"
+		},
+		"rtc:AebiRuleOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AareMurg_oKWMin1": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:AbflussaenderungPort": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:MaxAbflussPort": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:ProvMaxAbflussPort": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:RTG": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:AareMurg_oKWMin1",
+				"rtc:AbflussaenderungPort",
+				"rtc:MaxAbflussPort",
+				"rtc:ProvMaxAbflussPort",
+				"rtc:RTG"
+			],
+			"type": "object"
+		},
+		"rtc:AggregationTypeEnumStringType": {
+			"enum": [
+				"BLOCK",
+				"LINEAR"
+			],
+			"type": "string"
+		},
+		"rtc:AllocationTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputATableComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputATableComplexType"
+				},
+				"rtc:table": {
+					"$ref": "#/definitions/rtc:ATableComplexType"
+				},
+				"rtc:tableExternal": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ArmaComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:arCoef": {
+					"$ref": "#/definitions/xs:double",
+					"description": "autoregression coefficient related to prior time step"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:ArmaInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:ArmaOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:arCoef",
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ArmaInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:obs": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "observed data"
+				},
+				"rtc:sim": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "simulated data"
+				}
+			},
+			"required": [
+				"rtc:obs",
+				"rtc:sim"
+			],
+			"type": "object"
+		},
+		"rtc:ArmaOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:arma": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "output-corrected data"
+				}
+			},
+			"required": [
+				"rtc:arma"
+			],
+			"type": "object"
+		},
+		"rtc:BranchComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:alpha1": {
+					"$ref": "#/definitions/xs:double",
+					"description": "the wind friction coefficient is given by Cw = alpha1 + alpha2 * Vw, with wind velocity Vw"
+				},
+				"rtc:alpha2": {
+					"$ref": "#/definitions/xs:double",
+					"description": "the wind friction coefficient is given by Cw = alpha1 + alpha2 * Vw, with wind velocity Vw"
+				},
+				"rtc:crossSection": {
+					"$ref": "#/definitions/rtc:CrossSectionComplexType",
+					"description": "Cross section in the center of the flow branch."
+				},
+				"rtc:equationType": {
+					"$ref": "#/definitions/rtc:EquationEnumStringType"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:BranchInputComplexType"
+				},
+				"rtc:length": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Length of the flow branch"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:BranchOutputComplexType"
+				},
+				"rtc:roughness": {
+					"$ref": "#/definitions/rtc:CrossSectionRoughnessComplexType",
+					"description": "Roughness (Chezy) as a function of elevation h"
+				},
+				"rtc:slope": {
+					"$ref": "#/definitions/xs:double",
+					"description": "slope for optional kinematic wave branch"
+				},
+				"rtc:spatialScheme": {
+					"$ref": "#/definitions/rtc:SpatialEnumStringType"
+				}
+			},
+			"required": [
+				"rtc:crossSection",
+				"rtc:input",
+				"rtc:length",
+				"rtc:output",
+				"rtc:roughness",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:BranchGradientComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:storageDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:storageUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:surfaceAreaDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:surfaceAreaUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:storageDown",
+				"rtc:storageUp",
+				"rtc:surfaceAreaDown",
+				"rtc:surfaceAreaUp"
+			],
+			"type": "object"
+		},
+		"rtc:BranchInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "ID of downstream node"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "ID of upstream node"
+				},
+				"rtc:ux": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional wind velocity at an elevation of 10 m above the water surface (x-direction), implementation is for the inertial model only"
+				},
+				"rtc:uy": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional wind velocity at an elevation of 10 m above the water surface (y-direction), implementation is for the inertial model only"
+				}
+			},
+			"required": [
+				"rtc:HDown",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:BranchOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:BranchTypeEnumStringType": {
+			"enum": [
+				"KINEMATIC",
+				"DIFFUSIVE",
+				"DIFFUSIVEPLUSLOCAL"
+			],
+			"type": "string"
+		},
+		"rtc:CapacityCharacteristicsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@reference": {
+					"$ref": "#/definitions/rtc:CapacityReferenceEnumStringType"
+				},
+				"rtc:capacityEquation": {
+					"$ref": "#/definitions/rtc:EquationsComplexType"
+				},
+				"rtc:capacityTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:CapacityReferenceEnumStringType": {
+			"description": "reference for capacity",
+			"enum": [
+				"UPSTREAMLEVEL",
+				"HEAD"
+			],
+			"type": "string"
+		},
+		"rtc:CapillaryFlowStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputCapillaryFlowStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterCapillaryFlowStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ColumnsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@head01": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head02": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head03": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head04": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head05": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head06": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head07": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head08": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head09": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head10": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head11": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head12": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head13": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head14": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head15": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head16": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head17": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head18": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head19": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@head20": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@head01",
+				"@head02"
+			],
+			"type": "object"
+		},
+		"rtc:ComponentComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@template": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:accumulation": {
+					"$ref": "#/definitions/rtc:AccumulationComplexType",
+					"description": "Accumulation of a time series over time"
+				},
+				"rtc:allocationTable": {
+					"$ref": "#/definitions/rtc:AllocationTableComplexType"
+				},
+				"rtc:arma": {
+					"$ref": "#/definitions/rtc:ArmaComplexType",
+					"description": "Arma error correction model"
+				},
+				"rtc:expression": {
+					"$ref": "#/definitions/rtc:ExpressionComplexType",
+					"description": "Mathematical expression"
+				},
+				"rtc:gradient": {
+					"$ref": "#/definitions/rtc:GradientComplexType",
+					"description": "Post processing for computing gradients of simulated values"
+				},
+				"rtc:hbv": {
+					"$ref": "#/definitions/rtc:HBVComplexType",
+					"description": "This is an implementation of the HBV-96 hydrological model. Note that the unit hydrograph is not included, but available separately."
+				},
+				"rtc:hydraulicModel": {
+					"$ref": "#/definitions/rtc:HydraulicModelComplexType",
+					"description": "Simplifications of the full dynamic, one-dimensional hydraulic model according to the kinematic wave, diffusive wave and inertial assumptions."
+				},
+				"rtc:hydrologicalModel": {
+					"$ref": "#/definitions/rtc:HydrologicalModelComplexType",
+					"description": "Modular, conceptual hydrological model with implicit time stepping scheme."
+				},
+				"rtc:lookup2DTable": {
+					"$ref": "#/definitions/rtc:Lookup2DTableComplexType"
+				},
+				"rtc:lookupTable": {
+					"$ref": "#/definitions/rtc:LookupTableComplexType"
+				},
+				"rtc:lorentGevers": {
+					"$ref": "#/definitions/rtc:LorentGeversComplexType",
+					"description": "Lorent/Gevers hydrological model"
+				},
+				"rtc:merger": {
+					"$ref": "#/definitions/rtc:MergerComplexType"
+				},
+				"rtc:mergerSplitter": {
+					"$ref": "#/definitions/rtc:MergerSplitterComplexType"
+				},
+				"rtc:neuralNetwork": {
+					"$ref": "#/definitions/rtc:NeuralNetworkComplexType"
+				},
+				"rtc:reservoir": {
+					"$ref": "#/definitions/rtc:ReservoirComplexType",
+					"description": "Reservoir with arbitrary number of inlets and outlets."
+				},
+				"rtc:reservoirCompact": {
+					"$ref": "#/definitions/rtc:ReservoirCompactComplexType",
+					"description": "Test implementation of a compact reservoir class for simultaneous and sequential optimization mode"
+				},
+				"rtc:routing": {
+					"$ref": "#/definitions/rtc:RoutingComplexType",
+					"description": "not implemented yet"
+				},
+				"rtc:srm": {
+					"$ref": "#/definitions/rtc:SRMComplexType"
+				},
+				"rtc:unitDelay": {
+					"$ref": "#/definitions/rtc:UnitDelayComplexType",
+					"description": "Unit delay operator for  delaying a value by n times the time step of the model."
+				},
+				"rtc:unitHydrograph": {
+					"$ref": "#/definitions/rtc:UnitHydrographComplexType",
+					"description": "Unit hydrograph"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:ComponentsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:component": {
+					"items": {
+						"$ref": "#/definitions/rtc:ComponentComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:component"
+			],
+			"type": "object"
+		},
+		"rtc:ConditionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:greaterThan": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:lessThan": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:ConnectionCoefficientsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:a": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:b": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:c": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:d": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"rtc:a",
+				"rtc:b",
+				"rtc:c",
+				"rtc:d"
+			],
+			"type": "object"
+		},
+		"rtc:ConnectionInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:discharge": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:downstreamLevel": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:upstreamLevel": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:discharge",
+				"rtc:downstreamLevel",
+				"rtc:upstreamLevel"
+			],
+			"type": "object"
+		},
+		"rtc:ConnectionOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:discharge": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:discharge"
+			],
+			"type": "object"
+		},
+		"rtc:ConstantRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:constant": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:ConstantRuleOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:constant",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ConstantRuleOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:ControlledOutletComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:capacityCharacteristics": {
+					"$ref": "#/definitions/rtc:CapacityCharacteristicsComplexType",
+					"description": "Maximum capacity of outlet as function of the water level h, minimum capacity is assumed to be zero"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:OutletInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutletOutputComplexType"
+				},
+				"rtc:turbineCharacteristics": {
+					"$ref": "#/definitions/rtc:TurbineCharacteristicsComplexType",
+					"description": "Characteristics of optional turbine"
+				}
+			},
+			"required": [
+				"rtc:capacityCharacteristics",
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:CrossSectionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:crossSectionTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "Tabulated cross section, pairs of elevation h and width b "
+				}
+			},
+			"required": [
+				"rtc:crossSectionTable"
+			],
+			"type": "object"
+		},
+		"rtc:CrossSectionRoughnessComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:roughnessTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "Pairs of elevation h and roughness C (according to Chezy)"
+				}
+			},
+			"required": [
+				"rtc:roughnessTable"
+			],
+			"type": "object"
+		},
+		"rtc:DataTypicalProfileComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@monthOfYear": {
+					"enum": [
+						"January",
+						"February",
+						"March",
+						"April",
+						"May",
+						"June",
+						"July",
+						"August",
+						"September",
+						"October",
+						"November",
+						"December"
+					],
+					"type": "string"
+				},
+				"@value": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@monthOfYear",
+				"@value"
+			],
+			"type": "object"
+		},
+		"rtc:DateComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@monthDay": {
+					"$ref": "#/definitions/xs:gMonthDay"
+				}
+			},
+			"required": [
+				"@monthDay"
+			],
+			"type": "object"
+		},
+		"rtc:DateLookupTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:dateRecord": {
+					"items": {
+						"$ref": "#/definitions/rtc:DateRecord2ComplexType",
+						"description": "Lookup table at a date location"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:DateLookupTableInputComplexType"
+				},
+				"rtc:interpolationOptions": {
+					"$ref": "#/definitions/rtc:InterpolationOptionsComplexType",
+					"description": "Interpolation option BLOCK / LINEAR for the two inputs date and value"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:DateLookupTableOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:dateRecord",
+				"rtc:input",
+				"rtc:interpolationOptions",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:DateLookupTableInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:DateLookupTableOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:active": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:DateRecord2ComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@monthDay": {
+					"$ref": "#/definitions/xs:gMonthDay"
+				},
+				"rtc:record": {
+					"items": {
+						"$ref": "#/definitions/rtc:DateRecord2DataComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:record",
+				"@monthDay"
+			],
+			"type": "object"
+		},
+		"rtc:DateRecord2DataComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@x": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@y": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@x",
+				"@y"
+			],
+			"type": "object"
+		},
+		"rtc:DateRecordComplexType": {
+			"additionalProperties": false,
+			"description": "defined data input as per time series format date time (defined either by dateTime or time or\n                month day) and value",
+			"properties": {
+				"@comment": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@dateTime": {
+					"$ref": "#/definitions/xs:dateTime"
+				},
+				"@monthDay": {
+					"$ref": "#/definitions/xs:gMonthDay"
+				},
+				"@time": {
+					"$ref": "#/definitions/xs:time"
+				},
+				"@value": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@value"
+			],
+			"type": "object"
+		},
+		"rtc:DateTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:data": {
+					"items": {
+						"$ref": "#/definitions/rtc:DateRecordComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:data"
+			],
+			"type": "object"
+		},
+		"rtc:DateTimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@date": {
+					"$ref": "#/definitions/rtc:dateType"
+				},
+				"@time": {
+					"$ref": "#/definitions/rtc:timeType"
+				}
+			},
+			"required": [
+				"@date",
+				"@time"
+			],
+			"type": "object"
+		},
+		"rtc:DeadBandTimeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:discrete": {
+					"$ref": "#/definitions/rtc:DeadBandTimeDiscreteComplexType"
+				},
+				"rtc:false": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:DeadBandTimeInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:DeadBandTimeOutputComplexType"
+				},
+				"rtc:true": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				}
+			},
+			"required": [
+				"rtc:discrete",
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:DeadBandTimeDiscreteComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:numberOfStepsDown": {
+					"$ref": "#/definitions/xs:int"
+				},
+				"rtc:numberOfStepsUp": {
+					"$ref": "#/definitions/xs:int"
+				}
+			},
+			"required": [
+				"rtc:numberOfStepsDown",
+				"rtc:numberOfStepsUp"
+			],
+			"type": "object"
+		},
+		"rtc:DeadBandTimeInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.20"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:DeadBandTimeOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:status": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:stepsDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:stepsUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:timeFalse": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:timeTrue": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:status",
+				"rtc:stepsDown",
+				"rtc:stepsUp"
+			],
+			"type": "object"
+		},
+		"rtc:DeadBandTriggerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:conditionOff": {
+					"$ref": "#/definitions/rtc:RelationalConditionComplexType"
+				},
+				"rtc:conditionOn": {
+					"$ref": "#/definitions/rtc:RelationalConditionComplexType"
+				},
+				"rtc:default": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"rtc:false": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TriggerOutputComplexType"
+				},
+				"rtc:true": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				}
+			},
+			"required": [
+				"rtc:conditionOff",
+				"rtc:conditionOn",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:DeadBandValueComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:DeadBandValueInputComplexType"
+				},
+				"rtc:threshold": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:threshold",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:DeadBandValueInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:EdgeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@x1": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@x2": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@x1",
+				"@x2"
+			],
+			"type": "object"
+		},
+		"rtc:EdgesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:edge": {
+					"items": {
+						"$ref": "#/definitions/rtc:EdgeComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:edge"
+			],
+			"type": "object"
+		},
+		"rtc:EifelRurRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:a": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:b": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:minimumRelativeStorage": {
+					"$ref": "#/definitions/rtc:DateTableComplexType"
+				}
+			},
+			"required": [
+				"rtc:a",
+				"rtc:b",
+				"rtc:minimumRelativeStorage",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ElevationRecordComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@elevation": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@value": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"@elevation",
+				"@value"
+			],
+			"type": "object"
+		},
+		"rtc:ElevationTableComplexType": {
+			"additionalProperties": false,
+			"description": "\n                Table containing data for different elevations. Type of element 'value'\n                depends on purpose for which table is used.\n            ",
+			"properties": {
+				"rtc:elevationRecord": {
+					"items": {
+						"$ref": "#/definitions/rtc:ElevationRecordComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:elevationRecord"
+			],
+			"type": "object"
+		},
+		"rtc:EnsembleModeEnumStringType": {
+			"enum": [
+				"JOINT",
+				"TREE",
+				"INDEPENDENT"
+			],
+			"type": "string"
+		},
+		"rtc:EquationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:a": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:b": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:c": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:lowerLevel": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:upperLevel": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:a",
+				"rtc:b",
+				"rtc:c"
+			],
+			"type": "object"
+		},
+		"rtc:EquationEnumStringType": {
+			"enum": [
+				"KINEMATIC",
+				"DIFFUSIVE",
+				"INERTIAL"
+			],
+			"type": "string"
+		},
+		"rtc:EquationsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:equation": {
+					"items": {
+						"$ref": "#/definitions/rtc:EquationComplexType",
+						"description": "Power equation for optional segments with lower and upper water level bounds, y = a*(x+b)^c"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:equation"
+			],
+			"type": "object"
+		},
+		"rtc:EvaporationPotentialComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputEvaporationPotentialComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputEvaporationPotentialComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterEvaporationPotentialComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ExpressionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:mathematicalOperator": {
+					"$ref": "#/definitions/rtc:MathematicalOperatorEnumStringType",
+					"description": "mathematical operator: + (summation), - (substraction), * (multiplication), / (division), min, max, ^ (power)"
+				},
+				"rtc:x1Series": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.2",
+					"description": "reference to time series ID"
+				},
+				"rtc:x1SeriesVector": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.3",
+					"description": "reference to time series ID vector"
+				},
+				"rtc:x1Value": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "user-configured constant value"
+				},
+				"rtc:x2Series": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.4"
+				},
+				"rtc:x2SeriesVector": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.5"
+				},
+				"rtc:x2Value": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "time series ID of resulting value"
+				},
+				"rtc:yVector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "time series ID vector of resulting value"
+				}
+			},
+			"required": [
+				"rtc:mathematicalOperator",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ExternalBooleanSimpleType": {
+			"anyOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"rtc:ExternalIntegerSimpleType": {
+			"anyOf": [
+				{
+					"type": "integer"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"rtc:ExternalParameterSimpleType": {
+			"anyOf": [
+				{
+					"type": "number"
+				},
+				{
+					"pattern": "^([#-\\$][\\(-_a-z]+[#-\\$])$",
+					"type": "string"
+				}
+			]
+		},
+		"rtc:GeneralModuleConfigComplexType": {
+			"additionalProperties": false,
+			"description": "DEPRICATED",
+			"properties": {
+				"rtc:description": {
+					"$ref": "#/definitions/xs:string",
+					"description": "DEPRICATED"
+				},
+				"rtc:poolRoutingScheme": {
+					"$ref": "#/definitions/rtc:poolRoutingEnumStringType",
+					"description": "DEPRICATED"
+				},
+				"rtc:theta": {
+					"$ref": "#/definitions/xs:double",
+					"description": "DEPRICATED"
+				}
+			},
+			"required": [
+				"rtc:poolRoutingScheme",
+				"rtc:theta"
+			],
+			"type": "object"
+		},
+		"rtc:GradientComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:GradientInputComplexType",
+					"description": "input variable"
+				},
+				"rtc:multiplier": {
+					"$ref": "#/definitions/xs:double",
+					"description": "optional multiplier"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:GradientOutputComplexType",
+					"description": "gradient, dx = multiplier*(xNew-xOld)/dt"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:GradientInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:GradientOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:dx": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:dx"
+			],
+			"type": "object"
+		},
+		"rtc:GuideBandRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:GuideBandRuleInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:GuideBandRuleOutputComplexType"
+				},
+				"rtc:xMax": {
+					"$ref": "#/definitions/rtc:DateTableComplexType"
+				},
+				"rtc:xMin": {
+					"$ref": "#/definitions/rtc:DateTableComplexType"
+				},
+				"rtc:yMax": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:yMaxSeries": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:yMin": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:yMinSeries": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:xMax",
+				"rtc:xMin",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:GuideBandRuleInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:GuideBandRuleOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:HBVComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:HBVInputComplexType"
+				},
+				"rtc:link": {
+					"$ref": "#/definitions/rtc:HBVLinkComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:HBVOutputComplexType"
+				},
+				"rtc:parameterInput": {
+					"$ref": "#/definitions/rtc:HBVParameterInputComplexType"
+				},
+				"rtc:parameterInterception": {
+					"$ref": "#/definitions/rtc:HBVParameterInterceptionComplexType"
+				},
+				"rtc:parameterResponse": {
+					"$ref": "#/definitions/rtc:HBVParameterResponseComplexType"
+				},
+				"rtc:parameterSnow": {
+					"$ref": "#/definitions/rtc:HBVParameterSnowComplexType"
+				},
+				"rtc:parameterSoil": {
+					"$ref": "#/definitions/rtc:HBVParameterSoilComplexType"
+				},
+				"rtc:state": {
+					"$ref": "#/definitions/rtc:HBVStateComplexType"
+				},
+				"rtc:stateUpdate": {
+					"$ref": "#/definitions/rtc:HBVStateUpdateComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameterInput",
+				"rtc:parameterInterception",
+				"rtc:parameterResponse",
+				"rtc:parameterSnow",
+				"rtc:parameterSoil",
+				"rtc:state",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:HBVInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:EP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:P": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:T": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:TM": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:EP",
+				"rtc:P",
+				"rtc:T",
+				"rtc:TM"
+			],
+			"type": "object"
+		},
+		"rtc:HBVLinkComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:CF": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:EA": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:EI": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:EP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:IN": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:INI": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:PERC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:R": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:CF",
+				"rtc:EA",
+				"rtc:EI",
+				"rtc:EP",
+				"rtc:IN",
+				"rtc:INI",
+				"rtc:PERC",
+				"rtc:R"
+			],
+			"type": "object"
+		},
+		"rtc:HBVOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:SMPercentage": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:SWE": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:HBVParameterInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:ECORR": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "correction factor for EP"
+				},
+				"rtc:RFCF": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "correction factor for rainfall"
+				},
+				"rtc:SFCF": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "correction factor for snow"
+				},
+				"rtc:TT": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature limit for snow / rain [oC], normally close to 0 "
+				},
+				"rtc:TTI": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature interval with a mixture of snow / rain [oC]"
+				}
+			},
+			"required": [
+				"rtc:TT",
+				"rtc:TTI"
+			],
+			"type": "object"
+		},
+		"rtc:HBVParameterInterceptionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:LIC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "maximum interception storage"
+				}
+			},
+			"required": [
+				"rtc:LIC"
+			],
+			"type": "object"
+		},
+		"rtc:HBVParameterResponseComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:ALPHA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "response box parameter [-], usually between 1.0 and 2.0"
+				},
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "catchment area [km2]"
+				},
+				"rtc:K": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "recession coefficient"
+				},
+				"rtc:K1": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "recession coefficient [1/day]"
+				},
+				"rtc:PERC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "percolation from upper to lower response box [mm/day], usually between 0 and 6"
+				}
+			},
+			"required": [
+				"rtc:ALPHA",
+				"rtc:AREA",
+				"rtc:K",
+				"rtc:K1",
+				"rtc:PERC"
+			],
+			"type": "object"
+		},
+		"rtc:HBVParameterSnowComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:CFMAX": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "degree day factor [mm/(oC*day)], varies normally between 1.5 and 4, 2 and 3.5 can be used in forested and open\nlandscape respectively"
+				},
+				"rtc:CFR": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "refreezing factor [-], about 0.05"
+				},
+				"rtc:CWH": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "water holding capacity [-], usually 0.1"
+				},
+				"rtc:TTM": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature limit for melting [oC]"
+				}
+			},
+			"required": [
+				"rtc:CFMAX",
+				"rtc:CFR",
+				"rtc:CWH",
+				"rtc:TTM"
+			],
+			"type": "object"
+		},
+		"rtc:HBVParameterSoilComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:BETA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "parameter in soil routine [-], usually between 1 and 6"
+				},
+				"rtc:CFLUX": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "maximum value of CF"
+				},
+				"rtc:ETF": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature correction factor"
+				},
+				"rtc:FC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "field capacity [mm], between 50 and 500"
+				},
+				"rtc:LP": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "limit for potential evapotranspiration [-], in the range between 0.3 and 1"
+				}
+			},
+			"required": [
+				"rtc:BETA",
+				"rtc:CFLUX",
+				"rtc:ETF",
+				"rtc:FC",
+				"rtc:LP"
+			],
+			"type": "object"
+		},
+		"rtc:HBVStateComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:IC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:LZ": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:SM": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:SP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:UZ": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:WC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:IC",
+				"rtc:LZ",
+				"rtc:SM",
+				"rtc:SP",
+				"rtc:UZ",
+				"rtc:WC"
+			],
+			"type": "object"
+		},
+		"rtc:HBVStateUpdateComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:IC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:LZ": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "increment on lower zone storage [mm]"
+				},
+				"rtc:SM": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "STILL NOT IMPLEMENTED"
+				},
+				"rtc:SP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "STILL NOT IMPLEMENTED"
+				},
+				"rtc:UZ": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "STILL NOT IMPLEMENTED"
+				},
+				"rtc:WC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "STILL NOT IMPLEMENTED"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:HydraulicModelComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:branch": {
+					"items": {
+						"$ref": "#/definitions/rtc:BranchComplexType",
+						"description": "Flow branches"
+					},
+					"type": "array"
+				},
+				"rtc:hydraulicStructure": {
+					"items": {
+						"$ref": "#/definitions/rtc:HydraulicStructureComplexType",
+						"description": "Hydraulic structures"
+					},
+					"type": "array"
+				},
+				"rtc:mode": {
+					"$ref": "#/definitions/rtc:HydraulicModelModeEnumStringType"
+				},
+				"rtc:node": {
+					"items": {
+						"$ref": "#/definitions/rtc:NodeComplexType",
+						"description": "Storage nodes"
+					},
+					"type": "array"
+				},
+				"rtc:numericalTolerance": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:HydraulicModelOutputComplexType"
+				},
+				"rtc:sequentialImplicitSettings": {
+					"$ref": "#/definitions/rtc:HydraulicModelSequentialImplicitComplexType"
+				},
+				"rtc:simultaneousSettings": {
+					"$ref": "#/definitions/rtc:HydraulicModelSimultaneousComplexType"
+				}
+			},
+			"required": [
+				"rtc:mode",
+				"rtc:numericalTolerance",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:HydraulicModelModeEnumStringType": {
+			"enum": [
+				"SEQUENTIAL_EXPLICIT",
+				"SEQUENTIAL_IMPLICIT",
+				"SIMULTANEOUS"
+			],
+			"type": "string"
+		},
+		"rtc:HydraulicModelOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:nFun": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "number of function evaluations"
+				},
+				"rtc:nJac": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "number of evaluations of the Jacobian"
+				},
+				"rtc:res": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "residuum at last iteration step, 0.5*sum(SQR(ri))"
+				}
+			},
+			"required": [
+				"rtc:nFun",
+				"rtc:nJac",
+				"rtc:res"
+			],
+			"type": "object"
+		},
+		"rtc:HydraulicModelSequentialImplicitComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:convergenceThreshold": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:theta": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:treatNonConvergenceAsError": {
+					"$ref": "#/definitions/xs:boolean"
+				}
+			},
+			"required": [
+				"rtc:convergenceThreshold",
+				"rtc:theta",
+				"rtc:treatNonConvergenceAsError"
+			],
+			"type": "object"
+		},
+		"rtc:HydraulicModelSimultaneousComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:theta": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:theta"
+			],
+			"type": "object"
+		},
+		"rtc:HydraulicStructureComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:orifice": {
+					"$ref": "#/definitions/rtc:OrificeComplexType",
+					"description": "Orifice according to definition in SOBEK-Rural"
+				},
+				"rtc:pump": {
+					"$ref": "#/definitions/rtc:PumpComplexType",
+					"description": "Pump"
+				},
+				"rtc:weir": {
+					"$ref": "#/definitions/rtc:RiverWeirComplexType",
+					"description": "Weir according to definition in SOBEK-River"
+				}
+			},
+			"required": [
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:HydrologicalModelComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:submodel": {
+					"items": {
+						"$ref": "#/definitions/rtc:SubmodelComplexType",
+						"description": "sub-models for the modular setup of the hydrological model, the storage system contains a set of storage nodes and links and is solved with an implicit time stepping scheme"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:submodel",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:InflowComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@factor": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:InputATableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:valueSelection": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:InputCapillaryFlowStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "downstream node, typically UZ unsaturted zone"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, typically GW upper zone"
+				}
+			},
+			"required": [
+				"rtc:HDown",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputEvaporationActualStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:EI": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:EP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, typically SM (soil moisture)"
+				}
+			},
+			"required": [
+				"rtc:EP",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputEvaporationInterceptionStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:EP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "potential evaporation [mm]"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, typically IC (interception)"
+				}
+			},
+			"required": [
+				"rtc:EP",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputEvaporationPotentialComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:EPM": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "monthly mean value of potential evaporation [mm/timestep]"
+				},
+				"rtc:T": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "instantaneous temperature [oC]"
+				},
+				"rtc:TM": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "monthly mean temperature [oC]"
+				}
+			},
+			"required": [
+				"rtc:EPM",
+				"rtc:T",
+				"rtc:TM"
+			],
+			"type": "object"
+		},
+		"rtc:InputGroundwaterFlowStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "downstream node, can be GW groundwater or SW surface water"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, can be GW groundwater or SW surface water"
+				}
+			},
+			"required": [
+				"rtc:HDown",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputNodeStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:discharge": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "inflow as discharge [m3/s]"
+					},
+					"type": "array"
+				},
+				"rtc:state": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "unit volume [mm], replaces the computes state"
+				},
+				"rtc:unitVolume": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "inflow as unit Volume [mm/timestep]"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:InputPercolationStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "downstream node, typically LZ (lower zone storage)"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, typically UZ (upper zone storage)"
+				}
+			},
+			"required": [
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputPidComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:disturbance": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.8"
+				},
+				"rtc:setpointSeries": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:setpointValue": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "controllable variable"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:InputReleaseAboveThresholdStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "downstream node"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node"
+				}
+			},
+			"required": [
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputReleaseTotalComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:discharge": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "discharges from different storage nodes [m3/s]"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:discharge"
+			],
+			"type": "object"
+		},
+		"rtc:InputResponseStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream (release) node, typically UZ and/or LZ (upper/lower zone storages)"
+				}
+			},
+			"required": [
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputSnowRainJunctionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:P": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "precipitation [mm/timestep]"
+				},
+				"rtc:T": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "temperature [oC]"
+				}
+			},
+			"required": [
+				"rtc:P",
+				"rtc:T"
+			],
+			"type": "object"
+		},
+		"rtc:InputSoilRunoffStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional downstream node, typically uper saturated zones (UZ upper zone storage). Required if capillary flow is used and SM and UZ are present in one storage system"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, typically unsaturated zone (SM soil moisture)"
+				},
+				"rtc:INF": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "infiltation into the unsaturated zone (fluzex into SM  [m3/s]) "
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:HUp",
+				"rtc:INF"
+			],
+			"type": "object"
+		},
+		"rtc:InputWaterDistributionConstantStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "downstream node collector of abstracted water. For instance drinking water treatment plant"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, source of water abstraction/distribution (i.e. surface water/groundwater/sewerage)"
+				}
+			},
+			"required": [
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InputWaterDistributionVariableStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:D": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "series of industrial or domestic water demands/abstractions [m3/s]"
+				},
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "downstream node collector of abstracted water. For instance drinking water treatment plant"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "upstream node, source of water abstraction/distribution (i.e. surface water/groundwater/sewerage)"
+				}
+			},
+			"required": [
+				"rtc:D",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:InterpolationOptionsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:date": {
+					"$ref": "#/definitions/rtc:interpolationOptionEnumStringType"
+				},
+				"rtc:value": {
+					"$ref": "#/definitions/rtc:interpolationOptionEnumStringType"
+				}
+			},
+			"required": [
+				"rtc:date",
+				"rtc:value"
+			],
+			"type": "object"
+		},
+		"rtc:IntervalComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:deadbandSetpointAbsolute": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:deadbandSetpointRelative": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:IntervalInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:IntervalOutputComplexType"
+				},
+				"rtc:settingAbove": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:settingBelow": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:settingMaxSpeed": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:settingMaxStep": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:settingAbove",
+				"rtc:settingBelow",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:IntervalInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:setpoint": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:x": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.9",
+					"description": "reference to time series ID"
+				}
+			},
+			"required": [
+				"rtc:setpoint",
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:IntervalOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:status": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:status",
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:LayerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/rtc:LayerIDSimpleType"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:neuron": {
+					"items": {
+						"$ref": "#/definitions/rtc:NeuronComplexType",
+						"description": "arbitrary number of neurons within one of the layers"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:neuron",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:LayerIDSimpleType": {
+			"pattern": "^([L][0-9]+)$",
+			"type": "string"
+		},
+		"rtc:LevelStorageEquationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:A0": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:A1": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:A2": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:A3": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:A4": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:A0",
+				"rtc:A1"
+			],
+			"type": "object"
+		},
+		"rtc:LimiterComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:LimiterInputComplexType"
+				},
+				"rtc:mode": {
+					"$ref": "#/definitions/rtc:limiterOptionEnumStringType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:mode",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:LimiterInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:thresholdSeries": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.21"
+				},
+				"rtc:thresholdValue": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:LinkStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:capillaryFlow": {
+					"$ref": "#/definitions/rtc:CapillaryFlowStorageSystemComplexType",
+					"description": "capillary flow, typically from GW (saturated upper zone - ground water) to UZ (unsaturated zone)"
+				},
+				"rtc:evaporationActual": {
+					"$ref": "#/definitions/rtc:evaporationActualStorageSystemComplexType",
+					"description": "actual evaporation from unsaturated zone storage node"
+				},
+				"rtc:evaporationInterception": {
+					"$ref": "#/definitions/rtc:evaporationInterceptionStorageSystemComplexType",
+					"description": "evaporation from interception storage node, typically VEG/P/UP (vegeration/paved interception)"
+				},
+				"rtc:groundwaterFlow": {
+					"$ref": "#/definitions/rtc:groundwaterFlowStorageSystemComplexType",
+					"description": "GW Groundwater interaction with SW Surface water"
+				},
+				"rtc:irrigation": {
+					"$ref": "#/definitions/rtc:irrigationStorageSystemComplexType",
+					"description": "NOT REFACTORED. water consumption by domestic irrigation due to dry soil"
+				},
+				"rtc:meltRefreezing": {
+					"$ref": "#/definitions/rtc:meltRefreezingStorageSystemComplexType",
+					"description": "NOT REFACTORED. melting and refreezing, typically used between SP (snow pack) and WC (water content) nodes"
+				},
+				"rtc:percolation": {
+					"$ref": "#/definitions/rtc:PercolationStorageSystemComplexType",
+					"description": "percolation, typically from GW upper zone to GW lower zone), or from UP unpaved surface to UZ unsaturated zone"
+				},
+				"rtc:releaseInterception": {
+					"$ref": "#/definitions/rtc:releaseAboveThresholdStorageSystemComplexType",
+					"description": "release above threshold from interception storage node, typically VEG/P/UP (uses relese above threshold link)"
+				},
+				"rtc:releaseWaterContent": {
+					"$ref": "#/definitions/rtc:releaseWaterContentStorageSystemComplexType",
+					"description": "NOT REFACTORED. release from water content storage node (typically WC)"
+				},
+				"rtc:response": {
+					"$ref": "#/definitions/rtc:ResponseStorageSystemComplexType",
+					"description": "response from storage node, typically GW upper and GW lower zone storage nodes"
+				},
+				"rtc:sewerOverflow": {
+					"$ref": "#/definitions/rtc:releaseAboveThresholdStorageSystemComplexType",
+					"description": "sewer overflow (uses relese above threshold link)"
+				},
+				"rtc:soilRunoff": {
+					"$ref": "#/definitions/rtc:SoilRunoffStorageSystemComplexType",
+					"description": "soil runoff from UZ unsaturated zone to GW upper zone storage node"
+				},
+				"rtc:wasteWaterTreatmentPlant": {
+					"$ref": "#/definitions/rtc:waterDistributionConstantStorageSystemComplexType",
+					"description": "water treated via the WWTP, flows at a max rate of a constant max pump capacity. Uses water distribution constant link"
+				},
+				"rtc:waterDistributionConstant": {
+					"$ref": "#/definitions/rtc:waterDistributionConstantStorageSystemComplexType",
+					"description": "water abstraction/distribution/consumption referenced to a constant demand (e.i. maxpump capacity). Uses water distribution constant link"
+				},
+				"rtc:waterDistributionVariable": {
+					"$ref": "#/definitions/rtc:waterDistributionVariableStorageSystemComplexType",
+					"description": "water abstraction/distribution/consumption referenced to a variable demand (e.i. domestic or industrial water demands). Uses water distribution variable link)"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:Lookup2DTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:Lookup2DTableInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:Lookup2DTableOutputComplexType"
+				},
+				"rtc:table": {
+					"$ref": "#/definitions/rtc:Table2DLookupTableComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:table",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:Lookup2DTableInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:z": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x",
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:Lookup2DTableOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:z": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:z"
+			],
+			"type": "object"
+		},
+		"rtc:LookupTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:extrapolationOption": {
+					"$ref": "#/definitions/rtc:interpolationOptionEnumStringType",
+					"description": "table interpolation can be BLOCK or LINEAR, default setting if not provided is LINEAR"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:LookupTableInputComplexType"
+				},
+				"rtc:interpolationOption": {
+					"$ref": "#/definitions/rtc:interpolationOptionEnumStringType",
+					"description": "table interpolation can be BLOCK or LINEAR, default setting if not provided is LINEAR"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:LookupTableOutputComplexType"
+				},
+				"rtc:property": {
+					"items": {
+						"enum": [
+							"MONOTON",
+							"POSITIVE"
+						],
+						"type": "string"
+					},
+					"type": "array"
+				},
+				"rtc:table": {
+					"$ref": "#/definitions/rtc:TableLookupTableComplexType"
+				},
+				"rtc:tableExternal": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:LookupTableInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.10",
+					"description": "reference to time series ID"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:LookupTableOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:LorentGeversComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:LorentGeversInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:LorentGeversOutputComplexType"
+				},
+				"rtc:parameterResponse": {
+					"$ref": "#/definitions/rtc:LorentGeversParameterResponseComplexType"
+				},
+				"rtc:parameterSoil": {
+					"$ref": "#/definitions/rtc:LorentGeversParameterSoilComplexType"
+				},
+				"rtc:state": {
+					"$ref": "#/definitions/rtc:LorentGeversStateComplexType"
+				},
+				"rtc:stateUpdate": {
+					"$ref": "#/definitions/rtc:LorentGeversStateUpdateComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameterResponse",
+				"rtc:parameterSoil",
+				"rtc:state",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:LorentGeversInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:EP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:P": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:EP",
+				"rtc:P"
+			],
+			"type": "object"
+		},
+		"rtc:LorentGeversOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:LorentGeversParameterResponseComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:KB": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:KS": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:TB1": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:TB2": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:TS1": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:TS2": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"rtc:AREA",
+				"rtc:KB",
+				"rtc:KS",
+				"rtc:TB1",
+				"rtc:TB2",
+				"rtc:TS1",
+				"rtc:TS2"
+			],
+			"type": "object"
+		},
+		"rtc:LorentGeversParameterSoilComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:BETA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:PMAX": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:SMAX": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"rtc:BETA",
+				"rtc:PMAX",
+				"rtc:SMAX"
+			],
+			"type": "object"
+		},
+		"rtc:LorentGeversStateComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:QB1": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:QB2": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:QS1": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:QS2": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:S": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:QB1",
+				"rtc:QB2",
+				"rtc:QS1",
+				"rtc:QS2",
+				"rtc:S"
+			],
+			"type": "object"
+		},
+		"rtc:LorentGeversStateUpdateComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:S": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:S"
+			],
+			"type": "object"
+		},
+		"rtc:MathematicalOperatorEnumStringType": {
+			"description": "mathematical operators",
+			"enum": [
+				"+",
+				"-",
+				"*",
+				"/",
+				"min",
+				"max",
+				"^"
+			],
+			"type": "string"
+		},
+		"rtc:MaxFlowsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@maxFlow_head01": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head02": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head03": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head04": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head05": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head06": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head07": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head08": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head09": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head10": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head11": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head12": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head13": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head14": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head15": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head16": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head17": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head18": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head19": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@maxFlow_head20": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@maxFlow_head01",
+				"@maxFlow_head02"
+			],
+			"type": "object"
+		},
+		"rtc:MergerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:MergerInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:MergerOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:MergerInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"items": {
+						"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.11"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:MergerOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:ySum": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:MergerSplitterComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:MergerSplitterInputComplexType"
+				},
+				"rtc:mode": {
+					"$ref": "#/definitions/rtc:MergerSplitterEnumStringType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:MergerSplitterOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:mode",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:MergerSplitterEnumStringType": {
+			"enum": [
+				"AVERAGE",
+				"DATAHIERARCHY",
+				"SUM"
+			],
+			"type": "string"
+		},
+		"rtc:MergerSplitterInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"items": {
+						"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.17"
+					},
+					"type": "array"
+				},
+				"rtc:xVector": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.18"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:MergerSplitterOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"items": {
+						"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.19"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:MinSimpleRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:dateTable": {
+					"$ref": "#/definitions/rtc:DateTableComplexType"
+				},
+				"rtc:zones": {
+					"$ref": "#/definitions/rtc:ZonesComplexType"
+				}
+			},
+			"required": [
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:NeuralNetworkComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:layer": {
+					"items": {
+						"$ref": "#/definitions/rtc:LayerComplexType",
+						"description": "arbitrary number of layers"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:layer",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:NeuronComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/rtc:NeuronIDSimpleType"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:bias": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:NeuronInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:NeuronOutputComplexType"
+				},
+				"rtc:transferFunction": {
+					"$ref": "#/definitions/rtc:transferFunctionEnumStringType",
+					"description": "transfer function: sigmoid, linear etc."
+				}
+			},
+			"required": [
+				"rtc:bias",
+				"rtc:input",
+				"rtc:output",
+				"rtc:transferFunction",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:NeuronIDSimpleType": {
+			"pattern": "^([L][0-9]+[N][0-9]+)$",
+			"type": "string"
+		},
+		"rtc:NeuronInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:external": {
+					"items": {
+						"$ref": "#/definitions/..xs:string.1",
+						"description": "reference to time series ID"
+					},
+					"type": "array"
+				},
+				"rtc:internal": {
+					"items": {
+						"$ref": "#/definitions/..xs:string.2",
+						"description": "Supply neuron id! This can be any neuron in the network, also the neuron itself and neurons in the following layers. In this case, the output of the last time step is used -> recurrent network"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:NeuronOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "result of the transfer function"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "result of the summation of weighted input (intermediate result)"
+				}
+			},
+			"required": [
+				"rtc:x",
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:NodeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@x": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@y": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:NodeInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:NodeOutputComplexType"
+				},
+				"rtc:storageCharacteristics": {
+					"$ref": "#/definitions/rtc:StorageCharacteristicsComplexType",
+					"description": "Storage characteristics of the node: The storage as a function of water level h. It can be provided as table or as a formula."
+				}
+			},
+			"required": [
+				"rtc:output",
+				"rtc:storageCharacteristics",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:NodeGradientComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:lambda": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:surfaceArea": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:lambda",
+				"rtc:surfaceArea"
+			],
+			"type": "object"
+		},
+		"rtc:NodeInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HBC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Time series with the water level boundary condition, note that a value MUST be provided at all time steps, otherwise the model stops with an error message"
+				},
+				"rtc:HUpdate": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Time series with an optional water level for model updating"
+				},
+				"rtc:QBC": {
+					"items": {
+						"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.6",
+						"description": "Time series with an inflow bounday condition, note that a value MUST be provided at all time steps"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:NodeOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:H": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:R": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:S": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:H",
+				"rtc:S"
+			],
+			"type": "object"
+		},
+		"rtc:NodeStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "constant area [km2], default is 1.0"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputNodeStorageSystemComplexType"
+				},
+				"rtc:residuum": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "residuum [mm]"
+				},
+				"rtc:state": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "unit volume [mm]"
+				},
+				"rtc:stateMax": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:stateMin": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"rtc:residuum",
+				"rtc:state",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:OrificeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:contractionCoefficient": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:crestLevel": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:exponentGateFormula": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:exponentWeirFormula": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:flowDirection": {
+					"$ref": "#/definitions/rtc:flowDirectionEnumStringType"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:OrificeInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OrificeOutputComplexType"
+				},
+				"rtc:width": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:contractionCoefficient",
+				"rtc:crestLevel",
+				"rtc:input",
+				"rtc:output",
+				"rtc:width"
+			],
+			"type": "object"
+		},
+		"rtc:OrificeInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:D": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "deprecated"
+				},
+				"rtc:DConst": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:DSeries": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:DeltaHDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:DeltaHUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:HDown",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:OrificeOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:D": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:flowType": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:D",
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:OutletInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:relativeRelease": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "Reference to timeseries in data configuration containg the relative release (values inbetween 0 and 1). (ONLY FOR CONTROLLED OUTLET)"
+					},
+					"type": "array"
+				},
+				"rtc:release": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Reference to timeseries in data configuration containg an absolute release. (ONLY FOR CONTROLLED OUTLET)"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:OutletOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:release": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:release"
+			],
+			"type": "object"
+		},
+		"rtc:OutputATableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"items": {
+						"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.1"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:OutputEvaporationPotentialComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:EP": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "instantaneous potential evaporation [mm/timestep]"
+				}
+			},
+			"required": [
+				"rtc:EP"
+			],
+			"type": "object"
+		},
+		"rtc:OutputLinkStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:H": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Discharge as unit volume [mm/timestep]"
+				},
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Discharge [m3/s]"
+				}
+			},
+			"required": [
+				"rtc:H",
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:OutputPidComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:differentialPart": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "memory of differential part (in fact e of the last time step)"
+				},
+				"rtc:integralPart": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "memory of integral part: integral(e)dt"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "setting of the actuator"
+				}
+			},
+			"required": [
+				"rtc:differentialPart",
+				"rtc:integralPart",
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:OutputSnowRainJunctionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:RF": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "rainfall [mm/timestep]"
+				},
+				"rtc:SF": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "snowfall [mm/timestep]"
+				}
+			},
+			"required": [
+				"rtc:RF",
+				"rtc:SF"
+			],
+			"type": "object"
+		},
+		"rtc:OutputStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:nFun": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "number of function evaluations"
+				},
+				"rtc:nJac": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "number of evaluations of the Jacobian"
+				},
+				"rtc:res": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "residuum at last iteration step"
+				}
+			},
+			"required": [
+				"rtc:nFun",
+				"rtc:nJac",
+				"rtc:res"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterCapillaryFlowStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				},
+				"rtc:CFLUX": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "maximum value of capillary flow [mm/d]"
+				},
+				"rtc:FC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "field capacity [mm]"
+				}
+			},
+			"required": [
+				"rtc:CFLUX",
+				"rtc:FC"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterEvaporationActualStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [1000 m2], default = 1.0"
+				},
+				"rtc:D": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "distance measure for smoothing the transitions [-]"
+				},
+				"rtc:FC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "field capacity [mm]"
+				},
+				"rtc:LP": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "limit for potential evaporation [-]"
+				}
+			},
+			"required": [
+				"rtc:FC",
+				"rtc:LP"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterEvaporationInterceptionStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:ParameterEvaporationPotentialComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:ECORR": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "evaporation correction factor, default = 1.0"
+				},
+				"rtc:ETF": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature correction factor"
+				}
+			},
+			"required": [
+				"rtc:ETF"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterIrrigationStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2], default = 1.0"
+				},
+				"rtc:IRR_CONST": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "costant irrigation flux [mm/d]"
+				},
+				"rtc:IRR_THR": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "Threshold of the downstream node under which irrigation is needed [mm]"
+				},
+				"rtc:M": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "smoothing factor"
+				}
+			},
+			"required": [
+				"rtc:IRR_THR"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterMeltRefreezingStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				},
+				"rtc:CFMAX": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "degree day factor [mm/day]"
+				},
+				"rtc:CFR": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "refreezing factor [-]"
+				},
+				"rtc:M": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "smoothing factor, default = 0.05, more smoothing for higher value and vice versa"
+				},
+				"rtc:TTM": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature limit for melting [oC]"
+				}
+			},
+			"required": [
+				"rtc:CFMAX",
+				"rtc:CFR",
+				"rtc:TTM"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterPercolationStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				},
+				"rtc:PERC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "percolation [mm/d]"
+				}
+			},
+			"required": [
+				"rtc:PERC"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterReleaseAboveThresholdStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2], default = 1.0"
+				},
+				"rtc:FRAC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "percentage of the flow which flows towards the bucket of interest. The permitted range is between 0 and 100"
+				},
+				"rtc:LIC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "upper limit of (interception) storage node [mm]"
+				},
+				"rtc:M": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "smoothing factor"
+				}
+			},
+			"required": [
+				"rtc:LIC"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterReleaseTotalComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				}
+			},
+			"required": [
+				"rtc:AREA"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterReleaseWaterContentStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				},
+				"rtc:M": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "smoothing coefficient"
+				},
+				"rtc:WHC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "water holding capacity [-]"
+				}
+			},
+			"required": [
+				"rtc:WHC"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterResponseStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:ALPHA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "response box parameter [-], default = 0.0"
+				},
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				},
+				"rtc:K": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "recession coefficient [1/d]"
+				}
+			},
+			"required": [
+				"rtc:K"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterSnowRainJunctionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:D": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "smoothing parameter for switching between a linear ramp (D=0.0) and a sigmoid function (D=1.0)"
+				},
+				"rtc:RFCF": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "rainfall correction factor [-], default is 1.0"
+				},
+				"rtc:SFCF": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "snowfall correction factor [-], default is 1.0"
+				},
+				"rtc:TT": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature limit for snow and rainfall [oC]"
+				},
+				"rtc:TTI": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "temperature interval with a mixture of snow and rainfall [K]"
+				}
+			},
+			"required": [
+				"rtc:TT",
+				"rtc:TTI"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterSoilRunoffStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				},
+				"rtc:BETA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "parameter in soil routine [-]"
+				},
+				"rtc:FC": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "field capacity [mm]"
+				}
+			},
+			"required": [
+				"rtc:BETA",
+				"rtc:FC"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterWaterDistributionConstantStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2], default = 1.0"
+				},
+				"rtc:D": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "capacity of demand/abstraction [m3/s]"
+				},
+				"rtc:M": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "smoothing factor"
+				},
+				"rtc:MIN_UP": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "minimum abstraction level upstream [mm]. Default 0, till empty."
+				}
+			},
+			"required": [
+				"rtc:D"
+			],
+			"type": "object"
+		},
+		"rtc:ParameterWaterDistributionVariableStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2], default = 1.0"
+				},
+				"rtc:M": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "smoothing factor"
+				},
+				"rtc:MIN_UP": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "minimum abstraction level upstream [mm]. Default 0, till empty."
+				}
+			},
+			"type": "object"
+		},
+		"rtc:ParametergroundwaterFlowStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:ALPHA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "Ground water reaction coefficient"
+				},
+				"rtc:AREA": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				},
+				"rtc:K": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "Ground water Conductivity [1/d]"
+				},
+				"rtc:MAX_GFLOW": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "Maximum groundwater flow [mm/d]"
+				}
+			},
+			"required": [
+				"rtc:ALPHA",
+				"rtc:K",
+				"rtc:MAX_GFLOW"
+			],
+			"type": "object"
+		},
+		"rtc:PercolationStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputPercolationStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterPercolationStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:PidComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputPidComplexType"
+				},
+				"rtc:kd": {
+					"$ref": "#/definitions/xs:double",
+					"description": "fatcor on differential part kd*de/dt"
+				},
+				"rtc:ki": {
+					"$ref": "#/definitions/xs:double",
+					"description": "factor on the integral part ki*integral(e)dt"
+				},
+				"rtc:kp": {
+					"$ref": "#/definitions/xs:double",
+					"description": "factor on the proportional part kp*e"
+				},
+				"rtc:mode": {
+					"description": "pid mode, either \"NATIVE\" or \"SOBEK2\" or \"PIDPOS\" or PIDVEL\"",
+					"enum": [
+						"NATIVE",
+						"SOBEK2",
+						"PIDPOS",
+						"PIDVEL"
+					],
+					"type": "string"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputPidComplexType"
+				},
+				"rtc:settingMax": {
+					"$ref": "#/definitions/xs:double",
+					"description": "maximum setting of the actuator"
+				},
+				"rtc:settingMaxSpeed": {
+					"$ref": "#/definitions/xs:double",
+					"description": "maximum speed of the actuation in [unit/s]"
+				},
+				"rtc:settingMin": {
+					"$ref": "#/definitions/xs:double",
+					"description": "minimum setting of the actuator"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:kd",
+				"rtc:ki",
+				"rtc:kp",
+				"rtc:output",
+				"rtc:settingMax",
+				"rtc:settingMaxSpeed",
+				"rtc:settingMin",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:PolygonComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:edges": {
+					"$ref": "#/definitions/rtc:EdgesComplexType"
+				},
+				"rtc:value": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:edges"
+			],
+			"type": "object"
+		},
+		"rtc:PolygonLookupComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:default": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:false": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:PolygonLookupInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:PolygonLookupOutputComplexType"
+				},
+				"rtc:polygons": {
+					"$ref": "#/definitions/rtc:PolygonsComplexType"
+				},
+				"rtc:true": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:polygons",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:PolygonLookupInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x1": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.12"
+				},
+				"rtc:x2": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.13"
+				}
+			},
+			"required": [
+				"rtc:x1",
+				"rtc:x2"
+			],
+			"type": "object"
+		},
+		"rtc:PolygonLookupOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:status": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:status"
+			],
+			"type": "object"
+		},
+		"rtc:PolygonsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:polygon": {
+					"items": {
+						"$ref": "#/definitions/rtc:PolygonComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:polygon"
+			],
+			"type": "object"
+		},
+		"rtc:PumpComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:PumpInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:PumpOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output"
+			],
+			"type": "object"
+		},
+		"rtc:PumpGradientComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:storageDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:storageUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:storageDown",
+				"rtc:storageUp"
+			],
+			"type": "object"
+		},
+		"rtc:PumpInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:HDown",
+				"rtc:HUp",
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:PumpOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:RelationalConditionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:relationalOperator": {
+					"$ref": "#/definitions/rtc:relationalOperatorEnumStringType"
+				},
+				"rtc:x1Series": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.22"
+				},
+				"rtc:x1Value": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:x2Series": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.23"
+				},
+				"rtc:x2Value": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				}
+			},
+			"required": [
+				"rtc:relationalOperator"
+			],
+			"type": "object"
+		},
+		"rtc:ReleaseTotalComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputReleaseTotalComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "total discharge [m3/s]"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirCompactComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:ReservoirCompactInputComplexType",
+					"description": "input time series"
+				},
+				"rtc:levelStorageEquation": {
+					"$ref": "#/definitions/rtc:LevelStorageEquationComplexType",
+					"description": "level storage equation according to S = A0 + A1*FB ( + A2*FB^2 + ...)"
+				},
+				"rtc:levelStorageTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "level-storage relation of the reservoir, level in [m] or [ft], storage in [m3] or [KCFS-hrs]"
+				},
+				"rtc:levelStorageTableExternal": {
+					"$ref": "#/definitions/xs:string",
+					"description": "externalizes the level storage table to a parameter file, requires the two columns \"level\" and \"storage\""
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:ReservoirCompactOutputComplexType",
+					"description": "output time series"
+				},
+				"rtc:tailwaterConstant": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "constant value for tailwater elevation"
+				},
+				"rtc:tailwaterEquation": {
+					"$ref": "#/definitions/rtc:TailwaterEquationComplexType",
+					"description": "tailwater equation according to TW = A + B*FB_downstream(t-1) + C*Q(t)^D, D is equal 1.0 by default if not provided"
+				},
+				"rtc:tailwaterExternalTable": {
+					"$ref": "#/definitions/xs:string",
+					"description": "external tailwater table"
+				},
+				"rtc:tailwaterExternalTimeSeries": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "external tailwater elevation from an external source or a previous calculation OUTSIDE of the reservoirCompact components"
+				},
+				"rtc:tailwaterTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "tailwater as a function of the reservoir release only"
+				},
+				"rtc:tailwaterTidalEquation": {
+					"$ref": "#/definitions/rtc:TailwaterTidalEquationComplexType",
+					"description": "tidal influenced tailwater equation (works only in hindcast mode, use tailwater external with appropiate forecast of the tailwater in operational forecasting), TW = TWObs + A*(Q-QObs)"
+				},
+				"rtc:turbineEfficiencyConstant": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:turbineEfficiencyTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "old formulation, will be removed in the future"
+				},
+				"rtc:turbineEfficiencyTable2D": {
+					"$ref": "#/definitions/rtc:TurbineEfficiencyTableComplexType",
+					"description": "new formulation, turbine effiency depends on head and turbine release, computation by 2D lookup"
+				},
+				"rtc:turbineEfficiencyTable2DExternal": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:turbineEfficiencyTableExternal": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:units": {
+					"$ref": "#/definitions/rtc:UnitTypeEnumStringType",
+					"description": " \"SI\" or \"Imperial\" units"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirCompactInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:FB": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "forebay elevation [m above reference level] or [ft above sea level]"
+				},
+				"rtc:OF": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "optional time series with the unit outage factor [0-1], it reduces the (physical) constraints PXValue and QTXValue (NO impact on PX, QTX)"
+				},
+				"rtc:PM": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "minimum generation constraint on aggregated turbine level [MW], primarly used as operational constraint"
+				},
+				"rtc:PMValue": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "fixed minimum generation constraint on aggregated turbine level [MW], primarily used as physical constraint"
+				},
+				"rtc:PX": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "maximum generation constraint on aggregated turbine level [MW], primarly used as operational constraint"
+				},
+				"rtc:PXValue": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "fixed maximum generation constraint on aggregated turbine level [MW], primarly used as physical constraint"
+				},
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "reservoir outflow [m3/s] or [KCFS], data is expected to be complete and valid"
+				},
+				"rtc:QI": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "single or multiple inflow time series into the reservoir [m3/s] or [KCFS], data is expected to be complete and valid if provided"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"rtc:QMISC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional miscellaneous flow (uncontrolled), will be zero by default [m3/s] or [KCFS] if no time series is supplied or if the time series includes NaN values"
+				},
+				"rtc:QS": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "absolute spill target [m3/s] or [KCFS]"
+				},
+				"rtc:QSPercentage": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.7",
+					"description": "relative spill target as a percentage [0..100] of the total flow Q"
+				},
+				"rtc:QSPercentageValue": {
+					"$ref": "#/definitions/..rtc:ExternalParameterSimpleType.1",
+					"description": "relative spill target as a percentage [0..100] of the total flow Q"
+				},
+				"rtc:QSValue": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "absolute spill target [m3/s] or [KCFS]"
+				},
+				"rtc:QTX": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "maximum generation constraint on aggregated turbine level [m3/s] or [KCFS], primarily used as operational constraint"
+				},
+				"rtc:QTXValue": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "fixed maximum generation constraint on aggregated turbine level [m3/s] or [KCFS], primarily used as physical constraint"
+				}
+			},
+			"required": [
+				"rtc:FB",
+				"rtc:Q",
+				"rtc:QI"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirCompactOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:DQ": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "deviation from spill target [m3/s] or [KCFS]"
+				},
+				"rtc:FB": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "forebay elevation [m above reference level] or [ft above sea level]"
+				},
+				"rtc:H": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "head [m] or [ft]"
+				},
+				"rtc:P": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "power generation [MW]"
+				},
+				"rtc:PX": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "maximum power generation [MW]"
+				},
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "reservoir outflow [m3/s] or [KCFS]"
+				},
+				"rtc:QI": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "reservoir inflow [m3/s] or [KCFS]"
+				},
+				"rtc:QMISC": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "miscellaneous flow [m3/s] or [KCFS]"
+				},
+				"rtc:QS": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "spillage [m3/s] or [KCFS]"
+				},
+				"rtc:QSPercentage": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "relative spillage [0..100]"
+				},
+				"rtc:QT": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "turbine flow [m3/s] or [KCFS]"
+				},
+				"rtc:QTX": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "maximum turbine flow [m3/s] or [KCFS]"
+				},
+				"rtc:R": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "residuum of mass balance (in simultaneous mode) [m3/s] or [KCFS]"
+				},
+				"rtc:S": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "storage [m3] or [KCFS-hrs], this is the system state needed in the state file"
+				},
+				"rtc:TW": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "tailwater elevation [m above reference level] or [ft above sea level]"
+				}
+			},
+			"required": [
+				"rtc:DQ",
+				"rtc:FB",
+				"rtc:H",
+				"rtc:P",
+				"rtc:Q",
+				"rtc:QI",
+				"rtc:QS",
+				"rtc:QT",
+				"rtc:R",
+				"rtc:S",
+				"rtc:TW"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:controlledOutlet": {
+					"items": {
+						"$ref": "#/definitions/rtc:ControlledOutletComplexType",
+						"description": "Controlled outlet, release can be defined by external input or rule"
+					},
+					"type": "array"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:ReservoirInputComplexType"
+				},
+				"rtc:mode": {
+					"$ref": "#/definitions/rtc:poolRoutingEnumStringType",
+					"description": "Time integration scheme for the network components"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:ReservoirOutputComplexType"
+				},
+				"rtc:storageCharacteristics": {
+					"$ref": "#/definitions/rtc:StorageCharacteristicsComplexType",
+					"description": "Storage characteristics of the reservoir: The storage S as a function of the water level h can be provided as a table or formula."
+				},
+				"rtc:tailwater": {
+					"$ref": "#/definitions/rtc:TailwaterComplexType",
+					"description": "Tailwater rating curve\n                    "
+				},
+				"rtc:theta": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Time weighting coefficient for the semi-implicit theta schema: 0 is equal to a full weight on the old time step, 1 represents a full weight on new time step. The coefficient is not used in the fully explicit or implicit schemas. The permitted range is between 0.5 and 1.0."
+				},
+				"rtc:uncontrolledOutlet": {
+					"items": {
+						"$ref": "#/definitions/rtc:UncontrolledOutletComplexType",
+						"description": "Uncontrolled outlet, the release is a function of the water level h in the reservoir"
+					},
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:mode",
+				"rtc:output",
+				"rtc:storageCharacteristics",
+				"rtc:theta",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirGradientComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:lambda": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:lambdaDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:lambda"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:evaporation": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Direct evaporation from the reservoir [mm/time step]"
+				},
+				"rtc:inflow": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "Upstream inflows [m3/s] into the reservoir, can be more than one for aggregation the inflows from several upstream reservoirs or river reaches"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"rtc:level": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Optional level [m] for updating the simulated level by an observed water level (simple data assimilation), if provided the error output is equal to the mass balance correction "
+				},
+				"rtc:precipitation": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "Direct precitation into the reservoir [mm/time step], the value will be multiplied by the current water surface area of the reservoir"
+				}
+			},
+			"required": [
+				"rtc:inflow"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:error": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional error output [m3/s] which is non-zero if the simple data assimilation option for overruling the simulated water level is used "
+				},
+				"rtc:inflow": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "aggregated inflows [m3/s]"
+				},
+				"rtc:level": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "water level [m] in the reservoir"
+				},
+				"rtc:relativeStorage": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "relative storage [-] typically between 0 and 1 depending on the definition of the maximum level above]"
+				},
+				"rtc:release": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "aggregated release [m3/s]"
+				},
+				"rtc:residuum": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional residuum of the implicit solution"
+				},
+				"rtc:storage": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "storage [m3] (state variable)"
+				}
+			},
+			"required": [
+				"rtc:inflow",
+				"rtc:level",
+				"rtc:release",
+				"rtc:storage"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirRoutingComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:simpleReservoir": {
+					"items": {
+						"$ref": "#/definitions/rtc:SimpleReservoirComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:simpleReservoir"
+			],
+			"type": "object"
+		},
+		"rtc:ReservoirThunerseeRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:storageCharacteristics": {
+					"$ref": "#/definitions/rtc:StorageCharacteristicsComplexType"
+				}
+			},
+			"required": [
+				"rtc:storageCharacteristics"
+			],
+			"type": "object"
+		},
+		"rtc:ResponseStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputResponseStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterResponseStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ResultComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:value": {
+					"$ref": "#/definitions/xs:integer"
+				}
+			},
+			"required": [
+				"rtc:output",
+				"rtc:value"
+			],
+			"type": "object"
+		},
+		"rtc:RiverWeirComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:exponentWeirFormula": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:flowDirection": {
+					"$ref": "#/definitions/rtc:flowDirectionEnumStringType"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:RiverWeirInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:RiverWeirOutputComplexType"
+				},
+				"rtc:submergedFlowFactor": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:submergedFlowRatio": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:width": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:width"
+			],
+			"type": "object"
+		},
+		"rtc:RiverWeirInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:CConst": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:CSeries": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:DeltaHDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:DeltaHUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:HDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:HUp": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:HDown",
+				"rtc:HUp"
+			],
+			"type": "object"
+		},
+		"rtc:RiverWeirOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:C": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:flowType": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:C",
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:RoutingComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:dischargeRef": {
+					"$ref": "#/definitions/xs:string",
+					"description": "Reference to timeseries in data configuration"
+				},
+				"rtc:inflow": {
+					"items": {
+						"$ref": "#/definitions/rtc:InflowComplexType"
+					},
+					"type": "array"
+				},
+				"rtc:outputReferences": {
+					"$ref": "#/definitions/rtc:RoutingOutputComplexType",
+					"description": "Contains references to the output timeseries in the data configuration"
+				},
+				"rtc:reservoirRouting": {
+					"$ref": "#/definitions/rtc:ReservoirRoutingComplexType"
+				}
+			},
+			"required": [
+				"rtc:outputReferences",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:RoutingOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:discharge": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:error": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:RowComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@eta_head01": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head02": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head03": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head04": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head05": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head06": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head07": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head08": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head09": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head10": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head11": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head12": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head13": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head14": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head15": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head16": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head17": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head18": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head19": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@eta_head20": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@flow": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@eta_head02",
+				"@flow",
+				"@eta_head01"
+			],
+			"type": "object"
+		},
+		"rtc:RtcToolsConfigComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:components": {
+					"$ref": "#/definitions/rtc:ComponentsComplexType",
+					"description": "The components section includes all simulation components."
+				},
+				"rtc:general": {
+					"$ref": "#/definitions/rtc:GeneralModuleConfigComplexType",
+					"description": "OBSOLETE. Still here for backwards compatibility. Remove after next release."
+				},
+				"rtc:rules": {
+					"$ref": "#/definitions/rtc:RulesComplexType",
+					"description": "The rules section includes operating rules or controllers for defining the release of reservoir, structural settings of gates etc."
+				},
+				"rtc:triggers": {
+					"$ref": "#/definitions/rtc:TriggersComplexType",
+					"description": "Triggers may activate or deactivate rules defined in the section above."
+				}
+			},
+			"type": "object"
+		},
+		"rtc:RuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:constant": {
+					"$ref": "#/definitions/rtc:ConstantRuleComplexType",
+					"description": "Simple rule with constant value"
+				},
+				"rtc:dateLookupTable": {
+					"$ref": "#/definitions/rtc:DateLookupTableComplexType",
+					"description": "Date lookup table, output y is a function of date and an input value x, the interpolation on the date / value axis can be BLOCK or LINEAR, the number of records should be constant for each date record"
+				},
+				"rtc:deadBandTime": {
+					"$ref": "#/definitions/rtc:DeadBandTimeComplexType"
+				},
+				"rtc:deadBandValue": {
+					"$ref": "#/definitions/rtc:DeadBandValueComplexType",
+					"description": "Deadband threshold, yNew will become yOld, if the change yNew-yOld is smaller than the threshold value "
+				},
+				"rtc:dedicated-Aebi": {
+					"$ref": "#/definitions/rtc:AebiRuleComplexType",
+					"description": "Dedicated rule for the control of Bielersee, Canton Bern, CH"
+				},
+				"rtc:dedicated-Thunersee": {
+					"$ref": "#/definitions/rtc:ThunerseeRuleComplexType",
+					"description": "Dedicated rule for the control of Thunersee, Canton Bern, CH"
+				},
+				"rtc:expression": {
+					"$ref": "#/definitions/rtc:ExpressionComplexType",
+					"description": "mathematical expression"
+				},
+				"rtc:guideband": {
+					"$ref": "#/definitions/rtc:GuideBandRuleComplexType",
+					"description": "Guide band rule, output get 0 if input less equal xMin, 1 if input greater equal xMax, linear interpolation otherwise xMin and xMax can be a function of date, main application in combination with a relative release of a reservoir outlet"
+				},
+				"rtc:interval": {
+					"$ref": "#/definitions/rtc:IntervalComplexType"
+				},
+				"rtc:limiter": {
+					"$ref": "#/definitions/rtc:LimiterComplexType",
+					"description": "Limiter for limiting the change of a variable in a time step to a relative (PERCENTAGE) or absolute  (ABSOLUTE) change"
+				},
+				"rtc:lookup2DTable": {
+					"$ref": "#/definitions/rtc:Lookup2DTableComplexType"
+				},
+				"rtc:lookupTable": {
+					"$ref": "#/definitions/rtc:LookupTableComplexType"
+				},
+				"rtc:merger": {
+					"$ref": "#/definitions/rtc:MergerComplexType",
+					"description": "Data hierarchy, highest input has highest priority"
+				},
+				"rtc:pid": {
+					"$ref": "#/definitions/rtc:PidComplexType"
+				},
+				"rtc:timeAbsolute": {
+					"$ref": "#/definitions/rtc:TimeAbsoluteComplexType",
+					"description": "absolute time controller"
+				},
+				"rtc:timeRelative": {
+					"$ref": "#/definitions/rtc:TimeRelativeComplexType",
+					"description": "relative time controller"
+				},
+				"rtc:unitDelay": {
+					"$ref": "#/definitions/rtc:UnitDelayComplexType",
+					"description": "Unit delay operator for  delaying a value by n times the time step of the model."
+				}
+			},
+			"type": "object"
+		},
+		"rtc:RuleStateTriggerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:ruleId": {
+					"$ref": "#/definitions/xs:string"
+				}
+			},
+			"required": [
+				"rtc:ruleId",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:RuleTriggerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:trigger": {
+					"items": {
+						"$ref": "#/definitions/rtc:TriggerComplexType"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:RulesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:rule": {
+					"items": {
+						"$ref": "#/definitions/rtc:RuleComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:rule"
+			],
+			"type": "object"
+		},
+		"rtc:SRMComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:SRMInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:SRMOutputComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:SRMParameterComplexType"
+				},
+				"rtc:parameterZone": {
+					"items": {
+						"$ref": "#/definitions/rtc:SRMParameterZoneComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"rtc:state": {
+					"$ref": "#/definitions/rtc:SRMStateComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"rtc:parameterZone",
+				"rtc:state",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:SRMInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:P": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:P-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:RCA": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:RCA-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:SCA": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:SCA-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:T": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:T-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:cr": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:cr-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:cs": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:cs-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:SRMOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:QRain-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:QSnow-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:QStorage-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:QRain-Vector",
+				"rtc:QSnow-Vector",
+				"rtc:QStorage-Vector"
+			],
+			"type": "object"
+		},
+		"rtc:SRMParameterComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:Pt": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "precipitation threshold [mm]"
+				},
+				"rtc:TLag": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "Time lag of input data [h]"
+				},
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "recession coefficient 1"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "recession coefficient 2"
+				}
+			},
+			"required": [
+				"rtc:Pt",
+				"rtc:TLag",
+				"rtc:x",
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:SRMParameterZoneComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:Tcr1": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "critical temperature (???) [oC]"
+				},
+				"rtc:Tcr2": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "critical temperature (???) [oC]"
+				},
+				"rtc:a": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "degree day factor [mm/(oC*day)]"
+				},
+				"rtc:area": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "area [km2]"
+				}
+			},
+			"required": [
+				"rtc:Tcr1",
+				"rtc:Tcr2",
+				"rtc:a",
+				"rtc:area"
+			],
+			"type": "object"
+		},
+		"rtc:SRMStateComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:PStorage-Vector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "snow storage of non-snow-covered areas [mm]"
+				},
+				"rtc:Q": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "discharge [m3/s]"
+				}
+			},
+			"required": [
+				"rtc:PStorage-Vector",
+				"rtc:Q"
+			],
+			"type": "object"
+		},
+		"rtc:SetTriggerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:default": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"rtc:false": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:logicalOperator": {
+					"$ref": "#/definitions/rtc:logicalOperatorEnumStringType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TriggerOutputComplexType"
+				},
+				"rtc:true": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:x1Series": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.24"
+				},
+				"rtc:x1Trigger": {
+					"$ref": "#/definitions/rtc:TriggerComplexType"
+				},
+				"rtc:x1Value": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"rtc:x2Series": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.25"
+				},
+				"rtc:x2Trigger": {
+					"$ref": "#/definitions/rtc:TriggerComplexType"
+				},
+				"rtc:x2Value": {
+					"$ref": "#/definitions/xs:boolean"
+				}
+			},
+			"required": [
+				"rtc:logicalOperator",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:SimpleReservoirComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@multiplier": {
+					"minimum": 1,
+					"type": "integer"
+				},
+				"rtc:capacityCharacteristics": {
+					"$ref": "#/definitions/rtc:CapacityCharacteristicsComplexType"
+				},
+				"rtc:storageCharacteristics": {
+					"$ref": "#/definitions/rtc:StorageCharacteristicsComplexType"
+				}
+			},
+			"required": [
+				"rtc:capacityCharacteristics",
+				"rtc:storageCharacteristics"
+			],
+			"type": "object"
+		},
+		"rtc:SnowRainJunctionComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputSnowRainJunctionComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputSnowRainJunctionComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterSnowRainJunctionComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:SoilRunoffStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputSoilRunoffStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterSoilRunoffStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:SpatialEnumStringType": {
+			"description": "options for spatial schetization",
+			"enum": [
+				"CENTRAL",
+				"UPWIND"
+			],
+			"type": "string"
+		},
+		"rtc:SpreadsheetComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:defaultInputValue": {
+					"$ref": "#/definitions/xs:double",
+					"description": "default input value, if input is NaN or infinity"
+				},
+				"rtc:defaultOutputValue": {
+					"$ref": "#/definitions/xs:double",
+					"description": "default output, if no combination of the table applies"
+				},
+				"rtc:false": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:SpreadsheetInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:SpreadsheetOutputComplexType"
+				},
+				"rtc:tables": {
+					"$ref": "#/definitions/rtc:SpreadsheetTablesComplexType",
+					"description": "number of tables with input, output values, the initial state can be taken into account optionally"
+				},
+				"rtc:tolerance": {
+					"$ref": "#/definitions/xs:double",
+					"description": "tolerance for finding a match, keep in mind that the all variable are stored in doubles"
+				},
+				"rtc:true": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:validPeriods": {
+					"$ref": "#/definitions/rtc:ValidPeriodsComplexType",
+					"description": "optional period of the year for which the trigger is active"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:tables",
+				"rtc:tolerance",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:SpreadsheetInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x1": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.14"
+				},
+				"rtc:x2": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.15"
+				},
+				"rtc:x3": {
+					"$ref": "#/definitions/..rtc:TimeSeriesSimpleType.16"
+				}
+			},
+			"required": [
+				"rtc:x1",
+				"rtc:x2"
+			],
+			"type": "object"
+		},
+		"rtc:SpreadsheetOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:status": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:status"
+			],
+			"type": "object"
+		},
+		"rtc:SpreadsheetRecordComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@x1": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@x2": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@x3": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@y": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@x1",
+				"@x2",
+				"@y"
+			],
+			"type": "object"
+		},
+		"rtc:SpreadsheetTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@initialState": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:record": {
+					"items": {
+						"$ref": "#/definitions/rtc:SpreadsheetRecordComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:record"
+			],
+			"type": "object"
+		},
+		"rtc:SpreadsheetTablesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:table": {
+					"items": {
+						"$ref": "#/definitions/rtc:SpreadsheetTableComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:table"
+			],
+			"type": "object"
+		},
+		"rtc:StandardTriggerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:condition": {
+					"$ref": "#/definitions/rtc:RelationalConditionComplexType"
+				},
+				"rtc:default": {
+					"$ref": "#/definitions/xs:boolean"
+				},
+				"rtc:false": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TriggerOutputComplexType"
+				},
+				"rtc:true": {
+					"$ref": "#/definitions/rtc:RuleTriggerComplexType",
+					"description": "link the trigger event to either an other trigger           or to a rule. Use the item ID as link to rules"
+				}
+			},
+			"required": [
+				"rtc:condition",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:StorageCharacteristicsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:maximumLevel": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Maximum water level h in the reservoir: this optional value does not limit the water level, it is used however to compute the relative filling percentage of the reservoir according to s = S/S(maximumLevel), where S is the absolute storage volume"
+				},
+				"rtc:storageEquation": {
+					"$ref": "#/definitions/rtc:EquationsComplexType",
+					"description": "Storage equation, storage S = f(water level h)"
+				},
+				"rtc:storageTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "Storage table with pairs of elevation h and storage S"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:StorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:link": {
+					"items": {
+						"$ref": "#/definitions/rtc:LinkStorageSystemComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputStorageSystemComplexType"
+				},
+				"rtc:settings": {
+					"$ref": "#/definitions/rtc:StorageSystemSettingsComplexType"
+				},
+				"rtc:storageNode": {
+					"items": {
+						"$ref": "#/definitions/rtc:NodeStorageSystemComplexType",
+						"description": "storage node"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:link",
+				"rtc:storageNode",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:StorageSystemSettingsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:acceptableConvergenceThreshold": {
+					"$ref": "#/definitions/xs:double",
+					"description": "optional threshold after reaching the maximum number of iterations, writes a warning if reached, writes error otherwise"
+				},
+				"rtc:convergenceThreshold": {
+					"$ref": "#/definitions/xs:double",
+					"description": "iteration stops after reaching this threshold"
+				},
+				"rtc:treatNonConvergenceAsError": {
+					"$ref": "#/definitions/xs:boolean",
+					"description": "treat non-convergence related to the thresholds as error or not"
+				}
+			},
+			"required": [
+				"rtc:convergenceThreshold",
+				"rtc:treatNonConvergenceAsError"
+			],
+			"type": "object"
+		},
+		"rtc:SubmodelComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:evaporationPotential": {
+					"$ref": "#/definitions/rtc:EvaporationPotentialComplexType",
+					"description": "potential evaporation"
+				},
+				"rtc:snowRainJunction": {
+					"$ref": "#/definitions/rtc:SnowRainJunctionComplexType",
+					"description": "separates precipitation into snow and rainfall"
+				},
+				"rtc:storageSystem": {
+					"$ref": "#/definitions/rtc:StorageSystemComplexType",
+					"description": "storage systems with storage nodes and links for setting up bucket models"
+				},
+				"rtc:typicalProfile": {
+					"$ref": "#/definitions/rtc:TypicalProfileComplexType"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:Table2DLookupTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:matrix": {
+					"$ref": "#/definitions/rtc:XDimComplexType"
+				},
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:ValueArrayComplexType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:ValueArrayComplexType"
+				}
+			},
+			"required": [
+				"rtc:matrix",
+				"rtc:x",
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:TableLookupTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:record": {
+					"items": {
+						"$ref": "#/definitions/rtc:DateRecord2DataComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:record"
+			],
+			"type": "object"
+		},
+		"rtc:TailwaterComplexType": {
+			"additionalProperties": false,
+			"description": "\n                Table containing data for different elevations. Type of element 'value'\n                depends on purpose for which table is used.\n            ",
+			"properties": {
+				"rtc:constant": {
+					"$ref": "#/definitions/xs:double",
+					"description": "Constant tailwater level [m]"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TailwaterOutputComplexType"
+				},
+				"rtc:ratingCurve": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "Tailwater depending on discharge computed by a rating curve"
+				}
+			},
+			"required": [
+				"rtc:output"
+			],
+			"type": "object"
+		},
+		"rtc:TailwaterEquationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:A": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:B": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:C": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:D": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:FBDown": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "time series reference to forebay elevation of the downstream project, only required if B is non-zero"
+				}
+			},
+			"required": [
+				"rtc:A",
+				"rtc:B",
+				"rtc:C"
+			],
+			"type": "object"
+		},
+		"rtc:TailwaterOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:head": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "head [m]"
+				},
+				"rtc:level": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "tailwater level [m]"
+				}
+			},
+			"required": [
+				"rtc:head",
+				"rtc:level"
+			],
+			"type": "object"
+		},
+		"rtc:TailwaterTidalEquationComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:A": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType"
+				},
+				"rtc:QObs": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:TWObs": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:A",
+				"rtc:QObs",
+				"rtc:TWObs"
+			],
+			"type": "object"
+		},
+		"rtc:ThunerseeRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:ThunerseeRuleInputComplexType"
+				},
+				"rtc:levelSetpoint": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:ThunerseeRuleOutputComplexType"
+				},
+				"rtc:releaseLimiterPercentage": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:reservoir": {
+					"$ref": "#/definitions/rtc:ReservoirThunerseeRuleComplexType"
+				},
+				"rtc:tunnel": {
+					"$ref": "#/definitions/rtc:TunnelThunerseeRuleComplexType"
+				},
+				"rtc:weir": {
+					"$ref": "#/definitions/rtc:WeirThunerseeRuleComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:levelSetpoint",
+				"rtc:output",
+				"rtc:releaseLimiterPercentage",
+				"rtc:reservoir",
+				"rtc:tunnel",
+				"rtc:weir",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:ThunerseeRuleInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:catchment": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:inflow": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:level": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:catchment",
+				"rtc:inflow",
+				"rtc:level"
+			],
+			"type": "object"
+		},
+		"rtc:ThunerseeRuleOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:active": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:releaseTotal": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:releaseTunnel": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:releaseWeir": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:releaseTotal",
+				"rtc:releaseTunnel",
+				"rtc:releaseWeir"
+			],
+			"type": "object"
+		},
+		"rtc:TimeAbsoluteComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:TimeAbsoluteInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TimeAbsoluteOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:TimeAbsoluteInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:TimeAbsoluteOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:TimeRelativeComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:controlTable": {
+					"$ref": "#/definitions/rtc:TimeRelativeControlTableComplexType",
+					"description": "table with time [s] / value records"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:TimeRelativeInputComplexType"
+				},
+				"rtc:interpolationOption": {
+					"$ref": "#/definitions/rtc:interpolationOptionEnumStringType",
+					"description": "table interpolation can be BLOCK or LINEAR, default setting if not provided is LINEAR"
+				},
+				"rtc:maximumPeriod": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"rtc:mode": {
+					"description": "timeRelative mode, either \"NATIVE\" or \"RETAINVALUEWHENINACTIVE\"",
+					"enum": [
+						"NATIVE",
+						"RETAINVALUEWHENINACTIVE"
+					],
+					"type": "string"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TimeRelativeOutputComplexType"
+				},
+				"rtc:valueOption": {
+					"$ref": "#/definitions/rtc:timeRelativeEnumStringType",
+					"description": "setting if the control table provides the absolute value or the relative value "
+				}
+			},
+			"required": [
+				"rtc:controlTable",
+				"rtc:output",
+				"rtc:valueOption",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:TimeRelativeControlTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:record": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeRelativeControlTableRecordComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:record"
+			],
+			"type": "object"
+		},
+		"rtc:TimeRelativeControlTableRecordComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@time": {
+					"$ref": "#/definitions/xs:double"
+				},
+				"@value": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"@time",
+				"@value"
+			],
+			"type": "object"
+		},
+		"rtc:TimeRelativeInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional input for deriving the timeActive in case of the relative from Value option"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:TimeRelativeOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:timeActive": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:timeActive",
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:TimeSeriesSimpleType": {
+			"minLength": 1,
+			"type": "string"
+		},
+		"rtc:TimeStepComplexType": {
+			"additionalProperties": false,
+			"description": "The timeunit element has three attributes, unit and devider and multiplier.\n            the unit is second, minute, hour, week, month year.\n            The divider attribute is optional (default = 1).",
+			"properties": {
+				"@divider": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"@multiplier": {
+					"$ref": "#/definitions/xs:positiveInteger"
+				},
+				"@unit": {
+					"$ref": "#/definitions/rtc:timeStepUnitEnumStringType"
+				}
+			},
+			"required": [
+				"@unit"
+			],
+			"type": "object"
+		},
+		"rtc:TimeZoneSimpleType": {
+			"description": "The timeZone (in decimal hours shift from GMT)\n            e.g. -1.0 or 3.5. If not present GMT is assumed",
+			"type": "number"
+		},
+		"rtc:TriggerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:deadBand": {
+					"$ref": "#/definitions/rtc:DeadBandTriggerComplexType",
+					"description": "trigger with deadband"
+				},
+				"rtc:deadBandTime": {
+					"$ref": "#/definitions/rtc:DeadBandTimeComplexType",
+					"description": "trigger with time deadband"
+				},
+				"rtc:expression": {
+					"$ref": "#/definitions/rtc:ExpressionComplexType",
+					"description": "mathematical expression"
+				},
+				"rtc:lookupTable": {
+					"$ref": "#/definitions/rtc:LookupTableComplexType"
+				},
+				"rtc:merger": {
+					"$ref": "#/definitions/rtc:MergerComplexType",
+					"description": "Data hierarchy, highest input has highest priority"
+				},
+				"rtc:polygonLookup": {
+					"$ref": "#/definitions/rtc:PolygonLookupComplexType",
+					"description": "trigger with two-dimensional lookup table, trigger results are defined by polygons"
+				},
+				"rtc:ruleReference": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:set": {
+					"$ref": "#/definitions/rtc:SetTriggerComplexType",
+					"description": "set of triggers"
+				},
+				"rtc:spreadsheet": {
+					"$ref": "#/definitions/rtc:SpreadsheetComplexType",
+					"description": "spread sheet trigger"
+				},
+				"rtc:standard": {
+					"$ref": "#/definitions/rtc:StandardTriggerComplexType",
+					"description": "standard trigger"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:TriggerControllerComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:value": {
+					"$ref": "#/definitions/xs:integer"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:value"
+			],
+			"type": "object"
+		},
+		"rtc:TriggerInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:status": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:status"
+			],
+			"type": "object"
+		},
+		"rtc:TriggerOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:status": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:timeFalse": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:timeTrue": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:status"
+			],
+			"type": "object"
+		},
+		"rtc:TriggersComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:trigger": {
+					"items": {
+						"$ref": "#/definitions/rtc:TriggerComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:trigger"
+			],
+			"type": "object"
+		},
+		"rtc:TunnelThunerseeRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:capacityCharacteristics": {
+					"$ref": "#/definitions/rtc:CapacityCharacteristicsComplexType"
+				},
+				"rtc:levelThreshold": {
+					"$ref": "#/definitions/xs:double"
+				}
+			},
+			"required": [
+				"rtc:capacityCharacteristics",
+				"rtc:levelThreshold"
+			],
+			"type": "object"
+		},
+		"rtc:TurbineCapacityCharacteristicsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:capacityEquation": {
+					"$ref": "#/definitions/rtc:EquationsComplexType",
+					"description": "capacity equation of hydropower turbine as a function of the water head"
+				},
+				"rtc:capacityTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "capacity table of hydropower turbine as a function of the water head"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:TurbineCharacteristicsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:efficiencyTable": {
+					"$ref": "#/definitions/rtc:ElevationTableComplexType",
+					"description": "efficiency table unit power output [MW / m3/s] as function of head [m] "
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TurbineOutputCharacteristicsComplexType"
+				}
+			},
+			"required": [
+				"rtc:efficiencyTable",
+				"rtc:output"
+			],
+			"type": "object"
+		},
+		"rtc:TurbineComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:capacityCharacteristics": {
+					"$ref": "#/definitions/rtc:TurbineCapacityCharacteristicsComplexType"
+				},
+				"rtc:efficiencyCharacteristics": {
+					"$ref": "#/definitions/rtc:TurbineEfficiencyCharacteristicsComplexType"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:TurbineInputComplexType"
+				},
+				"rtc:nodeDown": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:nodeUp": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TurbineOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:capacityCharacteristics",
+				"rtc:efficiencyCharacteristics",
+				"rtc:input",
+				"rtc:nodeDown",
+				"rtc:nodeUp",
+				"rtc:output"
+			],
+			"type": "object"
+		},
+		"rtc:TurbineEfficiencyCharacteristicsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:efficiencyConstant": {
+					"$ref": "#/definitions/xs:double",
+					"description": "constant efficiency over all discharges, typical range is [0.80, 0.90]"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:TurbineEfficiencyTableComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:columns": {
+					"$ref": "#/definitions/rtc:ColumnsComplexType",
+					"description": "column Ids refering to the head [m] of each column"
+				},
+				"rtc:maxFlows": {
+					"$ref": "#/definitions/rtc:MaxFlowsComplexType",
+					"description": "maximum flow for a given head (provided above)"
+				},
+				"rtc:row": {
+					"items": {
+						"$ref": "#/definitions/rtc:RowComplexType",
+						"description": "rows with turbine efficiency (related to the head coloumn) for a given flow"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:columns",
+				"rtc:maxFlows",
+				"rtc:row"
+			],
+			"type": "object"
+		},
+		"rtc:TurbineInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:relativeRelease": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "provision of relative turbine release, 1 = maximum capacity"
+				},
+				"rtc:release": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "provision of absolute turbine release"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:TurbineOutputCharacteristicsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:power": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "power output [MW]"
+				}
+			},
+			"required": [
+				"rtc:power"
+			],
+			"type": "object"
+		},
+		"rtc:TurbineOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:discharge": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "discharge in m3/s"
+				},
+				"rtc:powerProduction": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "power production in MW"
+				}
+			},
+			"required": [
+				"rtc:discharge",
+				"rtc:powerProduction"
+			],
+			"type": "object"
+		},
+		"rtc:TypicalProfileComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:data": {
+					"items": {
+						"$ref": "#/definitions/rtc:DataTypicalProfileComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:data",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:UOutletInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:release": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:release"
+			],
+			"type": "object"
+		},
+		"rtc:UncontrolledOutletComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:capacityCharacteristics": {
+					"$ref": "#/definitions/rtc:CapacityCharacteristicsComplexType",
+					"description": "Maximum capacity of outlet as function of the water level h, minimum capacity is assumed to be zero"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:UOutletInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutletOutputComplexType"
+				}
+			},
+			"required": [
+				"rtc:capacityCharacteristics",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:UnitDelayComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:UnitDelayInputComplexType"
+				},
+				"rtc:nStep": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "nStep optionally provides a delay with an arbitrary numer of time steps or sub time step, i.e. 1.5 time steps, if being used also specify the yFinal tag in the output options"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:UnitDelayOutputComplexType",
+					"description": "The configuration of a multiple unit delay requires the configuration of a time series for each delay time step"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:UnitDelayInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:UnitDelayOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:y": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+					},
+					"type": "array"
+				},
+				"rtc:yFinal": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional result of the delay operator, identical to yVector[end] if the delay is a multiple of the time step, required in case of sub time steps"
+				},
+				"rtc:yMax": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:yMean": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional mean of input and outputs"
+				},
+				"rtc:yMin": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:ySum": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "optional sum of input and outputs"
+				},
+				"rtc:yVector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:UnitHydrographComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:UnitHydrographInputComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:UnitHydrographOutputComplexType"
+				},
+				"rtc:weights": {
+					"$ref": "#/definitions/rtc:UnitHydrographWeightComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:weights",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:UnitHydrographInputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:x": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				}
+			},
+			"required": [
+				"rtc:x"
+			],
+			"type": "object"
+		},
+		"rtc:UnitHydrographOutputComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:xDelay": {
+					"items": {
+						"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+						"description": "definition of individual time series for vector with delays, configure one element less than weights defined above"
+					},
+					"type": "array"
+				},
+				"rtc:xDelayVector": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "definition of delay vector, configure one element less than weights defined above"
+				},
+				"rtc:y": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "result of unit hydrograph"
+				}
+			},
+			"required": [
+				"rtc:y"
+			],
+			"type": "object"
+		},
+		"rtc:UnitHydrographWeightComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:custom": {
+					"$ref": "#/definitions/rtc:UnitHydrographWeightCustomComplexType",
+					"description": "user-defined weights"
+				},
+				"rtc:triangular": {
+					"$ref": "#/definitions/rtc:UnitHydrographWeightTriangularComplexType",
+					"description": "weights with triangular shape"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:UnitHydrographWeightCustomComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:weight": {
+					"items": {
+						"$ref": "#/definitions/xs:double",
+						"description": "user defined weights"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:weight"
+			],
+			"type": "object"
+		},
+		"rtc:UnitHydrographWeightTriangularComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:factor": {
+					"$ref": "#/definitions/xs:double",
+					"description": "sum of all weight, if not equal to 1.0"
+				},
+				"rtc:nSteps": {
+					"$ref": "#/definitions/rtc:ExternalParameterSimpleType",
+					"description": "number of time steps"
+				}
+			},
+			"required": [
+				"rtc:nSteps"
+			],
+			"type": "object"
+		},
+		"rtc:UnitTypeEnumStringType": {
+			"enum": [
+				"SI",
+				"Imperial"
+			],
+			"type": "string"
+		},
+		"rtc:ValidPeriodComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:endDate": {
+					"$ref": "#/definitions/rtc:DateComplexType"
+				},
+				"rtc:startDate": {
+					"$ref": "#/definitions/rtc:DateComplexType"
+				}
+			},
+			"required": [
+				"rtc:endDate",
+				"rtc:startDate"
+			],
+			"type": "object"
+		},
+		"rtc:ValidPeriodsComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:validPeriod": {
+					"items": {
+						"$ref": "#/definitions/rtc:ValidPeriodComplexType"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"rtc:ValueArrayComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:value": {
+					"items": {
+						"$ref": "#/definitions/xs:float"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:value"
+			],
+			"type": "object"
+		},
+		"rtc:VariableTypeEnumStringType": {
+			"enum": [
+				"CONTINUOUS",
+				"INTEGER",
+				"TIMEINSTANCE"
+			],
+			"type": "string"
+		},
+		"rtc:WeirThunerseeRuleComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:capacityCharacteristics": {
+					"$ref": "#/definitions/rtc:CapacityCharacteristicsComplexType"
+				}
+			},
+			"required": [
+				"rtc:capacityCharacteristics"
+			],
+			"type": "object"
+		},
+		"rtc:XDimComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:xDim": {
+					"items": {
+						"$ref": "#/definitions/rtc:YDimComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:xDim"
+			],
+			"type": "object"
+		},
+		"rtc:YDimComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:yDim": {
+					"items": {
+						"$ref": "#/definitions/xs:float"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:yDim"
+			],
+			"type": "object"
+		},
+		"rtc:ZoneComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@max": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"@min": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType"
+				},
+				"rtc:dateTable": {
+					"$ref": "#/definitions/rtc:DateTableComplexType"
+				}
+			},
+			"required": [
+				"rtc:dateTable"
+			],
+			"type": "object"
+		},
+		"rtc:ZonesComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"rtc:zone": {
+					"items": {
+						"$ref": "#/definitions/rtc:ZoneComplexType"
+					},
+					"minItems": 1,
+					"type": "array"
+				}
+			},
+			"required": [
+				"rtc:zone"
+			],
+			"type": "object"
+		},
+		"rtc:caseLangetenEnumStringType": {
+			"enum": [
+				1,
+				2
+			],
+			"maximum": 2147483647,
+			"minimum": -2147483648,
+			"type": "integer"
+		},
+		"rtc:dateType": {
+			"pattern": "^([\\d][\\d][\\d][\\d]\\-[\\d][\\d]\\-[\\d][\\d])$",
+			"type": "string"
+		},
+		"rtc:evaporationActualStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputEvaporationActualStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterEvaporationActualStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:evaporationInterceptionStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputEvaporationInterceptionStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterEvaporationInterceptionStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:flowDirectionEnumStringType": {
+			"anyOf": [
+				{
+					"enum": [
+						"POSITIVE",
+						"NEGATIVE",
+						"BOTH"
+					],
+					"type": "string"
+				},
+				{
+					"pattern": "^([\\$][\\(-_a-z]+[\\$])$",
+					"type": "string"
+				}
+			],
+			"description": "flow direction"
+		},
+		"rtc:groundwaterFlowStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputGroundwaterFlowStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParametergroundwaterFlowStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:inputReferenceEnumStringType": {
+			"enum": [
+				"EXPLICIT",
+				"IMPLICIT"
+			],
+			"type": "string"
+		},
+		"rtc:interpolationOptionEnumStringType": {
+			"description": "Type of interpolation",
+			"enum": [
+				"BLOCK",
+				"LINEAR"
+			],
+			"type": "string"
+		},
+		"rtc:irrigationStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:nodeD": {
+					"$ref": "#/definitions/xs:string",
+					"description": "downstream node which recieves the irrigation water"
+				},
+				"rtc:nodeU": {
+					"$ref": "#/definitions/xs:string",
+					"description": "upstream node, source of water usually the drinking water treatment plant"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterIrrigationStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:nodeD",
+				"rtc:nodeU",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:limiterOptionEnumStringType": {
+			"description": "Type of limiting",
+			"enum": [
+				"PERCENTAGE",
+				"ABSOLUTE"
+			],
+			"type": "string"
+		},
+		"rtc:logicalOperatorEnumStringType": {
+			"description": "logical operator",
+			"enum": [
+				"AND",
+				"OR",
+				"XOR"
+			],
+			"type": "string"
+		},
+		"rtc:meltRefreezingStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:TimeSeriesSimpleType",
+					"description": "instanteneous temperature [oC]"
+				},
+				"rtc:nodeD": {
+					"$ref": "#/definitions/xs:string",
+					"description": "downstream node, typically WC (water content)"
+				},
+				"rtc:nodeU": {
+					"$ref": "#/definitions/xs:string",
+					"description": "upstream node, typically SP (snow pack)"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterMeltRefreezingStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:nodeD",
+				"rtc:nodeU",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:poolRoutingEnumStringType": {
+			"description": "Type of pool routing.",
+			"enum": [
+				"ForwardEuler",
+				"BackwardEuler",
+				"Theta"
+			],
+			"type": "string"
+		},
+		"rtc:relationalOperatorEnumStringType": {
+			"description": "relational operator",
+			"enum": [
+				"Less",
+				"LessEqual",
+				"Equal",
+				"Unequal",
+				"GreaterEqual",
+				"Greater"
+			],
+			"type": "string"
+		},
+		"rtc:releaseAboveThresholdStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputReleaseAboveThresholdStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterReleaseAboveThresholdStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:releaseWaterContentStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:nodeA": {
+					"$ref": "#/definitions/xs:string",
+					"description": "auxiliary node with snow pack, typically SP (snow pack)"
+				},
+				"rtc:nodeU": {
+					"$ref": "#/definitions/xs:string",
+					"description": "upstream node, typically WC (water content)"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterReleaseWaterContentStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:nodeA",
+				"rtc:nodeU",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:timeRelativeEnumStringType": {
+			"description": "Value option",
+			"enum": [
+				"ABSOLUTE",
+				"RELATIVE"
+			],
+			"type": "string"
+		},
+		"rtc:timeSeriesType": {
+			"description": "Type of data, either accumulative or instantaneous.\n                        For accumulative data the time/date of the event is\n                        the moment at which the data was gathered.\n            ",
+			"enum": [
+				"accumulative",
+				"instantaneous"
+			],
+			"type": "string"
+		},
+		"rtc:timeStepUnitEnumStringType": {
+			"enum": [
+				"second",
+				"minute",
+				"hour",
+				"day",
+				"week"
+			],
+			"type": "string"
+		},
+		"rtc:timeType": {
+			"pattern": "^([\\d][\\d]\\:[\\d][\\d]\\:[\\d][\\d])$",
+			"type": "string"
+		},
+		"rtc:transferFunctionEnumStringType": {
+			"description": "Type of transfer function.",
+			"enum": [
+				"Linear",
+				"SigmoidLogistic",
+				"Tansig"
+			],
+			"type": "string"
+		},
+		"rtc:waterDistributionConstantStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputWaterDistributionConstantStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterWaterDistributionConstantStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"rtc:waterDistributionVariableStorageSystemComplexType": {
+			"additionalProperties": false,
+			"properties": {
+				"@id": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"@name": {
+					"$ref": "#/definitions/xs:string"
+				},
+				"rtc:input": {
+					"$ref": "#/definitions/rtc:InputWaterDistributionVariableStorageSystemComplexType"
+				},
+				"rtc:output": {
+					"$ref": "#/definitions/rtc:OutputLinkStorageSystemComplexType"
+				},
+				"rtc:parameter": {
+					"$ref": "#/definitions/rtc:ParameterWaterDistributionVariableStorageSystemComplexType"
+				}
+			},
+			"required": [
+				"rtc:input",
+				"rtc:output",
+				"rtc:parameter",
+				"@id"
+			],
+			"type": "object"
+		},
+		"xs:boolean": {
+			"type": "boolean"
+		},
+		"xs:dateTime": {
+			"type": "string"
+		},
+		"xs:double": {
+			"type": "number"
+		},
+		"xs:float": {
+			"type": "number"
+		},
+		"xs:gMonthDay": {
+			"type": "string"
+		},
+		"xs:int": {
+			"maximum": 2147483647,
+			"minimum": -2147483648,
+			"type": "integer"
+		},
+		"xs:integer": {
+			"type": "integer"
+		},
+		"xs:positiveInteger": {
+			"minimum": 1,
+			"type": "integer"
+		},
+		"xs:string": {
+			"type": "string"
+		},
+		"xs:time": {
+			"type": "string"
+		}
+	},
+	"description": "JSON Schema generated by XMLSpy v2019 rel. 3 sp1 (x64) (http://www.altova.com)",
+	"properties": {
+		"@xmlns:rtc": {
+			"default": "http://www.wldelft.nl/fews"
+		},
+		"@xmlns:xs": {
+			"default": "http://www.w3.org/2001/XMLSchema"
+		},
+		"rtc:rtcToolsConfig": {
+			"$ref": "#/definitions/.rtc:rtcToolsConfig"
+		}
+	},
+	"type": "object"
+}
