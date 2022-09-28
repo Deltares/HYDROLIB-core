@@ -372,6 +372,13 @@ class Branch:
         structure_chainage: List[float] = None,
         max_dist_to_struc: float = None,
     ):
+        """Generate the branch offsets and the nodes. 
+
+        Args:
+            mesh1d_edge_length (float): The edge length of the 1d mesh.
+            structure_chainage (List[float], optional): A list with the structure chainages. Defaults to None.
+            max_dist_to_struc (float, optional): The maximum distance from a node to a structure. Defaults to None.
+        """
         # Generate offsets
         self.branch_offsets = self._generate_offsets(
             mesh1d_edge_length, structure_chainage, max_dist_to_struc
@@ -387,7 +394,19 @@ class Branch:
         structure_offsets: List[float] = None,
         max_dist_to_struc: float = None,
     ):
+        """Generate the branch offsets.
 
+        Args:
+            mesh1d_edge_length (float): The edge length of the 1d mesh.
+            structure_offsets (List[float], optional): A list with the structure chainages. Defaults to None.
+            max_dist_to_struc (float, optional): The maximum distance from a node to a structure. Defaults to None.
+        Raises:
+            ValueError: Raised when any of the structure offsets is smaller than zero.
+            ValueError: Raised when any of the structure offsets is greater than the branch length.
+
+        Returns:
+            np.ndarray: The generated branch offsets.
+        """
         # Generate initial offsets
         anchor_pts = [0.0, self.length]
         offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
