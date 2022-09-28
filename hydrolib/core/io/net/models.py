@@ -443,15 +443,13 @@ class Branch:
                 )
                 if dist_to_prev_limit > 2 * max_dist_to_struc:
                     additional.append(
-                        limits[i]
-                        - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
+                        limits[i] - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
                     )
 
                 dist_to_next_limit = limits[i + 1] - limits[i]
                 if dist_to_next_limit > 2 * max_dist_to_struc:
                     additional.append(
-                        limits[i]
-                        + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
+                        limits[i] + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
                     )
 
             # Join the limits
