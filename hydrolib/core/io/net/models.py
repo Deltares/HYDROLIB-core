@@ -466,7 +466,9 @@ class Branch:
 
         return offsets
 
-    def _update_limits(self, max_dist_to_struc: float, limits: List[float]) -> List[float]:
+    def _update_limits(
+        self, max_dist_to_struc: float, limits: List[float]
+    ) -> List[float]:
         """Update the limits taking into account the maximum distance to a structure.
 
         Args:
@@ -485,26 +487,22 @@ class Branch:
             # the mesh point will be too far away. Add a limit on the minimum of half the length and
             # two times the max distance
             dist_to_prev_limit = limits[i] - (
-                max(additional[-1], limits[i - 1])
-                if any(additional)
-                else limits[i - 1]
+                max(additional[-1], limits[i - 1]) if any(additional) else limits[i - 1]
             )
             if dist_to_prev_limit > 2 * max_dist_to_struc:
                 additional.append(
-                    limits[i]
-                    - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
+                    limits[i] - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
                 )
 
             dist_to_next_limit = limits[i + 1] - limits[i]
             if dist_to_next_limit > 2 * max_dist_to_struc:
                 additional.append(
-                    limits[i]
-                    + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
+                    limits[i] + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
                 )
 
         # Join the limits
         return sorted(limits + additional)
-    
+
     @staticmethod
     def _generate_1d_spacing(
         anchor_pts: List[float], mesh1d_edge_length: float
