@@ -431,7 +431,9 @@ class Branch:
         if max_dist_to_struc is not None:
             limits: List[float] = self._update_limits(max_dist_to_struc, limits)
 
-        offsets = self._add_nodes_to_segments(offsets, anchor_pts, limits, mesh1d_edge_length)
+        offsets = self._add_nodes_to_segments(
+            offsets, anchor_pts, limits, mesh1d_edge_length
+        )
 
         return offsets
 
@@ -472,7 +474,13 @@ class Branch:
         # Join the limits
         return sorted(limits + additional)
 
-    def _add_nodes_to_segments(self, offsets: np.ndarray, anchor_pts: List[float], limits: List[float], mesh1d_edge_length: float) -> np.ndarray:
+    def _add_nodes_to_segments(
+        self,
+        offsets: np.ndarray,
+        anchor_pts: List[float],
+        limits: List[float],
+        mesh1d_edge_length: float,
+    ) -> np.ndarray:
         """Add nodes to segments that are missing a mesh node.
 
         Args:
@@ -487,7 +495,7 @@ class Branch:
         # Get upper and lower limits
         upper_limits = limits[1:]
         lower_limits = limits[:-1]
-        
+
         # Determine the segments that are missing a mesh node
         # Anchor points are added on these segments, such that they will get a mesh node
         in_range = [
