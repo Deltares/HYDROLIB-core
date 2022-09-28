@@ -80,7 +80,6 @@ def test_create_1d_branch_structure_offset():
     line = np.array([[0, 0], [100, 0]])
 
     branch = Branch(geometry=line)
-    structure_chainage = [25, 30, 70]
     branch.generate_nodes(
         mesh1d_edge_length=13, structure_chainage=[25, 30, 70], max_dist_to_struc=2
     )
