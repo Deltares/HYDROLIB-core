@@ -431,38 +431,7 @@ class Branch:
         if max_dist_to_struc is not None:
             limits: List[float] = self._update_limits(max_dist_to_struc, limits)
 
-        # Get upper and lower limits
-        upper_limits = limits[1:]
-        lower_limits = limits[:-1]
-
-        # Determine the segments that are missing a mesh node
-        # Anchot points are added on these segments, such that they will get a mesh node
-        in_range = [
-            ((offsets > lower) & (offsets < upper)).any()
-            for lower, upper in zip(lower_limits, upper_limits)
-        ]
-
-        while not all(in_range):
-            # Get the index of the first segment without grid point
-            i = in_range.index(False)
-
-            # Add it to the anchor pts
-            anchor_pts.append((lower_limits[i] + upper_limits[i]) / 2.0)
-            anchor_pts = sorted(anchor_pts)
-
-            # Generate new offsets
-            offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
-
-            # Determine the segments that are missing a grid point
-            in_range = [
-                ((offsets > lower) & (offsets < upper)).any()
-                for lower, upper in zip(lower_limits, upper_limits)
-            ]
-
-        if len(anchor_pts) > 2:
-            logger.info(
-                f"Added 1d mesh nodes on branch at: {anchor_pts}, due to the structures at {limits}."
-            )
+        offsets = self._add_nodes_to_segments(offsets, anchor_pts, limits, mesh1d_edge_length)
 
         return offsets
 
@@ -502,6 +471,53 @@ class Branch:
 
         # Join the limits
         return sorted(limits + additional)
+
+    def _add_nodes_to_segments(self, offsets: np.ndarray, anchor_pts: List[float], limits: List[float], mesh1d_edge_length: float) -> np.ndarray:
+        """Add nodes to segments that are missing a mesh node.
+
+        Args:
+            offsets (np.ndarray): The branch offsets.
+            anchor_pts (List[float]): The anchor points.
+            limits (List[float]): The limits.
+            mesh1d_edge_length (float): The edge length of the 1d mesh.
+
+        Returns:
+            np.ndarray: The array with branch offsets.
+        """
+        # Get upper and lower limits
+        upper_limits = limits[1:]
+        lower_limits = limits[:-1]
+        
+        # Determine the segments that are missing a mesh node
+        # Anchor points are added on these segments, such that they will get a mesh node
+        in_range = [
+            ((offsets > lower) & (offsets < upper)).any()
+            for lower, upper in zip(lower_limits, upper_limits)
+        ]
+
+        while not all(in_range):
+            # Get the index of the first segment without grid point
+            i = in_range.index(False)
+
+            # Add it to the anchor pts
+            anchor_pts.append((lower_limits[i] + upper_limits[i]) / 2.0)
+            anchor_pts = sorted(anchor_pts)
+
+            # Generate new offsets
+            offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
+
+            # Determine the segments that are missing a grid point
+            in_range = [
+                ((offsets > lower) & (offsets < upper)).any()
+                for lower, upper in zip(lower_limits, upper_limits)
+            ]
+
+        if len(anchor_pts) > 2:
+            logger.info(
+                f"Added 1d mesh nodes on branch at: {anchor_pts}, due to the structures at {limits}."
+            )
+
+        return offsets
 
     @staticmethod
     def _generate_1d_spacing(
