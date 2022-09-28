@@ -429,31 +429,7 @@ class Branch:
 
         # if requested, check if the calculation point are close enough to the structures
         if max_dist_to_struc is not None:
-            additional = []
-
-            # Skip the first and the last, these are no structures
-            for i in range(1, len(limits) - 1):
-                # if the distance between two limits is large than twice the max distance to structure,
-                # the mesh point will be too far away. Add a limit on the minimum of half the length and
-                # two times the max distance
-                dist_to_prev_limit = limits[i] - (
-                    max(additional[-1], limits[i - 1])
-                    if any(additional)
-                    else limits[i - 1]
-                )
-                if dist_to_prev_limit > 2 * max_dist_to_struc:
-                    additional.append(
-                        limits[i] - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
-                    )
-
-                dist_to_next_limit = limits[i + 1] - limits[i]
-                if dist_to_next_limit > 2 * max_dist_to_struc:
-                    additional.append(
-                        limits[i] + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
-                    )
-
-            # Join the limits
-            limits = sorted(limits + additional)
+            limits: List[float] = self._update_limits(max_dist_to_struc, limits)
 
         # Get upper and lower limits
         upper_limits = limits[1:]
@@ -490,6 +466,45 @@ class Branch:
 
         return offsets
 
+    def _update_limits(self, max_dist_to_struc: float, limits: List[float]) -> List[float]:
+        """Update the limits taking into account the maximum distance to a structure.
+
+        Args:
+            max_dist_to_struc (float): The maximum distance from a node to a structure.
+            limits (List[float]): The limits.
+
+        Returns:
+            List[float]: A list with the updated limits.
+        """
+
+        additional = []
+
+        # Skip the first and the last, these are no structures
+        for i in range(1, len(limits) - 1):
+            # if the distance between two limits is large than twice the max distance to structure,
+            # the mesh point will be too far away. Add a limit on the minimum of half the length and
+            # two times the max distance
+            dist_to_prev_limit = limits[i] - (
+                max(additional[-1], limits[i - 1])
+                if any(additional)
+                else limits[i - 1]
+            )
+            if dist_to_prev_limit > 2 * max_dist_to_struc:
+                additional.append(
+                    limits[i]
+                    - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
+                )
+
+            dist_to_next_limit = limits[i + 1] - limits[i]
+            if dist_to_next_limit > 2 * max_dist_to_struc:
+                additional.append(
+                    limits[i]
+                    + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
+                )
+
+        # Join the limits
+        return sorted(limits + additional)
+    
     @staticmethod
     def _generate_1d_spacing(
         anchor_pts: List[float], mesh1d_edge_length: float
