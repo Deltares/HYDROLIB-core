@@ -372,7 +372,7 @@ class Branch:
         structure_chainage: List[float] = None,
         max_dist_to_struc: float = None,
     ):
-        """Generate the branch offsets and the nodes. 
+        """Generate the branch offsets and the nodes.
 
         Args:
             mesh1d_edge_length (float): The edge length of the 1d mesh.
