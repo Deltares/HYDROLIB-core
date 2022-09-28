@@ -523,11 +523,6 @@ class Branch:
         Args:
             distance (npt.ArrayLike): Length
         """
-        # if min(distance) < 0.0:
-        #     raise ValueError(f"Distance {min(distance)} is outside the branch range (0.0 - {self.length}).")
-        # if max(distance) > self.length:
-        #     raise ValueError(f"Distance {max(distance)} is outside the branch length (0.0 - {self.length}).")
-
         intpcoords = np.stack(
             [
                 np.interp(distance, self._distance, self._x_coordinates),
@@ -644,8 +639,6 @@ class Link1d2d(BaseModel):
         """"""
         self.meshkernel.contacts_compute_with_points(node_mask=node_mask, points=points)
         self._process()
-
-        # raise NotImplementedError()
 
     def _link_from_2d_to_1d_lateral(
         self,
