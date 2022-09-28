@@ -411,82 +411,84 @@ class Branch:
         anchor_pts = [0.0, self.length]
         offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
 
-        if structure_offsets is not None:
-            # Check the limits
-            if min(structure_offsets) < 0.0:
-                raise ValueError(
-                    f"Distance {min(structure_offsets)} is outside the branch range (0.0 - {self.length})."
+        if structure_offsets is None:
+            return offsets
+
+        # Check the limits
+        if min(structure_offsets) < 0.0:
+            raise ValueError(
+                f"Distance {min(structure_offsets)} is outside the branch range (0.0 - {self.length})."
+            )
+        if max(structure_offsets) > self.length:
+            raise ValueError(
+                f"Distance {max(structure_offsets)} is outside the branch length (0.0 - {self.length})."
+            )
+
+        # Merge limits with start and end of branch
+        limits = [-1e-3] + list(sorted(structure_offsets)) + [self.length + 1e-3]
+
+        # if requested, check if the calculation point are close enough to the structures
+        if max_dist_to_struc is not None:
+            additional = []
+
+            # Skip the first and the last, these are no structures
+            for i in range(1, len(limits) - 1):
+                # if the distance between two limits is large than twice the max distance to structure,
+                # the mesh point will be too far away. Add a limit on the minimum of half the length and
+                # two times the max distance
+                dist_to_prev_limit = limits[i] - (
+                    max(additional[-1], limits[i - 1])
+                    if any(additional)
+                    else limits[i - 1]
                 )
-            if max(structure_offsets) > self.length:
-                raise ValueError(
-                    f"Distance {max(structure_offsets)} is outside the branch length (0.0 - {self.length})."
-                )
-
-            # Merge limits with start and end of branch
-            limits = [-1e-3] + list(sorted(structure_offsets)) + [self.length + 1e-3]
-
-            # if requested, check if the calculation point are close enough to the structures
-            if max_dist_to_struc is not None:
-                additional = []
-
-                # Skip the first and the last, these are no structures
-                for i in range(1, len(limits) - 1):
-                    # if the distance between two limits is large than twice the max distance to structure,
-                    # the mesh point will be too far away. Add a limit on the minimum of half the length and
-                    # two times the max distance
-                    dist_to_prev_limit = limits[i] - (
-                        max(additional[-1], limits[i - 1])
-                        if any(additional)
-                        else limits[i - 1]
+                if dist_to_prev_limit > 2 * max_dist_to_struc:
+                    additional.append(
+                        limits[i]
+                        - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
                     )
-                    if dist_to_prev_limit > 2 * max_dist_to_struc:
-                        additional.append(
-                            limits[i]
-                            - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
-                        )
 
-                    dist_to_next_limit = limits[i + 1] - limits[i]
-                    if dist_to_next_limit > 2 * max_dist_to_struc:
-                        additional.append(
-                            limits[i]
-                            + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
-                        )
+                dist_to_next_limit = limits[i + 1] - limits[i]
+                if dist_to_next_limit > 2 * max_dist_to_struc:
+                    additional.append(
+                        limits[i]
+                        + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
+                    )
 
-                # Join the limits
-                limits = sorted(limits + additional)
+            # Join the limits
+            limits = sorted(limits + additional)
 
-            # Get upper and lower limits
-            upper_limits = limits[1:]
-            lower_limits = limits[:-1]
+        # Get upper and lower limits
+        upper_limits = limits[1:]
+        lower_limits = limits[:-1]
 
-            # Determine the segments that are missing a mesh node
-            # Anchot points are added on these segments, such that they will get a mesh node
+        # Determine the segments that are missing a mesh node
+        # Anchot points are added on these segments, such that they will get a mesh node
+        in_range = [
+            ((offsets > lower) & (offsets < upper)).any()
+            for lower, upper in zip(lower_limits, upper_limits)
+        ]
+
+        while not all(in_range):
+            # Get the index of the first segment without grid point
+            i = in_range.index(False)
+
+            # Add it to the anchor pts
+            anchor_pts.append((lower_limits[i] + upper_limits[i]) / 2.0)
+            anchor_pts = sorted(anchor_pts)
+
+            # Generate new offsets
+            offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
+
+            # Determine the segments that are missing a grid point
             in_range = [
                 ((offsets > lower) & (offsets < upper)).any()
                 for lower, upper in zip(lower_limits, upper_limits)
             ]
 
-            while not all(in_range):
-                # Get the index of the first segment without grid point
-                i = in_range.index(False)
-
-                # Add it to the anchor pts
-                anchor_pts.append((lower_limits[i] + upper_limits[i]) / 2.0)
-                anchor_pts = sorted(anchor_pts)
-
-                # Generate new offsets
-                offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
-
-                # Determine the segments that are missing a grid point
-                in_range = [
-                    ((offsets > lower) & (offsets < upper)).any()
-                    for lower, upper in zip(lower_limits, upper_limits)
-                ]
-
-            if len(anchor_pts) > 2:
-                logger.info(
-                    f"Added 1d mesh nodes on branch at: {anchor_pts}, due to the structures at {limits}."
-                )
+        if len(anchor_pts) > 2:
+            logger.info(
+                f"Added 1d mesh nodes on branch at: {anchor_pts}, due to the structures at {limits}."
+            )
 
         return offsets
 
