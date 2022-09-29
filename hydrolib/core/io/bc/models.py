@@ -199,7 +199,7 @@ class TimeSeries(ForcingBase):
     """Subclass for a .bc file [Forcing] block with timeseries data."""
 
     function: Literal["timeseries"] = "timeseries"
-    timeinterpolation: TimeInterpolation = Field(alias="Time InterPolation")
+    timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
     offset: float = Field(0.0, alias="offset")
     factor: float = Field(1.0, alias="factor")
 
