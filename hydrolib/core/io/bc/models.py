@@ -199,7 +199,7 @@ class TimeSeries(ForcingBase):
     """Subclass for a .bc file [Forcing] block with timeseries data."""
 
     function: Literal["timeseries"] = "timeseries"
-    timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
+    timeinterpolation: TimeInterpolation = Field(alias="Time InterPolation")
     offset: float = Field(0.0, alias="offset")
     factor: float = Field(1.0, alias="factor")
 
@@ -242,9 +242,9 @@ class T3D(ForcingBase):
     offset: float = Field(0.0, alias="offset")
     factor: float = Field(1.0, alias="factor")
 
-    verticalpositions: List[float] = Field(alias="verticalPositions")
-    verticalinterpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
-    verticalpositiontype: VerticalPositionType = Field(alias="verticalPositionType")
+    verticalpositions: List[float] = Field(alias="Vertical Position Specification")
+    verticalinterpolation: VerticalInterpolation = Field(alias="Vertical Interpolation")
+    verticalpositiontype: VerticalPositionType = Field(alias="Vertical Position Type")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "verticalpositions",
