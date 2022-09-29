@@ -51,6 +51,7 @@ factor                          = 2.34
 Vertical Position Specification = 3.45 4.56 5.67
 Vertical Interpolation          = log
 Vertical Position Type          = percBed
+timeInterpolation               = linear
 quantity                        = time
 unit                            = m
 quantity                        = salinitybnd

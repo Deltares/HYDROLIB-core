@@ -272,6 +272,7 @@ class TestT3D:
         assert t3d.function == "t3d"
         assert t3d.offset == 1.23
         assert t3d.factor == 2.34
+        assert t3d.timeinterpolation == TimeInterpolation.linear
 
         assert len(t3d.verticalpositions) == 3
         assert t3d.verticalpositions[0] == 3.45
@@ -358,6 +359,7 @@ def _create_t3d_values():
         verticalpositions="3.45 4.56 5.67",
         verticalinterpolation="log",
         verticalpositiontype="percBed",
+        timeinterpolation="linear",
         quantityunitpair=[
             ("time", "m"),
             ("salinitybnd", "ppt"),

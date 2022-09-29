@@ -245,6 +245,7 @@ class T3D(ForcingBase):
     verticalpositions: List[float] = Field(alias="Vertical Position Specification")
     verticalinterpolation: VerticalInterpolation = Field(alias="Vertical Interpolation")
     verticalpositiontype: VerticalPositionType = Field(alias="Vertical Position Type")
+    timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "verticalpositions",
@@ -255,6 +256,9 @@ class T3D(ForcingBase):
     )
     _verticalpositiontype_validator = get_enum_validator(
         "verticalpositiontype", enum=VerticalPositionType
+    )
+    _timeinterpolation_validator = get_enum_validator(
+        "timeinterpolation", enum=TimeInterpolation
     )
 
 
