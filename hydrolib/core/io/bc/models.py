@@ -49,6 +49,9 @@ class VerticalPositionType(str, Enum):
     z_datum = "ZDatum"
     """str: z-coordinate with respect to the reference level of the model."""
 
+    z_surf = "ZSurf"
+    """str: Absolute distance from the free surface downward."""
+
 
 class TimeInterpolation(str, Enum):
     linear = "linear"

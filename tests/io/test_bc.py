@@ -240,6 +240,7 @@ class TestT3D:
             ("percBed", VerticalPositionType.percentage_bed),
             ("ZBed", VerticalPositionType.z_bed),
             ("ZDatum", VerticalPositionType.z_datum),
+            ("ZSurf", VerticalPositionType.z_surf)
         ],
     )
     def test_initialize_t3d(
