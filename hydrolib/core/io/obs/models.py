@@ -8,7 +8,7 @@ from hydrolib.core.io.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     get_enum_validator,
-    get_refactored_location_specification_rootvalidator,
+    get_location_specification_rootvalidator,
     make_list_validator,
 )
 
@@ -73,7 +73,7 @@ class ObservationPoint(INIBasedModel):
 
     _type_validator = get_enum_validator("locationtype", enum=LocationType)
 
-    _location_validator = get_refactored_location_specification_rootvalidator(
+    _location_validator = get_location_specification_rootvalidator(
         config=LocationValidationConfiguration(
             validate_node=False, validate_num_coordinates=False
         ),

@@ -12,7 +12,7 @@ from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
     LocationValidationConfiguration,
-    get_refactored_location_specification_rootvalidator,
+    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -141,7 +141,7 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    _location_validator = get_refactored_location_specification_rootvalidator(
+    _location_validator = get_location_specification_rootvalidator(
         config=LocationValidationConfiguration(minimum_num_coordinates=1)
     )
 

@@ -12,7 +12,7 @@ from hydrolib.core.io.ini.util import (
     LocationValidationFieldNames,
     get_enum_validator,
     get_from_subclass_defaults,
-    get_refactored_location_specification_rootvalidator,
+    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
     make_list_validator,
@@ -685,7 +685,7 @@ class CrossSection(INIBasedModel):
     shift: Optional[float] = Field(0.0)
     definitionid: str = Field(alias="definitionId")
 
-    _location_validator = get_refactored_location_specification_rootvalidator(
+    _location_validator = get_location_specification_rootvalidator(
         config=LocationValidationConfiguration(
             validate_node=False, validate_num_coordinates=False
         ),

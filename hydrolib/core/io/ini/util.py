@@ -273,7 +273,7 @@ class LocationValidationFieldNames(BaseModel):
     location_type: str = "locationType"
 
 
-def get_refactored_location_specification_rootvalidator(
+def get_location_specification_rootvalidator(
     config: Optional[LocationValidationConfiguration] = None,
     fields: Optional[LocationValidationFieldNames] = None,
 ):
