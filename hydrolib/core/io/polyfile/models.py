@@ -83,6 +83,12 @@ class PolyFile(ParsableFileModel):
     has_z_values: bool = False
     objects: Sequence[PolyObject] = []
 
+    def _serialize(self, _: dict) -> None:
+        from .serializer import write_polyfile
+
+        # We skip the passed dict for a better one.
+        write_polyfile(self._resolved_filepath, self.objects)
+
     @classmethod
     def _ext(cls) -> str:
         return ".pli"
@@ -93,10 +99,8 @@ class PolyFile(ParsableFileModel):
 
     @classmethod
     def _get_serializer(cls) -> Callable:
-        # TODO Prevent circular dependency in Parser
-        from .serializer import write_polyfile
-
-        return write_polyfile
+        # Unused, but requires abstract implementation
+        pass
 
     @classmethod
     def _get_parser(cls) -> Callable:

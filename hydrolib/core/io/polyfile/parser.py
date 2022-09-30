@@ -526,7 +526,7 @@ def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
     return isinstance(input_val, Path) and input_val.suffix == ".pliz"
 
 
-def read_polyfile(filepath: Path, has_z_values: bool = None) -> Dict:
+def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
     """Read the specified file and return the corresponding data.
 
     The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
