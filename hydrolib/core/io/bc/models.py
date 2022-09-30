@@ -70,23 +70,6 @@ class QuantityUnitPair(NamedTuple):
         yield Property(key="unit", value=self.unit)
 
 
-class QuantityUnitPositionPair(QuantityUnitPair):
-    """A .bc file header lines tuple containing a quantity name, its unit and the vertical position index."""
-
-    def __new__(cls, quantity, unit, verticalpositionindex):
-        """Override __new__ to be able to inherrit from a class that is a NamedTuple."""
-        self = super(QuantityUnitPositionPair, cls).__new__(cls, quantity, unit)
-        self.verticalpositionindex = verticalpositionindex
-        return self
-
-    verticalpositionindex: int
-
-    def _to_properties(self):
-        for property in super()._to_properties():
-            yield property
-        yield Property(key="verticalpositionindex", value=self.verticalpositionindex)
-
-
 class ForcingBase(DataBlockINIBasedModel):
     """
     The base class of a single [Forcing] block in a .bc forcings file.

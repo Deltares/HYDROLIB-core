@@ -15,7 +15,6 @@ from hydrolib.core.io.bc.models import (
     HarmonicCorrection,
     QHTable,
     QuantityUnitPair,
-    QuantityUnitPositionPair,
     TimeInterpolation,
     TimeSeries,
     VerticalInterpolation,
@@ -37,20 +36,6 @@ class TestQuantityUnitPair:
         pair = QuantityUnitPair(quantity="some_quantity", unit="some_unit")
         assert pair.quantity == "some_quantity"
         assert pair.unit == "some_unit"
-
-
-class TestQuantityUnitPositionPair:
-    def test_create_quantityunitpositionpair(self):
-        pair = QuantityUnitPositionPair(
-            quantity="some_quantity", unit="some_unit", verticalpositionindex=123
-        )
-        assert isinstance(pair, QuantityUnitPair)
-        assert pair.quantity == "some_quantity"
-        assert pair.unit == "some_unit"
-        assert pair.verticalpositionindex == 123
-
-        properties = pair._to_properties()
-        assert len(list(properties)) == 3
 
 
 class TestTimeSeries:
