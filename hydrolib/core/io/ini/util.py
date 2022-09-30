@@ -296,7 +296,7 @@ def get_refactored_location_specification_rootvalidator(
     if fields is None:
         fields = LocationValidationFieldNames()
 
-    def validate_location_specification(values: Dict) -> Dict:
+    def validate_location_specification(cls, values: Dict) -> Dict:
         """
         Verify whether the location given for this object matches the expectations.
 
@@ -315,12 +315,13 @@ def get_refactored_location_specification_rootvalidator(
         Returns:
             Dict: Validated dictionary of input class fields.
         """
-        has_node_id = fields.node_id.lower() in values
-        has_branch_id = fields.branch_id.lower() in values
-        has_chainage = fields.chainage.lower() in values
-        has_x_coordinates = fields.x_coordinates.lower() in values
-        has_y_coordinates = fields.y_coordinates.lower() in values
-        has_num_coordinates = fields.num_coordinates.lower() in values
+
+        has_node_id = values.get(fields.node_id.lower()) is not None
+        has_branch_id = values.get(fields.branch_id.lower()) is not None
+        has_chainage = values.get(fields.chainage.lower()) is not None
+        has_x_coordinates = values.get(fields.x_coordinates.lower()) is not None
+        has_y_coordinates = values.get(fields.y_coordinates.lower()) is not None
+        has_num_coordinates = values.get(fields.num_coordinates.lower()) is not None
 
         # ----- Location validation functions
         def validate_location_type(expected_location_type: str) -> None:
