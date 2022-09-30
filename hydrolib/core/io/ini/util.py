@@ -421,6 +421,7 @@ def get_refactored_location_specification_rootvalidator(
 
     return root_validator(allow_reuse=True)(validate_location_specification)
 
+
 def get_number_of_coordinates_validator(
     numfield_name: str = "numCoordinates",
     xfield_name: str = "xCoordinates",
