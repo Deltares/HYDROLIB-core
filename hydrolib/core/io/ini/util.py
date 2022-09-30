@@ -250,16 +250,20 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
 
     return value
 
+
 class LocationValidationConfiguration(BaseModel):
-    """ Class that holds the various configuration seetings needed for location validation."""
+    """Class that holds the various configuration seetings needed for location validation."""
+
     validate_node: bool = True
     validate_coordinates: bool = True
     validate_branch: bool = True
     validate_num_coordinates: bool = True
     minimum_num_coordinates: int = 0
 
+
 class LocationValidationFieldNames(BaseModel):
-    """ Class that holds the various field names needed for location validation."""
+    """Class that holds the various field names needed for location validation."""
+
     node_id: str = "nodeId"
     branch_id: str = "branchId"
     chainage: str = "chainage"
@@ -268,9 +272,10 @@ class LocationValidationFieldNames(BaseModel):
     num_coordinates: str = "numCoordinates"
     location_type: str = "locationType"
 
+
 def get_refactored_location_specification_rootvalidator(
     config: Optional[LocationValidationConfiguration] = None,
-    fields: Optional[LocationValidationFieldNames] = None
+    fields: Optional[LocationValidationFieldNames] = None,
 ):
     """
     Get a root validator that checks for correct location specification in
