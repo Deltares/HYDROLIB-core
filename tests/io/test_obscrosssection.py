@@ -36,14 +36,6 @@ class TestObservationCrossSection:
             pytest.param(
                 True,
                 2,
-                [1.1, 2.2],
-                [1.1, 2.2],
-                True,
-                id="Using branchId while also specifying numCoordinates should validate.",
-            ),
-            pytest.param(
-                True,
-                2,
                 [],
                 [],
                 False,
