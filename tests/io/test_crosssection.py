@@ -311,12 +311,36 @@ class TestCrossSectionLocation:
                 dict(branchid="", chainage=None, x=None, y=None),
                 id="All Empty",
             ),
+            pytest.param(
+                dict(branchid="some_branchid", chainage=None, x=None, y=None),
+                id="Only branchid given",
+            ),
+            pytest.param(
+                dict(branchid=None, chainage=1.0, x=None, y=None),
+                id="Only chainage given",
+            ),
+            pytest.param(
+                dict(branchid=None, chainage=None, x=[1,2,3], y=None),
+                id="Only x given",
+            ),
+            pytest.param(
+                dict(branchid=None, chainage=None, x=None, y=[1,2,3]),
+                id="Only y given",
+            ),
+            pytest.param(
+                dict(branchid="some_branchid", chainage=1.0, x=[1,2,3], y=None),
+                id="branchid and chainage given, but with something else",
+            ),
+            pytest.param(
+                dict(branchid="some_branchid", chainage=None, x=[1,2,3], y=[1,2,3]),
+                id="x and y given, but with something else",
+            ),
         ],
     )
-    def test_given_no_values_raises_valueerror(self, dict_values: dict):
+    def test_wrong_values_raises_valueerror(self, dict_values: dict):
         with pytest.raises(ValueError) as exc_err:
             CrossSection._location_validator(values=dict_values)
-        assert str(exc_err.value) == "x should be given."
+        assert str(exc_err.value) == "branchId and chainage or x and y should be provided"
 
     def test_given_valid_coordinates(self):
         test_dict = dict(
@@ -327,16 +351,3 @@ class TestCrossSectionLocation:
         )
         return_value = CrossSection._location_validator(test_dict)
         assert return_value == test_dict
-
-    def test_given_branchid_and_no_chainage_raises_valueerror(self):
-        with pytest.raises(ValueError) as exc_err:
-            CrossSection._location_validator(
-                dict(
-                    branchid="aBranchId",
-                    chainage=None,
-                )
-            )
-        assert (
-            str(exc_err.value)
-            == "Chainage should be provided when branchId is specified."
-        )
