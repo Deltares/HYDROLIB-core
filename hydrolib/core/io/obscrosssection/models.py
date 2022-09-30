@@ -74,7 +74,9 @@ class ObservationCrossSection(INIBasedModel):
     )
 
     _location_validator = get_refactored_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(validate_node=False, minimum_num_coordinates=2)
+        config=LocationValidationConfiguration(
+            validate_node=False, minimum_num_coordinates=2
+        )
     )
 
     def _get_identifier(self, data: dict) -> Optional[str]:

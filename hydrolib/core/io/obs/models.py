@@ -74,8 +74,10 @@ class ObservationPoint(INIBasedModel):
     _type_validator = get_enum_validator("locationtype", enum=LocationType)
 
     _location_validator = get_refactored_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(validate_node=False, validate_num_coordinates=False),
-        fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y")
+        config=LocationValidationConfiguration(
+            validate_node=False, validate_num_coordinates=False
+        ),
+        fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
     )
 
     def _get_identifier(self, data: dict) -> Optional[str]:

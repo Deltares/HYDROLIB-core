@@ -141,7 +141,9 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    _location_validator = get_refactored_location_specification_rootvalidator(config=LocationValidationConfiguration(minimum_num_coordinates=1))
+    _location_validator = get_refactored_location_specification_rootvalidator(
+        config=LocationValidationConfiguration(minimum_num_coordinates=1)
+    )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")

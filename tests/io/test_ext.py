@@ -155,7 +155,10 @@ class TestModels:
                 test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
                     Lateral._location_validator(test_dict)
-                assert str(exc_error.value) == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                assert (
+                    str(exc_error.value)
+                    == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                )
 
             def test_given_numcoordinates_and_valid_coordinates(self):
                 test_dict = dict(
@@ -203,8 +206,7 @@ class TestModels:
                 with pytest.raises(ValueError) as exc_err:
                     Lateral._location_validator(test_dict)
                 assert (
-                    str(exc_err.value)
-                    == "locationType should be 1d but was wrongType"
+                    str(exc_err.value) == "locationType should be 1d but was wrongType"
                 )
 
             @pytest.mark.parametrize(
