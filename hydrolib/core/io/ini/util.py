@@ -350,39 +350,36 @@ def get_location_specification_rootvalidator(
 
         def is_valid_node_specification() -> bool:
             has_other = (
-                has_branch_id or
-                has_chainage or 
-                has_x_coordinates or
-                has_y_coordinates or
-                has_num_coordinates
+                has_branch_id
+                or has_chainage
+                or has_x_coordinates
+                or has_y_coordinates
+                or has_num_coordinates
             )
             return has_node_id and not has_other
 
         def is_valid_branch_specification() -> bool:
             has_other = (
-                has_node_id or 
-                has_x_coordinates or 
-                has_y_coordinates or 
-                has_num_coordinates
+                has_node_id
+                or has_x_coordinates
+                or has_y_coordinates
+                or has_num_coordinates
             )
             return has_branch_id and has_chainage and not has_other
 
         def is_valid_coordinates_specification() -> bool:
             has_other = (
-                has_node_id or 
-                has_branch_id or 
-                has_chainage or 
-                has_num_coordinates
+                has_node_id or has_branch_id or has_chainage or has_num_coordinates
             )
             return has_x_coordinates and has_y_coordinates and not has_other
 
         def is_valid_coordinates_with_num_coordinates_specification() -> bool:
             has_other = has_node_id or has_branch_id or has_chainage
             return (
-                has_x_coordinates and 
-                has_y_coordinates and 
-                has_num_coordinates and 
-                not has_other
+                has_x_coordinates
+                and has_y_coordinates
+                and has_num_coordinates
+                and not has_other
             )
 
         # -----
