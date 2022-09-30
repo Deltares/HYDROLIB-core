@@ -316,8 +316,8 @@ def get_refactored_location_specification_rootvalidator(
             Dict: Validated dictionary of input class fields.
         """
 
-        has_node_id = values.get(fields.node_id.lower()) is not None
-        has_branch_id = values.get(fields.branch_id.lower()) is not None
+        has_node_id = not str_is_empty_or_none(values.get(fields.node_id.lower()))
+        has_branch_id = not str_is_empty_or_none(values.get(fields.branch_id.lower()))
         has_chainage = values.get(fields.chainage.lower()) is not None
         has_x_coordinates = values.get(fields.x_coordinates.lower()) is not None
         has_y_coordinates = values.get(fields.y_coordinates.lower()) is not None
@@ -326,11 +326,11 @@ def get_refactored_location_specification_rootvalidator(
         # ----- Location validation functions
         def validate_location_type(expected_location_type: str) -> None:
             location_type = values.get(fields.location_type.lower(), None)
-            if location_type is None:
+            if str_is_empty_or_none(location_type):
                 values[fields.location_type.lower()] = expected_location_type
             elif location_type != expected_location_type:
                 raise ValueError(
-                    f"{fields.location_type} should be {expected_location_type} but was {location_type}."
+                    f"{fields.location_type} should be {expected_location_type} but was {location_type}"
                 )
 
         def validate_num_coordinates() -> None:
