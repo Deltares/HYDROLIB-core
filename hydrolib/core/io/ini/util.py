@@ -416,7 +416,6 @@ def get_refactored_location_specification_rootvalidator(
 
                 error_parts.append(f"{fields.x_coordinates} and {fields.y_coordinates}")
 
-
         error = " or ".join(error_parts) + " should be provided"
         raise ValueError(error)
 
