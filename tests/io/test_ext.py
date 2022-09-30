@@ -28,8 +28,6 @@ class TestModels:
                 values = dict(
                     id="randomId",
                     name="randomName",
-                    branchid="randomBranchName",
-                    chainage=1.234,
                     numcoordinates=2,
                     xcoordinates=[1.1, 2.2],
                     ycoordinates=[1.1, 2.2],
@@ -123,11 +121,11 @@ class TestModels:
                 "dict_values",
                 [
                     pytest.param(
-                        dict(nodeid=None, branch_id=None, n_coords=None, chainage=None),
+                        dict(nodeid=None, branchid=None, chainage=None),
                         id="All None",
                     ),
                     pytest.param(
-                        dict(nodeid="", branch_id="", n_coords=0, chainage=None),
+                        dict(nodeid="", branchid="", chainage=None),
                         id="All Empty",
                     ),
                 ],
@@ -137,7 +135,7 @@ class TestModels:
                     Lateral._location_validator(values=dict_values)
                 assert (
                     str(exc_err.value)
-                    == "Either nodeId, branchId (with chainage) or numCoordinates with xCoordinates and yCoordinates are required."
+                    == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
                 )
 
             @pytest.mark.parametrize(
@@ -157,7 +155,7 @@ class TestModels:
                 test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
                     Lateral._location_validator(test_dict)
-                assert str(exc_error.value) == f"{missing_coordinates} should be given."
+                assert str(exc_error.value) == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
 
             def test_given_numcoordinates_and_valid_coordinates(self):
                 test_dict = dict(
@@ -182,7 +180,7 @@ class TestModels:
                     )
                 assert (
                     str(exc_err.value)
-                    == "Chainage should be provided when branchId is specified."
+                    == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
                 )
 
             @pytest.mark.parametrize(
@@ -199,9 +197,6 @@ class TestModels:
                 self, dict_values: dict
             ):
                 test_values = dict(
-                    numcoordinates=2,
-                    xcoordinates=[42, 24],
-                    ycoordinates=[24, 42],
                     locationtype="wrongType",
                 )
                 test_dict = {**dict_values, **test_values}
@@ -209,7 +204,7 @@ class TestModels:
                     Lateral._location_validator(test_dict)
                 assert (
                     str(exc_err.value)
-                    == "locationType should be 1d when nodeId (or branchId and chainage) is specified."
+                    == "locationType should be 1d but was wrongType"
                 )
 
             @pytest.mark.parametrize(
@@ -224,9 +219,6 @@ class TestModels:
             )
             def test_given_1d_args_and_1d_location_type(self, dict_values: dict):
                 test_values = dict(
-                    numcoordinates=2,
-                    xcoordinates=[42, 24],
-                    ycoordinates=[24, 42],
                     locationtype="1d",
                 )
                 test_dict = {**dict_values, **test_values}
@@ -277,7 +269,7 @@ class TestModels:
                         ycoordinates=y_coord,
                     )
 
-                expected_error_mssg = "When using coordinates, the fields numCoordinates, xCoordinates and yCoordinates should be given."
+                expected_error_mssg = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
                 assert expected_error_mssg in str(exc_mssg.value)
 
             @pytest.mark.parametrize(
@@ -314,8 +306,8 @@ class TestModels:
                 lateral_dict[missing_coord.lower()] = None
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(**lateral_dict)
-
-                assert f"{missing_coord} should be given." in str(exc_mssg.value)
+                expected_error_mssg = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                assert expected_error_mssg in str(exc_mssg.value)
 
             def test_given_unknown_locationtype_raises(self):
                 with pytest.raises(ValidationError) as exc_mssg:
@@ -340,10 +332,6 @@ class TestModels:
                         id="branchid + chainage given.",
                     ),
                     pytest.param(
-                        dict(nodeid="aNodeId", branchid="aBranchId", chainage=42),
-                        id="all given.",
-                    ),
-                    pytest.param(
                         dict(nodeid="", branchid="aBranchId", chainage=42),
                         id="Empty nodeid.",
                     ),
@@ -356,9 +344,6 @@ class TestModels:
                 default_values = dict(
                     id="42",
                     discharge=1.23,
-                    numcoordinates=2,
-                    xcoordinates=[42, 24],
-                    ycoordinates=[24, 42],
                     locationtype="1d",
                 )
                 test_dict = {**default_values, **location_values}
