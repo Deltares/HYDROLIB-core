@@ -323,7 +323,7 @@ def get_location_specification_rootvalidator(
         has_y_coordinates = values.get(fields.y_coordinates.lower()) is not None
         has_num_coordinates = values.get(fields.num_coordinates.lower()) is not None
 
-        # ----- Location validation functions
+        # ----- Local validation functions
         def validate_location_type(expected_location_type: str) -> None:
             location_type = values.get(fields.location_type.lower(), None)
             if str_is_empty_or_none(location_type):
