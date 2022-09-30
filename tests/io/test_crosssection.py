@@ -320,19 +320,19 @@ class TestCrossSectionLocation:
                 id="Only chainage given",
             ),
             pytest.param(
-                dict(branchid=None, chainage=None, x=[1,2,3], y=None),
+                dict(branchid=None, chainage=None, x=[1, 2, 3], y=None),
                 id="Only x given",
             ),
             pytest.param(
-                dict(branchid=None, chainage=None, x=None, y=[1,2,3]),
+                dict(branchid=None, chainage=None, x=None, y=[1, 2, 3]),
                 id="Only y given",
             ),
             pytest.param(
-                dict(branchid="some_branchid", chainage=1.0, x=[1,2,3], y=None),
+                dict(branchid="some_branchid", chainage=1.0, x=[1, 2, 3], y=None),
                 id="branchid and chainage given, but with something else",
             ),
             pytest.param(
-                dict(branchid="some_branchid", chainage=None, x=[1,2,3], y=[1,2,3]),
+                dict(branchid="some_branchid", chainage=None, x=[1, 2, 3], y=[1, 2, 3]),
                 id="x and y given, but with something else",
             ),
         ],
@@ -340,7 +340,9 @@ class TestCrossSectionLocation:
     def test_wrong_values_raises_valueerror(self, dict_values: dict):
         with pytest.raises(ValueError) as exc_err:
             CrossSection._location_validator(values=dict_values)
-        assert str(exc_err.value) == "branchId and chainage or x and y should be provided"
+        assert (
+            str(exc_err.value) == "branchId and chainage or x and y should be provided"
+        )
 
     def test_given_valid_coordinates(self):
         test_dict = dict(
