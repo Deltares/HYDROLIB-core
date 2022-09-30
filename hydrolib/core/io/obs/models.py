@@ -5,8 +5,10 @@ from pydantic.fields import Field
 from hydrolib.core.io.common.models import LocationType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    LocationValidationConfiguration,
+    LocationValidationFieldNames,
     get_enum_validator,
-    get_location_specification_rootvalidator,
+    get_refactored_location_specification_rootvalidator,
     make_list_validator,
 )
 
@@ -70,8 +72,10 @@ class ObservationPoint(INIBasedModel):
     y: Optional[float] = Field(None, alias="y")
 
     _type_validator = get_enum_validator("locationtype", enum=LocationType)
-    _location_validator = get_location_specification_rootvalidator(
-        allow_nodeid=False, numfield_name=None, xfield_name="x", yfield_name="y"
+
+    _location_validator = get_refactored_location_specification_rootvalidator(
+        config=LocationValidationConfiguration(validate_node=False, validate_num_coordinates=False),
+        fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y")
     )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
