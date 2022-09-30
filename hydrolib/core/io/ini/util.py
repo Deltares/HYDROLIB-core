@@ -250,31 +250,27 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
 
     return value
 
+class LocationValidationConfiguration(BaseModel):
+    """ Class that holds the various configuration seetings needed for location validation."""
+    validate_node: bool = True
+    validate_coordinates: bool = True
+    validate_branch: bool = True
+    validate_num_coordinates: bool = True
+    minimum_num_coordinates: int = 0
 
-class LocationValidationConfiguration:
-    """Class that holds the various configuration seetings needed for location validation."""
+class LocationValidationFieldNames(BaseModel):
+    """ Class that holds the various field names needed for location validation."""
+    node_id: str = "nodeId"
+    branch_id: str = "branchId"
+    chainage: str = "chainage"
+    x_coordinates: str = "xCoordinates"
+    y_coordinates: str = "yCoordinates"
+    num_coordinates: str = "numCoordinates"
+    location_type: str = "locationType"
 
-    validate_node: bool
-    validate_coordinates: bool
-    validate_branch: bool
-    validate_num_coordinates: bool
-    minimum_num_coordinates: int
-
-
-class LocationValidationFieldNames:
-    """Class that holds the various field names needed for location validation."""
-
-    node_id: str
-    branch_id: str
-    chainage: str
-    x_coordinates: str
-    y_coordinates: str
-    num_coordinates: str
-    location_type: str
-
-
-def get_location_specification_rootvalidator_refactored(
-    config: LocationValidationConfiguration, fields: LocationValidationFieldNames
+def get_refactored_location_specification_rootvalidator(
+    config: Optional[LocationValidationConfiguration] = None,
+    fields: Optional[LocationValidationFieldNames] = None
 ):
     """
     Get a root validator that checks for correct location specification in
@@ -285,9 +281,15 @@ def get_location_specification_rootvalidator_refactored(
     Validates for the locationType for nodeId and branchId.
 
     Args:
-        config (LocationValidationConfiguration): Configuration for the location validation.
-        field (LocationValidationFieldNames): Fields names that should be used for the location validation.
+        config (LocationValidationConfiguration, optional): Configuration for the location validation. Default is None.
+        field (LocationValidationFieldNames, optional): Fields names that should be used for the location validation. Default is None.
     """
+
+    if config is None:
+        config = LocationValidationConfiguration()
+
+    if fields is None:
+        fields = LocationValidationFieldNames()
 
     def validate_location_specification(values: Dict) -> Dict:
         """
