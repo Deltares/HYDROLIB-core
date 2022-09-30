@@ -406,15 +406,16 @@ def get_refactored_location_specification_rootvalidator(
                     validate_num_coordinates()
                     return values
 
-                error_parts.append(f"{fields.x_coordinates} and {fields.y_coordinates}")
+                error_parts.append(
+                    f"{fields.x_coordinates}, {fields.y_coordinates} and {fields.num_coordinates}"
+                )
 
             else:
                 if is_valid_coordinates_specification():
                     return values
 
-                error_parts.append(
-                    f"{fields.x_coordinates}, {fields.y_coordinates} and {fields.num_coordinates}"
-                )
+                error_parts.append(f"{fields.x_coordinates} and {fields.y_coordinates}")
+
 
         error = " or ".join(error_parts) + " should be provided"
         raise ValueError(error)
