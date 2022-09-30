@@ -686,7 +686,8 @@ class CrossSection(INIBasedModel):
     definitionid: str = Field(alias="definitionId")
 
     _location_validator = get_refactored_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(validate_node=False, validate_num_coordinates=False), fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y")
+        config=LocationValidationConfiguration(validate_node=False, validate_num_coordinates=False), 
+        fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y")
     )
 
 
