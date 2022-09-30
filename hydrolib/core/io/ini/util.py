@@ -336,7 +336,7 @@ def get_refactored_location_specification_rootvalidator(
         def validate_num_coordinates() -> None:
             x_coordinates = values[fields.x_coordinates.lower()]
             y_coordinates = values[fields.y_coordinates.lower()]
-            num_coordinates = values[fields.y_coordinates.lower()]
+            num_coordinates = values[fields.num_coordinates.lower()]
 
             if num_coordinates < config.minimum_num_coordinates:
                 raise ValueError(
