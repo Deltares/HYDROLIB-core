@@ -1,5 +1,6 @@
 import logging
 from typing import List, Literal, Optional
+from wsgiref import validate
 
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
@@ -7,9 +8,11 @@ from pydantic.class_validators import validator
 from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    LocationValidationConfiguration,
+    LocationValidationFieldNames,
     get_enum_validator,
     get_from_subclass_defaults,
-    get_location_specification_rootvalidator,
+    get_refactored_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
     make_list_validator,
@@ -682,8 +685,8 @@ class CrossSection(INIBasedModel):
     shift: Optional[float] = Field(0.0)
     definitionid: str = Field(alias="definitionId")
 
-    _location_validator = get_location_specification_rootvalidator(
-        allow_nodeid=False, numfield_name=None, xfield_name="x", yfield_name="y"
+    _location_validator = get_refactored_location_specification_rootvalidator(
+        config=LocationValidationConfiguration(validate_node=False, validate_num_coordinates=False), fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y")
     )
 
 
