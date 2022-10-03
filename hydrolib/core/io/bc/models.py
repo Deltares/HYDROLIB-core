@@ -11,14 +11,19 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Literal, NamedTuple, Optional, Set, Union
+from typing import Callable, List, Literal, Optional, Set, Union
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
 from hydrolib.core.io.ini.io_models import Property, Section
-from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.ini.models import (
+    DataBlockINIBasedModel,
+    INIGeneral,
+    INIModel,
+    BaseModel,
+)
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
@@ -59,15 +64,20 @@ class TimeInterpolation(str, Enum):
     block_to = "blockTo"
 
 
-class QuantityUnitPair(NamedTuple):
-    """A .bc file header lines tuple containing a quantity name and its unit."""
+class QuantityUnitPair(BaseModel):
+    """A .bc file header lines tuple containing a quantity name, its unit and optionally a vertical position index."""
 
     quantity: str
     unit: str
+    verticalpositionindex: Optional[int]
 
     def _to_properties(self):
         yield Property(key="quantity", value=self.quantity)
         yield Property(key="unit", value=self.unit)
+        if self.verticalpositionindex is not None:
+            yield Property(
+                key="verticalpositionindex", value=self.verticalpositionindex
+            )
 
 
 class ForcingBase(DataBlockINIBasedModel):
@@ -116,7 +126,9 @@ class ForcingBase(DataBlockINIBasedModel):
             raise ValueError("unit is not provided")
 
         if isinstance(quantities, str) and isinstance(units, str):
-            values[quantityunitpairkey] = [(quantities, units)]
+            values[quantityunitpairkey] = [
+                QuantityUnitPair(quantity=quantities, unit=units)
+            ]
             return values
 
         if isinstance(quantities, list) and isinstance(units, list):
@@ -126,7 +138,8 @@ class ForcingBase(DataBlockINIBasedModel):
                 )
 
             values[quantityunitpairkey] = [
-                (quantity, unit) for quantity, unit in zip(quantities, units)
+                QuantityUnitPair(quantity=quantity, unit=unit)
+                for quantity, unit in zip(quantities, units)
             ]
             return values
 

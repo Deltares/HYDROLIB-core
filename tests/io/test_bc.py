@@ -293,8 +293,8 @@ def _create_time_series_values():
         offset="1.23",
         factor="2.34",
         quantityunitpair=[
-            ("time", "minutes since 2015-01-01 00:00:00"),
-            ("dischargebnd", "m³/s"),
+            _create_quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
+            _create_quantityunitpair("dischargebnd", "m³/s"),
         ],
         datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
     )
@@ -306,9 +306,9 @@ def _create_harmonic_values(iscorrection: bool):
         name=f"boundary_{function}",
         function=function,
         quantityunitpair=[
-            ("harmonic component", "minutes"),
-            ("waterlevelbnd amplitude", "m"),
-            ("waterlevelbnd phase", "deg"),
+            _create_quantityunitpair("harmonic component", "minutes"),
+            _create_quantityunitpair("waterlevelbnd amplitude", "m"),
+            _create_quantityunitpair("waterlevelbnd phase", "deg"),
         ],
         datablock=[
             ["0", "1.23", "2.34"],
@@ -323,9 +323,9 @@ def _create_astronomic_values(iscorrection: bool):
         name=f"boundary_{function}",
         function=function,
         quantityunitpair=[
-            ("astronomic component", "-"),
-            ("waterlevelbnd amplitude", "m"),
-            ("waterlevelbnd phase", "deg"),
+            _create_quantityunitpair("astronomic component", "-"),
+            _create_quantityunitpair("waterlevelbnd amplitude", "m"),
+            _create_quantityunitpair("waterlevelbnd phase", "deg"),
         ],
         datablock=[
             ["A0", "1.23", "2.34"],
@@ -333,6 +333,10 @@ def _create_astronomic_values(iscorrection: bool):
             ["N2", "5.67", "6.78"],
         ],
     )
+
+
+def _create_quantityunitpair(quantity, unit):
+    return QuantityUnitPair(quantity=quantity, unit=unit)
 
 
 def _create_t3d_values():
@@ -346,10 +350,10 @@ def _create_t3d_values():
         verticalpositiontype="percBed",
         timeinterpolation="linear",
         quantityunitpair=[
-            ("time", "m"),
-            ("salinitybnd", "ppt"),
-            ("salinitybnd", "ppt"),
-            ("salinitybnd", "ppt"),
+            _create_quantityunitpair("time", "m"),
+            _create_quantityunitpair("salinitybnd", "ppt"),
+            _create_quantityunitpair("salinitybnd", "ppt"),
+            _create_quantityunitpair("salinitybnd", "ppt"),
         ],
         datablock=[
             ["0", "1", "2", "3"],
@@ -364,8 +368,8 @@ def _create_qhtable_values():
         name="boundary_qhtable",
         function="qhtable",
         quantityunitpair=[
-            ("qhbnd discharge", "m3/s"),
-            ("qhbnd waterlevel", "m"),
+            _create_quantityunitpair("qhbnd discharge", "m3/s"),
+            _create_quantityunitpair("qhbnd waterlevel", "m"),
         ],
         datablock=[
             ["1.23", "2.34"],
@@ -382,7 +386,7 @@ def _create_constant_values():
         factor="2.34",
         timeinterpolation="linear",
         quantityunitpair=[
-            ("waterlevelbnd", "m"),
+            _create_quantityunitpair("waterlevelbnd", "m"),
         ],
         datablock=[
             ["3.45"],
