@@ -66,9 +66,16 @@ class VerticalPositionType(str, Enum):
 
 
 class TimeInterpolation(str, Enum):
+    """Enum class containing the valid values for the time interpolation."""
+
     linear = "linear"
+    """str: Linear interpolation between times."""
+
     block_from = "blockFrom"
+    """str: Equal to that at the start of the time interval (latest specified time value)."""
+
     block_to = "blockTo"
+    """str: Equal to that at the end of the time interval (upcoming specified time value)."""
 
 
 class QuantityUnitPair(BaseModel):
