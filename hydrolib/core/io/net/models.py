@@ -415,9 +415,9 @@ class Branch:
             return offsets
 
         # Check the limits
-        if min(structure_offsets) < 0.0:
+        if (excess := min(structure_offsets)) < 0.0:
             raise ValueError(
-                f"Distance {min(structure_offsets)} is outside the branch range (0.0 - {self.length})."
+                f"Distance {excess} is outside the branch range (0.0 - {self.length})."
             )
         if max(structure_offsets) > self.length:
             raise ValueError(
