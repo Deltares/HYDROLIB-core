@@ -37,9 +37,16 @@ logger = logging.getLogger(__name__)
 
 
 class VerticalInterpolation(str, Enum):
+    """Enum class containing the valid values for the vertical interpolation."""
+    
     linear = "linear"
+    """str: Linear interpolation between vertical positions."""
+
     log = "log"
+    """str: Logarithmic interpolation between vertical positions (e.g. vertical velocity profiles)."""
+
     block = "block"
+    """str: Equal to the value at the directly lower specified vertical position."""
 
 
 class VerticalPositionType(str, Enum):
