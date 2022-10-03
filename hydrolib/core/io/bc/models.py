@@ -252,14 +252,23 @@ class T3D(ForcingBase):
     """Subclass for a .bc file [Forcing] block with 3D timeseries data."""
 
     function: Literal["t3d"] = "t3d"
-
     offset: float = Field(0.0, alias="offset")
+    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
     verticalpositions: List[float] = Field(alias="Vertical Position Specification")
+    """List[float]: The specification of the vertical positions."""
+
     verticalinterpolation: VerticalInterpolation = Field(alias="Vertical Interpolation")
+    """VerticalInterpolation: The type of vertical interpolation."""
+
     verticalpositiontype: VerticalPositionType = Field(alias="Vertical Position Type")
+    """VerticalPositionType: The vertical position type."""
+
     timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
+    """TimeInterpolation: The type of time interpolation."""
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "verticalpositions",
