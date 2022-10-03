@@ -106,18 +106,17 @@ class ForcingBase(DataBlockINIBasedModel):
     Typically subclassed, for the specific types of forcing data, e.g, TimeSeries.
     This model is for example referenced under a
     [ForcingModel][hydrolib.core.io.bc.models.ForcingModel]`.forcing[..]`.
-
-    Attributes:
-        name (str): Unique identifier that identifies the location for this forcing data.
-        function (str): Function type of the data in the actual datablock.
-        quantityunitpair (List[QuantityUnitPair]): list of header line tuples for one or
-            more quantities + their unit. Describes the columns in the actual datablock.
     """
 
     _header: Literal["Forcing"] = "Forcing"
     name: str = Field(alias="name")
+    """str: Unique identifier that identifies the location for this forcing data."""
+
     function: str = Field(alias="function")
+    """str: Function type of the data in the actual datablock."""
+
     quantityunitpair: List[QuantityUnitPair]
+    """List[QuantityUnitPair]: List of header lines for one or more quantities and their unit. Describes the columns in the actual datablock."""
 
     def _exclude_fields(self) -> Set:
         return {"quantityunitpair"}.union(super()._exclude_fields())
