@@ -424,6 +424,7 @@ class Branch:
             excess := max(structure_offsets)) > self.length:
             raise ValueError(
                 f"Distance {excess} is outside the branch range (0.0 - {self.length})."
+            )
 
         # Merge limits with start and end of branch
         limits = [-1e-3] + list(sorted(structure_offsets)) + [self.length + 1e-3]
