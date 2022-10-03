@@ -135,10 +135,7 @@ class TestModels:
             def test_given_no_values_raises_valueerror(self, dict_values: dict):
                 with pytest.raises(ValueError) as exc_err:
                     Lateral._location_validator(values=dict_values)
-                assert (
-                    str(exc_err.value)
-                    == TestModels.TestLateral.location_error
-                )
+                assert str(exc_err.value) == TestModels.TestLateral.location_error
 
             @pytest.mark.parametrize(
                 "missing_coordinates", [("xCoordinates"), ("yCoordinates")]
@@ -157,10 +154,7 @@ class TestModels:
                 test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
                     Lateral._location_validator(test_dict)
-                assert (
-                    str(exc_error.value)
-                    == TestModels.TestLateral.location_error
-                )
+                assert str(exc_error.value) == TestModels.TestLateral.location_error
 
             def test_given_numcoordinates_and_valid_coordinates(self):
                 test_dict = dict(
@@ -183,10 +177,7 @@ class TestModels:
                             chainage=None,
                         )
                     )
-                assert (
-                    str(exc_err.value)
-                    == TestModels.TestLateral.location_error
-                )
+                assert str(exc_err.value) == TestModels.TestLateral.location_error
 
             @pytest.mark.parametrize(
                 "dict_values",
