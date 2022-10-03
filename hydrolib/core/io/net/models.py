@@ -376,8 +376,12 @@ class Branch:
 
         Args:
             mesh1d_edge_length (float): The edge length of the 1d mesh.
-            structure_chainage (Optional[List[float]], optional): A list with the structure chainages. Defaults to None.
-            max_dist_to_struc (Optional[float], optional): The maximum distance from a node to a structure. Defaults to None.
+            structure_chainage (Optional[List[float]], optional): A list with the structure chainages. If not specified, calculation will not take it into account. Defaults to None.
+            max_dist_to_struc (Optional[float], optional): The maximum distance from a node to a structure. If not specified, calculation will not take it into account. Defaults to None.
+
+        Raises:
+            ValueError: Raised when any of the structure offsets, if specified, is smaller than zero.
+            ValueError: Raised when any of the structure offsets, if specified, is greater than the branch length.
         """
         # Generate offsets
         self.branch_offsets = self._generate_offsets(
@@ -398,11 +402,12 @@ class Branch:
 
         Args:
             mesh1d_edge_length (float): The edge length of the 1d mesh.
-            structure_offsets (Optional[List[float]], optional): A list with the structure chainages. Defaults to None.
-            max_dist_to_struc (Optional[float], optional): The maximum distance from a node to a structure. Defaults to None.
+            structure_chainage (Optional[List[float]], optional): A list with the structure chainages. If not specified, calculation will not take it into account. Defaults to None.
+            max_dist_to_struc (Optional[float], optional): The maximum distance from a node to a structure. If not specified, calculation will not take it into account. Defaults to None.
+
         Raises:
-            ValueError: Raised when any of the structure offsets is smaller than zero.
-            ValueError: Raised when any of the structure offsets is greater than the branch length.
+            ValueError: Raised when any of the structure offsets, if specified, is smaller than zero.
+            ValueError: Raised when any of the structure offsets, if specified, is greater than the branch length.
 
         Returns:
             np.ndarray: The generated branch offsets.
@@ -415,21 +420,17 @@ class Branch:
             return offsets
 
         # Check the limits
-        if (excess := min(structure_offsets)) < 0.0:
+        if (excess := min(structure_offsets)) < 0.0 or (
+            excess := max(structure_offsets)) > self.length:
             raise ValueError(
                 f"Distance {excess} is outside the branch range (0.0 - {self.length})."
-            )
-        if max(structure_offsets) > self.length:
-            raise ValueError(
-                f"Distance {max(structure_offsets)} is outside the branch length (0.0 - {self.length})."
-            )
 
         # Merge limits with start and end of branch
         limits = [-1e-3] + list(sorted(structure_offsets)) + [self.length + 1e-3]
 
         # if requested, check if the calculation point are close enough to the structures
         if max_dist_to_struc is not None:
-            limits: List[float] = self._update_limits(max_dist_to_struc, limits)
+            limits = self._generate_extended_limits(max_dist_to_struc, limits)
 
         offsets = self._add_nodes_to_segments(
             offsets, anchor_pts, limits, mesh1d_edge_length
@@ -437,10 +438,10 @@ class Branch:
 
         return offsets
 
-    def _update_limits(
+    def _generate_extended_limits(
         self, max_dist_to_struc: float, limits: List[float]
     ) -> List[float]:
-        """Update the limits taking into account the maximum distance to a structure.
+        """Generate extended limits by taking into account the maximum distance to a structure.
 
         Args:
             max_dist_to_struc (float): The maximum distance from a node to a structure.
