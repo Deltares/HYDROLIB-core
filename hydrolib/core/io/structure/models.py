@@ -24,6 +24,7 @@ from hydrolib.core.io.ini.util import (
     get_required_fields_validator,
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
+    make_list_validator,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
@@ -1019,3 +1020,5 @@ class StructureModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "structures"
+
+    _split_to_list = make_list_validator("structure")
