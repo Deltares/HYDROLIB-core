@@ -371,7 +371,7 @@ class T3D(ForcingBase):
         number_of_verticalpositions: int,
         quantityunitpairs: List[QuantityUnitPair]
     ):
-        T3D._validate_that_all_verticalpositionindexes_are_valid(
+        T3D._validate_that_verticalpositionindexes_are_valid(
             verticalpositionindexes, number_of_verticalpositions
         )
 
@@ -380,7 +380,7 @@ class T3D(ForcingBase):
         )
 
     @staticmethod
-    def _validate_that_all_verticalpositionindexes_are_valid(
+    def _validate_that_verticalpositionindexes_are_valid(
         verticalpositionindexes: List[int], number_of_vertical_positions: int
     ) -> None:
         for verticalpositionindexstring in verticalpositionindexes:
