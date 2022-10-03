@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from pydantic.error_wrappers import ValidationError
 
+from hydrolib.core.io.ini.models import BaseModel
 from hydrolib.core.io.bc.models import (
     T3D,
     Astronomic,
@@ -34,8 +35,19 @@ from ..utils import (
 class TestQuantityUnitPair:
     def test_create_quantityunitpair(self):
         pair = QuantityUnitPair(quantity="some_quantity", unit="some_unit")
+        assert isinstance(pair, BaseModel)
         assert pair.quantity == "some_quantity"
         assert pair.unit == "some_unit"
+        assert pair.verticalpositionindex is None
+
+    def test_create_quantityunitpair_with_verticalpositionindex(self):
+        pair = QuantityUnitPair(
+            quantity="some_quantity", unit="some_unit", verticalpositionindex=123
+        )
+        assert isinstance(pair, BaseModel)
+        assert pair.quantity == "some_quantity"
+        assert pair.unit == "some_unit"
+        assert pair.verticalpositionindex == 123
 
 
 class TestTimeSeries:
