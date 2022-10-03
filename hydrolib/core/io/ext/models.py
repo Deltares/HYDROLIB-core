@@ -130,8 +130,8 @@ class Lateral(INIBasedModel):
     branchid: Optional[str] = Field(alias="branchId")
     chainage: Optional[float] = Field(alias="chainage")
     numcoordinates: Optional[int] = Field(alias="numCoordinates")
-    xcoordinates: Optional[List[int]] = Field(alias="xCoordinates")
-    ycoordinates: Optional[List[int]] = Field(alias="yCoordinates")
+    xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
