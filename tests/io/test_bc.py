@@ -296,6 +296,20 @@ class TestT3D:
         assert t3d.datablock[1] == [60, 4, 5, 6]
         assert t3d.datablock[2] == [120, 7, 8, 9]
 
+    def test_create_t3d_first_quantity_not_time_raises_error(self):
+        values = _create_t3d_values()
+
+        values["quantityunitpair"] = [
+            _create_quantityunitpair("salinitybnd", "ppt"),
+            _create_quantityunitpair("time", "m"),
+        ]
+
+        with pytest.raises(ValidationError) as error:
+            t3d = T3D(**values)
+
+        expected_message = "First quantity should be `time`"
+        assert expected_message in str(error.value)
+
 
 def _create_time_series_values():
     return dict(

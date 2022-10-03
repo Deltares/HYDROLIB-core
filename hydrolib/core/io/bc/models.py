@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 class VerticalInterpolation(str, Enum):
     """Enum class containing the valid values for the vertical interpolation."""
-    
+
     linear = "linear"
     """str: Linear interpolation between vertical positions."""
 
@@ -283,6 +283,22 @@ class T3D(ForcingBase):
     _timeinterpolation_validator = get_enum_validator(
         "timeinterpolation", enum=TimeInterpolation
     )
+
+    @root_validator(pre=True)
+    def _validate_quantityunitpair(cls, values):
+        super()._validate_quantityunitpair(values)
+
+        quantityunitpairkey = "quantityunitpair"
+
+        quantityunitpairs = values[quantityunitpairkey]
+        T3D._validate_that_first_unit_is_time(quantityunitpairs)
+
+        return values
+
+    @staticmethod
+    def _validate_that_first_unit_is_time(quantityunitpairs: List[QuantityUnitPair]):
+        if quantityunitpairs[0] != "time":
+            raise ValueError("First quantity should be `time`")
 
 
 class QHTable(ForcingBase):
