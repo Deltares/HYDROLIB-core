@@ -82,8 +82,13 @@ class QuantityUnitPair(BaseModel):
     """A .bc file header lines tuple containing a quantity name, its unit and optionally a vertical position index."""
 
     quantity: str
+    """str: Name of quantity."""
+
     unit: str
+    """str: Unit of quantity."""
+
     verticalpositionindex: Optional[int]
+    """int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only)."""
 
     def _to_properties(self):
         yield Property(key="quantity", value=self.quantity)
