@@ -282,13 +282,13 @@ class TestT3D:
         assert len(t3d.quantityunitpair) == 4
         assert t3d.quantityunitpair[0] == QuantityUnitPair(quantity="time", unit="m")
         assert t3d.quantityunitpair[1] == QuantityUnitPair(
-            quantity="salinitybnd", unit="ppt"
+            quantity="salinitybnd", unit="ppt", verticalpositionindex=1
         )
         assert t3d.quantityunitpair[2] == QuantityUnitPair(
-            quantity="salinitybnd", unit="ppt"
+            quantity="salinitybnd", unit="ppt", verticalpositionindex=2
         )
         assert t3d.quantityunitpair[3] == QuantityUnitPair(
-            quantity="salinitybnd", unit="ppt"
+            quantity="salinitybnd", unit="ppt", verticalpositionindex=3
         )
 
         assert len(t3d.datablock) == 3
@@ -305,9 +305,75 @@ class TestT3D:
         ]
 
         with pytest.raises(ValidationError) as error:
-            t3d = T3D(**values)
+            T3D(**values)
 
         expected_message = "First quantity should be `time`"
+        assert expected_message in str(error.value)
+
+    def test_create_t3d_time_quantity_with_verticalpositionindex_raises_error(self):
+        values = _create_t3d_values()
+
+        values["quantityunitpair"] = [
+            _create_quantityunitpair("time", "m", 1),
+        ]
+
+        with pytest.raises(ValidationError) as error:
+            T3D(**values)
+
+        expected_message = "`time` quantity cannot have vertical position index"
+        assert expected_message in str(error.value)
+
+    def test_create_t3d_verticalpositionindex_missing_for_non_time_unit_raises_error(
+        self,
+    ):
+        values = _create_t3d_values()
+
+        values["quantityunitpair"] = [
+            _create_quantityunitpair("time", "m"),
+            _create_quantityunitpair("salinitybnd", "ppt", None),
+        ]
+
+        with pytest.raises(ValidationError) as error:
+            T3D(**values)
+
+        expected_maximum_index = len(values["verticalpositions"])
+        expected_message = (
+            f"Vertical position index should be between 1 and {expected_maximum_index}"
+        )
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "number_of_quantities_and_units, number_of_verticalpositionindexes",
+        [(4, 2), (2, 4)],
+    )
+    def test_create_t3d_number_of_verticalindexpositions_not_equal_to_number_of_units_raises_error(
+        self,
+        number_of_quantities_and_units: int,
+        number_of_verticalpositionindexes: int,
+    ):
+        values = _create_t3d_values()
+
+        del values["quantityunitpair"]
+
+        onebased_index_offset = 1
+
+        values["quantity"] = ["time"] + [
+            str(i + onebased_index_offset)
+            for i in range(number_of_quantities_and_units)
+        ]
+        values["unit"] = ["m"] + [
+            str(i + onebased_index_offset)
+            for i in range(number_of_quantities_and_units)
+        ]
+        values["verticalpositionindex"] = [None] + [
+            str(i + onebased_index_offset)
+            for i in range(number_of_verticalpositionindexes)
+        ]
+
+        with pytest.raises(ValidationError) as error:
+            T3D(**values)
+
+        expected_message = "Number of vertical positions should be equal to the number of units or equal to the number of units - 1"
         assert expected_message in str(error.value)
 
 
@@ -361,8 +427,10 @@ def _create_astronomic_values(iscorrection: bool):
     )
 
 
-def _create_quantityunitpair(quantity, unit):
-    return QuantityUnitPair(quantity=quantity, unit=unit)
+def _create_quantityunitpair(quantity, unit, verticalpositionindex=None):
+    return QuantityUnitPair(
+        quantity=quantity, unit=unit, verticalpositionindex=verticalpositionindex
+    )
 
 
 def _create_t3d_values():
@@ -377,9 +445,9 @@ def _create_t3d_values():
         timeinterpolation="linear",
         quantityunitpair=[
             _create_quantityunitpair("time", "m"),
-            _create_quantityunitpair("salinitybnd", "ppt"),
-            _create_quantityunitpair("salinitybnd", "ppt"),
-            _create_quantityunitpair("salinitybnd", "ppt"),
+            _create_quantityunitpair("salinitybnd", "ppt", 1),
+            _create_quantityunitpair("salinitybnd", "ppt", 2),
+            _create_quantityunitpair("salinitybnd", "ppt", 3),
         ],
         datablock=[
             ["0", "1", "2", "3"],
