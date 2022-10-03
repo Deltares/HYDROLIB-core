@@ -293,12 +293,13 @@ class T3D(ForcingBase):
         verticalpositionindexes = values.get("verticalpositionindex")
         number_of_verticalpositions = len(values["verticalpositions"])
 
-        T3D._validate_that_first_unit_is_time_and_has_no_verticalpositionindex(quantityunitpairs)
+        T3D._validate_that_first_unit_is_time_and_has_no_verticalpositionindex(
+            quantityunitpairs
+        )
 
         if verticalpositionindexes is None:
             T3D._validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
-                quantityunitpairs,
-                number_of_verticalpositions
+                quantityunitpairs, number_of_verticalpositions
             )
             return values
 
@@ -321,16 +322,17 @@ class T3D(ForcingBase):
 
     @staticmethod
     def _validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
-        quantityunitpairs: List[QuantityUnitPair],
-        maximum_verticalpositionindex: int
-    ) -> None:        
+        quantityunitpairs: List[QuantityUnitPair], maximum_verticalpositionindex: int
+    ) -> None:
         for quantityunitpair in quantityunitpairs:
-            unit = quantityunitpair.unit.lower()
+            quantity = quantityunitpair.quantity.lower()
             verticalpositionindex = quantityunitpair.verticalpositionindex
 
-            if unit == "time":
+            if quantity == "time":
                 continue
-            if not T3D._is_valid_verticalpositionindex(verticalpositionindex, maximum_verticalpositionindex):
+            if not T3D._is_valid_verticalpositionindex(
+                verticalpositionindex, maximum_verticalpositionindex
+            ):
                 raise ValueError(
                     f"Vertical position index should be between 1 and {maximum_verticalpositionindex}"
                 )
@@ -349,7 +351,9 @@ class T3D(ForcingBase):
 
         if number_of_verticalpositionindexes == number_of_quantityunitpairs:
             T3D._validate_verticalpositionindexes_and_add_them_to_quantityunitpairs(
-                verticalpositionindexes[1:], number_of_verticalpositions, quantityunitpairs[1:]
+                verticalpositionindexes[1:],
+                number_of_verticalpositions,
+                quantityunitpairs[1:],
             )
             return
 
@@ -364,12 +368,12 @@ class T3D(ForcingBase):
         raise ValueError(
             "Number of vertical positions should be equal to the number of units or equal to the number of units - 1"
         )
-    
+
     @staticmethod
     def _validate_verticalpositionindexes_and_add_them_to_quantityunitpairs(
         verticalpositionindexes: List[int],
         number_of_verticalpositions: int,
-        quantityunitpairs: List[QuantityUnitPair]
+        quantityunitpairs: List[QuantityUnitPair],
     ):
         T3D._validate_that_verticalpositionindexes_are_valid(
             verticalpositionindexes, number_of_verticalpositions
@@ -385,28 +389,34 @@ class T3D(ForcingBase):
     ) -> None:
         for verticalpositionindexstring in verticalpositionindexes:
             verticalpositionindex = int(verticalpositionindexstring)
-            if not T3D._is_valid_verticalpositionindex(verticalpositionindex, number_of_vertical_positions):
+            if not T3D._is_valid_verticalpositionindex(
+                verticalpositionindex, number_of_vertical_positions
+            ):
                 raise ValueError(
                     f"Vertical position index should be between 1 and {number_of_vertical_positions}"
                 )
 
     @staticmethod
-    def _is_valid_verticalpositionindex(verticalpositionindex: int, number_of_vertical_positions: int) -> bool:
+    def _is_valid_verticalpositionindex(
+        verticalpositionindex: int, number_of_vertical_positions: int
+    ) -> bool:
         one_based_index_offset = 1
-        
+
         return (
-            verticalpositionindex is not None 
+            verticalpositionindex is not None
             and verticalpositionindex >= one_based_index_offset
-            and verticalpositionindex <=number_of_vertical_positions
-            )
+            and verticalpositionindex <= number_of_vertical_positions
+        )
 
     @staticmethod
     def _add_verticalpositionindex_to_quantityunitpairs(
         quantityunitpairs: List[QuantityUnitPair], verticalpositionindexes: List[int]
     ) -> None:
         if len(quantityunitpairs) != len(verticalpositionindexes):
-            raise ValueError("Number of quantityunitpairs and verticalpositionindexes should be equal")
-        
+            raise ValueError(
+                "Number of quantityunitpairs and verticalpositionindexes should be equal"
+            )
+
         for (quantityunitpair, verticalpositionindex) in zip(
             quantityunitpairs, verticalpositionindexes
         ):
