@@ -30,7 +30,7 @@ class General(INIGeneral):
     version: str = Field("1.2.94.66079M", alias="version")
     filetype: Literal["modelDef"] = Field("modelDef", alias="fileType")
     fileversion: str = Field("1.09", alias="fileVersion")
-    autostart: bool = Field(False, alias="autoStart")
+    autostart: int = Field(0, alias="autoStart")
     pathsrelativetoparent: bool = Field(False, alias="pathsRelativeToParent")
 
 
