@@ -3,9 +3,15 @@ from typing import Dict, List, Optional
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.ini.models import INIBasedModel
-from hydrolib.core.io.ini.util import LocationValidationConfiguration, LocationValidationFieldNames, get_location_specification_rootvalidator, get_number_of_coordinates_validator
 from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.io.ini.models import INIBasedModel
+from hydrolib.core.io.ini.util import (
+    LocationValidationConfiguration,
+    LocationValidationFieldNames,
+    get_location_specification_rootvalidator,
+    get_number_of_coordinates_validator,
+)
+
 
 class TestLocationValidationConfiguration:
     def test_default(self):
@@ -15,6 +21,7 @@ class TestLocationValidationConfiguration:
         assert config.validate_branch == True
         assert config.validate_num_coordinates == True
         assert config.minimum_num_coordinates == 0
+
 
 class TestLocationValidationFieldNames:
     def test_default(self):
@@ -44,36 +51,34 @@ class TestLocationSpecificationValidator:
             config=LocationValidationConfiguration(minimum_num_coordinates=3)
         )
 
-
     @pytest.mark.parametrize(
         "values",
         [
-            {                                          
+            {},
+            {
+                "nodeid": "some_nodeid",
+                "branchid": "some_branchid",
+                "chainage": 1.23,
+                "xcoordinates": [4.56, 5.67, 6.78],
+                "ycoordinates": [7.89, 8.91, 9.12],
+                "numcoordinates": 3,
             },
             {
-                "nodeid" : "some_nodeid",
-                "branchid" : "some_branchid",
-                "chainage" : 1.23,
-                "xcoordinates" : [4.56,5.67,6.78],
-                "ycoordinates" : [7.89, 8.91, 9.12],
-                "numcoordinates" : 3,                                             
+                "xcoordinates": [4.56, 5.67, 6.78],
+                "ycoordinates": [7.89, 8.91, 9.12],
             },
             {
-                "xcoordinates" : [4.56,5.67,6.78],
-                "ycoordinates" : [7.89, 8.91, 9.12],                                              
+                "nodeid": "some_nodeid",
+                "branchid": "some_branchid",
+                "chainage": 1.23,
             },
             {
-                "nodeid" : "some_nodeid",
-                "branchid" : "some_branchid",
-                "chainage" : 1.23,                                               
+                "branchid": "some_branchid",
+                "chainage": 1.23,
+                "xcoordinates": [4.56, 5.67, 6.78],
             },
             {
-                "branchid" : "some_branchid",
-                "chainage" : 1.23,
-                "xcoordinates" : [4.56,5.67,6.78],                                             
-            },
-            {
-                "branchid" : "some_branchid",                                              
+                "branchid": "some_branchid",
             },
         ],
     )
@@ -86,9 +91,9 @@ class TestLocationSpecificationValidator:
 
     def test_too_few_coordinates_raises_error(self):
         values = {
-                "xcoordinates" : [1.23,2.34],
-                "ycoordinates" : [3.45,4.56],
-                "numcoordinates" : 2,                                           
+            "xcoordinates": [1.23, 2.34],
+            "ycoordinates": [3.45, 4.56],
+            "numcoordinates": 2,
         }
 
         with pytest.raises(ValidationError) as error:
@@ -96,31 +101,31 @@ class TestLocationSpecificationValidator:
 
         expected_message = f"numCoordinates should be at least 3"
         assert expected_message in str(error.value)
-    
+
     def test_coordinate_amount_does_not_match_numcoordinates_raises_error(self):
         values = {
-                "xcoordinates" : [1.23,2.34, 3.45],
-                "ycoordinates" : [4.56, 5.67, 6.78],
-                "numcoordinates" : 4,                                           
+            "xcoordinates": [1.23, 2.34, 3.45],
+            "ycoordinates": [4.56, 5.67, 6.78],
+            "numcoordinates": 4,
         }
 
         with pytest.raises(ValidationError) as error:
             TestLocationSpecificationValidator.DummyModel(**values)
 
-        expected_message ="numCoordinates should be equal to the amount of xCoordinates and yCoordinates"
+        expected_message = "numCoordinates should be equal to the amount of xCoordinates and yCoordinates"
         assert expected_message in str(error.value)
-    
+
     @pytest.mark.parametrize(
         "values",
         [
             {
-                "nodeid" : "some_nodeid",
-                "locationtype" : "2d",                                                
+                "nodeid": "some_nodeid",
+                "locationtype": "2d",
             },
             {
-                "branchid" : "some_branchid",
-                "chainage" : 1.23,
-                "locationtype" : "2d",                                                    
+                "branchid": "some_branchid",
+                "chainage": 1.23,
+                "locationtype": "2d",
             },
         ],
     )
@@ -128,47 +133,67 @@ class TestLocationSpecificationValidator:
         with pytest.raises(ValidationError) as error:
             TestLocationSpecificationValidator.DummyModel(**values)
 
-        expected_message ="locationType should be 1d but was 2d"
+        expected_message = "locationType should be 1d but was 2d"
         assert expected_message in str(error.value)
-    
+
     @pytest.mark.parametrize(
         "values",
         [
-            pytest.param({
-                "nodeid" : "some_nodeid",
-                "locationtype" : "1d",                                             
-            }, id="nodeid with locationtype"),
-            pytest.param({
-                "branchid" : "some_branchid",
-                "chainage" : 1.23,                                               
-            }, id="branchid"),
-            pytest.param({
-                "xcoordinates" : [4.56,5.67,6.78],
-                "ycoordinates" : [7.89, 8.91, 9.12],
-                "numcoordinates" : 3,                                           
-            }, id="coordinates"),
+            pytest.param(
+                {
+                    "nodeid": "some_nodeid",
+                    "locationtype": "1d",
+                },
+                id="nodeid with locationtype",
+            ),
+            pytest.param(
+                {
+                    "branchid": "some_branchid",
+                    "chainage": 1.23,
+                },
+                id="branchid",
+            ),
+            pytest.param(
+                {
+                    "xcoordinates": [4.56, 5.67, 6.78],
+                    "ycoordinates": [7.89, 8.91, 9.12],
+                    "numcoordinates": 3,
+                },
+                id="coordinates",
+            ),
         ],
     )
-    def test_correct_fields_initializes(self, values:dict):
-        validated_values =  TestLocationSpecificationValidator.DummyModel.validator(values)
+    def test_correct_fields_initializes(self, values: dict):
+        validated_values = TestLocationSpecificationValidator.DummyModel.validator(
+            values
+        )
         assert validated_values == values
 
     @pytest.mark.parametrize(
         "values, expected_values",
         [
             pytest.param(
-                {"nodeid" : "some_nodeid",},
-                {"nodeid" : "some_nodeid", "locationtype" : "1d"}, 
-                id="nodeid"),
+                {
+                    "nodeid": "some_nodeid",
+                },
+                {"nodeid": "some_nodeid", "locationtype": "1d"},
+                id="nodeid",
+            ),
             pytest.param(
-                {"branchid" : "some_branchid", "chainage" : 1.23},
-                {"branchid" : "some_branchid", "chainage" : 1.23, "locationtype" : "1d"}, 
-                id="branchid"),
+                {"branchid": "some_branchid", "chainage": 1.23},
+                {"branchid": "some_branchid", "chainage": 1.23, "locationtype": "1d"},
+                id="branchid",
+            ),
         ],
     )
-    def test_correct_1d_fields_locationtype_is_added(self, values: dict, expected_values: dict):
-        validated_values =  TestLocationSpecificationValidator.DummyModel.validator(values)
+    def test_correct_1d_fields_locationtype_is_added(
+        self, values: dict, expected_values: dict
+    ):
+        validated_values = TestLocationSpecificationValidator.DummyModel.validator(
+            values
+        )
         assert validated_values == expected_values
+
 
 class TestCoordinatesValidator:
     class DummyModel(INIBasedModel):
