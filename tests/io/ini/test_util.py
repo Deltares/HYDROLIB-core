@@ -118,15 +118,15 @@ class TestLocationSpecificationValidator:
     @pytest.mark.parametrize(
         "values",
         [
-            {
+            pytest.param({
                 "nodeid": "some_nodeid",
                 "locationtype": "2d",
-            },
-            {
+            }, id="nodeid"),
+            pytest.param({
                 "branchid": "some_branchid",
                 "chainage": 1.23,
                 "locationtype": "2d",
-            },
+            }, id="branchid"),
         ],
     )
     def test_incorrect_location_type_raises_error(self, values: dict):
@@ -142,9 +142,8 @@ class TestLocationSpecificationValidator:
             pytest.param(
                 {
                     "nodeid": "some_nodeid",
-                    "locationtype": "1d",
                 },
-                id="nodeid with locationtype",
+                id="nodeid",
             ),
             pytest.param(
                 {
