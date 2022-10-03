@@ -19,6 +19,8 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.io.ext.models.Lateral class"""
 
+        location_error: str = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+
         class TestValidateCoordinates:
             """
             Class to test the paradigms for validate_coordinates.
@@ -135,7 +137,7 @@ class TestModels:
                     Lateral._location_validator(values=dict_values)
                 assert (
                     str(exc_err.value)
-                    == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                    == TestModels.TestLateral.location_error
                 )
 
             @pytest.mark.parametrize(
@@ -157,7 +159,7 @@ class TestModels:
                     Lateral._location_validator(test_dict)
                 assert (
                     str(exc_error.value)
-                    == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                    == TestModels.TestLateral.location_error
                 )
 
             def test_given_numcoordinates_and_valid_coordinates(self):
@@ -183,7 +185,7 @@ class TestModels:
                     )
                 assert (
                     str(exc_err.value)
-                    == "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                    == TestModels.TestLateral.location_error
                 )
 
             @pytest.mark.parametrize(
@@ -271,7 +273,7 @@ class TestModels:
                         ycoordinates=y_coord,
                     )
 
-                expected_error_mssg = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                expected_error_mssg = TestModels.TestLateral.location_error
                 assert expected_error_mssg in str(exc_mssg.value)
 
             @pytest.mark.parametrize(
@@ -308,7 +310,7 @@ class TestModels:
                 lateral_dict[missing_coord.lower()] = None
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(**lateral_dict)
-                expected_error_mssg = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+                expected_error_mssg = TestModels.TestLateral.location_error
                 assert expected_error_mssg in str(exc_mssg.value)
 
             def test_given_unknown_locationtype_raises(self):
