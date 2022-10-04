@@ -1,5 +1,6 @@
 import inspect
 from pathlib import Path
+from typing import List
 
 import pytest
 from pydantic.error_wrappers import ValidationError
@@ -343,10 +344,49 @@ class TestT3D:
         assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
+        "verticalpositions, verticalpositionindexes",
+        [
+            pytest.param([1.23, 4.56], [0, 1], id="verticalpositionindex is one-based"),
+            pytest.param(
+                [1.23, 4.56],
+                [1, 3],
+                id="verticalpositionindex bigger than verticalpositions length",
+            ),
+            pytest.param([1.23, 4.56], [1, None], id="too few verticalpositionindexes"),
+            pytest.param(
+                [1.23, 4.56], [1, 2, 3], id="too many verticalpositionindexes"
+            ),
+        ],
+    )
+    def test_create_t3d_verticalpositionindex_has_invalid_value_raises_error(
+        self, verticalpositions: List[float], verticalpositionindexes: List[int]
+    ):
+        values = _create_t3d_values()
+
+        time_quantityunitpair = [_create_quantityunitpair("time", "m")]
+        other_quantutyunitpairs = []
+        for i in range(len(verticalpositionindexes)):
+            other_quantutyunitpairs.append(
+                _create_quantityunitpair(
+                    "randomQuantity", "randomUnit", verticalpositionindexes[i]
+                )
+            )
+
+        values["quantityunitpair"] = time_quantityunitpair + other_quantutyunitpairs
+        values["verticalpositions"] = verticalpositions
+
+        with pytest.raises(ValidationError) as error:
+            T3D(**values)
+
+        maximum_verticalpositionindex = len(verticalpositions)
+        expected_message = f"Vertical position index should be between 1 and {maximum_verticalpositionindex}"
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
         "number_of_quantities_and_units, number_of_verticalpositionindexes",
         [(4, 2), (2, 4)],
     )
-    def test_create_t3d_number_of_verticalindexpositions_not_equal_to_number_of_units_raises_error(
+    def test_create_t3d_number_of_verticalindexpositions_not_as_expected_raises_error(
         self,
         number_of_quantities_and_units: int,
         number_of_verticalpositionindexes: int,
