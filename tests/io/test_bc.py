@@ -358,7 +358,7 @@ class TestT3D:
             ),
         ],
     )
-    def test_create_t3d_verticalpositionindex_has_invalid_value_raises_error(
+    def test_create_t3d_verticalpositionindex_in_quantityunitpair_has_invalid_value_raises_error(
         self, verticalpositions: List[float], verticalpositionindexes: List[int]
     ):
         values = _create_t3d_values()
@@ -414,6 +414,46 @@ class TestT3D:
             T3D(**values)
 
         expected_message = "Number of vertical positions should be equal to the number of units or equal to the number of units - 1"
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "verticalpositionindexes",
+        [
+            pytest.param(
+                [0, 0], id="verticalpositionindex is one-based (time index ignored)"
+            ),
+            pytest.param([0], id="verticalpositionindex is one-based"),
+            pytest.param(
+                [1, None],
+                id="verticalpositionindex cannot be None (time index ignored)",
+            ),
+            pytest.param([None], id="verticalpositionindex cannot be None"),
+            pytest.param(
+                [1, 999],
+                id="verticalpositionindex cannot be larger than number of vertical positions (time index ignored)",
+            ),
+            pytest.param(
+                [999],
+                id="verticalpositionindex cannot be larger than number of vertical positions",
+            ),
+        ],
+    )
+    def test_create_t3d_verticalpositionindex_has_invalid_value_raises_error(
+        self, verticalpositionindexes: List[int]
+    ):
+        values = _create_t3d_values()
+
+        del values["quantityunitpair"]
+
+        values["quantity"] = ["time", "randomQuantity"]
+        values["unit"] = ["randomUnit", "randomUnit"]
+        values["verticalpositionindex"] = verticalpositionindexes
+
+        with pytest.raises(ValidationError) as error:
+            T3D(**values)
+
+        number_of_vertical_positions = len(values["verticalpositions"])
+        expected_message = f"Vertical position index should be between 1 and {number_of_vertical_positions}"
         assert expected_message in str(error.value)
 
 

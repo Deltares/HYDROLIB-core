@@ -388,7 +388,11 @@ class T3D(ForcingBase):
         verticalpositionindexes: List[int], number_of_vertical_positions: int
     ) -> None:
         for verticalpositionindexstring in verticalpositionindexes:
-            verticalpositionindex = int(verticalpositionindexstring)
+            verticalpositionindex = (
+                int(verticalpositionindexstring)
+                if verticalpositionindexstring
+                else None
+            )
             if not T3D._is_valid_verticalpositionindex(
                 verticalpositionindex, number_of_vertical_positions
             ):
