@@ -8,7 +8,7 @@ from pydantic.class_validators import root_validator, validator
 from pydantic.fields import ModelField
 from pydantic.main import BaseModel
 
-from hydrolib.core.utils import operator_str, str_is_empty_or_none
+from hydrolib.core.utils import operator_str, str_is_empty_or_none, to_list
 
 
 def get_split_string_on_delimiter_validator(*field_name: str):
@@ -346,6 +346,10 @@ def get_location_specification_rootvalidator(
         has_num_coordinates = values.get(fields.num_coordinates.lower()) is not None
 
         # ----- Local validation functions
+        def get_length(field: str):
+            value = values[field.lower()]
+            return len(to_list(value))
+
         def validate_location_type(expected_location_type: str) -> None:
             location_type = values.get(fields.location_type.lower(), None)
             if str_is_empty_or_none(location_type):
@@ -355,20 +359,34 @@ def get_location_specification_rootvalidator(
                     f"{fields.location_type} should be {expected_location_type} but was {location_type}"
                 )
 
-        def validate_num_coordinates() -> None:
-            x_coordinates = values[fields.x_coordinates.lower()]
-            y_coordinates = values[fields.y_coordinates.lower()]
+        def validate_coordinates_with_num_coordinates() -> None:
+            length_x_coordinates = get_length(fields.x_coordinates)
+            length_y_coordinates = get_length(fields.y_coordinates)
             num_coordinates = values[fields.num_coordinates.lower()]
 
-            if num_coordinates < config.minimum_num_coordinates:
-                raise ValueError(
-                    f"{fields.num_coordinates} should be at least {config.minimum_num_coordinates}"
-                )
-
-            if not num_coordinates == len(x_coordinates) == len(y_coordinates):
+            if not num_coordinates == length_x_coordinates == length_y_coordinates:
                 raise ValueError(
                     f"{fields.num_coordinates} should be equal to the amount of {fields.x_coordinates} and {fields.y_coordinates}"
                 )
+
+            validate_minimum_num_coordinates(num_coordinates)
+
+        def validate_coordinates() -> None:
+            len_x_coordinates = get_length(fields.x_coordinates)
+            len_y_coordinates = get_length(fields.y_coordinates)
+
+            if len_x_coordinates != len_y_coordinates:
+                raise ValueError(
+                    f"{fields.x_coordinates} and {fields.y_coordinates} should have an equal amount of coordinates"
+                )
+
+            validate_minimum_num_coordinates(len_x_coordinates)
+
+        def validate_minimum_num_coordinates(actual_num: int) -> None:
+            if actual_num < config.minimum_num_coordinates:
+                raise ValueError(
+                    f"{fields.x_coordinates} and {fields.y_coordinates} should have at least {config.minimum_num_coordinates} coordinate(s)"
+            )
 
         def is_valid_node_specification() -> bool:
             has_other = (
@@ -425,7 +443,7 @@ def get_location_specification_rootvalidator(
         if config.validate_coordinates:
             if config.validate_num_coordinates:
                 if is_valid_coordinates_with_num_coordinates_specification():
-                    validate_num_coordinates()
+                    validate_coordinates_with_num_coordinates()
                     return values
 
                 error_parts.append(
@@ -434,6 +452,7 @@ def get_location_specification_rootvalidator(
 
             else:
                 if is_valid_coordinates_specification():
+                    validate_coordinates()
                     return values
 
                 error_parts.append(f"{fields.x_coordinates} and {fields.y_coordinates}")

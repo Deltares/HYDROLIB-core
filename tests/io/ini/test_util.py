@@ -97,7 +97,7 @@ class TestLocationSpecificationValidator:
         with pytest.raises(ValidationError) as error:
             TestLocationSpecificationValidator.DummyModel(**values)
 
-        expected_message = f"numCoordinates should be at least 3"
+        expected_message = f"xCoordinates and yCoordinates should have at least 3 coordinate(s)"
         assert expected_message in str(error.value)
 
     def test_coordinate_amount_does_not_match_numcoordinates_raises_error(self):
