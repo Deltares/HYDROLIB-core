@@ -499,12 +499,15 @@ class Branch:
         upper_limits = limits[1:]
         lower_limits = limits[:-1]
 
+        def in_range():
+            return [
+                ((offsets > lower) & (offsets < upper)).any()
+                for lower, upper in zip(lower_limits, upper_limits)
+            ]
+
         # Determine the segments that are missing a mesh node
         # Anchor points are added on these segments, such that they will get a mesh node
-        in_range = [
-            ((offsets > lower) & (offsets < upper)).any()
-            for lower, upper in zip(lower_limits, upper_limits)
-        ]
+        in_range = in_range()
 
         while not all(in_range):
             # Get the index of the first segment without grid point
@@ -518,10 +521,7 @@ class Branch:
             offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
 
             # Determine the segments that are missing a grid point
-            in_range = [
-                ((offsets > lower) & (offsets < upper)).any()
-                for lower, upper in zip(lower_limits, upper_limits)
-            ]
+            in_range = in_range()
 
         if len(anchor_pts) > 2:
             logger.info(
