@@ -5,7 +5,6 @@ from typing import List
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.ini.models import BaseModel
 from hydrolib.core.io.bc.models import (
     T3D,
     Astronomic,
@@ -22,6 +21,7 @@ from hydrolib.core.io.bc.models import (
     VerticalInterpolation,
     VerticalPositionType,
 )
+from hydrolib.core.io.ini.models import BaseModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
 from ..utils import (

@@ -19,10 +19,10 @@ from pydantic.fields import Field
 
 from hydrolib.core.io.ini.io_models import Property, Section
 from hydrolib.core.io.ini.models import (
+    BaseModel,
     DataBlockINIBasedModel,
     INIGeneral,
     INIModel,
-    BaseModel,
 )
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
