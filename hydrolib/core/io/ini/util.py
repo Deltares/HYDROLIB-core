@@ -386,7 +386,7 @@ def get_location_specification_rootvalidator(
             if actual_num < config.minimum_num_coordinates:
                 raise ValueError(
                     f"{fields.x_coordinates} and {fields.y_coordinates} should have at least {config.minimum_num_coordinates} coordinate(s)"
-            )
+                )
 
         def is_valid_node_specification() -> bool:
             has_other = (
