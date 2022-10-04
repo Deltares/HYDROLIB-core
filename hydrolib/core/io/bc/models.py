@@ -213,9 +213,15 @@ class TimeSeries(ForcingBase):
     """Subclass for a .bc file [Forcing] block with timeseries data."""
 
     function: Literal["timeseries"] = "timeseries"
+
     timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
+    """TimeInterpolation: The type of time interpolation."""
+
     offset: float = Field(0.0, alias="offset")
+    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
     _timeinterpolation_validator = get_enum_validator(
         "timeinterpolation", enum=TimeInterpolation
@@ -226,14 +232,18 @@ class Harmonic(ForcingBase):
     """Subclass for a .bc file [Forcing] block with harmonic components data."""
 
     function: Literal["harmonic"] = "harmonic"
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
 
 class Astronomic(ForcingBase):
     """Subclass for a .bc file [Forcing] block with astronomic components data."""
 
     function: Literal["astronomic"] = "astronomic"
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
 
 class HarmonicCorrection(ForcingBase):
@@ -252,6 +262,7 @@ class T3D(ForcingBase):
     """Subclass for a .bc file [Forcing] block with 3D timeseries data."""
 
     function: Literal["t3d"] = "t3d"
+
     offset: float = Field(0.0, alias="offset")
     """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
 
@@ -290,12 +301,13 @@ class T3D(ForcingBase):
 
         quantityunitpairkey = "quantityunitpair"
         quantityunitpairs = values[quantityunitpairkey]
-        verticalpositionindexes = values.get("verticalpositionindex")
-        number_of_verticalpositions = len(values["verticalpositions"])
 
         T3D._validate_that_first_unit_is_time_and_has_no_verticalpositionindex(
             quantityunitpairs
         )
+
+        verticalpositionindexes = values.get("verticalpositionindex")
+        number_of_verticalpositions = len(values["verticalpositions"])
 
         if verticalpositionindexes is None:
             T3D._validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
@@ -374,7 +386,7 @@ class T3D(ForcingBase):
         verticalpositionindexes: List[int],
         number_of_verticalpositions: int,
         quantityunitpairs: List[QuantityUnitPair],
-    ):
+    ) -> None:
         T3D._validate_that_verticalpositionindexes_are_valid(
             verticalpositionindexes, number_of_verticalpositions
         )
@@ -439,13 +451,18 @@ class Constant(ForcingBase):
     function: Literal["constant"] = "constant"
 
     offset: float = Field(0.0, alias="offset")
+    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
 
 class ForcingGeneral(INIGeneral):
     """`[General]` section with .bc file metadata."""
 
     fileversion: str = Field("1.01", alias="fileVersion")
+    """str: The file version."""
+
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
@@ -455,16 +472,16 @@ class ForcingModel(INIModel):
 
     This model is for example referenced under a
     [ExtModel][hydrolib.core.io.ext.models.ExtModel]`.boundary[..].forcingfile[..]`.
-
-    Attributes:
-        general (ForcingGeneral): `[General]` block with file metadata.
-        forcing (List[ForcingBase]): List of `[Forcing]` blocks for all forcing
-            definitions in a single .bc file. Actual data is stored in
-            forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock] or [hydrolib.core.io.ini.models.DataBlockINIBasedModel].
     """
 
     general: ForcingGeneral = ForcingGeneral()
+    """ForcingGeneral: `[General]` block with file metadata."""
+
     forcing: List[ForcingBase] = []
+    """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
+    definitions in a single .bc file. Actual data is stored in
+    forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock] 
+    or [hydrolib.core.io.ini.models.DataBlockINIBasedModel]."""
 
     _split_to_list = make_list_validator("forcing")
 
