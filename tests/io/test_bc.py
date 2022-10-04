@@ -384,7 +384,10 @@ class TestT3D:
 
     @pytest.mark.parametrize(
         "number_of_quantities_and_units, number_of_verticalpositionindexes",
-        [(4, 2), (2, 4)],
+        [
+            pytest.param(4, 2, id="4 quantities, but 2 verticalpositionindexes"),
+            pytest.param(2, 4, id="2 quantities, but 4 verticalpositionindexes"),
+        ],
     )
     def test_create_t3d_number_of_verticalindexpositions_not_as_expected_raises_error(
         self,
@@ -455,6 +458,62 @@ class TestT3D:
         number_of_vertical_positions = len(values["verticalpositions"])
         expected_message = f"Vertical position index should be between 1 and {number_of_vertical_positions}"
         assert expected_message in str(error.value)
+
+    def test_create_t3d_creates_correct_quantityunitpairs(self):
+        values = _create_t3d_values()
+
+        t3d = T3D(**values)
+
+        quantityunitpairs = t3d.quantityunitpair
+        expected_quantityunitpairs = values["quantityunitpair"]
+
+        TestT3D._validate_that_correct_quantityunitpairs_are_created(
+            quantityunitpairs, expected_quantityunitpairs
+        )
+
+    def test_create_t3d_creates_correct_quantityunitpairs_using_verticalpositionindexes(
+        self,
+    ):
+        values = _create_t3d_values()
+
+        del values["quantityunitpair"]
+
+        values["quantity"] = ["time", "randomQuantity1", "randomQuantity2"]
+        values["unit"] = ["randomUnit", "randomUnit", "randomUnit"]
+        values["verticalpositionindex"] = [None, 2, 3]
+
+        t3d = T3D(**values)
+
+        quantityunitpairs = t3d.quantityunitpair
+        expected_quantityunitpairs = []
+
+        for quantity, unit, verticalpositionindex in zip(
+            values["quantity"], values["unit"], values["verticalpositionindex"]
+        ):
+            expected_quantityunitpairs.append(
+                _create_quantityunitpair(quantity, unit, verticalpositionindex)
+            )
+
+        TestT3D._validate_that_correct_quantityunitpairs_are_created(
+            quantityunitpairs, expected_quantityunitpairs
+        )
+
+    @staticmethod
+    def _validate_that_correct_quantityunitpairs_are_created(
+        quantityunitpairs: List[QuantityUnitPair],
+        expected_quantityunitpairs: List[QuantityUnitPair],
+    ):
+        assert len(quantityunitpairs) == len(expected_quantityunitpairs)
+
+        for quantityunitpair, expected_quantityunitpair in zip(
+            quantityunitpairs, expected_quantityunitpairs
+        ):
+            assert quantityunitpair.quantity == expected_quantityunitpair.quantity
+            assert quantityunitpair.unit == expected_quantityunitpair.unit
+            assert (
+                quantityunitpair.verticalpositionindex
+                == expected_quantityunitpair.verticalpositionindex
+            )
 
 
 def _create_time_series_values():
