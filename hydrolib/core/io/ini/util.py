@@ -252,25 +252,47 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
 
 
 class LocationValidationConfiguration(BaseModel):
-    """Class that holds the various configuration seetings needed for location validation."""
+    """Class that holds the various configuration settings needed for location validation."""
 
     validate_node: bool = True
+    """bool, optional: Whether or not node location specification should be validated. Defaults to True."""
+
     validate_coordinates: bool = True
+    """bool, optional: Whether or not coordinate location specification should be validated. Defaults to True."""
+
     validate_branch: bool = True
+    """bool, optional: Whether or not branch location specification should be validated. Defaults to True."""
+
     validate_num_coordinates: bool = True
+    """bool, optional: Whether or not the number of coordinates should be validated or not. This option is only relevant when `validate_coordinates` is True. Defaults to True."""
+
     minimum_num_coordinates: int = 0
+    """int, optional: The minimum required number of coordinates. This option is only relevant when `validate_coordinates` is True. Defaults to 0."""
 
 
 class LocationValidationFieldNames(BaseModel):
     """Class that holds the various field names needed for location validation."""
 
     node_id: str = "nodeId"
+    """str, optional: The node id field name. Defaults to `nodeId`."""
+
     branch_id: str = "branchId"
+    """str, optional: The branch id field name. Defaults to `branchId`."""
+
     chainage: str = "chainage"
+    """str, optional: The chainage field name. Defaults to `chainage`."""
+
     x_coordinates: str = "xCoordinates"
+    """str, optional: The x-coordinates field name. Defaults to `xCoordinates`."""
+
     y_coordinates: str = "yCoordinates"
+    """str, optional: The y-coordinates field name. Defaults to `yCoordinates`."""
+
     num_coordinates: str = "numCoordinates"
+    """str, optional: The number of coordinates field name. Defaults to `numCoordinates`."""
+
     location_type: str = "locationType"
+    """str, optional: The location type field name. Defaults to `locationType`."""
 
 
 def get_location_specification_rootvalidator(
@@ -309,7 +331,7 @@ def get_location_specification_rootvalidator(
             - branchId with chainage
             - xCoordinates with yCoordinates
             - xCoordinates with yCoordinates and numCoordinates.
-            ValueError: When numCoordinates does not meet the requirement minumum amount or does not match the amount of xCoordinates or yCoordinates.
+            ValueError: When numCoordinates does not meet the requirement minimum amount or does not match the amount of xCoordinates or yCoordinates.
             ValueError: When locationType should be 1d but other was specified.
 
         Returns:
