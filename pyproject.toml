@@ -22,6 +22,7 @@ numpy = "^1.21"
 pydantic = {extras = ["dotenv"], version = "~1.8"}
 lxml = "^4.6"
 meshkernel = "^1.0.0"
+poetry-multiproject-plugin = "^0.3.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
