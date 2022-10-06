@@ -560,6 +560,10 @@ class FileModel(BaseModel, ABC):
         If no filepath is provided, the model is initialized as an empty
         model with default values.
         If the filepath is provided, it is read from disk.
+
+        Args:
+            filepath (Optional[Path], optional): The file path. Defaults to None.
+            resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
