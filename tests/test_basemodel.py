@@ -291,6 +291,13 @@ class TestFileModel:
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
+    def test_initialize_model_with_resolve_casing_updates_file_references_recursively(self):
+        file_path = test_input_dir / "resolve_casing_file_load_test" / "fm.mdu"
+        model = FMModel(file_path, resolve_casing=True)
+
+        assert model.geometry.inifieldfile.filepath.name == "initialFields.ini"
+        assert model.geometry.inifieldfile.initial[0].datafile.filepath.name == "InitialWaterLevel.ini"
+
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
