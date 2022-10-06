@@ -545,7 +545,7 @@ class FileModel(BaseModel, ABC):
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
             loading_path = FileModel._adjust_file_path_to_casing(loading_path)
-            filepath=filepath.with_name(loading_path.name)
+            filepath = filepath.with_name(loading_path.name)
             context.register_model(filepath, self)
 
             logger.info(f"Loading data from {filepath}")
@@ -800,11 +800,13 @@ class FileModel(BaseModel, ABC):
         if file.parent.is_dir() and not str_is_empty_or_none(file.parent.name):
             for item in file.parent.iterdir():
                 if item.is_file() and item.name.lower() == file.name.lower():
-                        logger.info(f"Updating file reference from {file.name} to {item.name}")
-                        return file.with_name(item.name)
+                    logger.info(
+                        f"Updating file reference from {file.name} to {item.name}"
+                    )
+                    return file.with_name(item.name)
 
         return file
-        
+
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
 
