@@ -249,14 +249,35 @@ class ResolveRelativeMode(IntEnum):
 class FileCasingResolver:
     """Class for resolving file path in a case-insensitive manner."""
 
-    @staticmethod
-    def resolve(file: Path) -> Path:
+    def __init__(self) -> None:
+        """Initializes a new instance of the `FileCasingResolver` class."""
+        
+        self._has_initialized = False
+        self._resolve_casing = False
+
+    def initialize_resolve_casing(self, resolve_casing: bool) -> None:
+        """Initialize the setting to resolve casing or not. Can only be set once.
+
+        Args:
+            resolve_casing (bool): Whether or not to resolve the file casing.
+        """
+        if self._has_initialized:
+            return
+
+        self._resolve_casing = resolve_casing
+        self._has_initialized = True
+
+    def resolve(self, file: Path) -> Path:
         """Resolve the casing of a file path when the file does exist but not with the exact casing.
         Search is case-insensitive only for the file name not for the full file path.
 
         Returns:
             Path: The file path with the matched casing if a match exists; otherwise, the original file path.
         """
+
+        if not self._resolve_casing:
+            return file
+
         if file.parent.is_dir() and not str_is_empty_or_none(file.parent.name):
             for item in file.parent.iterdir():
                 if item.is_file() and item.name.lower() == file.name.lower():
@@ -393,6 +414,7 @@ class FileLoadContext:
         """Create a new empty FileLoadContext."""
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
+        self._file_casing_resolver = FileCasingResolver()
 
     def retrieve_model(self, path: Optional[Path]) -> Optional["FileModel"]:
         """Retrieve the model associated with the path.
@@ -467,6 +489,14 @@ class FileLoadContext:
         """Pop the last added parent off this FileLoadContext."""
         self._path_resolver.pop_last_parent()
 
+    def set_resolve_casing(self, resolve_casing: bool) -> None:
+        self._file_casing_resolver.initialize_resolve_casing(resolve_casing)
+
+    def resolve_casing(self, file_path: Path) -> Path:
+        return self._file_casing_resolver.resolve(file_path)
+
+
+
 
 @contextmanager
 def file_load_context():
@@ -481,7 +511,7 @@ def file_load_context():
     context_reset_token = None
 
     if not file_loading_context:
-        file_loading_context = FileLoadContext()
+        file_loading_context: FileLoadContext = FileLoadContext()
         context_reset_token = context_file_loading.set(file_loading_context)
 
     try:
@@ -570,9 +600,10 @@ class FileModel(BaseModel, ABC):
             return
 
         with file_load_context() as context:
+            context.set_resolve_casing(resolve_casing)
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
-            loading_path = FileCasingResolver.resolve(loading_path)
+            loading_path = context.resolve_casing(loading_path)
             filepath = filepath.with_name(loading_path.name)
             context.register_model(filepath, self)
 

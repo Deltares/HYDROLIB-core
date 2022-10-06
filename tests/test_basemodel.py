@@ -659,22 +659,42 @@ class TestDiskOnlyFileModel:
 
 class TestFileCasingResolver:
     @pytest.mark.parametrize(
-        "input_file_name, expected_file_name",
+        "resolve_casing, input_file_name, expected_file_name",
         [
             pytest.param(
+                True,
                 "FLOWFM_BOUNDARYCONDITIONS1D.BC",
                 "FlowFM_boundaryconditions1d.bc",
-                id="Matching file with different casing",
+                id="resolve_casing True: Matching file exists with different casing",
             ),
-            pytest.param("beepboop.robot", "beepboop.robot", id="No matching file"),
+            pytest.param(True, "beepboop.robot", "beepboop.robot", id="resolve_casing True: No matching file"),
+            pytest.param(
+                False,
+                "FLOWFM_BOUNDARYCONDITIONS1D.BC",
+                "FLOWFM_BOUNDARYCONDITIONS1D.BC",
+                id="resolve_casing False: Matching file exists with different casing",
+            ),
+            pytest.param(False, "beepboop.robot", "beepboop.robot", id="resolve_casing False: No matching file"),
         ],
     )
     def test_resolve_returns_correct_result(
-        self, input_file_name: str, expected_file_name: str
+        self, resolve_casing: bool, input_file_name: str, expected_file_name: str
     ) -> None:
+        resolver = FileCasingResolver()
+        resolver.initialize_resolve_casing(resolve_casing)
+
         file_path = test_input_dir / "dflowfm_individual_files" / input_file_name
 
         expected_file_path = file_path.with_name(expected_file_name)
-        actual_file_path = FileCasingResolver.resolve(file_path)
+        actual_file_path = resolver.resolve(file_path)
 
         assert actual_file_path == expected_file_path
+
+    @pytest.mark.parametrize("first", [True, False])
+    @pytest.mark.parametrize("second", [True, False])
+    def test_can_only_set_resolve_casing_once(self, first: bool, second: bool):
+        resolver = FileCasingResolver()
+        resolver.initialize_resolve_casing(first)
+        resolver.initialize_resolve_casing(second)
+
+        assert resolver._resolve_casing == first
