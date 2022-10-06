@@ -7,8 +7,8 @@ from typing import Any, Callable, Dict, List, Optional, Type
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import ModelField
 from pydantic.main import BaseModel
-from hydrolib.core.io.common.models import LocationType
 
+from hydrolib.core.io.common.models import LocationType
 from hydrolib.core.utils import operator_str, str_is_empty_or_none, to_list
 
 
