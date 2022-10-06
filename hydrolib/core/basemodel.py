@@ -245,12 +245,13 @@ class ResolveRelativeMode(IntEnum):
     ToParent = 0
     ToAnchor = 1
 
+
 class FileCasingResolver:
     """Class for resolving file path in a case-insensitive manner."""
 
     @staticmethod
     def resolve(file: Path) -> Path:
-        """Resolve the casing of a file path when the file does exist but not with the exact casing. 
+        """Resolve the casing of a file path when the file does exist but not with the exact casing.
         Search is case-insensitive only for the file name not for the full file path.
 
         Returns:
