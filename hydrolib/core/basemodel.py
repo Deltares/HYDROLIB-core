@@ -490,9 +490,22 @@ class FileLoadContext:
         self._path_resolver.pop_last_parent()
 
     def set_resolve_casing(self, resolve_casing: bool) -> None:
+        """Set the setting to resolve casing or not.
+
+        Args:
+            resolve_casing (bool): Whether or not to resolve the file casing.
+        """
         self._file_casing_resolver.initialize_resolve_casing(resolve_casing)
 
     def resolve_casing(self, file_path: Path) -> Path:
+        """Resolve the file casing for the provided file path.
+
+        Args:
+            file_path (Path): The file path to resolve the casing for.
+
+        Returns:
+            Path: The resolved file path.
+        """
         return self._file_casing_resolver.resolve(file_path)
 
 
