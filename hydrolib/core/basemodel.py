@@ -522,7 +522,7 @@ def file_load_context():
     context_reset_token = None
 
     if not file_loading_context:
-        file_loading_context: FileLoadContext = FileLoadContext()
+        file_loading_context = FileLoadContext()
         context_reset_token = context_file_loading.set(file_loading_context)
 
     try:
