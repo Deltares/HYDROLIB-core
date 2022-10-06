@@ -337,7 +337,7 @@ class TestT3D:
         with pytest.raises(ValidationError) as error:
             T3D(**values)
 
-        expected_maximum_index = len(values["verticalpositions"])
+        expected_maximum_index = len(values["verticalpositions"].split())
         expected_message = (
             f"Vertical position index should be between 1 and {expected_maximum_index}"
         )
@@ -386,7 +386,7 @@ class TestT3D:
         "number_of_quantities_and_units, number_of_verticalpositionindexes",
         [
             pytest.param(4, 2, id="4 quantities, but 2 verticalpositionindexes"),
-            pytest.param(2, 4, id="2 quantities, but 4 verticalpositionindexes"),
+            pytest.param(2, 3, id="2 quantities, but 3 verticalpositionindexes"),
         ],
     )
     def test_create_t3d_number_of_verticalindexpositions_not_as_expected_raises_error(
@@ -416,27 +416,16 @@ class TestT3D:
         with pytest.raises(ValidationError) as error:
             T3D(**values)
 
-        expected_message = "Number of vertical positions should be equal to the number of units or equal to the number of units - 1"
+        expected_message = "Number of vertical position indexes should be equal to the number of quantities/units - 1"
         assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
         "verticalpositionindexes",
         [
-            pytest.param(
-                [0, 0], id="verticalpositionindex is one-based (time index ignored)"
-            ),
             pytest.param([0], id="verticalpositionindex is one-based"),
-            pytest.param(
-                [1, None],
-                id="verticalpositionindex cannot be None (time index ignored)",
-            ),
             pytest.param([None], id="verticalpositionindex cannot be None"),
             pytest.param(
-                [1, 999],
-                id="verticalpositionindex cannot be larger than number of vertical positions (time index ignored)",
-            ),
-            pytest.param(
-                [999],
+                [4],
                 id="verticalpositionindex cannot be larger than number of vertical positions",
             ),
         ],
@@ -455,7 +444,7 @@ class TestT3D:
         with pytest.raises(ValidationError) as error:
             T3D(**values)
 
-        number_of_vertical_positions = len(values["verticalpositions"])
+        number_of_vertical_positions = len(values["verticalpositions"].split())
         expected_message = f"Vertical position index should be between 1 and {number_of_vertical_positions}"
         assert expected_message in str(error.value)
 
@@ -480,7 +469,7 @@ class TestT3D:
 
         values["quantity"] = ["time", "randomQuantity1", "randomQuantity2"]
         values["unit"] = ["randomUnit", "randomUnit", "randomUnit"]
-        values["verticalpositionindex"] = [None, 2, 3]
+        values["verticalpositionindex"] = [2, 3]
 
         t3d = T3D(**values)
 
@@ -488,7 +477,7 @@ class TestT3D:
         expected_quantityunitpairs = []
 
         for quantity, unit, verticalpositionindex in zip(
-            values["quantity"], values["unit"], values["verticalpositionindex"]
+            values["quantity"], values["unit"], [None] + values["verticalpositionindex"]
         ):
             expected_quantityunitpairs.append(
                 _create_quantityunitpair(quantity, unit, verticalpositionindex)

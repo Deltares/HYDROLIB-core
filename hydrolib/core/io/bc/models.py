@@ -37,7 +37,9 @@ logger = logging.getLogger(__name__)
 
 
 class VerticalInterpolation(str, Enum):
-    """Enum class containing the valid values for the vertical interpolation."""
+    """Enum class containing the valid values for the vertical position type,
+    which defines what the numeric values for vertical position specification mean.
+    """
 
     linear = "linear"
     """str: Linear interpolation between vertical positions."""
@@ -276,7 +278,7 @@ class T3D(ForcingBase):
     """VerticalInterpolation: The type of vertical interpolation."""
 
     verticalpositiontype: VerticalPositionType = Field(alias="Vertical Position Type")
-    """VerticalPositionType: The vertical position type."""
+    """VerticalPositionType: The vertical position type of the verticalpositions values."""
 
     timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
     """TimeInterpolation: The type of time interpolation."""
@@ -299,15 +301,19 @@ class T3D(ForcingBase):
     def _validate_quantityunitpair(cls, values):
         super()._validate_quantityunitpair(values)
 
-        quantityunitpairkey = "quantityunitpair"
-        quantityunitpairs = values[quantityunitpairkey]
+        quantityunitpairs = values["quantityunitpair"]
 
         T3D._validate_that_first_unit_is_time_and_has_no_verticalpositionindex(
             quantityunitpairs
         )
 
         verticalpositionindexes = values.get("verticalpositionindex")
-        number_of_verticalpositions = len(values["verticalpositions"])
+        verticalpositions = values["verticalpositions"]
+        number_of_verticalpositions = (
+            len(verticalpositions)
+            if isinstance(verticalpositions, List)
+            else len(verticalpositions.split())
+        )
 
         if verticalpositionindexes is None:
             T3D._validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
@@ -358,41 +364,17 @@ class T3D(ForcingBase):
         if verticalpositionindexes is None:
             raise ValueError("verticalpositionindex is not provided")
 
-        number_of_quantityunitpairs = len(quantityunitpairs)
-        number_of_verticalpositionindexes = len(verticalpositionindexes)
-
-        if number_of_verticalpositionindexes == number_of_quantityunitpairs:
-            T3D._validate_verticalpositionindexes_and_add_them_to_quantityunitpairs(
-                verticalpositionindexes[1:],
-                number_of_verticalpositions,
-                quantityunitpairs[1:],
+        if len(verticalpositionindexes) != len(quantityunitpairs) - 1:
+            raise ValueError(
+                "Number of vertical position indexes should be equal to the number of quantities/units - 1"
             )
-            return
 
-        if number_of_verticalpositionindexes == number_of_quantityunitpairs - 1:
-            T3D._validate_verticalpositionindexes_and_add_them_to_quantityunitpairs(
-                verticalpositionindexes,
-                number_of_verticalpositions,
-                quantityunitpairs[1:],
-            )
-            return
-
-        raise ValueError(
-            "Number of vertical positions should be equal to the number of units or equal to the number of units - 1"
-        )
-
-    @staticmethod
-    def _validate_verticalpositionindexes_and_add_them_to_quantityunitpairs(
-        verticalpositionindexes: List[int],
-        number_of_verticalpositions: int,
-        quantityunitpairs: List[QuantityUnitPair],
-    ) -> None:
         T3D._validate_that_verticalpositionindexes_are_valid(
             verticalpositionindexes, number_of_verticalpositions
         )
 
         T3D._add_verticalpositionindex_to_quantityunitpairs(
-            quantityunitpairs, verticalpositionindexes
+            quantityunitpairs[1:], verticalpositionindexes
         )
 
     @staticmethod
@@ -480,8 +462,7 @@ class ForcingModel(INIModel):
     forcing: List[ForcingBase] = []
     """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
     definitions in a single .bc file. Actual data is stored in
-    forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock] 
-    or [hydrolib.core.io.ini.models.DataBlockINIBasedModel]."""
+    forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock]."""
 
     _split_to_list = make_list_validator("forcing")
 
