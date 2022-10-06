@@ -667,14 +667,24 @@ class TestFileCasingResolver:
                 "FlowFM_boundaryconditions1d.bc",
                 id="resolve_casing True: Matching file exists with different casing",
             ),
-            pytest.param(True, "beepboop.robot", "beepboop.robot", id="resolve_casing True: No matching file"),
+            pytest.param(
+                True,
+                "beepboop.robot",
+                "beepboop.robot",
+                id="resolve_casing True: No matching file",
+            ),
             pytest.param(
                 False,
                 "FLOWFM_BOUNDARYCONDITIONS1D.BC",
                 "FLOWFM_BOUNDARYCONDITIONS1D.BC",
                 id="resolve_casing False: Matching file exists with different casing",
             ),
-            pytest.param(False, "beepboop.robot", "beepboop.robot", id="resolve_casing False: No matching file"),
+            pytest.param(
+                False,
+                "beepboop.robot",
+                "beepboop.robot",
+                id="resolve_casing False: No matching file",
+            ),
         ],
     )
     def test_resolve_returns_correct_result(

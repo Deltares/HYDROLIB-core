@@ -251,7 +251,7 @@ class FileCasingResolver:
 
     def __init__(self) -> None:
         """Initializes a new instance of the `FileCasingResolver` class."""
-        
+
         self._has_initialized = False
         self._resolve_casing = False
 
@@ -494,8 +494,6 @@ class FileLoadContext:
 
     def resolve_casing(self, file_path: Path) -> Path:
         return self._file_casing_resolver.resolve(file_path)
-
-
 
 
 @contextmanager
