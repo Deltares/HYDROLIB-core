@@ -7,6 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import ModelField
 from pydantic.main import BaseModel
+from hydrolib.core.io.common.models import LocationType
 
 from hydrolib.core.utils import operator_str, str_is_empty_or_none, to_list
 
@@ -350,7 +351,7 @@ def get_location_specification_rootvalidator(
             value = values[field.lower()]
             return len(to_list(value))
 
-        def validate_location_type(expected_location_type: str) -> None:
+        def validate_location_type(expected_location_type: LocationType) -> None:
             location_type = values.get(fields.location_type.lower(), None)
             if str_is_empty_or_none(location_type):
                 values[fields.location_type.lower()] = expected_location_type
@@ -428,14 +429,14 @@ def get_location_specification_rootvalidator(
 
         if config.validate_node:
             if is_valid_node_specification():
-                validate_location_type("1d")
+                validate_location_type(LocationType.oned)
                 return values
 
             error_parts.append(fields.node_id)
 
         if config.validate_branch:
             if is_valid_branch_specification():
-                validate_location_type("1d")
+                validate_location_type(LocationType.oned)
                 return values
 
             error_parts.append(f"{fields.branch_id} and {fields.chainage}")
