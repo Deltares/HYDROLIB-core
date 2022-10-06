@@ -552,7 +552,7 @@ class FileModel(BaseModel, ABC):
             else:
                 return super().__new__(cls)
 
-    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+    def __init__(self, filepath: Optional[Path] = None, resolve_casing = False, *args, **kwargs):
         """Create a new FileModel from the given filepath.
 
         If no filepath is provided, the model is initialized as an empty
@@ -813,21 +813,6 @@ class FileModel(BaseModel, ABC):
             Dict: The data stored at filepath
         """
         raise NotImplementedError()
-
-    @staticmethod
-    def _adjust_file_path_to_casing(file: Path) -> Path:
-        if file.is_file():
-            return file
-
-        if file.parent.is_dir() and not str_is_empty_or_none(file.parent.name):
-            for item in file.parent.iterdir():
-                if item.is_file() and item.name.lower() == file.name.lower():
-                    logger.info(
-                        f"Updating file reference from {file.name} to {item.name}"
-                    )
-                    return file.with_name(item.name)
-
-        return file
 
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
