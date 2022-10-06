@@ -552,7 +552,9 @@ class FileModel(BaseModel, ABC):
             else:
                 return super().__new__(cls)
 
-    def __init__(self, filepath: Optional[Path] = None, resolve_casing = False, *args, **kwargs):
+    def __init__(
+        self, filepath: Optional[Path] = None, resolve_casing=False, *args, **kwargs
+    ):
         """Create a new FileModel from the given filepath.
 
         If no filepath is provided, the model is initialized as an empty
