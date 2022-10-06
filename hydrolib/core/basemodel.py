@@ -245,6 +245,27 @@ class ResolveRelativeMode(IntEnum):
     ToParent = 0
     ToAnchor = 1
 
+class FileCasingResolver:
+    """Class for resolving file path in a case-insensitive manner."""
+
+    @staticmethod
+    def resolve(file: Path) -> Path:
+        """Resolve the casing of a file path when the file does exist but not with the exact casing. 
+        Search is case-insensitive only for the file name not for the full file path.
+
+        Returns:
+            Path: The file path with the matched casing if a match exists; otherwise, the original file path.
+        """
+        if file.parent.is_dir() and not str_is_empty_or_none(file.parent.name):
+            for item in file.parent.iterdir():
+                if item.is_file() and item.name.lower() == file.name.lower():
+                    logger.info(
+                        f"Updating file reference from {file.name} to {item.name}"
+                    )
+                    return file.with_name(item.name)
+
+        return file
+
 
 class FilePathResolver:
     """FilePathResolver is responsible for resolving relative paths.
@@ -544,7 +565,7 @@ class FileModel(BaseModel, ABC):
         with file_load_context() as context:
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
-            loading_path = FileModel._adjust_file_path_to_casing(loading_path)
+            loading_path = FileCasingResolver.resolve(loading_path)
             filepath = filepath.with_name(loading_path.name)
             context.register_model(filepath, self)
 

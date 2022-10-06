@@ -7,6 +7,7 @@ import pytest
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
+    FileCasingResolver,
     FileLoadContext,
     FileModel,
     FileModelCache,
@@ -654,3 +655,21 @@ class TestDiskOnlyFileModel:
         assert output_path.exists()
         assert output_path.is_file()
         assert filecmp.cmp(input_parent_path / input_file_name, output_path)
+
+class TestFileCasingResolver:
+    @pytest.mark.parametrize(
+        "input_file_name, expected_file_name",
+        [
+            pytest.param("FLOWFM_BOUNDARYCONDITIONS1D.BC", "FlowFM_boundaryconditions1d.bc", id="Matching file with different casing"),
+            pytest.param("beepboop.robot", "beepboop.robot", id="No matching file"),
+        ],
+    )
+    def test_resolve_returns_correct_result(self, input_file_name: str, expected_file_name: str) -> None:
+        file_path = (
+            test_input_dir / "dflowfm_individual_files" / input_file_name
+        )
+
+        expected_file_path = file_path.with_name(expected_file_name)
+        actual_file_path = FileCasingResolver.resolve(file_path)
+
+        assert actual_file_path == expected_file_path
