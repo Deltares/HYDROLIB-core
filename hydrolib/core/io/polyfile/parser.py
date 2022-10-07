@@ -438,16 +438,6 @@ class Parser:
         if line[0] != " ":
             return
 
-        end_column = len(line) - len(line.lstrip()) - 1
-        self._current_block.ws_warnings.append(
-            ParseMsg(
-                line_start=self._line,
-                line_end=self._line,
-                column=(0, end_column),
-                reason="White space at the start of the line is ignored.",
-            )
-        )
-
     def _handle_new_error(self, reason: str) -> None:
         self._error_builder.start_invalid_block(
             self._current_block.start_line, self._line, reason
