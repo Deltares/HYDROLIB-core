@@ -44,25 +44,25 @@ unit     = deg
 60.0    3.45    4.56
 
 [Forcing]
-name                            = boundary_t3d
-function                        = t3d
-offset                          = 1.23
-factor                          = 2.34
-Vertical Position Specification = 3.45 4.56 5.67
-Vertical Interpolation          = log
-Vertical Position Type          = percBed
-timeInterpolation               = linear
-quantity                        = time
-unit                            = m
-quantity                        = salinitybnd
-unit                            = ppt
-Vertical Position               = 1
-quantity                        = salinitybnd
-unit                            = ppt
-Vertical Position               = 2
-quantity                        = salinitybnd
-unit                            = ppt
-Vertical Position               = 3
+name                          = boundary_t3d
+function                      = t3d
+offset                        = 1.23
+factor                        = 2.34
+verticalPositionSpecification = 3.45 4.56 5.67
+verticalInterpolation         = log
+verticalPositionType          = percBed
+timeInterpolation             = linear
+quantity                      = time
+unit                          = m
+quantity                      = salinitybnd
+unit                          = ppt
+verticalPosition              = 1
+quantity                      = salinitybnd
+unit                          = ppt
+verticalPosition              = 2
+quantity                      = salinitybnd
+unit                          = ppt
+verticalPosition              = 3
 0.0      1.0    2.0    3.0
 60.0     4.0    5.0    6.0
 120.0    7.0    8.0    9.0

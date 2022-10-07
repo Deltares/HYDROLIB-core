@@ -89,14 +89,14 @@ class QuantityUnitPair(BaseModel):
     unit: str
     """str: Unit of quantity."""
 
-    verticalpositionindex: Optional[int]
+    verticalposition: Optional[int]
     """int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only)."""
 
     def _to_properties(self):
         yield Property(key="quantity", value=self.quantity)
         yield Property(key="unit", value=self.unit)
-        if self.verticalpositionindex is not None:
-            yield Property(key="Vertical Position", value=self.verticalpositionindex)
+        if self.verticalposition is not None:
+            yield Property(key="verticalPosition", value=self.verticalposition)
 
 
 class ForcingBase(DataBlockINIBasedModel):
@@ -269,20 +269,26 @@ class T3D(ForcingBase):
     factor: float = Field(1.0, alias="factor")
     """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
-    verticalpositions: List[float] = Field(alias="Vertical Position Specification")
+    verticalpositionspecification: List[float] = Field(
+        alias="verticalPositionSpecification"
+    )
     """List[float]: The specification of the vertical positions."""
 
-    verticalinterpolation: VerticalInterpolation = Field(alias="Vertical Interpolation")
-    """VerticalInterpolation: The type of vertical interpolation."""
+    verticalinterpolation: VerticalInterpolation = Field(
+        VerticalInterpolation.linear, alias="verticalInterpolation"
+    )
+    """VerticalInterpolation: The type of vertical interpolation. Defaults to linear."""
 
-    verticalpositiontype: VerticalPositionType = Field(alias="Vertical Position Type")
+    verticalpositiontype: VerticalPositionType = Field(alias="verticalPositionType")
     """VerticalPositionType: The vertical position type of the verticalpositions values."""
 
-    timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
-    """TimeInterpolation: The type of time interpolation."""
+    timeinterpolation: TimeInterpolation = Field(
+        TimeInterpolation.linear, alias="timeInterpolation"
+    )
+    """TimeInterpolation: The type of time interpolation. Defaults to linear."""
 
     _split_to_list = get_split_string_on_delimiter_validator(
-        "verticalpositions",
+        "verticalpositionspecification",
     )
 
     _verticalinterpolation_validator = get_enum_validator(
@@ -301,12 +307,12 @@ class T3D(ForcingBase):
 
         quantityunitpairs = values["quantityunitpair"]
 
-        T3D._validate_that_first_unit_is_time_and_has_no_verticalpositionindex(
+        T3D._validate_that_first_unit_is_time_and_has_no_verticalposition(
             quantityunitpairs
         )
 
-        verticalpositionindexes = values.get("Vertical Position")
-        verticalpositions = values["verticalpositions"]
+        verticalpositionindexes = values.get("verticalposition")
+        verticalpositions = values["verticalpositionspecification"]
         number_of_verticalpositions = (
             len(verticalpositions)
             if isinstance(verticalpositions, List)
@@ -328,12 +334,12 @@ class T3D(ForcingBase):
         return values
 
     @staticmethod
-    def _validate_that_first_unit_is_time_and_has_no_verticalpositionindex(
+    def _validate_that_first_unit_is_time_and_has_no_verticalposition(
         quantityunitpairs: List[QuantityUnitPair],
     ) -> None:
         if quantityunitpairs[0].quantity.lower() != "time":
             raise ValueError("First quantity should be `time`")
-        if quantityunitpairs[0].verticalpositionindex is not None:
+        if quantityunitpairs[0].verticalposition is not None:
             raise ValueError("`time` quantity cannot have vertical position index")
 
     @staticmethod
@@ -342,7 +348,7 @@ class T3D(ForcingBase):
     ) -> None:
         for quantityunitpair in quantityunitpairs:
             quantity = quantityunitpair.quantity.lower()
-            verticalpositionindex = quantityunitpair.verticalpositionindex
+            verticalpositionindex = quantityunitpair.verticalposition
 
             if quantity == "time":
                 continue
@@ -416,7 +422,7 @@ class T3D(ForcingBase):
         for (quantityunitpair, verticalpositionindex) in zip(
             quantityunitpairs, verticalpositionindexes
         ):
-            quantityunitpair.verticalpositionindex = verticalpositionindex
+            quantityunitpair.verticalposition = verticalpositionindex
 
 
 class QHTable(ForcingBase):
