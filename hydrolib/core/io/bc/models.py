@@ -96,9 +96,7 @@ class QuantityUnitPair(BaseModel):
         yield Property(key="quantity", value=self.quantity)
         yield Property(key="unit", value=self.unit)
         if self.verticalpositionindex is not None:
-            yield Property(
-                key="verticalpositionindex", value=self.verticalpositionindex
-            )
+            yield Property(key="Vertical Position", value=self.verticalpositionindex)
 
 
 class ForcingBase(DataBlockINIBasedModel):
@@ -307,7 +305,7 @@ class T3D(ForcingBase):
             quantityunitpairs
         )
 
-        verticalpositionindexes = values.get("verticalpositionindex")
+        verticalpositionindexes = values.get("Vertical Position")
         verticalpositions = values["verticalpositions"]
         number_of_verticalpositions = (
             len(verticalpositions)
