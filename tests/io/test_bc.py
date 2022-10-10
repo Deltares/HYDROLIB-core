@@ -198,24 +198,24 @@ class TestForcingModel:
         assert isinstance(m.forcing[-1], TimeSeries)
 
     def test_read_bc_missing_field_raises_correct_error(self):
-        file = "missing_field.bc"
+        bc_file = "missing_field.bc"
         identifier = "Boundary2"
 
-        filepath = invalid_test_data_dir / file
+        filepath = invalid_test_data_dir / bc_file
 
         with pytest.raises(ValidationError) as error:
             ForcingModel(filepath)
 
-        expected_message1 = f"{file} -> forcing -> 1 -> {identifier}"
+        expected_message1 = f"{bc_file} -> forcing -> 1 -> {identifier}"
         expected_message2 = "quantity is not provided"
         assert expected_message1 in str(error.value)
         assert expected_message2 in str(error.value)
 
     def test_save_forcing_model(self):
-        file = Path(test_output_dir / TEST_BC_FILE)
+        bc_file = Path(test_output_dir / TEST_BC_FILE)
         reference_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
         forcingmodel = ForcingModel()
-        forcingmodel.filepath = file
+        forcingmodel.filepath = bc_file
 
         timeseries = TimeSeries(**_create_time_series_values())
         harmonic = Harmonic(**_create_harmonic_values(False))
@@ -232,8 +232,8 @@ class TestForcingModel:
         forcingmodel.forcing.append(constant)
         forcingmodel.save()
 
-        assert file.is_file() == True
-        assert_files_equal(file, reference_file, skip_lines=[0, 3])
+        assert bc_file.is_file() == True
+        assert_files_equal(bc_file, reference_file, skip_lines=[0, 3])
 
     @pytest.mark.parametrize("cls", [Astronomic, AstronomicCorrection])
     def test_astronomic_values_with_strings_in_datablock_are_parsed_correctly(
