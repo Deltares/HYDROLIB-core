@@ -9,8 +9,8 @@ from typing import List, Literal, Optional
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import make_list_validator
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.util import make_list_validator
 
 logger = logging.getLogger(__name__)
 

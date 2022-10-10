@@ -10,8 +10,8 @@ from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
     validator_set_default_disk_only_file_model_when_none,
 )
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,

@@ -18,7 +18,11 @@ from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
 from hydrolib.core.io.dflowfm.ini.io_models import Property, Section
-from hydrolib.core.io.dflowfm.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.models import (
+    DataBlockINIBasedModel,
+    INIGeneral,
+    INIModel,
+)
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.dflowfm.ini.util import (
@@ -271,7 +275,7 @@ class ForcingModel(INIModel):
         general (ForcingGeneral): `[General]` block with file metadata.
         forcing (List[ForcingBase]): List of `[Forcing]` blocks for all forcing
             definitions in a single .bc file. Actual data is stored in
-            forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock] or [hydrolib.core.io.ini.models.DataBlockINIBasedModel].
+            forcing[..].datablock from [hydrolib.core.io.dflowfm.ini.models.DataBlockINIBasedModel.datablock] or [hydrolib.core.io.dflowfm.ini.models.DataBlockINIBasedModel].
     """
 
     general: ForcingGeneral = ForcingGeneral()
