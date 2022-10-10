@@ -2,7 +2,12 @@ from itertools import chain
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Sequence
 
-from hydrolib.core.io.dflowfm.polyfile.models import Description, Metadata, Point, PolyObject
+from hydrolib.core.io.dflowfm.polyfile.models import (
+    Description,
+    Metadata,
+    Point,
+    PolyObject,
+)
 
 
 class Serializer:

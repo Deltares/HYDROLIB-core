@@ -6,7 +6,12 @@ from typing import Callable, Dict, List, Optional, Tuple, Union
 from pydantic import validator
 
 from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.dflowfm.ini.io_models import CommentBlock, Document, Property, Section
+from hydrolib.core.io.dflowfm.ini.io_models import (
+    CommentBlock,
+    Document,
+    Property,
+    Section,
+)
 
 
 class ParserConfig(BaseModel):
