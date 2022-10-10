@@ -8,4 +8,4 @@ An observation point .ini file is described by the classes below.
 
 ## Model
 
-::: hydrolib.core.io.obs.models
+::: hydrolib.core.io.dflowfm.obs.models

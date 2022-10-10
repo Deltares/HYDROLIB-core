@@ -6,4 +6,4 @@ quantities and function types are supported.
 The forcings file is represented by the classes below.
 
 ## Model
-::: hydrolib.core.io.bc.models
+::: hydrolib.core.io.dflowfm.bc.models

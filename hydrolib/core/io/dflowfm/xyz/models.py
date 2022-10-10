@@ -36,7 +36,7 @@ class XYZModel(ParsableFileModel):
     """Sample or forcing file.
 
     Attributes:
-        points: List of [`XYZPoint`][hydrolib.core.io.xyz.models.XYZPoint]
+        points: List of [`XYZPoint`][hydrolib.core.io.dflowfm.xyz.models.XYZPoint]
     """
 
     points: List[XYZPoint]

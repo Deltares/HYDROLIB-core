@@ -353,7 +353,7 @@ class UniversalWeir(Structure):
 
 
 class CulvertSubType(str, Enum):
-    """Enum class to store a [Culvert][hydrolib.core.io.structure.models.Culvert]'s subType."""
+    """Enum class to store a [Culvert][hydrolib.core.io.dflowfm.structure.models.Culvert]'s subType."""
 
     culvert = "culvert"
     invertedSiphon = "invertedSiphon"
