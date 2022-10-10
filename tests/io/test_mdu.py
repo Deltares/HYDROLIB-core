@@ -13,12 +13,29 @@ from hydrolib.core.io.mdu.models import (
     VegetationModelNr,
 )
 
-from ..utils import test_input_dir
+from ..utils import test_input_dir, test_output_dir
 
 
 class TestModels:
     """Test class to test all classes and methods contained in the
     hydrolib.core.io.mdu.models.py module"""
+    def test_paths(self):
+        mdu_file_in = (
+            test_input_dir
+            / "relative_path"
+            / "FlowFM.mdu"
+        )
+
+        model = FMModel(mdu_file_in)
+
+        mdu_file_out = (
+            test_output_dir
+            / "relative_path"
+            / "FlowFM.mdu"
+        )
+
+        model.filepath = mdu_file_out
+        model.save(recurse=True)
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
