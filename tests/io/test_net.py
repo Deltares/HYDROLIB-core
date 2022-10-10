@@ -8,8 +8,8 @@ import pytest
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
 from hydrolib.core.io.dflowfm.mdu.models import FMModel
-from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
-from hydrolib.core.io.net.reader import NCExplorer
+from hydrolib.core.io.dflowfm.net.models import Branch, Mesh2d, NetworkModel
+from hydrolib.core.io.dflowfm.net.reader import NCExplorer
 
 from ..utils import test_input_dir, test_output_dir
 
