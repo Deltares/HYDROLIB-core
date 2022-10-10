@@ -111,7 +111,7 @@ class BranchModel(INIModel):
     """
     The overall branch model that contains the contents of one branches.gui file.
 
-    This model is not referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel].
+    This model is not referenced under a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel].
 
     Attributes:
         general (BranchGeneral): `[General]` block with file metadata.

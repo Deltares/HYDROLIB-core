@@ -18,7 +18,7 @@ from ...utils import test_input_dir
 
 class TestModels:
     """Test class to test all classes and methods contained in the
-    hydrolib.core.io.mdu.models.py module"""
+    hydrolib.core.io.dflowfm.mdu.models.py module"""
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (

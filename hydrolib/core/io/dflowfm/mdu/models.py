@@ -38,7 +38,7 @@ class Numerics(INIBasedModel):
     """
     The `[Numerics]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.numerics`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.numerics`.
 
     All lowercased attributes match with the [Numerics] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -77,7 +77,7 @@ class VolumeTables(INIBasedModel):
     """
     The `[VolumeTables]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.volumetables`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.volumetables`.
 
     All lowercased attributes match with the [VolumeTables] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -93,7 +93,7 @@ class Physics(INIBasedModel):
     """
     The `[Physics]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.physics`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.physics`.
 
     All lowercased attributes match with the [Physics] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -157,7 +157,7 @@ class Wind(INIBasedModel):
     """
     The `[Wind]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.wind`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.wind`.
 
     All lowercased attributes match with the [Wind] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -189,7 +189,7 @@ class Waves(INIBasedModel):
     """
     The `[Waves]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.waves`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.waves`.
 
     All lowercased attributes match with the [Waves] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -205,7 +205,7 @@ class Time(INIBasedModel):
     """
     The `[Time]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.time`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.time`.
 
     All lowercased attributes match with the [Time] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -228,7 +228,7 @@ class Restart(INIBasedModel):
     """
     The `[Restart]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.restart`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.restart`.
 
     All lowercased attributes match with the [Restart] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -249,7 +249,7 @@ class ExternalForcing(INIBasedModel):
     """
     The `[External Forcing]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.external_forcing`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.external_forcing`.
 
     All lowercased attributes match with the [External Forcing] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -277,7 +277,7 @@ class Hydrology(INIBasedModel):
     """
     The `[Hydrology]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.hydrology`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.hydrology`.
 
     All lowercased attributes match with the [Hydrology] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -291,7 +291,7 @@ class Trachytopes(INIBasedModel):
     """
     The `[Trachytopes]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.trachytopes`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.trachytopes`.
 
     All lowercased attributes match with the [Trachytopes] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -308,7 +308,7 @@ class Output(INIBasedModel):
     """
     The `[Output]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.output`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.output`.
 
     All lowercased attributes match with the [Output] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -464,7 +464,7 @@ class Geometry(INIBasedModel):
     """
     The `[Geometry]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry`.
 
     All lowercased attributes match with the [Geometry] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
@@ -563,7 +563,7 @@ class Calibration(INIBasedModel):
     """
     The `[Calibration]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.calibration`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.calibration`.
 
     All lowercased attributes match with the [Calibration] input as described in
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
@@ -586,7 +586,7 @@ class Calibration(INIBasedModel):
 class InfiltrationMethod(IntEnum):
     """
     Enum class containing the valid values for the Infiltrationmodel
-    attribute in the [Groundwater][hydrolib.core.io.mdu.models.Groundwater] class.
+    attribute in the [Groundwater][hydrolib.core.io.dflowfm.mdu.models.Groundwater] class.
     """
 
     NoInfiltration = 0
@@ -600,7 +600,7 @@ class GroundWater(INIBasedModel):
     """
     The `[Grw]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.grw`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.grw`.
 
     All lowercased attributes match with the [Grw] input as described in
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
@@ -626,7 +626,7 @@ class GroundWater(INIBasedModel):
 class ProcessFluxIntegration(IntEnum):
     """
     Enum class containing the valid values for the ProcessFluxIntegration
-    attribute in the [Processes][hydrolib.core.io.mdu.models.Processes] class.
+    attribute in the [Processes][hydrolib.core.io.dflowfm.mdu.models.Processes] class.
     """
 
     WAQ = 1
@@ -637,7 +637,7 @@ class Processes(INIBasedModel):
     """
     The `[Processes]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.processes`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.processes`.
 
     All lowercased attributes match with the [Processes] input as described in
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
@@ -684,7 +684,7 @@ class Particles(INIBasedModel):
     """
     The `[Particles]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.particles`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.particles`.
 
     All lowercased attributes match with the [Particles] input as described in
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
@@ -711,7 +711,7 @@ class Particles(INIBasedModel):
 class VegetationModelNr(IntEnum):
     """
     Enum class containing the valid values for the VegetationModelNr
-    attribute in the [Vegetation][hydrolib.core.io.mdu.models.Vegetation] class.
+    attribute in the [Vegetation][hydrolib.core.io.dflowfm.mdu.models.Vegetation] class.
     """
 
     No = 0
@@ -722,7 +722,7 @@ class Vegetation(INIBasedModel):
     """
     The `[Veg]` section in an MDU file.
 
-    This model is typically referenced under [FMModel][hydrolib.core.io.mdu.models.FMModel]`.veg`.
+    This model is typically referenced under [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.veg`.
 
     All lowercased attributes match with the [Veg] input as described in
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).

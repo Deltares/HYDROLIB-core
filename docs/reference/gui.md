@@ -7,4 +7,4 @@ A .gui file is described by the classes below.
 
 ## GUI models
 
-::: hydrolib.core.io.gui.models
+::: hydrolib.core.io.dflowfm.gui.models

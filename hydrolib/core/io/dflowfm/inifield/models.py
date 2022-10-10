@@ -211,7 +211,7 @@ class InitialField(AbstractSpatialField):
     """
     Initial condition field definition, represents an `[Initial]` block in
     an inifield file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.inifieldfile.initial[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.initial[..]`
     """
 
     _header: Literal["Initial"] = "Initial"
@@ -221,7 +221,7 @@ class ParameterField(AbstractSpatialField):
     """
     Parameter field definition, represents a `[Parameter]` block in
     an inifield file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.inifieldfile.parameter[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.parameter[..]`
     """
 
     _header: Literal["Parameter"] = "Parameter"
@@ -231,7 +231,7 @@ class IniFieldModel(INIModel):
     """
     The overall inifield model that contains the contents of one initial field and parameter file.
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.inifieldfile[..]`.
+    This model is typically referenced under a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile[..]`.
 
     Attributes:
         general (IniFieldGeneral): `[General]` block with file metadata.

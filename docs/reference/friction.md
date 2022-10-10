@@ -7,4 +7,4 @@ Generic parsing and serializing functionality comes from the generic hydrolib.co
 A 1D roughness file is described by the classes below.
 
 ## Model
-::: hydrolib.core.io.friction.models
+::: hydrolib.core.io.dflowfm.friction.models
