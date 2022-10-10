@@ -7,8 +7,8 @@ import netCDF4 as nc
 import numpy as np
 import pytest
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
-from hydrolib.core.basemodel import BaseModel
 
+from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
 from hydrolib.core.io.net.reader import NCExplorer
@@ -595,7 +595,8 @@ def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
 
     dataset.close()
 
-class TestFillValueConfiguration():
+
+class TestFillValueConfiguration:
     def test_create(self):
         config = FillValueConfiguration()
 
