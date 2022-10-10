@@ -19,6 +19,8 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.io.ext.models.Lateral class"""
 
+        location_error: str = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+
         class TestValidateCoordinates:
             """
             Class to test the paradigms for validate_coordinates.
@@ -28,8 +30,6 @@ class TestModels:
                 values = dict(
                     id="randomId",
                     name="randomName",
-                    branchid="randomBranchName",
-                    chainage=1.234,
                     numcoordinates=2,
                     xcoordinates=[1.1, 2.2],
                     ycoordinates=[1.1, 2.2],
@@ -123,11 +123,11 @@ class TestModels:
                 "dict_values",
                 [
                     pytest.param(
-                        dict(nodeid=None, branch_id=None, n_coords=None, chainage=None),
+                        dict(nodeid=None, branchid=None, chainage=None),
                         id="All None",
                     ),
                     pytest.param(
-                        dict(nodeid="", branch_id="", n_coords=0, chainage=None),
+                        dict(nodeid="", branchid="", chainage=None),
                         id="All Empty",
                     ),
                 ],
@@ -135,10 +135,7 @@ class TestModels:
             def test_given_no_values_raises_valueerror(self, dict_values: dict):
                 with pytest.raises(ValueError) as exc_err:
                     Lateral._location_validator(values=dict_values)
-                assert (
-                    str(exc_err.value)
-                    == "Either nodeId, branchId (with chainage) or numCoordinates with xCoordinates and yCoordinates are required."
-                )
+                assert str(exc_err.value) == TestModels.TestLateral.location_error
 
             @pytest.mark.parametrize(
                 "missing_coordinates", [("xCoordinates"), ("yCoordinates")]
@@ -157,7 +154,7 @@ class TestModels:
                 test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
                     Lateral._location_validator(test_dict)
-                assert str(exc_error.value) == f"{missing_coordinates} should be given."
+                assert str(exc_error.value) == TestModels.TestLateral.location_error
 
             def test_given_numcoordinates_and_valid_coordinates(self):
                 test_dict = dict(
@@ -180,10 +177,7 @@ class TestModels:
                             chainage=None,
                         )
                     )
-                assert (
-                    str(exc_err.value)
-                    == "Chainage should be provided when branchId is specified."
-                )
+                assert str(exc_err.value) == TestModels.TestLateral.location_error
 
             @pytest.mark.parametrize(
                 "dict_values",
@@ -199,17 +193,13 @@ class TestModels:
                 self, dict_values: dict
             ):
                 test_values = dict(
-                    numcoordinates=2,
-                    xcoordinates=[42, 24],
-                    ycoordinates=[24, 42],
                     locationtype="wrongType",
                 )
                 test_dict = {**dict_values, **test_values}
                 with pytest.raises(ValueError) as exc_err:
                     Lateral._location_validator(test_dict)
                 assert (
-                    str(exc_err.value)
-                    == "locationType should be 1d when nodeId (or branchId and chainage) is specified."
+                    str(exc_err.value) == "locationType should be 1d but was wrongType"
                 )
 
             @pytest.mark.parametrize(
@@ -224,9 +214,6 @@ class TestModels:
             )
             def test_given_1d_args_and_1d_location_type(self, dict_values: dict):
                 test_values = dict(
-                    numcoordinates=2,
-                    xcoordinates=[42, 24],
-                    ycoordinates=[24, 42],
                     locationtype="1d",
                 )
                 test_dict = {**dict_values, **test_values}
@@ -277,7 +264,7 @@ class TestModels:
                         ycoordinates=y_coord,
                     )
 
-                expected_error_mssg = "When using coordinates, the fields numCoordinates, xCoordinates and yCoordinates should be given."
+                expected_error_mssg = TestModels.TestLateral.location_error
                 assert expected_error_mssg in str(exc_mssg.value)
 
             @pytest.mark.parametrize(
@@ -314,8 +301,8 @@ class TestModels:
                 lateral_dict[missing_coord.lower()] = None
                 with pytest.raises(ValidationError) as exc_mssg:
                     Lateral(**lateral_dict)
-
-                assert f"{missing_coord} should be given." in str(exc_mssg.value)
+                expected_error_mssg = TestModels.TestLateral.location_error
+                assert expected_error_mssg in str(exc_mssg.value)
 
             def test_given_unknown_locationtype_raises(self):
                 with pytest.raises(ValidationError) as exc_mssg:
@@ -340,10 +327,6 @@ class TestModels:
                         id="branchid + chainage given.",
                     ),
                     pytest.param(
-                        dict(nodeid="aNodeId", branchid="aBranchId", chainage=42),
-                        id="all given.",
-                    ),
-                    pytest.param(
                         dict(nodeid="", branchid="aBranchId", chainage=42),
                         id="Empty nodeid.",
                     ),
@@ -356,9 +339,6 @@ class TestModels:
                 default_values = dict(
                     id="42",
                     discharge=1.23,
-                    numcoordinates=2,
-                    xcoordinates=[42, 24],
-                    ycoordinates=[24, 42],
                     locationtype="1d",
                 )
                 test_dict = {**default_values, **location_values}
