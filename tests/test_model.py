@@ -19,7 +19,7 @@ from hydrolib.core.io.dimr.models import (
     RRComponent,
     StartGroup,
 )
-from hydrolib.core.io.ext.models import Boundary, ExtModel
+from hydrolib.core.io.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.io.friction.models import FrictGeneral
 from hydrolib.core.io.mdu.models import (
     Calibration,

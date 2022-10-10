@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 from hydrolib.core.io.dflowfm.bc.models import Constant, ForcingModel, RealTime
-from hydrolib.core.io.ext.models import Boundary, ExtModel, Lateral
+from hydrolib.core.io.dflowfm.ext.models import Boundary, ExtModel, Lateral
 from hydrolib.core.io.ini.models import INIBasedModel
 
 from ..utils import test_data_dir
