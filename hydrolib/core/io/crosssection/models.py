@@ -7,6 +7,8 @@ from pydantic.class_validators import validator
 from hydrolib.core.io.friction.models import FrictionType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    LocationValidationConfiguration,
+    LocationValidationFieldNames,
     get_enum_validator,
     get_from_subclass_defaults,
     get_location_specification_rootvalidator,
@@ -683,7 +685,10 @@ class CrossSection(INIBasedModel):
     definitionid: str = Field(alias="definitionId")
 
     _location_validator = get_location_specification_rootvalidator(
-        allow_nodeid=False, numfield_name=None, xfield_name="x", yfield_name="y"
+        config=LocationValidationConfiguration(
+            validate_node=False, validate_num_coordinates=False
+        ),
+        fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
     )
 
 
