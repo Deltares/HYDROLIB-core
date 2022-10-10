@@ -32,6 +32,8 @@ from ..utils import (
     test_reference_dir,
 )
 
+TEST_BC_FILE = "test.bc"
+
 
 class TestQuantityUnitPair:
     def test_create_quantityunitpair(self):
@@ -210,8 +212,8 @@ class TestForcingModel:
         assert expected_message2 in str(error.value)
 
     def test_save_forcing_model(self):
-        file = Path(test_output_dir / "test.bc")
-        reference_file = Path(test_reference_dir / "bc" / "test.bc")
+        file = Path(test_output_dir / TEST_BC_FILE)
+        reference_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
         forcingmodel = ForcingModel()
         forcingmodel.filepath = file
 
@@ -510,8 +512,8 @@ class TestT3D:
         assert t3d.verticalinterpolation == "linear"
 
     def test_load_forcing_model(self):
-        file = Path(test_reference_dir / "bc" / "test.bc")
-        forcingmodel = ForcingModel(file)
+        bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
+        forcingmodel = ForcingModel(bc_file)
 
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
         assert t3d is not None
