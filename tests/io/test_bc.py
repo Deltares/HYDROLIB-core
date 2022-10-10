@@ -20,7 +20,7 @@ from hydrolib.core.io.dflowfm.bc.models import (
     VerticalInterpolation,
     VerticalPositionType,
 )
-from hydrolib.core.io.ini.parser import Parser, ParserConfig
+from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
 
 from ..utils import (
     assert_files_equal,

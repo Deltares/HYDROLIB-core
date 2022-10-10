@@ -4,8 +4,8 @@ from typing import List, Literal, Optional
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_required_fields_validator,
     get_split_string_on_delimiter_validator,

@@ -4,7 +4,7 @@ import pytest
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     get_location_specification_rootvalidator,

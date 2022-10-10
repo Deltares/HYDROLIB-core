@@ -5,7 +5,7 @@ from typing import Iterable, List, Optional, Sequence, Tuple, Union
 import pytest
 from pydantic import ValidationError
 
-from hydrolib.core.io.ini.io_models import (
+from hydrolib.core.io.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,
     Datablock,
@@ -13,14 +13,14 @@ from hydrolib.core.io.ini.io_models import (
     Property,
     Section,
 )
-from hydrolib.core.io.ini.models import INIBasedModel
-from hydrolib.core.io.ini.parser import (
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel
+from hydrolib.core.io.dflowfm.ini.parser import (
     Parser,
     ParserConfig,
     _IntermediateCommentBlock,
     _IntermediateSection,
 )
-from hydrolib.core.io.ini.serializer import (
+from hydrolib.core.io.dflowfm.ini.serializer import (
     MaxLengths,
     SectionSerializer,
     Serializer,

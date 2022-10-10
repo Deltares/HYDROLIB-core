@@ -5,8 +5,8 @@ from pydantic import Field
 from pydantic.class_validators import validator
 from pydantic.types import NonNegativeInt
 
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.util import (
     get_split_string_on_delimiter_validator,
     make_list_length_root_validator,
     make_list_validator,

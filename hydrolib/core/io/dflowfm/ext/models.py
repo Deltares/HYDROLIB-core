@@ -8,9 +8,9 @@ from hydrolib.core.basemodel import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.io.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
