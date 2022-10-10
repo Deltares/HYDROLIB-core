@@ -573,7 +573,7 @@ def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
     network = networkModel.network
     network.mesh2d_create_rectilinear_within_extent(extent=(-5, -5, 5, 5), dx=1, dy=1)
 
-    # set all values for the mesh2d_edge_z to NaN
+    # set all values for the mesh2d_face_z to NaN
     network._mesh2d.mesh2d_face_z[:] = np.nan
 
     # configure the writer
@@ -586,12 +586,12 @@ def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
 
     # read the NetCDF we just wrote
     dataset = nc.Dataset(nc_output_file)
-    mesh2d_edge_z = dataset["mesh2d_face_z"]
-    values = mesh2d_edge_z[:]
+    mesh2d_face_z = dataset["mesh2d_face_z"]
+    values = mesh2d_face_z[:]
     data = values[:].data
 
     assert (data[:] == fill_value).all()
-    assert mesh2d_edge_z._FillValue == fill_value
+    assert mesh2d_face_z._FillValue == fill_value
 
     dataset.close()
 
