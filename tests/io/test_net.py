@@ -7,8 +7,8 @@ import netCDF4 as nc
 import numpy as np
 import pytest
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
-from hydrolib.core.basemodel import BaseModel
 
+from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
 from hydrolib.core.io.net.reader import NCExplorer
