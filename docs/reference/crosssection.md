@@ -6,4 +6,4 @@ Generic parsing and serializing functionality comes from the generic hydrolib.co
 The cross section files are represented by the classes below.
 
 ## Model
-::: hydrolib.core.io.crosssection.models
+::: hydrolib.core.io.dflowfm.crosssection.models

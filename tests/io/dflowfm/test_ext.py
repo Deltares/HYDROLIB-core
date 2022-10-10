@@ -13,11 +13,11 @@ from ...utils import test_data_dir
 
 class TestModels:
     """Test class to test all classes and methods contained in the
-    hydrolib.core.io.ext.models.py module"""
+    hydrolib.core.io.dflowfm.ext.models.py module"""
 
     class TestLateral:
         """Class to test all methods contained in the
-        hydrolib.core.io.ext.models.Lateral class"""
+        hydrolib.core.io.dflowfm.ext.models.Lateral class"""
 
         location_error: str = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
 
@@ -415,7 +415,7 @@ class TestModels:
 
     class TestBoundary:
         """Class to test all methods contained in the
-        hydrolib.core.io.ext.models.Boundary class"""
+        hydrolib.core.io.dflowfm.ext.models.Boundary class"""
 
         def test_given_args_expected_values(self):
             # 1. Explicit declaration of parameters (to validate keys as they are written)

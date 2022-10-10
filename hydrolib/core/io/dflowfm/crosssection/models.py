@@ -49,7 +49,7 @@ class CrossLocGeneral(INIGeneral):
 class CrossSectionDefinition(INIBasedModel):
     """
     A `[Definition]` block for use inside a crosssection definition file,
-    i.e., a [CrossDefModel][hydrolib.core.io.crosssection.models.CrossDefModel].
+    i.e., a [CrossDefModel][hydrolib.core.io.dflowfm.crosssection.models.CrossDefModel].
 
     This class is intended as an abstract class: various subclasses should
     define they actual types of crosssection definitions.
@@ -638,7 +638,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 class CrossSection(INIBasedModel):
     """
     A `[CrossSection]` block for use inside a crosssection location file,
-    i.e., a [CrossLocModel][hydrolib.core.io.crosssection.models.CrossLocModel].
+    i.e., a [CrossLocModel][hydrolib.core.io.dflowfm.crosssection.models.CrossLocModel].
 
     Attributes:
         id (str): Unique cross-section location id.
