@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import matplotlib.pyplot as plt
+import netCDF4 as nc
 import numpy as np
 import pytest
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
@@ -10,6 +11,7 @@ from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
 from hydrolib.core.io.net.reader import NCExplorer
+from hydrolib.core.io.net.writer import FillValueConfiguration, UgridWriter
 
 from ..utils import test_input_dir, test_output_dir
 
@@ -559,3 +561,35 @@ def test_add_1d2d_links():
         network._link1d2d.link1d2d,
         np.array([[3, 70], [4, 62], [5, 54], [6, 45], [7, 37], [8, 29]]),
     )
+
+
+def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
+    nc_output_file = Path(test_output_dir / "test.nc")
+
+    # create a new network model with a rectilinear mesh2d
+    networkModel = NetworkModel()
+    networkModel.filepath = nc_output_file
+    network = networkModel.network
+    network.mesh2d_create_rectilinear_within_extent(extent=(-5, -5, 5, 5), dx=1, dy=1)
+
+    # set all values for the mesh2d_edge_z to NaN
+    network._mesh2d.mesh2d_face_z[:] = np.nan
+
+    # configure the writer
+    fill_value = 123.456
+    config = FillValueConfiguration()
+    config.float64_fill_value = fill_value
+    writer = UgridWriter(config)
+
+    writer.write(networkModel, nc_output_file)
+
+    # read the NetCDF we just wrote
+    dataset = nc.Dataset(nc_output_file)
+    mesh2d_edge_z = dataset["mesh2d_face_z"]
+    values = mesh2d_edge_z[:]
+    data = values[:].data
+
+    assert (data[:] == fill_value).all()
+    assert mesh2d_edge_z._FillValue == fill_value
+
+    dataset.close()
