@@ -10,7 +10,7 @@ from hydrolib.core.basemodel import (
     ResolveRelativeMode,
     validator_set_default_disk_only_file_model_when_none,
 )
-from hydrolib.core.io.crosssection.models import CrossDefModel, CrossLocModel
+from hydrolib.core.io.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
