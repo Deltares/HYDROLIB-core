@@ -7,6 +7,7 @@ import netCDF4 as nc
 import numpy as np
 import pytest
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
+from hydrolib.core.basemodel import BaseModel
 
 from hydrolib.core.io.mdu.models import FMModel
 from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
@@ -593,3 +594,13 @@ def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
     assert mesh2d_edge_z._FillValue == fill_value
 
     dataset.close()
+
+class TestFillValueConfiguration():
+    def test_create(self):
+        config = FillValueConfiguration()
+
+        assert isinstance(config, BaseModel)
+        assert config.int32_fill_value == nc.default_fillvals["i4"]
+        assert config.int64_fill_value == nc.default_fillvals["i8"]
+        assert config.float32_fill_value == nc.default_fillvals["f4"]
+        assert config.float64_fill_value == nc.default_fillvals["f8"]
