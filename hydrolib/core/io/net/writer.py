@@ -26,8 +26,7 @@ class FillValueConfiguration(BaseModel):
     float32_fill_value: float = nc.default_fillvals["f4"]
     "Fill value to use for 32-bit integers. Defaults to 9.97E36"
 
-    # float64_fill_value: float = nc.default_fillvals["f8"]
-    float64_fill_value: float = 123.456
+    float64_fill_value: float = nc.default_fillvals["f8"]
     "Fill value to use for 64-bit integers. Defaults to 9.97E36."
 
 
