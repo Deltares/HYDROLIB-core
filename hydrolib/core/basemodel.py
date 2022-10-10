@@ -546,7 +546,7 @@ class FileModel(BaseModel, ABC):
 
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
-
+            filepath = filepath.with_name(loading_path.name)
             logger.info(f"Loading data from {filepath}")
 
             data = self._load(loading_path)
