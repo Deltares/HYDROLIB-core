@@ -229,8 +229,8 @@ def test_read_write_read_compare(filepath):
     network2 = NetworkModel(filepath=network1.filepath)
 
     # Read keys from convention
-    path = Path(__file__).parent.parent.parent.joinpath(
-        "hydrolib/core/io/net/ugrid_conventions.json"
+    path = Path(__file__).parent.parent.parent.parent.joinpath(
+        "hydrolib/core/io/dflowfm/net/ugrid_conventions.json"
     )
 
     with open(path, "r") as f:
@@ -370,8 +370,8 @@ class TestNCExplorer:
     mesh2d_file = test_input_dir / "ugrid_files" / "mesh2d_net.nc"
 
     def test_load_ugrid_json(self):
-        path = Path(__file__).parent.parent.parent.joinpath(
-            "hydrolib/core/io/net/ugrid_conventions.json"
+        path = Path(__file__).parent.parent.parent.parent.joinpath(
+            "hydrolib/core/io/dflowfm/net/ugrid_conventions.json"
         )
         assert path.exists()
 
