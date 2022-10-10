@@ -595,7 +595,8 @@ def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
 
     dataset.close()
 
-class TestFillValueConfiguration():
+
+class TestFillValueConfiguration:
     def test_create(self):
         config = FillValueConfiguration()
 
