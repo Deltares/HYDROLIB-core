@@ -8,7 +8,7 @@ from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.io.dflowfm.friction.models import FrictionType
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.structure.models import (
+from hydrolib.core.io.dflowfm.structure.models import (
     Bridge,
     Compound,
     Culvert,
