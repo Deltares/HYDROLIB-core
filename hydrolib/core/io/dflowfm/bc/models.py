@@ -77,7 +77,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
     Typically subclassed, for the specific types of forcing data, e.g, TimeSeries.
     This model is for example referenced under a
-    [ForcingModel][hydrolib.core.io.bc.models.ForcingModel]`.forcing[..]`.
+    [ForcingModel][hydrolib.core.io.dflowfm.bc.models.ForcingModel]`.forcing[..]`.
 
     Attributes:
         name (str): Unique identifier that identifies the location for this forcing data.
