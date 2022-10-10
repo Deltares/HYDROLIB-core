@@ -33,7 +33,7 @@ from hydrolib.core.io.dflowfm.mdu.models import (
     Sediment,
 )
 from hydrolib.core.io.rr.models import RainfallRunoffModel
-from hydrolib.core.io.xyz.models import XYZModel
+from hydrolib.core.io.dflowfm.xyz.models import XYZModel
 
 from .io.rr.meteo.test_bui import BuiTestData
 from .utils import (
