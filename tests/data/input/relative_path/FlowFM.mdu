@@ -11,7 +11,7 @@ AutoStart         = 0
 PathsRelativeToParent= 0
 
 [geometry]
-NetFile           = net/FlowFM_net.nc
+NetFile           = /net/FlowFM_net.nc
 BathymetryFile    =
 DryPointsFile     =
 GridEnclosureFile =
