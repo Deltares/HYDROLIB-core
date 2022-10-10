@@ -22,7 +22,7 @@ from hydrolib.core.io.dflowfm.bc.models import (
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
 
-from ..utils import (
+from ...utils import (
     assert_files_equal,
     invalid_test_data_dir,
     test_data_dir,

@@ -14,7 +14,7 @@ from hydrolib.core.io.dflowfm.friction.models import (
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
 
-from ..utils import (
+from ...utils import (
     WrapperTest,
     assert_files_equal,
     test_data_dir,

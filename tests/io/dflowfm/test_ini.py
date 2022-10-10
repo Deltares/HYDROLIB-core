@@ -29,7 +29,7 @@ from hydrolib.core.io.dflowfm.ini.serializer import (
     write_ini,
 )
 
-from ..utils import test_output_dir
+from ...utils import test_output_dir
 
 
 class TestParserConfig:

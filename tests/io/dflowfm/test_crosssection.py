@@ -19,7 +19,7 @@ from hydrolib.core.io.dflowfm.crosssection.models import (
 )
 from hydrolib.core.io.dflowfm.friction.models import FrictionType
 
-from ..utils import WrapperTest, test_data_dir, test_output_dir
+from ...utils import WrapperTest, test_data_dir, test_output_dir
 
 
 class TestCrossSectionDefinition:

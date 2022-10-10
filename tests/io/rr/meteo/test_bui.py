@@ -15,7 +15,7 @@ from hydrolib.core.io.rr.meteo.serializer import (
     BuiSerializer,
     write_bui_file,
 )
-from tests.io.test_structure import (
+from tests.io.dflowfm.test_structure import (
     test_weir_and_universal_weir_resolve_from_parsed_document,
 )
 from tests.utils import test_input_dir, test_output_dir

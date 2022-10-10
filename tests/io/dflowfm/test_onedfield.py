@@ -11,7 +11,7 @@ from hydrolib.core.io.dflowfm.onedfield.models import (
     OneDFieldModel,
 )
 
-from ..utils import WrapperTest, test_data_dir
+from ...utils import WrapperTest, test_data_dir
 
 
 class TestOneDField:

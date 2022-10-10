@@ -20,7 +20,7 @@ from hydrolib.core.io.dflowfm.inifield.models import (
     ParameterField,
 )
 
-from ..utils import (
+from ...utils import (
     WrapperTest,
     assert_files_equal,
     invalid_test_data_dir,

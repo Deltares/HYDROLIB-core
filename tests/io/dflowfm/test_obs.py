@@ -8,7 +8,7 @@ from hydrolib.core.io.dflowfm.obs.models import (
     ObservationPointModel,
 )
 
-from ..utils import test_data_dir
+from ...utils import test_data_dir
 
 
 class TestObservationPointGeneral:

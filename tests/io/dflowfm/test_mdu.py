@@ -13,7 +13,7 @@ from hydrolib.core.io.dflowfm.mdu.models import (
     VegetationModelNr,
 )
 
-from ..utils import test_input_dir
+from ...utils import test_input_dir
 
 
 class TestModels:
