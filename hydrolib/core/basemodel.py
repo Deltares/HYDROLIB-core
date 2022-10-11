@@ -658,7 +658,7 @@ class FileModel(BaseModel, ABC):
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
             loading_path = context.resolve_casing(loading_path)
-            filepath = filepath.with_name(loading_path.name)
+            filepath = self._get_updated_file_path(filepath, loading_path)
             context.register_model(filepath, self)
 
             logger.info(f"Loading data from {filepath}")
@@ -717,6 +717,32 @@ class FileModel(BaseModel, ABC):
 
     def is_file_link(self) -> bool:
         return True
+
+    def _get_updated_file_path(self, file_path: Path, loading_path: Path) -> Path:
+        """Update the file path with the resolved casing from the loading path.
+        Logs an information message if a file path is updated.
+
+        For example, given:
+            file_path = "To/A/File.txt"
+            loading_path = "D:/path/to/a/file.txt"
+        
+        Then the result will be: "to/a/file.txt"
+
+        Args:
+            file_path (Path): The file path.
+            loading_path (Path): The resolved loading path.
+
+        Returns:
+            Path: The updated file path.
+        """
+
+        updated_file_parts = loading_path.parts[-len(file_path.parts):]
+        updated_file_path = Path(*updated_file_parts)
+        
+        if str(updated_file_path) != str(file_path):
+            logger.info(f"Updating file reference from {file_path.name} to {updated_file_path}")
+
+        return updated_file_path
 
     @classmethod
     def validate(cls: Type["FileModel"], value: Any):
