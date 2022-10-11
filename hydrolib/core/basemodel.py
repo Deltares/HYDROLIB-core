@@ -297,8 +297,9 @@ class FileCasingResolver:
         if operating_system == OperatingSystem.MACOS:
             return self._resolve_casing_macos(path)
         else:
-            raise NotImplementedError(f"Path case resolving for operating system {operating_system} is not supported yet.")
-
+            raise NotImplementedError(
+                f"Path case resolving for operating system {operating_system} is not supported yet."
+            )
 
     def _resolve_casing_windows(self, path: Path):
         return path.resolve()
@@ -309,7 +310,7 @@ class FileCasingResolver:
 
         if not path.parent.exists():
             path = self._resolve_casing_linux(path.parent) / path.name
-        
+
         return self._find_match(path)
 
     def _resolve_casing_macos(self, path: Path):
