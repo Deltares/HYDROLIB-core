@@ -275,13 +275,15 @@ class FileCasingResolver:
 
     def resolve(self, path: Path) -> Path:
         """Resolve the casing of a file path when the file does exist but not with the exact casing.
-        Search is case-insensitive only for the file name not for the full file path.
 
         Args:
             path (Path): The path of the file or directory for which the casing needs to be resolved.
 
         Returns:
             Path: The file path with the matched casing if a match exists; otherwise, the original file path.
+
+        Raises:
+            NotImplementedError: When this function is called with an operating system other than Windows, Linux or MacOS.
         """
 
         if not self._resolve_casing:
@@ -292,8 +294,11 @@ class FileCasingResolver:
             return self._resolve_casing_windows(path)
         if operating_system == OperatingSystem.LINUX:
             return self._resolve_casing_linux(path)
-        else:
+        if operating_system == OperatingSystem.MACOS:
             return self._resolve_casing_macos(path)
+        else:
+            raise NotImplementedError(f"Path case resolving for operating system {operating_system} is not supported yet.")
+
 
     def _resolve_casing_windows(self, path: Path):
         return path.resolve()
@@ -302,23 +307,19 @@ class FileCasingResolver:
         if path.exists():
             return path
 
-        if path.parent.is_dir() and not str_is_empty_or_none(path.parent.name):
-            for item in path.parent.iterdir():
-                if item.name.lower() == path.name.lower():
-                    logger.info(
-                        f"Updating file reference from {path.name} to {item.name}"
-                    )
-                    return path.with_name(item.name)
-
-        return path
+        if not path.parent.exists():
+            path = self._resolve_casing_linux(path.parent) / path.name
+        
+        return self._find_match(path)
 
     def _resolve_casing_macos(self, path: Path):
-        if path.parent.is_dir() and not str_is_empty_or_none(path.parent.name):
+        path = self._resolve_casing_macos(path.parent) / path.name
+        return self._find_match(path)
+
+    def _find_match(self, path: Path):
+        if path.parent.exists():
             for item in path.parent.iterdir():
                 if item.name.lower() == path.name.lower():
-                    logger.info(
-                        f"Updating file reference from {path.name} to {item.name}"
-                    )
                     return path.with_name(item.name)
 
         return path
