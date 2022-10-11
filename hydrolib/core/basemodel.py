@@ -273,7 +273,7 @@ class FileCasingResolver:
 
         Args:
             path (Path): The path of the file or directory for which the casing needs to be resolved.
-    
+
         Returns:
             Path: The file path with the matched casing if a match exists; otherwise, the original file path.
         """
@@ -597,7 +597,11 @@ class FileModel(BaseModel, ABC):
                 return super().__new__(cls)
 
     def __init__(
-        self, filepath: Optional[Path] = None, resolve_casing: bool = False, *args, **kwargs
+        self,
+        filepath: Optional[Path] = None,
+        resolve_casing: bool = False,
+        *args,
+        **kwargs,
     ):
         """Create a new FileModel from the given filepath.
 
