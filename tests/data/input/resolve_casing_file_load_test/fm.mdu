@@ -8,7 +8,7 @@ fileType          = modelDef
 fileVersion       = 1.09
 GuiVersion        = 4.5.0.491
 AutoStart         = 0
-PathsRelativeToParent= 0
+PathsRelativeToParent= 1
 
 [geometry]
 NetFile           =
