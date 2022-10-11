@@ -11,7 +11,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Literal, Optional, Set, Union, Dict
+from typing import Callable, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
