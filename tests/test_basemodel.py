@@ -298,7 +298,10 @@ class TestFileModel:
         model = FMModel(file_path, resolve_casing=True)
 
         assert str(model.geometry.inifieldfile.filepath) == "initial/initialFields.ini"
-        assert str(model.geometry.inifieldfile.initial[0].datafile.filepath) == "InitialWaterLevel.ini"
+        assert (
+            str(model.geometry.inifieldfile.initial[0].datafile.filepath)
+            == "InitialWaterLevel.ini"
+        )
 
 
 class TestContextManagerFileLoadContext:

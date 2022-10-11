@@ -725,7 +725,7 @@ class FileModel(BaseModel, ABC):
         For example, given:
             file_path = "To/A/File.txt"
             loading_path = "D:/path/to/a/file.txt"
-        
+
         Then the result will be: "to/a/file.txt"
 
         Args:
@@ -736,11 +736,13 @@ class FileModel(BaseModel, ABC):
             Path: The updated file path.
         """
 
-        updated_file_parts = loading_path.parts[-len(file_path.parts):]
+        updated_file_parts = loading_path.parts[-len(file_path.parts) :]
         updated_file_path = Path(*updated_file_parts)
-        
+
         if str(updated_file_path) != str(file_path):
-            logger.info(f"Updating file reference from {file_path.name} to {updated_file_path}")
+            logger.info(
+                f"Updating file reference from {file_path.name} to {updated_file_path}"
+            )
 
         return updated_file_path
 
