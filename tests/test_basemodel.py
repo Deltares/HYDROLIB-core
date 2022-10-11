@@ -291,11 +291,9 @@ class TestFileModel:
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
-    @pytest.mark.skipif(Path('/.dockerenv').exists(), reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.")
     def test_initialize_model_with_resolve_casing_updates_file_references_recursively(
         self,
     ):
-        pytest.fail("check to see if it is run in CI")
         file_path = test_input_dir / "resolve_casing_file_load_test" / "fm.mdu"
         model = FMModel(file_path, resolve_casing=True)
 
@@ -701,7 +699,6 @@ class TestFileCasingResolver:
             ),
         ],
     )
-    @pytest.mark.skipif(Path('/.dockerenv').exists(), reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.")
     def test_resolve_returns_correct_result(
         self, resolve_casing: bool, input_file_name: str, expected_file_name: str
     ) -> None:
