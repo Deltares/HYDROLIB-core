@@ -21,7 +21,7 @@ from pydantic.error_wrappers import ErrorWrapper, ValidationError
 from pydantic.fields import ModelField, PrivateAttr
 
 from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.utils import str_is_empty_or_none, to_key
+from hydrolib.core.utils import OperatingSystem, get_operating_system, str_is_empty_or_none, to_key
 
 logger = logging.getLogger(__name__)
 
@@ -282,17 +282,32 @@ class FileCasingResolver:
         if not self._resolve_casing:
             return path
 
-        if os.name == "nt":
+        operating_system = get_operating_system()
+        if operating_system == OperatingSystem.WINDOWS:
             return self._resolve_casing_windows(path)
-        return self._resolve_casing_posix(path)
+        if operating_system == OperatingSystem.LINUX:
+            return self._resolve_casing_linux(path)
+        else:
+            return self._resolve_casing_macos(path)
 
     def _resolve_casing_windows(self, path: Path):
         return path.resolve()
 
-    def _resolve_casing_posix(self, path: Path):
+    def _resolve_casing_linux(self, path: Path):
         if path.exists():
             return path
 
+        if path.parent.is_dir() and not str_is_empty_or_none(path.parent.name):
+            for item in path.parent.iterdir():
+                if item.name.lower() == path.name.lower():
+                    logger.info(
+                        f"Updating file reference from {path.name} to {item.name}"
+                    )
+                    return path.with_name(item.name)
+
+        return path
+
+    def _resolve_casing_macos(self, path: Path):
         if path.parent.is_dir() and not str_is_empty_or_none(path.parent.name):
             for item in path.parent.iterdir():
                 if item.name.lower() == path.name.lower():
