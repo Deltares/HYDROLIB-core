@@ -670,43 +670,43 @@ class TestDiskOnlyFileModel:
 
 class TestFileCasingResolver:
     @pytest.mark.parametrize(
-        "resolve_casing, input_file_name, expected_file_name",
+        "resolve_casing, input_file, expected_file",
         [
             pytest.param(
                 True,
-                "FLOWFM_BOUNDARYCONDITIONS1D.BC",
-                "FlowFM_boundaryconditions1d.bc",
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                Path("dflowfm_individual_files/FlowFM_boundaryconditions1d.bc"),
                 id="resolve_casing True: Matching file exists with different casing",
             ),
             pytest.param(
                 True,
-                "beepboop.robot",
-                "beepboop.robot",
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                Path("dflowfm_individual_files/beepboop.robot"),
                 id="resolve_casing True: No matching file",
             ),
             pytest.param(
                 False,
-                "FLOWFM_BOUNDARYCONDITIONS1D.BC",
-                "FLOWFM_BOUNDARYCONDITIONS1D.BC",
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
                 id="resolve_casing False: Matching file exists with different casing",
             ),
             pytest.param(
                 False,
-                "beepboop.robot",
-                "beepboop.robot",
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
                 id="resolve_casing False: No matching file",
             ),
         ],
     )
     def test_resolve_returns_correct_result(
-        self, resolve_casing: bool, input_file_name: str, expected_file_name: str
+        self, resolve_casing: bool, input_file: str, expected_file: str
     ) -> None:
         resolver = FileCasingResolver()
         resolver.initialize_resolve_casing(resolve_casing)
 
-        file_path = test_input_dir / "dflowfm_individual_files" / input_file_name
+        file_path = test_input_dir / input_file
 
-        expected_file_path = file_path.with_name(expected_file_name)
+        expected_file_path = test_input_dir / expected_file
         actual_file_path = resolver.resolve(file_path)
 
         assert actual_file_path == expected_file_path
