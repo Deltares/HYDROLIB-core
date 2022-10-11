@@ -297,8 +297,10 @@ class TestFileModel:
         file_path = test_input_dir / "resolve_casing_file_load_test" / "fm.mdu"
         model = FMModel(file_path, resolve_casing=True)
 
-        assert model.geometry.inifieldfile.filepath == Path("initial/initialFields.ini") 
-        assert model.geometry.inifieldfile.initial[0].datafile.filepath == Path("InitialWaterLevel.ini")
+        assert model.geometry.inifieldfile.filepath == Path("initial/initialFields.ini")
+        assert model.geometry.inifieldfile.initial[0].datafile.filepath == Path(
+            "InitialWaterLevel.ini"
+        )
 
 
 class TestContextManagerFileLoadContext:
