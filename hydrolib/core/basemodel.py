@@ -308,13 +308,15 @@ class FileCasingResolver:
         if path.exists():
             return path
 
-        if not path.parent.exists():
+        if not path.parent.exists() and not str_is_empty_or_none(path.parent.name):
             path = self._resolve_casing_linux(path.parent) / path.name
 
         return self._find_match(path)
 
     def _resolve_casing_macos(self, path: Path):
-        path = self._resolve_casing_macos(path.parent) / path.name
+        if not str_is_empty_or_none(path.parent.name):
+            path = self._resolve_casing_macos(path.parent) / path.name
+
         return self._find_match(path)
 
     def _find_match(self, path: Path):
