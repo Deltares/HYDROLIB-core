@@ -23,9 +23,11 @@ from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
 
+
 def runs_from_docker() -> bool:
     """Check to see if we are running from within docker."""
-    return Path('/.dockerenv').exists()
+    return Path("/.dockerenv").exists()
+
 
 class TestFileModel:
     _reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
