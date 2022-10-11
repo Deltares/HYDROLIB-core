@@ -5,6 +5,7 @@ also represents a file on disk.
 
 """
 import logging
+import os
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
 from contextlib import contextmanager
@@ -281,6 +282,14 @@ class FileCasingResolver:
         if not self._resolve_casing:
             return path
 
+        if os.name == 'nt':
+            return self._resolve_casing_windows(path)
+        return self._resolve_casing_posix(path)
+
+    def _resolve_casing_windows(self, path: Path):
+        return path.resolve()
+
+    def _resolve_casing_posix(self, path: Path):
         if path.parent.is_dir() and not str_is_empty_or_none(path.parent.name):
             for item in path.parent.iterdir():
                 if item.name.lower() == path.name.lower():
