@@ -144,14 +144,17 @@ def operator_str(operator_func: Callable) -> str:
     else:
         return str(operator_func)
 
+
 class OperatingSystem(Enum):
     """Enum represting an operating system."""
+
     WINDOWS = auto()
     """The Windows operating system."""
     LINUX = auto()
     """The Linux operating system."""
     MACOS = auto()
     """The MacOS operating system."""
+
 
 def get_operating_system() -> OperatingSystem:
     """Gets the currently running operating system.
@@ -163,7 +166,7 @@ def get_operating_system() -> OperatingSystem:
         OperatingSystem: The operating system.
     """
     operating_system = platform.system()
-    
+
     if operating_system == "Windows":
         return OperatingSystem.WINDOWS
     if operating_system == "Linux":
