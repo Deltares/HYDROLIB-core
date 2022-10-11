@@ -282,7 +282,7 @@ class FileCasingResolver:
         if not self._resolve_casing:
             return path
 
-        if os.name == 'nt':
+        if os.name == "nt":
             return self._resolve_casing_windows(path)
         return self._resolve_casing_posix(path)
 
