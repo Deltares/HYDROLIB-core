@@ -295,7 +295,7 @@ class FileCasingResolver:
         if operating_system == OperatingSystem.LINUX:
             return self._resolve_casing_linux(path)
         if operating_system == OperatingSystem.MACOS:
-            return self._resolve_casing_windows(path)
+            return self._resolve_casing_macos(path)
         else:
             raise NotImplementedError(
                 f"Path case resolving for operating system {operating_system} is not supported yet."
