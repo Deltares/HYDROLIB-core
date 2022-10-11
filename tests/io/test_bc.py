@@ -546,6 +546,41 @@ class TestT3D:
             [120.0, 7.0, 8.0, 9.0],
         ]
 
+    def test_load_forcing_model_with_Vertical_Position_Specification_keyword(self):
+        bc_file = Path(test_reference_dir / "bc" / "t3d_backwords_compatibility.bc")
+        forcingmodel = ForcingModel(bc_file)
+
+        t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
+        assert t3d is not None
+        assert t3d.name == "boundary_t3d"
+        assert t3d.offset == 1.23
+        assert t3d.factor == 2.34
+        assert t3d.verticalpositionspecification == [3.45, 4.56, 5.67]
+        assert t3d.verticalinterpolation == "log"
+        assert t3d.verticalpositiontype == "percBed"
+        assert t3d.timeinterpolation == "linear"
+
+        quantityunitpairs = t3d.quantityunitpair
+        assert len(quantityunitpairs) == 4
+        assert quantityunitpairs[0].quantity == "time"
+        assert quantityunitpairs[0].unit == "m"
+        assert quantityunitpairs[0].verticalposition == None
+        assert quantityunitpairs[1].quantity == "salinitybnd"
+        assert quantityunitpairs[1].unit == "ppt"
+        assert quantityunitpairs[1].verticalposition == 1
+        assert quantityunitpairs[2].quantity == "salinitybnd"
+        assert quantityunitpairs[2].unit == "ppt"
+        assert quantityunitpairs[2].verticalposition == 2
+        assert quantityunitpairs[3].quantity == "salinitybnd"
+        assert quantityunitpairs[3].unit == "ppt"
+        assert quantityunitpairs[3].verticalposition == 3
+
+        assert t3d.datablock == [
+            [0.0, 1.0, 2.0, 3.0],
+            [60.0, 4.0, 5.0, 6.0],
+            [120.0, 7.0, 8.0, 9.0],
+        ]
+
     @staticmethod
     def _validate_that_correct_quantityunitpairs_are_created(
         quantityunitpairs: List[QuantityUnitPair],
