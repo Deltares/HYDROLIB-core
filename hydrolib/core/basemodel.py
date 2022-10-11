@@ -267,26 +267,29 @@ class FileCasingResolver:
         self._resolve_casing = resolve_casing
         self._has_initialized = True
 
-    def resolve(self, file: Path) -> Path:
+    def resolve(self, path: Path) -> Path:
         """Resolve the casing of a file path when the file does exist but not with the exact casing.
         Search is case-insensitive only for the file name not for the full file path.
 
+        Args:
+            path (Path): The path of the file or directory for which the casing needs to be resolved.
+    
         Returns:
             Path: The file path with the matched casing if a match exists; otherwise, the original file path.
         """
 
         if not self._resolve_casing:
-            return file
+            return path
 
-        if file.parent.is_dir() and not str_is_empty_or_none(file.parent.name):
-            for item in file.parent.iterdir():
-                if item.is_file() and item.name.lower() == file.name.lower():
+        if path.parent.is_dir() and not str_is_empty_or_none(path.parent.name):
+            for item in path.parent.iterdir():
+                if item.name.lower() == path.name.lower():
                     logger.info(
-                        f"Updating file reference from {file.name} to {item.name}"
+                        f"Updating file reference from {path.name} to {item.name}"
                     )
-                    return file.with_name(item.name)
+                    return path.with_name(item.name)
 
-        return file
+        return path
 
 
 class FilePathResolver:
@@ -594,7 +597,7 @@ class FileModel(BaseModel, ABC):
                 return super().__new__(cls)
 
     def __init__(
-        self, filepath: Optional[Path] = None, resolve_casing=False, *args, **kwargs
+        self, filepath: Optional[Path] = None, resolve_casing: bool = False, *args, **kwargs
     ):
         """Create a new FileModel from the given filepath.
 
