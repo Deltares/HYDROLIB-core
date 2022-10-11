@@ -290,6 +290,9 @@ class FileCasingResolver:
         return path.resolve()
 
     def _resolve_casing_posix(self, path: Path):
+        if path.exists():
+            return path
+
         if path.parent.is_dir() and not str_is_empty_or_none(path.parent.name):
             for item in path.parent.iterdir():
                 if item.name.lower() == path.name.lower():
