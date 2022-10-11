@@ -23,11 +23,9 @@ from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
 
-
 def runs_from_docker() -> bool:
     """Check to see if we are running from within docker."""
-    return Path("/.dockerenv").exists()
-
+    return Path('/.dockerenv').exists()
 
 class TestFileModel:
     _reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
@@ -296,10 +294,7 @@ class TestFileModel:
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
-    @pytest.mark.skipif(
-        runs_from_docker(),
-        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
-    )
+    @pytest.mark.skipif(runs_from_docker(), reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.")
     def test_initialize_model_with_resolve_casing_updates_file_references_recursively(
         self,
     ):
@@ -708,10 +703,7 @@ class TestFileCasingResolver:
             ),
         ],
     )
-    @pytest.mark.skipif(
-        runs_from_docker(),
-        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
-    )
+    @pytest.mark.skipif(runs_from_docker(), reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.")
     def test_resolve_returns_correct_result(
         self, resolve_casing: bool, input_file_name: str, expected_file_name: str
     ) -> None:
