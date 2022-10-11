@@ -11,7 +11,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Literal, Optional, Set, Union
+from typing import Callable, List, Literal, Optional, Set, Union, Dict
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
@@ -302,7 +302,30 @@ class T3D(ForcingBase):
     )
 
     @root_validator(pre=True)
-    def _validate_quantityunitpair(cls, values):
+    def _support_backwards_compatibility_for_verticalposition_and_validate_quantityunitpair(
+        cls, values: Dict
+    ) -> Dict:
+        values = cls._support_backwards_compatibility_for_vertical_position(values)
+        values = cls._validate_quantityunitpair(values)
+
+        return values
+
+    @classmethod
+    def _support_backwards_compatibility_for_vertical_position(
+        cls, values: Dict
+    ) -> Dict:
+        verticalpositions = values.get("verticalpositionspecification") or values.get(
+            "vertical_position_specification"
+        )
+        if verticalpositions is None:
+            raise ValueError("verticalpositionspecification is not provided")
+
+        values["verticalpositionspecification"] = verticalpositions
+
+        return values
+
+    @classmethod
+    def _validate_quantityunitpair(cls, values: Dict) -> Dict:
         super()._validate_quantityunitpair(values)
 
         quantityunitpairs = values["quantityunitpair"]
@@ -311,8 +334,9 @@ class T3D(ForcingBase):
             quantityunitpairs
         )
 
+        verticalpositions = values.get("verticalpositionspecification")
         verticalpositionindexes = values.get("verticalposition")
-        verticalpositions = values["verticalpositionspecification"]
+
         number_of_verticalpositions = (
             len(verticalpositions)
             if isinstance(verticalpositions, List)
