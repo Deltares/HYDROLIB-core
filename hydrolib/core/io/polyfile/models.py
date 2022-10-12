@@ -77,22 +77,22 @@ class PolyObject(BaseModel):
     points: List[Point]
 
     @property
-    def xy_coordinates(self) -> Tuple[List[float], List[float]]:
+    def xy_values(self) -> Tuple[List[float], List[float]]:
         """Get a tuple containing the x-coordinates and y-coordinates of the polygon points.
 
         Returns:
             Tuple[List[float], List[float]]: Tuple containing a list of x-coordinates and a list of y-coordinates
         """
 
-        x, y, z = self.xyz_coordinates
+        x, y, z = self.xyz_values
         return x, y
 
     @property
-    def xyz_coordinates(self) -> Tuple[List[float], List[float], List[Optional[float]]]:
-        """Get a tuple containing the x-coordinates, y-coordinates and z-coordinates of the polygon points.
+    def xyz_values(self) -> Tuple[List[float], List[float], List[Optional[float]]]:
+        """Get a tuple containing the x-coordinates, y-coordinates and z values of the polygon points.
 
         Returns:
-            Tuple[List[float], List[float], List[Optional[float]]]: Tuple containing a list of x-coordinates, a list of y-coordinates and a list of z-coordinates.
+            Tuple[List[float], List[float], List[Optional[float]]]: Tuple containing a list of x-coordinates, a list of y-coordinates and a list of z values.
         """
         x: List[float] = []
         y: List[float] = []
