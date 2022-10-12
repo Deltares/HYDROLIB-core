@@ -20,11 +20,17 @@ class LocationType(str, Enum):
 class XYZValues:
     """Class that holds lists of x, y and z values."""
 
-    x: List[float] = []
+    x: List[float]
     """The x values."""
 
-    y: List[float] = []
+    y: List[float]
     """The y values."""
 
-    z: List[Optional[float]] = []
+    z: List[Optional[float]]
     """The z values. The values can be `None`."""
+
+    def __init__(self) -> None:
+        """Initializes a new instance of the `XYZValues` class."""
+        self.x = []
+        self.y = []
+        self.z = []
