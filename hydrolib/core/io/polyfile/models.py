@@ -54,6 +54,7 @@ class Point(BaseModel):
         z = data.get("z")
         return f"x:{x} y:{y} z:{z}"
 
+
 class XYZValues:
     """Class that holds lists of x, y and z values."""
 
@@ -77,6 +78,7 @@ class XYZValues:
         self.x.append(x)
         self.y.append(y)
         self.z.append(z)
+
 
 class PolyObject(BaseModel):
     """PolyObject describing a single block in a poly file.
