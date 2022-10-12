@@ -24,13 +24,23 @@ from hydrolib.core.io.structure.models import StructureModel
 from hydrolib.core.io.xyz.models import XYZModel
 
 
+class AutoStartOption(IntEnum):
+    """
+    Enum class containing the valid values for the AutoStart
+    attribute in the [General][hydrolib.core.io.mdu.models.General] class.
+    """
+    no = 0
+    autostart = 1
+    autostartstop = 2
+
+
 class General(INIGeneral):
     _header: Literal["General"] = "General"
     program: str = Field("D-Flow FM", alias="program")
     version: str = Field("1.2.94.66079M", alias="version")
     filetype: Literal["modelDef"] = Field("modelDef", alias="fileType")
     fileversion: str = Field("1.09", alias="fileVersion")
-    autostart: int = Field(0, alias="autoStart")
+    autostart: Optional[AutoStartOption] = Field(AutoStartOption.no, alias="autoStart")
     pathsrelativetoparent: bool = Field(False, alias="pathsRelativeToParent")
 
 
@@ -662,7 +672,7 @@ class Processes(INIBasedModel):
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
     dtmassbalance: Optional[float] = Field(0.0, alias="DtMassBalance")
-    processfluxintegration: Optional[float] = Field(
+    processfluxintegration: Optional[ProcessFluxIntegration] = Field(
         ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration"
     )
     wriwaqbot3doutput: Optional[bool] = Field(False, alias="Wriwaqbot3Doutput")
