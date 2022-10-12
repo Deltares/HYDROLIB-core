@@ -3,6 +3,7 @@ from typing import Callable, List, Optional
 from pydantic import Field
 
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.io.common.models import XYZValues
 
 from .parser import XYZParser
 from .serializer import XYZSerializer
@@ -60,3 +61,19 @@ class XYZModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         return XYZParser.parse
+
+    @property
+    def xyz_values(self) -> XYZValues:
+        """Get a `XYZValues` object containing the x-coordinates, y-coordinates and z values of the polygon points.
+
+        Returns:
+            XYZValues: `XYZValues` containing the list of x-coordinates, y-coordinates and z values.
+        """
+        values = XYZValues()
+
+        for point in self.points:
+            values.x.append(point.x)
+            values.y.append(point.y)
+            values.z.append(point.z)
+
+        return values
