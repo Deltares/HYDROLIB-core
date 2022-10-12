@@ -24,6 +24,7 @@ from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 
 from ..utils import assert_files_equal, test_input_dir, test_output_dir
 
+
 class TestPolyObject:
     def test_xy_coordinates_returns_correct_tuple(self):
         poly_object = PolyObject(
@@ -41,6 +42,7 @@ class TestPolyObject:
 
         assert x == [1.0, 2.0, 2.0, 1.5, 1.0]
         assert y == [1.0, 1.0, 2.0, 2.5, 2.0]
+
 
 class TestSerializer:
     @pytest.mark.parametrize(

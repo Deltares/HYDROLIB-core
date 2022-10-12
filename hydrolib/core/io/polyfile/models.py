@@ -92,6 +92,7 @@ class PolyObject(BaseModel):
 
         return (x, y)
 
+
 class PolyFile(ParsableFileModel):
     """Poly-file (.pol/.pli/.pliz) representation."""
 
