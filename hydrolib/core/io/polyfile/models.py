@@ -1,7 +1,7 @@
 """models.py defines all classes and functions related to representing pol/pli(z) files.
 """
 
-from typing import Callable, List, Optional, Sequence
+from typing import Callable, List, Optional, Sequence, Tuple
 
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
@@ -76,6 +76,21 @@ class PolyObject(BaseModel):
     metadata: Metadata
     points: List[Point]
 
+    @property
+    def xy_coordinates(self) -> Tuple[List[float], List[float]]:
+        """Get a tuple containing the x-coordinates and y-coordinates of the polygon points.
+
+        Returns:
+            Tuple[List[float], List[float]]: Tuple containing a list of x-coordinates and a list of y-coordinates
+        """
+        x: List[float] = []
+        y: List[float] = []
+
+        for point in self.points:
+            x.append(point.x)
+            y.append(point.y)
+
+        return (x, y)
 
 class PolyFile(ParsableFileModel):
     """Poly-file (.pol/.pli/.pliz) representation."""
