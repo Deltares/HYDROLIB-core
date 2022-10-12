@@ -54,6 +54,29 @@ class Point(BaseModel):
         z = data.get("z")
         return f"x:{x} y:{y} z:{z}"
 
+class XYZValues:
+    """Class that holds lists of x, y and z values."""
+
+    x: List[float] = []
+    """The x values."""
+
+    y: List[float] = []
+    """The y values."""
+
+    z: List[Optional[float]] = []
+    """The z values. The values can be `None`."""
+
+    def append(self, x: float, y: float, z: Optional[float]):
+        """Append an x, y and z value to their corresponding lists.
+
+        Args:
+            x (float): The x value
+            y (float): The y value
+            z (Optional[float]): The z value. Can be `None`.
+        """
+        self.x.append(x)
+        self.y.append(y)
+        self.z.append(z)
 
 class PolyObject(BaseModel):
     """PolyObject describing a single block in a poly file.

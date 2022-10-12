@@ -10,6 +10,7 @@ from hydrolib.core.io.polyfile.models import (
     Point,
     PolyFile,
     PolyObject,
+    XYZValues,
 )
 from hydrolib.core.io.polyfile.parser import (
     Block,
@@ -24,6 +25,27 @@ from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 
 from ..utils import assert_files_equal, test_input_dir, test_output_dir
 
+class TestXYZValues:
+    def test_constructor(self):
+        values = XYZValues()
+
+        assert values.x is not None
+        assert len(values.x) == 0
+        assert values.y is not None
+        assert len(values.y) == 0
+        assert values.z is not None
+        assert len(values.z) == 0
+
+    def test_append_adds_values(self):
+        values = XYZValues()
+
+        values.append(1.0, 2.0, 3.0)
+        values.append(4.0, 5.0, 6.0)
+        values.append(7.0, 8.0, 9.0)
+
+        assert values.x == [1.0, 4.0, 7.0]
+        assert values.y == [2.0, 5.0, 8.0]
+        assert values.z == [3.0, 6.0, 9.0]
 
 class TestPolyObject:
     def test_xy_values_returns_correct_tuple(self):
