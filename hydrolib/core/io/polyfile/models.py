@@ -102,33 +102,18 @@ class PolyObject(BaseModel):
     points: List[Point]
 
     @property
-    def xy_values(self) -> Tuple[List[float], List[float]]:
-        """Get a tuple containing the x-coordinates and y-coordinates of the polygon points.
+    def xyz_values(self) -> XYZValues:
+        """Get a `XYZValues` object containing the x-coordinates, y-coordinates and z values of the polygon points.
 
         Returns:
-            Tuple[List[float], List[float]]: Tuple containing a list of x-coordinates and a list of y-coordinates
+            XYZValues: `XYZValues` containing the list of x-coordinates, y-coordinates and z values.
         """
-
-        x, y, z = self.xyz_values
-        return x, y
-
-    @property
-    def xyz_values(self) -> Tuple[List[float], List[float], List[Optional[float]]]:
-        """Get a tuple containing the x-coordinates, y-coordinates and z values of the polygon points.
-
-        Returns:
-            Tuple[List[float], List[float], List[Optional[float]]]: Tuple containing a list of x-coordinates, a list of y-coordinates and a list of z values.
-        """
-        x: List[float] = []
-        y: List[float] = []
-        z: List[Optional[float]] = []
+        values = XYZValues()
 
         for point in self.points:
-            x.append(point.x)
-            y.append(point.y)
-            z.append(point.z)
+            values.append(point.x, point.y, point.z)
 
-        return x, y, z
+        return values
 
 
 class PolyFile(ParsableFileModel):

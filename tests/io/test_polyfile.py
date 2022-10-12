@@ -50,7 +50,7 @@ class TestXYZValues:
 
 
 class TestPolyObject:
-    def test_xy_values_returns_correct_tuple(self):
+    def test_xyz_values_returns_correct_result(self):
         poly_object = PolyObject(
             metadata=Metadata(name="house", n_rows=5, n_columns=2),
             points=[
@@ -62,12 +62,13 @@ class TestPolyObject:
             ],
         )
 
-        x, y = poly_object.xy_values
+        values = poly_object.xyz_values
 
-        assert x == [1.0, 2.0, 2.0, 1.5, 1.0]
-        assert y == [1.0, 1.0, 2.0, 2.5, 2.0]
+        assert values.x == [1.0, 2.0, 2.0, 1.5, 1.0]
+        assert values.y == [1.0, 1.0, 2.0, 2.5, 2.0]
+        assert values.z == [None, None, None, None, None]
 
-    def test_xyz_values_returns_correct_tuple(self):
+    def test_xyz_values_with_z_values_returns_correct_result(self):
         poly_object = PolyObject(
             metadata=Metadata(name="house", n_rows=5, n_columns=2),
             points=[
@@ -79,11 +80,11 @@ class TestPolyObject:
             ],
         )
 
-        x, y, z = poly_object.xyz_values
+        values = poly_object.xyz_values
 
-        assert x == [1.0, 2.0, 2.0, 1.5, 1.0]
-        assert y == [1.0, 1.0, 2.0, 2.5, 2.0]
-        assert z == [1.0, 2.0, 3.0, 4.0, 5.0]
+        assert values.x == [1.0, 2.0, 2.0, 1.5, 1.0]
+        assert values.y == [1.0, 1.0, 2.0, 2.5, 2.0]
+        assert values.z == [1.0, 2.0, 3.0, 4.0, 5.0]
 
 
 class TestSerializer:
