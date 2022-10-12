@@ -4,6 +4,7 @@
 from typing import Callable, List, Optional, Sequence, Tuple
 
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.io.common.models import XYZValues
 
 
 class Description(BaseModel):
@@ -53,19 +54,6 @@ class Point(BaseModel):
         y = data.get("y")
         z = data.get("z")
         return f"x:{x} y:{y} z:{z}"
-
-
-class XYZValues:
-    """Class that holds lists of x, y and z values."""
-
-    x: List[float] = []
-    """The x values."""
-
-    y: List[float] = []
-    """The y values."""
-
-    z: List[Optional[float]] = []
-    """The z values. The values can be `None`."""
 
 
 class PolyObject(BaseModel):

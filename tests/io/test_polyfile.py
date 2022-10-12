@@ -26,17 +26,6 @@ from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 from ..utils import assert_files_equal, test_input_dir, test_output_dir
 
 
-class TestXYZValues:
-    def test_constructor(self):
-        values = XYZValues()
-
-        assert values.x is not None
-        assert len(values.x) == 0
-        assert values.y is not None
-        assert len(values.y) == 0
-        assert values.z is not None
-        assert len(values.z) == 0
-
 
 class TestPolyObject:
     def test_xyz_values_returns_correct_result(self):
