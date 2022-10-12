@@ -67,18 +67,6 @@ class XYZValues:
     z: List[Optional[float]] = []
     """The z values. The values can be `None`."""
 
-    def append(self, x: float, y: float, z: Optional[float]):
-        """Append an x, y and z value to their corresponding lists.
-
-        Args:
-            x (float): The x value
-            y (float): The y value
-            z (Optional[float]): The z value. Can be `None`.
-        """
-        self.x.append(x)
-        self.y.append(y)
-        self.z.append(z)
-
 
 class PolyObject(BaseModel):
     """PolyObject describing a single block in a poly file.
@@ -111,7 +99,9 @@ class PolyObject(BaseModel):
         values = XYZValues()
 
         for point in self.points:
-            values.append(point.x, point.y, point.z)
+            values.x.append(point.x)
+            values.y.append(point.y)
+            values.z.append(point.z)
 
         return values
 
