@@ -43,6 +43,24 @@ class TestPolyObject:
         assert x == [1.0, 2.0, 2.0, 1.5, 1.0]
         assert y == [1.0, 1.0, 2.0, 2.5, 2.0]
 
+    def test_xyz_coordinates_returns_correct_tuple(self):
+        poly_object = PolyObject(
+            metadata=Metadata(name="house", n_rows=5, n_columns=2),
+            points=[
+                Point(x=1.0, y=1.0, z=1.0, data=[]),
+                Point(x=2.0, y=1.0, z=2.0, data=[]),
+                Point(x=2.0, y=2.0, z=3.0, data=[]),
+                Point(x=1.5, y=2.5, z=4.0, data=[]),
+                Point(x=1.0, y=2.0, z=5.0, data=[]),
+            ],
+        )
+
+        x, y, z = poly_object.xyz_coordinates
+
+        assert x == [1.0, 2.0, 2.0, 1.5, 1.0]
+        assert y == [1.0, 1.0, 2.0, 2.5, 2.0]
+        assert z == [1.0, 2.0, 3.0, 4.0, 5.0]
+
 
 class TestSerializer:
     @pytest.mark.parametrize(
