@@ -26,7 +26,6 @@ from hydrolib.core.io.polyfile.serializer import Serializer, write_polyfile
 from ..utils import assert_files_equal, test_input_dir, test_output_dir
 
 
-
 class TestPolyObject:
     def test_xyz_values_returns_correct_result(self):
         poly_object = PolyObject(

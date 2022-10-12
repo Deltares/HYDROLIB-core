@@ -1,5 +1,5 @@
-from typing import List, Optional
 from enum import Enum
+from typing import List, Optional
 
 
 class LocationType(str, Enum):
@@ -16,6 +16,7 @@ class LocationType(str, Enum):
 
     all = "all"
     """str: Denotes that both 1D and 2D locations may be selected."""
+
 
 class XYZValues:
     """Class that holds lists of x, y and z values."""
