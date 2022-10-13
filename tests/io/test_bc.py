@@ -41,16 +41,16 @@ class TestQuantityUnitPair:
         assert isinstance(pair, BaseModel)
         assert pair.quantity == "some_quantity"
         assert pair.unit == "some_unit"
-        assert pair.verticalposition is None
+        assert pair.vertpositionindex is None
 
-    def test_create_quantityunitpair_with_verticalposition(self):
+    def test_create_quantityunitpair_with_verticalpositionindex(self):
         pair = QuantityUnitPair(
-            quantity="some_quantity", unit="some_unit", verticalposition=123
+            quantity="some_quantity", unit="some_unit", vertpositionindex=123
         )
         assert isinstance(pair, BaseModel)
         assert pair.quantity == "some_quantity"
         assert pair.unit == "some_unit"
-        assert pair.verticalposition == 123
+        assert pair.vertpositionindex == 123
 
 
 class TestTimeSeries:
@@ -264,7 +264,7 @@ class TestT3D:
         exp_vertical_position_type: VerticalPositionType,
     ):
         values = _create_t3d_values()
-        values["verticalpositiontype"] = vertical_position_type
+        values["vertpositiontype"] = vertical_position_type
 
         t3d = T3D(**values)
 
@@ -274,24 +274,24 @@ class TestT3D:
         assert t3d.factor == 2.34
         assert t3d.timeinterpolation == TimeInterpolation.linear
 
-        assert len(t3d.verticalpositionspecification) == 3
-        assert t3d.verticalpositionspecification[0] == 3.45
-        assert t3d.verticalpositionspecification[1] == 4.56
-        assert t3d.verticalpositionspecification[2] == 5.67
+        assert len(t3d.vertpositions) == 3
+        assert t3d.vertpositions[0] == 3.45
+        assert t3d.vertpositions[1] == 4.56
+        assert t3d.vertpositions[2] == 5.67
 
-        assert t3d.verticalinterpolation == VerticalInterpolation.log
-        assert t3d.verticalpositiontype == exp_vertical_position_type
+        assert t3d.vertinterpolation == VerticalInterpolation.log
+        assert t3d.vertpositiontype == exp_vertical_position_type
 
         assert len(t3d.quantityunitpair) == 4
         assert t3d.quantityunitpair[0] == QuantityUnitPair(quantity="time", unit="m")
         assert t3d.quantityunitpair[1] == QuantityUnitPair(
-            quantity="salinitybnd", unit="ppt", verticalposition=1
+            quantity="salinitybnd", unit="ppt", vertpositionindex=1
         )
         assert t3d.quantityunitpair[2] == QuantityUnitPair(
-            quantity="salinitybnd", unit="ppt", verticalposition=2
+            quantity="salinitybnd", unit="ppt", vertpositionindex=2
         )
         assert t3d.quantityunitpair[3] == QuantityUnitPair(
-            quantity="salinitybnd", unit="ppt", verticalposition=3
+            quantity="salinitybnd", unit="ppt", vertpositionindex=3
         )
 
         assert len(t3d.datablock) == 3
@@ -313,7 +313,7 @@ class TestT3D:
         expected_message = "First quantity should be `time`"
         assert expected_message in str(error.value)
 
-    def test_create_t3d_time_quantity_with_verticalposition_raises_error(self):
+    def test_create_t3d_time_quantity_with_verticalpositionindex_raises_error(self):
         values = _create_t3d_values()
 
         values["quantityunitpair"] = [
@@ -326,7 +326,7 @@ class TestT3D:
         expected_message = "`time` quantity cannot have vertical position index"
         assert expected_message in str(error.value)
 
-    def test_create_t3d_verticalposition_missing_for_non_time_unit_raises_error(
+    def test_create_t3d_verticalpositionindex_missing_for_non_time_unit_raises_error(
         self,
     ):
         values = _create_t3d_values()
@@ -339,30 +339,28 @@ class TestT3D:
         with pytest.raises(ValidationError) as error:
             T3D(**values)
 
-        expected_maximum_index = len(values["verticalpositionspecification"].split())
+        expected_maximum_index = len(values["vertpositions"].split())
         expected_message = (
             f"Vertical position index should be between 1 and {expected_maximum_index}"
         )
         assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
-        "verticalpositionspecification, verticalpositionindexes",
+        "vertpositions, verticalpositionindexes",
         [
-            pytest.param([1.23, 4.56], [0, 1], id="verticalpositionindex is one-based"),
+            pytest.param([1.23, 4.56], [0, 1], id="vertpositionindex is one-based"),
             pytest.param(
                 [1.23, 4.56],
                 [1, 3],
-                id="verticalpositionindex bigger than verticalpositions length",
+                id="vertpositionindex bigger than vertpositions length",
             ),
-            pytest.param([1.23, 4.56], [1, None], id="too few verticalpositionindexes"),
-            pytest.param(
-                [1.23, 4.56], [1, 2, 3], id="too many verticalpositionindexes"
-            ),
+            pytest.param([1.23, 4.56], [1, None], id="too few vertpositionindex"),
+            pytest.param([1.23, 4.56], [1, 2, 3], id="too many vertpositionindex"),
         ],
     )
     def test_create_t3d_verticalposition_in_quantityunitpair_has_invalid_value_raises_error(
         self,
-        verticalpositionspecification: List[float],
+        vertpositions: List[float],
         verticalpositionindexes: List[int],
     ):
         values = _create_t3d_values()
@@ -377,12 +375,12 @@ class TestT3D:
             )
 
         values["quantityunitpair"] = time_quantityunitpair + other_quantutyunitpairs
-        values["verticalpositionspecification"] = verticalpositionspecification
+        values["vertpositions"] = vertpositions
 
         with pytest.raises(ValidationError) as error:
             T3D(**values)
 
-        maximum_verticalpositionindex = len(verticalpositionspecification)
+        maximum_verticalpositionindex = len(vertpositions)
         expected_message = f"Vertical position index should be between 1 and {maximum_verticalpositionindex}"
         assert expected_message in str(error.value)
 
@@ -412,7 +410,7 @@ class TestT3D:
             str(i + onebased_index_offset)
             for i in range(number_of_quantities_and_units)
         ]
-        values["verticalposition"] = [None] + [
+        values["vertpositionindex"] = [None] + [
             str(i + onebased_index_offset)
             for i in range(number_of_verticalpositionindexes)
         ]
@@ -426,15 +424,15 @@ class TestT3D:
     @pytest.mark.parametrize(
         "verticalpositionindexes",
         [
-            pytest.param([0], id="verticalpositionindex is one-based"),
-            pytest.param([None], id="verticalpositionindex cannot be None"),
+            pytest.param([0], id="vertpositionindex is one-based"),
+            pytest.param([None], id="vertpositionindex cannot be None"),
             pytest.param(
                 [4],
-                id="verticalpositionindex cannot be larger than number of vertical positions",
+                id="vertpositionindex cannot be larger than number of vertical positions",
             ),
         ],
     )
-    def test_create_t3d_verticalposition_has_invalid_value_raises_error(
+    def test_create_t3d_verticalpositionindex_has_invalid_value_raises_error(
         self, verticalpositionindexes: List[int]
     ):
         values = _create_t3d_values()
@@ -443,14 +441,12 @@ class TestT3D:
 
         values["quantity"] = ["time", "randomQuantity"]
         values["unit"] = ["randomUnit", "randomUnit"]
-        values["verticalposition"] = verticalpositionindexes
+        values["vertpositionindex"] = verticalpositionindexes
 
         with pytest.raises(ValidationError) as error:
             T3D(**values)
 
-        number_of_vertical_positions = len(
-            values["verticalpositionspecification"].split()
-        )
+        number_of_vertical_positions = len(values["vertpositions"].split())
         expected_message = f"Vertical position index should be between 1 and {number_of_vertical_positions}"
         assert expected_message in str(error.value)
 
@@ -475,7 +471,7 @@ class TestT3D:
 
         values["quantity"] = ["time", "randomQuantity1", "randomQuantity2"]
         values["unit"] = ["randomUnit", "randomUnit", "randomUnit"]
-        values["verticalposition"] = [2, 3]
+        values["vertpositionindex"] = [2, 3]
 
         t3d = T3D(**values)
 
@@ -483,7 +479,7 @@ class TestT3D:
         expected_quantityunitpairs = []
 
         for quantity, unit, verticalpositionindex in zip(
-            values["quantity"], values["unit"], [None] + values["verticalposition"]
+            values["quantity"], values["unit"], [None] + values["vertpositionindex"]
         ):
             expected_quantityunitpairs.append(
                 _create_quantityunitpair(quantity, unit, verticalpositionindex)
@@ -505,11 +501,11 @@ class TestT3D:
     def test_create_t3d_verticalinterpolation_defaults_to_linear(self):
         values = _create_t3d_values()
 
-        del values["verticalinterpolation"]
+        del values["vertinterpolation"]
 
         t3d = T3D(**values)
 
-        assert t3d.verticalinterpolation == "linear"
+        assert t3d.vertinterpolation == "linear"
 
     def test_load_forcing_model(self):
         bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
@@ -520,25 +516,25 @@ class TestT3D:
         assert t3d.name == "boundary_t3d"
         assert t3d.offset == 1.23
         assert t3d.factor == 2.34
-        assert t3d.verticalpositionspecification == [3.45, 4.56, 5.67]
-        assert t3d.verticalinterpolation == "log"
-        assert t3d.verticalpositiontype == "percBed"
+        assert t3d.vertpositions == [3.45, 4.56, 5.67]
+        assert t3d.vertinterpolation == "log"
+        assert t3d.vertpositiontype == "percBed"
         assert t3d.timeinterpolation == "linear"
 
         quantityunitpairs = t3d.quantityunitpair
         assert len(quantityunitpairs) == 4
         assert quantityunitpairs[0].quantity == "time"
         assert quantityunitpairs[0].unit == "m"
-        assert quantityunitpairs[0].verticalposition == None
+        assert quantityunitpairs[0].vertpositionindex == None
         assert quantityunitpairs[1].quantity == "salinitybnd"
         assert quantityunitpairs[1].unit == "ppt"
-        assert quantityunitpairs[1].verticalposition == 1
+        assert quantityunitpairs[1].vertpositionindex == 1
         assert quantityunitpairs[2].quantity == "salinitybnd"
         assert quantityunitpairs[2].unit == "ppt"
-        assert quantityunitpairs[2].verticalposition == 2
+        assert quantityunitpairs[2].vertpositionindex == 2
         assert quantityunitpairs[3].quantity == "salinitybnd"
         assert quantityunitpairs[3].unit == "ppt"
-        assert quantityunitpairs[3].verticalposition == 3
+        assert quantityunitpairs[3].vertpositionindex == 3
 
         assert t3d.datablock == [
             [0.0, 1.0, 2.0, 3.0],
@@ -547,7 +543,7 @@ class TestT3D:
         ]
 
     def test_load_forcing_model_with_Vertical_Position_Specification_keyword(self):
-        bc_file = Path(test_reference_dir / "bc" / "t3d_backwords_compatibility.bc")
+        bc_file = Path(test_reference_dir / "bc" / "t3d_backwards_compatibility.bc")
         forcingmodel = ForcingModel(bc_file)
 
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
@@ -555,25 +551,25 @@ class TestT3D:
         assert t3d.name == "boundary_t3d"
         assert t3d.offset == 1.23
         assert t3d.factor == 2.34
-        assert t3d.verticalpositionspecification == [3.45, 4.56, 5.67]
-        assert t3d.verticalinterpolation == "log"
-        assert t3d.verticalpositiontype == "percBed"
+        assert t3d.vertpositions == [3.45, 4.56, 5.67]
+        assert t3d.vertinterpolation == "log"
+        assert t3d.vertpositiontype == "percBed"
         assert t3d.timeinterpolation == "linear"
 
         quantityunitpairs = t3d.quantityunitpair
         assert len(quantityunitpairs) == 4
         assert quantityunitpairs[0].quantity == "time"
         assert quantityunitpairs[0].unit == "m"
-        assert quantityunitpairs[0].verticalposition == None
+        assert quantityunitpairs[0].vertpositionindex == None
         assert quantityunitpairs[1].quantity == "salinitybnd"
         assert quantityunitpairs[1].unit == "ppt"
-        assert quantityunitpairs[1].verticalposition == 1
+        assert quantityunitpairs[1].vertpositionindex == 1
         assert quantityunitpairs[2].quantity == "salinitybnd"
         assert quantityunitpairs[2].unit == "ppt"
-        assert quantityunitpairs[2].verticalposition == 2
+        assert quantityunitpairs[2].vertpositionindex == 2
         assert quantityunitpairs[3].quantity == "salinitybnd"
         assert quantityunitpairs[3].unit == "ppt"
-        assert quantityunitpairs[3].verticalposition == 3
+        assert quantityunitpairs[3].vertpositionindex == 3
 
         assert t3d.datablock == [
             [0.0, 1.0, 2.0, 3.0],
@@ -594,8 +590,8 @@ class TestT3D:
             assert quantityunitpair.quantity == expected_quantityunitpair.quantity
             assert quantityunitpair.unit == expected_quantityunitpair.unit
             assert (
-                quantityunitpair.verticalposition
-                == expected_quantityunitpair.verticalposition
+                quantityunitpair.vertpositionindex
+                == expected_quantityunitpair.vertpositionindex
             )
 
 
@@ -651,7 +647,7 @@ def _create_astronomic_values(iscorrection: bool):
 
 def _create_quantityunitpair(quantity, unit, verticalpositionindex=None):
     return QuantityUnitPair(
-        quantity=quantity, unit=unit, verticalposition=verticalpositionindex
+        quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
     )
 
 
@@ -661,9 +657,9 @@ def _create_t3d_values():
         function="t3d",
         offset="1.23",
         factor="2.34",
-        verticalpositionspecification="3.45 4.56 5.67",
-        verticalinterpolation="log",
-        verticalpositiontype="percBed",
+        vertpositions="3.45 4.56 5.67",
+        vertinterpolation="log",
+        vertpositiontype="percBed",
         timeinterpolation="linear",
         quantityunitpair=[
             _create_quantityunitpair("time", "m"),
