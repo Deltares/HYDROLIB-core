@@ -10,6 +10,7 @@ from hydrolib.core.io.bc.models import (
     Astronomic,
     AstronomicCorrection,
     Constant,
+    ForcingBackwardsCompatibilityHelper,
     ForcingBase,
     ForcingModel,
     Harmonic,
@@ -593,6 +594,73 @@ class TestT3D:
                 quantityunitpair.vertpositionindex
                 == expected_quantityunitpair.vertpositionindex
             )
+
+
+class TestForcingBackwardsCompatibilityHelper:
+    def test_old_timeinterpolation_keyword_gets_converted_to_current_keyword(self):
+        old_keyword = "time_interpolation"
+        data = TimeInterpolation.block_from
+
+        values = {old_keyword: data}
+
+        values = ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_timeinterpolation(
+            values
+        )
+
+        current_keyword = "timeinterpolation"
+        assert values[current_keyword] == data
+
+    def test_old_vertpositions_keyword_gets_converted_to_current_keyword(self):
+        old_keyword = "vertical_position_specification"
+        data = [1, 2, 3]
+
+        values = {old_keyword: data}
+
+        values = ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertpositions(
+            values
+        )
+
+        current_keyword = "vertpositions"
+        assert values[current_keyword] == data
+
+    def test_old_vertinterpolation_keyword_gets_converted_to_current_keyword(self):
+        old_keyword = "vertical_interpolation"
+        data = VerticalInterpolation.block
+
+        values = {old_keyword: data}
+
+        values = ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertinterpolation(
+            values
+        )
+
+        current_keyword = "vertinterpolation"
+        assert values[current_keyword] == data
+
+    def test_old_vertpositiontype_keyword_gets_converted_to_current_keyword(self):
+        old_keyword = "vertical_position_type"
+        data = VerticalPositionType.percentage_bed
+
+        values = {old_keyword: data}
+
+        values = ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertpositiontype(
+            values
+        )
+
+        current_keyword = "vertpositiontype"
+        assert values[current_keyword] == data
+
+    def test_old_vertpositionindex_keyword_gets_converted_to_current_keyword(self):
+        old_keyword = "vertical_position"
+        data = [1, 2, 3]
+
+        values = {old_keyword: data}
+
+        values = ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertpositionindex(
+            values
+        )
+
+        current_keyword = "vertpositionindex"
+        assert values[current_keyword] == data
 
 
 def _create_time_series_values():
