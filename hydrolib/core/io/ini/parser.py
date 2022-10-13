@@ -19,7 +19,7 @@ class ParserConfig(BaseModel):
     Attributes:
         allow_only_keywords (bool):
             Whether to allow properties with only keys (no '=' or value).
-            Defaults to True.
+            Defaults to False.
         parse_datablocks (bool):
             Whether to allow parsing of datablocks at the bottom of sections.
             Defaults to False.
