@@ -9,7 +9,6 @@
 
 """
 import logging
-from ast import For
 from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, List, Literal, Optional, Set, Union
@@ -30,6 +29,7 @@ from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
+    get_key_renaming_root_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -98,85 +98,6 @@ class QuantityUnitPair(BaseModel):
         yield Property(key="unit", value=self.unit)
         if self.vertpositionindex is not None:
             yield Property(key="vertPositionIndex", value=self.vertpositionindex)
-
-
-class ForcingBackwardsCompatibilityHelper:
-    """Class to add backwards compatibility for certain keywords in the .bc file."""
-
-    @staticmethod
-    def add_backwards_compatibility_for_timeinterpolation(values: Dict) -> Dict:
-        """Add backwards compatibility for older timeInterpolation keywords."""
-
-        timeinterpolation_keyword = "timeinterpolation"
-
-        if values.get(timeinterpolation_keyword) is not None:
-            return values
-
-        old_keyword = "time_interpolation"
-        if values.get(old_keyword) is not None:
-            values[timeinterpolation_keyword] = values.get(old_keyword)
-
-        return values
-
-    @staticmethod
-    def add_backwards_compatibility_for_vertpositions(values: Dict) -> Dict:
-        """Add backwards compatibility for older vertPositions keywords."""
-
-        vertpositions_keyword = "vertpositions"
-
-        if values.get(vertpositions_keyword) is not None:
-            return values
-
-        old_keyword = "vertical_position_specification"
-        if values.get(old_keyword) is not None:
-            values[vertpositions_keyword] = values.get(old_keyword)
-
-        return values
-
-    @staticmethod
-    def add_backwards_compatibility_for_vertinterpolation(values: Dict) -> Dict:
-        """Add backwards compatibility for older vertInterpolation keywords."""
-
-        vertinterpolation_keyword = "vertinterpolation"
-
-        if values.get(vertinterpolation_keyword) is not None:
-            return values
-
-        old_keyword = "vertical_interpolation"
-        if values.get(old_keyword) is not None:
-            values[vertinterpolation_keyword] = values.get(old_keyword)
-
-        return values
-
-    @staticmethod
-    def add_backwards_compatibility_for_vertpositiontype(values: Dict) -> Dict:
-        """Add backwards compatibility for older vertPositionType keywords."""
-
-        vertpositiontype_keyword = "vertpositiontype"
-
-        if values.get(vertpositiontype_keyword) is not None:
-            return values
-
-        old_keyword = "vertical_position_type"
-        if values.get(old_keyword) is not None:
-            values[vertpositiontype_keyword] = values.get(old_keyword)
-
-        return values
-
-    @staticmethod
-    def add_backwards_compatibility_for_vertpositionindex(values: Dict) -> Dict:
-        """Add backwards compatibility for older vertPositionIndex keywords."""
-
-        vertpositionindex_keyword = "vertpositionindex"
-
-        if values.get(vertpositionindex_keyword) is not None:
-            return values
-
-        old_keyword = "vertical_position"
-        if values.get(old_keyword) is not None:
-            values[vertpositionindex_keyword] = values.get(old_keyword)
-
-        return values
 
 
 class ForcingBase(DataBlockINIBasedModel):
@@ -307,13 +228,11 @@ class TimeSeries(ForcingBase):
         "timeinterpolation", enum=TimeInterpolation
     )
 
-    @root_validator(pre=True)
-    def add_backwards_compatibility_for_timeinterpolation(cls, values: Dict) -> Dict:
-        ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_timeinterpolation(
-            values
-        )
-
-        return values
+    _key_renaming_root_validator = get_key_renaming_root_validator(
+        {
+            "timeinterpolation": ["time_interpolation"],
+        }
+    )
 
 
 class Harmonic(ForcingBase):
@@ -373,6 +292,16 @@ class T3D(ForcingBase):
     )
     """TimeInterpolation: The type of time interpolation. Defaults to linear."""
 
+    _key_renaming_root_validator = get_key_renaming_root_validator(
+        {
+            "timeinterpolation": ["time_interpolation"],
+            "vertpositions": ["vertical_position_specification"],
+            "vertinterpolation": ["vertical_interpolation"],
+            "vertpositiontype": ["vertical_position_type"],
+            "vertpositionindex": ["vertical_position"],
+        }
+    )
+
     _split_to_list = get_split_string_on_delimiter_validator(
         "vertpositions",
     )
@@ -388,36 +317,7 @@ class T3D(ForcingBase):
     )
 
     @root_validator(pre=True)
-    def _add_support_for_keywords_with_spaces_and_validate_quantityunitpair(
-        cls, values: Dict
-    ) -> Dict:
-        values = cls._add_support_for_keywords_with_spaces(values)
-        values = cls._validate_quantityunitpair(values)
-
-        return values
-
-    @classmethod
-    def _add_support_for_keywords_with_spaces(cls, values: Dict) -> Dict:
-        ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_timeinterpolation(
-            values
-        )
-        ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertinterpolation(
-            values
-        )
-        ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertpositionindex(
-            values
-        )
-        ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertpositions(
-            values
-        )
-        ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_vertpositiontype(
-            values
-        )
-
-        return values
-
-    @classmethod
-    def _validate_quantityunitpair(cls, values: Dict) -> Dict:
+    def _validate_quantityunitpairs(cls, values: Dict) -> Dict:
         super()._validate_quantityunitpair(values)
 
         quantityunitpairs = values["quantityunitpair"]

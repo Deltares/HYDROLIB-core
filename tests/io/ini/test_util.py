@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 
 import pytest
+from pydantic import Extra
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import BaseModel
@@ -8,6 +9,7 @@ from hydrolib.core.io.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     get_location_specification_rootvalidator,
+    get_key_renaming_root_validator,
 )
 
 
@@ -198,3 +200,42 @@ class TestLocationSpecificationValidator:
             values
         )
         assert validated_values == expected_values
+
+
+class TestGetKeyRenamingRootValidator:
+    class DummyModel(BaseModel):
+        """Dummy model to test the validation of the location specification."""
+
+        randomproperty: str
+
+        validator = get_key_renaming_root_validator(
+            {
+                "randomproperty": [
+                    "randomProperty",
+                    "random_property",
+                    "oldRandomProperty",
+                ],
+            }
+        )
+
+        class Config:
+            extra = Extra.allow
+
+    @pytest.mark.parametrize(
+        "old_key", ["randomProperty", "random_property", "oldRandomProperty"]
+    )
+    def test_old_keys_are_correctly_renamed_to_current_keyword(self, old_key: str):
+        values = {old_key: "randomString"}
+
+        model = TestGetKeyRenamingRootValidator.DummyModel(**values)
+
+        assert model.randomproperty == "randomString"
+
+    def test_unknown_key_still_raises_error(self):
+        values = {"randomKeyThatNeverExisted": "randomString"}
+
+        with pytest.raises(ValidationError) as error:
+            TestGetKeyRenamingRootValidator.DummyModel(**values)
+
+        expected_message = "field required"
+        assert expected_message in str(error.value)
