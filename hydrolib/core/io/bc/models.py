@@ -384,7 +384,7 @@ class T3D(ForcingBase):
         quantityunitpairs: List[QuantityUnitPair],
     ) -> None:
         if verticalpositionindexes is None:
-            raise ValueError("vertpositionindex is not provided")
+            raise ValueError("vertPositionIndex is not provided")
 
         if len(verticalpositionindexes) != len(quantityunitpairs) - 1:
             raise ValueError(
