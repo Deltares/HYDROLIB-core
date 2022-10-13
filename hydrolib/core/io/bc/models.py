@@ -8,8 +8,8 @@
         AstronomicCorrection, Constant, T3D.
 
 """
-from ast import For
 import logging
+from ast import For
 from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, List, Literal, Optional, Set, Union
