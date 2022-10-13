@@ -829,6 +829,7 @@ class ParsableFileModel(FileModel):
         self._serialize(self.dict())
 
     def _serialize(self, data: dict) -> None:
+        """Serializes the data to file. Should not be called directly, only through `_save`."""
         path = self._resolved_filepath
         if path is None:
             # TODO: Do we need to add a warning / exception here

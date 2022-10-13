@@ -11,8 +11,8 @@ from hydrolib.core.io.bc.models import ForcingBase, ForcingData, ForcingModel
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
+    LocationValidationConfiguration,
     get_location_specification_rootvalidator,
-    get_number_of_coordinates_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -130,8 +130,8 @@ class Lateral(INIBasedModel):
     branchid: Optional[str] = Field(alias="branchId")
     chainage: Optional[float] = Field(alias="chainage")
     numcoordinates: Optional[int] = Field(alias="numCoordinates")
-    xcoordinates: Optional[List[int]] = Field(alias="xCoordinates")
-    ycoordinates: Optional[List[int]] = Field(alias="yCoordinates")
+    xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
@@ -141,9 +141,8 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    _location_validator = get_location_specification_rootvalidator(allow_nodeid=True)
-    _number_of_coordinates_validator = get_number_of_coordinates_validator(
-        minimum_required_number_of_coordinates=1
+    _location_validator = get_location_specification_rootvalidator(
+        config=LocationValidationConfiguration(minimum_num_coordinates=1)
     )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
