@@ -34,6 +34,7 @@ from ..utils import (
 )
 
 TEST_BC_FILE = "test.bc"
+TEST_BC_FILE_KEYWORDS_WITH_SPACES = "t3d_backwards_compatibility.bc"
 
 
 class TestQuantityUnitPair:
@@ -107,6 +108,32 @@ class TestTimeSeries:
         assert forcing.quantityunitpair[1].quantity == "waterlevelbnd"
         assert forcing.quantityunitpair[1].unit == "m"
         assert forcing.datablock[1] == [1440.0, 2.5]
+
+    def test_load_timeseries_model_with_old_keyword_that_contain_spaces(self):
+        bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE_KEYWORDS_WITH_SPACES)
+        forcingmodel = ForcingModel(bc_file)
+
+        timeseries = next(
+            (x for x in forcingmodel.forcing if x.function == "timeseries"), None
+        )
+        assert timeseries is not None
+        assert timeseries.name == "boundary_timeseries"
+        assert timeseries.timeinterpolation == TimeInterpolation.block_to
+        assert timeseries.offset == 1.23
+        assert timeseries.factor == 2.34
+
+        quantityunitpairs = timeseries.quantityunitpair
+        assert len(quantityunitpairs) == 2
+        assert quantityunitpairs[0].quantity == "time"
+        assert quantityunitpairs[0].unit == "minutes since 2015-01-01 00:00:00"
+        assert quantityunitpairs[1].quantity == "dischargebnd"
+        assert quantityunitpairs[1].unit == "m³/s"
+
+        assert timeseries.datablock == [
+            [0.0, 1.23],
+            [60.0, 2.34],
+            [120.0, 3.45],
+        ]
 
 
 class TestForcingBase:
@@ -543,8 +570,8 @@ class TestT3D:
             [120.0, 7.0, 8.0, 9.0],
         ]
 
-    def test_load_forcing_model_with_Vertical_Position_Specification_keyword(self):
-        bc_file = Path(test_reference_dir / "bc" / "t3d_backwards_compatibility.bc")
+    def test_load_t3d_model_with_old_keyword_that_contain_spaces(self):
+        bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE_KEYWORDS_WITH_SPACES)
         forcingmodel = ForcingModel(bc_file)
 
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)

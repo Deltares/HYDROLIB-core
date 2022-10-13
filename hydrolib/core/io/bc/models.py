@@ -307,6 +307,14 @@ class TimeSeries(ForcingBase):
         "timeinterpolation", enum=TimeInterpolation
     )
 
+    @root_validator(pre=True)
+    def add_backwards_compatibility_for_timeinterpolation(cls, values: Dict) -> Dict:
+        ForcingBackwardsCompatibilityHelper.add_backwards_compatibility_for_timeinterpolation(
+            values
+        )
+
+        return values
+
 
 class Harmonic(ForcingBase):
     """Subclass for a .bc file [Forcing] block with harmonic components data."""
