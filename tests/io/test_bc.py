@@ -127,7 +127,6 @@ class TestTimeSeries:
         assert quantityunitpairs[0].quantity == "time"
         assert quantityunitpairs[0].unit == "minutes since 2015-01-01 00:00:00"
         assert quantityunitpairs[1].quantity == "dischargebnd"
-        assert quantityunitpairs[1].unit == "m³/s"
 
         assert timeseries.datablock == [
             [0.0, 1.23],
