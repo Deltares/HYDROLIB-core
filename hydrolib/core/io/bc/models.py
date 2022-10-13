@@ -174,6 +174,13 @@ class ForcingBase(DataBlockINIBasedModel):
     class Config:
         extra = Extra.ignore
 
+    def __repr__(self) -> str:
+        datablock = self.datablock
+        self.datablock = []
+        repr_without_data_block = str(self)
+        self.datablock = datablock
+        return repr_without_data_block
+
 
 class TimeSeries(ForcingBase):
     """Subclass for a .bc file [Forcing] block with timeseries data."""
