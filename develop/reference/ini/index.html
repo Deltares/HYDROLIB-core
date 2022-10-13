@@ -2771,7 +2771,7 @@ such this will lead to a validation error.</p>
         <td><code>allow_only_keywords</code></td>
         <td><code>bool</code></td>
         <td><p>Whether to allow properties with only keys (no '=' or value).
-Defaults to True.</p></td>
+Defaults to False.</p></td>
       </tr>
       <tr>
         <td><code>parse_datablocks</code></td>
@@ -3486,12 +3486,20 @@ additional offset to ensure . is lined out. Defaults to 4.</p></td>
         <td><code>str</code></td>
         <td><p>The character used to delimit comments. Defaults to '#'.</p></td>
       </tr>
+      <tr>
+        <td><code>skip_empty_properties</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether or not to skip properties with a value that is empty or None. Defaults to True.</p></td>
+      </tr>
   </tbody>
 </table>
 
 
 
   <div class="doc doc-children">
+
+
+
 
 
 
