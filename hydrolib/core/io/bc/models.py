@@ -427,6 +427,8 @@ class T3D(ForcingBase):
         )
 
         verticalpositions = values.get("vertpositions")
+        if verticalpositions is None:
+            raise ValueError("vertpositions is not provided")
         verticalpositionindexes = values.get("vertpositionindex")
 
         number_of_verticalpositions = (

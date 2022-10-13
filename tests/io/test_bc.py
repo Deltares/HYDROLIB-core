@@ -535,6 +535,17 @@ class TestT3D:
 
         assert t3d.vertinterpolation == "linear"
 
+    def test_create_t3d_without_specifying_vertpositions_raises_error(self):
+        values = _create_t3d_values()
+
+        del values["vertpositions"]
+
+        with pytest.raises(ValidationError) as error:
+            T3D(**values)
+
+        expected_message = "vertpositions is not provided"
+        assert expected_message in str(error.value)
+
     def test_load_forcing_model(self):
         bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
         forcingmodel = ForcingModel(bc_file)
