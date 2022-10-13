@@ -4,8 +4,8 @@ from pydantic.fields import Field
 
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
+    LocationValidationConfiguration,
     get_location_specification_rootvalidator,
-    get_number_of_coordinates_validator,
     get_split_string_on_delimiter_validator,
 )
 
@@ -71,10 +71,10 @@ class ObservationCrossSection(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    _location_validator = get_location_specification_rootvalidator(allow_nodeid=False)
-
-    _number_of_coordinates_validator = get_number_of_coordinates_validator(
-        minimum_required_number_of_coordinates=2
+    _location_validator = get_location_specification_rootvalidator(
+        config=LocationValidationConfiguration(
+            validate_node=False, minimum_num_coordinates=2
+        )
     )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
