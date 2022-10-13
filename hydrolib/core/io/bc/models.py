@@ -378,7 +378,7 @@ class T3D(ForcingBase):
                 verticalpositionindex, maximum_verticalpositionindex
             ):
                 raise ValueError(
-                    f"Vertical position index should be between 1 and {maximum_verticalpositionindex}"
+                    f"Vertical position index should be between 1 and {maximum_verticalpositionindex}, but {verticalpositionindex} was given"
                 )
 
     @staticmethod
