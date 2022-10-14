@@ -541,7 +541,7 @@ class TestT3D:
         with pytest.raises(ValidationError) as error:
             T3D(**values)
 
-        expected_message = "vertpositions is not provided"
+        expected_message = "vertPositions is not provided"
         assert expected_message in str(error.value)
 
     def test_load_forcing_model(self):

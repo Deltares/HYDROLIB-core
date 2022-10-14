@@ -328,8 +328,7 @@ class T3D(ForcingBase):
 
         verticalpositions = values.get("vertpositions")
         if verticalpositions is None:
-            raise ValueError("vertpositions is not provided")
-        verticalpositionindexes = values.get("vertpositionindex")
+            raise ValueError("vertPositions is not provided")
 
         number_of_verticalpositions = (
             len(verticalpositions)
@@ -337,6 +336,7 @@ class T3D(ForcingBase):
             else len(verticalpositions.split())
         )
 
+        verticalpositionindexes = values.get("vertpositionindex")
         if verticalpositionindexes is None:
             T3D._validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
                 quantityunitpairs, number_of_verticalpositions
@@ -364,12 +364,9 @@ class T3D(ForcingBase):
     def _validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
         quantityunitpairs: List[QuantityUnitPair], maximum_verticalpositionindex: int
     ) -> None:
-        for quantityunitpair in quantityunitpairs:
-            quantity = quantityunitpair.quantity.lower()
+        for quantityunitpair in quantityunitpairs[1:]:
             verticalpositionindex = quantityunitpair.vertpositionindex
 
-            if quantity == "time":
-                continue
             if not T3D._is_valid_verticalpositionindex(
                 verticalpositionindex, maximum_verticalpositionindex
             ):

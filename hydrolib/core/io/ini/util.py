@@ -475,12 +475,12 @@ def get_key_renaming_root_validator(keys_to_rename: Dict[str, List[str]]):
 
     def rename_keys(cls, values: Dict) -> Dict:
         for current_keyword, old_keywords in keys_to_rename.items():
-            if values.get(current_keyword) is not None:
+            if current_keyword in values:
                 continue
 
             for old_keyword in old_keywords:
-                if values.get(old_keyword) is not None:
-                    values[current_keyword] = values.get(old_keyword)
+                if (value := values.get(old_keyword)) is not None:
+                    values[current_keyword] = value
                     del values[old_keyword]
                     break
 
