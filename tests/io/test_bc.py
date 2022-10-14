@@ -273,6 +273,23 @@ class TestForcingModel:
                 f"No validation error should be raised when creating an {cls.__name__}"
             )
 
+    def test_representation_is_correct(self):
+        forcing = ForcingBase(
+            name="some_name", 
+            function="some_function", 
+            quantityunitpair=[QuantityUnitPair(quantity="some_quantity", unit="some_unit")],
+            datablock=[[1.2, 2.3]]
+        )
+
+        str_representation_as_single = str(forcing)
+        str_representation_in_list = str([forcing])
+
+        # datablock should be omitted when a `ForcingBase` is represented from within a list
+        expected_result = "comments=Comments() datablock={0} name='some_name' function='some_function' quantityunitpair=[QuantityUnitPair(quantity='some_quantity', unit='some_unit', vertpositionindex=None)]"
+        assert str_representation_as_single == expected_result.format("[[1.2, 2.3]]")
+        assert str_representation_in_list == "[{0}]".format(expected_result.format("'<omitted>'"))
+
+
 
 class TestT3D:
     @pytest.mark.parametrize(
