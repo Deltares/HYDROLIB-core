@@ -30,6 +30,7 @@ class AutoStartOption(IntEnum):
     Enum class containing the valid values for the AutoStart
     attribute in the [General][hydrolib.core.io.mdu.models.General] class.
     """
+
     no = 0
     autostart = 1
     autostartstop = 2
