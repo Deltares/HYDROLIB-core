@@ -335,6 +335,20 @@ class Time(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        refdate: Optional[str] = Field("Reference date [yyyymmdd].", alias="refDate")
+        tzone: Optional[str] = Field("Data Sources in GMT are interrogated with time in minutes since refdat-Tzone*60 [min].", alias="tZone")
+        tunit: Optional[str] = Field("Time units in MDU [D, H, M or S].", alias="tUnit")
+        dtuser: Optional[str] = Field("User timestep in seconds [s] (interval for external forcing update & his/map output).", alias="dtUser")
+        dtnodal: Optional[str] = Field("Time interval [s] for updating nodal factors in astronomical boundary conditions [Dd HH:MM:SS.ZZZ].", alias="dtNodal")
+        dtmax: Optional[str] = Field("Max timestep in seconds [s].", alias="dtMax")
+        dtinit: Optional[str] = Field("Initial timestep in seconds [s].", alias="dtInit")
+        tstart: Optional[str] = Field("Start time w.r.t. RefDate [TUnit].", alias="tStart")
+        tstop: Optional[str] = Field("Stop time w.r.t. RefDate [TUnit].", alias="tStop")
+        updateroughnessinterval: Optional[str] = Field("Update interval for time dependent roughness parameters [s].", alias="updateRoughnessInterval")
+
+    comments: Comments = Comments()
+
     _header: Literal["Time"] = "Time"
     refdate: int = Field(20200101, alias="refDate")  # TODO Convert to datetime
     tzone: float = Field(0.0, alias="tZone")
