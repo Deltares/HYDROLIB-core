@@ -2,23 +2,46 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 import netCDF4 as nc
 import numpy as np
 
 from hydrolib.core import __version__
+from hydrolib.core.basemodel import BaseModel
 
 if TYPE_CHECKING:
     from .models import Link1d2d, Mesh1d, Mesh2d, NetworkModel
 
 
+class FillValueConfiguration(BaseModel):
+    """Class that holds the configuration for writing fill values."""
+
+    int32_fill_value: int = nc.default_fillvals["i4"]
+    "Fill value to use for 32-bit integers. Defaults to -2147483647."
+
+    int64_fill_value: int = nc.default_fillvals["i8"]
+    "Fill value to use for 64-bit integers. Defaults to -9223372036854775806."
+
+    float32_fill_value: float = nc.default_fillvals["f4"]
+    "Fill value to use for 32-bit integers. Defaults to 9.97E36"
+
+    float64_fill_value: float = nc.default_fillvals["f8"]
+    "Fill value to use for 64-bit integers. Defaults to 9.97E36."
+
+
 class UgridWriter:
     """Writer for netCDF files with UGrid convention"""
 
-    def __init__(self):
+    def __init__(self, fill_value_config: Optional[FillValueConfiguration] = None):
         self.idstrlength = 40
         self.longstrlength = 80
+
+        self._fill_value_config = (
+            fill_value_config
+            if fill_value_config is not None
+            else FillValueConfiguration()
+        )
 
     def write(
         self,
@@ -298,7 +321,10 @@ class UgridWriter:
         )
 
         mesh1d_node_offset = ncfile.createVariable(
-            "mesh1d_node_offset", np.float64, "mesh1d_nNodes", fill_value=np.nan
+            "mesh1d_node_offset",
+            np.float64,
+            "mesh1d_nNodes",
+            fill_value=self._fill_value_config.float64_fill_value,
         )
         mesh1d_node_offset.long_name = "Offset along branch of mesh nodes"
         mesh1d_node_offset.units = "m"
@@ -328,7 +354,10 @@ class UgridWriter:
             "mesh2d_node_y", np.float64, nc_mesh2d.node_dimension
         )
         mesh2d_node_z = ncfile.createVariable(
-            "mesh2d_node_z", np.float64, nc_mesh2d.node_dimension, fill_value=np.nan
+            "mesh2d_node_z",
+            np.float64,
+            nc_mesh2d.node_dimension,
+            fill_value=self._fill_value_config.float64_fill_value,
         )
 
         mesh2d_node_x.standard_name = "projection_x_coordinate"
@@ -351,7 +380,7 @@ class UgridWriter:
             "mesh2d_edge_nodes",
             "i4",
             (nc_mesh2d.edge_dimension, "Two"),
-            fill_value=np.iinfo(np.int32).min,
+            fill_value=self._fill_value_config.int32_fill_value,
         )
         mesh2d_en.cf_role = "edge_node_connectivity"
         mesh2d_en.long_name = "maps every edge to the two nodes that it connects"
@@ -364,7 +393,7 @@ class UgridWriter:
             "mesh2d_face_nodes",
             "i4",
             (nc_mesh2d.face_dimension, nc_mesh2d.max_face_nodes_dimension),
-            fill_value=np.iinfo(np.int32).min,
+            fill_value=self._fill_value_config.int32_fill_value,
         )
         mesh2d_fn.cf_role = "face_node_connectivity"
         mesh2d_fn.mesh = "mesh2d"
@@ -380,7 +409,10 @@ class UgridWriter:
             "mesh2d_face_y", np.float64, nc_mesh2d.face_dimension
         )
         mesh2d_face_z = ncfile.createVariable(
-            "mesh2d_face_z", np.float64, nc_mesh2d.face_dimension, fill_value=np.nan
+            "mesh2d_face_z",
+            np.float64,
+            nc_mesh2d.face_dimension,
+            fill_value=self._fill_value_config.float64_fill_value,
         )
 
         for var, dim in zip([mesh2d_face_x, mesh2d_face_y, mesh2d_face_z], list("xyz")):
@@ -440,7 +472,7 @@ class UgridWriter:
             "link1d2d_contact_type",
             "i4",
             "nLink1D2D_edge",
-            fill_value=np.iinfo(np.int32).min,
+            fill_value=self._fill_value_config.int32_fill_value,
         )
         link1d2d_contact_type[:] = link1d2d.link1d2d_contact_type
 

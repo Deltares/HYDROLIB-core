@@ -16,7 +16,7 @@ It can serve as the basis for various pre- and postprocessing tools for a modell
 Much more information is available from the dedicated package website.
 
 Some quickstarts:
-* First users: [Installation](https://deltares.github.io/HYDROLIB-core/latest/guides/setup/) and [Tutorials](https://deltares.github.io/HYDROLIB-core/latest/tutorials/steps).
+* First users: [Installation](https://deltares.github.io/HYDROLIB-core/latest/guides/setup/) and [Tutorials](https://deltares.github.io/HYDROLIB-core/latest/tutorials/tutorials).
 * Developers: [List of supported functionalities](https://deltares.github.io/HYDROLIB-core/latest/topics/dhydro_support/),
   [API reference](https://deltares.github.io/HYDROLIB-core/latest/reference/api/), and
   [How to contribute](https://deltares.github.io/HYDROLIB-core/latest/guides/contributing/).
