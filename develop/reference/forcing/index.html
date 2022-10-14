@@ -1126,6 +1126,13 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase.__repr__" class="md-nav__link">
+    __repr__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.bc.models.ForcingBase.validate" class="md-nav__link">
     validate()
   </a>
@@ -1624,6 +1631,13 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase.__repr__" class="md-nav__link">
+    __repr__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.bc.models.ForcingBase.validate" class="md-nav__link">
     validate()
   </a>
@@ -2064,6 +2078,40 @@ This model is for example referenced under a
 
 
 
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.ForcingBase.__repr__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.ForcingBase.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Return repr(self).</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&lt;omitted&gt;&quot;</span>
+    <span class="n">representable</span> <span class="o">=</span> <span class="n">BaseModel</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">representable</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
