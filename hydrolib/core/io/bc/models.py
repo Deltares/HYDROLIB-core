@@ -210,11 +210,10 @@ class ForcingBase(DataBlockINIBasedModel):
         extra = Extra.ignore
 
     def __repr__(self) -> str:
-        datablock = self.datablock
-        self.datablock = []
-        repr_without_data_block = str(self)
-        self.datablock = datablock
-        return repr_without_data_block
+        data = dict(self)
+        data["datablock"] = "<omitted>"
+        representable = BaseModel.construct(**data)
+        return str(representable)
 
 
 class TimeSeries(ForcingBase):
