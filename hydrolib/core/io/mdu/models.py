@@ -437,6 +437,11 @@ class Hydrology(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        interceptionmodel: Optional[str] = Field("Interception model (0: none, 1: on, via layer thickness). See Section 13.3.", alias="interceptionModel")
+
+    comments: Comments = Comments()
+
     _header: Literal["Hydrology"] = "Hydrology"
     interceptionmodel: bool = Field(False, alias="interceptionModel")
 
