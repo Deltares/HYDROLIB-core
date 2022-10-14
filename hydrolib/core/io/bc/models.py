@@ -11,19 +11,25 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Literal, NamedTuple, Optional, Set, Union
+from typing import Callable, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
 from hydrolib.core.io.ini.io_models import Property, Section
-from hydrolib.core.io.ini.models import DataBlockINIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.ini.models import (
+    BaseModel,
+    DataBlockINIBasedModel,
+    INIGeneral,
+    INIModel,
+)
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
+    get_key_renaming_root_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
 )
@@ -32,9 +38,18 @@ logger = logging.getLogger(__name__)
 
 
 class VerticalInterpolation(str, Enum):
+    """Enum class containing the valid values for the vertical position type,
+    which defines what the numeric values for vertical position specification mean.
+    """
+
     linear = "linear"
+    """str: Linear interpolation between vertical positions."""
+
     log = "log"
+    """str: Logarithmic interpolation between vertical positions (e.g. vertical velocity profiles)."""
+
     block = "block"
+    """str: Equal to the value at the directly lower specified vertical position."""
 
 
 class VerticalPositionType(str, Enum):
@@ -49,22 +64,40 @@ class VerticalPositionType(str, Enum):
     z_datum = "ZDatum"
     """str: z-coordinate with respect to the reference level of the model."""
 
+    z_surf = "ZSurf"
+    """str: Absolute distance from the free surface downward."""
+
 
 class TimeInterpolation(str, Enum):
+    """Enum class containing the valid values for the time interpolation."""
+
     linear = "linear"
+    """str: Linear interpolation between times."""
+
     block_from = "blockFrom"
+    """str: Equal to that at the start of the time interval (latest specified time value)."""
+
     block_to = "blockTo"
+    """str: Equal to that at the end of the time interval (upcoming specified time value)."""
 
 
-class QuantityUnitPair(NamedTuple):
-    """A .bc file header lines tuple containing a quantity name and its unit."""
+class QuantityUnitPair(BaseModel):
+    """A .bc file header lines tuple containing a quantity name, its unit and optionally a vertical position index."""
 
     quantity: str
+    """str: Name of quantity."""
+
     unit: str
+    """str: Unit of quantity."""
+
+    vertpositionindex: Optional[int] = Field(alias="vertPositionIndex")
+    """int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only)."""
 
     def _to_properties(self):
         yield Property(key="quantity", value=self.quantity)
         yield Property(key="unit", value=self.unit)
+        if self.vertpositionindex is not None:
+            yield Property(key="vertPositionIndex", value=self.vertpositionindex)
 
 
 class ForcingBase(DataBlockINIBasedModel):
@@ -74,18 +107,17 @@ class ForcingBase(DataBlockINIBasedModel):
     Typically subclassed, for the specific types of forcing data, e.g, TimeSeries.
     This model is for example referenced under a
     [ForcingModel][hydrolib.core.io.bc.models.ForcingModel]`.forcing[..]`.
-
-    Attributes:
-        name (str): Unique identifier that identifies the location for this forcing data.
-        function (str): Function type of the data in the actual datablock.
-        quantityunitpair (List[QuantityUnitPair]): list of header line tuples for one or
-            more quantities + their unit. Describes the columns in the actual datablock.
     """
 
     _header: Literal["Forcing"] = "Forcing"
     name: str = Field(alias="name")
+    """str: Unique identifier that identifies the location for this forcing data."""
+
     function: str = Field(alias="function")
+    """str: Function type of the data in the actual datablock."""
+
     quantityunitpair: List[QuantityUnitPair]
+    """List[QuantityUnitPair]: List of header lines for one or more quantities and their unit. Describes the columns in the actual datablock."""
 
     def _exclude_fields(self) -> Set:
         return {"quantityunitpair"}.union(super()._exclude_fields())
@@ -113,7 +145,9 @@ class ForcingBase(DataBlockINIBasedModel):
             raise ValueError("unit is not provided")
 
         if isinstance(quantities, str) and isinstance(units, str):
-            values[quantityunitpairkey] = [(quantities, units)]
+            values[quantityunitpairkey] = [
+                QuantityUnitPair(quantity=quantities, unit=units)
+            ]
             return values
 
         if isinstance(quantities, list) and isinstance(units, list):
@@ -123,7 +157,8 @@ class ForcingBase(DataBlockINIBasedModel):
                 )
 
             values[quantityunitpairkey] = [
-                (quantity, unit) for quantity, unit in zip(quantities, units)
+                QuantityUnitPair(quantity=quantity, unit=unit)
+                for quantity, unit in zip(quantities, units)
             ]
             return values
 
@@ -179,12 +214,24 @@ class TimeSeries(ForcingBase):
     """Subclass for a .bc file [Forcing] block with timeseries data."""
 
     function: Literal["timeseries"] = "timeseries"
+
     timeinterpolation: TimeInterpolation = Field(alias="timeInterpolation")
+    """TimeInterpolation: The type of time interpolation."""
+
     offset: float = Field(0.0, alias="offset")
+    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
     _timeinterpolation_validator = get_enum_validator(
         "timeinterpolation", enum=TimeInterpolation
+    )
+
+    _key_renaming_root_validator = get_key_renaming_root_validator(
+        {
+            "timeinterpolation": ["time_interpolation"],
+        }
     )
 
 
@@ -192,14 +239,18 @@ class Harmonic(ForcingBase):
     """Subclass for a .bc file [Forcing] block with harmonic components data."""
 
     function: Literal["harmonic"] = "harmonic"
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
 
 class Astronomic(ForcingBase):
     """Subclass for a .bc file [Forcing] block with astronomic components data."""
 
     function: Literal["astronomic"] = "astronomic"
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
 
 class HarmonicCorrection(ForcingBase):
@@ -220,22 +271,173 @@ class T3D(ForcingBase):
     function: Literal["t3d"] = "t3d"
 
     offset: float = Field(0.0, alias="offset")
-    factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
 
-    verticalpositions: List[float] = Field(alias="verticalPositions")
-    verticalinterpolation: VerticalInterpolation = Field(alias="verticalInterpolation")
-    verticalpositiontype: VerticalPositionType = Field(alias="verticalPositionType")
+    factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
+
+    vertpositions: List[float] = Field(alias="vertPositions")
+    """List[float]: The specification of the vertical positions."""
+
+    vertinterpolation: VerticalInterpolation = Field(
+        VerticalInterpolation.linear.value, alias="vertInterpolation"
+    )
+    """VerticalInterpolation: The type of vertical interpolation. Defaults to linear."""
+
+    vertpositiontype: VerticalPositionType = Field(alias="vertPositionType")
+    """VerticalPositionType: The vertical position type of the verticalpositions values."""
+
+    timeinterpolation: TimeInterpolation = Field(
+        TimeInterpolation.linear.value, alias="timeInterpolation"
+    )
+    """TimeInterpolation: The type of time interpolation. Defaults to linear."""
+
+    _key_renaming_root_validator = get_key_renaming_root_validator(
+        {
+            "timeinterpolation": ["time_interpolation"],
+            "vertpositions": ["vertical_position_specification"],
+            "vertinterpolation": ["vertical_interpolation"],
+            "vertpositiontype": ["vertical_position_type"],
+            "vertpositionindex": ["vertical_position"],
+        }
+    )
 
     _split_to_list = get_split_string_on_delimiter_validator(
-        "verticalpositions",
+        "vertpositions",
     )
 
     _verticalinterpolation_validator = get_enum_validator(
-        "verticalinterpolation", enum=VerticalInterpolation
+        "vertinterpolation", enum=VerticalInterpolation
     )
     _verticalpositiontype_validator = get_enum_validator(
-        "verticalpositiontype", enum=VerticalPositionType
+        "vertpositiontype", enum=VerticalPositionType
     )
+    _timeinterpolation_validator = get_enum_validator(
+        "timeinterpolation", enum=TimeInterpolation
+    )
+
+    @root_validator(pre=True)
+    def _validate_quantityunitpairs(cls, values: Dict) -> Dict:
+        super()._validate_quantityunitpair(values)
+
+        quantityunitpairs = values["quantityunitpair"]
+
+        T3D._validate_that_first_unit_is_time_and_has_no_verticalposition(
+            quantityunitpairs
+        )
+
+        verticalpositions = values.get("vertpositions")
+        if verticalpositions is None:
+            raise ValueError("vertPositions is not provided")
+
+        number_of_verticalpositions = (
+            len(verticalpositions)
+            if isinstance(verticalpositions, List)
+            else len(verticalpositions.split())
+        )
+
+        verticalpositionindexes = values.get("vertpositionindex")
+        if verticalpositionindexes is None:
+            T3D._validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
+                quantityunitpairs, number_of_verticalpositions
+            )
+            return values
+
+        T3D._validate_verticalpositionindexes_and_update_quantityunitpairs(
+            verticalpositionindexes,
+            number_of_verticalpositions,
+            quantityunitpairs,
+        )
+
+        return values
+
+    @staticmethod
+    def _validate_that_first_unit_is_time_and_has_no_verticalposition(
+        quantityunitpairs: List[QuantityUnitPair],
+    ) -> None:
+        if quantityunitpairs[0].quantity.lower() != "time":
+            raise ValueError("First quantity should be `time`")
+        if quantityunitpairs[0].vertpositionindex is not None:
+            raise ValueError("`time` quantity cannot have vertical position index")
+
+    @staticmethod
+    def _validate_that_all_non_time_quantityunitpairs_have_valid_verticalpositionindex(
+        quantityunitpairs: List[QuantityUnitPair], maximum_verticalpositionindex: int
+    ) -> None:
+        for quantityunitpair in quantityunitpairs[1:]:
+            verticalpositionindex = quantityunitpair.vertpositionindex
+
+            if not T3D._is_valid_verticalpositionindex(
+                verticalpositionindex, maximum_verticalpositionindex
+            ):
+                raise ValueError(
+                    f"Vertical position index should be between 1 and {maximum_verticalpositionindex}, but {verticalpositionindex} was given"
+                )
+
+    @staticmethod
+    def _validate_verticalpositionindexes_and_update_quantityunitpairs(
+        verticalpositionindexes: List[int],
+        number_of_verticalpositions: int,
+        quantityunitpairs: List[QuantityUnitPair],
+    ) -> None:
+        if verticalpositionindexes is None:
+            raise ValueError("vertPositionIndex is not provided")
+
+        if len(verticalpositionindexes) != len(quantityunitpairs) - 1:
+            raise ValueError(
+                "Number of vertical position indexes should be equal to the number of quantities/units - 1"
+            )
+
+        T3D._validate_that_verticalpositionindexes_are_valid(
+            verticalpositionindexes, number_of_verticalpositions
+        )
+
+        T3D._add_verticalpositionindex_to_quantityunitpairs(
+            quantityunitpairs[1:], verticalpositionindexes
+        )
+
+    @staticmethod
+    def _validate_that_verticalpositionindexes_are_valid(
+        verticalpositionindexes: List[int], number_of_vertical_positions: int
+    ) -> None:
+        for verticalpositionindexstring in verticalpositionindexes:
+            verticalpositionindex = (
+                int(verticalpositionindexstring)
+                if verticalpositionindexstring
+                else None
+            )
+            if not T3D._is_valid_verticalpositionindex(
+                verticalpositionindex, number_of_vertical_positions
+            ):
+                raise ValueError(
+                    f"Vertical position index should be between 1 and {number_of_vertical_positions}"
+                )
+
+    @staticmethod
+    def _is_valid_verticalpositionindex(
+        verticalpositionindex: int, number_of_vertical_positions: int
+    ) -> bool:
+        one_based_index_offset = 1
+
+        return (
+            verticalpositionindex is not None
+            and verticalpositionindex >= one_based_index_offset
+            and verticalpositionindex <= number_of_vertical_positions
+        )
+
+    @staticmethod
+    def _add_verticalpositionindex_to_quantityunitpairs(
+        quantityunitpairs: List[QuantityUnitPair], verticalpositionindexes: List[int]
+    ) -> None:
+        if len(quantityunitpairs) != len(verticalpositionindexes):
+            raise ValueError(
+                "Number of quantityunitpairs and verticalpositionindexes should be equal"
+            )
+
+        for (quantityunitpair, verticalpositionindex) in zip(
+            quantityunitpairs, verticalpositionindexes
+        ):
+            quantityunitpair.vertpositionindex = verticalpositionindex
 
 
 class QHTable(ForcingBase):
@@ -250,13 +452,18 @@ class Constant(ForcingBase):
     function: Literal["constant"] = "constant"
 
     offset: float = Field(0.0, alias="offset")
+    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
+
     factor: float = Field(1.0, alias="factor")
+    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
 
 class ForcingGeneral(INIGeneral):
     """`[General]` section with .bc file metadata."""
 
     fileversion: str = Field("1.01", alias="fileVersion")
+    """str: The file version."""
+
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
@@ -266,16 +473,15 @@ class ForcingModel(INIModel):
 
     This model is for example referenced under a
     [ExtModel][hydrolib.core.io.ext.models.ExtModel]`.boundary[..].forcingfile[..]`.
-
-    Attributes:
-        general (ForcingGeneral): `[General]` block with file metadata.
-        forcing (List[ForcingBase]): List of `[Forcing]` blocks for all forcing
-            definitions in a single .bc file. Actual data is stored in
-            forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock] or [hydrolib.core.io.ini.models.DataBlockINIBasedModel].
     """
 
     general: ForcingGeneral = ForcingGeneral()
+    """ForcingGeneral: `[General]` block with file metadata."""
+
     forcing: List[ForcingBase] = []
+    """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
+    definitions in a single .bc file. Actual data is stored in
+    forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock]."""
 
     _split_to_list = make_list_validator("forcing")
 

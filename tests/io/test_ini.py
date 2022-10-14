@@ -803,6 +803,15 @@ class TestSerializerConfig:
         config = SerializerConfig(section_indent=3, datablock_indent=10)
         assert config.total_datablock_indent == 13
 
+    def test_default_serializer_config(self):
+        config = SerializerConfig()
+        assert config.section_indent == 0
+        assert config.property_indent == 4
+        assert config.datablock_indent == 8
+        assert config.datablock_spacing == 4
+        assert config.comment_delimiter == "#"
+        assert config.skip_empty_properties == True
+
 
 class TestLengths:
     @pytest.mark.parametrize(
@@ -1260,13 +1269,17 @@ class TestSerializer:
             (
                 Property(key="key", value=None, comment=None),
                 MaxLengths(key=3, value=0),
-                SerializerConfig(section_indent=0, property_indent=0),
+                SerializerConfig(
+                    section_indent=0, property_indent=0, skip_empty_properties=False
+                ),
                 "key =",
             ),
             (
                 Property(key="key", value=None, comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=0),
+                SerializerConfig(
+                    section_indent=0, property_indent=0, skip_empty_properties=False
+                ),
                 "key =       # comment",
             ),
             (
@@ -1583,6 +1596,50 @@ class TestSerializer:
                     "      1.0     16.0    81.0    256.0",
                 ],
             ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key1", value="value", comment="comment1"),
+                        Property(key="key2", value="", comment="comment2"),
+                        Property(key="key3", value=None, comment="comment3"),
+                    ],
+                    datablock=[],
+                ),
+                SerializerConfig(
+                    section_indent=0,
+                    property_indent=4,
+                    datablock_indent=6,
+                    datablock_spacing=4,
+                    skip_empty_properties=False,
+                ),
+                [
+                    "[header]",
+                    "    key1 = value # comment1",
+                    "    key2 =       # comment2",
+                    "    key3 =       # comment3",
+                ],
+            ),
+            (
+                Section(
+                    header="header",
+                    content=[
+                        Property(key="key1", value="value", comment="comment1"),
+                        Property(key="key2", value="", comment="comment2"),
+                        Property(key="key3", value=None, comment="comment3"),
+                        Property(key="key4", value="   ", comment="comment4"),
+                    ],
+                    datablock=[],
+                ),
+                SerializerConfig(
+                    section_indent=0,
+                    property_indent=4,
+                    datablock_indent=6,
+                    datablock_spacing=4,
+                    skip_empty_properties=True,
+                ),
+                ["[header]", "    key1 = value # comment1"],
+            ),
         ],
     )
     def test_serialize_section(
@@ -1626,7 +1683,7 @@ class TestSerializer:
 
         document = parser.finalize()
 
-        serializer = Serializer(config=SerializerConfig())
+        serializer = Serializer(config=SerializerConfig(skip_empty_properties=False))
         result = "\n".join(serializer.serialize(document))
 
         assert result == input_str
@@ -1720,7 +1777,7 @@ def test_serialize_deserialize_should_give_the_same_result():
     )
 
     path = test_output_dir / "tmp" / "test.pliz"
-    write_ini(path, document)
+    write_ini(path, document, config=SerializerConfig(skip_empty_properties=False))
 
     parser = Parser(config=ParserConfig(parse_datablocks=True))
     with path.open("r") as f:

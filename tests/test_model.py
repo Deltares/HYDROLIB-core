@@ -7,7 +7,7 @@ import pytest
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.io.bc.models import ForcingBase, ForcingModel
+from hydrolib.core.io.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -349,7 +349,11 @@ def test_boundary_with_forcing_file_without_match_returns_none():
 
 
 def _create_forcing(name: str, quantity: str) -> ForcingBase:
-    return ForcingBase(name=name, quantityunitpair=[(quantity, "")], function="")
+    return ForcingBase(
+        name=name,
+        quantityunitpair=[QuantityUnitPair(quantity=quantity, unit="")],
+        function="",
+    )
 
 
 def _create_boundary(data: Dict) -> Boundary:
