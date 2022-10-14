@@ -456,6 +456,14 @@ class Trachytopes(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        trtrou: Optional[str] = Field("Flag for trachytopes (Y=on, N=off).", alias="trtRou")  # TODO bool
+        trtdef: Optional[str] = Field("File (*.ttd) including trachytope definitions.", alias="trtDef")
+        trtl: Optional[str] = Field("File (*.arl) including distribution of trachytope definitions.", alias="trtL")
+        dttrt: Optional[str] = Field("Interval for updating of bottom roughness due to trachytopes in seconds [s].", alias="dtTrt")
+
+    comments: Comments = Comments()
+
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
     trtdef: Optional[Path] = Field(None, alias="trtDef")
