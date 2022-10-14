@@ -399,6 +399,16 @@ class ExternalForcing(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        extforcefile: Optional[str] = Field("Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification.", alias="extForceFile")
+        extforcefilenew: Optional[str] = Field("New format for external forcings file *.ext, link with bcformat boundary conditions specification. See section C.5.2.", alias="extForceFileNew")
+        rainfall: Optional[str] = Field("Include rainfall, (0=no, 1=yes).", alias="rainfall")
+        qext: Optional[str] = Field("Include user Qin/out, externally provided, (0=no, 1=yes).", alias="qExt")
+        evaporation: Optional[str] = Field("Include evaporation in water balance, (0=no, 1=yes).", alias="evaporation")
+        windext: Optional[str] = Field("Include wind, externally provided, (0=no, 1=reserved for EC, 2=yes).", alias="windExt")
+    
+    comments: Comments = Comments()
+
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()
     )
