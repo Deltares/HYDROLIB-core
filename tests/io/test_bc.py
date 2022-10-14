@@ -275,10 +275,12 @@ class TestForcingModel:
 
     def test_representation_is_correct(self):
         forcing = ForcingBase(
-            name="some_name", 
-            function="some_function", 
-            quantityunitpair=[QuantityUnitPair(quantity="some_quantity", unit="some_unit")],
-            datablock=[[1.2, 2.3]]
+            name="some_name",
+            function="some_function",
+            quantityunitpair=[
+                QuantityUnitPair(quantity="some_quantity", unit="some_unit")
+            ],
+            datablock=[[1.2, 2.3]],
         )
 
         str_representation_as_single = str(forcing)
@@ -287,8 +289,9 @@ class TestForcingModel:
         # datablock should be omitted when a `ForcingBase` is represented from within a list
         expected_result = "comments=Comments() datablock={0} name='some_name' function='some_function' quantityunitpair=[QuantityUnitPair(quantity='some_quantity', unit='some_unit', vertpositionindex=None)]"
         assert str_representation_as_single == expected_result.format("[[1.2, 2.3]]")
-        assert str_representation_in_list == "[{0}]".format(expected_result.format("'<omitted>'"))
-
+        assert str_representation_in_list == "[{0}]".format(
+            expected_result.format("'<omitted>'")
+        )
 
 
 class TestT3D:
