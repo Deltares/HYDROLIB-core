@@ -134,6 +134,12 @@ class VolumeTables(INIBasedModel):
     All lowercased attributes match with the [VolumeTables] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
+    class Comments(INIBasedModel.Comments):
+        usevolumetables: bool = Field("Use volume tables for 1D grid cells (see section 8.16) (1: yes, 0 = no).", alias="useVolumeTables")
+        increment: float = Field("The height increment for the volume tables [m].", alias="increment")
+        usevolumetablefile: bool = Field("Read and write the volume table from/to file (1: yes, 0= no).", alias="useVolumeTableFile")
+
+    comments: Comments = Comments()
 
     _header: Literal["VolumeTables"] = "VolumeTables"
     usevolumetables: bool = Field(False, alias="useVolumeTables")
