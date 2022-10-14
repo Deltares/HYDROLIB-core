@@ -268,6 +268,18 @@ class Wind(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        icdtyp: Optional[str] = Field("Wind drag types,1=const, 2=S&B 2 breakpoints, 3=S&B 3 breakpoints, 4=Charnock constant.", alias="icdTyp")
+        cdbreakpoints: Optional[str] = Field("Wind drag breakpoints, e.g. 0.00063 0.00723.", alias="cdBreakpoints")
+        windspeedbreakpoints: Optional[str] = Field("Wind speed breakpoints [m/s], e.g. 0.0 100.0.", alias="windSpeedBreakpoints")
+        rhoair: Optional[str] = Field("Air density [kg/m3].", alias="rhoAir")
+        relativewind: Optional[str] = Field("Wind speed [kg/m3] relative to top-layer water speed*relativewind (0d0=no relative wind, 1d0=using full top layer speed).", alias="relativeWind")
+        windpartialdry: Optional[str] = Field("Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0=no, 1=yes (default).", alias="windPartialDry")
+        pavbnd: Optional[str] = Field("Average air pressure on open boundaries [N/m2], only applied if value > 0.", alias="pavBnd")
+        pavini: Optional[str] = Field("Initial air pressure [N/m2], only applied if value > 0.", alias="pavIni")
+
+    comments: Comments = Comments()
+
     _header: Literal["Wind"] = "Wind"
     icdtyp: int = Field(2, alias="icdTyp")
     cdbreakpoints: List[float] = Field([0.00063, 0.00723], alias="cdBreakpoints")
