@@ -1077,6 +1077,13 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.net.models.Branch.generate_nodes" class="md-nav__link">
+    generate_nodes()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.net.models.Branch.interpolate" class="md-nav__link">
     interpolate()
   </a>
@@ -1554,6 +1561,13 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.io.net.models.Branch.generate_nodes" class="md-nav__link">
+    generate_nodes()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.io.net.models.Branch.interpolate" class="md-nav__link">
     interpolate()
   </a>
@@ -1798,6 +1812,104 @@ Branch        </code>
 
 
 
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.net.models.Branch.generate_nodes" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">generate_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh1d_edge_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">structure_chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_dist_to_struc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#hydrolib.core.io.net.models.Branch.generate_nodes" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Generate the branch offsets and the nodes.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>mesh1d_edge_length</code></td>
+        <td><code>float</code></td>
+        <td><p>The edge length of the 1d mesh.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>structure_chainage</code></td>
+        <td><code>Optional[List[float]]</code></td>
+        <td><p>A list with the structure chainages. If not specified, calculation will not take it into account. Defaults to None.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>max_dist_to_struc</code></td>
+        <td><code>Optional[float]</code></td>
+        <td><p>The maximum distance from a node to a structure. If not specified, calculation will not take it into account. Defaults to None.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>Raised when any of the structure offsets, if specified, is smaller than zero.</p></td>
+      </tr>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>Raised when any of the structure offsets, if specified, is greater than the branch length.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/net/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">generate_nodes</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">mesh1d_edge_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">structure_chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_dist_to_struc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate the branch offsets and the nodes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mesh1d_edge_length (float): The edge length of the 1d mesh.</span>
+<span class="sd">        structure_chainage (Optional[List[float]], optional): A list with the structure chainages. If not specified, calculation will not take it into account. Defaults to None.</span>
+<span class="sd">        max_dist_to_struc (Optional[float], optional): The maximum distance from a node to a structure. If not specified, calculation will not take it into account. Defaults to None.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Raised when any of the structure offsets, if specified, is smaller than zero.</span>
+<span class="sd">        ValueError: Raised when any of the structure offsets, if specified, is greater than the branch length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Generate offsets</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">branch_offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_offsets</span><span class="p">(</span>
+        <span class="n">mesh1d_edge_length</span><span class="p">,</span> <span class="n">structure_chainage</span><span class="p">,</span> <span class="n">max_dist_to_struc</span>
+    <span class="p">)</span>
+    <span class="c1"># Calculate node positions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">node_xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_offsets</span><span class="p">)</span>
+    <span class="c1"># Add mask (all False)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_offsets</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
@@ -3230,6 +3342,9 @@ NetworkModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" hr
     </div>
 
   </div>
+
+
+
 
 
 
