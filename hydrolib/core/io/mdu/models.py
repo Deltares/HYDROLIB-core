@@ -372,6 +372,12 @@ class Restart(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        restartfile: Optional[str] = Field("Restart file, only from netCDF-file, hence: either *_rst.nc or *_map.nc.", alias="restartFile")
+        restartdatetime: Optional[str] = Field("Restart time [YYYYMMDDHHMMSS], only relevant in case of restart from *_map.nc.", alias="restartDateTime")
+    
+    comments: Comments = Comments()
+
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()
     )
