@@ -37,6 +37,16 @@ class AutoStartOption(IntEnum):
 
 
 class General(INIGeneral):
+
+    class Comments(INIBasedModel.Comments):
+        program: Optional[str] = Field("Program.", alias="program")
+        version: Optional[str] = Field("Version number of computational kernel", alias="version")
+        filetype: Optional[str] = Field("File type. Do not edit this", alias="fileType")
+        fileversion: Optional[str] = Field("File version. Do not edit this.", alias="fileVersion")
+        autostart: Optional[str] = Field("Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).", alias="autoStart")
+        pathsrelativetoparent: Optional[str] = Field("Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir", alias="pathsRelativeToParent")
+
+    comments: Comments = Comments()
     _header: Literal["General"] = "General"
     program: str = Field("D-Flow FM", alias="program")
     version: str = Field("1.2.94.66079M", alias="version")
