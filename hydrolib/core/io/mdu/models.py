@@ -237,6 +237,13 @@ class Physics(INIBasedModel):
 
 
 class Sediment(INIBasedModel):
+    class Comments(INIBasedModel.Comments):
+        sedimentmodelnr: Optional[str] = Field("", alias="Sedimentmodelnr")
+        morfile: Optional[str] = Field("", alias="MorFile")
+        sedfile: Optional[str] = Field("", alias="SedFile")
+    
+    comments: Comments = Comments()
+
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()
     )
