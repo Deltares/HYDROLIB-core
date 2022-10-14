@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 import meshkernel as mk
 import netCDF4 as nc
@@ -14,6 +15,8 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel, file_load_context
 from hydrolib.core.io.net.reader import UgridReader
 from hydrolib.core.io.net.writer import UgridWriter
+
+logger = logging.getLogger(__name__)
 
 
 def split_by(gl: mk.GeometryList, by: float) -> list:
@@ -355,7 +358,6 @@ class Branch:
         self.branch_offsets = branch_offsets
         # Calculate node positions
         if branch_offsets is not None:
-            # TODO Add validation for offsets smaller than 0 or smaller than the branch length.
             self.node_xy = self.interpolate(branch_offsets)
 
         # Set which of the nodes are present
@@ -367,25 +369,170 @@ class Branch:
     def generate_nodes(
         self,
         mesh1d_edge_length: float,
-        seperate_structures: bool = False,
-        max_dist_to_struc: float = None,
+        structure_chainage: Optional[List[float]] = None,
+        max_dist_to_struc: Optional[float] = None,
     ):
-        if seperate_structures:
-            raise NotImplementedError(
-                "Taking into account structure positions is not implemented."
-            )
+        """Generate the branch offsets and the nodes.
 
+        Args:
+            mesh1d_edge_length (float): The edge length of the 1d mesh.
+            structure_chainage (Optional[List[float]], optional): A list with the structure chainages. If not specified, calculation will not take it into account. Defaults to None.
+            max_dist_to_struc (Optional[float], optional): The maximum distance from a node to a structure. If not specified, calculation will not take it into account. Defaults to None.
+
+        Raises:
+            ValueError: Raised when any of the structure offsets, if specified, is smaller than zero.
+            ValueError: Raised when any of the structure offsets, if specified, is greater than the branch length.
+        """
         # Generate offsets
-        self.branch_offsets = self._generate_1d_spacing(
-            anchor_pts=[0.0, self.length], mesh1d_edge_length=mesh1d_edge_length
+        self.branch_offsets = self._generate_offsets(
+            mesh1d_edge_length, structure_chainage, max_dist_to_struc
         )
         # Calculate node positions
         self.node_xy = self.interpolate(self.branch_offsets)
         # Add mask (all False)
         self.mask = np.full(self.branch_offsets.shape, False)
 
+    def _generate_offsets(
+        self,
+        mesh1d_edge_length: float,
+        structure_offsets: Optional[List[float]] = None,
+        max_dist_to_struc: Optional[float] = None,
+    ) -> np.ndarray:
+        """Generate the branch offsets.
+
+        Args:
+            mesh1d_edge_length (float): The edge length of the 1d mesh.
+            structure_chainage (Optional[List[float]], optional): A list with the structure chainages. If not specified, calculation will not take it into account. Defaults to None.
+            max_dist_to_struc (Optional[float], optional): The maximum distance from a node to a structure. If not specified, calculation will not take it into account. Defaults to None.
+
+        Raises:
+            ValueError: Raised when any of the structure offsets, if specified, is smaller than zero.
+            ValueError: Raised when any of the structure offsets, if specified, is greater than the branch length.
+
+        Returns:
+            np.ndarray: The generated branch offsets.
+        """
+        # Generate initial offsets
+        anchor_pts = [0.0, self.length]
+        offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
+
+        if structure_offsets is None:
+            return offsets
+
+        # Check the limits
+        if (excess := min(structure_offsets)) < 0.0 or (
+            excess := max(structure_offsets)
+        ) > self.length:
+            raise ValueError(
+                f"Distance {excess} is outside the branch range (0.0 - {self.length})."
+            )
+
+        # Merge limits with start and end of branch
+        limits = [-1e-3] + list(sorted(structure_offsets)) + [self.length + 1e-3]
+
+        # if requested, check if the calculation point are close enough to the structures
+        if max_dist_to_struc is not None:
+            limits = self._generate_extended_limits(max_dist_to_struc, limits)
+
+        offsets = self._add_nodes_to_segments(
+            offsets, anchor_pts, limits, mesh1d_edge_length
+        )
+
+        return offsets
+
+    def _generate_extended_limits(
+        self, max_dist_to_struc: float, limits: List[float]
+    ) -> List[float]:
+        """Generate extended limits by taking into account the maximum distance to a structure.
+
+        Args:
+            max_dist_to_struc (float): The maximum distance from a node to a structure.
+            limits (List[float]): The limits.
+
+        Returns:
+            List[float]: A list with the updated limits.
+        """
+
+        additional = []
+
+        # Skip the first and the last, these are no structures
+        for i in range(1, len(limits) - 1):
+            # if the distance between two limits is large than twice the max distance to structure,
+            # the mesh point will be too far away. Add a limit on the minimum of half the length and
+            # two times the max distance
+            dist_to_prev_limit = limits[i] - (
+                max(additional[-1], limits[i - 1]) if any(additional) else limits[i - 1]
+            )
+            if dist_to_prev_limit > 2 * max_dist_to_struc:
+                additional.append(
+                    limits[i] - min(2 * max_dist_to_struc, dist_to_prev_limit / 2)
+                )
+
+            dist_to_next_limit = limits[i + 1] - limits[i]
+            if dist_to_next_limit > 2 * max_dist_to_struc:
+                additional.append(
+                    limits[i] + min(2 * max_dist_to_struc, dist_to_next_limit / 2)
+                )
+
+        # Join the limits
+        return sorted(limits + additional)
+
+    def _add_nodes_to_segments(
+        self,
+        offsets: np.ndarray,
+        anchor_pts: List[float],
+        limits: List[float],
+        mesh1d_edge_length: float,
+    ) -> np.ndarray:
+        """Add nodes to segments that are missing a mesh node.
+
+        Args:
+            offsets (np.ndarray): The branch offsets.
+            anchor_pts (List[float]): The anchor points.
+            limits (List[float]): The limits.
+            mesh1d_edge_length (float): The edge length of the 1d mesh.
+
+        Returns:
+            np.ndarray: The array with branch offsets.
+        """
+        # Get upper and lower limits
+        upper_limits = limits[1:]
+        lower_limits = limits[:-1]
+
+        def in_range():
+            return [
+                ((offsets > lower) & (offsets < upper)).any()
+                for lower, upper in zip(lower_limits, upper_limits)
+            ]
+
+        # Determine the segments that are missing a mesh node
+        # Anchor points are added on these segments, such that they will get a mesh node
+        in_range = in_range()
+
+        while not all(in_range):
+            # Get the index of the first segment without grid point
+            i = in_range.index(False)
+
+            # Add it to the anchor pts
+            anchor_pts.append((lower_limits[i] + upper_limits[i]) / 2.0)
+            anchor_pts = sorted(anchor_pts)
+
+            # Generate new offsets
+            offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
+
+            # Determine the segments that are missing a grid point
+            in_range = in_range()
+
+        if len(anchor_pts) > 2:
+            logger.info(
+                f"Added 1d mesh nodes on branch at: {anchor_pts}, due to the structures at {limits}."
+            )
+
+        return offsets
+
+    @staticmethod
     def _generate_1d_spacing(
-        self, anchor_pts: List[float], mesh1d_edge_length: float
+        anchor_pts: List[float], mesh1d_edge_length: float
     ) -> np.ndarray:
         """
         Generates 1d distances, called by function generate offsets
@@ -729,7 +876,12 @@ class Mesh1d(BaseModel):
         elif pos.size == 1:
             return np.int32(pos[0])
         else:
-            raise ValueError("Multiple nodes were found at the given position.")
+            # Find the nearest
+            distance = np.hypot(arrx[pos] - x, arry[pos] - y)
+            if np.unique(distance).size == 1:
+                raise ValueError("Multiple nodes were found at the same position.")
+            else:
+                return np.int32(pos[np.argmin(distance)])
 
     def _add_branch(
         self,

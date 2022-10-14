@@ -77,6 +77,42 @@ def test_create_1d_by_branch():
     network.save(test_output_dir / "test_net.nc")
 
 
+@pytest.mark.plots
+def test_create_1d_branch_structure_offset():
+
+    line = np.array([[0, 0], [100, 0]])
+
+    branch = Branch(geometry=line)
+    branch.generate_nodes(
+        mesh1d_edge_length=13, structure_chainage=[25, 30, 70], max_dist_to_struc=2
+    )
+
+    np.testing.assert_array_equal(
+        branch.node_xy,
+        np.array(
+            [
+                [0.0, 0.0],
+                [11.5, 0.0],
+                [23.0, 0.0],
+                [26.25, 0.0],
+                [28.75, 0.0],
+                [32.0, 0.0],
+                [44.0, 0.0],
+                [56.0, 0.0],
+                [68.0, 0.0],
+                [72.0, 0.0],
+                [86.0, 0.0],
+                [100.0, 0.0],
+            ]
+        ),
+    )
+
+    # fig, ax = plt.subplots()
+    # ax.plot(*branch.node_xy.T, marker='.', ls='-')
+    # ax.plot(*branch.interpolate(structure_chainage).T, marker='o', ls='')
+    # plt.show()
+
+
 def get_circle_gl(r, detail=100):
 
     t = np.r_[np.linspace(0, 2 * np.pi, detail), 0]
