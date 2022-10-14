@@ -66,6 +66,36 @@ class Numerics(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        cflmax: Optional[str] = Field("Maximum Courant nr.", alias="cflMax")
+        advectype: Optional[str] = Field("Adv type, 0=no, 33=Perot q(uio-u) fast, 3=Perot q(uio-u).", alias="advecType")
+        timesteptype: Optional[str] = Field("0=only transport, 1=transport + velocity update, 2=full implicit step_reduce, 3=step_jacobi, 4=explicit.", alias="timeStepType")
+        limtyphu: Optional[str] = Field("Limiter type for waterdepth in continuity eq., 0=no, 1=minmod,2=vanLeer,3=Koren,4=Monotone Central.", alias="limTypHu")
+        limtypmom: Optional[str] = Field("Limiter type for cell center advection velocity, 0=no, 1=minmod,2=vanLeer,4=Monotone Central.", alias="limTypMom")
+        limtypsa: Optional[str] = Field("Limiter type for salinity transport,           0=no, 1=minmod,2=vanLeer,4=Monotone Central.", alias="limTypSa")
+        icgsolver: Optional[str] = Field("Solver type, 4 = sobekGS + Saadilud (default sequential), 6 = PETSc (default parallel), 7= CG+MILU (parallel).", alias="icgSolver")
+        maxdegree: Optional[str] = Field("Maximum degree in Gauss elimination.", alias="maxDegree")
+        fixedweirscheme: Optional[str] = Field("6 = semi-subgrid scheme, 8 = Tabellenboek, 9 = Villemonte (default).", alias="fixedWeirScheme")
+        fixedweircontraction: Optional[str] = Field("flow width = flow width*FixedWeirContraction.", alias="fixedWeirContraction")
+        izbndpos: Optional[str] = Field("Position of z boundary, 0=mirroring of closest cell (as in Delft3D-FLOW), 1=on net boundary.", alias="izBndPos")
+        tlfsmo: Optional[str] = Field("Fourier smoothing time on water level boundaries [s].", alias="tlfSmo")
+        slopedrop2d: Optional[str] = Field("Apply droplosses only if local bottom slope > Slopedrop2D, <=0 =no droplosses.", alias="slopeDrop2D")
+        drop1d: Optional[str] = Field("Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown(ζ∗down = max(BOBdown, ζdown)).", alias="drop1D")
+        chkadvd: Optional[str] = Field("Check advection terms if depth < chkadvdp.", alias="chkAdvd")
+        teta0: Optional[str] = Field("Theta (implicitness) of time integration, 0.5 < Theta < 1.0.", alias="teta0")
+        qhrelax: Optional[str] = Field("", alias="qhRelax")
+        cstbnd: Optional[str] = Field("Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).", alias="cstBnd")
+        maxitverticalforestersal: Optional[str] = Field("0 : no vertical filter, > 0 = Max nr of Forester filter iterations.", alias="maxitVerticalForesterSal")
+        maxitverticalforestertem: Optional[str] = Field("0 : no vertical filter for temp, > 0 = Max nr of Forester Forester iterations.", alias="maxitVerticalForesterTem")
+        turbulencemodel: Optional[str] = Field("0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.", alias="turbulenceModel")
+        turbulenceadvection: Optional[str] = Field("0=no, 3 = horizontal explicit vertical implicit.", alias="turbulenceAdvection")
+        anticreep: Optional[str] = Field("Flag for AntiCreep option (0=off, 1=on).", alias="antiCreep")
+        maxwaterleveldiff: Optional[str] = Field("Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.", alias="maxWaterLevelDiff")
+        maxvelocitydiff: Optional[str] = Field("Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.", alias="maxVelocityDiff")
+        epshu: Optional[str] = Field("Threshold water depth for wetting and drying [m].", alias="epsHu")
+
+    comments: Comments = Comments()
+
     _header: Literal["Numerics"] = "Numerics"
     cflmax: float = Field(0.7, alias="cflMax")
     advectype: int = Field(33, alias="advecType")
