@@ -312,6 +312,13 @@ class Waves(INIBasedModel):
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
 
+    class Comments(INIBasedModel.Comments):
+        wavemodelnr: Optional[str] = Field("# Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = D-Waves, 4=wave group forcing", alias="waveModelNr")
+        rouwav: Optional[str] = Field("Necessary to include bed shear-stress enhancement by waves. See also Delft3D-FLOW manual.", alias="rouWav")
+        gammax: Optional[str] = Field("Maximum wave height/water depth ratio", alias="gammaX")
+    
+    comments: Comments = Comments()
+
     _header: Literal["Waves"] = "Waves"
     wavemodelnr: int = Field(3, alias="waveModelNr")
     rouwav: str = Field("FR84", alias="rouWav")
