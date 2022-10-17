@@ -37,14 +37,23 @@ class AutoStartOption(IntEnum):
 
 
 class General(INIGeneral):
-
     class Comments(INIBasedModel.Comments):
         program: Optional[str] = Field("Program.", alias="program")
-        version: Optional[str] = Field("Version number of computational kernel", alias="version")
+        version: Optional[str] = Field(
+            "Version number of computational kernel", alias="version"
+        )
         filetype: Optional[str] = Field("File type. Do not edit this", alias="fileType")
-        fileversion: Optional[str] = Field("File version. Do not edit this.", alias="fileVersion")
-        autostart: Optional[str] = Field("Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).", alias="autoStart")
-        pathsrelativetoparent: Optional[str] = Field("Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir", alias="pathsRelativeToParent")
+        fileversion: Optional[str] = Field(
+            "File version. Do not edit this.", alias="fileVersion"
+        )
+        autostart: Optional[str] = Field(
+            "Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).",
+            alias="autoStart",
+        )
+        pathsrelativetoparent: Optional[str] = Field(
+            "Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir",
+            alias="pathsRelativeToParent",
+        )
 
     comments: Comments = Comments()
     _header: Literal["General"] = "General"
@@ -68,31 +77,98 @@ class Numerics(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         cflmax: Optional[str] = Field("Maximum Courant nr.", alias="cflMax")
-        advectype: Optional[str] = Field("Adv type, 0=no, 33=Perot q(uio-u) fast, 3=Perot q(uio-u).", alias="advecType")
-        timesteptype: Optional[str] = Field("0=only transport, 1=transport + velocity update, 2=full implicit step_reduce, 3=step_jacobi, 4=explicit.", alias="timeStepType")
-        limtyphu: Optional[str] = Field("Limiter type for waterdepth in continuity eq., 0=no, 1=minmod,2=vanLeer,3=Koren,4=Monotone Central.", alias="limTypHu")
-        limtypmom: Optional[str] = Field("Limiter type for cell center advection velocity, 0=no, 1=minmod,2=vanLeer,4=Monotone Central.", alias="limTypMom")
-        limtypsa: Optional[str] = Field("Limiter type for salinity transport,           0=no, 1=minmod,2=vanLeer,4=Monotone Central.", alias="limTypSa")
-        icgsolver: Optional[str] = Field("Solver type, 4 = sobekGS + Saadilud (default sequential), 6 = PETSc (default parallel), 7= CG+MILU (parallel).", alias="icgSolver")
-        maxdegree: Optional[str] = Field("Maximum degree in Gauss elimination.", alias="maxDegree")
-        fixedweirscheme: Optional[str] = Field("6 = semi-subgrid scheme, 8 = Tabellenboek, 9 = Villemonte (default).", alias="fixedWeirScheme")
-        fixedweircontraction: Optional[str] = Field("flow width = flow width*FixedWeirContraction.", alias="fixedWeirContraction")
-        izbndpos: Optional[str] = Field("Position of z boundary, 0=mirroring of closest cell (as in Delft3D-FLOW), 1=on net boundary.", alias="izBndPos")
-        tlfsmo: Optional[str] = Field("Fourier smoothing time on water level boundaries [s].", alias="tlfSmo")
-        slopedrop2d: Optional[str] = Field("Apply droplosses only if local bottom slope > Slopedrop2D, <=0 =no droplosses.", alias="slopeDrop2D")
-        drop1d: Optional[str] = Field("Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown(ζ∗down = max(BOBdown, ζdown)).", alias="drop1D")
-        chkadvd: Optional[str] = Field("Check advection terms if depth < chkadvdp.", alias="chkAdvd")
-        teta0: Optional[str] = Field("Theta (implicitness) of time integration, 0.5 < Theta < 1.0.", alias="teta0")
+        advectype: Optional[str] = Field(
+            "Adv type, 0=no, 33=Perot q(uio-u) fast, 3=Perot q(uio-u).",
+            alias="advecType",
+        )
+        timesteptype: Optional[str] = Field(
+            "0=only transport, 1=transport + velocity update, 2=full implicit step_reduce, 3=step_jacobi, 4=explicit.",
+            alias="timeStepType",
+        )
+        limtyphu: Optional[str] = Field(
+            "Limiter type for waterdepth in continuity eq., 0=no, 1=minmod,2=vanLeer,3=Koren,4=Monotone Central.",
+            alias="limTypHu",
+        )
+        limtypmom: Optional[str] = Field(
+            "Limiter type for cell center advection velocity, 0=no, 1=minmod,2=vanLeer,4=Monotone Central.",
+            alias="limTypMom",
+        )
+        limtypsa: Optional[str] = Field(
+            "Limiter type for salinity transport,           0=no, 1=minmod,2=vanLeer,4=Monotone Central.",
+            alias="limTypSa",
+        )
+        icgsolver: Optional[str] = Field(
+            "Solver type, 4 = sobekGS + Saadilud (default sequential), 6 = PETSc (default parallel), 7= CG+MILU (parallel).",
+            alias="icgSolver",
+        )
+        maxdegree: Optional[str] = Field(
+            "Maximum degree in Gauss elimination.", alias="maxDegree"
+        )
+        fixedweirscheme: Optional[str] = Field(
+            "6 = semi-subgrid scheme, 8 = Tabellenboek, 9 = Villemonte (default).",
+            alias="fixedWeirScheme",
+        )
+        fixedweircontraction: Optional[str] = Field(
+            "flow width = flow width*FixedWeirContraction.",
+            alias="fixedWeirContraction",
+        )
+        izbndpos: Optional[str] = Field(
+            "Position of z boundary, 0=mirroring of closest cell (as in Delft3D-FLOW), 1=on net boundary.",
+            alias="izBndPos",
+        )
+        tlfsmo: Optional[str] = Field(
+            "Fourier smoothing time on water level boundaries [s].", alias="tlfSmo"
+        )
+        slopedrop2d: Optional[str] = Field(
+            "Apply droplosses only if local bottom slope > Slopedrop2D, <=0 =no droplosses.",
+            alias="slopeDrop2D",
+        )
+        drop1d: Optional[str] = Field(
+            "Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown(ζ∗down = max(BOBdown, ζdown)).",
+            alias="drop1D",
+        )
+        chkadvd: Optional[str] = Field(
+            "Check advection terms if depth < chkadvdp.", alias="chkAdvd"
+        )
+        teta0: Optional[str] = Field(
+            "Theta (implicitness) of time integration, 0.5 < Theta < 1.0.",
+            alias="teta0",
+        )
         qhrelax: Optional[str] = Field("", alias="qhRelax")
-        cstbnd: Optional[str] = Field("Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).", alias="cstBnd")
-        maxitverticalforestersal: Optional[str] = Field("0 : no vertical filter, > 0 = Max nr of Forester filter iterations.", alias="maxitVerticalForesterSal")
-        maxitverticalforestertem: Optional[str] = Field("0 : no vertical filter for temp, > 0 = Max nr of Forester Forester iterations.", alias="maxitVerticalForesterTem")
-        turbulencemodel: Optional[str] = Field("0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.", alias="turbulenceModel")
-        turbulenceadvection: Optional[str] = Field("0=no, 3 = horizontal explicit vertical implicit.", alias="turbulenceAdvection")
-        anticreep: Optional[str] = Field("Flag for AntiCreep option (0=off, 1=on).", alias="antiCreep")
-        maxwaterleveldiff: Optional[str] = Field("Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.", alias="maxWaterLevelDiff")
-        maxvelocitydiff: Optional[str] = Field("Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.", alias="maxVelocityDiff")
-        epshu: Optional[str] = Field("Threshold water depth for wetting and drying [m].", alias="epsHu")
+        cstbnd: Optional[str] = Field(
+            "Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).",
+            alias="cstBnd",
+        )
+        maxitverticalforestersal: Optional[str] = Field(
+            "0 : no vertical filter, > 0 = Max nr of Forester filter iterations.",
+            alias="maxitVerticalForesterSal",
+        )
+        maxitverticalforestertem: Optional[str] = Field(
+            "0 : no vertical filter for temp, > 0 = Max nr of Forester Forester iterations.",
+            alias="maxitVerticalForesterTem",
+        )
+        turbulencemodel: Optional[str] = Field(
+            "0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.",
+            alias="turbulenceModel",
+        )
+        turbulenceadvection: Optional[str] = Field(
+            "0=no, 3 = horizontal explicit vertical implicit.",
+            alias="turbulenceAdvection",
+        )
+        anticreep: Optional[str] = Field(
+            "Flag for AntiCreep option (0=off, 1=on).", alias="antiCreep"
+        )
+        maxwaterleveldiff: Optional[str] = Field(
+            "Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.",
+            alias="maxWaterLevelDiff",
+        )
+        maxvelocitydiff: Optional[str] = Field(
+            "Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.",
+            alias="maxVelocityDiff",
+        )
+        epshu: Optional[str] = Field(
+            "Threshold water depth for wetting and drying [m].", alias="epsHu"
+        )
 
     comments: Comments = Comments()
 
@@ -134,10 +210,19 @@ class VolumeTables(INIBasedModel):
     All lowercased attributes match with the [VolumeTables] input as described in
     [UM Sec.A.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.1).
     """
+
     class Comments(INIBasedModel.Comments):
-        usevolumetables: Optional[str] = Field("Use volume tables for 1D grid cells (see section 8.16) (1: yes, 0 = no).", alias="useVolumeTables")
-        increment: Optional[str] = Field("The height increment for the volume tables [m].", alias="increment")
-        usevolumetablefile: Optional[str] = Field("Read and write the volume table from/to file (1: yes, 0= no).", alias="useVolumeTableFile")
+        usevolumetables: Optional[str] = Field(
+            "Use volume tables for 1D grid cells (see section 8.16) (1: yes, 0 = no).",
+            alias="useVolumeTables",
+        )
+        increment: Optional[str] = Field(
+            "The height increment for the volume tables [m].", alias="increment"
+        )
+        usevolumetablefile: Optional[str] = Field(
+            "Read and write the volume table from/to file (1: yes, 0= no).",
+            alias="useVolumeTableFile",
+        )
 
     comments: Comments = Comments()
 
@@ -158,45 +243,129 @@ class Physics(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        uniffrictcoef: Optional[str] = Field("Uniform friction coefficient, 0=no friction.", alias="unifFrictCoef")
-        uniffricttype: Optional[str] = Field("0=Chezy, 1=Manning, 2=White-Colebrook, 3=White-Colebrook of WAQUA", alias="unifFrictType")
-        uniffrictcoef1d: Optional[str] = Field("Uniform friction coefficient in 1D links, 0=no friction.", alias="unifFrictCoef1D")
-        uniffrictcoeflin: Optional[str] = Field("Uniform linear friction coefficient (m/s), 0=no.", alias="unifFrictCoefLin")
-        vicouv: Optional[str] = Field("Uniform horizontal eddy viscosity [m2/s].", alias="vicouv")
-        dicouv: Optional[str] = Field("Uniform horizontal eddy diffusivity [m2/s].", alias="dicouv")
-        vicoww: Optional[str] = Field("Background vertical eddy viscosity [m2/s].", alias="vicoww")
-        dicoww: Optional[str] = Field("Background vertical eddy diffusivity [m2/s].", alias="dicoww")
-        vicwminb: Optional[str] = Field("Minimum viscosity in production and buoyancy term [m2/s].", alias="vicwminb")
-        xlozmidov: Optional[str] = Field("Ozmidov length scale [m], default=0.0, no contribution of internal waves to vertical diffusion.", alias="xlozmidov")
-        smagorinsky: Optional[str] = Field("Add Smagorinsky horizontal turbulence: vicu = vicu + ( (Smagorinsky*dx)**2)*S.", alias="smagorinsky")
-        elder: Optional[str] = Field("Add Elder contribution: vicu = vicu + Elder*kappa*ustar*H/6); e.g. 1.0.", alias="elder")
-        irov: Optional[str] = Field("Wall friction, 0=free slip, 1 = partial slip using wall_ks.", alias="irov")
-        wall_ks: Optional[str] = Field("Nikuradse roughness [m] for side walls, wall_z0=wall_ks/30.", alias="wall_ks")
-        rhomean: Optional[str] = Field("Average water density [kg/m3].", alias="rhomean")
-        idensform: Optional[str] = Field("1=Eckart, 2=UNESCO (default).", alias="idensform")
+        uniffrictcoef: Optional[str] = Field(
+            "Uniform friction coefficient, 0=no friction.", alias="unifFrictCoef"
+        )
+        uniffricttype: Optional[str] = Field(
+            "0=Chezy, 1=Manning, 2=White-Colebrook, 3=White-Colebrook of WAQUA",
+            alias="unifFrictType",
+        )
+        uniffrictcoef1d: Optional[str] = Field(
+            "Uniform friction coefficient in 1D links, 0=no friction.",
+            alias="unifFrictCoef1D",
+        )
+        uniffrictcoeflin: Optional[str] = Field(
+            "Uniform linear friction coefficient (m/s), 0=no.", alias="unifFrictCoefLin"
+        )
+        vicouv: Optional[str] = Field(
+            "Uniform horizontal eddy viscosity [m2/s].", alias="vicouv"
+        )
+        dicouv: Optional[str] = Field(
+            "Uniform horizontal eddy diffusivity [m2/s].", alias="dicouv"
+        )
+        vicoww: Optional[str] = Field(
+            "Background vertical eddy viscosity [m2/s].", alias="vicoww"
+        )
+        dicoww: Optional[str] = Field(
+            "Background vertical eddy diffusivity [m2/s].", alias="dicoww"
+        )
+        vicwminb: Optional[str] = Field(
+            "Minimum viscosity in production and buoyancy term [m2/s].",
+            alias="vicwminb",
+        )
+        xlozmidov: Optional[str] = Field(
+            "Ozmidov length scale [m], default=0.0, no contribution of internal waves to vertical diffusion.",
+            alias="xlozmidov",
+        )
+        smagorinsky: Optional[str] = Field(
+            "Add Smagorinsky horizontal turbulence: vicu = vicu + ( (Smagorinsky*dx)**2)*S.",
+            alias="smagorinsky",
+        )
+        elder: Optional[str] = Field(
+            "Add Elder contribution: vicu = vicu + Elder*kappa*ustar*H/6); e.g. 1.0.",
+            alias="elder",
+        )
+        irov: Optional[str] = Field(
+            "Wall friction, 0=free slip, 1 = partial slip using wall_ks.", alias="irov"
+        )
+        wall_ks: Optional[str] = Field(
+            "Nikuradse roughness [m] for side walls, wall_z0=wall_ks/30.",
+            alias="wall_ks",
+        )
+        rhomean: Optional[str] = Field(
+            "Average water density [kg/m3].", alias="rhomean"
+        )
+        idensform: Optional[str] = Field(
+            "1=Eckart, 2=UNESCO (default).", alias="idensform"
+        )
         ag: Optional[str] = Field("Gravitational acceleration [m/s2].", alias="ag")
-        tidalforcing: Optional[str] = Field("Tidal forcing (0=no, 1=yes) (only for jsferic == 1).", alias="tidalForcing")
-        doodsonstart: Optional[str] = Field("Doodson start time for tidal forcing [s].", alias="doodsonStart")
-        doodsonstop: Optional[str] = Field("Doodson stop time for tidal forcing [s].", alias="doodsonStop")
-        doodsoneps: Optional[str] = Field("Doodson tolerance level for tidal forcing [s].", alias="doodsonEps")
-        villemontecd1: Optional[str] = Field("Calibration coefficient for Villemonte. Default = 1.0.", alias="villemonteCD1")
-        villemontecd2: Optional[str] = Field("Calibration coefficient for Villemonte. Default = 10.0.", alias="villemonteCD2")
-        salinity: Optional[str] = Field("Include salinity, (0=no, 1=yes).", alias="salinity")
-        initialsalinity: Optional[str] = Field("Initial salinity concentration [ppt].", alias="initialSalinity")
-        sal0abovezlev: Optional[str] = Field("Salinity 0 above level [m].", alias="sal0AboveZLev")
-        deltasalinity: Optional[str] = Field("uniform initial salinity [ppt].", alias="deltaSalinity")
-        backgroundsalinity: Optional[str] = Field("Background salinity concentration [ppt].", alias="backgroundSalinity")
-        temperature: Optional[str] = Field("Include temperature, (0=no, 1=only transport, 5=heat flux model (5) of D3D), 3=excess model of D3D.", alias="temperature")
-        initialtemperature: Optional[str] = Field("Inital temperature [◦C].", alias="initialTemperature")
-        backgroundwatertemperature: Optional[str] = Field("Background temperature concentration [◦C].", alias="backgroundWaterTemperature")
-        secchidepth: Optional[str] = Field("Water clarity parameter [m].", alias="secchiDepth")
-        stanton: Optional[str] = Field("Coefficient for convective heat flux ( ), if negative, then Cd wind is used.", alias="stanton")
-        dalton: Optional[str] = Field("Coefficient for evaporative heat flux ( ), if negative, then Cd wind is used.", alias="dalton")
-        secondaryflow: Optional[str] = Field("Secondary flow (0=no, 1=yes).", alias="secondaryFlow")
-        betaspiral: Optional[str] = Field("Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).", alias="betaSpiral")
+        tidalforcing: Optional[str] = Field(
+            "Tidal forcing (0=no, 1=yes) (only for jsferic == 1).", alias="tidalForcing"
+        )
+        doodsonstart: Optional[str] = Field(
+            "Doodson start time for tidal forcing [s].", alias="doodsonStart"
+        )
+        doodsonstop: Optional[str] = Field(
+            "Doodson stop time for tidal forcing [s].", alias="doodsonStop"
+        )
+        doodsoneps: Optional[str] = Field(
+            "Doodson tolerance level for tidal forcing [s].", alias="doodsonEps"
+        )
+        villemontecd1: Optional[str] = Field(
+            "Calibration coefficient for Villemonte. Default = 1.0.",
+            alias="villemonteCD1",
+        )
+        villemontecd2: Optional[str] = Field(
+            "Calibration coefficient for Villemonte. Default = 10.0.",
+            alias="villemonteCD2",
+        )
+        salinity: Optional[str] = Field(
+            "Include salinity, (0=no, 1=yes).", alias="salinity"
+        )
+        initialsalinity: Optional[str] = Field(
+            "Initial salinity concentration [ppt].", alias="initialSalinity"
+        )
+        sal0abovezlev: Optional[str] = Field(
+            "Salinity 0 above level [m].", alias="sal0AboveZLev"
+        )
+        deltasalinity: Optional[str] = Field(
+            "uniform initial salinity [ppt].", alias="deltaSalinity"
+        )
+        backgroundsalinity: Optional[str] = Field(
+            "Background salinity concentration [ppt].", alias="backgroundSalinity"
+        )
+        temperature: Optional[str] = Field(
+            "Include temperature, (0=no, 1=only transport, 5=heat flux model (5) of D3D), 3=excess model of D3D.",
+            alias="temperature",
+        )
+        initialtemperature: Optional[str] = Field(
+            "Inital temperature [◦C].", alias="initialTemperature"
+        )
+        backgroundwatertemperature: Optional[str] = Field(
+            "Background temperature concentration [◦C].",
+            alias="backgroundWaterTemperature",
+        )
+        secchidepth: Optional[str] = Field(
+            "Water clarity parameter [m].", alias="secchiDepth"
+        )
+        stanton: Optional[str] = Field(
+            "Coefficient for convective heat flux ( ), if negative, then Cd wind is used.",
+            alias="stanton",
+        )
+        dalton: Optional[str] = Field(
+            "Coefficient for evaporative heat flux ( ), if negative, then Cd wind is used.",
+            alias="dalton",
+        )
+        secondaryflow: Optional[str] = Field(
+            "Secondary flow (0=no, 1=yes).", alias="secondaryFlow"
+        )
+        betaspiral: Optional[str] = Field(
+            "Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).",
+            alias="betaSpiral",
+        )
 
     comments: Comments = Comments()
-    
+
     _header: Literal["Physics"] = "Physics"
     uniffrictcoef: float = Field(0.023, alias="unifFrictCoef")
     uniffricttype: int = Field(1, alias="unifFrictType")
@@ -241,7 +410,7 @@ class Sediment(INIBasedModel):
         sedimentmodelnr: Optional[str] = Field("", alias="Sedimentmodelnr")
         morfile: Optional[str] = Field("", alias="MorFile")
         sedfile: Optional[str] = Field("", alias="SedFile")
-    
+
     comments: Comments = Comments()
 
     _disk_only_file_model_should_not_be_none = (
@@ -269,14 +438,33 @@ class Wind(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        icdtyp: Optional[str] = Field("Wind drag types,1=const, 2=S&B 2 breakpoints, 3=S&B 3 breakpoints, 4=Charnock constant.", alias="icdTyp")
-        cdbreakpoints: Optional[str] = Field("Wind drag breakpoints, e.g. 0.00063 0.00723.", alias="cdBreakpoints")
-        windspeedbreakpoints: Optional[str] = Field("Wind speed breakpoints [m/s], e.g. 0.0 100.0.", alias="windSpeedBreakpoints")
+        icdtyp: Optional[str] = Field(
+            "Wind drag types,1=const, 2=S&B 2 breakpoints, 3=S&B 3 breakpoints, 4=Charnock constant.",
+            alias="icdTyp",
+        )
+        cdbreakpoints: Optional[str] = Field(
+            "Wind drag breakpoints, e.g. 0.00063 0.00723.", alias="cdBreakpoints"
+        )
+        windspeedbreakpoints: Optional[str] = Field(
+            "Wind speed breakpoints [m/s], e.g. 0.0 100.0.",
+            alias="windSpeedBreakpoints",
+        )
         rhoair: Optional[str] = Field("Air density [kg/m3].", alias="rhoAir")
-        relativewind: Optional[str] = Field("Wind speed [kg/m3] relative to top-layer water speed*relativewind (0d0=no relative wind, 1d0=using full top layer speed).", alias="relativeWind")
-        windpartialdry: Optional[str] = Field("Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0=no, 1=yes (default).", alias="windPartialDry")
-        pavbnd: Optional[str] = Field("Average air pressure on open boundaries [N/m2], only applied if value > 0.", alias="pavBnd")
-        pavini: Optional[str] = Field("Initial air pressure [N/m2], only applied if value > 0.", alias="pavIni")
+        relativewind: Optional[str] = Field(
+            "Wind speed [kg/m3] relative to top-layer water speed*relativewind (0d0=no relative wind, 1d0=using full top layer speed).",
+            alias="relativeWind",
+        )
+        windpartialdry: Optional[str] = Field(
+            "Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0=no, 1=yes (default).",
+            alias="windPartialDry",
+        )
+        pavbnd: Optional[str] = Field(
+            "Average air pressure on open boundaries [N/m2], only applied if value > 0.",
+            alias="pavBnd",
+        )
+        pavini: Optional[str] = Field(
+            "Initial air pressure [N/m2], only applied if value > 0.", alias="pavIni"
+        )
 
     comments: Comments = Comments()
 
@@ -313,10 +501,18 @@ class Waves(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        wavemodelnr: Optional[str] = Field("# Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = D-Waves, 4=wave group forcing", alias="waveModelNr")
-        rouwav: Optional[str] = Field("Necessary to include bed shear-stress enhancement by waves. See also Delft3D-FLOW manual.", alias="rouWav")
-        gammax: Optional[str] = Field("Maximum wave height/water depth ratio", alias="gammaX")
-    
+        wavemodelnr: Optional[str] = Field(
+            "# Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = D-Waves, 4=wave group forcing",
+            alias="waveModelNr",
+        )
+        rouwav: Optional[str] = Field(
+            "Necessary to include bed shear-stress enhancement by waves. See also Delft3D-FLOW manual.",
+            alias="rouWav",
+        )
+        gammax: Optional[str] = Field(
+            "Maximum wave height/water depth ratio", alias="gammaX"
+        )
+
     comments: Comments = Comments()
 
     _header: Literal["Waves"] = "Waves"
@@ -337,15 +533,31 @@ class Time(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         refdate: Optional[str] = Field("Reference date [yyyymmdd].", alias="refDate")
-        tzone: Optional[str] = Field("Data Sources in GMT are interrogated with time in minutes since refdat-Tzone*60 [min].", alias="tZone")
+        tzone: Optional[str] = Field(
+            "Data Sources in GMT are interrogated with time in minutes since refdat-Tzone*60 [min].",
+            alias="tZone",
+        )
         tunit: Optional[str] = Field("Time units in MDU [D, H, M or S].", alias="tUnit")
-        dtuser: Optional[str] = Field("User timestep in seconds [s] (interval for external forcing update & his/map output).", alias="dtUser")
-        dtnodal: Optional[str] = Field("Time interval [s] for updating nodal factors in astronomical boundary conditions [Dd HH:MM:SS.ZZZ].", alias="dtNodal")
+        dtuser: Optional[str] = Field(
+            "User timestep in seconds [s] (interval for external forcing update & his/map output).",
+            alias="dtUser",
+        )
+        dtnodal: Optional[str] = Field(
+            "Time interval [s] for updating nodal factors in astronomical boundary conditions [Dd HH:MM:SS.ZZZ].",
+            alias="dtNodal",
+        )
         dtmax: Optional[str] = Field("Max timestep in seconds [s].", alias="dtMax")
-        dtinit: Optional[str] = Field("Initial timestep in seconds [s].", alias="dtInit")
-        tstart: Optional[str] = Field("Start time w.r.t. RefDate [TUnit].", alias="tStart")
+        dtinit: Optional[str] = Field(
+            "Initial timestep in seconds [s].", alias="dtInit"
+        )
+        tstart: Optional[str] = Field(
+            "Start time w.r.t. RefDate [TUnit].", alias="tStart"
+        )
         tstop: Optional[str] = Field("Stop time w.r.t. RefDate [TUnit].", alias="tStop")
-        updateroughnessinterval: Optional[str] = Field("Update interval for time dependent roughness parameters [s].", alias="updateRoughnessInterval")
+        updateroughnessinterval: Optional[str] = Field(
+            "Update interval for time dependent roughness parameters [s].",
+            alias="updateRoughnessInterval",
+        )
 
     comments: Comments = Comments()
 
@@ -373,9 +585,15 @@ class Restart(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        restartfile: Optional[str] = Field("Restart file, only from netCDF-file, hence: either *_rst.nc or *_map.nc.", alias="restartFile")
-        restartdatetime: Optional[str] = Field("Restart time [YYYYMMDDHHMMSS], only relevant in case of restart from *_map.nc.", alias="restartDateTime")
-    
+        restartfile: Optional[str] = Field(
+            "Restart file, only from netCDF-file, hence: either *_rst.nc or *_map.nc.",
+            alias="restartFile",
+        )
+        restartdatetime: Optional[str] = Field(
+            "Restart time [YYYYMMDDHHMMSS], only relevant in case of restart from *_map.nc.",
+            alias="restartDateTime",
+        )
+
     comments: Comments = Comments()
 
     _disk_only_file_model_should_not_be_none = (
@@ -400,13 +618,28 @@ class ExternalForcing(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        extforcefile: Optional[str] = Field("Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification.", alias="extForceFile")
-        extforcefilenew: Optional[str] = Field("New format for external forcings file *.ext, link with bcformat boundary conditions specification. See section C.5.2.", alias="extForceFileNew")
-        rainfall: Optional[str] = Field("Include rainfall, (0=no, 1=yes).", alias="rainfall")
-        qext: Optional[str] = Field("Include user Qin/out, externally provided, (0=no, 1=yes).", alias="qExt")
-        evaporation: Optional[str] = Field("Include evaporation in water balance, (0=no, 1=yes).", alias="evaporation")
-        windext: Optional[str] = Field("Include wind, externally provided, (0=no, 1=reserved for EC, 2=yes).", alias="windExt")
-    
+        extforcefile: Optional[str] = Field(
+            "Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification.",
+            alias="extForceFile",
+        )
+        extforcefilenew: Optional[str] = Field(
+            "New format for external forcings file *.ext, link with bcformat boundary conditions specification. See section C.5.2.",
+            alias="extForceFileNew",
+        )
+        rainfall: Optional[str] = Field(
+            "Include rainfall, (0=no, 1=yes).", alias="rainfall"
+        )
+        qext: Optional[str] = Field(
+            "Include user Qin/out, externally provided, (0=no, 1=yes).", alias="qExt"
+        )
+        evaporation: Optional[str] = Field(
+            "Include evaporation in water balance, (0=no, 1=yes).", alias="evaporation"
+        )
+        windext: Optional[str] = Field(
+            "Include wind, externally provided, (0=no, 1=reserved for EC, 2=yes).",
+            alias="windExt",
+        )
+
     comments: Comments = Comments()
 
     _disk_only_file_model_should_not_be_none = (
@@ -438,7 +671,10 @@ class Hydrology(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        interceptionmodel: Optional[str] = Field("Interception model (0: none, 1: on, via layer thickness). See Section 13.3.", alias="interceptionModel")
+        interceptionmodel: Optional[str] = Field(
+            "Interception model (0: none, 1: on, via layer thickness). See Section 13.3.",
+            alias="interceptionModel",
+        )
 
     comments: Comments = Comments()
 
@@ -457,10 +693,20 @@ class Trachytopes(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        trtrou: Optional[str] = Field("Flag for trachytopes (Y=on, N=off).", alias="trtRou")  # TODO bool
-        trtdef: Optional[str] = Field("File (*.ttd) including trachytope definitions.", alias="trtDef")
-        trtl: Optional[str] = Field("File (*.arl) including distribution of trachytope definitions.", alias="trtL")
-        dttrt: Optional[str] = Field("Interval for updating of bottom roughness due to trachytopes in seconds [s].", alias="dtTrt")
+        trtrou: Optional[str] = Field(
+            "Flag for trachytopes (Y=on, N=off).", alias="trtRou"
+        )  # TODO bool
+        trtdef: Optional[str] = Field(
+            "File (*.ttd) including trachytope definitions.", alias="trtDef"
+        )
+        trtl: Optional[str] = Field(
+            "File (*.arl) including distribution of trachytope definitions.",
+            alias="trtL",
+        )
+        dttrt: Optional[str] = Field(
+            "Interval for updating of bottom roughness due to trachytopes in seconds [s].",
+            alias="dtTrt",
+        )
 
     comments: Comments = Comments()
 
@@ -482,90 +728,309 @@ class Output(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        wrishp_crs: Optional[str] = Field("Writing cross sections to shape file (0=no, 1=yes).", alias="wrishp_crs")
-        wrishp_weir: Optional[str] = Field("Writing weirs to shape file (0=no, 1=yes).", alias="wrishp_weir")
-        wrishp_gate: Optional[str] = Field("Writing gates to shape file (0=no, 1=yes).", alias="wrishp_gate")
-        wrishp_fxw: Optional[str] = Field("Writing fixed weirs to shape file (0=no, 1=yes).", alias="wrishp_fxw")
-        wrishp_thd: Optional[str] = Field("Writing thin dams to shape file (0=no, 1=yes).", alias="wrishp_thd")
-        wrishp_obs: Optional[str] = Field("Writing observation points to shape file (0=no, 1=yes).", alias="wrishp_obs")
-        wrishp_emb: Optional[str] = Field("Writing embankments file (0=no, 1=yes).", alias="wrishp_emb")
-        wrishp_dryarea: Optional[str] = Field("Writing dry areas to shape file (0=no, 1=yes).", alias="wrishp_dryArea")
-        wrishp_enc: Optional[str] = Field("Writing enclosures to shape file (0=no, 1=yes).", alias="wrishp_enc")
-        wrishp_src: Optional[str] = Field("Writing sources and sinks to shape file (0=no, 1=yes).", alias="wrishp_src")
-        wrishp_pump: Optional[str] = Field("Writing pumps to shape file (0=no, 1=yes).", alias="wrishp_pump")
-        outputdir: Optional[str] = Field("Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.", alias="outputDir")
-        waqoutputdir: Optional[str] = Field("Output directory of Water Quality files.", alias="waqOutputDir")
-        flowgeomfile: Optional[str] = Field("*_flowgeom.nc Flow geometry file in netCDF format.", alias="flowGeomFile")
-        obsfile: Optional[str] = Field("Space separated list of files, containing information about observation points. See section F.2.2.", alias="obsFile")
-        crsfile: Optional[str] = Field("Space separated list of files, containing information about observation cross sections. See section F.2.4.", alias="crsFile")
-        hisfile: Optional[str] = Field("*_his.nc History file in netCDF format.", alias="hisFile")
-        hisinterval: Optional[str] = Field("History output, given as 'interval' 'start period' 'end period' [s].", alias="hisInterval")
-        xlsinterval: Optional[str] = Field("Interval between XLS history [s].", alias="xlsInterval")
-        mapfile: Optional[str] = Field("*_map.nc Map file in netCDF format.", alias="mapFile")
-        mapinterval: Optional[str] = Field("Map file output, given as 'interval' 'start period' 'end period' [s].", alias="mapInterval")
-        rstinterval: Optional[str] = Field("Restart file output, given as 'interval' 'start period' 'end period' [s].", alias="rstInterval")
-        mapformat: Optional[str] = Field("Map file format, 1: netCDF, 2: Tecplot, 3: NetCFD and Tecplot, 4: netCDF UGRID.", alias="mapFormat")
-        ncformat: Optional[str] = Field("Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).", alias="ncFormat")
-        ncnounlimited: Optional[str] = Field("Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)", alias="ncNoUnlimited")
-        ncnoforcedflush: Optional[str] = Field("Do not force flushing of map-like files every output timestep (1: yes, 0: no).", alias="ncNoForcedFlush")
-        ncwritelatlon: Optional[str] = Field("Write extra lat-lon coordinates for all projected coordinate variables in each NetCDF file (for CF-compliancy) (1: yes, 0: no).", alias="ncWriteLatLon")
-        wrihis_balance: Optional[str] = Field("Write mass balance totals to his file, (1: yes, 0: no).", alias="wrihis_balance")
-        wrihis_sourcesink: Optional[str] = Field("Write sources-sinks statistics to his file, (1: yes, 0: no).", alias="wrihis_sourceSink")
-        wrihis_structure_gen: Optional[str] = Field("Write general structure parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_gen")
-        wrihis_structure_dam: Optional[str] = Field("Write dam parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_dam")
-        wrihis_structure_pump: Optional[str] = Field("Write pump parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_pump")
-        wrihis_structure_gate: Optional[str] = Field("Write gate parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_gate")
-        wrihis_structure_weir: Optional[str] = Field("Write weir parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_weir")
-        wrihis_structure_orifice: Optional[str] = Field("Write orifice parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_orifice")
-        wrihis_structure_bridge: Optional[str] = Field("Write bridge parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_bridge")
-        wrihis_structure_culvert: Optional[str] = Field("Write culvert parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_culvert")
-        wrihis_structure_longculvert: Optional[str] = Field("Write long culvert parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_longCulvert")
-        wrihis_structure_dambreak: Optional[str] = Field("Write dam break parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_damBreak")
-        wrihis_structure_uniweir: Optional[str] = Field("Write universal weir parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_uniWeir")
-        wrihis_structure_compound: Optional[str] = Field("Write compound structure parameters to his file, (1: yes, 0: no).", alias="wrihis_structure_compound")
-        wrihis_lateral: Optional[str] = Field("Write lateral datato his file, (1: yes, 0: no).", alias="wrihis_lateral")
-        wrihis_velocity: Optional[str] = Field("Write velocity magnitude in observation point to his file, (1: yes, 0: no).", alias="wrihis_velocity")
-        wrihis_discharge: Optional[str] = Field("Write discharge magnitude in observation point to his file, (1: yes, 0: no).", alias="wrihis_discharge")
-        wrimap_waterlevel_s0: Optional[str] = Field("Write water levels at old time level to map file, (1: yes, 0: no).", alias="wrimap_waterLevel_s0")
-        wrimap_waterlevel_s1: Optional[str] = Field("Write water levels at new time level to map file, (1: yes, 0: no).", alias="wrimap_waterLevel_s1")
-        wrimap_evaporation: Optional[str] = Field("Write evaporation to map file, (1: yes, 0: no).", alias="wrimap_evaporation")
-        wrimap_velocity_component_u0: Optional[str] = Field("Write velocities at old time level to map file, (1: yes, 0: no).", alias="wrimap_velocity_component_u0")
-        wrimap_velocity_component_u1: Optional[str] = Field("Write velocities at new time level to map file, (1: yes, 0: no).", alias="wrimap_velocity_component_u1")
-        wrimap_velocity_vector: Optional[str] = Field("Write cell-center velocity vectors to map file, (1: yes, 0: no).", alias="wrimap_velocity_vector")
-        wrimap_upward_velocity_component: Optional[str] = Field("Write upward velocity component to map file, (1: yes, 0: no).", alias="wrimap_upward_velocity_component")
-        wrimap_density_rho: Optional[str] = Field("Write density to map file, (1: yes, 0: no).", alias="wrimap_density_rho")
-        wrimap_horizontal_viscosity_viu: Optional[str] = Field("Write horizontal viscosity to map file, (1: yes, 0: no).", alias="wrimap_horizontal_viscosity_viu")
-        wrimap_horizontal_diffusivity_diu: Optional[str] = Field("Write horizontal diffusivity to map file, (1: yes, 0: no).", alias="wrimap_horizontal_diffusivity_diu")
-        wrimap_flow_flux_q1: Optional[str] = Field("Write fluxes to map file, (1: yes, 0: no).", alias="wrimap_flow_flux_q1")
-        wrimap_spiral_flow: Optional[str] = Field("Write spiral flow to map file, (1: yes, 0: no).", alias="wrimap_spiral_flow")
-        wrimap_numlimdt: Optional[str] = Field("Write numlimdt to map file, (1: yes, 0: no).", alias="wrimap_numLimdt")
-        wrimap_taucurrent: Optional[str] = Field("Write bottom friction to map file, (1: yes, 0: no).", alias="wrimap_tauCurrent")
-        wrimap_chezy: Optional[str] = Field("Write chezy values to map file, (1: yes, 0: no).", alias="wrimap_chezy")
-        wrimap_turbulence: Optional[str] = Field("Write turbulence to map file, (1: yes, 0: no).", alias="wrimap_turbulence")
-        wrimap_rain: Optional[str] = Field("Write rainfall rate to map file, (1: yes, 0: no).", alias="wrimap_rain")
-        wrimap_wind: Optional[str] = Field("Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind")
-        wrimap_heat_fluxes: Optional[str] = Field("Write heat fluxes to map file, (1: yes, 0: no).", alias="wrimap_heat_fluxes")
-        wrimap_wet_waterdepth_threshold: Optional[str] = Field("Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.", alias="wrimap_wet_waterDepth_threshold")
-        wrimap_time_water_on_ground: Optional[str] = Field("Write cumulative time when water is above ground level (only for 1D nodes) to map file, (1: yes, 0: no).", alias="wrimap_time_water_on_ground")
-        wrimap_freeboard: Optional[str] = Field("Write freeboard (only for 1D nodes) to map file, (1: yes, 0: no).", alias="wrimap_freeboard")
-        wrimap_waterdepth_on_ground: Optional[str] = Field("Write waterdepth that is above ground level to map file (only for 1D nodes) (1: yes, 0: no).", alias="wrimap_waterDepth_on_ground")
-        wrimap_volume_on_ground: Optional[str] = Field("Write volume that is above ground level to map file (only for 1D nodes) (1: yes, 0: no).", alias="wrimap_volume_on_ground")
-        wrimap_total_net_inflow_1d2d: Optional[str] = Field("Write current total 1D2D net inflow (discharge) and cumulative total 1D2D net inflow (volume) to map file (only for 1D nodes) (1:yes, 0:no).", alias="wrimap_total_net_inflow_1d2d")
-        wrimap_total_net_inflow_lateral: Optional[str] = Field("Write current total lateral net inflow (discharge) and cumulative total lateral net inflow (volume) to map file (only for 1D nodes) (1:yes, 0:no).", alias="wrimap_total_net_inflow_lateral")
-        wrimap_water_level_gradient: Optional[str] = Field("Write water level gradient to map file (only for 1D links) (1:yes, 0:no).", alias="wrimap_water_level_gradient")
-        wrimap_flow_analysis: Optional[str] = Field("Write flow analysis data to the map file (1:yes, 0:no).", alias="wrimap_flow_analysis")
-        mapoutputtimevector: Optional[str] = Field("File (.mpt) containing fixed map output times (s) w.r.t. RefDate.", alias="mapOutputTimeVector")
-        fullgridoutput: Optional[str] = Field("Full grid output mode for layer positions (0: compact, 1: full time-varying grid layer data).", alias="fullGridOutput")
-        eulervelocities: Optional[str] = Field("Write Eulerian velocities, (1: yes, 0: no).", alias="eulerVelocities")
-        classmapfile: Optional[str] = Field("Name of class map file.", alias="classMapFile")
-        waterlevelclasses: Optional[str] = Field("Series of values between which water level classes are computed.", alias="waterLevelClasses")
-        waterdepthclasses: Optional[str] = Field("Series of values between which water depth classes are computed.", alias="waterDepthClasses")
-        classmapinterval: Optional[str] = Field("Interval [s] between class map file outputs.", alias="classMapInterval")
-        waqinterval: Optional[str] = Field("Interval [s] between DELWAQ file outputs.", alias="waqInterval")
-        statsinterval: Optional[str] = Field("Interval [s] between simulation statistics output.", alias="statsInterval")
-        timingsinterval: Optional[str] = Field("Timings output interval TimingsInterval.", alias="timingsInterval")
-        richardsononoutput: Optional[str] = Field("Write Richardson number, (1: yes, 0: no).", alias="richardsonOnOutput")
-    
+        wrishp_crs: Optional[str] = Field(
+            "Writing cross sections to shape file (0=no, 1=yes).", alias="wrishp_crs"
+        )
+        wrishp_weir: Optional[str] = Field(
+            "Writing weirs to shape file (0=no, 1=yes).", alias="wrishp_weir"
+        )
+        wrishp_gate: Optional[str] = Field(
+            "Writing gates to shape file (0=no, 1=yes).", alias="wrishp_gate"
+        )
+        wrishp_fxw: Optional[str] = Field(
+            "Writing fixed weirs to shape file (0=no, 1=yes).", alias="wrishp_fxw"
+        )
+        wrishp_thd: Optional[str] = Field(
+            "Writing thin dams to shape file (0=no, 1=yes).", alias="wrishp_thd"
+        )
+        wrishp_obs: Optional[str] = Field(
+            "Writing observation points to shape file (0=no, 1=yes).",
+            alias="wrishp_obs",
+        )
+        wrishp_emb: Optional[str] = Field(
+            "Writing embankments file (0=no, 1=yes).", alias="wrishp_emb"
+        )
+        wrishp_dryarea: Optional[str] = Field(
+            "Writing dry areas to shape file (0=no, 1=yes).", alias="wrishp_dryArea"
+        )
+        wrishp_enc: Optional[str] = Field(
+            "Writing enclosures to shape file (0=no, 1=yes).", alias="wrishp_enc"
+        )
+        wrishp_src: Optional[str] = Field(
+            "Writing sources and sinks to shape file (0=no, 1=yes).", alias="wrishp_src"
+        )
+        wrishp_pump: Optional[str] = Field(
+            "Writing pumps to shape file (0=no, 1=yes).", alias="wrishp_pump"
+        )
+        outputdir: Optional[str] = Field(
+            "Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.",
+            alias="outputDir",
+        )
+        waqoutputdir: Optional[str] = Field(
+            "Output directory of Water Quality files.", alias="waqOutputDir"
+        )
+        flowgeomfile: Optional[str] = Field(
+            "*_flowgeom.nc Flow geometry file in netCDF format.", alias="flowGeomFile"
+        )
+        obsfile: Optional[str] = Field(
+            "Space separated list of files, containing information about observation points. See section F.2.2.",
+            alias="obsFile",
+        )
+        crsfile: Optional[str] = Field(
+            "Space separated list of files, containing information about observation cross sections. See section F.2.4.",
+            alias="crsFile",
+        )
+        hisfile: Optional[str] = Field(
+            "*_his.nc History file in netCDF format.", alias="hisFile"
+        )
+        hisinterval: Optional[str] = Field(
+            "History output, given as 'interval' 'start period' 'end period' [s].",
+            alias="hisInterval",
+        )
+        xlsinterval: Optional[str] = Field(
+            "Interval between XLS history [s].", alias="xlsInterval"
+        )
+        mapfile: Optional[str] = Field(
+            "*_map.nc Map file in netCDF format.", alias="mapFile"
+        )
+        mapinterval: Optional[str] = Field(
+            "Map file output, given as 'interval' 'start period' 'end period' [s].",
+            alias="mapInterval",
+        )
+        rstinterval: Optional[str] = Field(
+            "Restart file output, given as 'interval' 'start period' 'end period' [s].",
+            alias="rstInterval",
+        )
+        mapformat: Optional[str] = Field(
+            "Map file format, 1: netCDF, 2: Tecplot, 3: NetCFD and Tecplot, 4: netCDF UGRID.",
+            alias="mapFormat",
+        )
+        ncformat: Optional[str] = Field(
+            "Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).",
+            alias="ncFormat",
+        )
+        ncnounlimited: Optional[str] = Field(
+            "Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)",
+            alias="ncNoUnlimited",
+        )
+        ncnoforcedflush: Optional[str] = Field(
+            "Do not force flushing of map-like files every output timestep (1: yes, 0: no).",
+            alias="ncNoForcedFlush",
+        )
+        ncwritelatlon: Optional[str] = Field(
+            "Write extra lat-lon coordinates for all projected coordinate variables in each NetCDF file (for CF-compliancy) (1: yes, 0: no).",
+            alias="ncWriteLatLon",
+        )
+        wrihis_balance: Optional[str] = Field(
+            "Write mass balance totals to his file, (1: yes, 0: no).",
+            alias="wrihis_balance",
+        )
+        wrihis_sourcesink: Optional[str] = Field(
+            "Write sources-sinks statistics to his file, (1: yes, 0: no).",
+            alias="wrihis_sourceSink",
+        )
+        wrihis_structure_gen: Optional[str] = Field(
+            "Write general structure parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_gen",
+        )
+        wrihis_structure_dam: Optional[str] = Field(
+            "Write dam parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_dam",
+        )
+        wrihis_structure_pump: Optional[str] = Field(
+            "Write pump parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_pump",
+        )
+        wrihis_structure_gate: Optional[str] = Field(
+            "Write gate parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_gate",
+        )
+        wrihis_structure_weir: Optional[str] = Field(
+            "Write weir parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_weir",
+        )
+        wrihis_structure_orifice: Optional[str] = Field(
+            "Write orifice parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_orifice",
+        )
+        wrihis_structure_bridge: Optional[str] = Field(
+            "Write bridge parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_bridge",
+        )
+        wrihis_structure_culvert: Optional[str] = Field(
+            "Write culvert parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_culvert",
+        )
+        wrihis_structure_longculvert: Optional[str] = Field(
+            "Write long culvert parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_longCulvert",
+        )
+        wrihis_structure_dambreak: Optional[str] = Field(
+            "Write dam break parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_damBreak",
+        )
+        wrihis_structure_uniweir: Optional[str] = Field(
+            "Write universal weir parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_uniWeir",
+        )
+        wrihis_structure_compound: Optional[str] = Field(
+            "Write compound structure parameters to his file, (1: yes, 0: no).",
+            alias="wrihis_structure_compound",
+        )
+        wrihis_lateral: Optional[str] = Field(
+            "Write lateral datato his file, (1: yes, 0: no).", alias="wrihis_lateral"
+        )
+        wrihis_velocity: Optional[str] = Field(
+            "Write velocity magnitude in observation point to his file, (1: yes, 0: no).",
+            alias="wrihis_velocity",
+        )
+        wrihis_discharge: Optional[str] = Field(
+            "Write discharge magnitude in observation point to his file, (1: yes, 0: no).",
+            alias="wrihis_discharge",
+        )
+        wrimap_waterlevel_s0: Optional[str] = Field(
+            "Write water levels at old time level to map file, (1: yes, 0: no).",
+            alias="wrimap_waterLevel_s0",
+        )
+        wrimap_waterlevel_s1: Optional[str] = Field(
+            "Write water levels at new time level to map file, (1: yes, 0: no).",
+            alias="wrimap_waterLevel_s1",
+        )
+        wrimap_evaporation: Optional[str] = Field(
+            "Write evaporation to map file, (1: yes, 0: no).",
+            alias="wrimap_evaporation",
+        )
+        wrimap_velocity_component_u0: Optional[str] = Field(
+            "Write velocities at old time level to map file, (1: yes, 0: no).",
+            alias="wrimap_velocity_component_u0",
+        )
+        wrimap_velocity_component_u1: Optional[str] = Field(
+            "Write velocities at new time level to map file, (1: yes, 0: no).",
+            alias="wrimap_velocity_component_u1",
+        )
+        wrimap_velocity_vector: Optional[str] = Field(
+            "Write cell-center velocity vectors to map file, (1: yes, 0: no).",
+            alias="wrimap_velocity_vector",
+        )
+        wrimap_upward_velocity_component: Optional[str] = Field(
+            "Write upward velocity component to map file, (1: yes, 0: no).",
+            alias="wrimap_upward_velocity_component",
+        )
+        wrimap_density_rho: Optional[str] = Field(
+            "Write density to map file, (1: yes, 0: no).", alias="wrimap_density_rho"
+        )
+        wrimap_horizontal_viscosity_viu: Optional[str] = Field(
+            "Write horizontal viscosity to map file, (1: yes, 0: no).",
+            alias="wrimap_horizontal_viscosity_viu",
+        )
+        wrimap_horizontal_diffusivity_diu: Optional[str] = Field(
+            "Write horizontal diffusivity to map file, (1: yes, 0: no).",
+            alias="wrimap_horizontal_diffusivity_diu",
+        )
+        wrimap_flow_flux_q1: Optional[str] = Field(
+            "Write fluxes to map file, (1: yes, 0: no).", alias="wrimap_flow_flux_q1"
+        )
+        wrimap_spiral_flow: Optional[str] = Field(
+            "Write spiral flow to map file, (1: yes, 0: no).",
+            alias="wrimap_spiral_flow",
+        )
+        wrimap_numlimdt: Optional[str] = Field(
+            "Write numlimdt to map file, (1: yes, 0: no).", alias="wrimap_numLimdt"
+        )
+        wrimap_taucurrent: Optional[str] = Field(
+            "Write bottom friction to map file, (1: yes, 0: no).",
+            alias="wrimap_tauCurrent",
+        )
+        wrimap_chezy: Optional[str] = Field(
+            "Write chezy values to map file, (1: yes, 0: no).", alias="wrimap_chezy"
+        )
+        wrimap_turbulence: Optional[str] = Field(
+            "Write turbulence to map file, (1: yes, 0: no).", alias="wrimap_turbulence"
+        )
+        wrimap_rain: Optional[str] = Field(
+            "Write rainfall rate to map file, (1: yes, 0: no).", alias="wrimap_rain"
+        )
+        wrimap_wind: Optional[str] = Field(
+            "Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind"
+        )
+        wrimap_heat_fluxes: Optional[str] = Field(
+            "Write heat fluxes to map file, (1: yes, 0: no).",
+            alias="wrimap_heat_fluxes",
+        )
+        wrimap_wet_waterdepth_threshold: Optional[str] = Field(
+            "Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.",
+            alias="wrimap_wet_waterDepth_threshold",
+        )
+        wrimap_time_water_on_ground: Optional[str] = Field(
+            "Write cumulative time when water is above ground level (only for 1D nodes) to map file, (1: yes, 0: no).",
+            alias="wrimap_time_water_on_ground",
+        )
+        wrimap_freeboard: Optional[str] = Field(
+            "Write freeboard (only for 1D nodes) to map file, (1: yes, 0: no).",
+            alias="wrimap_freeboard",
+        )
+        wrimap_waterdepth_on_ground: Optional[str] = Field(
+            "Write waterdepth that is above ground level to map file (only for 1D nodes) (1: yes, 0: no).",
+            alias="wrimap_waterDepth_on_ground",
+        )
+        wrimap_volume_on_ground: Optional[str] = Field(
+            "Write volume that is above ground level to map file (only for 1D nodes) (1: yes, 0: no).",
+            alias="wrimap_volume_on_ground",
+        )
+        wrimap_total_net_inflow_1d2d: Optional[str] = Field(
+            "Write current total 1D2D net inflow (discharge) and cumulative total 1D2D net inflow (volume) to map file (only for 1D nodes) (1:yes, 0:no).",
+            alias="wrimap_total_net_inflow_1d2d",
+        )
+        wrimap_total_net_inflow_lateral: Optional[str] = Field(
+            "Write current total lateral net inflow (discharge) and cumulative total lateral net inflow (volume) to map file (only for 1D nodes) (1:yes, 0:no).",
+            alias="wrimap_total_net_inflow_lateral",
+        )
+        wrimap_water_level_gradient: Optional[str] = Field(
+            "Write water level gradient to map file (only for 1D links) (1:yes, 0:no).",
+            alias="wrimap_water_level_gradient",
+        )
+        wrimap_flow_analysis: Optional[str] = Field(
+            "Write flow analysis data to the map file (1:yes, 0:no).",
+            alias="wrimap_flow_analysis",
+        )
+        mapoutputtimevector: Optional[str] = Field(
+            "File (.mpt) containing fixed map output times (s) w.r.t. RefDate.",
+            alias="mapOutputTimeVector",
+        )
+        fullgridoutput: Optional[str] = Field(
+            "Full grid output mode for layer positions (0: compact, 1: full time-varying grid layer data).",
+            alias="fullGridOutput",
+        )
+        eulervelocities: Optional[str] = Field(
+            "Write Eulerian velocities, (1: yes, 0: no).", alias="eulerVelocities"
+        )
+        classmapfile: Optional[str] = Field(
+            "Name of class map file.", alias="classMapFile"
+        )
+        waterlevelclasses: Optional[str] = Field(
+            "Series of values between which water level classes are computed.",
+            alias="waterLevelClasses",
+        )
+        waterdepthclasses: Optional[str] = Field(
+            "Series of values between which water depth classes are computed.",
+            alias="waterDepthClasses",
+        )
+        classmapinterval: Optional[str] = Field(
+            "Interval [s] between class map file outputs.", alias="classMapInterval"
+        )
+        waqinterval: Optional[str] = Field(
+            "Interval [s] between DELWAQ file outputs.", alias="waqInterval"
+        )
+        statsinterval: Optional[str] = Field(
+            "Interval [s] between simulation statistics output.", alias="statsInterval"
+        )
+        timingsinterval: Optional[str] = Field(
+            "Timings output interval TimingsInterval.", alias="timingsInterval"
+        )
+        richardsononoutput: Optional[str] = Field(
+            "Write Richardson number, (1: yes, 0: no).", alias="richardsonOnOutput"
+        )
+
     comments: Comments = Comments()
 
     _disk_only_file_model_should_not_be_none = (
