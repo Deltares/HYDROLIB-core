@@ -18,6 +18,7 @@ from hydrolib.core.io.bc.models import (
     QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
+    VectorQuantityUnitPairs,
     VerticalInterpolation,
     VerticalPositionType,
 )
@@ -28,6 +29,7 @@ from ..utils import (
     assert_files_equal,
     invalid_test_data_dir,
     test_data_dir,
+    test_input_dir,
     test_output_dir,
     test_reference_dir,
 )
@@ -565,6 +567,35 @@ class TestT3D:
         expected_message = "vertPositions is not provided"
         assert expected_message in str(error.value)
 
+    def test_initialize_t3d_with_vectorquantities(
+        self,
+    ):
+        values = _create_t3d_vectorvalues()
+
+        t3d = T3D(**values)
+
+        assert t3d.name == "boundary_t3d"
+
+        assert len(t3d.quantityunitpair) == 2
+        assert t3d.quantityunitpair[0] == QuantityUnitPair(quantity="time", unit="m")
+        assert isinstance(t3d.quantityunitpair[1], VectorQuantityUnitPairs)
+        assert t3d.quantityunitpair[1].vectorname == "uxuyadvectionvelocitybnd"
+        assert t3d.quantityunitpair[1].elementname == ["ux", "uy"]
+        assert t3d.quantityunitpair[1].quantityunitpair[0] == QuantityUnitPair(
+            quantity="ux", unit="m s-1", vertpositionindex=1
+        )
+        assert t3d.quantityunitpair[1].quantityunitpair[1] == QuantityUnitPair(
+            quantity="uy", unit="m s-1", vertpositionindex=1
+        )
+        assert t3d.quantityunitpair[1].quantityunitpair[4] == QuantityUnitPair(
+            quantity="ux", unit="m s-1", vertpositionindex=3
+        )
+
+        assert len(t3d.datablock) == 3
+        assert t3d.datablock[0] == [0, 1, 2, 3, 10, 20, 30]
+        assert t3d.datablock[1] == [60, 4, 5, 6, 40, 50, 60]
+        assert t3d.datablock[2] == [120, 7, 8, 9, 70, 80, 90]
+
     def test_load_forcing_model(self):
         bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
         forcingmodel = ForcingModel(bc_file)
@@ -652,6 +683,42 @@ class TestT3D:
                 == expected_quantityunitpair.vertpositionindex
             )
 
+    def test_load_t3d_model_with_vector_quantities(self):
+        bc_file = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "FlowFM_boundaryconditions3d_and_vectors.bc"
+        )
+        forcingmodel = ForcingModel(bc_file)
+
+        t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
+        assert isinstance(t3d, T3D)
+        assert t3d is not None
+        assert t3d.name == "zuiduxuy_0002"
+        assert t3d.vertpositions == [0, 0.2, 1.0]
+        assert t3d.vertinterpolation == "linear"
+        assert t3d.vertpositiontype == "percBed"
+        assert t3d.timeinterpolation == "linear"
+
+        quantityunitpairs = t3d.quantityunitpair
+        assert len(quantityunitpairs) == 2
+        assert quantityunitpairs[0].quantity == "time"
+        assert quantityunitpairs[0].unit == "MINUTES SINCE 1992-08-31 00:00:00 +00:00"
+        assert quantityunitpairs[0].vertpositionindex == None
+
+        assert isinstance(quantityunitpairs[1], VectorQuantityUnitPairs)
+        assert quantityunitpairs[1].vectorname == "uxuyadvectionvelocitybnd"
+        assert quantityunitpairs[1].elementname == ["ux", "uy"]
+        assert quantityunitpairs[1].quantityunitpair[0].vertpositionindex == 1
+        assert quantityunitpairs[1].quantityunitpair[0].quantity == "ux"
+        assert quantityunitpairs[1].quantityunitpair[0].unit == "-"
+        assert quantityunitpairs[1].quantityunitpair[1].vertpositionindex == 1
+        assert quantityunitpairs[1].quantityunitpair[1].quantity == "uy"
+        assert quantityunitpairs[1].quantityunitpair[1].unit == "-"
+        assert quantityunitpairs[1].quantityunitpair[4].vertpositionindex == 3
+        assert quantityunitpairs[1].quantityunitpair[4].quantity == "ux"
+        assert quantityunitpairs[1].quantityunitpair[4].unit == "-"
+
 
 def _create_time_series_values():
     return dict(
@@ -709,6 +776,16 @@ def _create_quantityunitpair(quantity, unit, verticalpositionindex=None):
     )
 
 
+def _create_vectorqup(
+    vectorname: str, elementname: List[str], quantityunitpair: List[QuantityUnitPair]
+):
+    return VectorQuantityUnitPairs(
+        vectorname=vectorname,
+        elementname=elementname,
+        quantityunitpair=quantityunitpair,
+    )
+
+
 def _create_t3d_values():
     return dict(
         name="boundary_t3d",
@@ -729,6 +806,39 @@ def _create_t3d_values():
             ["0", "1", "2", "3"],
             ["60", "4", "5", "6"],
             ["120", "7", "8", "9"],
+        ],
+    )
+
+
+def _create_t3d_vectorvalues():
+    return dict(
+        name="boundary_t3d",
+        function="t3d",
+        offset="1.23",
+        factor="2.34",
+        vertpositions="3.45 4.56 5.67",
+        vertinterpolation="log",
+        vertpositiontype="percBed",
+        timeinterpolation="linear",
+        quantityunitpair=[
+            _create_quantityunitpair("time", "m"),
+            _create_vectorqup(
+                "uxuyadvectionvelocitybnd",
+                ["ux", "uy"],
+                [
+                    _create_quantityunitpair("ux", "m s-1", 1),
+                    _create_quantityunitpair("uy", "m s-1", 1),
+                    _create_quantityunitpair("ux", "m s-1", 2),
+                    _create_quantityunitpair("uy", "m s-1", 2),
+                    _create_quantityunitpair("ux", "m s-1", 3),
+                    _create_quantityunitpair("uy", "m s-1", 3),
+                ],
+            ),
+        ],
+        datablock=[
+            ["0", "1", "2", "3", "10", "20", "30"],
+            ["60", "4", "5", "6", "40", "50", "60"],
+            ["120", "7", "8", "9", "70", "80", "90"],
         ],
     )
 
