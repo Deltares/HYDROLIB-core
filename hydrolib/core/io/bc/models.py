@@ -171,8 +171,6 @@ class ForcingBase(DataBlockINIBasedModel):
         if values.get(quantityunitpairkey) is not None:
             return values
 
-        vector = values.get("vector")
-
         quantities = values.get("quantity")
         if quantities is None:
             raise ValueError("quantity is not provided")
