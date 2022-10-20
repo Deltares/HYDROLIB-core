@@ -719,6 +719,19 @@ class TestT3D:
         assert quantityunitpairs[1].quantityunitpair[4].quantity == "ux"
         assert quantityunitpairs[1].quantityunitpair[4].unit == "-"
 
+    def test_load_and_save_t3d_model_with_vector_quantities(self):
+        bc_file_name = "FlowFM_boundaryconditions3d_and_vectors.bc"
+        bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
+        output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
+        reference_file = test_reference_dir / "bc" / bc_file_name
+
+        forcingmodel = ForcingModel(bc_file)
+
+        forcingmodel.filepath = output_file
+        forcingmodel.save()
+
+        assert_files_equal(output_file, reference_file, [0])
+
 
 def _create_time_series_values():
     return dict(

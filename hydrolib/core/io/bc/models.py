@@ -125,7 +125,10 @@ class VectorQuantityUnitPairs(BaseModel):
         yield Property(
             key="vector", value=self.vectorname + ":" + ",".join(self.elementname)
         )
-        map(QuantityUnitPair._to_properties, self.quantityunitpair)
+
+        for qup in self.quantityunitpair:
+            for prop in qup._to_properties():
+                yield prop
 
 
 ScalarOrVectorQUP = Union[QuantityUnitPair, VectorQuantityUnitPairs]
