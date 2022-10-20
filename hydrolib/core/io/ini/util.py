@@ -35,19 +35,34 @@ def get_split_string_on_delimiter_validator(*field_name: str):
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
 
-def get_enum_validator(*field_name: str, enum: Type[Enum]):
+def get_enum_validator(
+    *field_name: str,
+    enum: Type[Enum],
+    alternative_enum_values: Optional[Dict[str, List[str]]] = None,
+):
     """
     Get a case-insensitive enum validator that will returns the corresponding enum value.
     If the input is a list, then each list value is checked individually.
 
     Args:
         enum (Type[Enum]): The enum type for which to validate.
+        alternative_enum_values (Dict[str, List[str]], optional): Dictionary with alternative
+            allowed values for one or more of the enum keys. Dict key must be a valid current
+            key of enum (case sensitive). Use this to backwards support and convert old enum
+            values in user input. For example: {SomeEnum.current_value: ["old value"]}.
     """
 
     def get_enum(v):
         for entry in enum:
             if entry.lower() == v.lower():
                 return entry
+            if (
+                alternative_enum_values is not None
+                and (alt_values := alternative_enum_values.get(entry.value)) is not None
+                and v.lower() in (altval.lower() for altval in alt_values)
+            ):
+                return entry
+
         return v
 
     return validator(*field_name, allow_reuse=True, pre=True, each_item=True)(get_enum)
