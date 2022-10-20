@@ -270,14 +270,13 @@ class ForcingBase(DataBlockINIBasedModel):
         # that form the vector elements, and pack them into a single VectorQuantityUnitPairs oject.
         for vectordef in vectordefs:
             vectorname, componentdefs = vectordef.split(":")
-            componentnames = re.split(",| |\t", componentdefs)
+            componentnames = re.split(r"[, \t]", componentdefs)
             n_components = len(componentnames)
 
             vqu_pair = VectorQuantityUnitPairs(
                 vectorname=vectorname, elementname=componentnames, quantityunitpair=[]
             )
 
-            # component = next(componentnames)
             n_rep = 0
             for qu_pair in qup_iter:
                 if qu_pair.quantity in componentnames:
