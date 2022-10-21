@@ -62,27 +62,3 @@ Vertical position specification = 0.0 0.2 1.0
 60 .50 .2 .50 .2 1.0 1.7
 120 -.50 .7 -.50 .7 -2.0 2.4
 9999999 -.50 .7 -.50 .7 -2.0 2.4
-
-[forcing]
-                           Name = tangnoordlev_0001
-                       Function = harmonic
-                       Quantity = harmonic component
-                           Unit = minutes
-                       Quantity = waterlevelbnd amplitude
-                           Unit = -
-                       Quantity = waterlevelbnd phase
-                           Unit = deg
-0.0           0.000         0.0
-
-[forcing]
-                           Name = tangzuidlev_0001
-                       Function = harmonic
-                       Quantity = harmonic component
-                           Unit = minutes
-                       Quantity = waterlevelbnd amplitude
-                           Unit = -
-                       Quantity = waterlevelbnd phase
-                           Unit = deg
-0.0           0.100         0.0
-
-

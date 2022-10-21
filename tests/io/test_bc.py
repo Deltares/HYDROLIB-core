@@ -719,8 +719,16 @@ class TestT3D:
         assert quantityunitpairs[1].quantityunitpair[4].quantity == "ux"
         assert quantityunitpairs[1].quantityunitpair[4].unit == "-"
 
-    def test_load_and_save_t3d_model_with_vector_quantities(self):
-        bc_file_name = "FlowFM_boundaryconditions3d_and_vectors.bc"
+
+class TestVectorBC:
+    @pytest.mark.parametrize(
+        "bc_file_name",
+        [
+            "FlowFM_boundaryconditions2d_and_vectors.bc",
+            "FlowFM_boundaryconditions3d_and_vectors.bc",
+        ],
+    )
+    def test_load_and_save_model_with_vector_quantities(self, bc_file_name: str):
         bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
         output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
         reference_file = test_reference_dir / "bc" / bc_file_name
