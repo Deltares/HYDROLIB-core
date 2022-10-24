@@ -693,7 +693,9 @@ class Trachytopes(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        trtrou: Optional[str] = Field("Flag for trachytopes (Y=on, N=off).", alias="trtRou")
+        trtrou: Optional[str] = Field(
+            "Flag for trachytopes (Y=on, N=off).", alias="trtRou"
+        )
         trtdef: Optional[str] = Field(
             "File (*.ttd) including trachytope definitions.", alias="trtDef"
         )
