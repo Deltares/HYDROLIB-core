@@ -105,6 +105,9 @@ class VectorQuantityUnitPairs(BaseModel):
     followed by all component quantity names, their unit and optionally their
     vertical position indexes."""
 
+    class Config:
+        validate_assignment = True
+
     vectorname: str
     """str: Name of the vector quantity."""
 
@@ -114,12 +117,32 @@ class VectorQuantityUnitPairs(BaseModel):
     quantityunitpair: List[QuantityUnitPair]
     """List[QuantityUnitPair]: List of QuantityUnitPair that define the vector components."""
 
+    @root_validator
+    @classmethod
+    def _validator_quantity_element_names(cls, values: Dict):
+        for idx, name in enumerate(
+            [qup.quantity for qup in values["quantityunitpair"]]
+        ):
+            if name not in values["elementname"]:
+                raise ValueError(
+                    f"quantityunitpair[{idx}], quantity '{name}' must be in vectordefinition's element names: '{VectorQuantityUnitPairs._to_vectordefinition_string(values['vectorname'], values['elementname'])}'."
+                )
+
+        return values
+
+    @staticmethod
+    def _to_vectordefinition_string(vectorname: str, elementname: List[str]):
+        return vectorname + ":" + ",".join(elementname)
+
+    def __str__(self) -> str:
+        return VectorQuantityUnitPairs._to_vectordefinition_string(
+            self.vectorname, self.elementname
+        )
+
     def _to_properties(self):
         """Generator function that yields the ini Property objects for a single
         VectorQuantityUnitPairs object."""
-        yield Property(
-            key="vector", value=self.vectorname + ":" + ",".join(self.elementname)
-        )
+        yield Property(key="vector", value=str(self))
 
         for qup in self.quantityunitpair:
             for prop in qup._to_properties():
@@ -127,6 +150,157 @@ class VectorQuantityUnitPairs(BaseModel):
 
 
 ScalarOrVectorQUP = Union[QuantityUnitPair, VectorQuantityUnitPairs]
+
+
+class VectorQUPValidation:
+    """Helper class with validator routines for VectorQuantityUnitPairs
+    objects. To be called from other model classes."""
+
+    @staticmethod
+    def validate_vectorlength(
+        vqu_pair: VectorQuantityUnitPairs,
+        number_of_element_repetitions: int = 1,
+    ) -> bool:
+        """Checks whether the number of QuantityUnitPairs in a vector quantity
+        matches exactly with number of vector elements in the definition and,
+        optionally, the number of vertical layers.
+
+        Args:
+            vqu_pair (VectorQuantityUnitPairs): the vector quantity object to be checked.
+            number_of_element_repetitions (int, optional): Number of times each
+                vector element is expected to be present in the subsequent
+                Quantity lines. Typically used for 3D quantities, using the
+                number of vertical layers. Defaults to 1.
+
+        Returns:
+            bool: True if vqu_pair is valid. False return value is hidden because
+                an exception will be raised.
+
+        Raises:
+            ValueError: If number of QuantityUnitPair objects in vqu_pair is not equal
+                to number of element names * number_of_element_repetitions."""
+
+        if not (
+            valid := len(vqu_pair.quantityunitpair)
+            == len(vqu_pair.elementname) * number_of_element_repetitions
+        ):
+            raise ValueError(
+                f"Incorrect number of quantity unit pairs were found; should match the elements in vectordefinition for {vqu_pair.vectorname}"
+                + (
+                    f", and {number_of_element_repetitions} vertical layers"
+                    if number_of_element_repetitions > 1
+                    else ""
+                )
+                + "."
+            )
+
+        return valid
+
+    @staticmethod
+    def validate_vectordefinition_and_update_quantityunitpairs(
+        vectordefs: Optional[List[str]],
+        quantityunitpairs: List[ScalarOrVectorQUP],
+        number_of_element_repetitions: int = 1,
+    ) -> None:
+        """Validates the given vector definition header lines from a .bc file
+        for a ForcingBase subclass and updates the existing QuantityUnitPair list
+        by packing the vector elements into a VectorQuantityUnitPairs object
+        for each vector definition.
+
+        Args:
+            vectordefs (List[str]): List of vector definition values, e.g.,
+                ["vectorname:comp1,comp2,..compN", ...]
+            quantityunitpairs (List[ScalarOrVectorQUP]): list of already parsed
+                and constructed QuantityUnitPair objects, which will be modified
+                in place with some packed VectorQuantityUnitPairs objects.
+            number_of_element_repetitions (int, optional): Number of times each
+                vector element is expected to be present in the subsequent
+                Quantity lines. Typically used for 3D quantities, using the
+                number of vertical layers. Defaults to 1."""
+
+        if vectordefs is None:
+            return
+
+        vectordefs = to_list(vectordefs)
+
+        qup_iter = iter(quantityunitpairs)
+
+        # Start a new list, to only keep the scalar QUPs, and add newly
+        # created VectorQUPs.
+        quantityunitpairs_with_vectors = []
+
+        # If one quantity is "time", it must be the first one.
+        if quantityunitpairs[0].quantity == "time":
+            quantityunitpairs_with_vectors.append(quantityunitpairs[0])
+            _ = next(qup_iter)
+
+        # For each vector definition line, greedily find the quantity unit pairs
+        # that form the vector elements, and pack them into a single VectorQuantityUnitPairs oject.
+        for vectordef in vectordefs:
+            vectorname, componentdefs = vectordef.split(":")
+            componentnames = re.split(r"[, \t]", componentdefs)
+            n_components = len(componentnames)
+
+            vqu_pair = VectorQuantityUnitPairs(
+                vectorname=vectorname, elementname=componentnames, quantityunitpair=[]
+            )
+
+            n_rep = 0
+            for qu_pair in qup_iter:
+                if qu_pair.quantity in componentnames:
+                    # This vector element found, store it.
+                    vqu_pair.quantityunitpair.append(qu_pair)
+                    n_rep += 1
+                    if n_rep == n_components * number_of_element_repetitions:
+                        break
+                else:
+                    # This quantity was no vector element being searched for
+                    # so keep it as a regular (scalar) QuantityUnitPair.
+                    quantityunitpairs_with_vectors.append(qu_pair)
+
+            if VectorQUPValidation.validate_vectorlength(
+                vqu_pair, number_of_element_repetitions
+            ):
+                # This VectorQuantityUnitPairs is now complete; add it to result list.
+                quantityunitpairs_with_vectors.append(vqu_pair)
+
+        quantityunitpairs[:] = quantityunitpairs_with_vectors
+
+    @staticmethod
+    def process_vectordefinition_or_check_quantityunitpairs(
+        vectordefs: Optional[List[str]],
+        quantityunitpairs: List[ScalarOrVectorQUP],
+        number_of_element_repetitions: int = 1,
+    ) -> None:
+        """Processes the given vector definition header lines from a .bc file
+        or, if absent, checks whether the existing VectorQuantityUnitPairs
+        objects already have the correct vector length.
+
+        Args:
+            vectordefs (List[str]): List of vector definition values, e.g.,
+                ["vectorname:comp1,comp2,..compN", ...]
+            quantityunitpairs (List[ScalarOrVectorQUP]): list of already parsed
+                and constructed QuantityUnitPair objects, which may be modified
+                in place with some packed VectorQuantityUnitPairs objects.
+            number_of_element_repetitions (int, optional): Number of times each
+                vector element is expected to be present in the subsequent
+                Quantity lines. Typically used for 3D quantities, using the
+                number of vertical layers. Defaults to 1."""
+
+        if vectordefs is not None and not any(
+            map(lambda qup: isinstance(qup, VectorQuantityUnitPairs), quantityunitpairs)
+        ):
+            # Vector definition line still must be processed and VectorQUPs still created.
+            VectorQUPValidation.validate_vectordefinition_and_update_quantityunitpairs(
+                vectordefs, quantityunitpairs, number_of_element_repetitions
+            )
+        else:
+            # VectorQUPs already present; directly validate their vector length.
+            for qup in quantityunitpairs:
+                if isinstance(qup, VectorQuantityUnitPairs):
+                    VectorQUPValidation.validate_vectorlength(
+                        qup, number_of_element_repetitions
+                    )
 
 
 class ForcingBase(DataBlockINIBasedModel):
@@ -223,81 +397,6 @@ class ForcingBase(DataBlockINIBasedModel):
                 )
         return v
 
-    @staticmethod
-    def _validate_vectordefinition_and_update_quantityunitpairs(
-        vectordefs: Optional[List[str]],
-        quantityunitpairs: List[ScalarOrVectorQUP],
-        number_of_element_repetitions: int = 1,
-    ) -> None:
-        """Validates the given vector definition header lines from a .bc file
-        for a ForcingBase subclass and updates the existing QuantityUnitPair list
-        by packing the vector elements into a VectorQuantityUnitPairs object
-        for each vector definition.
-
-        Args:
-            vectordefs (List[str]): List of vector definition values, e.g.,
-                ["vectorname:comp1,comp2,..compN", ...]
-            quantityunitpairs (List[ScalarOrVectorQUP]): list of already parsed
-                and constructed QuantityUnitPair objects, which will be modified
-                in place with some packed VectorQuantityUnitPairs objects.
-            number_of_element_repetitions (int, optional): Number of times each
-                vector element is expected to be present in the subsequent
-                Quantity lines. Typically used for 3D quantities, using the
-                number of vertical layers. Defaults to 1."""
-
-        if vectordefs is None:
-            return
-
-        vectordefs = to_list(vectordefs)
-
-        qup_iter = iter(quantityunitpairs)
-
-        # Start a new list, to only keep the scalar QUPs, and add newly
-        # created VectorQUPs.
-        quantityunitpairs_with_vectors = []
-
-        # If one quantity is "time", it must be the first one.
-        if quantityunitpairs[0].quantity == "time":
-            quantityunitpairs_with_vectors.append(quantityunitpairs[0])
-            _ = next(qup_iter)
-
-        # For each vector definition line, greedily find the quantity unit pairs
-        # that form the vector elements, and pack them into a single VectorQuantityUnitPairs oject.
-        for vectordef in vectordefs:
-            vectorname, componentdefs = vectordef.split(":")
-            componentnames = re.split(r"[, \t]", componentdefs)
-            n_components = len(componentnames)
-
-            vqu_pair = VectorQuantityUnitPairs(
-                vectorname=vectorname, elementname=componentnames, quantityunitpair=[]
-            )
-
-            n_rep = 0
-            for qu_pair in qup_iter:
-                if qu_pair.quantity in componentnames:
-                    # This vector element found, store it.
-                    vqu_pair.quantityunitpair.append(qu_pair)
-                    n_rep += 1
-                    if n_rep == n_components * number_of_element_repetitions:
-                        break
-                else:
-                    # This quantity was no vector element being searched for
-                    # so keep it as a regular (scalar) QuantityUnitPair.
-                    quantityunitpairs_with_vectors.append(qu_pair)
-
-            if (
-                len(vqu_pair.quantityunitpair)
-                == n_components * number_of_element_repetitions
-            ):
-                # This VectorQuantityUnitPairs is now complete; add it to result list.
-                quantityunitpairs_with_vectors.append(vqu_pair)
-            else:
-                raise ValueError(
-                    f"Not all quantity unit pairs were found for the elements in vectordefinition {vectordef}."
-                )
-
-        quantityunitpairs[:] = quantityunitpairs_with_vectors
-
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
@@ -351,7 +450,7 @@ class TimeSeries(ForcingBase):
         quantityunitpairs = values["quantityunitpair"]
 
         vector = values.get("vector")
-        ForcingBase._validate_vectordefinition_and_update_quantityunitpairs(
+        VectorQUPValidation.process_vectordefinition_or_check_quantityunitpairs(
             vector, quantityunitpairs, 1
         )
 
@@ -468,16 +567,15 @@ class T3D(ForcingBase):
             T3D._validate_that_all_quantityunitpairs_have_valid_verticalpositionindex(
                 quantityunitpairs[1:], number_of_verticalpositions
             )
-            return values
-
-        T3D._validate_verticalpositionindexes_and_update_quantityunitpairs(
-            verticalpositionindexes,
-            number_of_verticalpositions,
-            quantityunitpairs,
-        )
+        else:
+            T3D._validate_verticalpositionindexes_and_update_quantityunitpairs(
+                verticalpositionindexes,
+                number_of_verticalpositions,
+                quantityunitpairs,
+            )
 
         vector = values.get("vector")
-        ForcingBase._validate_vectordefinition_and_update_quantityunitpairs(
+        VectorQUPValidation.process_vectordefinition_or_check_quantityunitpairs(
             vector, quantityunitpairs, number_of_verticalpositions
         )
 
