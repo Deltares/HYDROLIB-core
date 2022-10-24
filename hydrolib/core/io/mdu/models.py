@@ -1563,16 +1563,42 @@ class Processes(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        substancefile: Optional[str] = Field("Substance file name. Details in Section 22.2.1.", alias="SubstanceFile")
-        additionalhistoryoutputfile: Optional[str] = Field("Extra history output filename. Details in Section 22.5.1.", alias="AdditionalHistoryOutputFile",)
-        statisticsfile: Optional[str] = Field("Statistics definition file. Details in Section 22.5.3.", alias="StatisticsFile")
-        thetavertical: Optional[str] = Field("Theta value for vertical transport of water quality substances [-].", alias="ThetaVertical")
-        dtprocesses: Optional[str] = Field("waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.", alias="DtProcesses")
+        substancefile: Optional[str] = Field(
+            "Substance file name. Details in Section 22.2.1.", alias="SubstanceFile"
+        )
+        additionalhistoryoutputfile: Optional[str] = Field(
+            "Extra history output filename. Details in Section 22.5.1.",
+            alias="AdditionalHistoryOutputFile",
+        )
+        statisticsfile: Optional[str] = Field(
+            "Statistics definition file. Details in Section 22.5.3.",
+            alias="StatisticsFile",
+        )
+        thetavertical: Optional[str] = Field(
+            "Theta value for vertical transport of water quality substances [-].",
+            alias="ThetaVertical",
+        )
+        dtprocesses: Optional[str] = Field(
+            "waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
+            alias="DtProcesses",
+        )
         dtmassbalance: Optional[str] = Field("", alias="DtMassBalance")
-        processfluxintegration: Optional[str] = Field("Process fluxes integration option (1: WAQ, 2: D-Flow FM).", alias="ProcessFluxIntegration")
-        wriwaqbot3doutput: Optional[str] = Field("Write 3D water quality bottom variables (0: no, 1: yes).", alias="Wriwaqbot3Doutput")
-        volumedrythreshold: Optional[str] = Field("Volume [m3] below which segments are marked as dry. Details in Section 22.2.3.", alias="VolumeDryThreshold")
-        depthdrythreshold: Optional[str] = Field("Water depth [m] below which segments are marked as dry. Details in Section 22.2.3.", alias="DepthDryThreshold")
+        processfluxintegration: Optional[str] = Field(
+            "Process fluxes integration option (1: WAQ, 2: D-Flow FM).",
+            alias="ProcessFluxIntegration",
+        )
+        wriwaqbot3doutput: Optional[str] = Field(
+            "Write 3D water quality bottom variables (0: no, 1: yes).",
+            alias="Wriwaqbot3Doutput",
+        )
+        volumedrythreshold: Optional[str] = Field(
+            "Volume [m3] below which segments are marked as dry. Details in Section 22.2.3.",
+            alias="VolumeDryThreshold",
+        )
+        depthdrythreshold: Optional[str] = Field(
+            "Water depth [m] below which segments are marked as dry. Details in Section 22.2.3.",
+            alias="DepthDryThreshold",
+        )
 
     comments: Comments = Comments()
 
@@ -1624,12 +1650,23 @@ class Particles(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        particlesfile: Optional[str] = Field("Initial particle locations file (*.xyz).", alias="ParticlesFile")
-        particlesreleasefile: Optional[str] = Field("Particles release file (*.tim, 4 column).", alias="ParticlesReleaseFile")
-        addtracer: Optional[str] = Field("Add tracer or not (0: no, 1: yes).", alias="AddTracer")
+        particlesfile: Optional[str] = Field(
+            "Initial particle locations file (*.xyz).", alias="ParticlesFile"
+        )
+        particlesreleasefile: Optional[str] = Field(
+            "Particles release file (*.tim, 4 column).", alias="ParticlesReleaseFile"
+        )
+        addtracer: Optional[str] = Field(
+            "Add tracer or not (0: no, 1: yes).", alias="AddTracer"
+        )
         starttime: Optional[str] = Field("Start time (if > 0) [s]", alias="StartTime")
-        timestep: Optional[str] = Field("Time step (if > 0) or every computational time step [s].", alias="TimeStep")
-        threedtype: Optional[str] = Field("3D velocity type (0: depth averaged velocities, 1: free surface/top layer velocities).", alias="3Dtype")
+        timestep: Optional[str] = Field(
+            "Time step (if > 0) or every computational time step [s].", alias="TimeStep"
+        )
+        threedtype: Optional[str] = Field(
+            "3D velocity type (0: depth averaged velocities, 1: free surface/top layer velocities).",
+            alias="3Dtype",
+        )
 
     comments: Comments = Comments()
     _disk_only_file_model_should_not_be_none = (
@@ -1669,14 +1706,25 @@ class Vegetation(INIBasedModel):
     All lowercased attributes match with the [Veg] input as described in
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
+
     class Comments(INIBasedModel.Comments):
-        vegetationmodelnr: Optional[str] = Field("Vegetation model nr, (0: no, 1: Baptist DFM).", alias="Vegetationmodelnr")
+        vegetationmodelnr: Optional[str] = Field(
+            "Vegetation model nr, (0: no, 1: Baptist DFM).", alias="Vegetationmodelnr"
+        )
         clveg: Optional[str] = Field("Stem distance factor [-].", alias="Clveg")
         cdveg: Optional[str] = Field("Stem Cd coefficient [-].", alias="Cdveg")
         cbveg: Optional[str] = Field("Stem stiffness coefficient [-].", alias="Cbveg")
-        rhoveg: Optional[str] = Field("Stem Rho, if > 0, bouyant stick procedure [kg/m3].", alias="Rhoveg")
-        stemheightstd: Optional[str] = Field("Stem height standard deviation fraction, e.g. 0.1 [-].", alias="Stemheightstd")
-        densvegminbap: Optional[str] = Field("Minimum vegetation density in Baptist formula. Only in 2D. [1/m2].", alias="Densvegminbap")
+        rhoveg: Optional[str] = Field(
+            "Stem Rho, if > 0, bouyant stick procedure [kg/m3].", alias="Rhoveg"
+        )
+        stemheightstd: Optional[str] = Field(
+            "Stem height standard deviation fraction, e.g. 0.1 [-].",
+            alias="Stemheightstd",
+        )
+        densvegminbap: Optional[str] = Field(
+            "Minimum vegetation density in Baptist formula. Only in 2D. [1/m2].",
+            alias="Densvegminbap",
+        )
 
     comments: Comments = Comments()
     _header: Literal["Veg"] = "Veg"
