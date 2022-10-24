@@ -1339,6 +1339,14 @@ class Calibration(INIBasedModel):
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
 
+    
+    class Comments(INIBasedModel.Comments):
+        usecalibration: Optional[str] = Field("Activate calibration factor friction multiplier (0: no, 1: yes).", alias="UseCalibration")
+        definitionfile: Optional[str] = Field("File (*.cld) containing calibration definitions. Details in Section C.9.1.", alias="DefinitionFile")
+        areafile: Optional[str] = Field("File (*.cll) containing area distribution of calibration definitions. Details in Section C.9.2.", alias="AreaFile")
+
+    comments: Comments = Comments()
+
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()
     )
