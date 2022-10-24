@@ -1562,6 +1562,20 @@ class Processes(INIBasedModel):
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
 
+    class Comments(INIBasedModel.Comments):
+        substancefile: Optional[str] = Field("Substance file name. Details in Section 22.2.1.", alias="SubstanceFile")
+        additionalhistoryoutputfile: Optional[str] = Field("Extra history output filename. Details in Section 22.5.1.", alias="AdditionalHistoryOutputFile",)
+        statisticsfile: Optional[str] = Field("Statistics definition file. Details in Section 22.5.3.", alias="StatisticsFile")
+        thetavertical: Optional[str] = Field("Theta value for vertical transport of water quality substances [-].", alias="ThetaVertical")
+        dtprocesses: Optional[str] = Field("waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.", alias="DtProcesses")
+        dtmassbalance: Optional[str] = Field("", alias="DtMassBalance")
+        processfluxintegration: Optional[str] = Field("Process fluxes integration option (1: WAQ, 2: D-Flow FM).", alias="ProcessFluxIntegration")
+        wriwaqbot3doutput: Optional[str] = Field("Write 3D water quality bottom variables (0: no, 1: yes).", alias="Wriwaqbot3Doutput")
+        volumedrythreshold: Optional[str] = Field("Volume [m3] below which segments are marked as dry. Details in Section 22.2.3.", alias="VolumeDryThreshold")
+        depthdrythreshold: Optional[str] = Field("Water depth [m] below which segments are marked as dry. Details in Section 22.2.3.", alias="DepthDryThreshold")
+
+    comments: Comments = Comments()
+
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()
     )
