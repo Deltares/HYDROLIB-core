@@ -1623,6 +1623,15 @@ class Particles(INIBasedModel):
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
 
+    class Comments(INIBasedModel.Comments):
+        particlesfile: Optional[str] = Field("Initial particle locations file (*.xyz).", alias="ParticlesFile")
+        particlesreleasefile: Optional[str] = Field("Particles release file (*.tim, 4 column).", alias="ParticlesReleaseFile")
+        addtracer: Optional[str] = Field("Add tracer or not (0: no, 1: yes).", alias="AddTracer")
+        starttime: Optional[str] = Field("Start time (if > 0) [s]", alias="StartTime")
+        timestep: Optional[str] = Field("Time step (if > 0) or every computational time step [s].", alias="TimeStep")
+        threedtype: Optional[str] = Field("3D velocity type (0: depth averaged velocities, 1: free surface/top layer velocities).", alias="3Dtype")
+
+    comments: Comments = Comments()
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()
     )
