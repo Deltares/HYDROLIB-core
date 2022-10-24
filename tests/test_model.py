@@ -1,3 +1,4 @@
+import inspect
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -6,7 +7,7 @@ from typing import Callable, Dict, Union
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.basemodel import DiskOnlyFileModel, warnings_enabled
 from hydrolib.core.io.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
 from hydrolib.core.io.dimr.models import (
     DIMR,
@@ -75,6 +76,11 @@ def test_dimr_model():
 
     assert d.component[1].model is not None
     assert d.component[1].model.save_location.is_file()
+
+
+@warnings_enabled
+def test_dimr_model_warnings_enabled():
+    test_dimr_model()
 
 
 def test_parse_rr_model_returns_correct_model():

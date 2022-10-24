@@ -5,6 +5,7 @@ from typing import List
 import pytest
 from pydantic.error_wrappers import ValidationError
 
+from hydrolib.core.basemodel import BaseModel, warnings_enabled
 from hydrolib.core.io.bc.models import (
     T3D,
     Astronomic,
@@ -21,7 +22,6 @@ from hydrolib.core.io.bc.models import (
     VerticalInterpolation,
     VerticalPositionType,
 )
-from hydrolib.core.io.ini.models import BaseModel
 from hydrolib.core.io.ini.parser import Parser, ParserConfig
 
 from ..utils import (
@@ -72,6 +72,23 @@ class TestTimeSeries:
         assert forcing.datablock[0] == [0, 1.23]
         assert forcing.datablock[1] == [60, 2.34]
         assert forcing.datablock[2] == [120, 3.45]
+
+    @warnings_enabled
+    def test_create_a_forcing_from_scratch_with_wrong_field(self):
+        forcingmodel = ForcingModel()
+        ts_one = TimeSeries(
+            name="pli_north_0001",
+            verticalposition=VerticalPositionType("ZBed"),
+            quantityunitpair=[
+                QuantityUnitPair(quantity="time", unit="s"),
+                QuantityUnitPair(quantity="salinitybnd", unit="1e-3"),
+            ],
+            timeinterpolation=TimeInterpolation.linear,
+            datablock=[[]],
+        )
+        forcingmodel.forcing.append(ts_one)
+
+        # Should run fine, only with warnings logged.
 
     def test_read_bc_expected_result(self):
         input_str = inspect.cleandoc(

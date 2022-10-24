@@ -4,6 +4,8 @@ as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
 
 """
+import functools
+import inspect
 import logging
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
@@ -15,7 +17,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, Ty
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import validator
+from pydantic import Extra, root_validator, validator
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
 from pydantic.fields import ModelField, PrivateAttr
 
@@ -36,6 +38,7 @@ class BaseModel(PydanticBaseModel):
         validate_assignment = True
         use_enum_values = True
         extra = "forbid"  # will throw errors so we can fix our models
+        warn_dropped_extra = False
         allow_population_by_field_name = True
         alias_generator = to_key
 
@@ -120,6 +123,52 @@ class BaseModel(PydanticBaseModel):
             str: The identifier or None.
         """
         return None
+
+    @root_validator(pre=True)
+    @classmethod
+    def _warn_for_extra_fields_that_will_be_dropped(cls, values: dict):
+        """Root validator to print some warnings in case unknown field names
+        were passed to the object creation.
+
+        This only applies when Config.extra is Extra.ignore, since the Pydantic
+        BaseModel is (too) silent about dropping unknown fields.
+        All other checks are left to Pydantic BaseModel itself.
+
+        Also, setting BaseModel.__config__.warn_dropped_extra must be set to True
+        to enable these warnings."""
+
+        if (
+            cls.__config__.extra is not Extra.ignore
+            or not cls.__config__.warn_dropped_extra
+        ):
+            return values
+
+        class_fields = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)))
+
+        for key, value in values.items():
+            if (
+                value is not None
+                and key not in cls.__fields__
+                and key not in [tuple[0] for tuple in class_fields]
+            ):
+                logger.warning(
+                    f"While creating {cls.__name__}, given field {key} is unknown and will be ignored."
+                )
+
+        return values
+
+
+def warnings_enabled(func):
+    """Decorate methods that want special warnings enabled for BaseModel (sub)classes."""
+
+    @functools.wraps(func)
+    def wrapper_with_warnings(*args, **kwargs):
+        BaseModel.__config__.warn_dropped_extra = True
+        value = func(*args, **kwargs)
+        BaseModel.__config__.warn_dropped_extra = False
+        return value
+
+    return wrapper_with_warnings
 
 
 TAcc = TypeVar("TAcc")
