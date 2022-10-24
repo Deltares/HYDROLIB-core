@@ -1384,6 +1384,18 @@ class GroundWater(INIBasedModel):
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
 
+    class Comments(INIBasedModel.Comments):
+        groundwater: Optional[str] = Field("", alias="GroundWater")
+        infiltrationmodel: Optional[str] = Field("Infiltration method (0: No infiltration, 1: Interception layer, 2: Constant infiltration capacity, 3: model unsaturated/saturated (with grw), 4: Horton).", alias="Infiltrationmodel")
+        hinterceptionlayer: Optional[str] = Field("", alias="Hinterceptionlayer")
+        unifinfiltrationcapacity: Optional[str] = Field("Uniform maximum infiltration capacity [m/s].", alias="UnifInfiltrationCapacity")
+        conductivity: Optional[str] = Field("", alias="Conductivity")
+        h_aquiferuni: Optional[str] = Field("", alias="h_aquiferuni")
+        bgrwuni: Optional[str] = Field("", alias="bgrwuni")
+        h_unsatini: Optional[str] = Field("", alias="h_unsatini")
+        sgrwini: Optional[str] = Field("", alias="sgrwini")
+
+    comments: Comments = Comments()
     _header: Literal["Grw"] = "Grw"
 
     groundwater: Optional[bool] = Field(False, alias="GroundWater")
