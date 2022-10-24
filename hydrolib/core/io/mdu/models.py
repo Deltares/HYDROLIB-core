@@ -1669,7 +1669,16 @@ class Vegetation(INIBasedModel):
     All lowercased attributes match with the [Veg] input as described in
     [UM Sec.A.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.A.3).
     """
+    class Comments(INIBasedModel.Comments):
+        vegetationmodelnr: Optional[str] = Field("Vegetation model nr, (0: no, 1: Baptist DFM).", alias="Vegetationmodelnr")
+        clveg: Optional[str] = Field("Stem distance factor [-].", alias="Clveg")
+        cdveg: Optional[str] = Field("Stem Cd coefficient [-].", alias="Cdveg")
+        cbveg: Optional[str] = Field("Stem stiffness coefficient [-].", alias="Cbveg")
+        rhoveg: Optional[str] = Field("Stem Rho, if > 0, bouyant stick procedure [kg/m3].", alias="Rhoveg")
+        stemheightstd: Optional[str] = Field("Stem height standard deviation fraction, e.g. 0.1 [-].", alias="Stemheightstd")
+        densvegminbap: Optional[str] = Field("Minimum vegetation density in Baptist formula. Only in 2D. [1/m2].", alias="Densvegminbap")
 
+    comments: Comments = Comments()
     _header: Literal["Veg"] = "Veg"
 
     vegetationmodelnr: Optional[VegetationModelNr] = Field(
