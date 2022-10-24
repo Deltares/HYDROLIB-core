@@ -316,7 +316,11 @@ class T3D(ForcingBase):
         "vertinterpolation", enum=VerticalInterpolation
     )
     _verticalpositiontype_validator = get_enum_validator(
-        "vertpositiontype", enum=VerticalPositionType
+        "vertpositiontype",
+        enum=VerticalPositionType,
+        alternative_enum_values={
+            VerticalPositionType.percentage_bed: ["percentage from bed"],
+        },
     )
     _timeinterpolation_validator = get_enum_validator(
         "timeinterpolation", enum=TimeInterpolation

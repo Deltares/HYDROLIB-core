@@ -299,6 +299,7 @@ class TestT3D:
         "vertical_position_type, exp_vertical_position_type",
         [
             ("percBed", VerticalPositionType.percentage_bed),
+            ("percentage from bed", VerticalPositionType.percentage_bed),
             ("ZBed", VerticalPositionType.z_bed),
             ("ZDatum", VerticalPositionType.z_datum),
             ("ZSurf", VerticalPositionType.z_surf),
