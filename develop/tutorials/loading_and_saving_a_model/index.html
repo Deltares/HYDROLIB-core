@@ -746,6 +746,13 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#loading-models-on-case-sensitive-systems" class="md-nav__link">
+    Loading models on case-sensitive systems
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats-when-saving-models" class="md-nav__link">
     Caveats when saving models
   </a>
@@ -1408,6 +1415,13 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#loading-models-on-case-sensitive-systems" class="md-nav__link">
+    Loading models on case-sensitive systems
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats-when-saving-models" class="md-nav__link">
     Caveats when saving models
   </a>
@@ -1504,6 +1518,19 @@ correspond with the place where it was last stored on disk. Furthermore, by defa
 MapInterval       = 30.0
 ...
 </code></pre></div>
+<h2 id="loading-models-on-case-sensitive-systems">Loading models on case-sensitive systems<a class="headerlink" href="#loading-models-on-case-sensitive-systems" title="Permanent link">&para;</a></h2>
+<p>Model files may contain references to other model files of which the casing does not match with the file on disk. On Windows, loading a model with differently cased references will work just fine, since Windows is case-insensitive. However on Linux, the referenced file cannot be found and will raise an error. 
+To aid users in migrating their models, HYDROLIB-core offers a feature to resolve the casing of referenced files and supports three operating systems: Windows, Linux and MacOS.</p>
+<p>Consider an MDU model file that references a network file: <code>Network/flowfm_net.nc</code>.
+The file on disk is actually called <code>network/FlowFM_net.nc</code>.</p>
+<p>To load the model and simultaneously repair the file references in the in-memory model:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hydrolib.core.io.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="s2">&quot;FlowFM.mdu&quot;</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># assert that file reference has been updated from Network/flowfm_net.nc to network/FlowFM_net.nc</span>
+<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">netfile</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;network/FlowFM_net.nc&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>The <code>resolve_casing</code> argument is by default <code>False</code>. Using the <code>resolve_casing</code> functionality might heavily influence the performance of model loading depending on the model size, the file tree structure and the operating system.</p>
 <h2 id="caveats-when-saving-models">Caveats when saving models<a class="headerlink" href="#caveats-when-saving-models" title="Permanent link">&para;</a></h2>
 <p>There are some caveats to take into account when saving models.</p>
 <h3 id="filepath-changes-do-not-automatically-propagate">Filepath changes do not automatically propagate<a class="headerlink" href="#filepath-changes-do-not-automatically-propagate" title="Permanent link">&para;</a></h3>
