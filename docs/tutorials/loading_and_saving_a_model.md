@@ -81,12 +81,12 @@ MapInterval       = 30.0
 
 ## Loading models on case-sensitive systems
 Model files may contain references to other model files of which the casing does not match with the file on disk. On Windows, loading a model with differently cased references will work just fine, since Windows is case-insensitive. However on Linux, the referenced file cannot be found and will raise an error. 
-To aid users in migrating their models, Hydrolib-core offers a feature to resolve the casing of referenced files and supports three operating systems: Windows, Linux and MacOS.
+To aid users in migrating their models, HYDROLIB-core offers a feature to resolve the casing of referenced files and supports three operating systems: Windows, Linux and MacOS.
 
 Consider an MDU model file that references a network file: `Network/flowfm_net.nc`.
 The file on disk is actually called `network/FlowFM_net.nc`.
 
-To load the model and simultaneously synchronize the file references:
+To load the model and simultaneously repair the file references in the in-memory model:
 
 ```python
 from hydrolib.core.io.mdu.models import FMModel
