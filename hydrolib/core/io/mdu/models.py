@@ -76,7 +76,7 @@ class Numerics(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        cflmax: Optional[str] = Field("Maximum Courant nr.", alias="cflMax")
+        cflmax: Optional[str] = Field("Maximum Courant nr.", alias="CFLMax")
         advectype: Optional[str] = Field(
             "Adv type, 0=no, 33=Perot q(uio-u) fast, 3=Perot q(uio-u).",
             alias="advecType",
@@ -98,7 +98,7 @@ class Numerics(INIBasedModel):
             alias="limTypSa",
         )
         icgsolver: Optional[str] = Field(
-            "Solver type, 4 = sobekGS + Saadilud (default sequential), 6 = PETSc (default parallel), 7= CG+MILU (parallel).",
+            "Solver type, 4 = sobekGS + Saad-ILUD (default sequential), 6 = PETSc (default parallel), 7= CG+MILU (parallel).",
             alias="icgSolver",
         )
         maxdegree: Optional[str] = Field(
@@ -109,7 +109,7 @@ class Numerics(INIBasedModel):
             alias="fixedWeirScheme",
         )
         fixedweircontraction: Optional[str] = Field(
-            "flow width = flow width*FixedWeirContraction.",
+            "flow width = flow width*fixedWeirContraction.",
             alias="fixedWeirContraction",
         )
         izbndpos: Optional[str] = Field(
@@ -124,7 +124,7 @@ class Numerics(INIBasedModel):
             alias="slopeDrop2D",
         )
         drop1d: Optional[str] = Field(
-            "Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown(ζ∗down = max(BOBdown, ζdown)).",
+            "Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).",
             alias="drop1D",
         )
         chkadvd: Optional[str] = Field(
@@ -140,11 +140,11 @@ class Numerics(INIBasedModel):
             alias="cstBnd",
         )
         maxitverticalforestersal: Optional[str] = Field(
-            "0 : no vertical filter, > 0 = Max nr of Forester filter iterations.",
+            "Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).",
             alias="maxitVerticalForesterSal",
         )
         maxitverticalforestertem: Optional[str] = Field(
-            "0 : no vertical filter for temp, > 0 = Max nr of Forester Forester iterations.",
+            "Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).",
             alias="maxitVerticalForesterTem",
         )
         turbulencemodel: Optional[str] = Field(
@@ -152,11 +152,11 @@ class Numerics(INIBasedModel):
             alias="turbulenceModel",
         )
         turbulenceadvection: Optional[str] = Field(
-            "0=no, 3 = horizontal explicit vertical implicit.",
+            "Turbulence advection (0=no, 3 = horizontal explicit vertical implicit).",
             alias="turbulenceAdvection",
         )
         anticreep: Optional[str] = Field(
-            "Flag for AntiCreep option (0=off, 1=on).", alias="antiCreep"
+            "Include anti-creep calculation (0: no, 1: yes).", alias="antiCreep"
         )
         maxwaterleveldiff: Optional[str] = Field(
             "Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.",
@@ -173,7 +173,7 @@ class Numerics(INIBasedModel):
     comments: Comments = Comments()
 
     _header: Literal["Numerics"] = "Numerics"
-    cflmax: float = Field(0.7, alias="cflMax")
+    cflmax: float = Field(0.7, alias="CFLMax")
     advectype: int = Field(33, alias="advecType")
     timesteptype: int = Field(2, alias="timeStepType")
     limtyphu: int = Field(0, alias="limTypHu")
@@ -213,7 +213,7 @@ class VolumeTables(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         usevolumetables: Optional[str] = Field(
-            "Use volume tables for 1D grid cells (see section 8.16) (1: yes, 0 = no).",
+            "Use volume tables for 1D grid cells (1: yes, 0 = no).",
             alias="useVolumeTables",
         )
         increment: Optional[str] = Field(
@@ -244,18 +244,19 @@ class Physics(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         uniffrictcoef: Optional[str] = Field(
-            "Uniform friction coefficient, 0=no friction.", alias="unifFrictCoef"
+            "Uniform friction coefficient (0: no friction).", alias="unifFrictCoef"
         )
         uniffricttype: Optional[str] = Field(
-            "0=Chezy, 1=Manning, 2=White-Colebrook, 3=White-Colebrook of WAQUA",
+            "Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: idem, WAQUA style).",
             alias="unifFrictType",
         )
         uniffrictcoef1d: Optional[str] = Field(
-            "Uniform friction coefficient in 1D links, 0=no friction.",
+            "Uniform friction coefficient in 1D links (0: no friction).",
             alias="unifFrictCoef1D",
         )
         uniffrictcoeflin: Optional[str] = Field(
-            "Uniform linear friction coefficient (m/s), 0=no.", alias="unifFrictCoefLin"
+            "Uniform linear friction coefficient (0: no friction).",
+            alias="unifFrictCoefLin",
         )
         vicouv: Optional[str] = Field(
             "Uniform horizontal eddy viscosity [m2/s].", alias="vicouv"
@@ -296,11 +297,12 @@ class Physics(INIBasedModel):
             "Average water density [kg/m3].", alias="rhomean"
         )
         idensform: Optional[str] = Field(
-            "1=Eckart, 2=UNESCO (default).", alias="idensform"
+            "Density calulation (0: uniform, 1: Eckart, 2: Unesco, 3=Unesco83, 13=3+pressure).",
+            alias="idensform",
         )
         ag: Optional[str] = Field("Gravitational acceleration [m/s2].", alias="ag")
         tidalforcing: Optional[str] = Field(
-            "Tidal forcing (0=no, 1=yes) (only for jsferic == 1).", alias="tidalForcing"
+            "Tidal forcing, if jsferic=1 (0: no, 1: yes).", alias="tidalForcing"
         )
         doodsonstart: Optional[str] = Field(
             "Doodson start time for tidal forcing [s].", alias="doodsonStart"
@@ -320,7 +322,7 @@ class Physics(INIBasedModel):
             alias="villemonteCD2",
         )
         salinity: Optional[str] = Field(
-            "Include salinity, (0=no, 1=yes).", alias="salinity"
+            "Include salinity, (0: no, 1: yes).", alias="salinity"
         )
         initialsalinity: Optional[str] = Field(
             "Initial salinity concentration [ppt].", alias="initialSalinity"
@@ -332,17 +334,18 @@ class Physics(INIBasedModel):
             "uniform initial salinity [ppt].", alias="deltaSalinity"
         )
         backgroundsalinity: Optional[str] = Field(
-            "Background salinity concentration [ppt].", alias="backgroundSalinity"
+            "Background salinity for eqn. of state if salinity not computed [psu].",
+            alias="backgroundSalinity",
         )
         temperature: Optional[str] = Field(
-            "Include temperature, (0=no, 1=only transport, 5=heat flux model (5) of D3D), 3=excess model of D3D.",
+            "Include temperature (0: no, 1: only transport, 3: excess model of D3D, 5: composite (ocean) model).",
             alias="temperature",
         )
         initialtemperature: Optional[str] = Field(
-            "Inital temperature [◦C].", alias="initialTemperature"
+            "Initial temperature [◦C].", alias="initialTemperature"
         )
         backgroundwatertemperature: Optional[str] = Field(
-            "Background temperature concentration [◦C].",
+            "Background water temperature for eqn. of state if temperature not computed [◦C].",
             alias="backgroundWaterTemperature",
         )
         secchidepth: Optional[str] = Field(
@@ -357,7 +360,7 @@ class Physics(INIBasedModel):
             alias="dalton",
         )
         secondaryflow: Optional[str] = Field(
-            "Secondary flow (0=no, 1=yes).", alias="secondaryFlow"
+            "Secondary flow (0: no, 1: yes).", alias="secondaryFlow"
         )
         betaspiral: Optional[str] = Field(
             "Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).",
@@ -407,9 +410,16 @@ class Physics(INIBasedModel):
 
 class Sediment(INIBasedModel):
     class Comments(INIBasedModel.Comments):
-        sedimentmodelnr: Optional[str] = Field("", alias="Sedimentmodelnr")
-        morfile: Optional[str] = Field("", alias="MorFile")
-        sedfile: Optional[str] = Field("", alias="SedFile")
+        sedimentmodelnr: Optional[str] = Field(
+            "Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).",
+            alias="Sedimentmodelnr",
+        )
+        morfile: Optional[str] = Field(
+            "Morphology settings file (*.mor)", alias="MorFile"
+        )
+        sedfile: Optional[str] = Field(
+            "Sediment characteristics file (*.sed)", alias="SedFile"
+        )
 
     comments: Comments = Comments()
 
@@ -439,11 +449,11 @@ class Wind(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         icdtyp: Optional[str] = Field(
-            "Wind drag types,1=const, 2=S&B 2 breakpoints, 3=S&B 3 breakpoints, 4=Charnock constant.",
-            alias="icdTyp",
+            "Wind drag coefficient type (1: Const, 2: Smith&Banke (2 pts), 3: S&B (3 pts), 4: Charnock 1955, 5: Hwang 2005, 6: Wuest 2005, 7: Hersbach 2010 (2 pts), 8: 4+viscous).",
+            alias="iCdTyp",
         )
         cdbreakpoints: Optional[str] = Field(
-            "Wind drag breakpoints, e.g. 0.00063 0.00723.", alias="cdBreakpoints"
+            "Wind drag breakpoints, e.g. 0.00063 0.00723.", alias="CdBreakpoints"
         )
         windspeedbreakpoints: Optional[str] = Field(
             "Wind speed breakpoints [m/s], e.g. 0.0 100.0.",
@@ -469,8 +479,8 @@ class Wind(INIBasedModel):
     comments: Comments = Comments()
 
     _header: Literal["Wind"] = "Wind"
-    icdtyp: int = Field(2, alias="icdTyp")
-    cdbreakpoints: List[float] = Field([0.00063, 0.00723], alias="cdBreakpoints")
+    icdtyp: int = Field(2, alias="iCdTyp")
+    cdbreakpoints: List[float] = Field([0.00063, 0.00723], alias="CdBreakpoints")
     windspeedbreakpoints: List[float] = Field(
         [0.0, 100.0], alias="windSpeedBreakpoints"
     )
@@ -502,11 +512,11 @@ class Waves(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         wavemodelnr: Optional[str] = Field(
-            "# Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = D-Waves, 4=wave group forcing",
+            "Wave model nr. (0: none, 1: fetch/depth limited hurdlestive, 2: Young-Verhagen, 3: SWAN, 5: uniform, 6: SWAN-NetCDF",
             alias="waveModelNr",
         )
         rouwav: Optional[str] = Field(
-            "Necessary to include bed shear-stress enhancement by waves. See also Delft3D-FLOW manual.",
+            "Friction model for wave induced shear stress: FR84 (default) or: MS90, HT91, GM79, DS88, BK67, CJ85, OY88, VR04.",
             alias="rouWav",
         )
         gammax: Optional[str] = Field(
@@ -543,7 +553,7 @@ class Time(INIBasedModel):
             alias="dtUser",
         )
         dtnodal: Optional[str] = Field(
-            "Time interval [s] for updating nodal factors in astronomical boundary conditions [Dd HH:MM:SS.ZZZ].",
+            "Time interval [s] for updating nodal factors in astronomical boundary conditions.",
             alias="dtNodal",
         )
         dtmax: Optional[str] = Field("Max timestep in seconds [s].", alias="dtMax")
@@ -623,7 +633,7 @@ class ExternalForcing(INIBasedModel):
             alias="extForceFile",
         )
         extforcefilenew: Optional[str] = Field(
-            "New format for external forcings file *.ext, link with bcformat boundary conditions specification. See section C.5.2.",
+            "New format for external forcings file *.ext, link with bcformat boundary conditions specification.",
             alias="extForceFileNew",
         )
         rainfall: Optional[str] = Field(
@@ -672,7 +682,7 @@ class Hydrology(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         interceptionmodel: Optional[str] = Field(
-            "Interception model (0: none, 1: on, via layer thickness). See Section 13.3.",
+            "Interception model (0: none, 1: on, via layer thickness).",
             alias="interceptionModel",
         )
 
@@ -773,11 +783,11 @@ class Output(INIBasedModel):
             "*_flowgeom.nc Flow geometry file in netCDF format.", alias="flowGeomFile"
         )
         obsfile: Optional[str] = Field(
-            "Space separated list of files, containing information about observation points. See section F.2.2.",
+            "Space separated list of files, containing information about observation points.",
             alias="obsFile",
         )
         crsfile: Optional[str] = Field(
-            "Space separated list of files, containing information about observation cross sections. See section F.2.4.",
+            "Space separated list of files, containing information about observation cross sections.",
             alias="crsFile",
         )
         hisfile: Optional[str] = Field(
@@ -1200,11 +1210,11 @@ class Geometry(INIBasedModel):
             alias="dryPointsFile",
         )
         structurefile: Optional[str] = Field(
-            "File <*.ini> containing list of hydraulic structures. See section C.12.",
+            "File <*.ini> containing list of hydraulic structures.",
             alias="structureFile",
         )
         inifieldfile: Optional[str] = Field(
-            "Initial and parameter field file <*.ini>. See section D.2.",
+            "Initial and parameter field file <*.ini>.",
             alias="iniFieldFile",
         )
         waterlevinifile: Optional[str] = Field(
@@ -1233,23 +1243,23 @@ class Geometry(INIBasedModel):
             alias="vertPlizFile",
         )
         frictfile: Optional[str] = Field(
-            "Location of the files with roughness data for 1D. See section C.15.",
+            "Location of the files with roughness data for 1D.",
             alias="frictFile",
         )
         crossdeffile: Optional[str] = Field(
-            "Cross section definitions for all cross section shapes. See section C.16.",
+            "Cross section definitions for all cross section shapes.",
             alias="crossDefFile",
         )
         crosslocfile: Optional[str] = Field(
-            "Location definitions of the cross sections on a 1D network. See section C.16.",
+            "Location definitions of the cross sections on a 1D network.",
             alias="crossLocFile",
         )
         storagenodefile: Optional[str] = Field(
-            "File containing the specification of storage nodes and/or manholes to add extra storage to 1D models. See section C.17.",
+            "File containing the specification of storage nodes and/or manholes to add extra storage to 1D models.",
             alias="storageNodeFile",
         )
         oned2dlinkfile: Optional[str] = Field(
-            "File containing the custom parameterization of 1D-2D links. See section C.18.",
+            "File containing the custom parameterization of 1D-2D links.",
             alias="1d2dLinkFile",
         )
         proflocfile: Optional[str] = Field(
@@ -1302,7 +1312,7 @@ class Geometry(INIBasedModel):
             alias="conveyance2D",
         )
         nonlin1d: Optional[str] = Field(
-            "Non-linear 1D volumes, applicable for models with closed cross sections. 1=treat closed sections as partially open by using a Preissmann slot, 2=Nested Newton approach, 3=Partial Nested Newton approach. (For a description of these methods, see (D-Flow FM TRM, 2015, Section 6.9).",
+            "Non-linear 1D volumes, applicable for models with closed cross sections. 1=treat closed sections as partially open by using a Preissmann slot, 2=Nested Newton approach, 3=Partial Nested Newton approach.",
             alias="nonlin1D",
         )
         nonlin2d: Optional[str] = Field(
@@ -1460,11 +1470,11 @@ class Calibration(INIBasedModel):
             alias="UseCalibration",
         )
         definitionfile: Optional[str] = Field(
-            "File (*.cld) containing calibration definitions. Details in Section C.9.1.",
+            "File (*.cld) containing calibration definitions.",
             alias="DefinitionFile",
         )
         areafile: Optional[str] = Field(
-            "File (*.cll) containing area distribution of calibration definitions. Details in Section C.9.2.",
+            "File (*.cll) containing area distribution of calibration definitions.",
             alias="AreaFile",
         )
 
@@ -1518,11 +1528,25 @@ class GroundWater(INIBasedModel):
             "Uniform maximum infiltration capacity [m/s].",
             alias="UnifInfiltrationCapacity",
         )
-        conductivity: Optional[str] = Field("", alias="Conductivity")
-        h_aquiferuni: Optional[str] = Field("", alias="h_aquiferuni")
-        bgrwuni: Optional[str] = Field("", alias="bgrwuni")
-        h_unsatini: Optional[str] = Field("", alias="h_unsatini")
-        sgrwini: Optional[str] = Field("", alias="sgrwini")
+        conductivity: Optional[str] = Field(
+            "Non-dimensionless K conductivity   saturated (m/s), Q = K*A*i (m3/s)",
+            alias="Conductivity",
+        )
+        h_aquiferuni: Optional[str] = Field(
+            "bgrw = bl - h_aquiferuni (m), if negative, bgrw = bgrwuni.",
+            alias="h_aquiferuni",
+        )
+        bgrwuni: Optional[str] = Field(
+            "uniform level of impervious layer, only used if h_aquiferuni is negative.",
+            alias="bgrwuni",
+        )
+        h_unsatini: Optional[str] = Field(
+            "initial level groundwater is bedlevel - h_unsatini (m), if negative, sgrw = sgrwini.",
+            alias="h_unsatini",
+        )
+        sgrwini: Optional[str] = Field(
+            "Initial groundwater level, if h_unsatini < 0.", alias="sgrwini"
+        )
 
     comments: Comments = Comments()
     _header: Literal["Grw"] = "Grw"
@@ -1564,14 +1588,14 @@ class Processes(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         substancefile: Optional[str] = Field(
-            "Substance file name. Details in Section 22.2.1.", alias="SubstanceFile"
+            "Substance file name.", alias="SubstanceFile"
         )
         additionalhistoryoutputfile: Optional[str] = Field(
-            "Extra history output filename. Details in Section 22.5.1.",
+            "Extra history output filename.",
             alias="AdditionalHistoryOutputFile",
         )
         statisticsfile: Optional[str] = Field(
-            "Statistics definition file. Details in Section 22.5.3.",
+            "Statistics definition file.",
             alias="StatisticsFile",
         )
         thetavertical: Optional[str] = Field(
@@ -1579,7 +1603,7 @@ class Processes(INIBasedModel):
             alias="ThetaVertical",
         )
         dtprocesses: Optional[str] = Field(
-            "waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
+            "Waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
             alias="DtProcesses",
         )
         dtmassbalance: Optional[str] = Field("", alias="DtMassBalance")
@@ -1592,11 +1616,11 @@ class Processes(INIBasedModel):
             alias="Wriwaqbot3Doutput",
         )
         volumedrythreshold: Optional[str] = Field(
-            "Volume [m3] below which segments are marked as dry. Details in Section 22.2.3.",
+            "Volume [m3] below which segments are marked as dry.",
             alias="VolumeDryThreshold",
         )
         depthdrythreshold: Optional[str] = Field(
-            "Water depth [m] below which segments are marked as dry. Details in Section 22.2.3.",
+            "Water depth [m] below which segments are marked as dry.",
             alias="DepthDryThreshold",
         )
 
