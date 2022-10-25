@@ -1,0 +1,3748 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.0">
+    
+    
+      
+        <title>Forcings .bc file - hydrolib-core documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fd896c8a.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="deltares" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#forcings-bc-file" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+            <div class="md-banner__inner md-grid md-typeset">
+              
+You're not viewing the latest release version.
+<a href="../../..">
+    <strong>Click here to go to latest release.</strong>
+</a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          
+        </aside>
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="hydrolib-core documentation" class="md-header__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+      
+  <img src="../../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hydrolib-core documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Forcings .bc file
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="deltares" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Deltares/hydrolib-core" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/hydrolib-core
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../guides/setup/" class="md-tabs__link">
+        How-to
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorials/tutorials/" class="md-tabs__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../topics/dhydro_support/" class="md-tabs__link">
+        Topics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link md-tabs__link--active">
+        API Reference
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../changelog/" class="md-tabs__link">
+      Changelog
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="hydrolib-core documentation" class="md-nav__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+      
+  <img src="../../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
+
+    </a>
+    hydrolib-core documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Deltares/hydrolib-core" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/hydrolib-core
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          How-to
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="How-to" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          How-to
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_1">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/setup/" class="md-nav__link">
+        pip install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/devcontainers/" class="md-nav__link">
+        Developer container
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/poetry/" class="md-nav__link">
+        Local clone + Poetry
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          Contributing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contributing" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Contributing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_2_3" type="checkbox" id="__nav_2_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Documentation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/documentation/" class="md-nav__link">
+        Documentation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_4">
+          Support
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Support" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_4">
+          <span class="md-nav__icon md-icon"></span>
+          Support
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/gettinghelp/" class="md-nav__link">
+        Getting help
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorials/" class="md-nav__link">
+        Introduction to tutorials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/build_basic_model/" class="md-nav__link">
+        Build a basic model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/loading_and_saving_a_model/" class="md-nav__link">
+        Loading and saving a model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dataframe_handling/" class="md-nav__link">
+        Dataframe handling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plotting_a_network/" class="md-nav__link">
+        Plotting a network
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Topics
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Topics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/dhydro_support/" class="md-nav__link">
+        List of D-HYDRO functionalities and support in HYDROLIB-core
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/principles/" class="md-nav__link">
+        First principles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/pydantic/" class="md-nav__link">
+        Pydantic
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/loadsave/" class="md-nav__link">
+        Loading and Saving within HYDROLIB-core
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          API Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_1">
+          Introduction
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Introduction" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_1">
+          <span class="md-nav__icon md-icon"></span>
+          Introduction
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ini/" class="md-nav__link">
+        INI format
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_5_2" type="checkbox" id="__nav_5_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_2">
+          DIMR
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DIMR" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_2">
+          <span class="md-nav__icon md-icon"></span>
+          DIMR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dimr/" class="md-nav__link">
+        DIMR xml files
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_3" type="checkbox" id="__nav_5_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3">
+          D-Flow FM
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="D-Flow FM" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_3">
+          <span class="md-nav__icon md-icon"></span>
+          D-Flow FM
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mdu/" class="md-nav__link">
+        MDU file
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../net/" class="md-nav__link">
+        Net/grid file
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ext/" class="md-nav__link">
+        External forcings file
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Forcings .bc file
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Forcings .bc file
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    Model
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.Astronomic" class="md-nav__link">
+    Astronomic
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.AstronomicCorrection" class="md-nav__link">
+    AstronomicCorrection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.Constant" class="md-nav__link">
+    Constant
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase" class="md-nav__link">
+    ForcingBase
+  </a>
+  
+    <nav class="md-nav" aria-label="ForcingBase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase.__repr__" class="md-nav__link">
+    __repr__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase.validate" class="md-nav__link">
+    validate()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingData" class="md-nav__link">
+    ForcingData
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingGeneral" class="md-nav__link">
+    ForcingGeneral
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingModel" class="md-nav__link">
+    ForcingModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.Harmonic" class="md-nav__link">
+    Harmonic
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.HarmonicCorrection" class="md-nav__link">
+    HarmonicCorrection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.QHTable" class="md-nav__link">
+    QHTable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.QuantityUnitPair" class="md-nav__link">
+    QuantityUnitPair
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime" class="md-nav__link">
+    RealTime
+  </a>
+  
+    <nav class="md-nav" aria-label="RealTime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime.realtime" class="md-nav__link">
+    realtime
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.T3D" class="md-nav__link">
+    T3D
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation" class="md-nav__link">
+    TimeInterpolation
+  </a>
+  
+    <nav class="md-nav" aria-label="TimeInterpolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation.block_from" class="md-nav__link">
+    block_from
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation.block_to" class="md-nav__link">
+    block_to
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation.linear" class="md-nav__link">
+    linear
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeSeries" class="md-nav__link">
+    TimeSeries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation" class="md-nav__link">
+    VectorQUPValidation
+  </a>
+  
+    <nav class="md-nav" aria-label="VectorQUPValidation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation.process_vectordefinition_or_check_quantityunitpairs" class="md-nav__link">
+    process_vectordefinition_or_check_quantityunitpairs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectordefinition_and_update_quantityunitpairs" class="md-nav__link">
+    validate_vectordefinition_and_update_quantityunitpairs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectorlength" class="md-nav__link">
+    validate_vectorlength()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQuantityUnitPairs" class="md-nav__link">
+    VectorQuantityUnitPairs
+  </a>
+  
+    <nav class="md-nav" aria-label="VectorQuantityUnitPairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQuantityUnitPairs.__str__" class="md-nav__link">
+    __str__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation" class="md-nav__link">
+    VerticalInterpolation
+  </a>
+  
+    <nav class="md-nav" aria-label="VerticalInterpolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation.block" class="md-nav__link">
+    block
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation.linear" class="md-nav__link">
+    linear
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation.log" class="md-nav__link">
+    log
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType" class="md-nav__link">
+    VerticalPositionType
+  </a>
+  
+    <nav class="md-nav" aria-label="VerticalPositionType">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.percentage_bed" class="md-nav__link">
+    percentage_bed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_bed" class="md-nav__link">
+    z_bed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_datum" class="md-nav__link">
+    z_datum
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_surf" class="md-nav__link">
+    z_surf
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structure/" class="md-nav__link">
+        Structure .ini files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../friction/" class="md-nav__link">
+        Friction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crosssection/" class="md-nav__link">
+        Cross section files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storagenode/" class="md-nav__link">
+        Storage node .ini files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inifield/" class="md-nav__link">
+        Initial and parameter field files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../onedfield/" class="md-nav__link">
+        1D field INI files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polyfile/" class="md-nav__link">
+        Polyline/polygon files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xyz/" class="md-nav__link">
+        Sample files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../obs/" class="md-nav__link">
+        Observation point .ini files
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4">
+          RainfallRunoff
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="RainfallRunoff" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_4">
+          <span class="md-nav__icon md-icon"></span>
+          RainfallRunoff
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rr/rr/" class="md-nav__link">
+        RainfallRunoff file models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rr/meteo/" class="md-nav__link">
+        The Rainfall Runoff meteo layer
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    Model
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.Astronomic" class="md-nav__link">
+    Astronomic
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.AstronomicCorrection" class="md-nav__link">
+    AstronomicCorrection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.Constant" class="md-nav__link">
+    Constant
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase" class="md-nav__link">
+    ForcingBase
+  </a>
+  
+    <nav class="md-nav" aria-label="ForcingBase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase.__repr__" class="md-nav__link">
+    __repr__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingBase.validate" class="md-nav__link">
+    validate()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingData" class="md-nav__link">
+    ForcingData
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingGeneral" class="md-nav__link">
+    ForcingGeneral
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.ForcingModel" class="md-nav__link">
+    ForcingModel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.Harmonic" class="md-nav__link">
+    Harmonic
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.HarmonicCorrection" class="md-nav__link">
+    HarmonicCorrection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.QHTable" class="md-nav__link">
+    QHTable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.QuantityUnitPair" class="md-nav__link">
+    QuantityUnitPair
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime" class="md-nav__link">
+    RealTime
+  </a>
+  
+    <nav class="md-nav" aria-label="RealTime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.RealTime.realtime" class="md-nav__link">
+    realtime
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.T3D" class="md-nav__link">
+    T3D
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation" class="md-nav__link">
+    TimeInterpolation
+  </a>
+  
+    <nav class="md-nav" aria-label="TimeInterpolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation.block_from" class="md-nav__link">
+    block_from
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation.block_to" class="md-nav__link">
+    block_to
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeInterpolation.linear" class="md-nav__link">
+    linear
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.TimeSeries" class="md-nav__link">
+    TimeSeries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation" class="md-nav__link">
+    VectorQUPValidation
+  </a>
+  
+    <nav class="md-nav" aria-label="VectorQUPValidation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation.process_vectordefinition_or_check_quantityunitpairs" class="md-nav__link">
+    process_vectordefinition_or_check_quantityunitpairs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectordefinition_and_update_quantityunitpairs" class="md-nav__link">
+    validate_vectordefinition_and_update_quantityunitpairs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectorlength" class="md-nav__link">
+    validate_vectorlength()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQuantityUnitPairs" class="md-nav__link">
+    VectorQuantityUnitPairs
+  </a>
+  
+    <nav class="md-nav" aria-label="VectorQuantityUnitPairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VectorQuantityUnitPairs.__str__" class="md-nav__link">
+    __str__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation" class="md-nav__link">
+    VerticalInterpolation
+  </a>
+  
+    <nav class="md-nav" aria-label="VerticalInterpolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation.block" class="md-nav__link">
+    block
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation.linear" class="md-nav__link">
+    linear
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalInterpolation.log" class="md-nav__link">
+    log
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType" class="md-nav__link">
+    VerticalPositionType
+  </a>
+  
+    <nav class="md-nav" aria-label="VerticalPositionType">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.percentage_bed" class="md-nav__link">
+    percentage_bed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_bed" class="md-nav__link">
+    z_bed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_datum" class="md-nav__link">
+    z_datum
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_surf" class="md-nav__link">
+    z_surf
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/Deltares/hydrolib-core/edit/main/docs/reference/forcing.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="forcings-bc-file">Forcings .bc file<a class="headerlink" href="#forcings-bc-file" title="Permanent link">&para;</a></h1>
+<p>The forcings .bc files contain forcing data for point locations,
+for example time series input for a boundary condition. Various
+quantities and function types are supported.</p>
+<p>The forcings file is represented by the classes below.</p>
+<h2 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-object doc-module">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Representation of a .bc file in various classes.</p>
+<p>Most relevant classes are:</p>
+<ul>
+<li>ForcingModel: toplevel class containing the whole .bc file contents.</li>
+<li>ForcingBase subclasses: containing the actual data columns, for example:
+    TimeSeries, HarmonicComponent, AstronomicComponent, HarmonicCorrection,
+    AstronomicCorrection, Constant, T3D.</li>
+</ul>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.Astronomic" class="doc doc-heading">
+        <code>
+Astronomic            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.Astronomic" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with astronomic components data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.AstronomicCorrection" class="doc doc-heading">
+        <code>
+AstronomicCorrection            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.AstronomicCorrection" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with astronomic components correction data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.Constant" class="doc doc-heading">
+        <code>
+Constant            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.Constant" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with constant value data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.ForcingBase" class="doc doc-heading">
+        <code>
+ForcingBase            (<a title="hydrolib.core.io.ini.models.DataBlockINIBasedModel" href="../ini/#hydrolib.core.io.ini.models.DataBlockINIBasedModel">DataBlockINIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.ForcingBase" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The base class of a single [Forcing] block in a .bc forcings file.</p>
+<p>Typically subclassed, for the specific types of forcing data, e.g, TimeSeries.
+This model is for example referenced under a
+<a href="#hydrolib.core.io.bc.models.ForcingModel">ForcingModel</a><code>.forcing[..]</code>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.ForcingBase.__repr__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.ForcingBase.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Return repr(self).</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&lt;omitted&gt;&quot;</span>
+    <span class="n">representable</span> <span class="o">=</span> <span class="n">BaseModel</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">representable</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.ForcingBase.validate" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.ForcingBase.validate" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Try to initialize subclass based on the <code>function</code> field.
+This field is compared to each <code>function</code> field of the derived models of <code>ForcingBase</code>.
+The derived model with an equal function type will be initialized.</p>
+
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>When the given type is not a known structure type.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Try to initialize subclass based on the `function` field.</span>
+<span class="sd">    This field is compared to each `function` field of the derived models of `ForcingBase`.</span>
+<span class="sd">    The derived model with an equal function type will be initialized.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: When the given type is not a known structure type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># should be replaced by discriminated unions once merged</span>
+    <span class="c1"># https://github.com/samuelcolvin/pydantic/pull/2336</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">c</span><span class="o">.</span><span class="n">__fields__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="o">==</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Function of </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with name=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> and function=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not recognized.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.ForcingData" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ForcingData</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.ForcingData" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Data type that selects from three different types of forcing data:
+*   a scalar float constant
+*   "realtime" keyword, indicating externally controlled.
+*   A ForcingModel coming from a .bc file.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.ForcingGeneral" class="doc doc-heading">
+        <code>
+ForcingGeneral            (<span title="hydrolib.core.io.ini.models.INIGeneral">INIGeneral</span>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.ForcingGeneral" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p><code>[General]</code> section with .bc file metadata.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.ForcingModel" class="doc doc-heading">
+        <code>
+ForcingModel            (<a title="hydrolib.core.io.ini.models.INIModel" href="../ini/#hydrolib.core.io.ini.models.INIModel">INIModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.ForcingModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The overall model that contains the contents of one .bc forcings file.</p>
+<p>This model is for example referenced under a
+<a href="../ext/#hydrolib.core.io.ext.models.ExtModel">ExtModel</a><code>.boundary[..].forcingfile[..]</code>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.Harmonic" class="doc doc-heading">
+        <code>
+Harmonic            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.Harmonic" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with harmonic components data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.HarmonicCorrection" class="doc doc-heading">
+        <code>
+HarmonicCorrection            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.HarmonicCorrection" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with harmonic components correction data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.QHTable" class="doc doc-heading">
+        <code>
+QHTable            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.QHTable" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with Q-h table data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.QuantityUnitPair" class="doc doc-heading">
+        <code>
+QuantityUnitPair            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.QuantityUnitPair" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>A .bc file header lines tuple containing a quantity name, its unit and optionally a vertical position index.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.RealTime" class="doc doc-heading">
+        <code>
+RealTime            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+<a href="#hydrolib.core.io.bc.models.RealTime" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Enum class containing the valid value for the "realtime" reserved
+keyword for real-time controlled forcing data, e.g., for hydraulic
+structures.</p>
+<p>This class is used inside the ForcingData Union, to force detection
+of the realtime keyword, prior to considering it a filename.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.RealTime.realtime" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">realtime</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.RealTime.realtime" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Realtime data source, externally provided</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.T3D" class="doc doc-heading">
+        <code>
+T3D            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.T3D" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with 3D timeseries data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.TimeInterpolation" class="doc doc-heading">
+        <code>
+TimeInterpolation            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+<a href="#hydrolib.core.io.bc.models.TimeInterpolation" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Enum class containing the valid values for the time interpolation.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.TimeInterpolation.block_from" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">block_from</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.TimeInterpolation.block_from" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Equal to that at the start of the time interval (latest specified time value).</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.TimeInterpolation.block_to" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">block_to</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.TimeInterpolation.block_to" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Equal to that at the end of the time interval (upcoming specified time value).</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.TimeInterpolation.linear" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">linear</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.TimeInterpolation.linear" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Linear interpolation between times.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.TimeSeries" class="doc doc-heading">
+        <code>
+TimeSeries            (<a title="hydrolib.core.io.bc.models.ForcingBase" href="#hydrolib.core.io.bc.models.ForcingBase">ForcingBase</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.TimeSeries" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Subclass for a .bc file [Forcing] block with timeseries data.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.VectorQUPValidation" class="doc doc-heading">
+        <code>
+VectorQUPValidation        </code>
+
+
+
+<a href="#hydrolib.core.io.bc.models.VectorQUPValidation" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper class with validator routines for VectorQuantityUnitPairs
+objects. To be called from other model classes.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VectorQUPValidation.process_vectordefinition_or_check_quantityunitpairs" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">process_vectordefinition_or_check_quantityunitpairs</span><span class="p">(</span><span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">QuantityUnitPair</span><span class="p">,</span> <span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">VectorQuantityUnitPairs</span><span class="p">]],</span> <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.VectorQUPValidation.process_vectordefinition_or_check_quantityunitpairs" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Processes the given vector definition header lines from a .bc file
+or, if absent, checks whether the existing VectorQuantityUnitPairs
+objects already have the correct vector length.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>vectordefs</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>List of vector definition values, e.g.,
+["vectorname:comp1,comp2,..compN", ...]</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>quantityunitpairs</code></td>
+        <td><code>List[ScalarOrVectorQUP]</code></td>
+        <td><p>list of already parsed
+and constructed QuantityUnitPair objects, which may be modified
+in place with some packed VectorQuantityUnitPairs objects.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>number_of_element_repetitions</code></td>
+        <td><code>int</code></td>
+        <td><p>Number of times each
+vector element is expected to be present in the subsequent
+Quantity lines. Typically used for 3D quantities, using the
+number of vertical layers. Defaults to 1.</p></td>
+        <td><code>1</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">process_vectordefinition_or_check_quantityunitpairs</span><span class="p">(</span>
+    <span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ScalarOrVectorQUP</span><span class="p">],</span>
+    <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Processes the given vector definition header lines from a .bc file</span>
+<span class="sd">    or, if absent, checks whether the existing VectorQuantityUnitPairs</span>
+<span class="sd">    objects already have the correct vector length.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vectordefs (List[str]): List of vector definition values, e.g.,</span>
+<span class="sd">            [&quot;vectorname:comp1,comp2,..compN&quot;, ...]</span>
+<span class="sd">        quantityunitpairs (List[ScalarOrVectorQUP]): list of already parsed</span>
+<span class="sd">            and constructed QuantityUnitPair objects, which may be modified</span>
+<span class="sd">            in place with some packed VectorQuantityUnitPairs objects.</span>
+<span class="sd">        number_of_element_repetitions (int, optional): Number of times each</span>
+<span class="sd">            vector element is expected to be present in the subsequent</span>
+<span class="sd">            Quantity lines. Typically used for 3D quantities, using the</span>
+<span class="sd">            number of vertical layers. Defaults to 1.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">vectordefs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">qup</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">qup</span><span class="p">,</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">),</span> <span class="n">quantityunitpairs</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="c1"># Vector definition line still must be processed and VectorQUPs still created.</span>
+        <span class="n">VectorQUPValidation</span><span class="o">.</span><span class="n">validate_vectordefinition_and_update_quantityunitpairs</span><span class="p">(</span>
+            <span class="n">vectordefs</span><span class="p">,</span> <span class="n">quantityunitpairs</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># VectorQUPs already present; directly validate their vector length.</span>
+        <span class="k">for</span> <span class="n">qup</span> <span class="ow">in</span> <span class="n">quantityunitpairs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">qup</span><span class="p">,</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">):</span>
+                <span class="n">VectorQUPValidation</span><span class="o">.</span><span class="n">validate_vectorlength</span><span class="p">(</span>
+                    <span class="n">qup</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span>
+                <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectordefinition_and_update_quantityunitpairs" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate_vectordefinition_and_update_quantityunitpairs</span><span class="p">(</span><span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">QuantityUnitPair</span><span class="p">,</span> <span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">VectorQuantityUnitPairs</span><span class="p">]],</span> <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectordefinition_and_update_quantityunitpairs" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Validates the given vector definition header lines from a .bc file
+for a ForcingBase subclass and updates the existing QuantityUnitPair list
+by packing the vector elements into a VectorQuantityUnitPairs object
+for each vector definition.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>vectordefs</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>List of vector definition values, e.g.,
+["vectorname:comp1,comp2,..compN", ...]</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>quantityunitpairs</code></td>
+        <td><code>List[ScalarOrVectorQUP]</code></td>
+        <td><p>list of already parsed
+and constructed QuantityUnitPair objects, which will be modified
+in place with some packed VectorQuantityUnitPairs objects.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>number_of_element_repetitions</code></td>
+        <td><code>int</code></td>
+        <td><p>Number of times each
+vector element is expected to be present in the subsequent
+Quantity lines. Typically used for 3D quantities, using the
+number of vertical layers. Defaults to 1.</p></td>
+        <td><code>1</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">validate_vectordefinition_and_update_quantityunitpairs</span><span class="p">(</span>
+    <span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ScalarOrVectorQUP</span><span class="p">],</span>
+    <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Validates the given vector definition header lines from a .bc file</span>
+<span class="sd">    for a ForcingBase subclass and updates the existing QuantityUnitPair list</span>
+<span class="sd">    by packing the vector elements into a VectorQuantityUnitPairs object</span>
+<span class="sd">    for each vector definition.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vectordefs (List[str]): List of vector definition values, e.g.,</span>
+<span class="sd">            [&quot;vectorname:comp1,comp2,..compN&quot;, ...]</span>
+<span class="sd">        quantityunitpairs (List[ScalarOrVectorQUP]): list of already parsed</span>
+<span class="sd">            and constructed QuantityUnitPair objects, which will be modified</span>
+<span class="sd">            in place with some packed VectorQuantityUnitPairs objects.</span>
+<span class="sd">        number_of_element_repetitions (int, optional): Number of times each</span>
+<span class="sd">            vector element is expected to be present in the subsequent</span>
+<span class="sd">            Quantity lines. Typically used for 3D quantities, using the</span>
+<span class="sd">            number of vertical layers. Defaults to 1.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">vectordefs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">vectordefs</span> <span class="o">=</span> <span class="n">to_list</span><span class="p">(</span><span class="n">vectordefs</span><span class="p">)</span>
+
+    <span class="n">qup_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">quantityunitpairs</span><span class="p">)</span>
+
+    <span class="c1"># Start a new list, to only keep the scalar QUPs, and add newly</span>
+    <span class="c1"># created VectorQUPs.</span>
+    <span class="n">quantityunitpairs_with_vectors</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># If one quantity is &quot;time&quot;, it must be the first one.</span>
+    <span class="k">if</span> <span class="n">quantityunitpairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">quantity</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
+        <span class="n">quantityunitpairs_with_vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantityunitpairs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">qup_iter</span><span class="p">)</span>
+
+    <span class="c1"># For each vector definition line, greedily find the quantity unit pairs</span>
+    <span class="c1"># that form the vector elements, and pack them into a single VectorQuantityUnitPairs oject.</span>
+    <span class="k">for</span> <span class="n">vectordef</span> <span class="ow">in</span> <span class="n">vectordefs</span><span class="p">:</span>
+        <span class="n">vectorname</span><span class="p">,</span> <span class="n">componentdefs</span> <span class="o">=</span> <span class="n">vectordef</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="n">componentnames</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[, \t]&quot;</span><span class="p">,</span> <span class="n">componentdefs</span><span class="p">)</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">componentnames</span><span class="p">)</span>
+
+        <span class="n">vqu_pair</span> <span class="o">=</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">(</span>
+            <span class="n">vectorname</span><span class="o">=</span><span class="n">vectorname</span><span class="p">,</span> <span class="n">elementname</span><span class="o">=</span><span class="n">componentnames</span><span class="p">,</span> <span class="n">quantityunitpair</span><span class="o">=</span><span class="p">[]</span>
+        <span class="p">)</span>
+
+        <span class="n">n_rep</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">qu_pair</span> <span class="ow">in</span> <span class="n">qup_iter</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">qu_pair</span><span class="o">.</span><span class="n">quantity</span> <span class="ow">in</span> <span class="n">componentnames</span><span class="p">:</span>
+                <span class="c1"># This vector element found, store it.</span>
+                <span class="n">vqu_pair</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qu_pair</span><span class="p">)</span>
+                <span class="n">n_rep</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">n_rep</span> <span class="o">==</span> <span class="n">n_components</span> <span class="o">*</span> <span class="n">number_of_element_repetitions</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># This quantity was no vector element being searched for</span>
+                <span class="c1"># so keep it as a regular (scalar) QuantityUnitPair.</span>
+                <span class="n">quantityunitpairs_with_vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qu_pair</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">VectorQUPValidation</span><span class="o">.</span><span class="n">validate_vectorlength</span><span class="p">(</span>
+            <span class="n">vqu_pair</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span>
+        <span class="p">):</span>
+            <span class="c1"># This VectorQuantityUnitPairs is now complete; add it to result list.</span>
+            <span class="n">quantityunitpairs_with_vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vqu_pair</span><span class="p">)</span>
+
+    <span class="n">quantityunitpairs</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">quantityunitpairs_with_vectors</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectorlength" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate_vectorlength</span><span class="p">(</span><span class="n">vqu_pair</span><span class="p">:</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.VectorQUPValidation.validate_vectorlength" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Checks whether the number of QuantityUnitPairs in a vector quantity
+matches exactly with number of vector elements in the definition and,
+optionally, the number of vertical layers.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>vqu_pair</code></td>
+        <td><code>VectorQuantityUnitPairs</code></td>
+        <td><p>the vector quantity object to be checked.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>number_of_element_repetitions</code></td>
+        <td><code>int</code></td>
+        <td><p>Number of times each
+vector element is expected to be present in the subsequent
+Quantity lines. Typically used for 3D quantities, using the
+number of vertical layers. Defaults to 1.</p></td>
+        <td><code>1</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>True if vqu_pair is valid. False return value is hidden because
+    an exception will be raised.</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>If number of QuantityUnitPair objects in vqu_pair is not equal
+to number of element names * number_of_element_repetitions.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">validate_vectorlength</span><span class="p">(</span>
+    <span class="n">vqu_pair</span><span class="p">:</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">,</span>
+    <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Checks whether the number of QuantityUnitPairs in a vector quantity</span>
+<span class="sd">    matches exactly with number of vector elements in the definition and,</span>
+<span class="sd">    optionally, the number of vertical layers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vqu_pair (VectorQuantityUnitPairs): the vector quantity object to be checked.</span>
+<span class="sd">        number_of_element_repetitions (int, optional): Number of times each</span>
+<span class="sd">            vector element is expected to be present in the subsequent</span>
+<span class="sd">            Quantity lines. Typically used for 3D quantities, using the</span>
+<span class="sd">            number of vertical layers. Defaults to 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if vqu_pair is valid. False return value is hidden because</span>
+<span class="sd">            an exception will be raised.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If number of QuantityUnitPair objects in vqu_pair is not equal</span>
+<span class="sd">            to number of element names * number_of_element_repetitions.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">valid</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="p">)</span>
+        <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">elementname</span><span class="p">)</span> <span class="o">*</span> <span class="n">number_of_element_repetitions</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Incorrect number of quantity unit pairs were found; should match the elements in vectordefinition for </span><span class="si">{</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">vectorname</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;, and </span><span class="si">{</span><span class="n">number_of_element_repetitions</span><span class="si">}</span><span class="s2"> vertical layers&quot;</span>
+                <span class="k">if</span> <span class="n">number_of_element_repetitions</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">valid</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.VectorQuantityUnitPairs" class="doc doc-heading">
+        <code>
+VectorQuantityUnitPairs            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.VectorQuantityUnitPairs" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>A subset of .bc file header lines containing a vector quantity definition,
+followed by all component quantity names, their unit and optionally their
+vertical position indexes.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VectorQuantityUnitPairs.__str__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.bc.models.VectorQuantityUnitPairs.__str__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Return str(self).</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">VectorQuantityUnitPairs</span><span class="o">.</span><span class="n">_to_vectordefinition_string</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectorname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elementname</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.VerticalInterpolation" class="doc doc-heading">
+        <code>
+VerticalInterpolation            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalInterpolation" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Enum class containing the valid values for the vertical position type,
+which defines what the numeric values for vertical position specification mean.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VerticalInterpolation.block" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">block</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalInterpolation.block" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Equal to the value at the directly lower specified vertical position.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VerticalInterpolation.linear" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">linear</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalInterpolation.linear" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Linear interpolation between vertical positions.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VerticalInterpolation.log" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">log</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalInterpolation.log" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Logarithmic interpolation between vertical positions (e.g. vertical velocity profiles).</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.bc.models.VerticalPositionType" class="doc doc-heading">
+        <code>
+VerticalPositionType            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalPositionType" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Enum class containing the valid values for the vertical position type.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VerticalPositionType.percentage_bed" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">percentage_bed</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalPositionType.percentage_bed" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Percentage with respect to the water depth from the bed upward.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VerticalPositionType.z_bed" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">z_bed</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_bed" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Absolute distance from the bed upward.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VerticalPositionType.z_datum" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">z_datum</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_datum" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: z-coordinate with respect to the reference level of the model.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.io.bc.models.VerticalPositionType.z_surf" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">z_surf</span></code>
+
+
+<a href="#hydrolib.core.io.bc.models.VerticalPositionType.z_surf" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Absolute distance from the free surface downward.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-top--hidden md-icon" data-md-component="top">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../ext/" class="md-footer__link md-footer__link--prev" aria-label="Previous: External forcings file" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              External forcings file
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../structure/" class="md-footer__link md-footer__link--next" aria-label="Next: Structure .ini files" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Structure .ini files
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 Deltares
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    <a href="https://github.com/Deltares/hydrolib-core" target="_blank" rel="noopener" title="Source code" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    <a href="https://gitter.im/Deltares/hydrolib" target="_blank" rel="noopener" title="Chat with us on Gitter" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M66.4 322.5H16V0h50.4v322.5zM166.9 76.1h-50.4V512h50.4V76.1zm100.6 0h-50.4V512h50.4V76.1zM368 76h-50.4v247H368V76z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.b028fd86.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.0f659f14.min.js"></script>
+      
+    
+  </body>
+</html>
