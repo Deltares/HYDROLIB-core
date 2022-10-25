@@ -18,6 +18,7 @@ from hydrolib.core.io.bc.models import (
     QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
+    VectorQuantityUnitPairs,
     VerticalInterpolation,
     VerticalPositionType,
 )
@@ -28,12 +29,15 @@ from ..utils import (
     assert_files_equal,
     invalid_test_data_dir,
     test_data_dir,
+    test_input_dir,
     test_output_dir,
     test_reference_dir,
 )
 
 TEST_BC_FILE = "test.bc"
 TEST_BC_FILE_KEYWORDS_WITH_SPACES = "t3d_backwards_compatibility.bc"
+
+TEST_TIME_UNIT = "minutes since 2015-01-01 00:00:00"
 
 
 class TestQuantityUnitPair:
@@ -65,7 +69,7 @@ class TestTimeSeries:
         assert forcing.timeinterpolation == TimeInterpolation.block_to
         assert len(forcing.quantityunitpair) == 2
         assert forcing.quantityunitpair[0].quantity == "time"
-        assert forcing.quantityunitpair[0].unit == "minutes since 2015-01-01 00:00:00"
+        assert forcing.quantityunitpair[0].unit == TEST_TIME_UNIT
         assert forcing.quantityunitpair[1].quantity == "dischargebnd"
         assert forcing.quantityunitpair[1].unit == "m³/s"
         assert len(forcing.datablock) == 3
@@ -124,7 +128,7 @@ class TestTimeSeries:
         quantityunitpairs = timeseries.quantityunitpair
         assert len(quantityunitpairs) == 2
         assert quantityunitpairs[0].quantity == "time"
-        assert quantityunitpairs[0].unit == "minutes since 2015-01-01 00:00:00"
+        assert quantityunitpairs[0].unit == TEST_TIME_UNIT
         assert quantityunitpairs[1].quantity == "dischargebnd"
 
         assert timeseries.datablock == [
@@ -132,6 +136,44 @@ class TestTimeSeries:
             [60.0, 2.34],
             [120.0, 3.45],
         ]
+
+    def test_initialize_timeseries_with_vectorvalues(self):
+        values = _create_time_series_vectorvalues()
+
+        ts = TimeSeries(**values)
+
+        assert ts.name == values["name"]
+
+        assert len(ts.quantityunitpair) == 2
+        assert ts.quantityunitpair[0] == values["quantityunitpair"][0]
+        assert isinstance(ts.quantityunitpair[1], VectorQuantityUnitPairs)
+        assert ts.quantityunitpair[1].vectorname == "uxuyadvectionvelocitybnd"
+        assert ts.quantityunitpair[1].elementname == ["ux", "uy"]
+        assert len(ts.quantityunitpair[1].quantityunitpair) == 2
+        assert ts.quantityunitpair[1].quantityunitpair[0] == QuantityUnitPair(
+            quantity="ux", unit="m s-1", vertpositionindex=None
+        )
+        assert ts.quantityunitpair[1].quantityunitpair[1] == QuantityUnitPair(
+            quantity="uy", unit="m s-1", vertpositionindex=None
+        )
+        assert len(ts.datablock) == 3
+        assert ts.datablock == [list(map(float, row)) for row in values["datablock"]]
+
+    def test_initialize_timeseries_with_wrong_amount_vectorquantities(
+        self,
+    ):
+        values = _create_time_series_vectorvalues()
+        del values["quantityunitpair"][1].quantityunitpair[1]
+
+        with pytest.raises(ValueError) as error:
+            TimeSeries(**values)
+
+        expected_error_mssg = (
+            f"Incorrect number of quantity unit pairs were found; "
+            + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd."
+        )
+
+        assert expected_error_mssg in str(error.value)
 
 
 class TestForcingBase:
@@ -330,7 +372,9 @@ class TestT3D:
         assert t3d.vertpositiontype == exp_vertical_position_type
 
         assert len(t3d.quantityunitpair) == 4
-        assert t3d.quantityunitpair[0] == QuantityUnitPair(quantity="time", unit="m")
+        assert t3d.quantityunitpair[0] == QuantityUnitPair(
+            quantity="time", unit=TEST_TIME_UNIT
+        )
         assert t3d.quantityunitpair[1] == QuantityUnitPair(
             quantity="salinitybnd", unit="ppt", vertpositionindex=1
         )
@@ -351,7 +395,7 @@ class TestT3D:
 
         values["quantityunitpair"] = [
             _create_quantityunitpair("salinitybnd", "ppt"),
-            _create_quantityunitpair("time", "m"),
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
         ]
 
         with pytest.raises(ValidationError) as error:
@@ -364,7 +408,7 @@ class TestT3D:
         values = _create_t3d_values()
 
         values["quantityunitpair"] = [
-            _create_quantityunitpair("time", "m", 1),
+            _create_quantityunitpair("time", TEST_TIME_UNIT, 1),
         ]
 
         with pytest.raises(ValidationError) as error:
@@ -379,7 +423,7 @@ class TestT3D:
         values = _create_t3d_values()
 
         values["quantityunitpair"] = [
-            _create_quantityunitpair("time", "m"),
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
             _create_quantityunitpair("salinitybnd", "ppt", None),
         ]
 
@@ -412,7 +456,7 @@ class TestT3D:
     ):
         values = _create_t3d_values()
 
-        time_quantityunitpair = [_create_quantityunitpair("time", "m")]
+        time_quantityunitpair = [_create_quantityunitpair("time", TEST_TIME_UNIT)]
         other_quantutyunitpairs = []
         for i in range(len(verticalpositionindexes)):
             other_quantutyunitpairs.append(
@@ -453,7 +497,7 @@ class TestT3D:
             str(i + onebased_index_offset)
             for i in range(number_of_quantities_and_units)
         ]
-        values["unit"] = ["m"] + [
+        values["unit"] = [TEST_TIME_UNIT] + [
             str(i + onebased_index_offset)
             for i in range(number_of_quantities_and_units)
         ]
@@ -565,6 +609,53 @@ class TestT3D:
         expected_message = "vertPositions is not provided"
         assert expected_message in str(error.value)
 
+    def test_initialize_t3d_with_vectorquantities(
+        self,
+    ):
+        values = _create_t3d_vectorvalues()
+
+        t3d = T3D(**values)
+
+        assert t3d.name == "boundary_t3d"
+
+        assert len(t3d.quantityunitpair) == 2
+        assert t3d.quantityunitpair[0] == QuantityUnitPair(
+            quantity="time", unit=TEST_TIME_UNIT
+        )
+        assert isinstance(t3d.quantityunitpair[1], VectorQuantityUnitPairs)
+        assert t3d.quantityunitpair[1].vectorname == "uxuyadvectionvelocitybnd"
+        assert t3d.quantityunitpair[1].elementname == ["ux", "uy"]
+        assert t3d.quantityunitpair[1].quantityunitpair[0] == QuantityUnitPair(
+            quantity="ux", unit="m s-1", vertpositionindex=1
+        )
+        assert t3d.quantityunitpair[1].quantityunitpair[1] == QuantityUnitPair(
+            quantity="uy", unit="m s-1", vertpositionindex=1
+        )
+        assert t3d.quantityunitpair[1].quantityunitpair[4] == QuantityUnitPair(
+            quantity="ux", unit="m s-1", vertpositionindex=3
+        )
+
+        assert len(t3d.datablock) == 3
+        assert t3d.datablock[0] == [0, 1, 2, 3, 10, 20, 30]
+        assert t3d.datablock[1] == [60, 4, 5, 6, 40, 50, 60]
+        assert t3d.datablock[2] == [120, 7, 8, 9, 70, 80, 90]
+
+    def test_initialize_t3d_with_wrong_amount_vectorquantities(
+        self,
+    ):
+        values = _create_t3d_vectorvalues()
+        del values["quantityunitpair"][1].quantityunitpair[3]
+
+        with pytest.raises(ValueError) as error:
+            T3D(**values)
+
+        expected_error_mssg = (
+            f"Incorrect number of quantity unit pairs were found; "
+            + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
+            + "and 3 vertical layers."
+        )
+        assert expected_error_mssg in str(error.value)
+
     def test_load_forcing_model(self):
         bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
         forcingmodel = ForcingModel(bc_file)
@@ -582,7 +673,7 @@ class TestT3D:
         quantityunitpairs = t3d.quantityunitpair
         assert len(quantityunitpairs) == 4
         assert quantityunitpairs[0].quantity == "time"
-        assert quantityunitpairs[0].unit == "m"
+        assert quantityunitpairs[0].unit == TEST_TIME_UNIT
         assert quantityunitpairs[0].vertpositionindex == None
         assert quantityunitpairs[1].quantity == "salinitybnd"
         assert quantityunitpairs[1].unit == "ppt"
@@ -617,7 +708,7 @@ class TestT3D:
         quantityunitpairs = t3d.quantityunitpair
         assert len(quantityunitpairs) == 4
         assert quantityunitpairs[0].quantity == "time"
-        assert quantityunitpairs[0].unit == "m"
+        assert quantityunitpairs[0].unit == TEST_TIME_UNIT
         assert quantityunitpairs[0].vertpositionindex == None
         assert quantityunitpairs[1].quantity == "salinitybnd"
         assert quantityunitpairs[1].unit == "ppt"
@@ -652,6 +743,97 @@ class TestT3D:
                 == expected_quantityunitpair.vertpositionindex
             )
 
+    def test_load_t3d_model_with_vector_quantities(self):
+        bc_file = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "FlowFM_boundaryconditions3d_and_vectors.bc"
+        )
+        forcingmodel = ForcingModel(bc_file)
+
+        t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
+        assert isinstance(t3d, T3D)
+        assert t3d is not None
+        assert t3d.name == "zuiduxuy_0002"
+        assert t3d.vertpositions == [0, 0.2, 1.0]
+        assert t3d.vertinterpolation == "linear"
+        assert t3d.vertpositiontype == "percBed"
+        assert t3d.timeinterpolation == "linear"
+
+        quantityunitpairs = t3d.quantityunitpair
+        assert len(quantityunitpairs) == 2
+        assert quantityunitpairs[0].quantity == "time"
+        assert quantityunitpairs[0].unit == "MINUTES SINCE 1992-08-31 00:00:00 +00:00"
+        assert quantityunitpairs[0].vertpositionindex == None
+
+        assert isinstance(quantityunitpairs[1], VectorQuantityUnitPairs)
+        assert quantityunitpairs[1].vectorname == "uxuyadvectionvelocitybnd"
+        assert quantityunitpairs[1].elementname == ["ux", "uy"]
+        assert quantityunitpairs[1].quantityunitpair[0].vertpositionindex == 1
+        assert quantityunitpairs[1].quantityunitpair[0].quantity == "ux"
+        assert quantityunitpairs[1].quantityunitpair[0].unit == "-"
+        assert quantityunitpairs[1].quantityunitpair[1].vertpositionindex == 1
+        assert quantityunitpairs[1].quantityunitpair[1].quantity == "uy"
+        assert quantityunitpairs[1].quantityunitpair[1].unit == "-"
+        assert quantityunitpairs[1].quantityunitpair[4].vertpositionindex == 3
+        assert quantityunitpairs[1].quantityunitpair[4].quantity == "ux"
+        assert quantityunitpairs[1].quantityunitpair[4].unit == "-"
+
+
+class TestVectorBC:
+    @pytest.mark.parametrize(
+        "bc_file_name",
+        [
+            "FlowFM_boundaryconditions2d_and_vectors.bc",
+            "FlowFM_boundaryconditions3d_and_vectors.bc",
+        ],
+    )
+    def test_load_and_save_model_with_vector_quantities(self, bc_file_name: str):
+        bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
+        output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
+        reference_file = test_reference_dir / "bc" / bc_file_name
+
+        forcingmodel = ForcingModel(bc_file)
+
+        forcingmodel.filepath = output_file
+        forcingmodel.save()
+
+        assert_files_equal(output_file, reference_file, [0])
+
+    def test_initialize_vectorqup_with_wrongly_named_vectorquantities(
+        self,
+    ):
+        numlayers = 3
+        values = _create_vectorvalues(numlayers)
+        vQUP = VectorQuantityUnitPairs(**values)
+        assert len(vQUP.quantityunitpair) == numlayers * 2
+
+        with pytest.raises(ValueError) as error:
+            # Now re-assign these qups such that last element has a wrong quantity name:
+            vQUP.quantityunitpair = vQUP.quantityunitpair[:-1] + [
+                _create_quantityunitpair(
+                    quantity="wrongname", unit="-", verticalpositionindex=numlayers
+                )
+            ]
+        expected_error_mssg = f"quantityunitpair[{2*numlayers-1}], quantity 'wrongname' must be in vectordefinition's element names: 'uxuyadvectionvelocitybnd:ux,uy'."
+        assert expected_error_mssg in str(error.value)
+
+
+def _create_quantityunitpair(quantity, unit, verticalpositionindex=None):
+    return QuantityUnitPair(
+        quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
+    )
+
+
+def _create_vectorqup(
+    vectorname: str, elementname: List[str], quantityunitpair: List[QuantityUnitPair]
+):
+    return VectorQuantityUnitPairs(
+        vectorname=vectorname,
+        elementname=elementname,
+        quantityunitpair=quantityunitpair,
+    )
+
 
 def _create_time_series_values():
     return dict(
@@ -661,7 +843,7 @@ def _create_time_series_values():
         offset="1.23",
         factor="2.34",
         quantityunitpair=[
-            _create_quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
             _create_quantityunitpair("dischargebnd", "m³/s"),
         ],
         datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
@@ -703,12 +885,6 @@ def _create_astronomic_values(iscorrection: bool):
     )
 
 
-def _create_quantityunitpair(quantity, unit, verticalpositionindex=None):
-    return QuantityUnitPair(
-        quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
-    )
-
-
 def _create_t3d_values():
     return dict(
         name="boundary_t3d",
@@ -720,7 +896,7 @@ def _create_t3d_values():
         vertpositiontype="percBed",
         timeinterpolation="linear",
         quantityunitpair=[
-            _create_quantityunitpair("time", "m"),
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
             _create_quantityunitpair("salinitybnd", "ppt", 1),
             _create_quantityunitpair("salinitybnd", "ppt", 2),
             _create_quantityunitpair("salinitybnd", "ppt", 3),
@@ -729,6 +905,66 @@ def _create_t3d_values():
             ["0", "1", "2", "3"],
             ["60", "4", "5", "6"],
             ["120", "7", "8", "9"],
+        ],
+    )
+
+
+def _create_vectorvalues(number_of_element_repetitions: int = None):
+    element_names = ["ux", "uy"]
+    layers = (
+        range(1, number_of_element_repetitions + 1)
+        if number_of_element_repetitions is not None
+        else [None]
+    )
+
+    return dict(
+        vectorname="uxuyadvectionvelocitybnd",
+        elementname=element_names,
+        quantityunitpair=[
+            _create_quantityunitpair(elem, "m s-1", layer)
+            for layer in layers
+            for elem in element_names
+        ],
+    )
+
+
+def _create_t3d_vectorvalues():
+    return dict(
+        name="boundary_t3d",
+        function="t3d",
+        offset="1.23",
+        factor="2.34",
+        vertpositions="3.45 4.56 5.67",
+        vertinterpolation="log",
+        vertpositiontype="percBed",
+        timeinterpolation="linear",
+        quantityunitpair=[
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
+            _create_vectorqup(**_create_vectorvalues(3)),
+        ],
+        datablock=[
+            ["0", "1", "2", "3", "10", "20", "30"],
+            ["60", "4", "5", "6", "40", "50", "60"],
+            ["120", "7", "8", "9", "70", "80", "90"],
+        ],
+    )
+
+
+def _create_time_series_vectorvalues():
+    return dict(
+        name="boundary_timeseries",
+        function="timeseries",
+        timeinterpolation="blockTo",
+        offset="1.23",
+        factor="2.34",
+        quantityunitpair=[
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
+            _create_vectorqup(**_create_vectorvalues()),
+        ],
+        datablock=[
+            ["0", "1.23", "12.3"],
+            ["60", "2.34", "23.4"],
+            ["120", "3.45", "34.5"],
         ],
     )
 
