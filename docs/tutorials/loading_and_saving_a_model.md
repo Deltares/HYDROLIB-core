@@ -79,6 +79,25 @@ MapInterval       = 30.0
 ...
 ```
 
+## Loading models on case-sensitive systems
+Model files may contain references to other model files of which the casing does not match with the file on disk. On Windows, loading a model with differently cased references will work just fine, since Windows is case-insensitive. However on Linux, the referenced file cannot be found and will raise an error. 
+To aid users in migrating their models, HYDROLIB-core offers a feature to resolve the casing of referenced files and supports three operating systems: Windows, Linux and MacOS.
+
+Consider an MDU model file that references a network file: `Network/flowfm_net.nc`.
+The file on disk is actually called `network/FlowFM_net.nc`.
+
+To load the model and simultaneously repair the file references in the in-memory model:
+
+```python
+from hydrolib.core.io.mdu.models import FMModel
+model = FMModel("FlowFM.mdu", resolve_casing=True)
+
+# assert that file reference has been updated from Network/flowfm_net.nc to network/FlowFM_net.nc
+assert model.geometry.netfile.filepath == Path("network/FlowFM_net.nc")
+```
+
+The `resolve_casing` argument is by default `False`. Using the `resolve_casing` functionality might heavily influence the performance of model loading depending on the model size, the file tree structure and the operating system.
+
 ## Caveats when saving models
 
 There are some caveats to take into account when saving models.
