@@ -1024,6 +1024,40 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver" class="md-nav__link">
+    FileCasingResolver
+  </a>
+  
+    <nav class="md-nav" aria-label="FileCasingResolver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver.initialize_resolve_casing" class="md-nav__link">
+    initialize_resolve_casing()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver.resolve" class="md-nav__link">
+    resolve()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext" class="md-nav__link">
     FileLoadContext
   </a>
@@ -1074,8 +1108,22 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileLoadContext.resolve_casing" class="md-nav__link">
+    resolve_casing()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext.retrieve_model" class="md-nav__link">
     retrieve_model()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileLoadContext.set_resolve_casing" class="md-nav__link">
+    set_resolve_casing()
   </a>
   
 </li>
@@ -1785,6 +1833,40 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver" class="md-nav__link">
+    FileCasingResolver
+  </a>
+  
+    <nav class="md-nav" aria-label="FileCasingResolver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver.initialize_resolve_casing" class="md-nav__link">
+    initialize_resolve_casing()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileCasingResolver.resolve" class="md-nav__link">
+    resolve()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext" class="md-nav__link">
     FileLoadContext
   </a>
@@ -1835,8 +1917,22 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileLoadContext.resolve_casing" class="md-nav__link">
+    resolve_casing()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext.retrieve_model" class="md-nav__link">
     retrieve_model()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileLoadContext.set_resolve_casing" class="md-nav__link">
+    set_resolve_casing()
   </a>
   
 </li>
@@ -2525,6 +2621,232 @@ DiskOnlyFileModel and instead inherit directly from FileModel.</p>
 
 
 
+<h3 id="hydrolib.core.basemodel.FileCasingResolver" class="doc doc-heading">
+        <code>
+FileCasingResolver        </code>
+
+
+
+<a href="#hydrolib.core.basemodel.FileCasingResolver" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Class for resolving file path in a case-insensitive manner.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.FileCasingResolver.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.basemodel.FileCasingResolver.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Initializes a new instance of the <code>FileCasingResolver</code> class.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Initializes a new instance of the `FileCasingResolver` class.&quot;&quot;&quot;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_has_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_casing</span> <span class="o">=</span> <span class="kc">False</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.FileCasingResolver.initialize_resolve_casing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">initialize_resolve_casing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+
+<a href="#hydrolib.core.basemodel.FileCasingResolver.initialize_resolve_casing" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Initialize the setting to resolve casing or not. Can only be set once.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>resolve_casing</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether or not to resolve the file casing.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">initialize_resolve_casing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Initialize the setting to resolve casing or not. Can only be set once.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        resolve_casing (bool): Whether or not to resolve the file casing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_initialized</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_casing</span> <span class="o">=</span> <span class="n">resolve_casing</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_has_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.FileCasingResolver.resolve" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span></code>
+
+
+<a href="#hydrolib.core.basemodel.FileCasingResolver.resolve" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Resolve the casing of a file path when the file does exist but not with the exact casing.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>path</code></td>
+        <td><code>Path</code></td>
+        <td><p>The path of the file or directory for which the casing needs to be resolved.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Path</code></td>
+      <td><p>The file path with the matched casing if a match exists; otherwise, the original file path.</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>NotImplementedError</code></td>
+        <td><p>When this function is called with an operating system other than Windows, Linux or MacOS.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Resolve the casing of a file path when the file does exist but not with the exact casing.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (Path): The path of the file or directory for which the casing needs to be resolved.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path: The file path with the matched casing if a match exists; otherwise, the original file path.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NotImplementedError: When this function is called with an operating system other than Windows, Linux or MacOS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_casing</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="n">operating_system</span> <span class="o">=</span> <span class="n">get_operating_system</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">operating_system</span> <span class="o">==</span> <span class="n">OperatingSystem</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_casing_windows</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">operating_system</span> <span class="o">==</span> <span class="n">OperatingSystem</span><span class="o">.</span><span class="n">LINUX</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_casing_linux</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">operating_system</span> <span class="o">==</span> <span class="n">OperatingSystem</span><span class="o">.</span><span class="n">MACOS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_casing_macos</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Path case resolving for operating system </span><span class="si">{</span><span class="n">operating_system</span><span class="si">}</span><span class="s2"> is not supported yet.&quot;</span>
+        <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
 <h3 id="hydrolib.core.basemodel.FileLoadContext" class="doc doc-heading">
         <code>
 FileLoadContext        </code>
@@ -2570,6 +2892,7 @@ are only read once.</p>
     <span class="sd">&quot;&quot;&quot;Create a new empty FileLoadContext.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_path_resolver</span> <span class="o">=</span> <span class="n">FilePathResolver</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">FileModelCache</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_file_casing_resolver</span> <span class="o">=</span> <span class="n">FileCasingResolver</span><span class="p">()</span>
 </code></pre></div>
         </details>
     </div>
@@ -2871,6 +3194,76 @@ it will be resolved based on the current state of this FileLoadContext.</p>
 
 
 
+<h4 id="hydrolib.core.basemodel.FileLoadContext.resolve_casing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">resolve_casing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span></code>
+
+
+<a href="#hydrolib.core.basemodel.FileLoadContext.resolve_casing" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Resolve the file casing for the provided file path.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>file_path</code></td>
+        <td><code>Path</code></td>
+        <td><p>The file path to resolve the casing for.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Path</code></td>
+      <td><p>The resolved file path.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_casing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Resolve the file casing for the provided file path.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (Path): The file path to resolve the casing for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path: The resolved file path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_casing_resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h4 id="hydrolib.core.basemodel.FileLoadContext.retrieve_model" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">retrieve_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FileModel</span><span class="p">]</span></code>
 
@@ -2919,6 +3312,58 @@ current state of the FileLoadContext.</p>
 
     <span class="n">absolute_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">retrieve_model</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.FileLoadContext.set_resolve_casing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">set_resolve_casing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+
+<a href="#hydrolib.core.basemodel.FileLoadContext.set_resolve_casing" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Set the setting to resolve casing or not.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>resolve_casing</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether or not to resolve the file casing.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_resolve_casing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Set the setting to resolve casing or not.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        resolve_casing (bool): Whether or not to resolve the file casing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_file_casing_resolver</span><span class="o">.</span><span class="n">initialize_resolve_casing</span><span class="p">(</span><span class="n">resolve_casing</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3014,7 +3459,7 @@ cwd / filename.extension</p></td>
 
 
 <h4 id="hydrolib.core.basemodel.FileModel.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -3029,24 +3474,61 @@ cwd / filename.extension</p></td>
 model with default values.
 If the filepath is provided, it is read from disk.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>filepath</code></td>
+        <td><code>Optional[Path]</code></td>
+        <td><p>The file path. Defaults to None.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>resolve_casing</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a new FileModel from the given filepath.</span>
 
 <span class="sd">    If no filepath is provided, the model is initialized as an empty</span>
 <span class="sd">    model with default values.</span>
 <span class="sd">    If the filepath is provided, it is read from disk.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filepath (Optional[Path], optional): The file path. Defaults to None.</span>
+<span class="sd">        resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-
+        <span class="n">context</span><span class="o">.</span><span class="n">set_resolve_casing</span><span class="p">(</span><span class="n">resolve_casing</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_absolute_anchor_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_current_parent</span><span class="p">()</span>
         <span class="n">loading_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">loading_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">resolve_casing</span><span class="p">(</span><span class="n">loading_path</span><span class="p">)</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_updated_file_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">loading_path</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading data from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
