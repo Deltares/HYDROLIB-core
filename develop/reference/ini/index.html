@@ -2001,7 +2001,8 @@ INIBasedModel            (<a title="hydrolib.core.basemodel.BaseModel" href="../
 
     <div class="doc doc-contents ">
 
-      <p>INIBasedModel defines the base model for ini models</p>
+      <p>INIBasedModel defines the base model for blocks/chapters
+inside an INIModel (*.ini file).</p>
 <p>INIBasedModel instances can be created from Section instances
 obtained through parsing ini documents. It further supports
 adding arbitrary fields to it, which will be written to file.
@@ -2020,7 +2021,8 @@ Lastly, no arbitrary types are allowed for the defined fields.</p>
       <tr>
         <td><code>comments</code></td>
         <td><code>Optional[Comments]</code></td>
-        <td><p>Optional Comments if defined by the user.</p></td>
+        <td><p>Optional Comments if defined by the user, containing
+descriptions for all data fields.</p></td>
       </tr>
   </tbody>
 </table>
@@ -2249,7 +2251,11 @@ INIModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="
 
     <div class="doc doc-contents ">
 
-      <p>INI Model representation.</p>
+      <p>INI Model representation of a *.ini file.</p>
+<p>Typically subclasses will implement the various sorts of ini files,
+specifically for their fileType/contents.
+Child elements of this class associated with chapters/blocks in the
+ini file will be (sub)class of INIBasedModel.</p>
 
 
 
