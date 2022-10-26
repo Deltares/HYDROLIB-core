@@ -136,9 +136,7 @@ class ModelTreeTraverser(Generic[TAcc]):
     functions.
 
     The ModelTreeTraverser will only traverse BaseModel and derived objects.
-
-    Args:
-        Generic ([type]): The type of Accumulator to be used.
+    Type parameter TAcc defines the type of Accumulator to be used.
     """
 
     def __init__(

@@ -1170,7 +1170,7 @@ class Network:
         directly, but is easier accessible for users.
 
         Args:
-            geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
+            polygon (mk.GeometryList): GeometryList representing a polygon within which the mesh is generated.
         """
         self._mesh2d.create_triangular(geometry_list=polygon)
 

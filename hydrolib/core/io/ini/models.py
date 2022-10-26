@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 class INIBasedModel(BaseModel, ABC):
-    """INIBasedModel defines the base model for ini models
+    """INIBasedModel defines the base model for blocks/chapters
+    inside an INIModel (*.ini file).
 
     INIBasedModel instances can be created from Section instances
     obtained through parsing ini documents. It further supports
@@ -27,7 +28,8 @@ class INIBasedModel(BaseModel, ABC):
 
     Attributes:
         comments (Optional[Comments]):
-            Optional Comments if defined by the user.
+            Optional Comments if defined by the user, containing
+            descriptions for all data fields.
     """
 
     _header: str
@@ -180,7 +182,13 @@ class INIGeneral(INIBasedModel):
 
 
 class INIModel(ParsableFileModel):
-    """INI Model representation."""
+    """INI Model representation of a *.ini file.
+
+    Typically subclasses will implement the various sorts of ini files,
+    specifically for their fileType/contents.
+    Child elements of this class associated with chapters/blocks in the
+    ini file will be (sub)class of INIBasedModel.
+    """
 
     general: INIGeneral
 
