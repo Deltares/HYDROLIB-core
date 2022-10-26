@@ -26,6 +26,7 @@ For each issue or feature, a separate branch should be created from the main. To
 * `fix/` for bugfixes;
 * `docs/` for documentation;
 * `chore/` for tasks, tool changes, configuration work, everything not relevant for external users.
+
 After this prefix, preferrably add the issue number, followed by a brief title using underscores. For example: `feat/160_obsfile` or, `fix/197_validation_pump_stages`.
 
 ### Pull requests
@@ -65,7 +66,7 @@ To prepare for releasing, please make sure you have a clean checkout of the late
 	 ```
 	 pip install commitizen
 	 ```
-	 * Prepare the Changelog
+	 * Prepare the Changelog before bumping the release version:
 	 ```
 	 cz changelog --unreleased-version="0.3.1" --incremental
 	 ```
