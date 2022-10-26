@@ -22,7 +22,7 @@ If you use [conventional commit messages](https://www.conventionalcommits.org/en
 
 ### Branches
 For each issue or feature, a separate branch should be created from the main. To keep the branches organized each branch should be created with a prefix in the name:
-* `feat/` or `feature/` for new features and feature improvements;
+* `feat/` for new features and feature improvements;
 * `fix/` for bugfixes;
 * `docs/` for documentation;
 * `chore/` for tasks, tool changes, configuration work, everything not relevant for external users.
