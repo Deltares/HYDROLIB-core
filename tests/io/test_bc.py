@@ -5,7 +5,7 @@ from typing import List
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.bc.models import (
+from hydrolib.core.io.dflowfm.bc.models import (
     T3D,
     Astronomic,
     AstronomicCorrection,

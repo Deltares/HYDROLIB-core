@@ -7,7 +7,7 @@ import pytest
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.io.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
+from hydrolib.core.io.dflowfm.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
