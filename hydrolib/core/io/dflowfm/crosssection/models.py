@@ -4,9 +4,9 @@ from typing import List, Literal, Optional
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
 
-from hydrolib.core.io.friction.models import FrictionType
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.friction.models import FrictionType
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     get_enum_validator,
