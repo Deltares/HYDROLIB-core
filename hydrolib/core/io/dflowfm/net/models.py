@@ -13,8 +13,8 @@ from pydantic import Field
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel, file_load_context
-from hydrolib.core.io.net.reader import UgridReader
-from hydrolib.core.io.net.writer import UgridWriter
+from hydrolib.core.io.dflowfm.net.reader import UgridReader
+from hydrolib.core.io.dflowfm.net.writer import UgridWriter
 
 logger = logging.getLogger(__name__)
 
