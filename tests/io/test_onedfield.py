@@ -4,7 +4,7 @@ from typing import List, Optional
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.ini.parser import Parser, ParserConfig
+from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.onedfield.models import (
     OneDFieldBranch,
     OneDFieldGlobal,

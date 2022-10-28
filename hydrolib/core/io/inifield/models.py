@@ -9,8 +9,8 @@ from pydantic.class_validators import validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_required_fields_validator,
     make_list_validator,

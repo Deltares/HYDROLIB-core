@@ -15,8 +15,8 @@ from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.friction.models import FrictionType
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.util import (
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.util import (
     get_conditional_root_validator,
     get_enum_validator,
     get_forbidden_fields_validator,

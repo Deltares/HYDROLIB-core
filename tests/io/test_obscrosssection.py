@@ -3,7 +3,7 @@ from typing import List
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral
 from hydrolib.core.io.obscrosssection.models import (
     ObservationCrossSection,
     ObservationCrossSectionGeneral,

@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
 from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.ini.io_models import (
+from hydrolib.core.io.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,
     Datablock,

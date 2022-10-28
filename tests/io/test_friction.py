@@ -12,7 +12,7 @@ from hydrolib.core.io.friction.models import (
     FrictionModel,
     FrictionType,
 )
-from hydrolib.core.io.ini.parser import Parser, ParserConfig
+from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
 
 from ..utils import (
     WrapperTest,

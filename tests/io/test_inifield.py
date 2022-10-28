@@ -7,7 +7,7 @@ import pytest
 from pydantic.error_wrappers import ValidationError
 from pydantic.types import FilePath
 
-from hydrolib.core.io.ini.parser import Parser, ParserConfig
+from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.io.inifield.models import (
     AveragingType,
     DataFileType,

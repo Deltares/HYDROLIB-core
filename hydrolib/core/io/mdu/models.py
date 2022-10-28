@@ -13,9 +13,9 @@ from hydrolib.core.basemodel import (
 from hydrolib.core.io.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.io.dflowfm.ext.models import ExtModel
 from hydrolib.core.io.friction.models import FrictionModel
-from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.ini.serializer import SerializerConfig, write_ini
-from hydrolib.core.io.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.io.inifield.models import IniFieldModel
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.obs.models import ObservationPointModel
