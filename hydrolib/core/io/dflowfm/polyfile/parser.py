@@ -7,7 +7,12 @@ from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
 from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.io.dflowfm.polyfile.models import Description, Metadata, Point, PolyObject
+from hydrolib.core.io.dflowfm.polyfile.models import (
+    Description,
+    Metadata,
+    Point,
+    PolyObject,
+)
 
 
 class ParseMsg(BaseModel):
