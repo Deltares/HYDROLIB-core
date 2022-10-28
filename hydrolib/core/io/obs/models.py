@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from pydantic.fields import Field
 
-from hydrolib.core.io.common.models import LocationType
+from hydrolib.core.io.dflowfm.common.models import LocationType
 from hydrolib.core.io.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.ini.util import (
     LocationValidationConfiguration,

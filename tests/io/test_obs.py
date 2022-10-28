@@ -1,7 +1,7 @@
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.common.models import LocationType
+from hydrolib.core.io.dflowfm.common.models import LocationType
 from hydrolib.core.io.obs.models import (
     ObservationPoint,
     ObservationPointGeneral,
