@@ -9,7 +9,7 @@ from pydantic.fields import ModelField
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
-from ..dflowfm.ini.io_models import CommentBlock, Document, Property, Section
+from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import SerializerConfig, write_ini
 from .util import make_list_validator
