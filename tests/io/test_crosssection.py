@@ -17,7 +17,7 @@ from hydrolib.core.io.dflowfm.crosssection.models import (
     ZWCrsDef,
     ZWRiverCrsDef,
 )
-from hydrolib.core.io.friction.models import FrictionType
+from hydrolib.core.io.dflowfm.friction.models import FrictionType
 
 from ..utils import WrapperTest, test_data_dir, test_output_dir
 
