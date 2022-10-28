@@ -154,7 +154,7 @@ class CrossDefModel(INIModel):
     """
     The overall crosssection definition model that contains the contents of one crossdef file.
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile`.
+    This model is typically referenced under a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile`.
 
     Attributes:
         general (CrossdefGeneral): `[General]` block with file metadata.
@@ -174,7 +174,7 @@ class CrossDefModel(INIModel):
 class CircleCrsDef(CrossSectionDefinition):
     """
     Crosssection definition with `type=circle`, to be included in a crossdef file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the circle input as described in
     [UM Sec.C.16.1.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.1).
@@ -214,7 +214,7 @@ class CircleCrsDef(CrossSectionDefinition):
 class RectangleCrsDef(CrossSectionDefinition):
     """
     Crosssection definition with `type=rectangle`, to be included in a crossdef file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the rectangle input as described in
     [UM Sec.C.16.1.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.2).
@@ -257,7 +257,7 @@ class RectangleCrsDef(CrossSectionDefinition):
 class ZWRiverCrsDef(CrossSectionDefinition):
     """
     Crosssection definition with `type=zwRiver`, to be included in a crossdef file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the zwRiver input as described in
     [UM Sec.C.16.1.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.3).
@@ -372,7 +372,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
 class ZWCrsDef(CrossSectionDefinition):
     """
     Crosssection definition with `type=zw`, to be included in a crossdef file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the zw input as described in
     [UM Sec.C.16.1.4](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.4).
@@ -444,7 +444,7 @@ class ZWCrsDef(CrossSectionDefinition):
 class YZCrsDef(CrossSectionDefinition):
     """
     Crosssection definition with `type=yz`, to be included in a crossdef file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the yz input as described in
     [UM Sec.C.16.1.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.6).
@@ -549,7 +549,7 @@ class YZCrsDef(CrossSectionDefinition):
 class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     """
     Crosssection definition with `type=xyz`, to be included in a crossdef file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
+    Typically inside the definition list of a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the xyz input as described in
     [UM Sec.C.16.1.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.5).
@@ -696,7 +696,7 @@ class CrossLocModel(INIModel):
     """
     The overall crosssection location model that contains the contents of one crossloc file.
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.crosslocfile`.
+    This model is typically referenced under a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.crosslocfile`.
 
     Attributes:
         general (CrossLocGeneral): `[General]` block with file metadata.

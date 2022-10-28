@@ -88,7 +88,7 @@ class ObservationPointModel(INIModel):
     """
     The overall observation point model that contains the contents of one observation point file.
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.output.obsfile[..]`.
+    This model is typically referenced under a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.output.obsfile[..]`.
 
     Attributes:
         general (ObservationPointGeneral): `[General]` block with file metadata.

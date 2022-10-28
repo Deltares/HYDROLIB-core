@@ -201,7 +201,7 @@ class StorageNodeModel(INIModel):
     """
     The overall storage node model that contains the contents of one storage node file.
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.geometry.storagenodefile[..]`.
+    This model is typically referenced under a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.geometry.storagenodefile[..]`.
 
     Attributes:
         general (StorageNodeGeneral): `[General]` block with file metadata.

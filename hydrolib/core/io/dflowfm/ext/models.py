@@ -22,7 +22,7 @@ from hydrolib.core.utils import str_is_empty_or_none
 class Boundary(INIBasedModel):
     """
     A `[Boundary]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.io.ext.models.ExtModel].
+    i.e., a [ExtModel][hydrolib.core.io.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the boundary input as described in
     [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
@@ -116,7 +116,7 @@ class Boundary(INIBasedModel):
 class Lateral(INIBasedModel):
     """
     A `[Lateral]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.io.ext.models.ExtModel].
+    i.e., a [ExtModel][hydrolib.core.io.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the lateral input as described in
     [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
@@ -185,7 +185,7 @@ class ExtModel(INIModel):
     """
     The overall external forcings model that contains the contents of one external forcings file (new format).
 
-    This model is typically referenced under a [FMModel][hydrolib.core.io.mdu.models.FMModel]`.external_forcing.extforcefilenew`.
+    This model is typically referenced under a [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefilenew`.
 
     Attributes:
         general (ExtGeneral): `[General]` block with file metadata.

@@ -707,7 +707,7 @@ class ForcingModel(INIModel):
     The overall model that contains the contents of one .bc forcings file.
 
     This model is for example referenced under a
-    [ExtModel][hydrolib.core.io.ext.models.ExtModel]`.boundary[..].forcingfile[..]`.
+    [ExtModel][hydrolib.core.io.dflowfm.ext.models.ExtModel]`.boundary[..].forcingfile[..]`.
     """
 
     general: ForcingGeneral = ForcingGeneral()
