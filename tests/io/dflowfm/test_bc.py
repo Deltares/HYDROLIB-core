@@ -253,7 +253,7 @@ class TestForcingBase:
 
 class TestForcingModel:
     """
-    Wrapper class to test the logic of the ForcingModel class in hydrolib.core.io.bc.models.py.
+    Wrapper class to test the logic of the ForcingModel class in hydrolib.core.io.dflowfm.bc.models.py.
     """
 
     def test_forcing_model(self):

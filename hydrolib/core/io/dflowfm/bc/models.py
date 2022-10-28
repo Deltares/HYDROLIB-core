@@ -309,7 +309,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
     Typically subclassed, for the specific types of forcing data, e.g, TimeSeries.
     This model is for example referenced under a
-    [ForcingModel][hydrolib.core.io.bc.models.ForcingModel]`.forcing[..]`.
+    [ForcingModel][hydrolib.core.io.dflowfm.bc.models.ForcingModel]`.forcing[..]`.
     """
 
     _header: Literal["Forcing"] = "Forcing"
@@ -716,7 +716,7 @@ class ForcingModel(INIModel):
     forcing: List[ForcingBase] = []
     """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
     definitions in a single .bc file. Actual data is stored in
-    forcing[..].datablock from [hydrolib.core.io.ini.models.DataBlockINIBasedModel.datablock]."""
+    forcing[..].datablock from [hydrolib.core.io.dflowfm.ini.models.DataBlockINIBasedModel.datablock]."""
 
     _split_to_list = make_list_validator("forcing")
 
