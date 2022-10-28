@@ -1,7 +1,7 @@
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.gui.models import Branch
+from hydrolib.core.io.dflowfm.gui.models import Branch
 
 
 def _create_branch_values():
