@@ -339,7 +339,7 @@ def create_structure_values(type: str) -> dict:
 class TestBridge:
     """
     Wrapper class to test all the methods and subclasses in:
-    hydrolib.core.io.structure.models.py Bridge class
+    hydrolib.core.io.dflowfm.structure.models.py Bridge class
     """
 
     def test_create_a_bridge_from_scratch(self):
@@ -522,7 +522,7 @@ class TestBridge:
 class TestStructure:
     """
     Wrapper class to test all the methods and subclasses in:
-    hydrolib.core.io.structure.models.py Structure class.
+    hydrolib.core.io.dflowfm.structure.models.py Structure class.
     """
 
     class TestRootValidator:
@@ -863,7 +863,7 @@ class TestStructure:
 class TestDambreakAlgorithm:
     """
     Wrapper class to test all the methods in:
-    hydrolib.core.io.structure.models.py DambreakAlgorithm enum class.
+    hydrolib.core.io.dflowfm.structure.models.py DambreakAlgorithm enum class.
     """
 
     @pytest.mark.parametrize(
@@ -897,7 +897,7 @@ class DambreakTestCases:
 class TestDambreak:
     """
     Wrapper class to test all the methods and sublcasses in:
-    hydrolib.core.io.structure.models.py Dambreak class.
+    hydrolib.core.io.dflowfm.structure.models.py Dambreak class.
     """
 
     @pytest.fixture
@@ -1418,7 +1418,7 @@ class TestDambreak:
 class TestOrifice:
     """
     Wrapper class to test all the methods and sublcasses in:
-    hydrolib.core.io.structure.models.py Orifice class.
+    hydrolib.core.io.dflowfm.structure.models.py Orifice class.
     """
 
     def test_create_orifice(self):
