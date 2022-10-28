@@ -18,7 +18,7 @@ from hydrolib.core.basemodel import (
     file_load_context,
 )
 from hydrolib.core.io.dimr.models import DIMR
-from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.dflowfm.mdu.models import FMModel
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"

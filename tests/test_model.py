@@ -21,7 +21,7 @@ from hydrolib.core.io.dimr.models import (
 )
 from hydrolib.core.io.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.io.dflowfm.friction.models import FrictGeneral
-from hydrolib.core.io.mdu.models import (
+from hydrolib.core.io.dflowfm.mdu.models import (
     Calibration,
     ExternalForcing,
     FMModel,

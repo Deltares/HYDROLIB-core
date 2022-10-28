@@ -4,7 +4,7 @@ from typing import Callable, Dict, Union
 import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.io.mdu.models import (
+from hydrolib.core.io.dflowfm.mdu.models import (
     FMModel,
     InfiltrationMethod,
     Output,
