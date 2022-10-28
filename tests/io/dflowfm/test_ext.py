@@ -8,7 +8,7 @@ from hydrolib.core.io.dflowfm.bc.models import Constant, ForcingModel, RealTime
 from hydrolib.core.io.dflowfm.ext.models import Boundary, ExtModel, Lateral
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel
 
-from ..utils import test_data_dir
+from ...utils import test_data_dir
 
 
 class TestModels:

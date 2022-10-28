@@ -14,7 +14,7 @@ from hydrolib.core.io.dflowfm.net.models import Branch, Mesh2d, NetworkModel
 from hydrolib.core.io.dflowfm.net.reader import NCExplorer
 from hydrolib.core.io.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 
-from ..utils import test_input_dir, test_output_dir
+from ...utils import test_input_dir, test_output_dir
 
 
 def plot_network(network):
