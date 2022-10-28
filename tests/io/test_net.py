@@ -10,9 +10,9 @@ from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.dflowfm.mdu.models import FMModel
-from hydrolib.core.io.net.models import Branch, Mesh2d, NetworkModel
-from hydrolib.core.io.net.reader import NCExplorer
-from hydrolib.core.io.net.writer import FillValueConfiguration, UgridWriter
+from hydrolib.core.io.dflowfm.net.models import Branch, Mesh2d, NetworkModel
+from hydrolib.core.io.dflowfm.net.reader import NCExplorer
+from hydrolib.core.io.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 
 from ..utils import test_input_dir, test_output_dir
 
@@ -269,7 +269,7 @@ def test_read_write_read_compare(filepath):
 
     # Read keys from convention
     path = Path(__file__).parent.parent.parent.joinpath(
-        "hydrolib/core/io/net/ugrid_conventions.json"
+        "hydrolib/core/io/dflowfm/net/ugrid_conventions.json"
     )
 
     with open(path, "r") as f:
@@ -410,7 +410,7 @@ class TestNCExplorer:
 
     def test_load_ugrid_json(self):
         path = Path(__file__).parent.parent.parent.joinpath(
-            "hydrolib/core/io/net/ugrid_conventions.json"
+            "hydrolib/core/io/dflowfm/net/ugrid_conventions.json"
         )
         assert path.exists()
 

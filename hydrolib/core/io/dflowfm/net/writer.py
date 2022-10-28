@@ -11,7 +11,7 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import BaseModel
 
 if TYPE_CHECKING:
-    from .models import Link1d2d, Mesh1d, Mesh2d, NetworkModel
+    from ..dflowfm.net.models import Link1d2d, Mesh1d, Mesh2d, NetworkModel
 
 
 class FillValueConfiguration(BaseModel):
