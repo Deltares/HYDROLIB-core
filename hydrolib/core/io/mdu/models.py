@@ -16,7 +16,7 @@ from hydrolib.core.io.dflowfm.friction.models import FrictionModel
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.dflowfm.ini.util import get_split_string_on_delimiter_validator
-from hydrolib.core.io.inifield.models import IniFieldModel
+from hydrolib.core.io.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.io.net.models import NetworkModel
 from hydrolib.core.io.obs.models import ObservationPointModel
 from hydrolib.core.io.polyfile.models import PolyFile
