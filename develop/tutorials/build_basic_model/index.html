@@ -2387,15 +2387,15 @@ Licensed under the Apache License, Version 2.0.
             </clipboard-copy>
         </div>
             <div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># Import HYDROLIB-core functionalities and setup D-Flow FM model</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.structure.models</span> <span class="kn">import</span> <span class="n">FlowDirection</span><span class="p">,</span> <span class="n">StructureModel</span><span class="p">,</span> <span class="n">Weir</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.io.dflowfm.structure.models</span> <span class="kn">import</span> <span class="n">FlowDirection</span><span class="p">,</span> <span class="n">StructureModel</span><span class="p">,</span> <span class="n">Weir</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.io.dflowfm.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
 
 <span class="n">fm</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">()</span>
 <span class="n">fm</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;test.mdu&quot;</span>
 </pre></div>
 <div id="cell-1" class="clipboard-copy-txt"># Import HYDROLIB-core functionalities and setup D-Flow FM model
-from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
-from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.dflowfm.structure.models import FlowDirection, StructureModel, Weir
+from hydrolib.core.io.dflowfm.mdu.models import FMModel
 
 fm = FMModel()
 fm.filepath = "test.mdu"</div>

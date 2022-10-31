@@ -1572,11 +1572,11 @@ You're not viewing the latest release version.
 <li>RainfallRunoff files: <a href="../reference/rr/rr/#hydrolib.core.io.rr.topology.models.NodeFile">NodeFile</a> (<a href="https://github.com/Deltares/HYDROLIB-core/issues/138">#138</a>)
   and <a href="../reference/rr/rr/#hydrolib.core.io.rr.topology.models.LinkFile">LinkFile</a> (<a href="https://github.com/Deltares/HYDROLIB-core/issues/140">#140</a>)</li>
 <li>D-Flow FM files:<ul>
-<li>Initial field files: <a href="../reference/inifield/#hydrolib.core.io.inifield.models.IniFieldModel">IniFieldModel</a>,
-  also added 1D Field INI format: <a href="../reference/onedfield/#hydrolib.core.io.onedfield.models.OneDFieldModel">OneDFieldModel</a> (<a href="https://github.com/Deltares/HYDROLIB-core/issues/119">#119</a>).</li>
-<li>1D Roughness INI files: <a href="../reference/friction/#hydrolib.core.io.friction.models.FrictionModel">FrictionModel</a> (<a href="https://github.com/Deltares/HYDROLIB-core/issues/118">#118</a>).</li>
-<li>Storage node files: <a href="../reference/storagenode/#hydrolib.core.io.storagenode.models.StorageNodeModel">StorageNodeModel</a> (<a href="https://github.com/Deltares/HYDROLIB-core/issues/131">#131</a>).</li>
-<li>General structure:  <a href="../reference/structure/#hydrolib.core.io.structure.models.GeneralStructure">GeneralStructure</a> (<a href="https://github.com/Deltares/HYDROLIB-core/issues/79">#79</a>).</li>
+<li>Initial field files: [IniFieldModel][hydrolib.core.io.inifield.models.IniFieldModel],
+  also added 1D Field INI format: [OneDFieldModel][hydrolib.core.io.onedfield.models.OneDFieldModel] (<a href="https://github.com/Deltares/HYDROLIB-core/issues/119">#119</a>).</li>
+<li>1D Roughness INI files: [FrictionModel][hydrolib.core.io.friction.models.FrictionModel] (<a href="https://github.com/Deltares/HYDROLIB-core/issues/118">#118</a>).</li>
+<li>Storage node files: [StorageNodeModel][hydrolib.core.io.storagenode.models.StorageNodeModel] (<a href="https://github.com/Deltares/HYDROLIB-core/issues/131">#131</a>).</li>
+<li>General structure:  [GeneralStructure][hydrolib.core.io.structure.models.GeneralStructure] (<a href="https://github.com/Deltares/HYDROLIB-core/issues/79">#79</a>).</li>
 </ul>
 </li>
 <li>Many additions to the <a href="../reference/api/">API documentation</a>.</li>
@@ -1584,10 +1584,10 @@ You're not viewing the latest release version.
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>All classes that have fields with "keyword values" (such as <code>frictionType = WhiteColebrook</code>) now use Enum classes for those values.
-  See for example <a href="../reference/friction/#hydrolib.core.io.friction.models.FrictionType">FrictionType</a> and <a href="../reference/structure/#hydrolib.core.io.structure.models.FlowDirection">FlowDirection</a>
+  See for example [FrictionType][hydrolib.core.io.friction.models.FrictionType] and [FlowDirection][hydrolib.core.io.structure.models.FlowDirection]
   (<a href="https://github.com/Deltares/HYDROLIB-core/issues/98">#98</a>)</li>
 <li>All crosssection definition type now supported as subclasses of
-  <a href="../reference/crosssection/#hydrolib.core.io.crosssection.models.CrossSectionDefinition">CrossSection</a> (<a href="https://github.com/Deltares/HYDROLIB-core/issues/117">#117</a>)</li>
+  [CrossSection][hydrolib.core.io.crosssection.models.CrossSectionDefinition] (<a href="https://github.com/Deltares/HYDROLIB-core/issues/117">#117</a>)</li>
 <li>Cross section definition and location classes have been moved from <code>hydrolib.core.io.ini.models</code>
   to <code>hydrolib.core.io.crosssection.models</code>. (<a href="https://github.com/Deltares/HYDROLIB-core/issues/149">#149</a>)</li>
 <li>Changed behavior for file paths in saved files (<a href="https://github.com/Deltares/HYDROLIB-core/issues/96">#96</a>).
