@@ -423,6 +423,10 @@ class ForcingBase(DataBlockINIBasedModel):
         return str(representable)
 
 
+class VectorForcingBase(ForcingBase):
+    pass
+
+
 class TimeSeries(ForcingBase):
     """Subclass for a .bc file [Forcing] block with timeseries data."""
 

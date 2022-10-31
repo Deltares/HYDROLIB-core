@@ -336,6 +336,11 @@ class TestForcingModel:
         )
 
 
+class TestVectorForcingModel:
+    def test_create_vectorforcingmodel(self):
+        pass
+
+
 class TestT3D:
     @pytest.mark.parametrize(
         "vertical_position_type, exp_vertical_position_type",
