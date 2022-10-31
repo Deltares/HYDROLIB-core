@@ -18,6 +18,7 @@ from hydrolib.core.io.dflowfm.bc.models import (
     QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
+    VectorForcingBase,
     VectorQuantityUnitPairs,
     VerticalInterpolation,
     VerticalPositionType,
@@ -63,6 +64,7 @@ class TestTimeSeries:
         forcing = TimeSeries(**_create_time_series_values())
 
         assert isinstance(forcing, TimeSeries)
+        assert isinstance(forcing, VectorForcingBase)
         assert forcing.name == "boundary_timeseries"
         assert forcing.offset == 1.23
         assert forcing.factor == 2.34
@@ -362,6 +364,7 @@ class TestT3D:
 
         t3d = T3D(**values)
 
+        assert isinstance(t3d, VectorForcingBase)
         assert t3d.name == "boundary_t3d"
         assert t3d.function == "t3d"
         assert t3d.offset == 1.23

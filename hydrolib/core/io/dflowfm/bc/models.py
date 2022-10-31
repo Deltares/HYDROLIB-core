@@ -424,10 +424,14 @@ class ForcingBase(DataBlockINIBasedModel):
 
 
 class VectorForcingBase(ForcingBase):
+    """
+    The base class of a single [Forcing] block that supports vectors in a .bc forcings file.
+    """
+
     pass
 
 
-class TimeSeries(ForcingBase):
+class TimeSeries(VectorForcingBase):
     """Subclass for a .bc file [Forcing] block with timeseries data."""
 
     function: Literal["timeseries"] = "timeseries"
@@ -495,7 +499,7 @@ class AstronomicCorrection(ForcingBase):
     function: Literal["astronomic-correction"] = "astronomic-correction"
 
 
-class T3D(ForcingBase):
+class T3D(VectorForcingBase):
     """Subclass for a .bc file [Forcing] block with 3D timeseries data."""
 
     function: Literal["t3d"] = "t3d"
