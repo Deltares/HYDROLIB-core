@@ -725,8 +725,8 @@ class ForcingModel(INIModel):
     _split_to_list = make_list_validator("forcing")
 
     serializer_config: SerializerConfig = SerializerConfig(
-            section_indent=0, property_indent=0, datablock_indent=0
-        )
+        section_indent=0, property_indent=0, datablock_indent=0
+    )
 
     @classmethod
     def _ext(cls) -> str:

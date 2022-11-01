@@ -8,7 +8,12 @@ from hydrolib.core.basemodel import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.io.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
-from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel, SerializerConfig
+from hydrolib.core.io.dflowfm.ini.models import (
+    INIBasedModel,
+    INIGeneral,
+    INIModel,
+    SerializerConfig,
+)
 from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -196,7 +201,9 @@ class ExtModel(INIModel):
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = []
     lateral: List[Lateral] = []
-    serializer_config: SerializerConfig = SerializerConfig(section_indent=0, property_indent=0)
+    serializer_config: SerializerConfig = SerializerConfig(
+        section_indent=0, property_indent=0
+    )
     _split_to_list = make_list_validator("boundary", "lateral")
 
     @classmethod

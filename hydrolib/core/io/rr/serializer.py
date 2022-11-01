@@ -48,7 +48,6 @@ def serialize(data: Dict) -> str:
     if "serializer_config" in data:
         del data["serializer_config"]
 
-
     values = [_get_string_value(v) for v in data.values()]
     max_len = _calculate_max_value_length(values)
     padded_values = [s.ljust(max_len) if s else " " * max_len for s in values]

@@ -224,4 +224,6 @@ class INIModel(ParsableFileModel):
         return Document(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict) -> None:
-        write_ini(self._resolved_filepath, self._to_document(), config=self.serializer_config)
+        write_ini(
+            self._resolved_filepath, self._to_document(), config=self.serializer_config
+        )

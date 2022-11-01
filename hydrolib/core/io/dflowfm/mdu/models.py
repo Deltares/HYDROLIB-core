@@ -1795,6 +1795,7 @@ class FMModel(INIModel):
     veg: Optional[Vegetation] = Field(None)
 
     serializer_config: SerializerConfig = SerializerConfig(skip_empty_properties=False)
+
     @classmethod
     def _ext(cls) -> str:
         return ".mdu"
