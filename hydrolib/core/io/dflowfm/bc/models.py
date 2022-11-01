@@ -26,7 +26,7 @@ from hydrolib.core.io.dflowfm.ini.models import (
     INIModel,
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
@@ -752,11 +752,6 @@ class ForcingModel(INIModel):
                 parser.feed_line(line)
 
         return parser.finalize().flatten(True, False)
-
-    def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-
-        write_ini(self._resolved_filepath, self._to_document(), config=self.serializer_config)
 
 
 class RealTime(str, Enum):

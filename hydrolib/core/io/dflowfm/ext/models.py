@@ -9,7 +9,7 @@ from hydrolib.core.basemodel import (
 )
 from hydrolib.core.io.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel, SerializerConfig
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     get_location_specification_rootvalidator,
@@ -206,7 +206,3 @@ class ExtModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "bnd"
-
-    def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-        write_ini(self._resolved_filepath, self._to_document(), config=self.serializer_config)
