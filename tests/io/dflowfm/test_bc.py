@@ -171,7 +171,7 @@ class TestTimeSeries:
             TimeSeries(**values)
 
         expected_error_mssg = (
-            f"Incorrect number of quantity unit pairs were found; "
+            "Incorrect number of quantity unit pairs were found; "
             + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd."
         )
 
@@ -648,6 +648,28 @@ class TestT3D:
         assert t3d.datablock[1] == [60, 4, 5, 6, 40, 50, 60]
         assert t3d.datablock[2] == [120, 7, 8, 9, 70, 80, 90]
 
+    def test_initialize_t3d_with_wrong_amount_vectorquantities_but_multiple_of_number_of_elements_in_vector(
+        self,
+    ):
+        values = _create_t3d_vectorvalues()
+
+        # We have a vector with 2 elements and 6 quantityunitpairs.
+        # If we delete 2 pairs, we still have a multiple of the number of elements,
+        # so it should pass the vectorbase validation.
+        # But we no longer have the expected number of pairs, so it should fail the T3D validation.
+        del values["quantityunitpair"][1].quantityunitpair[5]
+        del values["quantityunitpair"][1].quantityunitpair[4]
+
+        with pytest.raises(ValueError) as error:
+            T3D(**values)
+
+        expected_error_mssg = (
+            "Incorrect number of quantity unit pairs were found; "
+            + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
+            + "and 3 vertical layers."
+        )
+        assert expected_error_mssg in str(error.value)
+
     def test_initialize_t3d_with_wrong_amount_vectorquantities(
         self,
     ):
@@ -658,7 +680,7 @@ class TestT3D:
             T3D(**values)
 
         expected_error_mssg = (
-            f"Incorrect number of quantity unit pairs were found; "
+            "Incorrect number of quantity unit pairs were found; "
             + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
             + "and 3 vertical layers."
         )

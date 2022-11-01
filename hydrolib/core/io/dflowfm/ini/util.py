@@ -249,7 +249,10 @@ def get_conditional_root_validator(
 
 
 def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
-    """Gets a value that corresponds with the default field value of one of the subclasses.
+    """
+    Gets a value that corresponds with the default field value of one of the subclasses.
+    If the subclass doesn't have the specified field, it will look into its own subclasses
+    for the specified fieldname.
 
     Args:
         cls (Type[BaseModel]): The parent model type.
@@ -261,6 +264,16 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
     """
     for c in cls.__subclasses__():
         default = c.__fields__.get(fieldname).default
+
+        # if default is none: zoek in de subclasses naar de default, recursively?
+        if default is None:
+            for sc in c.__subclasses__():
+                default = sc.__fields__.get(fieldname).default
+                if default is None:
+                    continue
+                if default.lower() == value.lower():
+                    return default
+
         if default.lower() == value.lower():
             return default
 
