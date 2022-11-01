@@ -307,7 +307,7 @@ class DIMR(ParsableFileModel):
 
     def dict(self, *args, **kwargs):
         kwargs["exclude_none"] = True
-        kwargs["exclude"] = {"filepath"}
+        kwargs["exclude"] = {"filepath", "serializer_config"}
         return super().dict(*args, **kwargs)
 
     def _post_init_load(self) -> None:

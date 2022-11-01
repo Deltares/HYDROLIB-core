@@ -953,6 +953,14 @@ class ParsableFileModel(FileModel):
     to skip the _get_serializer and _get_parser methods respectively.
     """
 
+    class SerializerConfig(BaseModel, ABC):
+        """Class that holds the configuration settings for serialization. """
+
+        number_of_decimals: Optional[int] = None
+        """Optional[int]: The number of decimals that should be serialized for floating numbers. If None, the full number will be serialized. Defaults to None."""
+
+    serializer_config: SerializerConfig = SerializerConfig()
+
     def _load(self, filepath: Path) -> Dict:
         # TODO Make this lazy in some cases so it doesn't become slow
         if filepath.is_file():

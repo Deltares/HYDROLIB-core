@@ -45,6 +45,9 @@ def serialize(data: Dict) -> str:
     """
     if "filepath" in data:
         del data["filepath"]
+    if "serializer_config" in data:
+        del data["serializer_config"]
+
 
     values = [_get_string_value(v) for v in data.values()]
     max_len = _calculate_max_value_length(values)

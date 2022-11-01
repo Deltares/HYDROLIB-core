@@ -514,7 +514,7 @@ class RainfallRunoffModel(ParsableFileModel):
     @classmethod
     def property_keys(cls) -> Iterable[str]:
         # Skip first element corresponding with file_path introduced by the FileModel.
-        return list(cls.schema()["properties"].keys())[1:]
+        return list(cls.schema()["properties"].keys())[2:]
 
     @classmethod
     def _ext(cls) -> str:

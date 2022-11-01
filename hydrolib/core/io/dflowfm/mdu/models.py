@@ -1794,6 +1794,7 @@ class FMModel(INIModel):
     particles: Optional[Particles] = Field(None)
     veg: Optional[Vegetation] = Field(None)
 
+    serializer_config: SerializerConfig = SerializerConfig(skip_empty_properties=False)
     @classmethod
     def _ext(cls) -> str:
         return ".mdu"
@@ -1845,5 +1846,4 @@ class FMModel(INIModel):
             return ResolveRelativeMode.ToParent
 
     def _serialize(self, _: dict) -> None:
-        config = SerializerConfig(skip_empty_properties=False)
-        write_ini(self._resolved_filepath, self._to_document(), config=config)
+        write_ini(self._resolved_filepath, self._to_document(), config=self.serializer_config)

@@ -190,6 +190,8 @@ class INIModel(ParsableFileModel):
     ini file will be (sub)class of INIBasedModel.
     """
 
+    serializer_config: SerializerConfig = SerializerConfig()
+
     general: INIGeneral
 
     @classmethod
@@ -212,7 +214,7 @@ class INIModel(ParsableFileModel):
         header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
         sections = []
         for _, value in self:
-            if _ == "filepath" or value is None:
+            if _ == "filepath" or _ == "serializer_config" or value is None:
                 continue
             if isinstance(value, list):
                 for v in value:
@@ -222,6 +224,4 @@ class INIModel(ParsableFileModel):
         return Document(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-        config = SerializerConfig(section_indent=0, property_indent=4)
-        write_ini(self._resolved_filepath, self._to_document(), config=config)
+        write_ini(self._resolved_filepath, self._to_document(), config=self.serializer_config)
