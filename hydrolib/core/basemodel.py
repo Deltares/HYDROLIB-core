@@ -12,7 +12,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
+from typing import Any, Callable, Dict, Generic, List, Optional, Set, Tuple, Type, TypeVar
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
@@ -985,6 +985,11 @@ class ParsableFileModel(FileModel):
 
         path.parent.mkdir(parents=True, exist_ok=True)
         self._get_serializer()(path, data)
+
+    @classmethod
+    def _exclude_fields(cls) -> Set[str]:
+        """A set containing the field names that should not be serialized."""
+        return {"filepath", "serializer_config"}
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:

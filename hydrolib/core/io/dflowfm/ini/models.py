@@ -214,7 +214,7 @@ class INIModel(ParsableFileModel):
         header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
         sections = []
         for _, value in self:
-            if _ == "filepath" or _ == "serializer_config" or value is None:
+            if _ in self._exclude_fields() or value is None:
                 continue
             if isinstance(value, list):
                 for v in value:
