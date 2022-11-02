@@ -13,6 +13,7 @@ from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import SerializerConfig, write_ini
 from .util import make_list_validator
+from hydrolib.core.utils import float_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +135,7 @@ class INIBasedModel(BaseModel, ABC):
         else:
             return str(v)
 
-    def _to_section(self) -> Section:
+    def _to_section(self, config: SerializerConfig) -> Section:
         props = []
         for key, value in self:
             if key in self._exclude_fields():
@@ -165,10 +166,27 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     _make_lists = make_list_validator("datablock")
 
-    def _to_section(self) -> Section:
-        section = super()._to_section()
-        section.datablock = self.datablock
+    def _to_section(self, config: SerializerConfig) -> Section:
+        section = super()._to_section(config)
+        section.datablock = self._to_datablock(config)
         return section
+
+    def _to_datablock(self, config: SerializerConfig) -> List[List[str]]:
+        converted_datablock = []
+    
+        for row in self.datablock:
+            converted_row = (DataBlockINIBasedModel._elem_to_str(elem, config) for elem in row)
+            converted_datablock.append(list(converted_row))
+
+        return converted_datablock
+            
+    @classmethod
+    def _elem_to_str(cls, elem: Union[float, str], config: SerializerConfig) -> str:
+        if isinstance(elem, float) and config.number_of_decimals is not None:
+            return float_to_str(elem, config.number_of_decimals)
+            
+        return str(elem)
+
 
 
 class INIGeneral(INIBasedModel):
@@ -218,9 +236,9 @@ class INIModel(ParsableFileModel):
                 continue
             if isinstance(value, list):
                 for v in value:
-                    sections.append(v._to_section())
+                    sections.append(v._to_section(self.serializer_config))
             else:
-                sections.append(value._to_section())
+                sections.append(value._to_section(self.serializer_config))
         return Document(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict) -> None:

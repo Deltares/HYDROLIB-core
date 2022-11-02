@@ -404,8 +404,8 @@ class ForcingBase(DataBlockINIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    def _to_section(self) -> Section:
-        section = super()._to_section()
+    def _to_section(self, config: SerializerConfig) -> Section:
+        section = super()._to_section(config)
 
         for quantity in self.quantityunitpair:
             for prop in quantity._to_properties():
