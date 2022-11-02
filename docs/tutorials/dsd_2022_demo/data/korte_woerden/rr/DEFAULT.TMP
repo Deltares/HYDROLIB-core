@@ -1,0 +1,14 @@
+* Created: 03/13/2020 10:06:49
+* Use the default data set for other input (always 1) 
+1
+* Number of meteo stations: 
+1
+* Names of meteo stations: 
+'Global'
+* Number of events and the period in seconds 
+1 86400 
+* The first record contains the start date and time (yyyy mm dd HH mm ss), * followed by the length of the event (dd HH mm ss). 
+* The last part is the data for each time step.
+2020 01 01 00 00 00 01 00 00 00
+18.00 
+18.00 
