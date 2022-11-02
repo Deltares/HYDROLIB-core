@@ -8,12 +8,12 @@ from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.utils import float_to_str
 
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import SerializerConfig, write_ini
 from .util import make_list_validator
-from hydrolib.core.utils import float_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -173,20 +173,21 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     def _to_datablock(self, config: SerializerConfig) -> List[List[str]]:
         converted_datablock = []
-    
+
         for row in self.datablock:
-            converted_row = (DataBlockINIBasedModel._elem_to_str(elem, config) for elem in row)
+            converted_row = (
+                DataBlockINIBasedModel._elem_to_str(elem, config) for elem in row
+            )
             converted_datablock.append(list(converted_row))
 
         return converted_datablock
-            
+
     @classmethod
     def _elem_to_str(cls, elem: Union[float, str], config: SerializerConfig) -> str:
         if isinstance(elem, float) and config.number_of_decimals is not None:
             return float_to_str(elem, config.number_of_decimals)
-            
-        return str(elem)
 
+        return str(elem)
 
 
 class INIGeneral(INIBasedModel):
