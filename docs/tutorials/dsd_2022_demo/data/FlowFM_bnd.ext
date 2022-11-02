@@ -1,46 +1,50 @@
+# written by HYDROLIB-core 0.3.1
+
 [General]
-    fileVersion           = 2.00                
-    fileType              = extForce            
-
-
-[Lateral]
-id=10
-name=Stuw Wedde R5 A=4249 ha
-nodeId=10
-discharge=FlowFM_lateral_sources.bc
+fileVersion = 2.00
+fileType    = extForce
 
 [Lateral]
-id=632
-name=De Poale A=424 ha
-nodeId=632
-discharge=FlowFM_lateral_sources.bc
+id             = 10
+name           = Stuw Wedde R5 A=4249 ha
+locationType   = 1d
+nodeId         = 10
+discharge      = FlowFM_lateral_sources.bc
 
 [Lateral]
-id=1183
-name=
-nodeId=1183
-discharge=realtime
+id             = 632
+name           = De Poale A=424 ha
+locationType   = 1d
+nodeId         = 632
+discharge      = FlowFM_lateral_sources.bc
 
 [Lateral]
-id=1277
-name=
-nodeId=1277
-discharge=realtime
+id             = 1183
+locationType   = 1d
+nodeId         = 1183
+discharge      = realtime
 
 [Lateral]
-id=DV_360
-name=
-nodeId=DV_360
-discharge=FlowFM_lateral_sources.bc
+id             = 1277
+locationType   = 1d
+nodeId         = 1277
+discharge      = realtime
 
 [Lateral]
-id=DV_1454
-name=
-nodeId=DV_1454
-discharge=FlowFM_lateral_sources.bc
+id             = DV_360
+locationType   = 1d
+nodeId         = DV_360
+discharge      = FlowFM_lateral_sources.bc
 
 [Lateral]
-id=DV_1455
-name=
-nodeId=DV_1455
-discharge=FlowFM_lateral_sources.bc
+id             = DV_1454
+locationType   = 1d
+nodeId         = DV_1454
+discharge      = FlowFM_lateral_sources.bc
+
+[Lateral]
+id             = DV_1455
+locationType   = 1d
+nodeId         = DV_1455
+discharge      = FlowFM_lateral_sources.bc
+
