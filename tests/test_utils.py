@@ -3,7 +3,11 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.io.dflowfm.mdu.models import Geometry, Output
-from hydrolib.core.utils import float_to_str, get_substring_between, str_is_empty_or_none
+from hydrolib.core.utils import (
+    float_to_str,
+    get_substring_between,
+    str_is_empty_or_none,
+)
 
 from .utils import test_input_dir
 
@@ -72,10 +76,10 @@ class TestGetSubstringBetween:
 
         assert result == exp_result
 
-class TestFloatToString:
 
+class TestFloatToString:
     @pytest.mark.parametrize(
-        ("value, number_of_decimals, exp_result"), 
+        ("value, number_of_decimals, exp_result"),
         [
             pytest.param(3.141592, 0, "3"),
             pytest.param(3.141592, 2, "3.14"),
@@ -83,10 +87,13 @@ class TestFloatToString:
             pytest.param(3.141592, 8, "3.14159200"),
             pytest.param(123.141592, 0, "123"),
             pytest.param(123.141592, 2, "123.14"),
-            pytest.param(123.141592, 4, "123.1416"),  
-            pytest.param(123.141592, 8, "123.14159200"),                 
-        ])
-    def non_negative_number_of_decimals_returns_correct_string(self, value: float, number_of_decimals: int, exp_result: str):
+            pytest.param(123.141592, 4, "123.1416"),
+            pytest.param(123.141592, 8, "123.14159200"),
+        ],
+    )
+    def non_negative_number_of_decimals_returns_correct_string(
+        self, value: float, number_of_decimals: int, exp_result: str
+    ):
         result = float_to_str(value, number_of_decimals)
 
         assert result == exp_result

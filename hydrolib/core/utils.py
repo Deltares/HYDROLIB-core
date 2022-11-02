@@ -176,6 +176,7 @@ def get_operating_system() -> OperatingSystem:
 
     raise NotImplementedError(f"Operating system {operating_system} is not supported.")
 
+
 def float_to_str(value: float, number_of_decimals: int) -> str:
     """Converts a floating number to a string with the specified number of digits.
 
