@@ -654,24 +654,12 @@ class T3D(VectorForcingBase):
         if verticalpositionindexes is None:
             raise ValueError("vertPositionIndex is not provided")
 
-        all_qups = []
-        for qup in quantityunitpairs:
-            if isinstance(qup, VectorQuantityUnitPairs):
-                all_qups.extend(qup.quantityunitpair)
-            else:
-                all_qups.append(qup)
-
-        if len(verticalpositionindexes) != len(all_qups) - 1:
-            raise ValueError(
-                "Number of vertical position indexes should be equal to the number of quantities/units - 1"
-            )
-
         T3D._validate_that_verticalpositionindexes_are_valid(
             verticalpositionindexes, number_of_verticalpositions
         )
 
         T3D._add_verticalpositionindex_to_quantityunitpairs(
-            all_qups[1:], verticalpositionindexes
+            quantityunitpairs[1:], verticalpositionindexes
         )
 
     @staticmethod
@@ -705,17 +693,28 @@ class T3D(VectorForcingBase):
 
     @staticmethod
     def _add_verticalpositionindex_to_quantityunitpairs(
-        quantityunitpairs: List[QuantityUnitPair], verticalpositionindexes: List[int]
+        quantityunitpairs: List[ScalarOrVectorQUP], verticalpositionindexes: List[int]
     ) -> None:
-        if len(quantityunitpairs) != len(verticalpositionindexes):
-            raise ValueError(
-                "Number of quantityunitpairs and verticalpositionindexes should be equal"
-            )
+        i = 0
 
-        for (quantityunitpair, verticalpositionindex) in zip(
-            quantityunitpairs, verticalpositionindexes
-        ):
-            quantityunitpair.vertpositionindex = verticalpositionindex
+        for quanityunitpair in quantityunitpairs:
+            if i >= len(verticalpositionindexes):
+                raise ValueError(
+                    "Number of vertical position indexes should be equal to the number of quantities/units - 1"
+                )
+
+            if isinstance(quanityunitpair, VectorQuantityUnitPairs):
+                for qup in quanityunitpair.quantityunitpair:
+                    qup.vertpositionindex = verticalpositionindexes[i]
+                    i = i + 1
+            else:
+                quanityunitpair.vertpositionindex = verticalpositionindexes[i]
+                i = i + 1
+
+        if i != len(verticalpositionindexes):
+            raise ValueError(
+                "Number of vertical position indexes should be equal to the number of quantities/units - 1"
+            )
 
 
 class QHTable(ForcingBase):

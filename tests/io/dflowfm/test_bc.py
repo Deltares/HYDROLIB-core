@@ -509,7 +509,7 @@ class TestT3D:
             str(i + onebased_index_offset)
             for i in range(number_of_quantities_and_units)
         ]
-        values["vertpositionindex"] = [None] + [
+        values["vertpositionindex"] = [
             str(i + onebased_index_offset)
             for i in range(number_of_verticalpositionindexes)
         ]
