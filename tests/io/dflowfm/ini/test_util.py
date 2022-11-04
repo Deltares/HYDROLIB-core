@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 import pytest
 from pydantic import Extra
@@ -10,6 +10,7 @@ from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationFieldNames,
     get_key_renaming_root_validator,
     get_location_specification_rootvalidator,
+    get_from_subclass_defaults,
 )
 
 
@@ -239,3 +240,61 @@ class TestGetKeyRenamingRootValidator:
 
         expected_message = "field required"
         assert expected_message in str(error.value)
+
+
+class TestGetFromSubclassDefaults:
+    class BaseClass(BaseModel):
+        name: str
+
+    class WithDefaultProperty(BaseClass):
+        name: Literal["WithDefaultProperty"] = "WithDefaultProperty"
+
+    class WithoutDefaultProperty(BaseClass):
+        pass
+
+    class GrandChildWithDefaultProperty(WithoutDefaultProperty):
+        name: Literal["GrandChildWithDefaultProperty"] = "GrandChildWithDefaultProperty"
+
+    def test_get_from_subclass_defaults__correctly_gets_default_property_from_child(
+        self,
+    ):
+        name = get_from_subclass_defaults(
+            TestGetFromSubclassDefaults.BaseClass,
+            "name",
+            "WithDefaultProperty",
+        )
+
+        assert name == "WithDefaultProperty"
+
+    def test_get_from_subclass_defaults__correctly_gets_default_property_from_grandchild(
+        self,
+    ):
+        name = get_from_subclass_defaults(
+            TestGetFromSubclassDefaults.BaseClass,
+            "name",
+            "GrandChildWithDefaultProperty",
+        )
+
+        assert name == "GrandChildWithDefaultProperty"
+
+    def test_get_from_subclass_defaults__returns_value_if_no_corresponding_defaults_found(
+        self,
+    ):
+        name = get_from_subclass_defaults(
+            TestGetFromSubclassDefaults.BaseClass,
+            "name",
+            "ThisDefaultValueDoesNotExist",
+        )
+
+        assert name == "ThisDefaultValueDoesNotExist"
+
+    def test_get_from_subclass_defaults__property_not_found__returns_value(self):
+        value = "valueToCheck"
+
+        default = get_from_subclass_defaults(
+            TestGetFromSubclassDefaults.BaseClass,
+            "unknownProperty",
+            value,
+        )
+
+        assert default == value

@@ -248,11 +248,11 @@ def get_conditional_root_validator(
     return root_validator(allow_reuse=True)(validate_conditionally)
 
 
-def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
+def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str) -> str:
     """
     Gets a value that corresponds with the default field value of one of the subclasses.
     If the subclass doesn't have the specified field, it will look into its own subclasses
-    for the specified fieldname.
+    recursively for the specified fieldname.
 
     Args:
         cls (Type[BaseModel]): The parent model type.
@@ -263,21 +263,27 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
         [type]: The field default that corresponds to the value.
     """
     for c in cls.__subclasses__():
-        default = c.__fields__.get(fieldname).default
+        default = _try_get_default_value(c, fieldname, value)
+        if default is not None and default.lower() == value.lower():
+            return default
+    return value
 
-        # if default is none: zoek in de subclasses naar de default, recursively?
-        if default is None:
-            for sc in c.__subclasses__():
-                default = sc.__fields__.get(fieldname).default
-                if default is None:
-                    continue
-                if default.lower() == value.lower():
-                    return default
 
-        if default.lower() == value.lower():
+def _try_get_default_value(c, fieldname, value):
+    if (field := c.__fields__.get(fieldname)) is None:
+        return value
+
+    default = field.default
+
+    if default is not None and default.lower() == value.lower():
+        return default
+
+    for sc in c.__subclasses__():
+        default = _try_get_default_value(sc, fieldname, value)
+        if default is not None and default.lower() == value.lower():
             return default
 
-    return value
+    return None
 
 
 class LocationValidationConfiguration(BaseModel):
