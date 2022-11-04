@@ -8,9 +8,9 @@ from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
+    get_from_subclass_defaults,
     get_key_renaming_root_validator,
     get_location_specification_rootvalidator,
-    get_from_subclass_defaults,
 )
 
 
