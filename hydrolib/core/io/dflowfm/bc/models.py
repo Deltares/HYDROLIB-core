@@ -288,8 +288,6 @@ class VectorForcingBase(ForcingBase):
 
     @root_validator(pre=True)
     def validate_and_update_quantityunitpairs(cls, values: Dict) -> Dict:
-        super()._validate_quantityunitpair(values)
-
         quantityunitpairs = values["quantityunitpair"]
         vector = values.get("vector")
         number_of_element_repetitions = cls.get_number_of_repetitions(values)
@@ -597,8 +595,6 @@ class T3D(VectorForcingBase):
 
     @root_validator(pre=True)
     def _validate_quantityunitpairs(cls, values: Dict) -> Dict:
-        super().validate_and_update_quantityunitpairs(values)
-
         quantityunitpairs = values["quantityunitpair"]
 
         T3D._validate_that_first_unit_is_time_and_has_no_verticalposition(
