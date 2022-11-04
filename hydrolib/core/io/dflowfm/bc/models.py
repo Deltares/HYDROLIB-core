@@ -575,6 +575,8 @@ class T3D(VectorForcingBase):
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:
         verticalpositions = values.get("vertpositions")
+        # Since the renaming root validator may not have been run yet, in this
+        # method we explicitly check old keywords for backwards compatibility:
         if verticalpositions is None:
             # try to get the value from any of the older keywords
             for old_keyword in cls._keys_to_rename["vertpositions"]:
