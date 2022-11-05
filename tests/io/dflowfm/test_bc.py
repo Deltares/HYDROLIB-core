@@ -435,6 +435,25 @@ class TestVectorForcingBase:
         assert second_vector_qup.quantityunitpair[3].quantity == "waterlevelbnd"
         assert second_vector_qup.quantityunitpair[3].unit == "m"
 
+    @pytest.mark.parametrize(
+        "bc_file_name",
+        [
+            "FlowFM_boundaryconditions2d_and_vectors.bc",
+            "FlowFM_boundaryconditions3d_and_vectors.bc",
+        ],
+    )
+    def test_load_and_save_model_with_vector_quantities(self, bc_file_name: str):
+        bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
+        output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
+        reference_file = test_reference_dir / "bc" / bc_file_name
+
+        forcingmodel = ForcingModel(bc_file)
+
+        forcingmodel.filepath = output_file
+        forcingmodel.save()
+
+        assert_files_equal(output_file, reference_file, [0])
+
 
 class TestT3D:
     @pytest.mark.parametrize(
@@ -903,26 +922,7 @@ class TestT3D:
         assert quantityunitpairs[1].quantityunitpair[4].unit == "-"
 
 
-class TestVectorBC:
-    @pytest.mark.parametrize(
-        "bc_file_name",
-        [
-            "FlowFM_boundaryconditions2d_and_vectors.bc",
-            "FlowFM_boundaryconditions3d_and_vectors.bc",
-        ],
-    )
-    def test_load_and_save_model_with_vector_quantities(self, bc_file_name: str):
-        bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
-        output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
-        reference_file = test_reference_dir / "bc" / bc_file_name
-
-        forcingmodel = ForcingModel(bc_file)
-
-        forcingmodel.filepath = output_file
-        forcingmodel.save()
-
-        assert_files_equal(output_file, reference_file, [0])
-
+class TestVectorQuantityUnitPairs:
     def test_initialize_vectorqup_with_wrongly_named_vectorquantities(
         self,
     ):
