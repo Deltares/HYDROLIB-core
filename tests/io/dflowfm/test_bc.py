@@ -346,6 +346,11 @@ class TestVectorForcingBase:
         def get_number_of_repetitions(cls, values: Dict):
             return 2
 
+    incorrect_number_of_qups_error = (
+        "Incorrect number of quantity unit pairs were found; should match the elements"
+        + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
+    )
+
     def test_valid_vectorquantityunitpair_does_not_throw(self):
         values = _create_valid_vectorforcingtest_values()
 
@@ -366,11 +371,7 @@ class TestVectorForcingBase:
         with pytest.raises(ValidationError) as error:
             TestVectorForcingBase.VectorForcingTest(**values)
 
-        expected_message = (
-            "Incorrect number of quantity unit pairs were found; should match the elements"
-            + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
-        )
-        assert expected_message in str(error.value)
+        assert TestVectorForcingBase.incorrect_number_of_qups_error in str(error.value)
 
     def test_too_many_quantityunitpairs_raises_error(self):
         values = _create_valid_vectorforcingtest_values()
@@ -381,11 +382,7 @@ class TestVectorForcingBase:
         with pytest.raises(ValidationError) as error:
             TestVectorForcingBase.VectorForcingTest(**values)
 
-        expected_message = (
-            "Incorrect number of quantity unit pairs were found; should match the elements"
-            + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
-        )
-        assert expected_message in str(error.value)
+        assert TestVectorForcingBase.incorrect_number_of_qups_error in str(error.value)
 
     def test_too_few_quanityunitpairs_with_vector_raises_error(self):
         values = _create_valid_vectorforcingtest_values_that_still_have_to_be_parsed()
@@ -396,11 +393,7 @@ class TestVectorForcingBase:
         with pytest.raises(ValidationError) as error:
             TestVectorForcingBase.VectorForcingTest(**values)
 
-        expected_message = (
-            "Incorrect number of quantity unit pairs were found; should match the elements"
-            + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
-        )
-        assert expected_message in str(error.value)
+        assert TestVectorForcingBase.incorrect_number_of_qups_error in str(error.value)
 
     def test_multiple_vectors_are_parsed_correctly(self):
         values = (
