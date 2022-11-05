@@ -387,6 +387,54 @@ class TestVectorForcingBase:
         )
         assert expected_message in str(error.value)
 
+    def test_too_few_quanityunitpairs_with_vector_raises_error(self):
+        values = _create_valid_vectorforcingtest_values_that_still_have_to_be_parsed()
+
+        values["quantity"].pop(0)
+        values["unit"].pop(0)
+
+        with pytest.raises(ValidationError) as error:
+            TestVectorForcingBase.VectorForcingTest(**values)
+
+        expected_message = (
+            "Incorrect number of quantity unit pairs were found; should match the elements"
+            + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
+        )
+        assert expected_message in str(error.value)
+
+    def test_multiple_vectors_are_parsed_correctly(self):
+        values = (
+            _create_valid_vectorforcingtest_values_with_multiple_vectors_that_still_have_to_be_parsed()
+        )
+
+        vector_forcing = TestVectorForcingBase.VectorForcingTest(**values)
+
+        first_vector_qup = vector_forcing.quantityunitpair[0]
+        assert len(first_vector_qup.quantityunitpair) == 4
+        assert first_vector_qup.elementname == ["ux", "uy"]
+        assert first_vector_qup.vectorname == "uxuyadvectionvelocitybnd"
+        assert first_vector_qup.quantityunitpair[0].quantity == "ux"
+        assert first_vector_qup.quantityunitpair[0].unit == "m s-1"
+        assert first_vector_qup.quantityunitpair[1].quantity == "ux"
+        assert first_vector_qup.quantityunitpair[1].unit == "m s-1"
+        assert first_vector_qup.quantityunitpair[2].quantity == "uy"
+        assert first_vector_qup.quantityunitpair[2].unit == "m s-1"
+        assert first_vector_qup.quantityunitpair[3].quantity == "uy"
+        assert first_vector_qup.quantityunitpair[3].unit == "m s-1"
+
+        second_vector_qup = vector_forcing.quantityunitpair[1]
+        assert len(second_vector_qup.quantityunitpair) == 4
+        assert second_vector_qup.elementname == ["salinity", "waterlevelbnd"]
+        assert second_vector_qup.vectorname == "randomvector"
+        assert second_vector_qup.quantityunitpair[0].quantity == "salinity"
+        assert second_vector_qup.quantityunitpair[0].unit == "ppt"
+        assert second_vector_qup.quantityunitpair[1].quantity == "salinity"
+        assert second_vector_qup.quantityunitpair[1].unit == "ppt"
+        assert second_vector_qup.quantityunitpair[2].quantity == "waterlevelbnd"
+        assert second_vector_qup.quantityunitpair[2].unit == "m"
+        assert second_vector_qup.quantityunitpair[3].quantity == "waterlevelbnd"
+        assert second_vector_qup.quantityunitpair[3].unit == "m"
+
 
 class TestT3D:
     @pytest.mark.parametrize(
@@ -1083,6 +1131,48 @@ def _create_valid_vectorforcingtest_values():
             _create_quantityunitpair("time", TEST_TIME_UNIT),
             _create_vectorqup(**_create_vectorvalues(2)),
         ],
+        datablock=[
+            ["0", "1.23", "12.3"],
+            ["60", "2.34", "23.4"],
+            ["120", "3.45", "34.5"],
+        ],
+    )
+
+
+def _create_valid_vectorforcingtest_values_that_still_have_to_be_parsed():
+    return dict(
+        name="test",
+        function="testfunction",
+        vector="uxuyadvectionvelocitybnd:ux,uy",
+        quantity=["ux", "ux", "uy", "uy"],
+        unit=["m s-1", "m s-1", "m s-1", "m s-1"],
+        datablock=[
+            ["0", "1.23", "12.3"],
+            ["60", "2.34", "23.4"],
+            ["120", "3.45", "34.5"],
+        ],
+    )
+
+
+def _create_valid_vectorforcingtest_values_with_multiple_vectors_that_still_have_to_be_parsed():
+    return dict(
+        name="test",
+        function="testfunction",
+        vector=[
+            "uxuyadvectionvelocitybnd:ux,uy",
+            "randomvector:salinity,waterlevelbnd",
+        ],
+        quantity=[
+            "ux",
+            "ux",
+            "uy",
+            "uy",
+            "salinity",
+            "salinity",
+            "waterlevelbnd",
+            "waterlevelbnd",
+        ],
+        unit=["m s-1", "m s-1", "m s-1", "m s-1", "ppt", "ppt", "m", "m"],
         datablock=[
             ["0", "1.23", "12.3"],
             ["60", "2.34", "23.4"],
