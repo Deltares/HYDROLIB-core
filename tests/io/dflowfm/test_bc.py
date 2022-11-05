@@ -1,6 +1,6 @@
 import inspect
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Literal
 
 import pytest
 from pydantic.error_wrappers import ValidationError
@@ -338,9 +338,54 @@ class TestForcingModel:
         )
 
 
-class TestVectorForcingModel:
-    def test_create_vectorforcingmodel(self):
-        pass
+class TestVectorForcingBase:
+    class VectorForcingTest(VectorForcingBase):
+        function: Literal["testfunction"] = "testfunction"
+
+        @classmethod
+        def get_number_of_repetitions(cls, values: Dict):
+            return 2
+
+    def test_valid_vectorquantityunitpair_does_not_throw(self):
+        values = _create_valid_vectorforcingtest_values()
+
+        vector_forcing = TestVectorForcingBase.VectorForcingTest(**values)
+
+        assert len(vector_forcing.quantityunitpair) == 2
+
+        vectorquantityunitpairs = vector_forcing.quantityunitpair[1]
+        assert vectorquantityunitpairs.elementname == ["ux", "uy"]
+        assert vectorquantityunitpairs.vectorname == "uxuyadvectionvelocitybnd"
+        assert len(vectorquantityunitpairs.quantityunitpair) == 4
+
+    def test_too_few_quantityunitpairs_raises_error(self):
+        values = _create_valid_vectorforcingtest_values()
+
+        values["quantityunitpair"][1].quantityunitpair.pop(0)
+
+        with pytest.raises(ValidationError) as error:
+            TestVectorForcingBase.VectorForcingTest(**values)
+
+        expected_message = (
+            "Incorrect number of quantity unit pairs were found; should match the elements"
+            + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
+        )
+        assert expected_message in str(error.value)
+
+    def test_too_many_quantityunitpairs_raises_error(self):
+        values = _create_valid_vectorforcingtest_values()
+
+        qup = _create_quantityunitpair("ux", "randomUnit", 3)
+        values["quantityunitpair"][1].quantityunitpair.append(qup)
+
+        with pytest.raises(ValidationError) as error:
+            TestVectorForcingBase.VectorForcingTest(**values)
+
+        expected_message = (
+            "Incorrect number of quantity unit pairs were found; should match the elements"
+            + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
+        )
+        assert expected_message in str(error.value)
 
 
 class TestT3D:
@@ -1026,5 +1071,21 @@ def _create_constant_values():
         ],
         datablock=[
             ["3.45"],
+        ],
+    )
+
+
+def _create_valid_vectorforcingtest_values():
+    return dict(
+        name="test",
+        function="testfunction",
+        quantityunitpair=[
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
+            _create_vectorqup(**_create_vectorvalues(2)),
+        ],
+        datablock=[
+            ["0", "1.23", "12.3"],
+            ["60", "2.34", "23.4"],
+            ["120", "3.45", "34.5"],
         ],
     )
