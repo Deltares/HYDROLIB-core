@@ -40,6 +40,12 @@ TEST_BC_FILE_KEYWORDS_WITH_SPACES = "t3d_backwards_compatibility.bc"
 
 TEST_TIME_UNIT = "minutes since 2015-01-01 00:00:00"
 
+INCORRECT_NUMBER_QUP_IN_VECTOR_WITH_THREE_LAYERS_ERROR = (
+    "Incorrect number of quantity unit pairs were found; "
+    + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
+    + "and 3 vertical layers."
+)
+
 
 class TestQuantityUnitPair:
     def test_create_quantityunitpair(self):
@@ -768,12 +774,9 @@ class TestT3D:
         with pytest.raises(ValueError) as error:
             T3D(**values)
 
-        expected_error_mssg = (
-            "Incorrect number of quantity unit pairs were found; "
-            + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
-            + "and 3 vertical layers."
+        assert INCORRECT_NUMBER_QUP_IN_VECTOR_WITH_THREE_LAYERS_ERROR in str(
+            error.value
         )
-        assert expected_error_mssg in str(error.value)
 
     def test_initialize_t3d_with_wrong_amount_vectorquantities(
         self,
@@ -784,12 +787,9 @@ class TestT3D:
         with pytest.raises(ValueError) as error:
             T3D(**values)
 
-        expected_error_mssg = (
-            "Incorrect number of quantity unit pairs were found; "
-            + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
-            + "and 3 vertical layers."
+        assert INCORRECT_NUMBER_QUP_IN_VECTOR_WITH_THREE_LAYERS_ERROR in str(
+            error.value
         )
-        assert expected_error_mssg in str(error.value)
 
     def test_load_forcing_model(self):
         bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
