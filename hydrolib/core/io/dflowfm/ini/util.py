@@ -311,7 +311,7 @@ def get_type_based_on_subclass_default_value(
     return None
 
 
-def _get_type_based_on_default_value(cls, fieldname, value):
+def _get_type_based_on_default_value(cls, fieldname, value) -> Optional[Type]:
     if (field := cls.__fields__.get(fieldname)) is None:
         return None
 
