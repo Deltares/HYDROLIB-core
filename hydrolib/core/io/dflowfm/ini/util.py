@@ -260,7 +260,7 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
         value (str): The value to compare with.
 
     Returns:
-        [type]: The field default that corresponds to the value.
+        [str]: The field default that corresponds to the value.
     """
     for c in cls.__subclasses__():
         default = _try_get_default_value(c, fieldname, value)
@@ -282,6 +282,47 @@ def _try_get_default_value(c, fieldname, value):
         default = _try_get_default_value(sc, fieldname, value)
         if default is not None and default.lower() == value.lower():
             return default
+
+    return None
+
+
+def get_type_based_on_subclass_default_value(
+    cls: Type, fieldname: str, value: str
+) -> Optional[Type]:
+    """
+    Gets the type of the first subclass where the default value of the fieldname is equal
+    to the provided value. If there is no match in the subclass, it will recursively search
+    in the subclasses of the subclass.
+
+    Args:
+        cls (Type): The base type.
+        fieldname (str): The field name for which retrieve the default for.
+        value (str): The value to compare with.
+
+    Returns:
+        [type]: The type of the first subclass that has a default value for the provided fieldname
+        equal to the provided value. Returns None if the fieldname is not found in the subclasses
+        or if no match was found.
+    """
+    for c in cls.__subclasses__():
+        type = _get_type_based_on_default_value(c, fieldname, value)
+        if type is not None:
+            return type
+    return None
+
+
+def _get_type_based_on_default_value(cls, fieldname, value):
+    if (field := cls.__fields__.get(fieldname)) is None:
+        return None
+
+    default = field.default
+    if default is not None and default.lower() == value.lower():
+        return cls
+
+    for sc in cls.__subclasses__():
+        type = _get_type_based_on_default_value(sc, fieldname, value)
+        if type is not None:
+            return type
 
     return None
 

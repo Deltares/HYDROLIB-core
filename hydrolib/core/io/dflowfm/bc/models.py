@@ -32,6 +32,7 @@ from hydrolib.core.io.dflowfm.ini.util import (
     get_from_subclass_defaults,
     get_key_renaming_root_validator,
     get_split_string_on_delimiter_validator,
+    get_type_based_on_subclass_default_value,
     make_list_validator,
 )
 from hydrolib.core.utils import to_list
@@ -238,20 +239,13 @@ class ForcingBase(DataBlockINIBasedModel):
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                default = c.__fields__.get("function").default
-                if default is not None and (
-                    default.lower() == v.get("function", "").lower()
-                ):
-                    v = c(**v)
-                    break
-                else:
-                    for sc in c.__subclasses__():
-                        default = sc.__fields__.get("function").default
-                        if default is not None and (
-                            default.lower() == v.get("function", "").lower()
-                        ):
-                            return sc(**v)
+            function_string = v.get("function", "").lower()
+            function_type = get_type_based_on_subclass_default_value(
+                cls, "function", function_string
+            )
+
+            if function_type is not None:
+                return function_type(**v)
 
             else:
                 raise ValueError(
