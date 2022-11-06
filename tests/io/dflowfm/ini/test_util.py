@@ -293,46 +293,46 @@ class TestGetTypeBasedOnSubclassDefaultValue:
     def test_get_type_based_on_subclass_default_value__correctly_gets_type_from_child(
         self,
     ):
-        type = get_type_based_on_subclass_default_value(
+        subclass_type = get_type_based_on_subclass_default_value(
             BaseClass,
             "name",
             "WithDefaultProperty",
         )
 
-        assert type == WithDefaultProperty
+        assert subclass_type == WithDefaultProperty
 
     def test_get_type_based_on_subclass_default_value__correctly_gets_type_from_grandchild(
         self,
     ):
-        type = get_type_based_on_subclass_default_value(
+        subclass_type = get_type_based_on_subclass_default_value(
             BaseClass,
             "name",
             "GrandChildWithDefaultProperty",
         )
 
-        assert type == GrandChildWithDefaultProperty
+        assert subclass_type == GrandChildWithDefaultProperty
 
     def test_get_type_based_on_subclass_default_value__returns_none_if_no_corresponding_defaults_found(
         self,
     ):
-        type = get_type_based_on_subclass_default_value(
+        subclass_type = get_type_based_on_subclass_default_value(
             BaseClass,
             "name",
             "ThisDefaultValueDoesNotExist",
         )
 
-        assert type is None
+        assert subclass_type is None
 
     def test_get_type_based_on_subclass_default_value__property_not_found__returns_none(
         self,
     ):
-        type = get_type_based_on_subclass_default_value(
+        subclass_type = get_type_based_on_subclass_default_value(
             BaseClass,
             "unknownProperty",
             "randomValue",
         )
 
-        assert type is None
+        assert subclass_type is None
 
 
 class BaseClass(BaseModel):

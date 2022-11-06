@@ -305,9 +305,9 @@ def get_type_based_on_subclass_default_value(
         or if no match was found.
     """
     for c in cls.__subclasses__():
-        type = _get_type_based_on_default_value(c, fieldname, value)
-        if type is not None:
-            return type
+        subclass_type = _get_type_based_on_default_value(c, fieldname, value)
+        if subclass_type is not None:
+            return subclass_type
     return None
 
 
@@ -320,9 +320,9 @@ def _get_type_based_on_default_value(cls, fieldname, value) -> Optional[Type]:
         return cls
 
     for sc in cls.__subclasses__():
-        type = _get_type_based_on_default_value(sc, fieldname, value)
-        if type is not None:
-            return type
+        subclass_type = _get_type_based_on_default_value(sc, fieldname, value)
+        if subclass_type is not None:
+            return subclass_type
 
     return None
 
