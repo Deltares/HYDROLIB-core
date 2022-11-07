@@ -484,6 +484,11 @@ class FileLoadContext:
         self._load_settings: Optional[ModelLoadSettings] = None
 
     def initialize_load_settings(self, recurse: bool):
+        """Initialize the global model load setting. Can only be set once.
+        
+        Args:
+            recurse (bool): Whether or not to recursively load the whole model.
+        """
         if self._load_settings is None:
             self._load_settings = ModelLoadSettings(recurse)
 
