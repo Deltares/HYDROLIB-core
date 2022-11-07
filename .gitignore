@@ -131,7 +131,7 @@ dmypy.json
 .pyre/
 
 # Testdata
-tests/data
+tests/data/output
 
 # Visual Studio Code
 .vscode/
