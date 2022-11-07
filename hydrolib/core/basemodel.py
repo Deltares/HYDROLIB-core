@@ -435,8 +435,8 @@ class ModelLoadSettings:
         """Initializes a new instance of the ModelLoadSettings class.
 
         Args:
-        recurse (bool): Whether or not to recursively load the whole model.
-        resolve_casing (bool): Whether or not to resolve the file casing.
+            recurse (bool): Whether or not to recursively load the whole model.
+            resolve_casing (bool): Whether or not to resolve the file casing.
         """
         self._recurse = recurse
         self._resolve_casing = resolve_casing
