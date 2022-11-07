@@ -440,6 +440,14 @@ class FileModelCache:
         """
         self._cache_dict[path] = model
 
+    def is_empty(self) -> bool:
+        """ Whether or not this file model cache is empty.
+
+        Returns:
+            bool: Whether or not the cache is empty.
+        """
+        return not any(self._cache_dict)
+
 
 class FileLoadContext:
     """FileLoadContext provides the context necessary to resolve paths
@@ -452,6 +460,8 @@ class FileLoadContext:
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
         self._file_casing_resolver = FileCasingResolver()
+        self._recurse_initialized = False
+        self._recurse = False
 
     def retrieve_model(self, path: Optional[Path]) -> Optional["FileModel"]:
         """Retrieve the model associated with the path.
@@ -483,6 +493,31 @@ class FileLoadContext:
         """
         absolute_path = self._path_resolver.resolve(path)
         self._cache.register_model(absolute_path, model)
+
+    def cache_is_empty(self) -> bool:
+        """ Whether or not the file model cache is empty.
+
+        Returns:
+            bool: Whether or not the file model cache is empty.
+        """
+        return self._cache.is_empty()
+
+
+    def initialize_recurse(self, recurse: bool) -> None:
+        """Initialize the setting to recursively load models or not. Can only be set once.
+
+        Args:
+            recurse (bool): Whether or not to recursively load models.
+        """
+        if self._recurse_initialized:
+            return
+
+        self._recurse = recurse
+        self._recurse_initialized = True
+
+    @property
+    def recurse(self) -> bool:
+        return self._recurse
 
     def get_current_parent(self) -> Path:
         """Get the current absolute path with which files are resolved.
@@ -634,6 +669,7 @@ class FileModel(BaseModel, ABC):
         self,
         filepath: Optional[Path] = None,
         resolve_casing: bool = False,
+        recurse: bool = True,
         *args,
         **kwargs,
     ):
@@ -646,6 +682,7 @@ class FileModel(BaseModel, ABC):
         Args:
             filepath (Optional[Path], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
+            recurse (bool): Whether or not to recursively load the model.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
@@ -653,6 +690,14 @@ class FileModel(BaseModel, ABC):
 
         with file_load_context() as context:
             context.set_resolve_casing(resolve_casing)
+            context.initialize_recurse(recurse)
+
+            if not context.recurse and not context.cache_is_empty():
+                super().__init__(*args, **kwargs)
+                self.filepath = filepath
+                return
+
+
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
             loading_path = context.resolve_casing(loading_path)

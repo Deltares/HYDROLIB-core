@@ -237,6 +237,26 @@ def test_mdu_model():
     assert structurefile.save_location == output_dir / structurefile.filepath
     assert structurefile.save_location.is_file()
 
+def test_load_model_recurse_false():
+    model = FMModel(
+        filepath=Path(
+            test_data_dir
+            / "input"
+            / "e02"
+            / "c11_korte-woerden-1d"
+            / "dimr_model"
+            / "dflowfm"
+            / "FlowFM.mdu"
+        ),
+        recurse=False
+    )
+
+    # Assert that references to child models are preserved, but child models are not loaded
+    assert model.geometry.structurefile is not None
+    assert len(model.geometry.structurefile) == 1
+    assert model.geometry.structurefile[0].filepath == Path("structures.ini")
+    assert not any(model.geometry.structurefile[0].structure)
+
 
 def test_model_with_duplicate_file_references_use_same_instances():
     model = ExtModel(
