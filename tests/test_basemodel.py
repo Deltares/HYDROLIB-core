@@ -574,7 +574,10 @@ class TestFileLoadContext:
         with pytest.raises(ValueError) as error:
             context.load_settings
 
-        assert str(error.value) == f"The model load settings have not been initialized yet. Make sure to call `{context.initialize_load_settings.__name__}` first."
+        assert (
+            str(error.value)
+            == f"The model load settings have not been initialized yet. Make sure to call `{context.initialize_load_settings.__name__}` first."
+        )
 
     @pytest.mark.parametrize("first", [True, False])
     @pytest.mark.parametrize("second", [True, False])
@@ -585,6 +588,7 @@ class TestFileLoadContext:
 
         assert context.load_settings is not None
         assert context.load_settings.recurse == first
+
 
 class TestDiskOnlyFileModel:
     _generic_file_model_path = Path("unsupported_file.blob")
