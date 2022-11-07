@@ -587,7 +587,7 @@ class TestT3D:
 
         t3d = T3D(**values)
 
-        assert t3d.timeinterpolation == "linear"
+        assert t3d.timeinterpolation == TimeInterpolation.linear
 
     def test_create_t3d_verticalinterpolation_defaults_to_linear(self):
         values = _create_t3d_values()
@@ -596,7 +596,7 @@ class TestT3D:
 
         t3d = T3D(**values)
 
-        assert t3d.vertinterpolation == "linear"
+        assert t3d.vertinterpolation == VerticalInterpolation.linear
 
     def test_create_t3d_without_specifying_vertpositions_raises_error(self):
         values = _create_t3d_values()
@@ -666,9 +666,9 @@ class TestT3D:
         assert t3d.offset == 1.23
         assert t3d.factor == 2.34
         assert t3d.vertpositions == [3.45, 4.56, 5.67]
-        assert t3d.vertinterpolation == "log"
-        assert t3d.vertpositiontype == "percBed"
-        assert t3d.timeinterpolation == "linear"
+        assert t3d.vertinterpolation == VerticalInterpolation.log
+        assert t3d.vertpositiontype == VerticalPositionType.percentage_bed
+        assert t3d.timeinterpolation == TimeInterpolation.linear
 
         quantityunitpairs = t3d.quantityunitpair
         assert len(quantityunitpairs) == 4
@@ -701,9 +701,9 @@ class TestT3D:
         assert t3d.offset == 1.23
         assert t3d.factor == 2.34
         assert t3d.vertpositions == [3.45, 4.56, 5.67]
-        assert t3d.vertinterpolation == "log"
-        assert t3d.vertpositiontype == "percBed"
-        assert t3d.timeinterpolation == "linear"
+        assert t3d.vertinterpolation == VerticalInterpolation.log
+        assert t3d.vertpositiontype == VerticalPositionType.percentage_bed
+        assert t3d.timeinterpolation == TimeInterpolation.linear
 
         quantityunitpairs = t3d.quantityunitpair
         assert len(quantityunitpairs) == 4
@@ -756,9 +756,9 @@ class TestT3D:
         assert t3d is not None
         assert t3d.name == "zuiduxuy_0002"
         assert t3d.vertpositions == [0, 0.2, 1.0]
-        assert t3d.vertinterpolation == "linear"
-        assert t3d.vertpositiontype == "percBed"
-        assert t3d.timeinterpolation == "linear"
+        assert t3d.vertinterpolation == VerticalInterpolation.linear
+        assert t3d.vertpositiontype == VerticalPositionType.percentage_bed
+        assert t3d.timeinterpolation == TimeInterpolation.linear
 
         quantityunitpairs = t3d.quantityunitpair
         assert len(quantityunitpairs) == 2
@@ -839,7 +839,7 @@ def _create_time_series_values():
     return dict(
         name="boundary_timeseries",
         function="timeseries",
-        timeinterpolation="blockTo",
+        timeinterpolation=TimeInterpolation.block_to,
         offset="1.23",
         factor="2.34",
         quantityunitpair=[
@@ -892,9 +892,9 @@ def _create_t3d_values():
         offset="1.23",
         factor="2.34",
         vertpositions="3.45 4.56 5.67",
-        vertinterpolation="log",
-        vertpositiontype="percBed",
-        timeinterpolation="linear",
+        vertinterpolation=VerticalInterpolation.log,
+        vertpositiontype=VerticalPositionType.percentage_bed,
+        timeinterpolation=TimeInterpolation.linear,
         quantityunitpair=[
             _create_quantityunitpair("time", TEST_TIME_UNIT),
             _create_quantityunitpair("salinitybnd", "ppt", 1),
@@ -935,9 +935,9 @@ def _create_t3d_vectorvalues():
         offset="1.23",
         factor="2.34",
         vertpositions="3.45 4.56 5.67",
-        vertinterpolation="log",
-        vertpositiontype="percBed",
-        timeinterpolation="linear",
+        vertinterpolation=VerticalInterpolation.log,
+        vertpositiontype=VerticalPositionType.percentage_bed,
+        timeinterpolation=TimeInterpolation.linear,
         quantityunitpair=[
             _create_quantityunitpair("time", TEST_TIME_UNIT),
             _create_vectorqup(**_create_vectorvalues(3)),
@@ -954,7 +954,7 @@ def _create_time_series_vectorvalues():
     return dict(
         name="boundary_timeseries",
         function="timeseries",
-        timeinterpolation="blockTo",
+        timeinterpolation=TimeInterpolation.block_to,
         offset="1.23",
         factor="2.34",
         quantityunitpair=[
@@ -990,7 +990,7 @@ def _create_constant_values():
         function="constant",
         offset="1.23",
         factor="2.34",
-        timeinterpolation="linear",
+        timeinterpolation=TimeInterpolation.linear,
         quantityunitpair=[
             _create_quantityunitpair("waterlevelbnd", "m"),
         ],
