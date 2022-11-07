@@ -253,24 +253,6 @@ class ResolveRelativeMode(IntEnum):
 class FileCasingResolver:
     """Class for resolving file path in a case-insensitive manner."""
 
-    def __init__(self) -> None:
-        """Initializes a new instance of the `FileCasingResolver` class."""
-
-        self._has_initialized = False
-        self._resolve_casing = False
-
-    def initialize_resolve_casing(self, resolve_casing: bool) -> None:
-        """Initialize the setting to resolve casing or not. Can only be set once.
-
-        Args:
-            resolve_casing (bool): Whether or not to resolve the file casing.
-        """
-        if self._has_initialized:
-            return
-
-        self._resolve_casing = resolve_casing
-        self._has_initialized = True
-
     def resolve(self, path: Path) -> Path:
         """Resolve the casing of a file path when the file does exist but not with the exact casing.
 
@@ -283,9 +265,6 @@ class FileCasingResolver:
         Raises:
             NotImplementedError: When this function is called with an operating system other than Windows, Linux or MacOS.
         """
-
-        if not self._resolve_casing:
-            return path
 
         operating_system = get_operating_system()
         if operating_system == OperatingSystem.WINDOWS:
@@ -452,13 +431,15 @@ class FileModelCache:
 class ModelLoadSettings:
     """A class that holds the global settings for model loading."""
 
-    def __init__(self, recurse: bool) -> None:
+    def __init__(self, recurse: bool, resolve_casing: bool) -> None:
         """Initializes a new instance of the ModelLoadSettings class.
 
         Args:
         recurse (bool): Whether or not to recursively load the whole model.
+        resolve_casing (bool): Whether or not to resolve the file casing.
         """
         self._recurse = recurse
+        self._resolve_casing = resolve_casing
 
     @property
     def recurse(self) -> bool:
@@ -468,6 +449,15 @@ class ModelLoadSettings:
             bool: Whether or not to recursively load the whole model.
         """
         return self._recurse
+
+    @property
+    def resolve_casing(self) -> bool:
+        """Gets the resolve casing setting.
+
+        Returns:
+            bool: Whether or not to resolve the file casing.
+        """
+        return self._resolve_casing
 
 
 class FileLoadContext:
@@ -483,14 +473,15 @@ class FileLoadContext:
         self._file_casing_resolver = FileCasingResolver()
         self._load_settings: Optional[ModelLoadSettings] = None
 
-    def initialize_load_settings(self, recurse: bool):
+    def initialize_load_settings(self, recurse: bool, resolve_casing: bool):
         """Initialize the global model load setting. Can only be set once.
 
         Args:
             recurse (bool): Whether or not to recursively load the whole model.
+            resolve_casing (bool): Whether or not to resolve the file casing.
         """
         if self._load_settings is None:
-            self._load_settings = ModelLoadSettings(recurse)
+            self._load_settings = ModelLoadSettings(recurse, resolve_casing)
 
     @property
     def load_settings(self) -> ModelLoadSettings:
@@ -590,14 +581,6 @@ class FileLoadContext:
         """Pop the last added parent off this FileLoadContext."""
         self._path_resolver.pop_last_parent()
 
-    def initialize_resolve_casing(self, resolve_casing: bool) -> None:
-        """Initialize the setting to resolve casing or not. Can only be set once.
-
-        Args:
-            resolve_casing (bool): Whether or not to resolve the file casing.
-        """
-        self._file_casing_resolver.initialize_resolve_casing(resolve_casing)
-
     def resolve_casing(self, file_path: Path) -> Path:
         """Resolve the file casing for the provided file path.
 
@@ -607,7 +590,9 @@ class FileLoadContext:
         Returns:
             Path: The resolved file path.
         """
-        return self._file_casing_resolver.resolve(file_path)
+        if self.load_settings.resolve_casing:
+            return self._file_casing_resolver.resolve(file_path)
+        return file_path
 
 
 @contextmanager
@@ -718,8 +703,7 @@ class FileModel(BaseModel, ABC):
             return
 
         with file_load_context() as context:
-            context.initialize_resolve_casing(resolve_casing)
-            context.initialize_load_settings(recurse)
+            context.initialize_load_settings(recurse, resolve_casing)
 
             if not context.load_settings.recurse and not context.cache_is_empty():
                 super().__init__(*args, **kwargs)

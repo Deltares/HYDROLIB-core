@@ -574,11 +574,12 @@ class TestFileLoadContext:
     @pytest.mark.parametrize("second", [True, False])
     def test_can_only_set_load_settings_once(self, first: bool, second: bool):
         context = FileLoadContext()
-        context.initialize_load_settings(first)
-        context.initialize_load_settings(second)
+        context.initialize_load_settings(first, first)
+        context.initialize_load_settings(second, second)
 
         assert context.load_settings is not None
         assert context.load_settings.recurse == first
+        assert context.load_settings.resolve_casing == first
 
 
 class TestDiskOnlyFileModel:
@@ -700,31 +701,17 @@ class TestDiskOnlyFileModel:
 
 class TestFileCasingResolver:
     @pytest.mark.parametrize(
-        "resolve_casing, input_file, expected_file",
+        "input_file, expected_file",
         [
             pytest.param(
-                True,
                 Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
                 Path("dflowfm_individual_files/FlowFM_boundaryconditions1d.bc"),
                 id="resolve_casing True: Matching file exists with different casing",
             ),
             pytest.param(
-                True,
                 Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
                 Path("dflowfm_individual_files/beepboop.robot"),
                 id="resolve_casing True: No matching file",
-            ),
-            pytest.param(
-                False,
-                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
-                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
-                id="resolve_casing False: Matching file exists with different casing",
-            ),
-            pytest.param(
-                False,
-                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
-                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
-                id="resolve_casing False: No matching file",
             ),
         ],
     )
@@ -733,10 +720,9 @@ class TestFileCasingResolver:
         reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
     )
     def test_resolve_returns_correct_result(
-        self, resolve_casing: bool, input_file: str, expected_file: str
+        self, input_file: str, expected_file: str
     ) -> None:
         resolver = FileCasingResolver()
-        resolver.initialize_resolve_casing(resolve_casing)
 
         file_path = test_input_dir / input_file
 
@@ -745,18 +731,9 @@ class TestFileCasingResolver:
 
         assert actual_file_path == expected_file_path
 
-    @pytest.mark.parametrize("first", [True, False])
-    @pytest.mark.parametrize("second", [True, False])
-    def test_can_only_set_resolve_casing_once(self, first: bool, second: bool):
-        resolver = FileCasingResolver()
-        resolver.initialize_resolve_casing(first)
-        resolver.initialize_resolve_casing(second)
-
-        assert resolver._resolve_casing == first
-
-
 class TestModelLoadSettings:
     @pytest.mark.parametrize("value", [True, False])
     def test_recurse_property(self, value: bool):
-        settings = ModelLoadSettings(recurse=value)
+        settings = ModelLoadSettings(recurse=value, resolve_casing=value)
         assert settings.recurse == value
+        assert settings.resolve_casing == value
