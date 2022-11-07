@@ -560,8 +560,8 @@ class FileLoadContext:
         """Pop the last added parent off this FileLoadContext."""
         self._path_resolver.pop_last_parent()
 
-    def set_resolve_casing(self, resolve_casing: bool) -> None:
-        """Set the setting to resolve casing or not.
+    def initialize_resolve_casing(self, resolve_casing: bool) -> None:
+        """Initialize the setting to resolve casing or not. Can only be set once.
 
         Args:
             resolve_casing (bool): Whether or not to resolve the file casing.
@@ -688,7 +688,7 @@ class FileModel(BaseModel, ABC):
             return
 
         with file_load_context() as context:
-            context.set_resolve_casing(resolve_casing)
+            context.initialize_resolve_casing(resolve_casing)
             context.initialize_recurse(recurse)
 
             if not context.recurse and not context.cache_is_empty():
