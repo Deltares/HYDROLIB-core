@@ -506,7 +506,7 @@ class T3D(ForcingBase):
     """List[float]: The specification of the vertical positions."""
 
     vertinterpolation: VerticalInterpolation = Field(
-        VerticalInterpolation.linear.value, alias="vertInterpolation"
+        VerticalInterpolation.linear, alias="vertInterpolation"
     )
     """VerticalInterpolation: The type of vertical interpolation. Defaults to linear."""
 
@@ -514,7 +514,7 @@ class T3D(ForcingBase):
     """VerticalPositionType: The vertical position type of the verticalpositions values."""
 
     timeinterpolation: TimeInterpolation = Field(
-        TimeInterpolation.linear.value, alias="timeInterpolation"
+        TimeInterpolation.linear, alias="timeInterpolation"
     )
     """TimeInterpolation: The type of time interpolation. Defaults to linear."""
 
