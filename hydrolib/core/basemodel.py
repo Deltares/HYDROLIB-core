@@ -483,7 +483,26 @@ class FileLoadContext:
         self._file_casing_resolver = FileCasingResolver()
         self._recurse_initialized = False
         self._recurse = False
+        self._load_settings: Optional[ModelLoadSettings] = None
 
+    def initialize_load_settings(self, recurse: bool):
+        if self._load_settings is None:
+            self._load_settings = ModelLoadSettings(recurse)
+    
+    @property
+    def load_settings(self) -> ModelLoadSettings:
+        """Gets the model load settings.
+        
+        Raises:
+            ValueError: When the model load settings have not been initialized yet.
+        Returns:
+            ModelLoadSettings: The model load settings.
+
+        """
+        if self._load_settings is None:
+            raise ValueError(f"The model load settings have not been initialized yet. Make sure to call `{self.initialize_load_settings.__name__}` first.")
+
+        return self._load_settings
     def retrieve_model(self, path: Optional[Path]) -> Optional["FileModel"]:
         """Retrieve the model associated with the path.
 

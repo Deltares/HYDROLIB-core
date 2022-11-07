@@ -569,6 +569,22 @@ class TestFileLoadContext:
 
         assert context.recurse == first
 
+    def test_load_settings_property_raises_error_with_uninitialized_settings(self):
+        context = FileLoadContext()
+        with pytest.raises(ValueError) as error:
+            context.load_settings
+
+        assert str(error.value) == f"The model load settings have not been initialized yet. Make sure to call `{context.initialize_load_settings.__name__}` first."
+
+    @pytest.mark.parametrize("first", [True, False])
+    @pytest.mark.parametrize("second", [True, False])
+    def test_can_only_set_load_settings_once(self, first: bool, second: bool):
+        context = FileLoadContext()
+        context.initialize_load_settings(first)
+        context.initialize_load_settings(second)
+
+        assert context.load_settings is not None
+        assert context.load_settings.recurse == first
 
 class TestDiskOnlyFileModel:
     _generic_file_model_path = Path("unsupported_file.blob")
