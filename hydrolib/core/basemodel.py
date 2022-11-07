@@ -481,8 +481,6 @@ class FileLoadContext:
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
         self._file_casing_resolver = FileCasingResolver()
-        self._recurse_initialized = False
-        self._recurse = False
         self._load_settings: Optional[ModelLoadSettings] = None
 
     def initialize_load_settings(self, recurse: bool):
@@ -544,22 +542,6 @@ class FileLoadContext:
             bool: Whether or not the file model cache is empty.
         """
         return self._cache.is_empty()
-
-    def initialize_recurse(self, recurse: bool) -> None:
-        """Initialize the setting to recursively load models or not. Can only be set once.
-
-        Args:
-            recurse (bool): Whether or not to recursively load models.
-        """
-        if self._recurse_initialized:
-            return
-
-        self._recurse = recurse
-        self._recurse_initialized = True
-
-    @property
-    def recurse(self) -> bool:
-        return self._recurse
 
     def get_current_parent(self) -> Path:
         """Get the current absolute path with which files are resolved.
@@ -732,9 +714,9 @@ class FileModel(BaseModel, ABC):
 
         with file_load_context() as context:
             context.initialize_resolve_casing(resolve_casing)
-            context.initialize_recurse(recurse)
+            context.initialize_load_settings(recurse)
 
-            if not context.recurse and not context.cache_is_empty():
+            if not context.load_settings.recurse and not context.cache_is_empty():
                 super().__init__(*args, **kwargs)
                 self.filepath = filepath
                 return

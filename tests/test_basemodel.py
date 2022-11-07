@@ -560,15 +560,6 @@ class TestFileLoadContext:
         context.register_model(register_path, model)
         assert context.retrieve_model(retrieval_path) is model
 
-    @pytest.mark.parametrize("first", [True, False])
-    @pytest.mark.parametrize("second", [True, False])
-    def test_can_only_set_recurse_once(self, first: bool, second: bool):
-        context = FileLoadContext()
-        context.initialize_recurse(first)
-        context.initialize_recurse(second)
-
-        assert context.recurse == first
-
     def test_load_settings_property_raises_error_with_uninitialized_settings(self):
         context = FileLoadContext()
         with pytest.raises(ValueError) as error:
