@@ -450,7 +450,7 @@ class FileModelCache:
 
 
 class ModelLoadSettings:
-    """ A class that holds the global settings for model loading."""
+    """A class that holds the global settings for model loading."""
 
     def __init__(self, recurse: bool) -> None:
         """Initializes a new instance of the ModelLoadSettings class.
@@ -463,7 +463,7 @@ class ModelLoadSettings:
     @property
     def recurse(self) -> bool:
         """Gets the recurse setting.
-        
+
         Returns:
             bool: Whether or not to recursively load the whole model.
         """
