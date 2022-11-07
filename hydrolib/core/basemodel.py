@@ -441,7 +441,7 @@ class FileModelCache:
         self._cache_dict[path] = model
 
     def is_empty(self) -> bool:
-        """ Whether or not this file model cache is empty.
+        """Whether or not this file model cache is empty.
 
         Returns:
             bool: Whether or not the cache is empty.
@@ -495,13 +495,12 @@ class FileLoadContext:
         self._cache.register_model(absolute_path, model)
 
     def cache_is_empty(self) -> bool:
-        """ Whether or not the file model cache is empty.
+        """Whether or not the file model cache is empty.
 
         Returns:
             bool: Whether or not the file model cache is empty.
         """
         return self._cache.is_empty()
-
 
     def initialize_recurse(self, recurse: bool) -> None:
         """Initialize the setting to recursively load models or not. Can only be set once.
@@ -696,7 +695,6 @@ class FileModel(BaseModel, ABC):
                 super().__init__(*args, **kwargs)
                 self.filepath = filepath
                 return
-
 
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)

@@ -237,6 +237,7 @@ def test_mdu_model():
     assert structurefile.save_location == output_dir / structurefile.filepath
     assert structurefile.save_location.is_file()
 
+
 def test_load_model_recurse_false():
     model = FMModel(
         filepath=Path(
@@ -248,7 +249,7 @@ def test_load_model_recurse_false():
             / "dflowfm"
             / "FlowFM.mdu"
         ),
-        recurse=False
+        recurse=False,
     )
 
     # Assert that references to child models are preserved, but child models are not loaded
