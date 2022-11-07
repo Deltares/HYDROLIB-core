@@ -13,6 +13,7 @@ from hydrolib.core.basemodel import (
     FileModelCache,
     FilePathResolver,
     ParsableFileModel,
+    ModelLoadSettings,
     ResolveRelativeMode,
     context_file_loading,
     file_load_context,
@@ -741,3 +742,10 @@ class TestFileCasingResolver:
         resolver.initialize_resolve_casing(second)
 
         assert resolver._resolve_casing == first
+
+class TestModelLoadSettings:
+
+    @pytest.mark.parametrize("value", [True, False])
+    def test_recurse_property(self, value: bool):
+        settings = ModelLoadSettings(recurse=value)
+        assert settings.recurse == value

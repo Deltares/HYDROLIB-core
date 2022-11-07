@@ -449,6 +449,27 @@ class FileModelCache:
         return not any(self._cache_dict)
 
 
+class ModelLoadSettings:
+    """ A class that holds the global settings for model loading."""
+
+    def __init__(self, recurse: bool) -> None:
+        """Initializes a new instance of the ModelLoadSettings class.
+
+        Args:
+        recurse (bool): Whether or not to recursively load the whole model.
+        """
+        self._recurse = recurse
+
+    @property
+    def recurse(self) -> bool:
+        """Gets the recurse setting.
+        
+        Returns:
+            bool: Whether or not to recursively load the whole model.
+        """
+        return self._recurse
+
+
 class FileLoadContext:
     """FileLoadContext provides the context necessary to resolve paths
     during the init of a FileModel, as well as ensure the relevant models
