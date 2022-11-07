@@ -731,6 +731,7 @@ class TestFileCasingResolver:
 
         assert actual_file_path == expected_file_path
 
+
 class TestModelLoadSettings:
     @pytest.mark.parametrize("value", [True, False])
     def test_recurse_property(self, value: bool):
