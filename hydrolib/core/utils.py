@@ -1,4 +1,6 @@
+import platform
 import re
+from enum import Enum, auto
 from operator import eq, ge, gt, le, lt, ne
 from typing import Any, Callable, List, Optional
 
@@ -79,6 +81,19 @@ def str_is_empty_or_none(str_field: str) -> bool:
     return str_field is None or not str_field or str_field.isspace()
 
 
+def get_str_len(str_field: Optional[str]) -> int:
+    """
+    Get string length or 0 if input is None.
+
+    Args:
+        str_field (str): String to measure.
+
+    Returns:
+        int: Length of passed input.
+    """
+    return len(str_field) if str_field else 0
+
+
 def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
     """Finds the substring between two other strings.
 
@@ -128,3 +143,35 @@ def operator_str(operator_func: Callable) -> str:
         return "is greater than or equal to"
     else:
         return str(operator_func)
+
+
+class OperatingSystem(Enum):
+    """Enum represting an operating system."""
+
+    WINDOWS = auto()
+    """The Windows operating system."""
+    LINUX = auto()
+    """The Linux operating system."""
+    MACOS = auto()
+    """The MacOS operating system."""
+
+
+def get_operating_system() -> OperatingSystem:
+    """Gets the currently running operating system.
+
+    Raises:
+        NotImplementedError: When the current operating system is anything other than Windows, Linux or MacOS.
+
+    Returns:
+        OperatingSystem: The operating system.
+    """
+    operating_system = platform.system()
+
+    if operating_system == "Windows":
+        return OperatingSystem.WINDOWS
+    if operating_system == "Linux":
+        return OperatingSystem.LINUX
+    if operating_system == "Darwin":
+        return OperatingSystem.MACOS
+
+    raise NotImplementedError(f"Operating system {operating_system} is not supported.")

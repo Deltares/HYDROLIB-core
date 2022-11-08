@@ -1,0 +1,43 @@
+# written by HYDROLIB-core 0.3.0
+
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name               = boundary_timeseries
+function           = timeseries
+Time Interpolation = blockTo
+offset             = 1.23
+factor             = 2.34
+quantity           = time
+unit               = minutes since 2015-01-01 00:00:00
+quantity           = dischargebnd
+unit               = m³/s
+0.0      1.23
+60.0     2.34
+120.0    3.45
+
+[Forcing]
+name                            = boundary_t3d
+function                        = t3d
+offset                          = 1.23
+factor                          = 2.34
+Vertical Position Specification = 3.45 4.56 5.67
+Vertical Interpolation          = log
+Vertical Position Type          = percBed
+Time Interpolation              = linear
+quantity                        = time
+unit                            = minutes since 2015-01-01 00:00:00
+quantity                        = salinitybnd
+unit                            = ppt
+Vertical Position               = 1
+quantity                        = salinitybnd
+unit                            = ppt
+Vertical Position               = 2
+quantity                        = salinitybnd
+unit                            = ppt
+Vertical Position               = 3
+0.0      1.0    2.0    3.0
+60.0     4.0    5.0    6.0
+120.0    7.0    8.0    9.0

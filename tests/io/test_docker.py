@@ -3,15 +3,18 @@ from pathlib import Path
 import pytest
 from devtools import debug
 
+from hydrolib.core.io.dflowfm.mdu.models import FMModel
+from hydrolib.core.io.dflowfm.structure.models import (
+    FlowDirection,
+    StructureModel,
+    Weir,
+)
 from hydrolib.core.io.dimr.models import DIMR, FMComponent, Start
-from hydrolib.core.io.mdu.models import FMModel
-from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
 from tests.utils import test_input_dir, test_output_dir
 
 from ..utils import test_output_dir
 
 
-@pytest.mark.skip  # skipped as long as its imcomplete
 def test_from_scratch_docker():
     # TODO Make a valid model from scratch
     dimr = DIMR()
@@ -68,7 +71,8 @@ def test_existing_model_saved_docker():
     dimr.save(filepath=save_path, recurse=True)
     assert (output_dir / "Boundary_net.nc").is_file()
     assert (output_dir / "Boundary.mdu").is_file()
-    # assert (output_dir / "observcrs.ini").is_file() # Only possible once issue #159 is done
+    assert (output_dir / "ObservationPoints.ini").is_file()
+    # assert (output_dir / "ObservationPoints_crs.ini").is_file() # Only possible once issue #159 is done
     assert (output_dir / "Boundary.ext").is_file()
     assert (output_dir / "BoundaryConditions.bc").is_file()
     assert (output_dir / "CrossSectionLocations.ini").is_file()

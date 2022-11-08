@@ -1,12 +1,19 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.2.1"
+version = "0.3.1"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
 packages = [
     { include = "hydrolib"},
 ]
+readme = "README.md"
+repository = "https://github.com/deltares/hydrolib-core"
+documentation = "https://deltares.github.io/HYDROLIB-core"
+homepage = "https://deltares.github.io/HYDROLIB-core"
+
+[tool.poetry.urls]
+"issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -43,7 +50,7 @@ ipykernel = "^6.15.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.2.1"
+version = "0.3.1"
 tag_format = "$version"
 version_files = [
     "hydrolib/core/__init__.py",
@@ -80,7 +87,7 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
-addopts = "-m \"not plots and not docker\""
+addopts = "-m \"not plots\""
 markers = [
     "plots",
     "docker"

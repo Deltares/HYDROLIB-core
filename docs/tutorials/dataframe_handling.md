@@ -4,7 +4,7 @@ We can use `DataFrame`s from pandas together with hydrolib-core.
 Note that this functionality can only work on files that are in essence tables
 and are represented by a `List` of objects in hydrolib-core.
 
-Examples of such `FileModel`s with their `List` fields are:
+Examples of such `ParsableFileModel`s with their `List` fields are:
 - ForcingModel.forcing
 - CrossDefModel.definition
 - CrossLocModel.crosssection
@@ -14,7 +14,7 @@ Examples of such `FileModel`s with their `List` fields are:
 Say we load in a .bc file and want the resulting forcing in a dataframe.
 
 ```python
-from hydrolib.core.io.bc.models import ForcingModel
+from hydrolib.core.io.dflowfm.bc.models import ForcingModel
 
 filepath = (
     "tests/data/input/e02/f101_1D-boundaries/c01_steady-state-flow/BoundaryConditions.bc"

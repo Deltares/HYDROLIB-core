@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from typing import List
 from xml.dom import minidom
@@ -58,5 +59,8 @@ class DIMRSerializer:
                     root.append(c)
             else:
                 c = e.Element(key)
-                c.text = str(val)
+                if isinstance(val, datetime):
+                    c.text = val.isoformat(sep="T", timespec="auto")
+                else:
+                    c.text = str(val)
                 root.append(c)

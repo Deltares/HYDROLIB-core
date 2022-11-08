@@ -1,3 +1,4 @@
+import filecmp
 import shutil
 from pathlib import Path
 from typing import Sequence, Tuple
@@ -5,28 +6,39 @@ from typing import Sequence, Tuple
 import pytest
 
 from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    FileCasingResolver,
     FileLoadContext,
     FileModel,
     FileModelCache,
     FilePathResolver,
+    ParsableFileModel,
     ResolveRelativeMode,
     context_file_loading,
     file_load_context,
 )
+from hydrolib.core.io.dflowfm.mdu.models import FMModel
 from hydrolib.core.io.dimr.models import DIMR
-from hydrolib.core.io.mdu.models import FMModel
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
 
 
+def runs_from_docker() -> bool:
+    """Check to see if we are running from within docker."""
+    return Path("/.dockerenv").exists()
+
+
 class TestFileModel:
     _reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
+
+    def test_serializable_model_is_a_file_model(self):
+        assert issubclass(ParsableFileModel, FileModel)
 
     def test_dimr_model_is_a_file_model(self):
         # For the ease of testing, we use DIMR model, which implements FileModel
         # If this test fails the other tests are basically useless.
-        assert issubclass(DIMR, FileModel)
+        assert issubclass(DIMR, ParsableFileModel)
 
     def test_loading_a_file_twice_returns_different_model_instances(self) -> None:
         # If the same source file is read multiple times, we expect that
@@ -284,6 +296,21 @@ class TestFileModel:
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
+    @pytest.mark.skipif(
+        runs_from_docker(),
+        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
+    )
+    def test_initialize_model_with_resolve_casing_updates_file_references_recursively(
+        self,
+    ):
+        file_path = test_input_dir / "resolve_casing_file_load_test" / "fm.mdu"
+        model = FMModel(file_path, resolve_casing=True)
+
+        assert model.geometry.inifieldfile.filepath == Path("initial/initialFields.ini")
+        assert model.geometry.inifieldfile.initial[0].datafile.filepath == Path(
+            "InitialWaterLevel.ini"
+        )
+
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
@@ -531,3 +558,177 @@ class TestFileLoadContext:
         model = DIMR()
         context.register_model(register_path, model)
         assert context.retrieve_model(retrieval_path) is model
+
+
+class TestDiskOnlyFileModel:
+    _generic_file_model_path = Path("unsupported_file.blob")
+
+    def test_constructor(self):
+        # Setup file load context
+        parent_path = Path.cwd() / "some" / "parent" / "directory"
+        with file_load_context() as context:
+            context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+
+            # Call
+            model = DiskOnlyFileModel(filepath=self._generic_file_model_path)
+
+            # Assert
+            assert model._source_file_path == (
+                parent_path / self._generic_file_model_path
+            )
+
+    def test_save_as_without_file(self):
+        # Setup file load context
+        parent_path = Path.cwd() / "some" / "parent" / "directory"
+
+        with file_load_context() as context:
+            context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=self._generic_file_model_path)
+
+            output_path = (
+                test_output_dir
+                / TestDiskOnlyFileModel.__name__
+                / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+                / "someFile.blob"
+            ).resolve()
+
+            # Call
+            model.save(filepath=output_path)
+
+            # Assert
+            assert model._source_file_path == output_path
+            assert model.filepath == output_path
+            assert not output_path.exists()
+
+    def test_save_without_file(self):
+        # Setup file load context
+        parent_path = Path.cwd() / "some" / "parent" / "directory"
+
+        with file_load_context() as context:
+            context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=self._generic_file_model_path)
+
+            output_path = (
+                test_output_dir
+                / TestDiskOnlyFileModel.__name__
+                / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+                / "someFile.blob"
+            ).resolve()
+
+            # Call
+            model.filepath = output_path
+            model.save()
+
+            # Assert
+            assert model._source_file_path == output_path
+            assert model.filepath == output_path
+            assert not output_path.exists()
+
+    def test_save_as_absolute(self):
+        input_parent_path = (
+            test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+        )
+        file_name = Path("CROP_OW.PRN")
+
+        with file_load_context() as context:
+            context.push_new_parent(input_parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=file_name)
+
+        output_path = (
+            test_output_dir
+            / TestDiskOnlyFileModel.__name__
+            / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+            / file_name
+        ).resolve()
+
+        with file_load_context() as context:
+            context.push_new_parent(output_path, ResolveRelativeMode.ToParent)
+            model.save(output_path)
+
+        assert output_path.exists()
+        assert output_path.is_file()
+        assert filecmp.cmp(input_parent_path / file_name, output_path)
+
+    def test_save(self):
+        input_parent_path = (
+            test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"
+        )
+        input_file_name = Path("CROP_OW.PRN")
+
+        with file_load_context() as context:
+            context.push_new_parent(input_parent_path, ResolveRelativeMode.ToParent)
+            model = DiskOnlyFileModel(filepath=input_file_name)
+
+        output_file_name = Path("CROP.PRN")
+        output_path = (
+            test_output_dir
+            / TestDiskOnlyFileModel.__name__
+            / TestDiskOnlyFileModel.test_save_as_absolute.__name__
+            / output_file_name
+        ).resolve()
+
+        with file_load_context() as context:
+            context.push_new_parent(output_path, ResolveRelativeMode.ToParent)
+            model.filepath = output_path
+            model.save()
+
+        assert output_path.exists()
+        assert output_path.is_file()
+        assert filecmp.cmp(input_parent_path / input_file_name, output_path)
+
+
+class TestFileCasingResolver:
+    @pytest.mark.parametrize(
+        "resolve_casing, input_file, expected_file",
+        [
+            pytest.param(
+                True,
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                Path("dflowfm_individual_files/FlowFM_boundaryconditions1d.bc"),
+                id="resolve_casing True: Matching file exists with different casing",
+            ),
+            pytest.param(
+                True,
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                Path("dflowfm_individual_files/beepboop.robot"),
+                id="resolve_casing True: No matching file",
+            ),
+            pytest.param(
+                False,
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                id="resolve_casing False: Matching file exists with different casing",
+            ),
+            pytest.param(
+                False,
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                id="resolve_casing False: No matching file",
+            ),
+        ],
+    )
+    @pytest.mark.skipif(
+        runs_from_docker(),
+        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
+    )
+    def test_resolve_returns_correct_result(
+        self, resolve_casing: bool, input_file: str, expected_file: str
+    ) -> None:
+        resolver = FileCasingResolver()
+        resolver.initialize_resolve_casing(resolve_casing)
+
+        file_path = test_input_dir / input_file
+
+        expected_file_path = test_input_dir / expected_file
+        actual_file_path = resolver.resolve(file_path)
+
+        assert actual_file_path == expected_file_path
+
+    @pytest.mark.parametrize("first", [True, False])
+    @pytest.mark.parametrize("second", [True, False])
+    def test_can_only_set_resolve_casing_once(self, first: bool, second: bool):
+        resolver = FileCasingResolver()
+        resolver.initialize_resolve_casing(first)
+        resolver.initialize_resolve_casing(second)
+
+        assert resolver._resolve_casing == first
