@@ -1479,6 +1479,10 @@ file path to this model:</p>
 <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./dimr_config.xml&quot;</span><span class="p">)</span>
 <span class="n">dimr_model</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">model_path</span><span class="p">)</span>
 </code></pre></div>
+<p>It is also possible to not recursively load models:
+<div class="highlight"><pre><span></span><code><span class="n">dimr_model</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div></p>
+<p>This will only load a DIMR model without its underlying child file models, such as the Flow FM model.</p>
 <h2 id="save-the-model-in-a-new-location">Save the model in a new location<a class="headerlink" href="#save-the-model-in-a-new-location" title="Permanent link">&para;</a></h2>
 <p>If we want to store the full model in a different location we can use the <code>save</code> function:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Adjust this new_path to a path convenient for you.</span>
