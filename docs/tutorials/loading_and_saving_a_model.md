@@ -18,6 +18,13 @@ model_path = Path("./dimr_config.xml")
 dimr_model = DIMR(filepath=model_path)
 ```
 
+It is also possible to not recursively load models:
+```python
+dimr_model = DIMR(filepath=model_path, recurse=False)
+```
+
+This will only load a DIMR model without its underlying child file models, such as the Flow FM model.
+
 ## Save the model in a new location
 
 If we want to store the full model in a different location we can use the `save` function:
