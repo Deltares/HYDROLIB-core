@@ -12,9 +12,9 @@ from hydrolib.core.io.dflowfm.ini.models import (
     INIBasedModel,
     INIGeneral,
     INIModel,
-    SerializerConfig,
+    INISerializerConfig,
 )
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig
+from hydrolib.core.io.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     get_location_specification_rootvalidator,
@@ -201,7 +201,7 @@ class ExtModel(INIModel):
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = []
     lateral: List[Lateral] = []
-    serializer_config: SerializerConfig = SerializerConfig(
+    serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )
     _split_to_list = make_list_validator("boundary", "lateral")

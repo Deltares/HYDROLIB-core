@@ -13,7 +13,7 @@ from hydrolib.core.utils import float_to_str
 
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
-from .serializer import SerializerConfig, write_ini
+from .serializer import INISerializerConfig, write_ini
 from .util import make_list_validator
 
 logger = logging.getLogger(__name__)
@@ -138,7 +138,7 @@ class INIBasedModel(BaseModel, ABC):
         else:
             return str(v)
 
-    def _to_section(self, config: SerializerConfig) -> Section:
+    def _to_section(self, config: INISerializerConfig) -> Section:
         props = []
         for key, value in self:
             if key in self._exclude_fields():
@@ -169,12 +169,12 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     _make_lists = make_list_validator("datablock")
 
-    def _to_section(self, config: SerializerConfig) -> Section:
+    def _to_section(self, config: INISerializerConfig) -> Section:
         section = super()._to_section(config)
         section.datablock = self._to_datablock(config)
         return section
 
-    def _to_datablock(self, config: SerializerConfig) -> List[List[str]]:
+    def _to_datablock(self, config: INISerializerConfig) -> List[List[str]]:
         converted_datablock = []
 
         for row in self.datablock:
@@ -186,7 +186,7 @@ class DataBlockINIBasedModel(INIBasedModel):
         return converted_datablock
 
     @classmethod
-    def _elem_to_str(cls, elem: Union[float, str], config: SerializerConfig) -> str:
+    def _elem_to_str(cls, elem: Union[float, str], config: INISerializerConfig) -> str:
         if isinstance(elem, float) and config.number_of_decimals is not None:
             return float_to_str(elem, config.number_of_decimals)
 
@@ -212,7 +212,7 @@ class INIModel(ParsableFileModel):
     ini file will be (sub)class of INIBasedModel.
     """
 
-    serializer_config: SerializerConfig = SerializerConfig()
+    serializer_config: INISerializerConfig = INISerializerConfig()
 
     general: INIGeneral
 

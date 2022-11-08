@@ -14,7 +14,7 @@ from hydrolib.core.io.dflowfm.crosssection.models import CrossDefModel, CrossLoc
 from hydrolib.core.io.dflowfm.ext.models import ExtModel
 from hydrolib.core.io.dflowfm.friction.models import FrictionModel
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig
+from hydrolib.core.io.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.io.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.io.dflowfm.net.models import NetworkModel
@@ -1794,7 +1794,7 @@ class FMModel(INIModel):
     particles: Optional[Particles] = Field(None)
     veg: Optional[Vegetation] = Field(None)
 
-    serializer_config: SerializerConfig = SerializerConfig(skip_empty_properties=False)
+    serializer_config: INISerializerConfig = INISerializerConfig(skip_empty_properties=False)
 
     @classmethod
     def _ext(cls) -> str:

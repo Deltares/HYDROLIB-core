@@ -15,7 +15,7 @@ from hydrolib.core.io.dflowfm.ini.io_models import (
 from hydrolib.core.utils import str_is_empty_or_none
 
 
-class SerializerConfig(ParsableFileModel.SerializerConfig):
+class INISerializerConfig(ParsableFileModel.SerializerConfig):
     """SerializerConfig defines the configuration options of the Serializer
 
     Attributes:
@@ -138,7 +138,7 @@ class SectionSerializer:
     an actual instance and serializes the Section with it.
     """
 
-    def __init__(self, config: SerializerConfig, max_length: MaxLengths):
+    def __init__(self, config: INISerializerConfig, max_length: MaxLengths):
         """Create a new SectionSerializer
 
         Args:
@@ -149,7 +149,7 @@ class SectionSerializer:
         self._max_length = max_length
 
     @classmethod
-    def serialize(cls, section: Section, config: SerializerConfig) -> Lines:
+    def serialize(cls, section: Section, config: INISerializerConfig) -> Lines:
         """Serialize the provided section with the given config
 
         Args:
@@ -163,7 +163,7 @@ class SectionSerializer:
         return serializer._serialize_section(section)
 
     @property
-    def config(self) -> SerializerConfig:
+    def config(self) -> INISerializerConfig:
         """The SerializerConfig used while serializing the section."""
         return self._config
 
@@ -236,7 +236,7 @@ class SectionSerializer:
 class Serializer:
     """Serializer serializes Document to its corresponding lines."""
 
-    def __init__(self, config: SerializerConfig):
+    def __init__(self, config: INISerializerConfig):
         """Creates a new Serializer with the provided configuration.
 
         Args:
@@ -283,7 +283,7 @@ class Serializer:
 def write_ini(
     path: Path,
     document: Document,
-    config: Optional[SerializerConfig] = None,
+    config: Optional[INISerializerConfig] = None,
 ) -> None:
     """Write the provided document to the specified path
 
@@ -298,7 +298,7 @@ def write_ini(
             default to the standard SerializerConfig. Defaults to None.
     """
     if config is None:
-        config = SerializerConfig()
+        config = INISerializerConfig()
 
     serializer = Serializer(config)
 
