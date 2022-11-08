@@ -56,11 +56,13 @@ class INISerializerConfig(ParsableFileModel.SerializerConfig):
         """The combined datablock indentation, i.e. section_indent + datablock_indent"""
         return self.section_indent + self.datablock_indent
 
+
 class DataBlockINIBasedSerializerConfig(INISerializerConfig):
     """Class that holds the configuration settings for INI files with data blocks serialization."""
 
     number_of_decimals_datablock: Optional[int] = None
     """Optional[int]: The number of decimals that should be serialized for floating numbers in the datablock. If None, the full number will be serialized. Defaults to None."""
+
 
 class MaxLengths(BaseModel):
     """MaxLengths defines the maxmimum lengths of the parts of a section

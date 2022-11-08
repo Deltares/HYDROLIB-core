@@ -13,7 +13,11 @@ from hydrolib.core.utils import float_to_str
 
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
-from .serializer import DataBlockINIBasedSerializerConfig, INISerializerConfig, write_ini
+from .serializer import (
+    DataBlockINIBasedSerializerConfig,
+    INISerializerConfig,
+    write_ini,
+)
 from .util import make_list_validator
 
 logger = logging.getLogger(__name__)
@@ -174,7 +178,9 @@ class DataBlockINIBasedModel(INIBasedModel):
         section.datablock = self._to_datablock(config)
         return section
 
-    def _to_datablock(self, config: DataBlockINIBasedSerializerConfig) -> List[List[str]]:
+    def _to_datablock(
+        self, config: DataBlockINIBasedSerializerConfig
+    ) -> List[List[str]]:
         converted_datablock = []
 
         for row in self.datablock:
@@ -186,7 +192,9 @@ class DataBlockINIBasedModel(INIBasedModel):
         return converted_datablock
 
     @classmethod
-    def _elem_to_str(cls, elem: Union[float, str], config: DataBlockINIBasedSerializerConfig) -> str:
+    def _elem_to_str(
+        cls, elem: Union[float, str], config: DataBlockINIBasedSerializerConfig
+    ) -> str:
         if isinstance(elem, float) and config.number_of_decimals_datablock is not None:
             return float_to_str(elem, config.number_of_decimals_datablock)
 

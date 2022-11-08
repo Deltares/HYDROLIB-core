@@ -26,7 +26,10 @@ from hydrolib.core.io.dflowfm.ini.models import (
     INIModel,
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig, INISerializerConfig
+from hydrolib.core.io.dflowfm.ini.serializer import (
+    DataBlockINIBasedSerializerConfig,
+    INISerializerConfig,
+)
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
@@ -724,8 +727,10 @@ class ForcingModel(INIModel):
 
     _split_to_list = make_list_validator("forcing")
 
-    serializer_config: DataBlockINIBasedSerializerConfig = DataBlockINIBasedSerializerConfig(
-        section_indent=0, property_indent=0, datablock_indent=0
+    serializer_config: DataBlockINIBasedSerializerConfig = (
+        DataBlockINIBasedSerializerConfig(
+            section_indent=0, property_indent=0, datablock_indent=0
+        )
     )
 
     @classmethod
