@@ -32,7 +32,7 @@ class INISerializerConfig(ParsableFileModel.SerializerConfig):
             datablock_indent). Defaults to 8.
         datablock_spacing (int):
             The number of spaces between datablock columns. Note that there might be
-            additional offset to ensure . is lined out. Defaults to 2.
+            additional offset to ensure . is lined out. Defaults to 4.
         comment_delimiter (str):
             The character used to delimit comments. Defaults to '#'.
         skip_empty_properties (bool):
@@ -42,7 +42,7 @@ class INISerializerConfig(ParsableFileModel.SerializerConfig):
     section_indent: int = 0
     property_indent: int = 4
     datablock_indent: int = 8
-    datablock_spacing: int = 2
+    datablock_spacing: int = 4
     comment_delimiter: str = "#"
     skip_empty_properties: bool = True
 

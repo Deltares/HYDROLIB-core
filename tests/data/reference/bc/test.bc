@@ -14,9 +14,9 @@ quantity          = time
 unit              = minutes since 2015-01-01 00:00:00
 quantity          = dischargebnd
 unit              = m³/s
-0.0    1.23
-60.0   2.34
-120.0  3.45
+0.0      1.23
+60.0     2.34
+120.0    3.45
 
 [Forcing]
 name     = boundary_harmonic
@@ -28,8 +28,8 @@ quantity = waterlevelbnd amplitude
 unit     = m
 quantity = waterlevelbnd phase
 unit     = deg
-0.0   1.23  2.34
-60.0  3.45  4.56
+0.0     1.23    2.34
+60.0    3.45    4.56
 
 [Forcing]
 name     = boundary_harmonic-correction
@@ -40,8 +40,8 @@ quantity = waterlevelbnd amplitude
 unit     = m
 quantity = waterlevelbnd phase
 unit     = deg
-0.0   1.23  2.34
-60.0  3.45  4.56
+0.0     1.23    2.34
+60.0    3.45    4.56
 
 [Forcing]
 name              = boundary_t3d
@@ -63,9 +63,9 @@ vertPositionIndex = 2
 quantity          = salinitybnd
 unit              = ppt
 vertPositionIndex = 3
-0.0    1.0  2.0  3.0
-60.0   4.0  5.0  6.0
-120.0  7.0  8.0  9.0
+0.0      1.0    2.0    3.0
+60.0     4.0    5.0    6.0
+120.0    7.0    8.0    9.0
 
 [Forcing]
 name     = boundary_qhtable
@@ -74,8 +74,8 @@ quantity = qhbnd discharge
 unit     = m3/s
 quantity = qhbnd waterlevel
 unit     = m
-1.23  2.34
-3.45  4.56
+1.23    2.34
+3.45    4.56
 
 [Forcing]
 name     = boundary_constant
