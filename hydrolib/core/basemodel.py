@@ -705,7 +705,7 @@ class FileModel(BaseModel, ABC):
         with file_load_context() as context:
             context.initialize_load_settings(recurse, resolve_casing)
 
-            if not context.load_settings.recurse and not context.cache_is_empty():
+            if not FileModel._should_load_model(context):
                 super().__init__(*args, **kwargs)
                 self.filepath = filepath
                 return
@@ -733,6 +733,17 @@ class FileModel(BaseModel, ABC):
             self._post_init_load()
 
             context.pop_last_parent()
+
+    @classmethod
+    def _should_load_model(cls, context: FileLoadContext)-> bool:
+        """Determines whether the file model should be loaded or not.
+        A file model should be loaded when either all models should be loaded recursively, 
+        or when no file model has been loaded yet.
+        
+        Returns:
+            bool: Whether or not the file model should be loaded or not.
+        """
+        return context.load_settings.recurse or context.cache_is_empty()
 
     def _post_init_load(self) -> None:
         """
