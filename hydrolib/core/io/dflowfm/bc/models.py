@@ -705,11 +705,12 @@ class ForcingGeneral(INIGeneral):
 
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
-class BCSerializerConfig(INISerializerConfig):
-        """Class that holds the configuration settings for serialization of BC files."""
 
-        number_of_decimals_datablock: Optional[int] = None
-        """Optional[int]: The number of decimals that should be serialized for floating numbers in the datablock. If None, the full number will be serialized. Defaults to None."""
+class BCSerializerConfig(INISerializerConfig):
+    """Class that holds the configuration settings for serialization of BC files."""
+
+    number_of_decimals_datablock: Optional[int] = None
+    """Optional[int]: The number of decimals that should be serialized for floating numbers in the datablock. If None, the full number will be serialized. Defaults to None."""
 
 
 class ForcingModel(INIModel):
