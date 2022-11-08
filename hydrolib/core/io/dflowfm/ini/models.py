@@ -1,5 +1,6 @@
 import logging
 from abc import ABC
+from enum import Enum
 from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
@@ -130,6 +131,8 @@ class INIBasedModel(BaseModel, ABC):
             return str(int(v))
         elif isinstance(v, list):
             return cls.get_list_field_delimiter(key).join([str(x) for x in v])
+        elif isinstance(v, Enum):
+            return v.value
         elif v is None:
             return ""
         else:
