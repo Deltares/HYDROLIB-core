@@ -3,9 +3,13 @@ from pathlib import Path
 import pytest
 from devtools import debug
 
+from hydrolib.core.io.dflowfm.mdu.models import FMModel
+from hydrolib.core.io.dflowfm.structure.models import (
+    FlowDirection,
+    StructureModel,
+    Weir,
+)
 from hydrolib.core.io.dimr.models import DIMR, FMComponent, Start
-from hydrolib.core.io.mdu.models import FMModel
-from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
 from tests.utils import test_input_dir, test_output_dir
 
 from ..utils import test_output_dir
