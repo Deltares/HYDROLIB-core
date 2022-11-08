@@ -130,13 +130,15 @@ class INIBasedModel(BaseModel, ABC):
         return {"comments", "datablock", "_header"}
 
     @classmethod
-    def _convert_value(cls, key: str, v: Any) -> str:
+    def _convert_value(cls, key: str, v: Any, config: INISerializerConfig) -> str:
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
             return cls.get_list_field_delimiter(key).join([str(x) for x in v])
         elif isinstance(v, Enum):
             return v.value
+        elif isinstance(v, float) and config.number_of_decimals is not None:
+            return float_to_str(v, config.number_of_decimals)
         elif v is None:
             return ""
         else:
@@ -154,7 +156,7 @@ class INIBasedModel(BaseModel, ABC):
 
             prop = Property(
                 key=key,
-                value=self.__class__._convert_value(field_key, value),
+                value=self.__class__._convert_value(field_key, value, config),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)
