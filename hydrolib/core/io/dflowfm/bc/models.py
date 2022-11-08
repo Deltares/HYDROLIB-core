@@ -26,7 +26,7 @@ from hydrolib.core.io.dflowfm.ini.models import (
     INIModel,
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.dflowfm.ini.serializer import INISerializerConfig
+from hydrolib.core.io.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig, INISerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
@@ -706,13 +706,6 @@ class ForcingGeneral(INIGeneral):
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
-class BCSerializerConfig(INISerializerConfig):
-    """Class that holds the configuration settings for serialization of BC files."""
-
-    number_of_decimals_datablock: Optional[int] = None
-    """Optional[int]: The number of decimals that should be serialized for floating numbers in the datablock. If None, the full number will be serialized. Defaults to None."""
-
-
 class ForcingModel(INIModel):
     """
     The overall model that contains the contents of one .bc forcings file.
@@ -731,7 +724,7 @@ class ForcingModel(INIModel):
 
     _split_to_list = make_list_validator("forcing")
 
-    serializer_config: BCSerializerConfig = BCSerializerConfig(
+    serializer_config: DataBlockINIBasedSerializerConfig = DataBlockINIBasedSerializerConfig(
         section_indent=0, property_indent=0, datablock_indent=0
     )
 
