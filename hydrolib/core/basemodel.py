@@ -696,7 +696,7 @@ class FileModel(BaseModel, ABC):
         Args:
             filepath (Optional[Path], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
-            recurse (bool): Whether or not to recursively load the model. Default to True.
+            recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
