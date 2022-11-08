@@ -735,11 +735,11 @@ class FileModel(BaseModel, ABC):
             context.pop_last_parent()
 
     @classmethod
-    def _should_load_model(cls, context: FileLoadContext)-> bool:
+    def _should_load_model(cls, context: FileLoadContext) -> bool:
         """Determines whether the file model should be loaded or not.
-        A file model should be loaded when either all models should be loaded recursively, 
+        A file model should be loaded when either all models should be loaded recursively,
         or when no file model has been loaded yet.
-        
+
         Returns:
             bool: Whether or not the file model should be loaded or not.
         """
