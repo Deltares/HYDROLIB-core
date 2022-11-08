@@ -1,0 +1,32 @@
+
+[forcing]
+                           Name = zuiduxuy_0002
+                       Function = timeseries
+             Time-interpolation = linear
+                       Quantity = time
+                           Unit = MINUTES SINCE 1992-08-31 00:00:00 +00:00
+                         Vector = uxuyadvectionvelocitybnd:ux,uy
+                       Quantity = ux
+                           Unit = -
+                       Quantity = uy
+                           Unit = -
+0 .50 .2
+60 .50 .2
+120 -.50 .4
+9999999 -.50 .4
+
+[forcing]
+                           Name = zuiduxuy_0001
+                       Function = timeseries
+             Time-interpolation = linear
+                       Quantity = time
+                           Unit = MINUTES SINCE 1992-08-31 00:00:00 +00:00
+                         Vector = uxuyadvectionvelocitybnd:ux,uy
+                       Quantity = ux
+                           Unit = -
+                       Quantity = uy
+                           Unit = -
+0 .50 .2
+60 .50 .2
+120 -.50 .7
+9999999 -.50 .7

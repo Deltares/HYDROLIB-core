@@ -5,6 +5,7 @@ also represents a file on disk.
 
 """
 import logging
+import os
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
 from contextlib import contextmanager
@@ -19,8 +20,13 @@ from pydantic import validator
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
 from pydantic.fields import ModelField, PrivateAttr
 
-from hydrolib.core.io.base import DummmyParser, DummySerializer
-from hydrolib.core.utils import to_key
+from hydrolib.core.io.dflowfm.xyz.base import DummmyParser, DummySerializer
+from hydrolib.core.utils import (
+    OperatingSystem,
+    get_operating_system,
+    str_is_empty_or_none,
+    to_key,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -130,9 +136,7 @@ class ModelTreeTraverser(Generic[TAcc]):
     functions.
 
     The ModelTreeTraverser will only traverse BaseModel and derived objects.
-
-    Args:
-        Generic ([type]): The type of Accumulator to be used.
+    Type parameter TAcc defines the type of Accumulator to be used.
     """
 
     def __init__(
@@ -244,6 +248,82 @@ class ResolveRelativeMode(IntEnum):
 
     ToParent = 0
     ToAnchor = 1
+
+
+class FileCasingResolver:
+    """Class for resolving file path in a case-insensitive manner."""
+
+    def __init__(self) -> None:
+        """Initializes a new instance of the `FileCasingResolver` class."""
+
+        self._has_initialized = False
+        self._resolve_casing = False
+
+    def initialize_resolve_casing(self, resolve_casing: bool) -> None:
+        """Initialize the setting to resolve casing or not. Can only be set once.
+
+        Args:
+            resolve_casing (bool): Whether or not to resolve the file casing.
+        """
+        if self._has_initialized:
+            return
+
+        self._resolve_casing = resolve_casing
+        self._has_initialized = True
+
+    def resolve(self, path: Path) -> Path:
+        """Resolve the casing of a file path when the file does exist but not with the exact casing.
+
+        Args:
+            path (Path): The path of the file or directory for which the casing needs to be resolved.
+
+        Returns:
+            Path: The file path with the matched casing if a match exists; otherwise, the original file path.
+
+        Raises:
+            NotImplementedError: When this function is called with an operating system other than Windows, Linux or MacOS.
+        """
+
+        if not self._resolve_casing:
+            return path
+
+        operating_system = get_operating_system()
+        if operating_system == OperatingSystem.WINDOWS:
+            return self._resolve_casing_windows(path)
+        if operating_system == OperatingSystem.LINUX:
+            return self._resolve_casing_linux(path)
+        if operating_system == OperatingSystem.MACOS:
+            return self._resolve_casing_macos(path)
+        else:
+            raise NotImplementedError(
+                f"Path case resolving for operating system {operating_system} is not supported yet."
+            )
+
+    def _resolve_casing_windows(self, path: Path):
+        return path.resolve()
+
+    def _resolve_casing_linux(self, path: Path):
+        if path.exists():
+            return path
+
+        if not path.parent.exists() and not str_is_empty_or_none(path.parent.name):
+            path = self._resolve_casing_linux(path.parent) / path.name
+
+        return self._find_match(path)
+
+    def _resolve_casing_macos(self, path: Path):
+        if not str_is_empty_or_none(path.parent.name):
+            path = self._resolve_casing_macos(path.parent) / path.name
+
+        return self._find_match(path)
+
+    def _find_match(self, path: Path):
+        if path.parent.exists():
+            for item in path.parent.iterdir():
+                if item.name.lower() == path.name.lower():
+                    return path.with_name(item.name)
+
+        return path
 
 
 class FilePathResolver:
@@ -371,6 +451,7 @@ class FileLoadContext:
         """Create a new empty FileLoadContext."""
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
+        self._file_casing_resolver = FileCasingResolver()
 
     def retrieve_model(self, path: Optional[Path]) -> Optional["FileModel"]:
         """Retrieve the model associated with the path.
@@ -444,6 +525,25 @@ class FileLoadContext:
     def pop_last_parent(self) -> None:
         """Pop the last added parent off this FileLoadContext."""
         self._path_resolver.pop_last_parent()
+
+    def set_resolve_casing(self, resolve_casing: bool) -> None:
+        """Set the setting to resolve casing or not.
+
+        Args:
+            resolve_casing (bool): Whether or not to resolve the file casing.
+        """
+        self._file_casing_resolver.initialize_resolve_casing(resolve_casing)
+
+    def resolve_casing(self, file_path: Path) -> Path:
+        """Resolve the file casing for the provided file path.
+
+        Args:
+            file_path (Path): The file path to resolve the casing for.
+
+        Returns:
+            Path: The resolved file path.
+        """
+        return self._file_casing_resolver.resolve(file_path)
 
 
 @contextmanager
@@ -530,22 +630,34 @@ class FileModel(BaseModel, ABC):
             else:
                 return super().__new__(cls)
 
-    def __init__(self, filepath: Optional[Path] = None, *args, **kwargs):
+    def __init__(
+        self,
+        filepath: Optional[Path] = None,
+        resolve_casing: bool = False,
+        *args,
+        **kwargs,
+    ):
         """Create a new FileModel from the given filepath.
 
         If no filepath is provided, the model is initialized as an empty
         model with default values.
         If the filepath is provided, it is read from disk.
+
+        Args:
+            filepath (Optional[Path], optional): The file path. Defaults to None.
+            resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
             return
 
         with file_load_context() as context:
-            context.register_model(filepath, self)
-
+            context.set_resolve_casing(resolve_casing)
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
+            loading_path = context.resolve_casing(loading_path)
+            filepath = self._get_updated_file_path(filepath, loading_path)
+            context.register_model(filepath, self)
 
             logger.info(f"Loading data from {filepath}")
 
@@ -603,6 +715,34 @@ class FileModel(BaseModel, ABC):
 
     def is_file_link(self) -> bool:
         return True
+
+    def _get_updated_file_path(self, file_path: Path, loading_path: Path) -> Path:
+        """Update the file path with the resolved casing from the loading path.
+        Logs an information message if a file path is updated.
+
+        For example, given:
+            file_path = "To/A/File.txt"
+            loading_path = "D:/path/to/a/file.txt"
+
+        Then the result will be: "to/a/file.txt"
+
+        Args:
+            file_path (Path): The file path.
+            loading_path (Path): The resolved loading path.
+
+        Returns:
+            Path: The updated file path.
+        """
+
+        updated_file_parts = loading_path.parts[-len(file_path.parts) :]
+        updated_file_path = Path(*updated_file_parts)
+
+        if str(updated_file_path) != str(file_path):
+            logger.info(
+                f"Updating file reference from {file_path.name} to {updated_file_path}"
+            )
+
+        return updated_file_path
 
     @classmethod
     def validate(cls: Type["FileModel"], value: Any):
@@ -740,7 +880,7 @@ class FileModel(BaseModel, ABC):
         the parent. In exceptional cases, the relative mode can be dependent on the
         data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
         As such the data is provided for such classes where the relative mode is
-        dependent on the state (e.g. the [FMModel][hydrolib.core.io.mdu.models.FMModel]).
+        dependent on the state (e.g. the [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]).
 
         Args:
             data (Dict[str, Any]):
@@ -829,6 +969,7 @@ class ParsableFileModel(FileModel):
         self._serialize(self.dict())
 
     def _serialize(self, data: dict) -> None:
+        """Serializes the data to file. Should not be called directly, only through `_save`."""
         path = self._resolved_filepath
         if path is None:
             # TODO: Do we need to add a warning / exception here

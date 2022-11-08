@@ -7,6 +7,7 @@ import pytest
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
+    FileCasingResolver,
     FileLoadContext,
     FileModel,
     FileModelCache,
@@ -16,11 +17,16 @@ from hydrolib.core.basemodel import (
     context_file_loading,
     file_load_context,
 )
+from hydrolib.core.io.dflowfm.mdu.models import FMModel
 from hydrolib.core.io.dimr.models import DIMR
-from hydrolib.core.io.mdu.models import FMModel
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
+
+
+def runs_from_docker() -> bool:
+    """Check to see if we are running from within docker."""
+    return Path("/.dockerenv").exists()
 
 
 class TestFileModel:
@@ -289,6 +295,21 @@ class TestFileModel:
         forcing = extforcefile.boundary[0].forcingfile  # type: ignore
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
+
+    @pytest.mark.skipif(
+        runs_from_docker(),
+        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
+    )
+    def test_initialize_model_with_resolve_casing_updates_file_references_recursively(
+        self,
+    ):
+        file_path = test_input_dir / "resolve_casing_file_load_test" / "fm.mdu"
+        model = FMModel(file_path, resolve_casing=True)
+
+        assert model.geometry.inifieldfile.filepath == Path("initial/initialFields.ini")
+        assert model.geometry.inifieldfile.initial[0].datafile.filepath == Path(
+            "InitialWaterLevel.ini"
+        )
 
 
 class TestContextManagerFileLoadContext:
@@ -654,3 +675,60 @@ class TestDiskOnlyFileModel:
         assert output_path.exists()
         assert output_path.is_file()
         assert filecmp.cmp(input_parent_path / input_file_name, output_path)
+
+
+class TestFileCasingResolver:
+    @pytest.mark.parametrize(
+        "resolve_casing, input_file, expected_file",
+        [
+            pytest.param(
+                True,
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                Path("dflowfm_individual_files/FlowFM_boundaryconditions1d.bc"),
+                id="resolve_casing True: Matching file exists with different casing",
+            ),
+            pytest.param(
+                True,
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                Path("dflowfm_individual_files/beepboop.robot"),
+                id="resolve_casing True: No matching file",
+            ),
+            pytest.param(
+                False,
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                id="resolve_casing False: Matching file exists with different casing",
+            ),
+            pytest.param(
+                False,
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                id="resolve_casing False: No matching file",
+            ),
+        ],
+    )
+    @pytest.mark.skipif(
+        runs_from_docker(),
+        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
+    )
+    def test_resolve_returns_correct_result(
+        self, resolve_casing: bool, input_file: str, expected_file: str
+    ) -> None:
+        resolver = FileCasingResolver()
+        resolver.initialize_resolve_casing(resolve_casing)
+
+        file_path = test_input_dir / input_file
+
+        expected_file_path = test_input_dir / expected_file
+        actual_file_path = resolver.resolve(file_path)
+
+        assert actual_file_path == expected_file_path
+
+    @pytest.mark.parametrize("first", [True, False])
+    @pytest.mark.parametrize("second", [True, False])
+    def test_can_only_set_resolve_casing_once(self, first: bool, second: bool):
+        resolver = FileCasingResolver()
+        resolver.initialize_resolve_casing(first)
+        resolver.initialize_resolve_casing(second)
+
+        assert resolver._resolve_casing == first
