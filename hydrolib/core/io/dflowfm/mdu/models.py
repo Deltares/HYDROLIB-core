@@ -1794,7 +1794,9 @@ class FMModel(INIModel):
     particles: Optional[Particles] = Field(None)
     veg: Optional[Vegetation] = Field(None)
 
-    serializer_config: INISerializerConfig = INISerializerConfig(skip_empty_properties=False)
+    serializer_config: INISerializerConfig = INISerializerConfig(
+        skip_empty_properties=False
+    )
 
     @classmethod
     def _ext(cls) -> str:

@@ -21,10 +21,10 @@ from hydrolib.core.io.dflowfm.ini.parser import (
     _IntermediateSection,
 )
 from hydrolib.core.io.dflowfm.ini.serializer import (
+    INISerializerConfig,
     MaxLengths,
     SectionSerializer,
     Serializer,
-    INISerializerConfig,
     _serialize_comment_block,
     write_ini,
 )
