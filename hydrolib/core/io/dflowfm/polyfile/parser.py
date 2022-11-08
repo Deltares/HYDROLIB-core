@@ -301,9 +301,9 @@ class Parser:
         }
 
         self._handle_ws: Dict[StateType, Callable[[str], None]] = {
-            StateType.NEW_BLOCK: self._log_ws_warning,
-            StateType.PARSED_DESCRIPTION: self._log_ws_warning,
-            StateType.PARSED_NAME: self._log_ws_warning,
+            StateType.NEW_BLOCK: self._noop,
+            StateType.PARSED_DESCRIPTION: self._noop,
+            StateType.PARSED_NAME: self._noop,
             StateType.PARSING_POINTS: self._noop,
             StateType.INVALID_STATE: self._noop,
         }
@@ -438,10 +438,6 @@ class Parser:
     def _handle_empty_line(self) -> None:
         if self._state != StateType.INVALID_STATE:
             self._current_block.empty_lines.append(self._line)
-
-    def _log_ws_warning(self, line: str) -> None:
-        if line[0] != " ":
-            return
 
     def _handle_new_error(self, reason: str) -> None:
         self._error_builder.start_invalid_block(
