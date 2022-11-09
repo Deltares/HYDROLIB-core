@@ -188,20 +188,20 @@ class DataBlockINIBasedModel(INIBasedModel):
 
         for row in self.datablock:
             converted_row = (
-                DataBlockINIBasedModel._elem_to_str(elem, config) for elem in row
+                DataBlockINIBasedModel.convert_value(value, config) for value in row
             )
             converted_datablock.append(list(converted_row))
 
         return converted_datablock
 
     @classmethod
-    def _elem_to_str(
-        cls, elem: Union[float, str], config: DataBlockINIBasedSerializerConfig
+    def convert_value(
+        cls, value: Union[float, str], config: DataBlockINIBasedSerializerConfig
     ) -> str:
-        if isinstance(elem, float):
-            return float_to_str(elem, config.number_of_decimals_datablock)
+        if isinstance(value, float):
+            return float_to_str(value, config.number_of_decimals_datablock)
 
-        return str(elem)
+        return value
 
 
 class INIGeneral(INIBasedModel):
