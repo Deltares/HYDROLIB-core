@@ -260,29 +260,49 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
         value (str): The value to compare with.
 
     Returns:
-        [str]: The field default that corresponds to the value.
+        str: The field default that corresponds to the value. If nothing is found return the input value.
     """
+    # Immediately check in direct subclasses, not in base cls itself:
     for c in cls.__subclasses__():
         default = _try_get_default_value(c, fieldname, value)
-        if default is not None and default.lower() == value.lower():
+        if default is not None:
             return default
+
+    # No matching default was found, return input value:
     return value
 
 
-def _try_get_default_value(c, fieldname, value):
+def _try_get_default_value(
+    c: Type[BaseModel], fieldname: str, value: str
+) -> Optional[str]:
+    """Helper subroutine to get the default value for a particular field in
+    the given class or any of its descendant classes, if it matches the input
+    value (case insensitive).
+
+    This method recurses depth-first topdown into the class'es subclasses.
+
+        c (Type[BaseModel]): The base model type where the search starts.
+        fieldname (str): The field name for which retrieve the default for.
+        value (str): The value to compare with.
+
+    Returns:
+        Optional[str]: The field default that corresponds to the value. If nothing is found return None.
+    """
     if (field := c.__fields__.get(fieldname)) is None:
-        return value
+        return None
 
     default = field.default
 
     if default is not None and default.lower() == value.lower():
+        # If this class's default matches, directly return it to end the recursion.
         return default
 
     for sc in c.__subclasses__():
         default = _try_get_default_value(sc, fieldname, value)
-        if default is not None and default.lower() == value.lower():
+        if default is not None:
             return default
 
+    # Nothing found under c, return None to caller (e.g., to continue recursion).
     return None
 
 
