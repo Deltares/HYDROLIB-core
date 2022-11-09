@@ -180,12 +180,10 @@ class DataBlockINIBasedModel(INIBasedModel):
         section.datablock = self._to_datablock(config)
         return section
 
-    def _to_datablock(
-        self, config: DataBlockINIBasedSerializerConfig
-    ) -> List[List]:
+    def _to_datablock(self, config: DataBlockINIBasedSerializerConfig) -> List[List]:
         if config.number_of_decimals_datablock is None:
             return self.datablock
-        
+
         converted_datablock = []
 
         for row in self.datablock:
