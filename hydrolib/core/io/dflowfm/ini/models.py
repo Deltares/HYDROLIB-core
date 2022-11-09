@@ -182,7 +182,10 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     def _to_datablock(
         self, config: DataBlockINIBasedSerializerConfig
-    ) -> List[List[str]]:
+    ) -> List[List]:
+        if config.number_of_decimals_datablock is None:
+            return self.datablock
+        
         converted_datablock = []
 
         for row in self.datablock:
@@ -197,7 +200,7 @@ class DataBlockINIBasedModel(INIBasedModel):
     def _elem_to_str(
         cls, elem: Union[float, str], config: DataBlockINIBasedSerializerConfig
     ) -> str:
-        if isinstance(elem, float) and config.number_of_decimals_datablock is not None:
+        if isinstance(elem, float):
             return float_to_str(elem, config.number_of_decimals_datablock)
 
         return str(elem)
