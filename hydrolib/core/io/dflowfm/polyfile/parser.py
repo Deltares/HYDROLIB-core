@@ -300,14 +300,6 @@ class Parser:
             StateType.INVALID_STATE: self._noop,
         }
 
-        self._handle_ws: Dict[StateType, Callable[[str], None]] = {
-            StateType.NEW_BLOCK: self._noop,
-            StateType.PARSED_DESCRIPTION: self._noop,
-            StateType.PARSED_NAME: self._noop,
-            StateType.PARSING_POINTS: self._noop,
-            StateType.INVALID_STATE: self._noop,
-        }
-
     def feed_line(self, line: str) -> None:
         """Parse the next line with this Parser.
 
@@ -316,7 +308,6 @@ class Parser:
         """
 
         if not Parser._is_empty_line(line):
-            self._handle_ws[self._state](line)
             self._feed_line[self._state](line)
         else:
             self._handle_empty_line()
