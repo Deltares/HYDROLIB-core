@@ -300,14 +300,6 @@ class Parser:
             StateType.INVALID_STATE: self._noop,
         }
 
-        self._handle_ws: Dict[StateType, Callable[[str], None]] = {
-            StateType.NEW_BLOCK: self._log_ws_warning,
-            StateType.PARSED_DESCRIPTION: self._log_ws_warning,
-            StateType.PARSED_NAME: self._log_ws_warning,
-            StateType.PARSING_POINTS: self._noop,
-            StateType.INVALID_STATE: self._noop,
-        }
-
     def feed_line(self, line: str) -> None:
         """Parse the next line with this Parser.
 
@@ -316,7 +308,6 @@ class Parser:
         """
 
         if not Parser._is_empty_line(line):
-            self._handle_ws[self._state](line)
             self._feed_line[self._state](line)
         else:
             self._handle_empty_line()
@@ -438,20 +429,6 @@ class Parser:
     def _handle_empty_line(self) -> None:
         if self._state != StateType.INVALID_STATE:
             self._current_block.empty_lines.append(self._line)
-
-    def _log_ws_warning(self, line: str) -> None:
-        if line[0] != " ":
-            return
-
-        end_column = len(line) - len(line.lstrip()) - 1
-        self._current_block.ws_warnings.append(
-            ParseMsg(
-                line_start=self._line,
-                line_end=self._line,
-                column=(0, end_column),
-                reason="White space at the start of the line is ignored.",
-            )
-        )
 
     def _handle_new_error(self, reason: str) -> None:
         self._error_builder.start_invalid_block(
