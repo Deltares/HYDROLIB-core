@@ -15,6 +15,7 @@ from hydrolib.core.basemodel import (
     ModelLoadSettings,
     ParsableFileModel,
     ResolveRelativeMode,
+    SerializerConfig,
     context_file_loading,
     file_load_context,
 )
@@ -738,3 +739,8 @@ class TestModelLoadSettings:
         settings = ModelLoadSettings(recurse=value, resolve_casing=value)
         assert settings.recurse == value
         assert settings.resolve_casing == value
+
+class TestSerializerConfig:
+    def test_default(self):
+        config = SerializerConfig()
+        assert config.float_format == ""
