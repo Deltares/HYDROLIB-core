@@ -61,7 +61,29 @@ class DataBlockINIBasedSerializerConfig(INISerializerConfig):
     """Class that holds the configuration settings for INI files with data blocks serialization."""
 
     float_format_datablock: str = ""
-    """str: The string format that will be used for float serialization of the datablock. If empty, the original number will be serialized. Defaults to an empty string."""
+    """str: The string format that will be used for float serialization of the datablock. If empty, the original number will be serialized. Defaults to an empty string.
+    
+    Examples:
+        Input value = 123.456
+
+        Format    | Output          | Description
+        -------------------------------------------------------------------------------------------------------------------------------------
+        ".0f"     | 123             | Format float with 0 decimal places.
+        "f"       | 123.456000      | Format float with default (=6) decimal places.
+        ".2f"     | 123.46          | Format float with 2 decimal places.
+        "+.1f"    | +123.5          | Format float with 1 decimal place with a + or  sign.
+        "e"       | 1.234560e+02    | Format scientific notation with the letter 'e' with default (=6) decimal places.
+        "E"       | 1.234560E+02    | Format scientific notation with the letter 'E' with default (=6) decimal places.
+        ".3e"     | 1.235e+02       | Format scientific notation with the letter 'e' with 3 decimal places.
+        "<15"     | 123.456         | Left aligned in space with width 15
+        "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
+        ">15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
+        "*>15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
+        "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.     
+        ".3%"     | 12345.600%      | Format percentage with 3 decimal places.  
+
+        More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
+    """
 
 
 class MaxLengths(BaseModel):
