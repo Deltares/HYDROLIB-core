@@ -1035,8 +1035,8 @@ class ParsableFileModel(FileModel):
     class SerializerConfig(BaseModel, ABC):
         """Class that holds the configuration settings for serialization."""
 
-        number_of_decimals: Optional[int] = None
-        """Optional[int]: The number of decimals that should be serialized for floating numbers. If None, the full number will be serialized. Defaults to None."""
+        float_format: Optional[str] = None
+        """Optional[str]: The string format that will be used for float serialization. If None, the original number will be serialized. Defaults to None."""
 
     serializer_config: SerializerConfig = SerializerConfig()
 
