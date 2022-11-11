@@ -108,8 +108,23 @@ class Structure(INIBasedModel):
         filtered_values = {k: v for k, v in values.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        if not (structype == "compound" or issubclass(cls, (Compound, Dambreak))):
+        if not (structype == "compound" or issubclass(cls, (Compound))):
             # Compound structure does not require a location specification.
+
+            # Backwards compatibility for old-style polylinefile input field (instead of num/x/yCoordinates):
+            polyline_compatible_structures = dict(
+                pump="Pump",
+                dambreak="Dambreak",
+                gate="Gate",
+                weir="Weir",
+                generalstructure="GeneralStructure",
+            )
+            polylinefile_in_model = (
+                structype in polyline_compatible_structures.keys()
+                and filtered_values.get("polylinefile") is not None
+            )
+
+            # No branchId+chainage for some structures:
             only_coordinates_structures = dict(
                 longculvert="LongCulvert", dambreak="Dambreak"
             )
@@ -117,18 +132,38 @@ class Structure(INIBasedModel):
                 filtered_values
             )
 
-            # Exception -> LongCulvert requires coordinates_in_model, but not branchId and chainage.
-            if structype in only_coordinates_structures.keys():
+            # Error: do not allow both x/y and polyline file:
+            assert not (
+                polylinefile_in_model and coordinates_in_model
+            ), f"`Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+
+            # Error: require x/y or polyline file:
+            if (
+                structype in polyline_compatible_structures.keys()
+                and structype in only_coordinates_structures.keys()
+            ):
+                assert (
+                    coordinates_in_model or polylinefile_in_model
+                ), f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
+
+            # Error: Some structures require coordinates_in_model, but not branchId and chainage.
+            if (
+                not polylinefile_in_model
+                and structype in only_coordinates_structures.keys()
+            ):
                 assert (
                     coordinates_in_model
-                ), f"`num/x/yCoordinates` are mandatory for a {only_coordinates_structures[structype]} structure."
+                ), f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
 
+            # Error: final check: at least one of x/y, branchId+chainage or polyline file must be given
             branch_and_chainage_in_model = (
                 Structure.validate_branch_and_chainage_in_model(filtered_values)
             )
             assert (
-                branch_and_chainage_in_model or coordinates_in_model
-            ), "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields."
+                branch_and_chainage_in_model
+                or coordinates_in_model
+                or polylinefile_in_model
+            ), "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
 
         return values
 
@@ -925,15 +960,7 @@ class Dambreak(Structure):
             "waterLevelDownstreamNodeId",
         )
 
-        if (
-            Structure.validate_coordinates_in_model(values)
-            or values.get("polylinefile", None) is not None
-        ):
-            return values
-
-        raise ValueError(
-            "`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure."
-        )
+        return values
 
 
 class Bridge(Structure):
