@@ -2,7 +2,7 @@ from itertools import chain, count, repeat
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, SerializerConfig
 from hydrolib.core.io.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,
@@ -15,7 +15,7 @@ from hydrolib.core.io.dflowfm.ini.io_models import (
 from hydrolib.core.utils import str_is_empty_or_none
 
 
-class INISerializerConfig(ParsableFileModel.SerializerConfig):
+class INISerializerConfig(SerializerConfig):
     """SerializerConfig defines the configuration options of the Serializer
 
     Attributes:

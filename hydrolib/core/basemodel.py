@@ -5,7 +5,6 @@ also represents a file on disk.
 
 """
 import logging
-import os
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
 from contextlib import contextmanager
@@ -1013,26 +1012,7 @@ class FileModel(BaseModel, ABC):
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
 
-
-class ParsableFileModel(FileModel):
-    """ParsableFileModel defines a FileModel which can be parsed
-    and serialized with a serializer .
-
-    Each ParsableFileModel has a default _filename and _ext,
-    which are used to generate the file name of any instance where
-    the filepath is not (yet) set.
-
-    Children of the ParsableFileModel are expected to implement a
-    serializer function which takes a Path and Dict and writes the
-    ParsableFileModel to disk, and a parser function which takes
-    a Path and outputs a Dict.
-
-    If more complicated solutions are required, a ParsableFileModel
-    child can also opt to overwrite the _serialize and _parse methods,
-    to skip the _get_serializer and _get_parser methods respectively.
-    """
-
-    class SerializerConfig(BaseModel, ABC):
+class SerializerConfig(BaseModel, ABC):
         """Class that holds the configuration settings for serialization."""
 
         float_format: str = ""
@@ -1059,6 +1039,24 @@ class ParsableFileModel(FileModel):
 
             More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
         """
+
+class ParsableFileModel(FileModel):
+    """ParsableFileModel defines a FileModel which can be parsed
+    and serialized with a serializer .
+
+    Each ParsableFileModel has a default _filename and _ext,
+    which are used to generate the file name of any instance where
+    the filepath is not (yet) set.
+
+    Children of the ParsableFileModel are expected to implement a
+    serializer function which takes a Path and Dict and writes the
+    ParsableFileModel to disk, and a parser function which takes
+    a Path and outputs a Dict.
+
+    If more complicated solutions are required, a ParsableFileModel
+    child can also opt to overwrite the _serialize and _parse methods,
+    to skip the _get_serializer and _get_parser methods respectively.
+    """
 
     serializer_config: SerializerConfig = SerializerConfig()
 
