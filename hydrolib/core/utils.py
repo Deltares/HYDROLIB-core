@@ -175,23 +175,3 @@ def get_operating_system() -> OperatingSystem:
         return OperatingSystem.MACOS
 
     raise NotImplementedError(f"Operating system {operating_system} is not supported.")
-
-
-def float_to_str(value: float, number_of_decimals: int) -> str:
-    """Converts a floating number to a string with the specified number of digits.
-
-    Args:
-        value (float): The floating number to convert to a string.
-        number_of_decimals (float): The number of decimals to round the floating number with.
-
-    Returns:
-        str: The string representation of the floating number.
-
-    Raises:
-        ValueError: When number_of_decimals is smaller than zero.
-
-    """
-    if number_of_decimals < 0:
-        raise ValueError("number_of_decimals cannot be negative.")
-
-    return f"{value:.{number_of_decimals}f}"

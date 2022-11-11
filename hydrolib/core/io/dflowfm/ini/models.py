@@ -9,7 +9,6 @@ from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
-from hydrolib.core.utils import float_to_str
 
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser

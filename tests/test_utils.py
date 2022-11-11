@@ -3,11 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.io.dflowfm.mdu.models import Geometry, Output
-from hydrolib.core.utils import (
-    float_to_str,
-    get_substring_between,
-    str_is_empty_or_none,
-)
+from hydrolib.core.utils import get_substring_between, str_is_empty_or_none
 
 from .utils import test_input_dir
 
@@ -75,30 +71,3 @@ class TestGetSubstringBetween:
         result = get_substring_between(source, start, end)
 
         assert result == exp_result
-
-
-class TestFloatToString:
-    @pytest.mark.parametrize(
-        ("value, number_of_decimals, exp_result"),
-        [
-            pytest.param(3.141592, 0, "3"),
-            pytest.param(3.141592, 2, "3.14"),
-            pytest.param(3.141592, 4, "3.1416"),
-            pytest.param(3.141592, 8, "3.14159200"),
-            pytest.param(123.141592, 0, "123"),
-            pytest.param(123.141592, 2, "123.14"),
-            pytest.param(123.141592, 4, "123.1416"),
-            pytest.param(123.141592, 8, "123.14159200"),
-        ],
-    )
-    def test_non_negative_number_of_decimals_returns_correct_string(
-        self, value: float, number_of_decimals: int, exp_result: str
-    ):
-        result = float_to_str(value, number_of_decimals)
-
-        assert result == exp_result
-
-    def test_negative_number_of_decimals_raises_valueerror(self):
-        with pytest.raises(ValueError) as error:
-            _: str = float_to_str(3.141592, -1)
-        assert str(error.value) == "number_of_decimals cannot be negative."
