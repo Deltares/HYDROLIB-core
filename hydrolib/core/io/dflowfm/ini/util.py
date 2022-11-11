@@ -79,17 +79,19 @@ def make_list_validator(*field_name: str):
     return validator(*field_name, allow_reuse=True, pre=True)(split)
 
 
-def make_list_length_root_validator(
+def validate_correct_length(
+    values: Dict,
     *field_names,
     length_name: str,
     length_incr: int = 0,
     list_required_with_length: bool = False,
     min_length: int = 0,
-):
+) -> Dict:
     """
-    Get a root_validator that checks the correct length (and presence) of several list fields in an object.
+    Validate the correct length (and presence) of several list fields in an object.
 
     Args:
+        values (Dict): dictionary of values to validate.
         *field_names (str): names of the instance variables that are a list and need checking.
         length_name (str): name of the instance variable that stores the expected length.
         length_incr (int): Optional extra increment of length value (e.g., to have +1 extra value in lists).
@@ -98,6 +100,12 @@ def make_list_length_root_validator(
             checked for the lists that are not None.
         min_length (int): minimum for list length value, overrides length_name value if that is smaller.
             For example, to require list length 1 when length value is given as 0.
+
+    Raises:
+        ValueError: When the number of values for the given field_name is not as expected.
+
+    Returns:
+        Dict: Dictionary of validated values.
     """
 
     def _get_incorrect_length_validation_message() -> str:
@@ -131,24 +139,22 @@ def make_list_length_root_validator(
 
         return field
 
-    def validate_correct_length(cls, values: dict):
-        """The actual validator, will loop across all specified field names in outer function."""
-        length = values.get(length_name)
-        if length is None:
-            # length attribute not present, possibly defer validation to a subclass.
-            return values
-
-        requiredlength = max(length + length_incr, min_length)
-
-        for field_name in field_names:
-            field = values.get(field_name)
-            values[field_name] = _validate_listfield_length(
-                field_name, field, requiredlength
-            )
-
+    length = values.get(length_name)
+    if length is None:
+        # length attribute not present, possibly defer validation to a subclass.
         return values
 
-    return root_validator(allow_reuse=True)(validate_correct_length)
+    requiredlength = max(length + length_incr, min_length)
+
+    for field_name in field_names:
+        field = values.get(field_name)
+        values[field_name] = _validate_listfield_length(
+            field_name,
+            field,
+            requiredlength,
+        )
+
+    return values
 
 
 def get_forbidden_fields_validator(

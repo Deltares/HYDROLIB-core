@@ -2,14 +2,14 @@ import logging
 from typing import List, Literal, Optional
 
 from pydantic import Field
-from pydantic.class_validators import validator
+from pydantic.class_validators import root_validator
 from pydantic.types import NonNegativeInt
 
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.dflowfm.ini.util import (
     get_split_string_on_delimiter_validator,
-    make_list_length_root_validator,
     make_list_validator,
+    validate_correct_length,
 )
 
 logger = logging.getLogger(__name__)
@@ -87,18 +87,26 @@ class OneDFieldBranch(INIBasedModel):
         "values",
     )
 
-    _check_list_length_values = make_list_length_root_validator(
-        "chainage",
-        length_name="numlocations",
-        list_required_with_length=True,
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_length_values(cls, values):
+        """Validates that the length of the values field is as expected."""
+        return validate_correct_length(
+            values,
+            "values",
+            length_name="numlocations",
+            list_required_with_length=True,
+            min_length=1,
+        )
 
-    _check_list_length_chainage = make_list_length_root_validator(
-        "values",
-        length_name="numlocations",
-        list_required_with_length=True,
-        min_length=1,
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_length_chainage(cls, values):
+        """Validates that the length of the chainage field is as expected."""
+        return validate_correct_length(
+            values,
+            "chainage",
+            length_name="numlocations",
+            list_required_with_length=True,
+        )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")

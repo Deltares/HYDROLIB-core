@@ -9,8 +9,8 @@ from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_required_fields_validator,
     get_split_string_on_delimiter_validator,
-    make_list_length_root_validator,
     make_list_validator,
+    validate_correct_length,
 )
 
 
@@ -170,12 +170,16 @@ class StorageNode(INIBasedModel):
         "storagearea",
     )
 
-    _check_list_length = make_list_length_root_validator(
-        "levels",
-        "storagearea",
-        length_name="numlevels",
-        list_required_with_length=True,
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_length_levels(cls, values):
+        """Validates that the length of the levels field is as expected."""
+        return validate_correct_length(
+            values,
+            "levels",
+            "storagearea",
+            length_name="numlevels",
+            list_required_with_length=True,
+        )
 
     _usetable_true_validator = get_required_fields_validator(
         "numlevels",
