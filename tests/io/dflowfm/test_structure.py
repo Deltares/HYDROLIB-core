@@ -32,14 +32,6 @@ from ...utils import WrapperTest, invalid_test_data_dir, test_data_dir
 uniqueid_str = "Unique structure id (max. 256 characters)."
 
 
-def test_foo():
-    file_struct = Path(
-        r"p:\11206813-006-kpp2021_rmm-2d\C_Work\31_RMM_FMmodel\computations\model_setup\run_206_HYDROLIB\RMM_structures.ini"
-    )
-    structs = StructureModel(file_struct)
-    pass
-
-
 def test_structure_model():
     filepath = (
         test_data_dir
