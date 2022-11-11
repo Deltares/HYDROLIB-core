@@ -136,7 +136,7 @@ class INIBasedModel(BaseModel, ABC):
             return cls.get_list_field_delimiter(key).join([str(x) for x in v])
         elif isinstance(v, Enum):
             return v.value
-        elif isinstance(v, float) and config.float_format is not None:
+        elif isinstance(v, float):
             return f"{v:{config.float_format}}"
         elif v is None:
             return ""
@@ -180,9 +180,6 @@ class DataBlockINIBasedModel(INIBasedModel):
         return section
 
     def _to_datablock(self, config: DataBlockINIBasedSerializerConfig) -> List[List]:
-        if config.float_format_datablock is None:
-            return self.datablock
-
         converted_datablock = []
 
         for row in self.datablock:

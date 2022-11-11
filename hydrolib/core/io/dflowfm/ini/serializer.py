@@ -60,8 +60,8 @@ class INISerializerConfig(ParsableFileModel.SerializerConfig):
 class DataBlockINIBasedSerializerConfig(INISerializerConfig):
     """Class that holds the configuration settings for INI files with data blocks serialization."""
 
-    float_format_datablock: Optional[str] = None
-    """Optional[str]: The string format that will be used for float serialization of the datablock. If None, the original number will be serialized. Defaults to None."""
+    float_format_datablock: str = ""
+    """str: The string format that will be used for float serialization of the datablock. If empty, the original number will be serialized. Defaults to an empty string."""
 
 
 class MaxLengths(BaseModel):
