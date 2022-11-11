@@ -740,6 +740,7 @@ class TestModelLoadSettings:
         assert settings.recurse == value
         assert settings.resolve_casing == value
 
+
 class TestSerializerConfig:
     def test_default(self):
         config = SerializerConfig()
