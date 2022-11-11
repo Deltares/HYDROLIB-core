@@ -540,7 +540,7 @@ class TestStructure:
         """
 
         long_culvert_err = "Specify location by setting `num/x/yCoordinates` for a LongCulvert structure."
-        dambreak_err = "Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a damBreak structure."
+        dambreak_err = "Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a Dambreak structure."
         structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
 
         @pytest.mark.parametrize(
