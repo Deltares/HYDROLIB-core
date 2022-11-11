@@ -21,6 +21,7 @@ from hydrolib.core.io.dflowfm.ini.parser import (
     _IntermediateSection,
 )
 from hydrolib.core.io.dflowfm.ini.serializer import (
+    DataBlockINIBasedSerializerConfig,
     INISerializerConfig,
     MaxLengths,
     SectionSerializer,
@@ -811,6 +812,19 @@ class TestINISerializerConfig:
         assert config.datablock_spacing == 2
         assert config.comment_delimiter == "#"
         assert config.skip_empty_properties == True
+        assert config.float_format == ""
+
+class TestDataBlockINIBasedSerializerConfig:
+    def test_default_serializer_config(self):
+        config = DataBlockINIBasedSerializerConfig()
+        assert config.section_indent == 0
+        assert config.property_indent == 4
+        assert config.datablock_indent == 8
+        assert config.datablock_spacing == 2
+        assert config.comment_delimiter == "#"
+        assert config.skip_empty_properties == True
+        assert config.float_format == ""
+        assert config.float_format_datablock == ""
 
 
 class TestLengths:
