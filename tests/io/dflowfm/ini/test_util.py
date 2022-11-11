@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 import pytest
 from pydantic import Extra
@@ -8,8 +8,10 @@ from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
+    get_from_subclass_defaults,
     get_key_renaming_root_validator,
     get_location_specification_rootvalidator,
+    get_type_based_on_subclass_default_value,
 )
 
 
@@ -239,3 +241,111 @@ class TestGetKeyRenamingRootValidator:
 
         expected_message = "field required"
         assert expected_message in str(error.value)
+
+
+class TestGetFromSubclassDefaults:
+    def test_get_from_subclass_defaults__correctly_gets_default_property_from_child(
+        self,
+    ):
+        name = get_from_subclass_defaults(
+            BaseClass,
+            "name",
+            "WithDefaultProperty",
+        )
+
+        assert name == "WithDefaultProperty"
+
+    def test_get_from_subclass_defaults__correctly_gets_default_property_from_grandchild(
+        self,
+    ):
+        name = get_from_subclass_defaults(
+            BaseClass,
+            "name",
+            "GrandChildWithDefaultProperty",
+        )
+
+        assert name == "GrandChildWithDefaultProperty"
+
+    def test_get_from_subclass_defaults__returns_value_if_no_corresponding_defaults_found(
+        self,
+    ):
+        name = get_from_subclass_defaults(
+            BaseClass,
+            "name",
+            "ThisDefaultValueDoesNotExist",
+        )
+
+        assert name == "ThisDefaultValueDoesNotExist"
+
+    def test_get_from_subclass_defaults__property_not_found__returns_value(self):
+        value = "valueToCheck"
+
+        default = get_from_subclass_defaults(
+            BaseClass,
+            "unknownProperty",
+            value,
+        )
+
+        assert default == value
+
+
+class TestGetTypeBasedOnSubclassDefaultValue:
+    def test_get_type_based_on_subclass_default_value__correctly_gets_type_from_child(
+        self,
+    ):
+        subclass_type = get_type_based_on_subclass_default_value(
+            BaseClass,
+            "name",
+            "WithDefaultProperty",
+        )
+
+        assert subclass_type == WithDefaultProperty
+
+    def test_get_type_based_on_subclass_default_value__correctly_gets_type_from_grandchild(
+        self,
+    ):
+        subclass_type = get_type_based_on_subclass_default_value(
+            BaseClass,
+            "name",
+            "GrandChildWithDefaultProperty",
+        )
+
+        assert subclass_type == GrandChildWithDefaultProperty
+
+    def test_get_type_based_on_subclass_default_value__returns_none_if_no_corresponding_defaults_found(
+        self,
+    ):
+        subclass_type = get_type_based_on_subclass_default_value(
+            BaseClass,
+            "name",
+            "ThisDefaultValueDoesNotExist",
+        )
+
+        assert subclass_type is None
+
+    def test_get_type_based_on_subclass_default_value__property_not_found__returns_none(
+        self,
+    ):
+        subclass_type = get_type_based_on_subclass_default_value(
+            BaseClass,
+            "unknownProperty",
+            "randomValue",
+        )
+
+        assert subclass_type is None
+
+
+class BaseClass(BaseModel):
+    name: str
+
+
+class WithDefaultProperty(BaseClass):
+    name: Literal["WithDefaultProperty"] = "WithDefaultProperty"
+
+
+class WithoutDefaultProperty(BaseClass):
+    pass
+
+
+class GrandChildWithDefaultProperty(WithoutDefaultProperty):
+    name: Literal["GrandChildWithDefaultProperty"] = "GrandChildWithDefaultProperty"
