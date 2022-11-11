@@ -306,6 +306,9 @@ class TestForcingModel:
         forcingmodel.forcing.append(t3d)
         forcingmodel.forcing.append(qhtable)
         forcingmodel.forcing.append(constant)
+
+        forcingmodel.serializer_config.float_format = ".3f"
+        forcingmodel.serializer_config.float_format_datablock = ".4f"
         forcingmodel.save()
 
         assert bc_file.is_file() == True
