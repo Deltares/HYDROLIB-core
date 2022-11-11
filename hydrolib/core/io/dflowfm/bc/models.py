@@ -26,9 +26,7 @@ from hydrolib.core.io.dflowfm.ini.models import (
     INIModel,
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.dflowfm.ini.serializer import (
-    DataBlockINIBasedSerializerConfig
-)
+from hydrolib.core.io.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,

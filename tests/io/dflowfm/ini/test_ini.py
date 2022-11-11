@@ -814,6 +814,7 @@ class TestINISerializerConfig:
         assert config.skip_empty_properties == True
         assert config.float_format == ""
 
+
 class TestDataBlockINIBasedSerializerConfig:
     def test_default_serializer_config(self):
         config = DataBlockINIBasedSerializerConfig()
