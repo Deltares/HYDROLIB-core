@@ -794,7 +794,7 @@ class TestParser:
         assert result == expected_result
 
 
-class TestSerializerConfig:
+class TestINISerializerConfig:
     def test_total_property_indent_expected_result(self):
         config = INISerializerConfig(section_indent=5, property_indent=3)
         assert config.total_property_indent == 8
