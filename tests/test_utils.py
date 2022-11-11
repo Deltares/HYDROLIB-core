@@ -91,14 +91,14 @@ class TestFloatToString:
             pytest.param(123.141592, 8, "123.14159200"),
         ],
     )
-    def non_negative_number_of_decimals_returns_correct_string(
+    def test_non_negative_number_of_decimals_returns_correct_string(
         self, value: float, number_of_decimals: int, exp_result: str
     ):
         result = float_to_str(value, number_of_decimals)
 
         assert result == exp_result
 
-    def negative_number_of_decimals_raises_valueerror(self):
+    def test_negative_number_of_decimals_raises_valueerror(self):
         with pytest.raises(ValueError) as error:
             _: str = float_to_str(3.141592, -1)
         assert str(error.value) == "number_of_decimals cannot be negative."
