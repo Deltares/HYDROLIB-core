@@ -377,6 +377,7 @@ class TestCrossSectionModel:
         }
         crossloc_model.crosssection.append(CrossSection(**values))
 
+        crossloc_model.serializer_config.float_format = ".2f"
         crossloc_model.save(filepath=output_file)
 
         assert_files_equal(output_file, reference_file)
