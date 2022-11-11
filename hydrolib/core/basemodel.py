@@ -1012,11 +1012,12 @@ class FileModel(BaseModel, ABC):
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
 
-class SerializerConfig(BaseModel, ABC):
-        """Class that holds the configuration settings for serialization."""
 
-        float_format: str = ""
-        """str: The string format that will be used for float serialization. If empty, the original number will be serialized. Defaults to an empty string.
+class SerializerConfig(BaseModel, ABC):
+    """Class that holds the configuration settings for serialization."""
+
+    float_format: str = ""
+    """str: The string format that will be used for float serialization. If empty, the original number will be serialized. Defaults to an empty string.
         
         Examples:
             Input value = 123.456
@@ -1039,6 +1040,7 @@ class SerializerConfig(BaseModel, ABC):
 
             More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
         """
+
 
 class ParsableFileModel(FileModel):
     """ParsableFileModel defines a FileModel which can be parsed
