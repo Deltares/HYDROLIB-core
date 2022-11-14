@@ -1,5 +1,5 @@
 from hydrolib.core.basemodel import SerializerConfig
-from hydrolib.core.io.dflowfm.xyz.models import XYZPoint, XYZModel
+from hydrolib.core.io.dflowfm.xyz.models import XYZModel, XYZPoint
 from hydrolib.core.io.dflowfm.xyz.serializer import XYZSerializer
 from tests.utils import assert_files_equal, test_output_dir, test_reference_dir
 
@@ -22,6 +22,7 @@ class TestXYZSerializer:
 
         assert_files_equal(output_file, reference_file)
 
+
 class TestXYZModel:
     def test_save(self):
         output_file = test_output_dir / "test_save.xyz"
@@ -38,4 +39,3 @@ class TestXYZModel:
         model.save()
 
         assert_files_equal(output_file, reference_file)
-
