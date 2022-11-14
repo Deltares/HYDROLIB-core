@@ -1,4 +1,5 @@
 from pathlib import Path
+from hydrolib.core.basemodel import SerializerConfig
 
 from hydrolib.core.io.rr.topology.serializer import (
     LinkFileSerializer,
@@ -16,7 +17,7 @@ class TestNodeFileSerializer:
         data = dict(
             node=[create_node_values(), create_node_values(), create_node_values()]
         )
-        NodeFileSerializer.serialize(output_file, data)
+        NodeFileSerializer.serialize(output_file, data, config=SerializerConfig())
 
         assert_files_equal(output_file, reference_file)
 
@@ -43,7 +44,7 @@ class TestLinkFileSerializer:
         data = dict(
             link=[create_link_values(), create_link_values(), create_link_values()]
         )
-        LinkFileSerializer.serialize(output_file, data)
+        LinkFileSerializer.serialize(output_file, data, config=SerializerConfig())
 
         assert_files_equal(output_file, reference_file)
 

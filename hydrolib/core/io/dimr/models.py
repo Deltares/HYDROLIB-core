@@ -1,12 +1,12 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, List, Literal, Optional, Type, Union
+from typing import Callable, Dict, List, Literal, Optional, Type, Union
 
 from pydantic import Field, validator
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, FileModel, ParsableFileModel, SerializerConfig
 from hydrolib.core.io.dflowfm.mdu.models import FMModel
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
@@ -330,7 +330,7 @@ class DIMR(ParsableFileModel):
         return "dimr_config"
 
     @classmethod
-    def _get_serializer(cls) -> Callable:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return DIMRSerializer.serialize
 
     @classmethod

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
+from hydrolib.core.basemodel import SerializerConfig
 
 from hydrolib.core.io.rr.meteo.models import BuiModel, BuiPrecipitationEvent
 from hydrolib.core.io.rr.meteo.parser import (
@@ -595,7 +596,7 @@ class TestSerializer:
     def test_write_bui_file_given_valid_file(self):
         default_bui_model = BuiTestData.bui_model()
         new_path = test_output_dir / "new_path.bui"
-        write_bui_file(new_path, default_bui_model.dict())
+        write_bui_file(new_path, default_bui_model.dict(), config=SerializerConfig())
         assert new_path.is_file()
         written_text = new_path.read_text(encoding="utf8")
         assert str(new_path) in written_text

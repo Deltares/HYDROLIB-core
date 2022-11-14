@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 from xml.dom import minidom
+from hydrolib.core.basemodel import SerializerConfig
 
 from lxml import etree as e
 
@@ -10,13 +11,14 @@ class DIMRSerializer:
     """A serializer for DIMR files."""
 
     @staticmethod
-    def serialize(path: Path, data: dict):
+    def serialize(path: Path, data: dict, config: SerializerConfig):
         """
         Serializes the DIMR data to the file at the specified path.
 
         Attributes:
             path (Path): The path to the destination file.
             data (Dict): The data to be serialized.
+            config (SerializerConfig): The serialization configuration.
         """
 
         path.parent.mkdir(parents=True, exist_ok=True)

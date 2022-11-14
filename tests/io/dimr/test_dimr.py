@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core import __version__
+from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.io.dimr.models import DIMR
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer
@@ -121,7 +122,7 @@ def test_serialize():
         },
     }
 
-    DIMRSerializer.serialize(file, data)
+    DIMRSerializer.serialize(file, data, config=SerializerConfig())
 
     assert file.is_file()
     assert_files_equal(file, reference_file)

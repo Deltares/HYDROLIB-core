@@ -2,6 +2,7 @@ import inspect
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
+from hydrolib.core.basemodel import SerializerConfig
 
 
 class BuiEventSerializer:
@@ -202,13 +203,14 @@ class BuiSerializer:
         return str.join(" ", data_to_serialize)
 
 
-def write_bui_file(path: Path, data: Dict) -> None:
+def write_bui_file(path: Path, data: Dict, config: SerializerConfig) -> None:
     """
     Writes a .bui file in the given path based on the data given in a dictionary.
 
     Args:
         path (Path): Path where to output the text.
         data (Dict): Data to serialize into the file.
+        config (SerializerConfig): The serialization configuration.
     """
     data["filepath"] = path  # This is redundant as already exists in the data.
     serialized_bui_data = BuiSerializer.serialize(data)
