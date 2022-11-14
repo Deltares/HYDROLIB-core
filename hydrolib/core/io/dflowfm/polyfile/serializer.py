@@ -1,6 +1,6 @@
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, Optional, Sequence
+from typing import Generator, Iterable, Optional, Sequence
 
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.io.dflowfm.polyfile.models import (
@@ -50,9 +50,18 @@ class Serializer:
         Returns:
             str: The serialised equivalent of this Point
         """
-        z_val = f"{point.z}    " if point.z is not None else ""
-        data_vals = "    ".join(str(v) for v in point.data)
-        return f"    {point.x}    {point.y}    {z_val}{data_vals}".rstrip()
+        space = 4 * " "
+        return space + space.join(str(v) for v in Serializer._get_point_values(point))
+
+    @staticmethod
+    def _get_point_values(point: Point) -> Generator[float, None, None]:
+        yield point.x
+        yield point.y
+        if point.z:
+            yield point.z
+        for value in point.data:
+            yield value
+
 
     @staticmethod
     def serialize_poly_object(
