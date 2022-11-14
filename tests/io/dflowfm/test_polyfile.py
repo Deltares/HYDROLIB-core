@@ -59,7 +59,7 @@ class TestSerializer:
         assert "\n".join(Serializer.serialize_metadata(metadata)) == expected_output
 
     @pytest.mark.parametrize(
-        "point,expected_output",
+        "point,config,expected_output",
         [
             (
                 Point(
@@ -72,6 +72,7 @@ class TestSerializer:
                         5.0,
                     ],
                 ),
+                SerializerConfig(),
                 "    0.0    1.0    2.0    3.0    4.0    5.0",
             ),
             (
@@ -86,7 +87,8 @@ class TestSerializer:
                         5.0,
                     ],
                 ),
-                "    0.0    1.0    2.0    3.0    4.0    5.0",
+                SerializerConfig(float_format=".2f"),
+                "    0.00    1.00    2.00    3.00    4.00    5.00",
             ),
             (
                 Point(
@@ -95,15 +97,13 @@ class TestSerializer:
                     z=None,
                     data=[],
                 ),
+                SerializerConfig(float_format=".1f"),
                 "    0.0    1.0",
             ),
         ],
     )
-    def test_serialize_point(self, point: Point, expected_output: str):
-        assert (
-            Serializer.serialize_point(point, config=SerializerConfig())
-            == expected_output
-        )
+    def test_serialize_point(self, point: Point, config: SerializerConfig, expected_output: str):
+        assert Serializer.serialize_point(point, config) == expected_output
 
     def test_serialize_poly_object(self):
         poly_object = PolyObject(
