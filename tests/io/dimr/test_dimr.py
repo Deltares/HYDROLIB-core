@@ -126,3 +126,15 @@ def test_serialize():
 
     assert file.is_file()
     assert_files_equal(file, reference_file)
+
+def test_serialize_float_are_formatted():
+    data = {"some_key" : 1.23456}
+
+    file = Path(test_output_dir / "dimr" / "test_serialize_float_are_formatted.xml")
+    reference_file = Path(test_reference_dir / "dimr" / "test_serialize_float_are_formatted.xml")
+
+    config=SerializerConfig(float_format=".2f")
+    DIMRSerializer.serialize(file, data, config)
+
+    assert file.is_file()
+    assert_files_equal(file, reference_file)
