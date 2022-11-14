@@ -100,7 +100,7 @@ class TestSerializer:
         ],
     )
     def test_serialize_point(self, point: Point, expected_output: str):
-        assert Serializer.serialize_point(point) == expected_output
+        assert Serializer.serialize_point(point, config=SerializerConfig()) == expected_output
 
     def test_serialize_poly_object(self):
         poly_object = PolyObject(

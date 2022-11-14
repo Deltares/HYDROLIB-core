@@ -41,7 +41,7 @@ class Serializer:
         return [metadata.name, f"{metadata.n_rows}    {metadata.n_columns}"]
 
     @staticmethod
-    def serialize_point(point: Point) -> str:
+    def serialize_point(point: Point, config: SerializerConfig) -> str:
         """Serialize this Point to a string which can be used within a polyfile.
 
         the point data is indented with 4 spaces, and the individual values are
@@ -70,7 +70,7 @@ class Serializer:
 
         description = Serializer.serialize_description(obj.description)
         metadata = Serializer.serialize_metadata(obj.metadata)
-        points = map(Serializer.serialize_point, obj.points)
+        points = [Serializer.serialize_point(obj, config) for obj in obj.points]
         return chain(description, metadata, points)
 
 
