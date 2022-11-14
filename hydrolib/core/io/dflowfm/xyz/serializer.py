@@ -22,7 +22,9 @@ class XYZSerializer:
 
         with path.open("w") as f:
             for point in data["points"]:
-                geometry: str = space.join([format_float(p) for p in XYZSerializer._get_point_values(point)])
+                geometry: str = space.join(
+                    [format_float(p) for p in XYZSerializer._get_point_values(point)]
+                )
                 if point.comment:
                     f.write(f"{geometry} # {point.comment}\n")
                 else:
@@ -33,4 +35,3 @@ class XYZSerializer:
         yield point.x
         yield point.y
         yield point.z
-
