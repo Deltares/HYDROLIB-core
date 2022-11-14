@@ -2,9 +2,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 from xml.dom import minidom
-from hydrolib.core.basemodel import SerializerConfig
 
 from lxml import etree as e
+
+from hydrolib.core.basemodel import SerializerConfig
 
 
 class DIMRSerializer:

@@ -6,7 +6,12 @@ from typing import Callable, Dict, List, Literal, Optional, Type, Union
 from pydantic import Field, validator
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, FileModel, ParsableFileModel, SerializerConfig
+from hydrolib.core.basemodel import (
+    BaseModel,
+    FileModel,
+    ParsableFileModel,
+    SerializerConfig,
+)
 from hydrolib.core.io.dflowfm.mdu.models import FMModel
 from hydrolib.core.io.dimr.parser import DIMRParser
 from hydrolib.core.io.dimr.serializer import DIMRSerializer

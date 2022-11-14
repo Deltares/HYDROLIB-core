@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
-from hydrolib.core.basemodel import SerializerConfig
 
+from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.io.rr.meteo.models import BuiModel, BuiPrecipitationEvent
 from hydrolib.core.io.rr.meteo.parser import (
     BuiEventListParser,
