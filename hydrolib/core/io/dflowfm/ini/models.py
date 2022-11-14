@@ -133,7 +133,11 @@ class INIBasedModel(BaseModel, ABC):
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
-            format = lambda x: f"{x:{config.float_format}}" if isinstance(x, float) else str(x)
+            format = (
+                lambda x: f"{x:{config.float_format}}"
+                if isinstance(x, float)
+                else str(x)
+            )
             return cls.get_list_field_delimiter(key).join([format(x) for x in v])
         elif isinstance(v, Enum):
             return v.value
