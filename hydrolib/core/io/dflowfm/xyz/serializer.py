@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Generator
 
 from hydrolib.core.basemodel import SerializerConfig
 
@@ -16,9 +16,21 @@ class XYZSerializer:
             config (SerializerConfig): The serialization configuration.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
+
+        space = 1 * " "
+        format_float = lambda x: f"{x:{config.float_format}}"
+
         with path.open("w") as f:
             for point in data["points"]:
+                geometry: str = space.join([format_float(p) for p in XYZSerializer._get_point_values(point)])
                 if point.comment:
-                    f.write(f"{point.x} {point.y} {point.z} # {point.comment}\n")
+                    f.write(f"{geometry} # {point.comment}\n")
                 else:
-                    f.write(f"{point.x} {point.y} {point.z}\n")
+                    f.write(f"{geometry}\n")
+
+    @staticmethod
+    def _get_point_values(point) -> Generator[float, None, None]:
+        yield point.x
+        yield point.y
+        yield point.z
+
