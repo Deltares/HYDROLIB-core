@@ -62,7 +62,6 @@ class Serializer:
         for value in point.data:
             yield value
 
-
     @staticmethod
     def serialize_poly_object(
         obj: PolyObject, config: SerializerConfig
