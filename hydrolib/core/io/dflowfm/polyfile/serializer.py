@@ -55,7 +55,9 @@ class Serializer:
         return f"    {point.x}    {point.y}    {z_val}{data_vals}".rstrip()
 
     @staticmethod
-    def serialize_poly_object(obj: PolyObject, config: SerializerConfig) -> Iterable[str]:
+    def serialize_poly_object(
+        obj: PolyObject, config: SerializerConfig
+    ) -> Iterable[str]:
         """Serialize this PolyObject to a string which can be used within a polyfile.
 
         Args:
@@ -72,7 +74,9 @@ class Serializer:
         return chain(description, metadata, points)
 
 
-def write_polyfile(path: Path, data: Sequence[PolyObject], config: SerializerConfig) -> None:
+def write_polyfile(
+    path: Path, data: Sequence[PolyObject], config: SerializerConfig
+) -> None:
     """Write the data to a new file at path
 
     Args:
@@ -80,7 +84,9 @@ def write_polyfile(path: Path, data: Sequence[PolyObject], config: SerializerCon
         data (Sequence[PolyObject]): The poly objects to write
         config (SerializerConfig): The serialization configuration.
     """
-    serialized_poly_objects = [Serializer.serialize_poly_object(poly_object, config) for poly_object in data]
+    serialized_poly_objects = [
+        Serializer.serialize_poly_object(poly_object, config) for poly_object in data
+    ]
     serialized_data = chain.from_iterable(serialized_poly_objects)
 
     path.parent.mkdir(parents=True, exist_ok=True)

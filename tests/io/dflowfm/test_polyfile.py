@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
-from hydrolib.core.basemodel import SerializerConfig
 
+from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.io.dflowfm.polyfile.models import (
     Description,
     Metadata,
@@ -121,7 +121,12 @@ class TestSerializer:
                 3.0    4.0"""
         expected_str = inspect.cleandoc(expected_str)
 
-        assert "\n".join(Serializer.serialize_poly_object(poly_object, config=SerializerConfig())) == expected_str
+        assert (
+            "\n".join(
+                Serializer.serialize_poly_object(poly_object, config=SerializerConfig())
+            )
+            == expected_str
+        )
 
 
 class TestBlock:
