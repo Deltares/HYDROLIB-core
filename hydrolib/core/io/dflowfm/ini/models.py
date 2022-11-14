@@ -246,8 +246,8 @@ class INIModel(ParsableFileModel):
     def _to_document(self) -> Document:
         header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
         sections = []
-        for _, value in self:
-            if _ in self._exclude_fields() or value is None:
+        for key, value in self:
+            if key in self._exclude_fields() or value is None:
                 continue
             if isinstance(value, list):
                 for v in value:

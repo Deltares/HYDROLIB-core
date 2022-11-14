@@ -1087,6 +1087,10 @@ class ParsableFileModel(FileModel):
         path.parent.mkdir(parents=True, exist_ok=True)
         self._get_serializer()(path, data)
 
+    def dict(self, *args, **kwargs):
+        kwargs["exclude"] = self._exclude_fields()
+        return super().dict(*args, **kwargs)
+
     @classmethod
     def _exclude_fields(cls) -> Set[str]:
         """A set containing the field names that should not be serialized."""
