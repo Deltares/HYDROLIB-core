@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
+from hydrolib.core.basemodel import SerializerConfig
 
 from hydrolib.core.io.dflowfm.polyfile.models import (
     Description,
@@ -120,7 +121,7 @@ class TestSerializer:
                 3.0    4.0"""
         expected_str = inspect.cleandoc(expected_str)
 
-        assert "\n".join(Serializer.serialize_poly_object(poly_object)) == expected_str
+        assert "\n".join(Serializer.serialize_poly_object(poly_object, config=SerializerConfig())) == expected_str
 
 
 class TestBlock:
@@ -691,7 +692,7 @@ def test_write_read_write_should_have_the_same_data():
         ),
     ]
 
-    write_polyfile(path, objects)
+    write_polyfile(path, objects, config=SerializerConfig())
     read_result = read_polyfile(path, has_z_values=True)
 
     assert read_result["objects"] == objects
