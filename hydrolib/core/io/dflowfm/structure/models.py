@@ -18,12 +18,12 @@ from hydrolib.core.io.dflowfm.friction.models import FrictionType
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
-    get_forbidden_fields_validator,
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
     make_list_validator,
     validate_conditionally,
     validate_correct_length,
+    validate_forbidden_fields,
     validate_required_fields,
 )
 from hydrolib.core.utils import str_is_empty_or_none
@@ -432,11 +432,17 @@ class Culvert(Structure):
             list_required_with_length=True,
         )
 
-    _bendlosscoeff_culvert = get_forbidden_fields_validator(
-        "bendlosscoeff",
-        conditional_field_name="subtype",
-        conditional_value=CulvertSubType.culvert,
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_bendlosscoeff_is_not_provided_for_culverts(
+        cls, values: Dict
+    ) -> Dict:
+        """Validates that the bendlosscoeff field is not provided when the subtype is a culvert."""
+        return validate_forbidden_fields(
+            values,
+            "bendlosscoeff",
+            conditional_field_name="subtype",
+            conditional_value=CulvertSubType.culvert,
+        )
 
 
 class Pump(Structure):
