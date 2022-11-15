@@ -8,7 +8,7 @@ import logging
 from enum import Enum
 from operator import gt, ne
 from pathlib import Path
-from typing import List, Literal, Optional, Set, Union
+from typing import List, Literal, Optional, Set, Union, Dict
 
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
@@ -17,14 +17,14 @@ from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.dflowfm.friction.models import FrictionType
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.dflowfm.ini.util import (
-    get_conditional_root_validator,
     get_enum_validator,
     get_forbidden_fields_validator,
     get_from_subclass_defaults,
     get_required_fields_validator,
     get_split_string_on_delimiter_validator,
-    make_list_length_root_validator,
     make_list_validator,
+    validate_correct_length,
+    validate_conditionally,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
@@ -403,12 +403,16 @@ class Culvert(Structure):
         conditional_value=True,
     )
 
-    _check_list_length = make_list_length_root_validator(
-        "relopening",
-        "losscoeff",
-        length_name="numlosscoeff",
-        list_required_with_length=True,
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_lengths(cls, values):
+        """Validates that the length of the relopening and losscoeff fields are as expected."""
+        return validate_correct_length(
+            values,
+            "relopening",
+            "losscoeff",
+            length_name="numlosscoeff",
+            list_required_with_length=True,
+        )
 
     _bendlosscoeff_invertedsiphon = get_required_fields_validator(
         "bendlosscoeff",
@@ -467,36 +471,68 @@ class Pump(Structure):
         comparison_func=gt,
     )
 
-    _check_list_length1 = get_conditional_root_validator(
-        make_list_length_root_validator(
+    @classmethod
+    def _check_list_lengths_suctionside(cls, values: Dict) -> Dict:
+        """Validates that the length of the startlevelsuctionside and stoplevelsuctionside fields are as expected."""
+        return validate_correct_length(
+            values,
             "startlevelsuctionside",
             "stoplevelsuctionside",
             length_name="numstages",
             list_required_with_length=True,
-        ),
-        "controlside",
-        "deliverySide",
-        ne,
-    )
+        )
 
-    _check_list_length2 = get_conditional_root_validator(
-        make_list_length_root_validator(
+    @root_validator(allow_reuse=True)
+    def conditionally_check_list_lengths_suctionside(cls, values: Dict) -> Dict:
+        """
+        Validates the length of the suction side fields, but only if there is a controlside value
+        present in the values and the controlside is not equal to the deliverySide.
+        """
+        return validate_conditionally(
+            cls,
+            values,
+            Pump._check_list_lengths_suctionside,
+            "controlside",
+            "deliverySide",
+            ne,
+        )
+
+    @classmethod
+    def _check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
+        """Validates that the length of the startleveldeliveryside and stopleveldeliveryside fields are as expected."""
+        return validate_correct_length(
+            values,
             "startleveldeliveryside",
             "stopleveldeliveryside",
             length_name="numstages",
             list_required_with_length=True,
-        ),
-        "controlside",
-        "suctionSide",
-        ne,
-    )
+        )
 
-    _check_list_length3 = make_list_length_root_validator(
-        "head",
-        "reductionfactor",
-        length_name="numreductionlevels",
-        list_required_with_length=True,
-    )
+    @root_validator(allow_reuse=True)
+    def conditionally_check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
+        """
+        Validates the length of the delivery side fields, but only if there is a controlside value
+        present in the values and the controlside is not equal to the suctionSide.
+        """
+        return validate_conditionally(
+            cls,
+            values,
+            Pump._check_list_lengths_deliveryside,
+            "controlside",
+            "suctionSide",
+            ne,
+        )
+
+    @root_validator(allow_reuse=True)
+    def check_list_lengths_head_and_reductionfactor(cls, values):
+        """Validates that the lengths of the head and reductionfactor fields are as expected."""
+        return validate_correct_length(
+            values,
+            "head",
+            "reductionfactor",
+            length_name="numreductionlevels",
+            list_required_with_length=True,
+        )
 
 
 class Compound(Structure):

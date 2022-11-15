@@ -225,33 +225,36 @@ def get_required_fields_validator(
     return root_validator(allow_reuse=True)(validate_required_fields)
 
 
-def get_conditional_root_validator(
+def validate_conditionally(
+    cls,
+    values: Dict,
     root_vldt: classmethod,
     conditional_field_name: str,
     conditional_value: Any,
     comparison_func: Callable[[Any, Any], bool] = eq,
-):
+) -> Dict:
     """
-    Gets a validator that checks whether certain fields are *not* provided, if `conditional_field_name` is equal to `conditional_value`.
+    Validate whether certain fields are *not* provided, if `conditional_field_name` is equal to `conditional_value`.
     The equality check can be overridden with another comparison operator function.
 
     Args:
+        cls: Reference to a class.
+        values (Dict): Dictionary of input class fields.
         root_vldt (classmethod): A root validator that is to be called *if* the condition is satisfied.
         conditional_field_name (str): Name of the instance variable that determines whether the root validator must be called or not.
         conditional_value (Any): Value that the conditional field should be compared with to perform this validation.
-        comparison_func (Callable): binary operator function, used to override the default "eq" check for the conditional field value.
+        comparison_func (Callable): Binary operator function, used to override the default "eq" check for the conditional field value.
+
+    Returns:
+        Dict: Validated dictionary of input class fields.
     """
+    if (val := values.get(conditional_field_name)) is not None and comparison_func(
+        val, conditional_value
+    ):
+        # Condition is met: call the actual root validator, passing on the attribute values.
+        root_vldt.__func__(cls, values)
 
-    def validate_conditionally(cls, values: dict):
-        if (val := values.get(conditional_field_name)) is not None and comparison_func(
-            val, conditional_value
-        ):
-            # Condition is met: call the actual root validator, passing on the attribute values.
-            root_vldt.__func__(cls, values)
-
-        return values
-
-    return root_validator(allow_reuse=True)(validate_conditionally)
+    return values
 
 
 def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
