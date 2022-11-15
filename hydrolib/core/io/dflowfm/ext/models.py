@@ -12,9 +12,9 @@ from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIMo
 from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
+    validate_location_specification,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
@@ -141,9 +141,12 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    _location_validator = get_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(minimum_num_coordinates=1)
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+        """Validates that the correct location specification is given."""
+        return validate_location_specification(
+            values, config=LocationValidationConfiguration(minimum_num_coordinates=1)
+        )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")

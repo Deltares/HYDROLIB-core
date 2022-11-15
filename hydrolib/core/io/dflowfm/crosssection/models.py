@@ -1,5 +1,5 @@
 import logging
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Dict
 
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
@@ -11,10 +11,10 @@ from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationFieldNames,
     get_enum_validator,
     get_from_subclass_defaults,
-    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
     validate_correct_length,
+    validate_location_specification,
 )
 
 logger = logging.getLogger(__name__)
@@ -705,12 +705,16 @@ class CrossSection(INIBasedModel):
     shift: Optional[float] = Field(0.0)
     definitionid: str = Field(alias="definitionId")
 
-    _location_validator = get_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(
-            validate_node=False, validate_num_coordinates=False
-        ),
-        fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+        """Validates that the correct location specification is given."""
+        return validate_location_specification(
+            values,
+            config=LocationValidationConfiguration(
+                validate_node=False, validate_num_coordinates=False
+            ),
+            fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
+        )
 
 
 class CrossLocModel(INIModel):
