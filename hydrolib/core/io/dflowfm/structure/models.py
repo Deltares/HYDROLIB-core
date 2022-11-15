@@ -8,7 +8,7 @@ import logging
 from enum import Enum
 from operator import gt, ne
 from pathlib import Path
-from typing import List, Literal, Optional, Set, Union, Dict
+from typing import Dict, List, Literal, Optional, Set, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
@@ -22,8 +22,8 @@ from hydrolib.core.io.dflowfm.ini.util import (
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
     make_list_validator,
-    validate_correct_length,
     validate_conditionally,
+    validate_correct_length,
     validate_required_fields,
 )
 from hydrolib.core.utils import str_is_empty_or_none
