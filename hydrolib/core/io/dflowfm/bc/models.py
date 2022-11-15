@@ -400,6 +400,9 @@ class VectorForcingBase(ForcingBase):
                 # This VectorQuantityUnitPairs is now complete; add it to result list.
                 quantityunitpairs_with_vectors.append(vqu_pair)
 
+        for remaining_qu_pair in qup_iter:
+            quantityunitpairs_with_vectors.append(remaining_qu_pair)
+
         quantityunitpairs[:] = quantityunitpairs_with_vectors
 
     @staticmethod
