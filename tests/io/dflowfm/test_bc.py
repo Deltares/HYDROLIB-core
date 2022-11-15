@@ -453,6 +453,18 @@ class TestVectorForcingBase:
 
         assert_files_equal(output_file, reference_file, [0])
 
+    def test_initialize_vectorforcing_with_vectorQUPs_followed_by_scalarQUPs(self):
+        values = _create_valid_vectorforcingtest_values()
+        del values["quantityunitpair"]
+
+        values["quantity"] = ["time", "ux", "uy", "ux", "uy", "randomScalar"]
+        values["unit"] = ["minutes", "-", "-", "-", "-", "-"]
+        values["vector"] = "uxuyadvectionvelocitybnd:ux,uy"
+
+        vectorforcing = TestVectorForcingBase.VectorForcingTest(**values)
+
+        assert len(vectorforcing.quantityunitpair) == 3
+
 
 class TestT3D:
     @pytest.mark.parametrize(
