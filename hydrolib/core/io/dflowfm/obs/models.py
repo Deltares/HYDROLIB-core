@@ -1,7 +1,7 @@
-from typing import List, Literal, Optional, Dict
+from typing import Dict, List, Literal, Optional
 
-from pydantic.fields import Field
 from pydantic.class_validators import root_validator
+from pydantic.fields import Field
 
 from hydrolib.core.io.dflowfm.common.models import LocationType
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
