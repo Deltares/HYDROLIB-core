@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Literal, Optional, Dict
+from typing import Dict, List, Literal, Optional
 
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
