@@ -293,9 +293,7 @@ class DIMR(ParsableFileModel):
     """
 
     documentation: Documentation = Documentation()
-    control: List[Union[Start, Parallel]] = Field(
-        [], discriminator="_type"
-    )  # used in Pydantic 1.9
+    control: List[Union[Start, Parallel]] = Field([])
     component: List[Union[RRComponent, FMComponent, Component]] = []
     coupler: Optional[List[Coupler]] = []
     waitFile: Optional[str]
