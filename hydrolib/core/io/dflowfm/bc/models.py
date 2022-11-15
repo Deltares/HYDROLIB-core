@@ -30,9 +30,9 @@ from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
-    get_key_renaming_root_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
+    rename_keys_for_backwards_compatibility,
 )
 from hydrolib.core.utils import to_list
 
@@ -441,11 +441,15 @@ class TimeSeries(ForcingBase):
         "timeinterpolation", enum=TimeInterpolation
     )
 
-    _key_renaming_root_validator = get_key_renaming_root_validator(
-        {
-            "timeinterpolation": ["time_interpolation"],
-        }
-    )
+    @root_validator(allow_reuse=True, pre=True)
+    def rename_keys(cls, values: Dict) -> Dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return rename_keys_for_backwards_compatibility(
+            values,
+            {
+                "timeinterpolation": ["time_interpolation"],
+            },
+        )
 
     @root_validator(pre=True)
     def _validate_quantityunitpairs(cls, values: Dict) -> Dict:
@@ -518,15 +522,19 @@ class T3D(ForcingBase):
     )
     """TimeInterpolation: The type of time interpolation. Defaults to linear."""
 
-    _key_renaming_root_validator = get_key_renaming_root_validator(
-        {
-            "timeinterpolation": ["time_interpolation"],
-            "vertpositions": ["vertical_position_specification"],
-            "vertinterpolation": ["vertical_interpolation"],
-            "vertpositiontype": ["vertical_position_type"],
-            "vertpositionindex": ["vertical_position"],
-        }
-    )
+    @root_validator(allow_reuse=True, pre=True)
+    def rename_keys(cls, values: Dict) -> Dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return rename_keys_for_backwards_compatibility(
+            values,
+            {
+                "timeinterpolation": ["time_interpolation"],
+                "vertpositions": ["vertical_position_specification"],
+                "vertinterpolation": ["vertical_interpolation"],
+                "vertpositiontype": ["vertical_position_type"],
+                "vertpositionindex": ["vertical_position"],
+            },
+        )
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "vertpositions",

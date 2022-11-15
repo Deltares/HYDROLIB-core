@@ -484,26 +484,29 @@ def validate_location_specification(
     raise ValueError(error)
 
 
-def get_key_renaming_root_validator(keys_to_rename: Dict[str, List[str]]):
+def rename_keys_for_backwards_compatibility(
+    values: Dict, keys_to_rename: Dict[str, List[str]]
+) -> Dict:
     """
-    Gets a root validator that renames the provided keys to support backwards compatibility.
+    Renames the provided keys to support backwards compatibility.
 
     Args:
-            keys_to_rename Dict[str, List[str]]: Dictionary of keys and a list of old keys that
-            should be converted to the current key.
+
+        values (Dict): Dictionary of input class fields.
+        keys_to_rename (Dict[str, List[str]]): Dictionary of keys and a list of old keys that
+        should be converted to the current key.
+
+    Returns:
+        Dict: Dictionary where the provided keys are renamed.
     """
+    for current_keyword, old_keywords in keys_to_rename.items():
+        if current_keyword in values:
+            continue
 
-    def rename_keys(cls, values: Dict) -> Dict:
-        for current_keyword, old_keywords in keys_to_rename.items():
-            if current_keyword in values:
-                continue
+        for old_keyword in old_keywords:
+            if (value := values.get(old_keyword)) is not None:
+                values[current_keyword] = value
+                del values[old_keyword]
+                break
 
-            for old_keyword in old_keywords:
-                if (value := values.get(old_keyword)) is not None:
-                    values[current_keyword] = value
-                    del values[old_keyword]
-                    break
-
-        return values
-
-    return root_validator(allow_reuse=True, pre=True)(rename_keys)
+    return values

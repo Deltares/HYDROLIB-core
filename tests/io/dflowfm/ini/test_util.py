@@ -9,7 +9,7 @@ from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    get_key_renaming_root_validator,
+    rename_keys_for_backwards_compatibility,
     validate_location_specification,
 )
 
@@ -212,15 +212,18 @@ class TestGetKeyRenamingRootValidator:
 
         randomproperty: str
 
-        validator = get_key_renaming_root_validator(
-            {
-                "randomproperty": [
-                    "randomProperty",
-                    "random_property",
-                    "oldRandomProperty",
-                ],
-            }
-        )
+        @root_validator(allow_reuse=True, pre=True)
+        def rename_keys(cls, values: Dict) -> Dict:
+            return rename_keys_for_backwards_compatibility(
+                values,
+                {
+                    "randomproperty": [
+                        "randomProperty",
+                        "random_property",
+                        "oldRandomProperty",
+                    ],
+                },
+            )
 
         class Config:
             extra = Extra.allow
