@@ -115,7 +115,9 @@ class BuiEventSerializer:
         return f"{data_to_serialize.days} {total_hours} {total_minutes} {total_seconds}"
 
     @staticmethod
-    def serialize_precipitation_per_timestep(data_to_serialize: List[List[float]], config: SerializerConfig) -> str:
+    def serialize_precipitation_per_timestep(
+        data_to_serialize: List[List[float]], config: SerializerConfig
+    ) -> str:
         """
         Serialized the data containing all the precipitations per timestep (and station)
         into a single string ready to be mapped.
@@ -129,7 +131,10 @@ class BuiEventSerializer:
         format = lambda v: f"{v:{config.float_format}}"
         serialized_data = str.join(
             "\n",
-            [str.join(" ", map(format, listed_data)) for listed_data in data_to_serialize],
+            [
+                str.join(" ", map(format, listed_data))
+                for listed_data in data_to_serialize
+            ],
         )
         return serialized_data
 
@@ -175,7 +180,9 @@ class BuiSerializer:
         return BuiSerializer.bui_template.format(**bui_data)
 
     @staticmethod
-    def serialize_event_list(data_to_serialize: List[Dict], config: SerializerConfig) -> str:
+    def serialize_event_list(
+        data_to_serialize: List[Dict], config: SerializerConfig
+    ) -> str:
         """
         Serializes a event list dictionary into a single text block.
 

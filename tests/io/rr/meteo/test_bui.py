@@ -511,7 +511,9 @@ class TestSerializer:
 
             # 2. Do test.
             config = SerializerConfig(float_format=".3f")
-            serialized_text = BuiSerializer.serialize_event_list(event_list_data, config)
+            serialized_text = BuiSerializer.serialize_event_list(
+                event_list_data, config
+            )
 
             # 3. Verify final expectations.
             expected_string = inspect.cleandoc(
@@ -553,7 +555,9 @@ class TestSerializer:
                 ],
             )
             config = SerializerConfig(float_format=".2f")
-            serialized_text = BuiEventSerializer.serialize(precipitation_event_list, config)
+            serialized_text = BuiEventSerializer.serialize(
+                precipitation_event_list, config
+            )
             expected_string = inspect.cleandoc(
                 """
                 * Event 1 duration days:1 hours:3 minutes:0 seconds:0
