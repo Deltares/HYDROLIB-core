@@ -362,8 +362,8 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
 
     @root_validator(allow_reuse=True)
-    def check_list_length_levels(cls, values):
-        """Validates that the length of the levels field is as expected."""
+    def check_list_lengths(cls, values):
+        """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
         return validate_correct_length(
             values,
             "levels",
@@ -433,8 +433,8 @@ class ZWCrsDef(CrossSectionDefinition):
     )
 
     @root_validator(allow_reuse=True)
-    def check_list_length_levels(cls, values):
-        """Validates that the length of the levels field is as expected."""
+    def check_list_lengths(cls, values):
+        """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
         return validate_correct_length(
             values,
             "levels",
@@ -531,8 +531,8 @@ class YZCrsDef(CrossSectionDefinition):
     )
 
     @root_validator(allow_reuse=True)
-    def check_list_length_ycoordinates(cls, values):
-        """Validates that the length of the ycoordinates field is as expected."""
+    def check_list_lengths_coordinates(cls, values):
+        """Validates that the length of the ycoordinates and zcoordinates fields are as expected."""
         return validate_correct_length(
             values,
             "ycoordinates",
@@ -541,8 +541,8 @@ class YZCrsDef(CrossSectionDefinition):
         )
 
     @root_validator(allow_reuse=True)
-    def check_list_length_frictionids(cls, values):
-        """Validates that the length of the frictionids field is as expected."""
+    def check_list_lengths_friction(cls, values):
+        """Validates that the length of the frictionids, frictiontypes and frictionvalues field are as expected."""
         return validate_correct_length(
             values,
             "frictionids",
@@ -645,21 +645,13 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         return field_value
 
     @root_validator(allow_reuse=True)
-    def check_list_length_ycoordinates(cls, values):
-        """Validates that the length of the ycoordinates field is as expected."""
-        return validate_correct_length(
-            values,
-            "ycoordinates",
-            "zcoordinates",
-            length_name="xyzcount",
-        )
-
-    @root_validator(allow_reuse=True)
-    def check_list_length_xcoordinates(cls, values):
-        """Validates that the length of the xcoordinates field is as expected."""
+    def check_list_lengths_coordinates(cls, values):
+        """Validates that the length of the xcoordinates, ycoordinates and zcoordinates field are as expected."""
         return validate_correct_length(
             values,
             "xcoordinates",
+            "ycoordinates",
+            "zcoordinates",
             length_name="xyzcount",
         )
 
