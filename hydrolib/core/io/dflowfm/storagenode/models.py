@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Dict
 
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
@@ -7,10 +7,10 @@ from pydantic.fields import Field
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
-    get_required_fields_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
     validate_correct_length,
+    validate_required_fields,
 )
 
 
@@ -181,21 +181,33 @@ class StorageNode(INIBasedModel):
             list_required_with_length=True,
         )
 
-    _usetable_true_validator = get_required_fields_validator(
-        "numlevels",
-        "levels",
-        "storagearea",
-        conditional_field_name="usetable",
-        conditional_value=True,
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_required_fields_are_present_when_using_tables(
+        cls, values: Dict
+    ) -> Dict:
+        """Validates that the specified fields are present when the usetable field is also present."""
+        return validate_required_fields(
+            values,
+            "numlevels",
+            "levels",
+            "storagearea",
+            conditional_field_name="usetable",
+            conditional_value=True,
+        )
 
-    _usetable_false_validator = get_required_fields_validator(
-        "bedlevel",
-        "area",
-        "streetlevel",
-        conditional_field_name="usetable",
-        conditional_value=False,
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_required_fields_are_present_when_not_using_tables(
+        cls, values: Dict
+    ) -> Dict:
+        """Validates that the specified fields are present."""
+        return validate_required_fields(
+            values,
+            "bedlevel",
+            "area",
+            "streetlevel",
+            conditional_field_name="usetable",
+            conditional_value=False,
+        )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")

@@ -191,38 +191,43 @@ def get_forbidden_fields_validator(
     return root_validator(allow_reuse=True)(validate_forbidden_fields)
 
 
-def get_required_fields_validator(
+def validate_required_fields(
+    values: Dict,
     *field_names,
     conditional_field_name: str,
     conditional_value: Any,
     comparison_func: Callable[[Any, Any], bool] = eq,
-):
+) -> Dict:
     """
-    Gets a validator that checks whether the fields are provided, if `conditional_field_name` is equal to `conditional_value`.
+    Validates whether the specified fields are provided, if `conditional_field_name` is equal to `conditional_value`.
     The equality check can be overridden with another comparison operator function.
 
     Args:
+        values (Dict): Dictionary of input class fields.
         *field_names (str): Names of the instance variables that need to be validated.
         conditional_field_name (str): Name of the instance variable on which the fields are dependent.
         conditional_value (Any): Value that the conditional field should contain to perform this validation.
         comparison_func (Callable): binary operator function, used to override the default "eq" check for the conditional field value.
+
+    Raises:
+        ValueError: When a required field is not provided under the given conditions.
+
+    Returns:
+        Dict: Validated dictionary of input class fields.
     """
 
-    def validate_required_fields(cls, values: dict):
-        if (val := values.get(conditional_field_name)) is None or not comparison_func(
-            val, conditional_value
-        ):
-            return values
-
-        for field in field_names:
-            if values.get(field) == None:
-                raise ValueError(
-                    f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
-                )
-
+    if (val := values.get(conditional_field_name)) is None or not comparison_func(
+        val, conditional_value
+    ):
         return values
 
-    return root_validator(allow_reuse=True)(validate_required_fields)
+    for field in field_names:
+        if values.get(field) == None:
+            raise ValueError(
+                f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
+            )
+
+    return values
 
 
 def validate_conditionally(

@@ -20,11 +20,11 @@ from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_forbidden_fields_validator,
     get_from_subclass_defaults,
-    get_required_fields_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
     validate_correct_length,
     validate_conditionally,
+    validate_required_fields,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
@@ -394,14 +394,32 @@ class Culvert(Structure):
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
     _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
 
-    _valveonoff_validator = get_required_fields_validator(
-        "valveopeningheight",
-        "numlosscoeff",
-        "relopening",
-        "losscoeff",
-        conditional_field_name="valveonoff",
-        conditional_value=True,
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_valve_related_fields_are_present_for_culverts_with_valves(
+        cls, values: Dict
+    ) -> Dict:
+        """Validates that valve-related fields are present when there is a valve present."""
+        return validate_required_fields(
+            values,
+            "valveopeningheight",
+            "numlosscoeff",
+            "relopening",
+            "losscoeff",
+            conditional_field_name="valveonoff",
+            conditional_value=True,
+        )
+
+    @root_validator(allow_reuse=True)
+    def validate_that_bendlosscoeff_field_is_present_for_invertedsyphons(
+        cls, values: Dict
+    ) -> Dict:
+        """Validates that the bendlosscoeff value is present when dealing with inverted syphons."""
+        return validate_required_fields(
+            values,
+            "bendlosscoeff",
+            conditional_field_name="subtype",
+            conditional_value=CulvertSubType.invertedSiphon,
+        )
 
     @root_validator(allow_reuse=True)
     def check_list_lengths(cls, values):
@@ -413,12 +431,6 @@ class Culvert(Structure):
             length_name="numlosscoeff",
             list_required_with_length=True,
         )
-
-    _bendlosscoeff_invertedsiphon = get_required_fields_validator(
-        "bendlosscoeff",
-        conditional_field_name="subtype",
-        conditional_value=CulvertSubType.invertedSiphon,
-    )
 
     _bendlosscoeff_culvert = get_forbidden_fields_validator(
         "bendlosscoeff",
@@ -464,12 +476,17 @@ class Pump(Structure):
 
     _orientation_validator = get_enum_validator("orientation", enum=Orientation)
 
-    _control_side_check = get_required_fields_validator(
-        "controlside",
-        conditional_field_name="numstages",
-        conditional_value=0,
-        comparison_func=gt,
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_controlside_is_provided_when_numstages_is_provided(
+        cls, values: Dict
+    ) -> Dict:
+        return validate_required_fields(
+            values,
+            "controlside",
+            conditional_field_name="numstages",
+            conditional_value=0,
+            comparison_func=gt,
+        )
 
     @classmethod
     def _check_list_lengths_suctionside(cls, values: Dict) -> Dict:

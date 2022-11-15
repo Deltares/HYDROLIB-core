@@ -1,19 +1,18 @@
 import logging
-from abc import ABC, abstractclassmethod
+from abc import ABC
 from enum import Enum
-from pathlib import Path
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Dict
 
 from pydantic import Field
-from pydantic.class_validators import validator
+from pydantic.class_validators import validator, root_validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
-    get_required_fields_validator,
     make_list_validator,
+    validate_required_fields,
 )
 
 logger = logging.getLogger(__name__)
@@ -190,11 +189,15 @@ class AbstractSpatialField(INIBasedModel, ABC):
     averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
     locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
 
-    _value_validator = get_required_fields_validator(
-        "value",
-        conditional_field_name="datafiletype",
-        conditional_value=DataFileType.polygon,
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
+        """Validates that the value is provided when dealing with polygons."""
+        return validate_required_fields(
+            values,
+            "value",
+            conditional_field_name="datafiletype",
+            conditional_value=DataFileType.polygon,
+        )
 
     @validator("value", always=True)
     @classmethod
