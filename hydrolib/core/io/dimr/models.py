@@ -61,7 +61,7 @@ class Component(BaseModel, ABC):
     def get_model(cls) -> Type[FileModel]:
         raise NotImplementedError("Model not implemented yet.")
 
-    @validator("setting", "parameter", pre=True)
+    @validator("setting", "parameter", pre=True, allow_reuse=True)
     def validate_setting(cls, v):
         return to_list(v)
 
