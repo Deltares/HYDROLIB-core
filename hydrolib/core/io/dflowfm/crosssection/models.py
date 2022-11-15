@@ -1,5 +1,5 @@
 import logging
-from typing import List, Literal, Optional, Dict
+from typing import Dict, List, Literal, Optional
 
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
