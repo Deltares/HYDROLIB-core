@@ -436,7 +436,8 @@ class TestSerializer:
             expected_datetime = datetime.now().strftime("%d-%m-%y %H:%M:%S")
 
             # 2. Do test.
-            serialized_text = BuiSerializer.serialize(dict_values)
+            config = SerializerConfig(float_format=".2f")
+            serialized_text = BuiSerializer.serialize(dict_values, config)
 
             # 3. Verify expectations.
             expected_serialized = inspect.cleandoc(
@@ -456,10 +457,10 @@ class TestSerializer:
                 * Duration of the event           : dd hh mm ss
                 * Rainfall value per time step [mm/time step]
                 1996 1 1 0 0 0 1 3 0 0
-                0.2
-                0.2
-                0.2
-                0.2
+                0.20
+                0.20
+                0.20
+                0.20
                 """.format(
                     expected_datetime
                 )
@@ -472,11 +473,12 @@ class TestSerializer:
             assert serialized_text == "Hello World ’Station1’"
 
         def test_given_precipitation_serialize_into_text(self):
-            precipitation_per_timestep = [["0.2"], ["0.2"], ["0.2"], ["0.2"]]
+            precipitation_per_timestep = [[1.23], [2.34], [3.45], [4.56]]
+            config = SerializerConfig(float_format=".1f")
             serialized_text = BuiEventSerializer.serialize_precipitation_per_timestep(
-                precipitation_per_timestep
+                precipitation_per_timestep, config
             )
-            assert serialized_text == "0.2\n0.2\n0.2\n0.2"
+            assert serialized_text == "1.2\n2.3\n3.5\n4.6"
 
         def test_given_start_time_serialize_into_text(self):
             first_event = datetime(2021, 12, 20, 0, 42, 24)
@@ -508,7 +510,8 @@ class TestSerializer:
             ]
 
             # 2. Do test.
-            serialized_text = BuiSerializer.serialize_event_list(event_list_data)
+            config = SerializerConfig(float_format=".3f")
+            serialized_text = BuiSerializer.serialize_event_list(event_list_data, config)
 
             # 3. Verify final expectations.
             expected_string = inspect.cleandoc(
@@ -518,16 +521,16 @@ class TestSerializer:
                 * Duration of the event           : dd hh mm ss
                 * Rainfall value per time step [mm/time step]
                 1996 1 1 0 0 0 0 0 2 0
-                0.24
-                0.24
+                0.240
+                0.240
                 * Event 2 duration days:0 hours:0 minutes:3 seconds:0
                 * Start date and time of the event: yyyy mm dd hh mm ss
                 * Duration of the event           : dd hh mm ss
                 * Rainfall value per time step [mm/time step]
                 1996 1 1 0 0 0 0 0 3 0
-                0.42
-                0.42
-                0.42
+                0.420
+                0.420
+                0.420
             """
             )
             assert serialized_text == expected_string
@@ -549,7 +552,8 @@ class TestSerializer:
                     [0.2],
                 ],
             )
-            serialized_text = BuiEventSerializer.serialize(precipitation_event_list)
+            config = SerializerConfig(float_format=".2f")
+            serialized_text = BuiEventSerializer.serialize(precipitation_event_list, config)
             expected_string = inspect.cleandoc(
                 """
                 * Event 1 duration days:1 hours:3 minutes:0 seconds:0
@@ -557,10 +561,10 @@ class TestSerializer:
                 * Duration of the event           : dd hh mm ss
                 * Rainfall value per time step [mm/time step]
                 1996 1 1 0 0 0 1 3 0 0
-                0.2
-                0.2
-                0.2
-                0.2
+                0.20
+                0.20
+                0.20
+                0.20
             """
             )
             assert serialized_text == expected_string
@@ -586,11 +590,12 @@ class TestSerializer:
             assert serialized_td == expected_string
 
         def test_given_precipitationlist_serialize_precipitation_per_timestep(self):
-            precipitation_list = [["2.4"]] * 4
+            precipitation_list = [[2.4]] * 4
+            config = SerializerConfig(float_format=".2f")
             serialzied_pl = BuiEventSerializer.serialize_precipitation_per_timestep(
-                precipitation_list
+                precipitation_list, config
             )
-            expected_string = "2.4\n2.4\n2.4\n2.4"
+            expected_string = "2.40\n2.40\n2.40\n2.40"
             assert serialzied_pl == expected_string
 
     def test_write_bui_file_given_valid_file(self):
