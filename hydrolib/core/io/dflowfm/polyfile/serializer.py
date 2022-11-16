@@ -47,6 +47,10 @@ class Serializer:
         the point data is indented with 4 spaces, and the individual values are
         separated by 4 spaces as well.
 
+        Args:
+            point (Point): The point to serialize.
+            config (SerializerConfig): The serialization configuration.
+
         Returns:
             str: The serialised equivalent of this Point
         """

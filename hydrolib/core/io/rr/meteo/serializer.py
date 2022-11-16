@@ -29,6 +29,7 @@ class BuiEventSerializer:
 
         Args:
             event_data (Dict): Dictionary representing precipitation event.
+            config (SerializerConfig): The serialization configuration.
 
         Returns:
             str: Formatted string.
@@ -124,6 +125,7 @@ class BuiEventSerializer:
 
         Args:
             data_to_serialize (List[List[str]]): Data to be mapped.
+            config (SerializerConfig): The serialization configuration.
 
         Returns:
             str: Serialized string in .bui format.
@@ -169,6 +171,10 @@ class BuiSerializer:
 
         Args:
             bui_data (Dict): Data to serialize.
+            config (SerializerConfig): The serialization configuration.
+        
+        Returns:
+            str: The serialized data.
         """
         bui_data["datetime_now"] = datetime.now().strftime("%d-%m-%y %H:%M:%S")
         bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
@@ -188,6 +194,7 @@ class BuiSerializer:
 
         Args:
             data_to_serialize (Dict): Dictionary containing list of events.
+            config (SerializerConfig): The serialization configuration.
 
         Returns:
             str: Text block representing all precipitation events.
