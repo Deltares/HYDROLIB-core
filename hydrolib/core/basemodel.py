@@ -30,7 +30,7 @@ from pydantic import validator
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
 from pydantic.fields import ModelField, PrivateAttr
 
-from hydrolib.core.io.dflowfm.xyz.base import DummmyParser, DummySerializer
+from hydrolib.core.io.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import (
     OperatingSystem,
     get_operating_system,
