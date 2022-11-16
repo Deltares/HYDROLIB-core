@@ -172,7 +172,7 @@ class BuiSerializer:
         Args:
             bui_data (Dict): Data to serialize.
             config (SerializerConfig): The serialization configuration.
-        
+
         Returns:
             str: The serialized data.
         """
