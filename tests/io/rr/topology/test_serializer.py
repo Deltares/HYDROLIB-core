@@ -17,7 +17,7 @@ class TestNodeFileSerializer:
         data = dict(
             node=[create_node_values(), create_node_values(), create_node_values()]
         )
-        config=SerializerConfig(float_format=".3f")
+        config = SerializerConfig(float_format=".3f")
         NodeFileSerializer.serialize(output_file, data, config)
 
         assert_files_equal(output_file, reference_file)
