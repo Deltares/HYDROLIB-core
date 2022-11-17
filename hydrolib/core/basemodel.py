@@ -1085,7 +1085,7 @@ class ParsableFileModel(FileModel):
             return
 
         path.parent.mkdir(parents=True, exist_ok=True)
-        self._get_serializer()(path, data)
+        self._get_serializer()(path, data, self.serializer_config)
 
     def dict(self, *args, **kwargs):
         kwargs["exclude"] = self._exclude_fields()
@@ -1114,7 +1114,7 @@ class ParsableFileModel(FileModel):
         return ".test"
 
     @abstractclassmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict], None]:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return DummySerializer.serialize
 
     @abstractclassmethod
