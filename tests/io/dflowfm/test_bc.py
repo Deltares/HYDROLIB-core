@@ -462,11 +462,9 @@ class TestVectorForcingBase:
         with pytest.raises(ValidationError) as error:
             TestVectorForcingBase.VectorForcingTest(**values)
 
-        expected_message = (
-            "Incorrect number of quantity unit pairs were found; should match the elements"
-            + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
-        )
+        expected_message = "Invalid quantity `unit_not_part_of_vector` found in vector `uxuyadvectionvelocitybnd`."
         assert expected_message in str(error.value)
+
 
 class TestT3D:
     @pytest.mark.parametrize(
