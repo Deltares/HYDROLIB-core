@@ -10,7 +10,7 @@ from pydantic.fields import ModelField
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
-from ..ini.io_models import CommentBlock, Document, Property, Section
+from ..ini.io_models import CommentBlock, Datablock, Document, Property, Section
 from .parser import Parser
 from .serializer import (
     DataBlockINIBasedSerializerConfig,
@@ -184,9 +184,8 @@ class DataBlockINIBasedModel(INIBasedModel):
         section.datablock = self._to_datablock(config)
         return section
 
-    def _to_datablock(self, config: DataBlockINIBasedSerializerConfig) -> List[List]:
-        converted_datablock = []
-
+    def _to_datablock(self, config: DataBlockINIBasedSerializerConfig) -> Datablock:
+        converted_datablock: List[List[str]] = []
         for row in self.datablock:
             converted_row = (
                 DataBlockINIBasedModel.convert_value(value, config) for value in row
@@ -202,7 +201,7 @@ class DataBlockINIBasedModel(INIBasedModel):
         if isinstance(value, float):
             return f"{value:{config.float_format_datablock}}"
 
-        return value
+        return str(value)
 
 
 class INIGeneral(INIBasedModel):
