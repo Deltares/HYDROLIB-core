@@ -4,11 +4,7 @@ import pytest
 from devtools import debug
 
 from hydrolibcore.io.dflowfm.mdu.models import FMModel
-from hydrolibcore.io.dflowfm.structure.models import (
-    FlowDirection,
-    StructureModel,
-    Weir,
-)
+from hydrolibcore.io.dflowfm.structure.models import FlowDirection, StructureModel, Weir
 from hydrolibcore.io.dimr.models import DIMR, FMComponent, Start
 from tests.utils import test_input_dir, test_output_dir
 
