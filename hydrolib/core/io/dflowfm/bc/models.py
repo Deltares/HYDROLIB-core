@@ -289,6 +289,10 @@ class VectorForcingBase(ForcingBase):
             values (Dict): Dictionary of values to be used to validate or
             update vector quantity unit pairs.
 
+        Raises:
+            ValueError: When a quantity unit pair is found in a vector where it does not belong.
+            ValueError: When the number of quantity unit pairs in a vectors is not as expected.
+
         Returns:
             Dict: Dictionary of validates values.
         """
