@@ -453,7 +453,7 @@ class TestVectorForcingBase:
 
         assert_files_equal(output_file, reference_file, [0])
 
-    def test_unexpected_quantityunitpair_raises_error(self):
+    def test_unexpected_quantityunitpair_in_vector_raises_error(self):
         values = _create_valid_vectorforcingtest_values()
         values["quantityunitpair"][1].quantityunitpair[
             0
