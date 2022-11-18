@@ -69,7 +69,7 @@ class _IntermediateCommentBlock(BaseModel):
         self.lines.append(line)
 
     def finalize(self) -> CommentBlock:
-        return CommentBlock(
+        return CommentBlock.construct(
             lines=self.lines,
         )
 
@@ -90,7 +90,7 @@ class _IntermediateSection(BaseModel):
 
     def add_comment(self, comment: str, line: int) -> None:
         if self.curr_comment_block is None:
-            self.curr_comment_block = _IntermediateCommentBlock(start_line=line)
+            self.curr_comment_block = _IntermediateCommentBlock.construct(start_line=line)
 
         self.curr_comment_block.add_comment_line(comment)
 
@@ -106,7 +106,7 @@ class _IntermediateSection(BaseModel):
 
     def finalize(self) -> Section:
         self._finalize_comment_block()
-        return Section(
+        return Section.construct(
             header=self.header,
             content=self.content,
             datablock=self.datablock if self.datablock else None,
@@ -132,7 +132,7 @@ class Parser:
             config (ParserConfig): The configuration of this Parser
         """
         self._config = config
-        self._document = Document()
+        self._document = Document.construct()
         self._current_section: Optional[_IntermediateSection] = None
         self._current_header_block: Optional[_IntermediateCommentBlock] = None
 
@@ -207,7 +207,7 @@ class Parser:
 
     def _handle_new_section_header(self, line: str) -> None:
         section_header = line.strip()[1:-1].strip()
-        self._current_section = _IntermediateSection(
+        self._current_section = _IntermediateSection.construct(
             header=section_header, start_line=self._line_index
         )
 
@@ -217,7 +217,7 @@ class Parser:
 
     def _handle_header_comment(self, line: str) -> None:
         if self._current_header_block is None:
-            self._current_header_block = _IntermediateCommentBlock(
+            self._current_header_block = _IntermediateCommentBlock.construct(
                 start_line=self._line_index
             )
 
@@ -235,7 +235,7 @@ class Parser:
         else:
             comment, value = None, None
 
-        prop = Property(key=key, value=value, comment=comment)
+        prop = Property.construct(key=key, value=value, comment=comment)
         self._current_section.add_property(prop)  # type: ignore
 
     def _handle_new_datarow(self, line: str) -> None:

@@ -99,10 +99,10 @@ class QuantityUnitPair(BaseModel):
     def _to_properties(self):
         """Generator function that yields the ini Property objects for a single
         QuantityUnitPair object."""
-        yield Property(key="quantity", value=self.quantity)
-        yield Property(key="unit", value=self.unit)
+        yield Property.construct(key="quantity", value=self.quantity)
+        yield Property.construct(key="unit", value=self.unit)
         if self.vertpositionindex is not None:
-            yield Property(key="vertPositionIndex", value=self.vertpositionindex)
+            yield Property.construct(key="vertPositionIndex", value=self.vertpositionindex)
 
 
 class VectorQuantityUnitPairs(BaseModel):
@@ -147,7 +147,7 @@ class VectorQuantityUnitPairs(BaseModel):
     def _to_properties(self):
         """Generator function that yields the ini Property objects for a single
         VectorQuantityUnitPairs object."""
-        yield Property(key="vector", value=str(self))
+        yield Property.construct(key="vector", value=str(self))
 
         for qup in self.quantityunitpair:
             for prop in qup._to_properties():

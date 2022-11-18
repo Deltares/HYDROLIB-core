@@ -158,13 +158,13 @@ class INIBasedModel(BaseModel, ABC):
             if key in self.__fields__:
                 key = self.__fields__[key].alias
 
-            prop = Property(
+            prop = Property.construct(
                 key=key,
                 value=self.__class__._convert_value(field_key, value, config),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)
-        return Section(header=self._header, content=props)
+        return Section.construct(header=self._header, content=props)
 
 
 class DataBlockINIBasedModel(INIBasedModel):
@@ -245,7 +245,7 @@ class INIModel(ParsableFileModel):
         return Parser.parse_as_dict
 
     def _to_document(self) -> Document:
-        header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
+        header = CommentBlock.construct(lines=[f"written by HYDROLIB-core {version}"])
         sections = []
         for key, value in self:
             if key in self._exclude_fields() or value is None:
@@ -255,7 +255,7 @@ class INIModel(ParsableFileModel):
                     sections.append(v._to_section(self.serializer_config))
             else:
                 sections.append(value._to_section(self.serializer_config))
-        return Document(header_comment=[header], sections=sections)
+        return Document.construct(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict) -> None:
         write_ini(
