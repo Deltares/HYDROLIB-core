@@ -4,14 +4,14 @@ from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
 
-from hydrolib.core.io.dflowfm.polyfile.models import (
+from hydrolibcore.io.dflowfm.polyfile.models import (
     Description,
     Metadata,
     Point,
     PolyFile,
     PolyObject,
 )
-from hydrolib.core.io.dflowfm.polyfile.parser import (
+from hydrolibcore.io.dflowfm.polyfile.parser import (
     Block,
     ErrorBuilder,
     InvalidBlock,
@@ -20,7 +20,7 @@ from hydrolib.core.io.dflowfm.polyfile.parser import (
     _determine_has_z_value,
     read_polyfile,
 )
-from hydrolib.core.io.dflowfm.polyfile.serializer import Serializer, write_polyfile
+from hydrolibcore.io.dflowfm.polyfile.serializer import Serializer, write_polyfile
 
 from ...utils import assert_files_equal, test_input_dir, test_output_dir
 

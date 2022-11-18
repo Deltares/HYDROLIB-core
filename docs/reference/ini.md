@@ -4,24 +4,24 @@ The ini module provides the generic logic for parsing Deltares ini based files, 
 
 Note that specific attribute files that employ this ini format often have their own dedicated module (and separate API doc page). These include:
 
-- [MDU file](mdu.md) (`hydrolib.core.io.dflowfm.mdu`)
-- [External forcing file](ext.md) (`hydrolib.core.io.dflowfm.ext`)
-- [Initial fields and parameter file](inifield.md) (`hydrolib.core.io.dflowfm.inifield`)
-- [Structure file](structure.md) (`hydrolib.core.io.dflowfm.structure`)
-- [1D roughness](friction.md) (`hydrolib.core.io.dflowfm.friction`)
-- [Cross section files](crosssection.md) (`hydrolib.core.io.dflowfm.crosssection`)
-- [Storage node file](storagenode.md) (`hydrolib.core.io.dflowfm.storagenode`)
+- [MDU file](mdu.md) (`hydrolibcore.io.dflowfm.mdu`)
+- [External forcing file](ext.md) (`hydrolibcore.io.dflowfm.ext`)
+- [Initial fields and parameter file](inifield.md) (`hydrolibcore.io.dflowfm.inifield`)
+- [Structure file](structure.md) (`hydrolibcore.io.dflowfm.structure`)
+- [1D roughness](friction.md) (`hydrolibcore.io.dflowfm.friction`)
+- [Cross section files](crosssection.md) (`hydrolibcore.io.dflowfm.crosssection`)
+- [Storage node file](storagenode.md) (`hydrolibcore.io.dflowfm.storagenode`)
 
 Following below is the documentation for the INI format base classes.
 
 ## Model
 
-::: hydrolib.core.io.dflowfm.ini.models
+::: hydrolibcore.io.dflowfm.ini.models
 
 ## Parser
 
-::: hydrolib.core.io.dflowfm.ini.parser
+::: hydrolibcore.io.dflowfm.ini.parser
 
 ## Serializer
 
-::: hydrolib.core.io.dflowfm.ini.serializer
+::: hydrolibcore.io.dflowfm.ini.serializer

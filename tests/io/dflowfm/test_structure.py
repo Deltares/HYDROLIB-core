@@ -6,9 +6,9 @@ from typing import Any, List, Union
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.dflowfm.friction.models import FrictionType
-from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.dflowfm.structure.models import (
+from hydrolibcore.io.dflowfm.friction.models import FrictionType
+from hydrolibcore.io.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolibcore.io.dflowfm.structure.models import (
     Bridge,
     Compound,
     Culvert,
@@ -339,7 +339,7 @@ def create_structure_values(type: str) -> dict:
 class TestBridge:
     """
     Wrapper class to test all the methods and subclasses in:
-    hydrolib.core.io.dflowfm.structure.models.py Bridge class
+    hydrolibcore.io.dflowfm.structure.models.py Bridge class
     """
 
     def test_create_a_bridge_from_scratch(self):
@@ -522,7 +522,7 @@ class TestBridge:
 class TestStructure:
     """
     Wrapper class to test all the methods and subclasses in:
-    hydrolib.core.io.dflowfm.structure.models.py Structure class.
+    hydrolibcore.io.dflowfm.structure.models.py Structure class.
     """
 
     class TestRootValidator:
@@ -863,7 +863,7 @@ class TestStructure:
 class TestDambreakAlgorithm:
     """
     Wrapper class to test all the methods in:
-    hydrolib.core.io.dflowfm.structure.models.py DambreakAlgorithm enum class.
+    hydrolibcore.io.dflowfm.structure.models.py DambreakAlgorithm enum class.
     """
 
     @pytest.mark.parametrize(
@@ -897,7 +897,7 @@ class DambreakTestCases:
 class TestDambreak:
     """
     Wrapper class to test all the methods and sublcasses in:
-    hydrolib.core.io.dflowfm.structure.models.py Dambreak class.
+    hydrolibcore.io.dflowfm.structure.models.py Dambreak class.
     """
 
     @pytest.fixture
@@ -1418,7 +1418,7 @@ class TestDambreak:
 class TestOrifice:
     """
     Wrapper class to test all the methods and sublcasses in:
-    hydrolib.core.io.dflowfm.structure.models.py Orifice class.
+    hydrolibcore.io.dflowfm.structure.models.py Orifice class.
     """
 
     def test_create_orifice(self):

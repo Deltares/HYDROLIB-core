@@ -43,7 +43,7 @@ plugins:
 
       custom_templates: templates
       watch:
-        - hydrolib/core
+        - hydrolibcore
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
@@ -83,7 +83,7 @@ nav:
           - "guides/documentation.md"
       - Support:
           - guides/gettinghelp.md
-  - Tutorials: 
+  - Tutorials:
       - tutorials/tutorials.md
       - tutorials/build_basic_model.ipynb
       - tutorials/loading_and_saving_a_model.md

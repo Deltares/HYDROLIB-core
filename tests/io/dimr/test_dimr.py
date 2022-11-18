@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core import __version__
-from hydrolib.core.io.dimr.models import DIMR
-from hydrolib.core.io.dimr.parser import DIMRParser
-from hydrolib.core.io.dimr.serializer import DIMRSerializer
+from hydrolibcore import __version__
+from hydrolibcore.io.dimr.models import DIMR
+from hydrolibcore.io.dimr.parser import DIMRParser
+from hydrolibcore.io.dimr.serializer import DIMRSerializer
 from tests.utils import (
     assert_files_equal,
     test_input_dir,

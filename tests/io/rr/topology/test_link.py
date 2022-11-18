@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hydrolib.core.io.rr.topology.models import Link, LinkFile
+from hydrolibcore.io.rr.topology.models import Link, LinkFile
 from tests.utils import (
     assert_files_equal,
     test_input_dir,

@@ -181,7 +181,7 @@ data again. This forms the basis for most of the in-memory file models.
 ### `DiskOnlyFileModel`
 
 The `DiskOnlyFileModel` provides a file model implementation for files which do not have a 
-representation in `HYDROLIB.Core` (yet). The `DiskOnlyFileModel` ensures the underlying 
+representation in `HYDROLIB` (yet). The `DiskOnlyFileModel` ensures the underlying 
 file, specified with the `filepath` of the `FileModel`, is copied when a parent model is
 saved recursively. It does so by maintaining an internal source file path, which is initialized
 at construction of the `DiskOnlyFileModel`. When a `DiskOnlyFileModel` is saved, the underlying

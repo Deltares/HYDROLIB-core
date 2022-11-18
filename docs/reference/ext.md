@@ -4,4 +4,4 @@ This includes open boundaries, lateral discharges and meteorological forcings.
 The documentation below only concerns the 'new' format (`ExtForceFileNew` in the MDU file).
 
 ## Model
-::: hydrolib.core.io.dflowfm.ext.models
+::: hydrolibcore.io.dflowfm.ext.models

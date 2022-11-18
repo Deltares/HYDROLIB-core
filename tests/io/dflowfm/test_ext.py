@@ -4,20 +4,20 @@ from typing import Dict, List, Optional
 import pytest
 from pydantic import ValidationError
 
-from hydrolib.core.io.dflowfm.bc.models import Constant, ForcingModel, RealTime
-from hydrolib.core.io.dflowfm.ext.models import Boundary, ExtModel, Lateral
-from hydrolib.core.io.dflowfm.ini.models import INIBasedModel
+from hydrolibcore.io.dflowfm.bc.models import Constant, ForcingModel, RealTime
+from hydrolibcore.io.dflowfm.ext.models import Boundary, ExtModel, Lateral
+from hydrolibcore.io.dflowfm.ini.models import INIBasedModel
 
 from ...utils import test_data_dir
 
 
 class TestModels:
     """Test class to test all classes and methods contained in the
-    hydrolib.core.io.dflowfm.ext.models.py module"""
+    hydrolibcore.io.dflowfm.ext.models.py module"""
 
     class TestLateral:
         """Class to test all methods contained in the
-        hydrolib.core.io.dflowfm.ext.models.Lateral class"""
+        hydrolibcore.io.dflowfm.ext.models.Lateral class"""
 
         location_error: str = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
 
@@ -415,7 +415,7 @@ class TestModels:
 
     class TestBoundary:
         """Class to test all methods contained in the
-        hydrolib.core.io.dflowfm.ext.models.Boundary class"""
+        hydrolibcore.io.dflowfm.ext.models.Boundary class"""
 
         def test_given_args_expected_values(self):
             # 1. Explicit declaration of parameters (to validate keys as they are written)

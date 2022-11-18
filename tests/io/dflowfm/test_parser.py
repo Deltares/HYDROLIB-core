@@ -1,4 +1,4 @@
-from hydrolib.core.io.dflowfm.xyz import parser
+from hydrolibcore.io.dflowfm.xyz import parser
 from tests.utils import test_data_dir
 
 

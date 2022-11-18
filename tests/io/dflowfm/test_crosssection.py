@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.dflowfm.crosssection.models import (
+from hydrolibcore.io.dflowfm.crosssection.models import (
     CircleCrsDef,
     CrossDefModel,
     CrossLocModel,
@@ -14,7 +14,7 @@ from hydrolib.core.io.dflowfm.crosssection.models import (
     ZWCrsDef,
     ZWRiverCrsDef,
 )
-from hydrolib.core.io.dflowfm.friction.models import FrictionType
+from hydrolibcore.io.dflowfm.friction.models import FrictionType
 
 from ...utils import (
     assert_files_equal,

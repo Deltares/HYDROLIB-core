@@ -5,7 +5,7 @@ from typing import Sequence, Tuple
 
 import pytest
 
-from hydrolib.core.basemodel import (
+from hydrolibcore.basemodel import (
     DiskOnlyFileModel,
     FileCasingResolver,
     FileLoadContext,
@@ -18,8 +18,8 @@ from hydrolib.core.basemodel import (
     context_file_loading,
     file_load_context,
 )
-from hydrolib.core.io.dflowfm.mdu.models import FMModel
-from hydrolib.core.io.dimr.models import DIMR
+from hydrolibcore.io.dflowfm.mdu.models import FMModel
+from hydrolibcore.io.dimr.models import DIMR
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"

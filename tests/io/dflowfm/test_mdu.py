@@ -3,8 +3,8 @@ from typing import Callable, Dict, Union
 
 import pytest
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.io.dflowfm.mdu.models import (
+from hydrolibcore.basemodel import DiskOnlyFileModel
+from hydrolibcore.io.dflowfm.mdu.models import (
     FMModel,
     InfiltrationMethod,
     Output,
@@ -18,7 +18,7 @@ from ...utils import test_input_dir
 
 class TestModels:
     """Test class to test all classes and methods contained in the
-    hydrolib.core.io.dflowfm.mdu.models.py module"""
+    hydrolibcore.io.dflowfm.mdu.models.py module"""
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (

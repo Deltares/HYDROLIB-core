@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.io.dflowfm.mdu.models import Geometry, Output
-from hydrolib.core.utils import get_substring_between, str_is_empty_or_none
+from hydrolibcore.io.dflowfm.mdu.models import Geometry, Output
+from hydrolibcore.utils import get_substring_between, str_is_empty_or_none
 
 from .utils import test_input_dir
 

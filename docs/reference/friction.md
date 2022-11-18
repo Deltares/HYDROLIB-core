@@ -2,9 +2,9 @@
 The friction module provides the specific logic for accessing friction/1D roughness files
 for a [D-Flow FM](glossary.md#d-flow-fm) model.
 
-Generic parsing and serializing functionality comes from the generic hydrolib.core.io.dflowfm.ini modules.
+Generic parsing and serializing functionality comes from the generic hydrolibcore.io.dflowfm.ini modules.
 
 A 1D roughness file is described by the classes below.
 
 ## Model
-::: hydrolib.core.io.dflowfm.friction.models
+::: hydrolibcore.io.dflowfm.friction.models

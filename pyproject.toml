@@ -53,7 +53,7 @@ name = "cz_conventional_commits"
 version = "0.3.1"
 tag_format = "$version"
 version_files = [
-    "hydrolib/core/__init__.py",
+    "hydrolibcore/__init__.py",
     "pyproject.toml:version",
     "tests/data/reference/dimr/test_serialize.xml:createdBy",
     "tests/data/reference/model/test_dimr_model_save.xml:createdBy"

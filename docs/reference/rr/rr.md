@@ -6,14 +6,14 @@ Support is still basic, but growing. The input 'layers' listed below correspond 
 in the {{sobek_um("section.D.19")}}.
 
 ## Main input (sobek_3b.fnm)
-::: hydrolib.core.io.rr.models
+::: hydrolibcore.io.rr.models
 
 ## General layer
 ### rainfall file
-::: hydrolib.core.io.rr.meteo.models
+::: hydrolibcore.io.rr.meteo.models
 
 
 ## Topology layer ("Topography" in SOBEK UM)
-::: hydrolib.core.io.rr.topology.models
+::: hydrolibcore.io.rr.topology.models
 
 ## (Other input layers foreseen in future releases)

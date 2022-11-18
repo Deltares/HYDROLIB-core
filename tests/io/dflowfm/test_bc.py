@@ -5,7 +5,7 @@ from typing import Dict, List, Literal
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.dflowfm.bc.models import (
+from hydrolibcore.io.dflowfm.bc.models import (
     T3D,
     Astronomic,
     AstronomicCorrection,
@@ -23,8 +23,8 @@ from hydrolib.core.io.dflowfm.bc.models import (
     VerticalInterpolation,
     VerticalPositionType,
 )
-from hydrolib.core.io.dflowfm.ini.models import BaseModel
-from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolibcore.io.dflowfm.ini.models import BaseModel
+from hydrolibcore.io.dflowfm.ini.parser import Parser, ParserConfig
 
 from ...utils import (
     assert_files_equal,
@@ -261,7 +261,7 @@ class TestForcingBase:
 
 class TestForcingModel:
     """
-    Wrapper class to test the logic of the ForcingModel class in hydrolib.core.io.dflowfm.bc.models.py.
+    Wrapper class to test the logic of the ForcingModel class in hydrolibcore.io.dflowfm.bc.models.py.
     """
 
     def test_forcing_model(self):

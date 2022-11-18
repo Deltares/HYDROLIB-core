@@ -5,13 +5,13 @@ from typing import Callable, Optional
 
 import pytest
 
-from hydrolib.core.basemodel import (
+from hydrolibcore.basemodel import (
     DiskOnlyFileModel,
     ResolveRelativeMode,
     file_load_context,
 )
-from hydrolib.core.io.dimr.models import DIMR
-from hydrolib.core.io.rr.models import (
+from hydrolibcore.io.dimr.models import DIMR
+from hydrolibcore.io.rr.models import (
     RainfallRunoffModel,
     _mappix_balance_name,
     _mappix_cumulative_balance_name,
@@ -29,8 +29,8 @@ from hydrolib.core.io.rr.models import (
     _mappix_salt_concentrations_name,
     _mappix_unpaved_area_flow_rates_name,
 )
-from hydrolib.core.io.rr.parser import parse
-from hydrolib.core.io.rr.serializer import serialize
+from hydrolibcore.io.rr.parser import parse
+from hydrolibcore.io.rr.serializer import serialize
 from tests.utils import assert_file_is_same_binary, test_input_dir, test_output_dir
 
 rr_directory = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model" / "rr"

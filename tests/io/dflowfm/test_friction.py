@@ -6,13 +6,13 @@ from typing import Any, Callable, List, Union
 import pytest
 from pydantic.error_wrappers import ValidationError
 
-from hydrolib.core.io.dflowfm.friction.models import (
+from hydrolibcore.io.dflowfm.friction.models import (
     FrictBranch,
     FrictGlobal,
     FrictionModel,
     FrictionType,
 )
-from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolibcore.io.dflowfm.ini.parser import Parser, ParserConfig
 
 from ...utils import (
     WrapperTest,

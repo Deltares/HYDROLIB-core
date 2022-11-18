@@ -4,10 +4,10 @@ The "bui" file contains the precipitation input data for [Rainfall Runoff](../gl
 It is represented by the classes below.
 
 ## Model
-::: hydrolib.core.io.rr.meteo.models
+::: hydrolibcore.io.rr.meteo.models
 
 ## Parser
-::: hydrolib.core.io.rr.meteo.parser
+::: hydrolibcore.io.rr.meteo.parser
 
 ## Serializer
-::: hydrolib.core.io.rr.meteo.serializer
+::: hydrolibcore.io.rr.meteo.serializer
