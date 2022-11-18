@@ -329,6 +329,21 @@ class VectorForcingBase(ForcingBase):
                     VectorForcingBase.validate_vectorlength(
                         qup, number_of_element_repetitions
                     )
+                    VectorForcingBase._validate_that_qups_in_vector_have_correct_quantity(
+                        qup
+                    )
+
+    @staticmethod
+    def _validate_that_qups_in_vector_have_correct_quantity(
+        vector_qup: VectorQuantityUnitPairs,
+    ) -> None:
+        element_set = set(vector_qup.elementname)
+
+        for qup in vector_qup.quantityunitpair:
+            if qup.quantity not in element_set:
+                raise ValueError(
+                    f"Invalid quantity `{qup.quantity}` found in vector `{vector_qup.vectorname}`."
+                )
 
     @staticmethod
     def validate_vectordefinition_and_update_quantityunitpairs(
