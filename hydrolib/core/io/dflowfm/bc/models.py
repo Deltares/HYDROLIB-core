@@ -102,7 +102,7 @@ class QuantityUnitPair(BaseModel):
         yield Property.construct(key="quantity", value=self.quantity)
         yield Property.construct(key="unit", value=self.unit)
         if self.vertpositionindex is not None:
-            yield Property.construct(key="vertPositionIndex", value=self.vertpositionindex)
+            yield Property.construct(key="vertPositionIndex", value=str(self.vertpositionindex))
 
 
 class VectorQuantityUnitPairs(BaseModel):
