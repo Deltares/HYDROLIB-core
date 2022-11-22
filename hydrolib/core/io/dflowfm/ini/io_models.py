@@ -15,6 +15,9 @@ class CommentBlock(BaseModel):
         lines (List[str]): The actual lines of the CommentBlock
     """
 
+    class Config:
+        validate_assignment = False
+    
     lines: List[str]
 
 
@@ -27,6 +30,9 @@ class Property(BaseModel):
         comment (Optional[str]): The comment associated with this Property
     """
 
+    class Config:
+        validate_assignment = False
+    
     key: str
     value: Optional[str]
     comment: Optional[str]
@@ -70,6 +76,8 @@ class Section(BaseModel):
             structured as a sequence of rows, i.e. datablock[2][1] refers to the third
             row, second column.
     """
+    class Config:
+        validate_assignment = False
 
     header: str = Field(alias="_header")
     content: List[ContentElement]
@@ -130,6 +138,9 @@ class Document(BaseModel):
             An ordered list of sections defined in this Document
     """
 
+    class Config:
+        validate_assignment = False
+    
     header_comment: List[CommentBlock] = []
     sections: List[Section] = []
 

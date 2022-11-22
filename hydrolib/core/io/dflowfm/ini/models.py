@@ -10,9 +10,13 @@ from pydantic.fields import ModelField
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 
-from ..ini.io_models import CommentBlock, Document, Property, Section
+from ..ini.io_models import CommentBlock, Datablock, Document, Property, Section
 from .parser import Parser
-from .serializer import SerializerConfig, write_ini
+from .serializer import (
+    DataBlockINIBasedSerializerConfig,
+    INISerializerConfig,
+    write_ini,
+)
 from .util import make_list_validator
 
 logger = logging.getLogger(__name__)
@@ -125,19 +129,26 @@ class INIBasedModel(BaseModel, ABC):
         return {"comments", "datablock", "_header"}
 
     @classmethod
-    def _convert_value(cls, key: str, v: Any) -> str:
+    def _convert_value(cls, key: str, v: Any, config: INISerializerConfig) -> str:
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
-            return cls.get_list_field_delimiter(key).join([str(x) for x in v])
+            format = (
+                lambda x: f"{x:{config.float_format}}"
+                if isinstance(x, float)
+                else str(x)
+            )
+            return cls.get_list_field_delimiter(key).join([format(x) for x in v])
         elif isinstance(v, Enum):
             return v.value
+        elif isinstance(v, float):
+            return f"{v:{config.float_format}}"
         elif v is None:
             return ""
         else:
             return str(v)
 
-    def _to_section(self) -> Section:
+    def _to_section(self, config: INISerializerConfig) -> Section:
         props = []
         for key, value in self:
             if key in self._exclude_fields():
@@ -147,13 +158,13 @@ class INIBasedModel(BaseModel, ABC):
             if key in self.__fields__:
                 key = self.__fields__[key].alias
 
-            prop = Property(
+            prop = Property.construct(
                 key=key,
-                value=self.__class__._convert_value(field_key, value),
+                value=self.__class__._convert_value(field_key, value, config),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)
-        return Section(header=self._header, content=props)
+        return Section.construct(header=self._header, content=props)
 
 
 class DataBlockINIBasedModel(INIBasedModel):
@@ -168,10 +179,29 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     _make_lists = make_list_validator("datablock")
 
-    def _to_section(self) -> Section:
-        section = super()._to_section()
-        section.datablock = self.datablock
+    def _to_section(self, config: DataBlockINIBasedSerializerConfig) -> Section:
+        section = super()._to_section(config)
+        section.datablock = self._to_datablock(config)
         return section
+
+    def _to_datablock(self, config: DataBlockINIBasedSerializerConfig) -> Datablock:
+        converted_datablock: List[List[str]] = []
+        for row in self.datablock:
+            converted_row = (
+                DataBlockINIBasedModel.convert_value(value, config) for value in row
+            )
+            converted_datablock.append(list(converted_row))
+
+        return converted_datablock
+
+    @classmethod
+    def convert_value(
+        cls, value: Union[float, str], config: DataBlockINIBasedSerializerConfig
+    ) -> str:
+        if isinstance(value, float):
+            return f"{value:{config.float_format_datablock}}"
+
+        return str(value)
 
 
 class INIGeneral(INIBasedModel):
@@ -193,6 +223,8 @@ class INIModel(ParsableFileModel):
     ini file will be (sub)class of INIBasedModel.
     """
 
+    serializer_config: INISerializerConfig = INISerializerConfig()
+
     general: INIGeneral
 
     @classmethod
@@ -212,19 +244,19 @@ class INIModel(ParsableFileModel):
         return Parser.parse_as_dict
 
     def _to_document(self) -> Document:
-        header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
+        header = CommentBlock.construct(lines=[f"written by HYDROLIB-core {version}"])
         sections = []
-        for _, value in self:
-            if _ == "filepath" or value is None:
+        for key, value in self:
+            if key in self._exclude_fields() or value is None:
                 continue
             if isinstance(value, list):
                 for v in value:
-                    sections.append(v._to_section())
+                    sections.append(v._to_section(self.serializer_config))
             else:
-                sections.append(value._to_section())
-        return Document(header_comment=[header], sections=sections)
+                sections.append(value._to_section(self.serializer_config))
+        return Document.construct(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-        config = SerializerConfig(section_indent=0, property_indent=4)
-        write_ini(self._resolved_filepath, self._to_document(), config=config)
+        write_ini(
+            self._resolved_filepath, self._to_document(), config=self.serializer_config
+        )

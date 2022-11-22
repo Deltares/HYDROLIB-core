@@ -5,18 +5,21 @@ from xml.dom import minidom
 
 from lxml import etree as e
 
+from hydrolib.core.basemodel import SerializerConfig
+
 
 class DIMRSerializer:
     """A serializer for DIMR files."""
 
     @staticmethod
-    def serialize(path: Path, data: dict):
+    def serialize(path: Path, data: dict, config: SerializerConfig):
         """
         Serializes the DIMR data to the file at the specified path.
 
         Attributes:
             path (Path): The path to the destination file.
             data (Dict): The data to be serialized.
+            config (SerializerConfig): The serialization configuration.
         """
 
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -33,7 +36,7 @@ class DIMRSerializer:
             attrib=attrib,
             nsmap=namespaces,
         )
-        DIMRSerializer._build_tree(root, data)
+        DIMRSerializer._build_tree(root, data, config)
 
         to_string = minidom.parseString(e.tostring(root))
         xml = to_string.toprettyxml(indent="  ", encoding="utf-8")
@@ -42,7 +45,7 @@ class DIMRSerializer:
             f.write(xml)
 
     @staticmethod
-    def _build_tree(root, data: dict):
+    def _build_tree(root, data: dict, config: SerializerConfig):
         name = data.pop("name", None)
         if name:
             root.set("name", name)
@@ -50,17 +53,19 @@ class DIMRSerializer:
         for key, val in data.items():
             if isinstance(val, dict):
                 c = e.Element(key)
-                DIMRSerializer._build_tree(c, val)
+                DIMRSerializer._build_tree(c, val, config)
                 root.append(c)
             elif isinstance(val, List):
                 for item in val:
                     c = e.Element(key)
-                    DIMRSerializer._build_tree(c, item)
+                    DIMRSerializer._build_tree(c, item, config)
                     root.append(c)
             else:
                 c = e.Element(key)
                 if isinstance(val, datetime):
                     c.text = val.isoformat(sep="T", timespec="auto")
+                elif isinstance(val, float):
+                    c.text = f"{val:{config.float_format}}"
                 else:
                     c.text = str(val)
                 root.append(c)

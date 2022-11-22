@@ -87,7 +87,7 @@ class PolyFile(ParsableFileModel):
         from .serializer import write_polyfile
 
         # We skip the passed dict for a better one.
-        write_polyfile(self._resolved_filepath, self.objects)
+        write_polyfile(self._resolved_filepath, self.objects, self.serializer_config)
 
     @classmethod
     def _ext(cls) -> str:
