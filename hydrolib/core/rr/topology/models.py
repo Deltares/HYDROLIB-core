@@ -5,10 +5,7 @@ from pydantic.fields import Field
 
 from hydrolib.core.basemodel import BaseModel, ParsableFileModel
 from hydrolib.core.rr.topology.parser import NetworkTopologyFileParser
-from hydrolib.core.rr.topology.serializer import (
-    LinkFileSerializer,
-    NodeFileSerializer,
-)
+from hydrolib.core.rr.topology.serializer import LinkFileSerializer, NodeFileSerializer
 
 nodetypes_netter_to_rr = {
     43: 1,  # 1: Paved area
