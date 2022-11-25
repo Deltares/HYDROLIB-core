@@ -453,7 +453,7 @@ class TestVectorForcingBase:
 
         assert_files_equal(output_file, reference_file, [0])
 
-    def test_initialize_vectorforcing_with_vectorQUPs_followed_by_scalarQUPs(self):
+    def test_initialize_vectorforcing_with_vectorqups_followed_by_scalarqups(self):
         values = _create_valid_vectorforcingtest_values()
         del values["quantityunitpair"]
 
