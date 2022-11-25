@@ -453,18 +453,6 @@ class TestVectorForcingBase:
 
         assert_files_equal(output_file, reference_file, [0])
 
-    def test_unexpected_quantityunitpair_in_vector_raises_error(self):
-        values = _create_valid_vectorforcingtest_values()
-        values["quantityunitpair"][1].quantityunitpair[
-            0
-        ].quantity = "unit_not_part_of_vector"
-
-        with pytest.raises(ValidationError) as error:
-            TestVectorForcingBase.VectorForcingTest(**values)
-
-        expected_message = "Invalid quantity `unit_not_part_of_vector` found in vector `uxuyadvectionvelocitybnd`."
-        assert expected_message in str(error.value)
-
 
 class TestT3D:
     @pytest.mark.parametrize(
