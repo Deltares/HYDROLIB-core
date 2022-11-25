@@ -1,7 +1,4 @@
-from .models import (
-    XYZPoint,
-    XYZModel,
-)
+from .models import XYZModel, XYZPoint
 
 __all__ = [
     "XYZPoint",
