@@ -7,14 +7,14 @@ import pytest
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.io.dflowfm.bc.models import (
+from hydrolib.core.dflowfm.bc.models import (
     ForcingBase,
     ForcingModel,
     QuantityUnitPair,
 )
-from hydrolib.core.io.dflowfm.ext.models import Boundary, ExtModel
-from hydrolib.core.io.dflowfm.friction.models import FrictGeneral
-from hydrolib.core.io.dflowfm.mdu.models import (
+from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
+from hydrolib.core.dflowfm.friction.models import FrictGeneral
+from hydrolib.core.dflowfm.mdu.models import (
     Calibration,
     ExternalForcing,
     FMModel,
@@ -25,8 +25,8 @@ from hydrolib.core.io.dflowfm.mdu.models import (
     Restart,
     Sediment,
 )
-from hydrolib.core.io.dflowfm.xyz.models import XYZModel
-from hydrolib.core.io.dimr.models import (
+from hydrolib.core.dflowfm.xyz.models import XYZModel
+from hydrolib.core.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
     CoupledItem,
@@ -37,9 +37,9 @@ from hydrolib.core.io.dimr.models import (
     RRComponent,
     StartGroup,
 )
-from hydrolib.core.io.rr.models import RainfallRunoffModel
+from hydrolib.core.rr.models import RainfallRunoffModel
 
-from .io.rr.meteo.test_bui import BuiTestData
+from .rr.meteo.test_bui import BuiTestData
 from .utils import (
     assert_files_equal,
     invalid_test_data_dir,
