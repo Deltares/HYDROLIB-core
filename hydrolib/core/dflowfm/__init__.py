@@ -7,3 +7,4 @@ from .gui import *
 from .inifield import *
 from .mdu import *
 from .net import *
+from .obs import *
