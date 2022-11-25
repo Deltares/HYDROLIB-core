@@ -1,12 +1,12 @@
 from .models import (
+    AveragingType,
     DataFileType,
+    IniFieldGeneral,
+    IniFieldModel,
+    InitialField,
     InterpolationMethod,
     Operand,
-    AveragingType,
-    IniFieldGeneral,
-    InitialField,
     ParameterField,
-    IniFieldModel,
 )
 
 __all__ = [
