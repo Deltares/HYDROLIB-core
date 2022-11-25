@@ -5,11 +5,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.rr.meteo.models import BuiModel, BuiPrecipitationEvent
-from hydrolib.core.rr.meteo.parser import (
-    BuiEventListParser,
-    BuiEventParser,
-    BuiParser,
-)
+from hydrolib.core.rr.meteo.parser import BuiEventListParser, BuiEventParser, BuiParser
 from hydrolib.core.rr.meteo.serializer import (
     BuiEventSerializer,
     BuiSerializer,
