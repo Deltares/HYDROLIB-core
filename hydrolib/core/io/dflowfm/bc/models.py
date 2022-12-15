@@ -122,7 +122,7 @@ class VectorQuantityUnitPairs(BaseModel):
     quantityunitpair: List[QuantityUnitPair]
     """List[QuantityUnitPair]: List of QuantityUnitPair that define the vector components."""
 
-    @root_validator
+    @root_validator(allow_reuse=True)
     @classmethod
     def _validate_quantity_element_names(cls, values: Dict):
         for idx, name in enumerate(
