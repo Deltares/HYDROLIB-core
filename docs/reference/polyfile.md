@@ -6,10 +6,10 @@ and are used in various other input files.
 They are represented by the classes below.
 
 ## Model
-::: hydrolib.core.io.polyfile.models
+::: hydrolib.core.io.dflowfm.polyfile.models
 
 ## Parser
-::: hydrolib.core.io.polyfile.parser
+::: hydrolib.core.io.dflowfm.polyfile.parser
 
 ## Serializer
-::: hydrolib.core.io.polyfile.serializer
+::: hydrolib.core.io.dflowfm.polyfile.serializer

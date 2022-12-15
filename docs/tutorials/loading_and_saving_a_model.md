@@ -18,6 +18,13 @@ model_path = Path("./dimr_config.xml")
 dimr_model = DIMR(filepath=model_path)
 ```
 
+It is also possible to not recursively load models:
+```python
+dimr_model = DIMR(filepath=model_path, recurse=False)
+```
+
+This will only load a DIMR model without its underlying child file models, such as the Flow FM model.
+
 ## Save the model in a new location
 
 If we want to store the full model in a different location we can use the `save` function:
@@ -89,7 +96,7 @@ The file on disk is actually called `network/FlowFM_net.nc`.
 To load the model and simultaneously repair the file references in the in-memory model:
 
 ```python
-from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.io.dflowfm.mdu.models import FMModel
 model = FMModel("FlowFM.mdu", resolve_casing=True)
 
 # assert that file reference has been updated from Network/flowfm_net.nc to network/FlowFM_net.nc

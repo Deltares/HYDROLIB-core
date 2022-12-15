@@ -7,7 +7,25 @@ import pytest
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.io.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
+from hydrolib.core.io.dflowfm.bc.models import (
+    ForcingBase,
+    ForcingModel,
+    QuantityUnitPair,
+)
+from hydrolib.core.io.dflowfm.ext.models import Boundary, ExtModel
+from hydrolib.core.io.dflowfm.friction.models import FrictGeneral
+from hydrolib.core.io.dflowfm.mdu.models import (
+    Calibration,
+    ExternalForcing,
+    FMModel,
+    Geometry,
+    Output,
+    Particles,
+    Processes,
+    Restart,
+    Sediment,
+)
+from hydrolib.core.io.dflowfm.xyz.models import XYZModel
 from hydrolib.core.io.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -19,21 +37,7 @@ from hydrolib.core.io.dimr.models import (
     RRComponent,
     StartGroup,
 )
-from hydrolib.core.io.ext.models import Boundary, ExtModel
-from hydrolib.core.io.friction.models import FrictGeneral
-from hydrolib.core.io.mdu.models import (
-    Calibration,
-    ExternalForcing,
-    FMModel,
-    Geometry,
-    Output,
-    Particles,
-    Processes,
-    Restart,
-    Sediment,
-)
 from hydrolib.core.io.rr.models import RainfallRunoffModel
-from hydrolib.core.io.xyz.models import XYZModel
 
 from .io.rr.meteo.test_bui import BuiTestData
 from .utils import (
@@ -232,6 +236,27 @@ def test_mdu_model():
 
     assert structurefile.save_location == output_dir / structurefile.filepath
     assert structurefile.save_location.is_file()
+
+
+def test_load_model_recurse_false():
+    model = FMModel(
+        filepath=Path(
+            test_data_dir
+            / "input"
+            / "e02"
+            / "c11_korte-woerden-1d"
+            / "dimr_model"
+            / "dflowfm"
+            / "FlowFM.mdu"
+        ),
+        recurse=False,
+    )
+
+    # Assert that references to child models are preserved, but child models are not loaded
+    assert model.geometry.structurefile is not None
+    assert len(model.geometry.structurefile) == 1
+    assert model.geometry.structurefile[0].filepath == Path("structures.ini")
+    assert not any(model.geometry.structurefile[0].structure)
 
 
 def test_model_with_duplicate_file_references_use_same_instances():
