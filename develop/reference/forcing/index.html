@@ -1290,22 +1290,8 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.process_vectordefinition_or_check_quantityunitpairs" class="md-nav__link">
-    process_vectordefinition_or_check_quantityunitpairs()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectordefinition_and_update_quantityunitpairs" class="md-nav__link">
-    validate_vectordefinition_and_update_quantityunitpairs()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectorlength" class="md-nav__link">
-    validate_vectorlength()
+  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_and_update_quantityunitpairs" class="md-nav__link">
+    validate_and_update_quantityunitpairs()
   </a>
   
 </li>
@@ -1869,22 +1855,8 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.process_vectordefinition_or_check_quantityunitpairs" class="md-nav__link">
-    process_vectordefinition_or_check_quantityunitpairs()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectordefinition_and_update_quantityunitpairs" class="md-nav__link">
-    validate_vectordefinition_and_update_quantityunitpairs()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectorlength" class="md-nav__link">
-    validate_vectorlength()
+  <a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_and_update_quantityunitpairs" class="md-nav__link">
+    validate_and_update_quantityunitpairs()
   </a>
   
 </li>
@@ -3091,20 +3063,18 @@ VectorForcingBase            (<a title="hydrolib.core.io.dflowfm.bc.models.Forci
 
 
 
-<h4 id="hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.process_vectordefinition_or_check_quantityunitpairs" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">process_vectordefinition_or_check_quantityunitpairs</span><span class="p">(</span><span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">QuantityUnitPair</span><span class="p">,</span> <span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">VectorQuantityUnitPairs</span><span class="p">]],</span> <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<h4 id="hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_and_update_quantityunitpairs" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate_and_update_quantityunitpairs</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
 
   <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
   </span>
 
-<a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.process_vectordefinition_or_check_quantityunitpairs" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_and_update_quantityunitpairs" class="headerlink" title="Permanent link">&para;</a></h4>
 
     <div class="doc doc-contents ">
 
-      <p>Processes the given vector definition header lines from a .bc file
-or, if absent, checks whether the existing VectorQuantityUnitPairs
-objects already have the correct vector length.</p>
+      <p>Validates and, if required, updates vector quantity unit pairs.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -3118,284 +3088,11 @@ objects already have the correct vector length.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>vectordefs</code></td>
-        <td><code>List[str]</code></td>
-        <td><p>List of vector definition values, e.g.,
-["vectorname:comp1,comp2,..compN", ...]</p></td>
+        <td><code>values</code></td>
+        <td><code>Dict</code></td>
+        <td><p>Dictionary of values to be used to validate or</p></td>
         <td><em>required</em></td>
       </tr>
-      <tr>
-        <td><code>quantityunitpairs</code></td>
-        <td><code>List[ScalarOrVectorQUP]</code></td>
-        <td><p>list of already parsed
-and constructed QuantityUnitPair objects, which may be modified
-in place with some packed VectorQuantityUnitPairs objects.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>number_of_element_repetitions</code></td>
-        <td><code>int</code></td>
-        <td><p>Number of times each
-vector element is expected to be present in the subsequent
-Quantity lines. Typically used for 3D quantities, using the
-number of vertical layers.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>hydrolib/core/io/dflowfm/bc/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">process_vectordefinition_or_check_quantityunitpairs</span><span class="p">(</span>
-    <span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-    <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ScalarOrVectorQUP</span><span class="p">],</span>
-    <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Processes the given vector definition header lines from a .bc file</span>
-<span class="sd">    or, if absent, checks whether the existing VectorQuantityUnitPairs</span>
-<span class="sd">    objects already have the correct vector length.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        vectordefs (List[str]): List of vector definition values, e.g.,</span>
-<span class="sd">            [&quot;vectorname:comp1,comp2,..compN&quot;, ...]</span>
-<span class="sd">        quantityunitpairs (List[ScalarOrVectorQUP]): list of already parsed</span>
-<span class="sd">            and constructed QuantityUnitPair objects, which may be modified</span>
-<span class="sd">            in place with some packed VectorQuantityUnitPairs objects.</span>
-<span class="sd">        number_of_element_repetitions (int, optional): Number of times each</span>
-<span class="sd">            vector element is expected to be present in the subsequent</span>
-<span class="sd">            Quantity lines. Typically used for 3D quantities, using the</span>
-<span class="sd">            number of vertical layers.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">vectordefs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
-        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">qup</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">qup</span><span class="p">,</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">),</span> <span class="n">quantityunitpairs</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="c1"># Vector definition line still must be processed and VectorQUPs still created.</span>
-        <span class="n">VectorForcingBase</span><span class="o">.</span><span class="n">validate_vectordefinition_and_update_quantityunitpairs</span><span class="p">(</span>
-            <span class="n">vectordefs</span><span class="p">,</span> <span class="n">quantityunitpairs</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># VectorQUPs already present; directly validate their vector length.</span>
-        <span class="k">for</span> <span class="n">qup</span> <span class="ow">in</span> <span class="n">quantityunitpairs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">qup</span><span class="p">,</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">):</span>
-                <span class="n">VectorForcingBase</span><span class="o">.</span><span class="n">validate_vectorlength</span><span class="p">(</span>
-                    <span class="n">qup</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span>
-                <span class="p">)</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-
-
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectordefinition_and_update_quantityunitpairs" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">validate_vectordefinition_and_update_quantityunitpairs</span><span class="p">(</span><span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">QuantityUnitPair</span><span class="p">,</span> <span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">VectorQuantityUnitPairs</span><span class="p">]],</span> <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
-  </span>
-
-<a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectordefinition_and_update_quantityunitpairs" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Validates the given vector definition header lines from a .bc file
-for a ForcingBase subclass and updates the existing QuantityUnitPair list
-by packing the vector elements into a VectorQuantityUnitPairs object
-for each vector definition.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>vectordefs</code></td>
-        <td><code>List[str]</code></td>
-        <td><p>List of vector definition values, e.g.,
-["vectorname:comp1,comp2,..compN", ...]</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>quantityunitpairs</code></td>
-        <td><code>List[ScalarOrVectorQUP]</code></td>
-        <td><p>list of already parsed
-and constructed QuantityUnitPair objects, which will be modified
-in place with some packed VectorQuantityUnitPairs objects.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>number_of_element_repetitions</code></td>
-        <td><code>int</code></td>
-        <td><p>Number of times each
-vector element is expected to be present in the subsequent
-Quantity lines. Typically used for 3D quantities, using the
-number of vertical layers.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>hydrolib/core/io/dflowfm/bc/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">validate_vectordefinition_and_update_quantityunitpairs</span><span class="p">(</span>
-    <span class="n">vectordefs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-    <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ScalarOrVectorQUP</span><span class="p">],</span>
-    <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Validates the given vector definition header lines from a .bc file</span>
-<span class="sd">    for a ForcingBase subclass and updates the existing QuantityUnitPair list</span>
-<span class="sd">    by packing the vector elements into a VectorQuantityUnitPairs object</span>
-<span class="sd">    for each vector definition.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        vectordefs (List[str]): List of vector definition values, e.g.,</span>
-<span class="sd">            [&quot;vectorname:comp1,comp2,..compN&quot;, ...]</span>
-<span class="sd">        quantityunitpairs (List[ScalarOrVectorQUP]): list of already parsed</span>
-<span class="sd">            and constructed QuantityUnitPair objects, which will be modified</span>
-<span class="sd">            in place with some packed VectorQuantityUnitPairs objects.</span>
-<span class="sd">        number_of_element_repetitions (int, optional): Number of times each</span>
-<span class="sd">            vector element is expected to be present in the subsequent</span>
-<span class="sd">            Quantity lines. Typically used for 3D quantities, using the</span>
-<span class="sd">            number of vertical layers.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">vectordefs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span>
-
-    <span class="n">vectordefs</span> <span class="o">=</span> <span class="n">to_list</span><span class="p">(</span><span class="n">vectordefs</span><span class="p">)</span>
-
-    <span class="n">qup_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">quantityunitpairs</span><span class="p">)</span>
-
-    <span class="c1"># Start a new list, to only keep the scalar QUPs, and add newly</span>
-    <span class="c1"># created VectorQUPs.</span>
-    <span class="n">quantityunitpairs_with_vectors</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="c1"># If one quantity is &quot;time&quot;, it must be the first one.</span>
-    <span class="k">if</span> <span class="n">quantityunitpairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">quantity</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
-        <span class="n">quantityunitpairs_with_vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantityunitpairs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">qup_iter</span><span class="p">)</span>
-
-    <span class="c1"># For each vector definition line, greedily find the quantity unit pairs</span>
-    <span class="c1"># that form the vector elements, and pack them into a single VectorQuantityUnitPairs oject.</span>
-    <span class="k">for</span> <span class="n">vectordef</span> <span class="ow">in</span> <span class="n">vectordefs</span><span class="p">:</span>
-        <span class="n">vectorname</span><span class="p">,</span> <span class="n">componentdefs</span> <span class="o">=</span> <span class="n">vectordef</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-        <span class="n">componentnames</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[, \t]&quot;</span><span class="p">,</span> <span class="n">componentdefs</span><span class="p">)</span>
-        <span class="n">n_components</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">componentnames</span><span class="p">)</span>
-
-        <span class="n">vqu_pair</span> <span class="o">=</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">(</span>
-            <span class="n">vectorname</span><span class="o">=</span><span class="n">vectorname</span><span class="p">,</span> <span class="n">elementname</span><span class="o">=</span><span class="n">componentnames</span><span class="p">,</span> <span class="n">quantityunitpair</span><span class="o">=</span><span class="p">[]</span>
-        <span class="p">)</span>
-
-        <span class="n">n_rep</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">qu_pair</span> <span class="ow">in</span> <span class="n">qup_iter</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">qu_pair</span><span class="o">.</span><span class="n">quantity</span> <span class="ow">in</span> <span class="n">componentnames</span><span class="p">:</span>
-                <span class="c1"># This vector element found, store it.</span>
-                <span class="n">vqu_pair</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qu_pair</span><span class="p">)</span>
-                <span class="n">n_rep</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">n_rep</span> <span class="o">==</span> <span class="n">n_components</span> <span class="o">*</span> <span class="n">number_of_element_repetitions</span><span class="p">:</span>
-                    <span class="k">break</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># This quantity was no vector element being searched for</span>
-                <span class="c1"># so keep it as a regular (scalar) QuantityUnitPair.</span>
-                <span class="n">quantityunitpairs_with_vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qu_pair</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">VectorForcingBase</span><span class="o">.</span><span class="n">validate_vectorlength</span><span class="p">(</span>
-            <span class="n">vqu_pair</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span>
-        <span class="p">):</span>
-            <span class="c1"># This VectorQuantityUnitPairs is now complete; add it to result list.</span>
-            <span class="n">quantityunitpairs_with_vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vqu_pair</span><span class="p">)</span>
-
-    <span class="n">quantityunitpairs</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">quantityunitpairs_with_vectors</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectorlength" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">validate_vectorlength</span><span class="p">(</span><span class="n">vqu_pair</span><span class="p">:</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
-  </span>
-
-<a href="#hydrolib.core.io.dflowfm.bc.models.VectorForcingBase.validate_vectorlength" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Checks whether the number of QuantityUnitPairs in a vector quantity
-matches exactly with number of vector elements in the definition and,
-optionally, the number of vertical layers.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>vqu_pair</code></td>
-        <td><code>VectorQuantityUnitPairs</code></td>
-        <td><p>the vector quantity object to be checked.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>number_of_element_repetitions</code></td>
-        <td><code>int</code></td>
-        <td><p>Number of times each
-vector element is expected to be present in the subsequent
-Quantity lines. Typically used for 3D quantities, using the
-number of vertical layers.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>bool</code></td>
-      <td><p>True if vqu_pair is valid. False return value is hidden because
-    an exception will be raised.</p></td>
-    </tr>
   </tbody>
 </table>
 <p><strong>Exceptions:</strong></p>
@@ -3409,54 +3106,56 @@ number of vertical layers.</p></td>
   <tbody>
       <tr>
         <td><code>ValueError</code></td>
-        <td><p>If number of QuantityUnitPair objects in vqu_pair is not equal
-to number of element names * number_of_element_repetitions.</p></td>
+        <td><p>When a quantity unit pair is found in a vector where it does not belong.</p></td>
       </tr>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>When the number of quantity unit pairs in a vectors is not as expected.</p></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>Dictionary of validates values.</p></td>
+    </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/dflowfm/bc/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">validate_vectorlength</span><span class="p">(</span>
-    <span class="n">vqu_pair</span><span class="p">:</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">,</span>
-    <span class="n">number_of_element_repetitions</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">validate_and_update_quantityunitpairs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks whether the number of QuantityUnitPairs in a vector quantity</span>
-<span class="sd">    matches exactly with number of vector elements in the definition and,</span>
-<span class="sd">    optionally, the number of vertical layers.</span>
+<span class="sd">    Validates and, if required, updates vector quantity unit pairs.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        vqu_pair (VectorQuantityUnitPairs): the vector quantity object to be checked.</span>
-<span class="sd">        number_of_element_repetitions (int, optional): Number of times each</span>
-<span class="sd">            vector element is expected to be present in the subsequent</span>
-<span class="sd">            Quantity lines. Typically used for 3D quantities, using the</span>
-<span class="sd">            number of vertical layers.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        bool: True if vqu_pair is valid. False return value is hidden because</span>
-<span class="sd">            an exception will be raised.</span>
+<span class="sd">        values (Dict): Dictionary of values to be used to validate or</span>
+<span class="sd">        update vector quantity unit pairs.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If number of QuantityUnitPair objects in vqu_pair is not equal</span>
-<span class="sd">            to number of element names * number_of_element_repetitions.</span>
+<span class="sd">        ValueError: When a quantity unit pair is found in a vector where it does not belong.</span>
+<span class="sd">        ValueError: When the number of quantity unit pairs in a vectors is not as expected.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: Dictionary of validates values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">quantityunitpairs</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span>
+    <span class="n">vector</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vector&quot;</span><span class="p">)</span>
+    <span class="n">number_of_element_repetitions</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_number_of_repetitions</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-        <span class="n">valid</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="p">)</span>
-        <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">elementname</span><span class="p">)</span> <span class="o">*</span> <span class="n">number_of_element_repetitions</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Incorrect number of quantity unit pairs were found; should match the elements in vectordefinition for </span><span class="si">{</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">vectorname</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="o">+</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;, and </span><span class="si">{</span><span class="n">number_of_element_repetitions</span><span class="si">}</span><span class="s2"> vertical layers&quot;</span>
-                <span class="k">if</span> <span class="n">number_of_element_repetitions</span> <span class="o">&gt;</span> <span class="mi">1</span>
-                <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-            <span class="p">)</span>
-            <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">VectorForcingBase</span><span class="o">.</span><span class="n">_process_vectordefinition_or_check_quantityunitpairs</span><span class="p">(</span>
+        <span class="n">vector</span><span class="p">,</span> <span class="n">quantityunitpairs</span><span class="p">,</span> <span class="n">number_of_element_repetitions</span>
+    <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">valid</span>
+    <span class="k">return</span> <span class="n">values</span>
 </code></pre></div>
         </details>
     </div>
