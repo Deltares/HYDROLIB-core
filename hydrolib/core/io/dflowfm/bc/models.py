@@ -561,12 +561,11 @@ class T3D(VectorForcingBase):
         "vertpositiontype": ["vertical_position_type"],
         "vertpositionindex": ["vertical_position"],
     }
+
     @root_validator(allow_reuse=True, pre=True)
     def rename_keys(cls, values: Dict) -> Dict:
         """Renames some old keywords to the currently supported keywords."""
-        return rename_keys_for_backwards_compatibility(
-            values, cls._keys_to_rename
-        )
+        return rename_keys_for_backwards_compatibility(values, cls._keys_to_rename)
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "vertpositions",
