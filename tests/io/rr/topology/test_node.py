@@ -108,6 +108,7 @@ class TestNodeFile:
         nodefile = NodeFile(node=[node, node, node])
         nodefile.filepath = output_file
 
+        nodefile.serializer_config.float_format = ".3f"
         nodefile.save()
 
         assert_files_equal(output_file, reference_file)

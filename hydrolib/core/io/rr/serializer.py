@@ -4,6 +4,7 @@ import inspect
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Union
 
+from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.utils import get_str_len
 
 
@@ -43,8 +44,6 @@ def serialize(data: Dict) -> str:
     Returns:
         str: The serialized RainfallRunoffModel in .fnm format.
     """
-    if "filepath" in data:
-        del data["filepath"]
 
     values = [_get_string_value(v) for v in data.values()]
     max_len = _calculate_max_value_length(values)
@@ -195,7 +194,7 @@ def serialize(data: Dict) -> str:
     # fmt: on
 
 
-def write(path: Path, data: Dict) -> None:
+def write(path: Path, data: Dict, config: SerializerConfig) -> None:
     """Write the specified model to the specified path.
 
     If the parent of the path does not exist, it will be created.
@@ -203,6 +202,7 @@ def write(path: Path, data: Dict) -> None:
     Args:
         model (RainfallRunoffModel): The model to write to file
         path (Path): The file path to write to.
+        config (SerializerConfig): The serialization configuration.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:

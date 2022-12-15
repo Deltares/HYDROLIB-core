@@ -306,6 +306,9 @@ class TestForcingModel:
         forcingmodel.forcing.append(t3d)
         forcingmodel.forcing.append(qhtable)
         forcingmodel.forcing.append(constant)
+
+        forcingmodel.serializer_config.float_format = ".3f"
+        forcingmodel.serializer_config.float_format_datablock = ".4f"
         forcingmodel.save()
 
         assert bc_file.is_file() == True
@@ -342,6 +345,17 @@ class TestForcingModel:
         assert str_representation_in_list == "[{0}]".format(
             expected_result.format("'<omitted>'")
         )
+
+    def test_forcing_model_correct_default_serializer_config(self):
+        model = ForcingModel()
+
+        assert model.serializer_config.section_indent == 0
+        assert model.serializer_config.property_indent == 0
+        assert model.serializer_config.datablock_indent == 0
+        assert model.serializer_config.float_format == ""
+        assert model.serializer_config.datablock_spacing == 2
+        assert model.serializer_config.comment_delimiter == "#"
+        assert model.serializer_config.skip_empty_properties == True
 
 
 class TestVectorForcingBase:

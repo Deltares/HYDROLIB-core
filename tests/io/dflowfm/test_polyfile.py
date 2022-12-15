@@ -4,6 +4,7 @@ from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
 
+from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.io.dflowfm.polyfile.models import (
     Description,
     Metadata,
@@ -58,7 +59,7 @@ class TestSerializer:
         assert "\n".join(Serializer.serialize_metadata(metadata)) == expected_output
 
     @pytest.mark.parametrize(
-        "point,expected_output",
+        "point,config,expected_output",
         [
             (
                 Point(
@@ -71,6 +72,7 @@ class TestSerializer:
                         5.0,
                     ],
                 ),
+                SerializerConfig(),
                 "    0.0    1.0    2.0    3.0    4.0    5.0",
             ),
             (
@@ -85,7 +87,8 @@ class TestSerializer:
                         5.0,
                     ],
                 ),
-                "    0.0    1.0    2.0    3.0    4.0    5.0",
+                SerializerConfig(float_format=".2f"),
+                "    0.00    1.00    2.00    3.00    4.00    5.00",
             ),
             (
                 Point(
@@ -94,12 +97,15 @@ class TestSerializer:
                     z=None,
                     data=[],
                 ),
+                SerializerConfig(float_format=".1f"),
                 "    0.0    1.0",
             ),
         ],
     )
-    def test_serialize_point(self, point: Point, expected_output: str):
-        assert Serializer.serialize_point(point) == expected_output
+    def test_serialize_point(
+        self, point: Point, config: SerializerConfig, expected_output: str
+    ):
+        assert Serializer.serialize_point(point, config) == expected_output
 
     def test_serialize_poly_object(self):
         poly_object = PolyObject(
@@ -120,7 +126,12 @@ class TestSerializer:
                 3.0    4.0"""
         expected_str = inspect.cleandoc(expected_str)
 
-        assert "\n".join(Serializer.serialize_poly_object(poly_object)) == expected_str
+        assert (
+            "\n".join(
+                Serializer.serialize_poly_object(poly_object, config=SerializerConfig())
+            )
+            == expected_str
+        )
 
 
 class TestBlock:
@@ -691,7 +702,7 @@ def test_write_read_write_should_have_the_same_data():
         ),
     ]
 
-    write_polyfile(path, objects)
+    write_polyfile(path, objects, config=SerializerConfig())
     read_result = read_polyfile(path, has_z_values=True)
 
     assert read_result["objects"] == objects
