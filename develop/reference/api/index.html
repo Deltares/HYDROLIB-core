@@ -1350,11 +1350,31 @@ You're not viewing the latest release version.
     ParsableFileModel
   </a>
   
+    <nav class="md-nav" aria-label="ParsableFileModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.ParsableFileModel.dict" class="md-nav__link">
+    dict()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.ResolveRelativeMode" class="md-nav__link">
     ResolveRelativeMode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.SerializerConfig" class="md-nav__link">
+    SerializerConfig
   </a>
   
 </li>
@@ -2200,11 +2220,31 @@ You're not viewing the latest release version.
     ParsableFileModel
   </a>
   
+    <nav class="md-nav" aria-label="ParsableFileModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.ParsableFileModel.dict" class="md-nav__link">
+    dict()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.ResolveRelativeMode" class="md-nav__link">
     ResolveRelativeMode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.SerializerConfig" class="md-nav__link">
+    SerializerConfig
   </a>
   
 </li>
@@ -5058,6 +5098,38 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.ParsableFileModel.dict" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#hydrolib.core.basemodel.ParsableFileModel.dict" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;exclude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
   </div>
 
     </div>
@@ -5107,6 +5179,56 @@ of subsequent parent model locations.</p>
 
 
   <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.basemodel.SerializerConfig" class="doc doc-heading">
+        <code>
+SerializerConfig            (<a title="hydrolib.core.basemodel.BaseModel" href="#hydrolib.core.basemodel.BaseModel">BaseModel</a>, <span title="abc.ABC">ABC</span>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.basemodel.SerializerConfig" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Class that holds the configuration settings for serialization.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
 
 
 

@@ -1278,6 +1278,32 @@ You're not viewing the latest release version.
     Serializer
   </a>
   
+    <nav class="md-nav" aria-label="Serializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer" class="md-nav__link">
+    XYZSerializer
+  </a>
+  
+    <nav class="md-nav" aria-label="XYZSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer.serialize" class="md-nav__link">
+    serialize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1497,6 +1523,32 @@ You're not viewing the latest release version.
   <a href="#serializer" class="md-nav__link">
     Serializer
   </a>
+  
+    <nav class="md-nav" aria-label="Serializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer" class="md-nav__link">
+    XYZSerializer
+  </a>
+  
+    <nav class="md-nav" aria-label="XYZSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer.serialize" class="md-nav__link">
+    serialize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1830,6 +1882,116 @@ left out.</p>
   <div class="doc doc-children">
 
 
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer" class="doc doc-heading">
+        <code>
+XYZSerializer        </code>
+
+
+
+<a href="#hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer.serialize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dflowfm.xyz.serializer.XYZSerializer.serialize" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Serializes the XYZ data to the file at the specified path.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>path</code></td>
+        <td><code>Path</code></td>
+        <td><p>The path to the destination file.</p></td>
+      </tr>
+      <tr>
+        <td><code>data</code></td>
+        <td><code>Dict</code></td>
+        <td><p>The data to be serialized.</p></td>
+      </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The serialization configuration.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dflowfm/xyz/serializer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Serializes the XYZ data to the file at the specified path.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        path (Path): The path to the destination file.</span>
+<span class="sd">        data (Dict): The data to be serialized.</span>
+<span class="sd">        config (SerializerConfig): The serialization configuration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">space</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
+    <span class="n">format_float</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
+
+    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">]:</span>
+            <span class="n">geometry</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">format_float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">XYZSerializer</span><span class="o">.</span><span class="n">_get_point_values</span><span class="p">(</span><span class="n">point</span><span class="p">)]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">comment</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">geometry</span><span class="si">}</span><span class="s2"> # </span><span class="si">{</span><span class="n">point</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">geometry</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 

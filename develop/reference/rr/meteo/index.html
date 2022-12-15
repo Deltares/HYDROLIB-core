@@ -2859,7 +2859,7 @@ hours and minutes.</p>
 
 
 <h4 id="hydrolib.core.io.rr.meteo.serializer.BuiEventSerializer.serialize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2888,6 +2888,12 @@ hours and minutes.</p>
         <td><p>Dictionary representing precipitation event.</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The serialization configuration.</p></td>
+        <td><em>required</em></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -2908,12 +2914,13 @@ hours and minutes.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a dictionary representing an event into a text block.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        event_data (Dict): Dictionary representing precipitation event.</span>
+<span class="sd">        config (SerializerConfig): The serialization configuration.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Formatted string.</span>
@@ -2934,7 +2941,7 @@ hours and minutes.</p>
     <span class="n">event_data</span><span class="p">[</span>
         <span class="s2">&quot;precipitation_per_timestep&quot;</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_precipitation_per_timestep</span><span class="p">(</span>
-        <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;precipitation_per_timestep&quot;</span><span class="p">]</span>
+        <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;precipitation_per_timestep&quot;</span><span class="p">],</span> <span class="n">config</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;event_idx&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;event_idx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
@@ -2954,7 +2961,7 @@ hours and minutes.</p>
 
 
 <h4 id="hydrolib.core.io.rr.meteo.serializer.BuiEventSerializer.serialize_precipitation_per_timestep" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">serialize_precipitation_per_timestep</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+<code class="highlight language-python"><span class="n">serialize_precipitation_per_timestep</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2984,6 +2991,12 @@ into a single string ready to be mapped.</p>
         <td><p>Data to be mapped.</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The serialization configuration.</p></td>
+        <td><em>required</em></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -3004,20 +3017,27 @@ into a single string ready to be mapped.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">serialize_precipitation_per_timestep</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">serialize_precipitation_per_timestep</span><span class="p">(</span>
+    <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serialized the data containing all the precipitations per timestep (and station)</span>
 <span class="sd">    into a single string ready to be mapped.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data_to_serialize (List[List[str]]): Data to be mapped.</span>
+<span class="sd">        config (SerializerConfig): The serialization configuration.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Serialized string in .bui format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">float_format</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
     <span class="n">serialized_data</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="p">[</span><span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">listed_data</span><span class="p">))</span> <span class="k">for</span> <span class="n">listed_data</span> <span class="ow">in</span> <span class="n">data_to_serialize</span><span class="p">],</span>
+        <span class="p">[</span>
+            <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">float_format</span><span class="p">,</span> <span class="n">listed_data</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">listed_data</span> <span class="ow">in</span> <span class="n">data_to_serialize</span>
+        <span class="p">],</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">serialized_data</span>
 </code></pre></div>
@@ -3230,7 +3250,7 @@ BuiSerializer        </code>
 
 
 <h4 id="hydrolib.core.io.rr.meteo.serializer.BuiSerializer.serialize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">bui_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">bui_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -3261,12 +3281,33 @@ Otherwise it will crash.</p>
         <td><p>Data to serialize.</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The serialization configuration.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>str</code></td>
+      <td><p>The serialized data.</p></td>
+    </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">bui_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">bui_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats the bui_template with the content of the given data.</span>
 <span class="sd">    NOTE: It requires that caller injects file_path into bui_data prior to this call.</span>
@@ -3274,13 +3315,17 @@ Otherwise it will crash.</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bui_data (Dict): Data to serialize.</span>
+<span class="sd">        config (SerializerConfig): The serialization configuration.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The serialized data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;datetime_now&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%y %H:%M:%S&quot;</span><span class="p">)</span>
     <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;name_of_stations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_stations_ids</span><span class="p">(</span>
         <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;name_of_stations&quot;</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;precipitation_events&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_event_list</span><span class="p">(</span>
-        <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;precipitation_events&quot;</span><span class="p">]</span>
+        <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;precipitation_events&quot;</span><span class="p">],</span> <span class="n">config</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">bui_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">bui_data</span><span class="p">)</span>
 </code></pre></div>
@@ -3298,7 +3343,7 @@ Otherwise it will crash.</p>
 
 
 <h4 id="hydrolib.core.io.rr.meteo.serializer.BuiSerializer.serialize_event_list" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">serialize_event_list</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+<code class="highlight language-python"><span class="n">serialize_event_list</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -3327,6 +3372,12 @@ Otherwise it will crash.</p>
         <td><p>Dictionary containing list of events.</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The serialization configuration.</p></td>
+        <td><em>required</em></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -3347,12 +3398,15 @@ Otherwise it will crash.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">serialize_event_list</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">serialize_event_list</span><span class="p">(</span>
+    <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a event list dictionary into a single text block.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data_to_serialize (Dict): Dictionary containing list of events.</span>
+<span class="sd">        config (SerializerConfig): The serialization configuration.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Text block representing all precipitation events.</span>
@@ -3360,7 +3414,7 @@ Otherwise it will crash.</p>
     <span class="n">serialized_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">n_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">):</span>
         <span class="n">event</span><span class="p">[</span><span class="s2">&quot;event_idx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_event</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">serialized_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+        <span class="n">serialized_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialized_list</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -3462,7 +3516,7 @@ Otherwise it will crash.</p>
 
 
 <h3 id="hydrolib.core.io.rr.meteo.serializer.write_bui_file" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">write_bui_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<code class="highlight language-python"><span class="n">write_bui_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
 
 
 <a href="#hydrolib.core.io.rr.meteo.serializer.write_bui_file" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3494,20 +3548,27 @@ Otherwise it will crash.</p>
         <td><p>Data to serialize into the file.</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>SerializerConfig</code></td>
+        <td><p>The serialization configuration.</p></td>
+        <td><em>required</em></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/io/rr/meteo/serializer.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_bui_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_bui_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes a .bui file in the given path based on the data given in a dictionary.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (Path): Path where to output the text.</span>
 <span class="sd">        data (Dict): Data to serialize into the file.</span>
+<span class="sd">        config (SerializerConfig): The serialization configuration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>  <span class="c1"># This is redundant as already exists in the data.</span>
-    <span class="n">serialized_bui_data</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">serialized_bui_data</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
     <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">serialized_bui_data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
