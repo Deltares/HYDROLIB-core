@@ -124,7 +124,7 @@ class VectorQuantityUnitPairs(BaseModel):
 
     @root_validator
     @classmethod
-    def _validator_quantity_element_names(cls, values: Dict):
+    def _validate_quantity_element_names(cls, values: Dict):
         for idx, name in enumerate(
             [qup.quantity for qup in values["quantityunitpair"]]
         ):
@@ -282,18 +282,32 @@ class VectorForcingBase(ForcingBase):
 
     @root_validator(pre=True)
     def validate_and_update_quantityunitpairs(cls, values: Dict) -> Dict:
+        """
+        Validates and, if required, updates vector quantity unit pairs.
+
+        Args:
+            values (Dict): Dictionary of values to be used to validate or
+            update vector quantity unit pairs.
+
+        Raises:
+            ValueError: When a quantity unit pair is found in a vector where it does not belong.
+            ValueError: When the number of quantity unit pairs in a vectors is not as expected.
+
+        Returns:
+            Dict: Dictionary of validates values.
+        """
         quantityunitpairs = values["quantityunitpair"]
         vector = values.get("vector")
         number_of_element_repetitions = cls.get_number_of_repetitions(values)
 
-        VectorForcingBase.process_vectordefinition_or_check_quantityunitpairs(
+        VectorForcingBase._process_vectordefinition_or_check_quantityunitpairs(
             vector, quantityunitpairs, number_of_element_repetitions
         )
 
         return values
 
     @staticmethod
-    def process_vectordefinition_or_check_quantityunitpairs(
+    def _process_vectordefinition_or_check_quantityunitpairs(
         vectordefs: Optional[List[str]],
         quantityunitpairs: List[ScalarOrVectorQUP],
         number_of_element_repetitions: int,
@@ -319,19 +333,19 @@ class VectorForcingBase(ForcingBase):
             map(lambda qup: isinstance(qup, VectorQuantityUnitPairs), quantityunitpairs)
         ):
             # Vector definition line still must be processed and VectorQUPs still created.
-            VectorForcingBase.validate_vectordefinition_and_update_quantityunitpairs(
+            VectorForcingBase._validate_vectordefinition_and_update_quantityunitpairs(
                 vectordefs, quantityunitpairs, number_of_element_repetitions
             )
         else:
             # VectorQUPs already present; directly validate their vector length.
             for qup in quantityunitpairs:
                 if isinstance(qup, VectorQuantityUnitPairs):
-                    VectorForcingBase.validate_vectorlength(
+                    VectorForcingBase._validate_vectorlength(
                         qup, number_of_element_repetitions
                     )
 
     @staticmethod
-    def validate_vectordefinition_and_update_quantityunitpairs(
+    def _validate_vectordefinition_and_update_quantityunitpairs(
         vectordefs: Optional[List[str]],
         quantityunitpairs: List[ScalarOrVectorQUP],
         number_of_element_repetitions: int,
@@ -394,7 +408,7 @@ class VectorForcingBase(ForcingBase):
                     # so keep it as a regular (scalar) QuantityUnitPair.
                     quantityunitpairs_with_vectors.append(qu_pair)
 
-            if VectorForcingBase.validate_vectorlength(
+            if VectorForcingBase._validate_vectorlength(
                 vqu_pair, number_of_element_repetitions
             ):
                 # This VectorQuantityUnitPairs is now complete; add it to result list.
@@ -403,7 +417,7 @@ class VectorForcingBase(ForcingBase):
         quantityunitpairs[:] = quantityunitpairs_with_vectors
 
     @staticmethod
-    def validate_vectorlength(
+    def _validate_vectorlength(
         vqu_pair: VectorQuantityUnitPairs,
         number_of_element_repetitions,
     ) -> bool:
