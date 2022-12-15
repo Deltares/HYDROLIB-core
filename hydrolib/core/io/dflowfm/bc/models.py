@@ -26,7 +26,7 @@ from hydrolib.core.io.dflowfm.ini.models import (
     INIModel,
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
@@ -256,8 +256,8 @@ class ForcingBase(DataBlockINIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    def _to_section(self) -> Section:
-        section = super()._to_section()
+    def _to_section(self, config: DataBlockINIBasedSerializerConfig) -> Section:
+        section = super()._to_section(config)
 
         for quantity in self.quantityunitpair:
             for prop in quantity._to_properties():
@@ -777,6 +777,12 @@ class ForcingModel(INIModel):
 
     _split_to_list = make_list_validator("forcing")
 
+    serializer_config: DataBlockINIBasedSerializerConfig = (
+        DataBlockINIBasedSerializerConfig(
+            section_indent=0, property_indent=0, datablock_indent=0
+        )
+    )
+
     @classmethod
     def _ext(cls) -> str:
         return ".bc"
@@ -801,13 +807,6 @@ class ForcingModel(INIModel):
                 parser.feed_line(line)
 
         return parser.finalize().flatten(True, False)
-
-    def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-        config = SerializerConfig(
-            section_indent=0, property_indent=0, datablock_indent=0
-        )
-        write_ini(self._resolved_filepath, self._to_document(), config=config)
 
 
 class RealTime(str, Enum):

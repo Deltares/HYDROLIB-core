@@ -8,8 +8,13 @@ from hydrolib.core.basemodel import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.io.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
-from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.models import (
+    INIBasedModel,
+    INIGeneral,
+    INIModel,
+    INISerializerConfig,
+)
+from hydrolib.core.io.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     get_split_string_on_delimiter_validator,
@@ -199,7 +204,9 @@ class ExtModel(INIModel):
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = []
     lateral: List[Lateral] = []
-
+    serializer_config: INISerializerConfig = INISerializerConfig(
+        section_indent=0, property_indent=0
+    )
     _split_to_list = make_list_validator("boundary", "lateral")
 
     @classmethod
@@ -209,8 +216,3 @@ class ExtModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "bnd"
-
-    def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-        config = SerializerConfig(section_indent=0, property_indent=0)
-        write_ini(self._resolved_filepath, self._to_document(), config=config)

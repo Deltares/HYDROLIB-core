@@ -5,14 +5,24 @@ also represents a file on disk.
 
 """
 import logging
-import os
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
 from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+)
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
@@ -1003,6 +1013,35 @@ class FileModel(BaseModel, ABC):
         return str(self.filepath if self.filepath else "")
 
 
+class SerializerConfig(BaseModel, ABC):
+    """Class that holds the configuration settings for serialization."""
+
+    float_format: str = ""
+    """str: The string format that will be used for float serialization. If empty, the original number will be serialized. Defaults to an empty string.
+        
+        Examples:
+            Input value = 123.456
+
+            Format    | Output          | Description
+            -------------------------------------------------------------------------------------------------------------------------------------
+            ".0f"     | 123             | Format float with 0 decimal places.
+            "f"       | 123.456000      | Format float with default (=6) decimal places.
+            ".2f"     | 123.46          | Format float with 2 decimal places.
+            "+.1f"    | +123.5          | Format float with 1 decimal place with a + or  sign.
+            "e"       | 1.234560e+02    | Format scientific notation with the letter 'e' with default (=6) decimal places.
+            "E"       | 1.234560E+02    | Format scientific notation with the letter 'E' with default (=6) decimal places.
+            ".3e"     | 1.235e+02       | Format scientific notation with the letter 'e' with 3 decimal places.
+            "<15"     | 123.456         | Left aligned in space with width 15
+            "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
+            ">15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
+            "*>15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
+            "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.     
+            ".3%"     | 12345.600%      | Format percentage with 3 decimal places.
+
+            More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
+        """
+
+
 class ParsableFileModel(FileModel):
     """ParsableFileModel defines a FileModel which can be parsed
     and serialized with a serializer .
@@ -1020,6 +1059,8 @@ class ParsableFileModel(FileModel):
     child can also opt to overwrite the _serialize and _parse methods,
     to skip the _get_serializer and _get_parser methods respectively.
     """
+
+    serializer_config: SerializerConfig = SerializerConfig()
 
     def _load(self, filepath: Path) -> Dict:
         # TODO Make this lazy in some cases so it doesn't become slow
@@ -1044,7 +1085,16 @@ class ParsableFileModel(FileModel):
             return
 
         path.parent.mkdir(parents=True, exist_ok=True)
-        self._get_serializer()(path, data)
+        self._get_serializer()(path, data, self.serializer_config)
+
+    def dict(self, *args, **kwargs):
+        kwargs["exclude"] = self._exclude_fields()
+        return super().dict(*args, **kwargs)
+
+    @classmethod
+    def _exclude_fields(cls) -> Set[str]:
+        """A set containing the field names that should not be serialized."""
+        return {"filepath", "serializer_config"}
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
@@ -1064,7 +1114,7 @@ class ParsableFileModel(FileModel):
         return ".test"
 
     @abstractclassmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict], None]:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return DummySerializer.serialize
 
     @abstractclassmethod

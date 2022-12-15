@@ -583,3 +583,15 @@ class TestModels:
                     created_boundary.dict()["locationfile"]["filepath"]
                     == expected_locationfile
                 )
+
+    class TestExtModel:
+        def test_ext_model_correct_default_serializer_config(self):
+            model = ExtModel()
+
+            assert model.serializer_config.section_indent == 0
+            assert model.serializer_config.property_indent == 0
+            assert model.serializer_config.datablock_indent == 8
+            assert model.serializer_config.float_format == ""
+            assert model.serializer_config.datablock_spacing == 2
+            assert model.serializer_config.comment_delimiter == "#"
+            assert model.serializer_config.skip_empty_properties == True
