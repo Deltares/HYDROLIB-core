@@ -1,6 +1,6 @@
 import inspect
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Literal
 
 import pytest
 from pydantic.error_wrappers import ValidationError
@@ -18,6 +18,7 @@ from hydrolib.core.io.dflowfm.bc.models import (
     QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
+    VectorForcingBase,
     VectorQuantityUnitPairs,
     VerticalInterpolation,
     VerticalPositionType,
@@ -38,6 +39,12 @@ TEST_BC_FILE = "test.bc"
 TEST_BC_FILE_KEYWORDS_WITH_SPACES = "t3d_backwards_compatibility.bc"
 
 TEST_TIME_UNIT = "minutes since 2015-01-01 00:00:00"
+
+INCORRECT_NUMBER_QUP_IN_VECTOR_WITH_THREE_LAYERS_ERROR = (
+    "Incorrect number of quantity unit pairs were found; "
+    + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
+    + "and 3 vertical layers."
+)
 
 
 class TestQuantityUnitPair:
@@ -63,6 +70,7 @@ class TestTimeSeries:
         forcing = TimeSeries(**_create_time_series_values())
 
         assert isinstance(forcing, TimeSeries)
+        assert isinstance(forcing, VectorForcingBase)
         assert forcing.name == "boundary_timeseries"
         assert forcing.offset == 1.23
         assert forcing.factor == 2.34
@@ -169,7 +177,7 @@ class TestTimeSeries:
             TimeSeries(**values)
 
         expected_error_mssg = (
-            f"Incorrect number of quantity unit pairs were found; "
+            "Incorrect number of quantity unit pairs were found; "
             + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd."
         )
 
@@ -336,6 +344,116 @@ class TestForcingModel:
         )
 
 
+class TestVectorForcingBase:
+    class VectorForcingTest(VectorForcingBase):
+        function: Literal["testfunction"] = "testfunction"
+
+        @classmethod
+        def get_number_of_repetitions(cls, values: Dict):
+            return 2
+
+    incorrect_number_of_qups_error = (
+        "Incorrect number of quantity unit pairs were found; should match the elements"
+        + " in vectordefinition for uxuyadvectionvelocitybnd, and 2 vertical layers."
+    )
+
+    def test_valid_vectorquantityunitpair_does_not_throw(self):
+        values = _create_valid_vectorforcingtest_values()
+
+        vector_forcing = TestVectorForcingBase.VectorForcingTest(**values)
+
+        assert len(vector_forcing.quantityunitpair) == 2
+
+        vectorquantityunitpairs = vector_forcing.quantityunitpair[1]
+        assert vectorquantityunitpairs.elementname == ["ux", "uy"]
+        assert vectorquantityunitpairs.vectorname == "uxuyadvectionvelocitybnd"
+        assert len(vectorquantityunitpairs.quantityunitpair) == 4
+
+    def test_too_few_quantityunitpairs_raises_error(self):
+        values = _create_valid_vectorforcingtest_values()
+
+        values["quantityunitpair"][1].quantityunitpair.pop(0)
+
+        with pytest.raises(ValidationError) as error:
+            TestVectorForcingBase.VectorForcingTest(**values)
+
+        assert TestVectorForcingBase.incorrect_number_of_qups_error in str(error.value)
+
+    def test_too_many_quantityunitpairs_raises_error(self):
+        values = _create_valid_vectorforcingtest_values()
+
+        qup = _create_quantityunitpair("ux", "randomUnit", 3)
+        values["quantityunitpair"][1].quantityunitpair.append(qup)
+
+        with pytest.raises(ValidationError) as error:
+            TestVectorForcingBase.VectorForcingTest(**values)
+
+        assert TestVectorForcingBase.incorrect_number_of_qups_error in str(error.value)
+
+    def test_too_few_quanityunitpairs_with_vector_raises_error(self):
+        values = _create_valid_vectorforcingtest_values_that_still_have_to_be_parsed()
+
+        values["quantity"].pop(0)
+        values["unit"].pop(0)
+
+        with pytest.raises(ValidationError) as error:
+            TestVectorForcingBase.VectorForcingTest(**values)
+
+        assert TestVectorForcingBase.incorrect_number_of_qups_error in str(error.value)
+
+    def test_multiple_vectors_are_parsed_correctly(self):
+        values = (
+            _create_valid_vectorforcingtest_values_with_multiple_vectors_that_still_have_to_be_parsed()
+        )
+
+        vector_forcing = TestVectorForcingBase.VectorForcingTest(**values)
+
+        first_vector_qup = vector_forcing.quantityunitpair[0]
+        assert len(first_vector_qup.quantityunitpair) == 4
+        assert first_vector_qup.elementname == ["ux", "uy"]
+        assert first_vector_qup.vectorname == "uxuyadvectionvelocitybnd"
+        assert first_vector_qup.quantityunitpair[0].quantity == "ux"
+        assert first_vector_qup.quantityunitpair[0].unit == "m s-1"
+        assert first_vector_qup.quantityunitpair[1].quantity == "ux"
+        assert first_vector_qup.quantityunitpair[1].unit == "m s-1"
+        assert first_vector_qup.quantityunitpair[2].quantity == "uy"
+        assert first_vector_qup.quantityunitpair[2].unit == "m s-1"
+        assert first_vector_qup.quantityunitpair[3].quantity == "uy"
+        assert first_vector_qup.quantityunitpair[3].unit == "m s-1"
+
+        second_vector_qup = vector_forcing.quantityunitpair[1]
+        assert len(second_vector_qup.quantityunitpair) == 4
+        assert second_vector_qup.elementname == ["salinity", "waterlevelbnd"]
+        assert second_vector_qup.vectorname == "randomvector"
+        assert second_vector_qup.quantityunitpair[0].quantity == "salinity"
+        assert second_vector_qup.quantityunitpair[0].unit == "ppt"
+        assert second_vector_qup.quantityunitpair[1].quantity == "salinity"
+        assert second_vector_qup.quantityunitpair[1].unit == "ppt"
+        assert second_vector_qup.quantityunitpair[2].quantity == "waterlevelbnd"
+        assert second_vector_qup.quantityunitpair[2].unit == "m"
+        assert second_vector_qup.quantityunitpair[3].quantity == "waterlevelbnd"
+        assert second_vector_qup.quantityunitpair[3].unit == "m"
+
+    @pytest.mark.parametrize(
+        "bc_file_name",
+        [
+            "FlowFM_boundaryconditions2d_and_vectors.bc",
+            "FlowFM_boundaryconditions3d_and_vectors.bc",
+        ],
+    )
+    def test_load_and_save_model_with_vector_quantities(self, bc_file_name: str):
+        bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
+        output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
+        reference_file = test_reference_dir / "bc" / bc_file_name
+
+        forcingmodel = ForcingModel(bc_file)
+
+        forcingmodel.filepath = output_file
+        forcingmodel.save()
+
+        assert_files_equal(output_file, reference_file, [0])
+
+
 class TestT3D:
     @pytest.mark.parametrize(
         "vertical_position_type, exp_vertical_position_type",
@@ -357,6 +475,7 @@ class TestT3D:
 
         t3d = T3D(**values)
 
+        assert isinstance(t3d, VectorForcingBase)
         assert t3d.name == "boundary_t3d"
         assert t3d.function == "t3d"
         assert t3d.offset == 1.23
@@ -501,7 +620,7 @@ class TestT3D:
             str(i + onebased_index_offset)
             for i in range(number_of_quantities_and_units)
         ]
-        values["vertpositionindex"] = [None] + [
+        values["vertpositionindex"] = [
             str(i + onebased_index_offset)
             for i in range(number_of_verticalpositionindexes)
         ]
@@ -640,6 +759,25 @@ class TestT3D:
         assert t3d.datablock[1] == [60, 4, 5, 6, 40, 50, 60]
         assert t3d.datablock[2] == [120, 7, 8, 9, 70, 80, 90]
 
+    def test_initialize_t3d_with_wrong_amount_vectorquantities_but_multiple_of_number_of_elements_in_vector(
+        self,
+    ):
+        values = _create_t3d_vectorvalues()
+
+        # We have a vector with 2 elements and 6 quantityunitpairs.
+        # If we delete 2 pairs, we still have a multiple of the number of elements,
+        # so it should pass the vectorbase validation.
+        # But we no longer have the expected number of pairs, so it should fail the T3D validation.
+        del values["quantityunitpair"][1].quantityunitpair[5]
+        del values["quantityunitpair"][1].quantityunitpair[4]
+
+        with pytest.raises(ValueError) as error:
+            T3D(**values)
+
+        assert INCORRECT_NUMBER_QUP_IN_VECTOR_WITH_THREE_LAYERS_ERROR in str(
+            error.value
+        )
+
     def test_initialize_t3d_with_wrong_amount_vectorquantities(
         self,
     ):
@@ -649,12 +787,9 @@ class TestT3D:
         with pytest.raises(ValueError) as error:
             T3D(**values)
 
-        expected_error_mssg = (
-            f"Incorrect number of quantity unit pairs were found; "
-            + "should match the elements in vectordefinition for uxuyadvectionvelocitybnd, "
-            + "and 3 vertical layers."
+        assert INCORRECT_NUMBER_QUP_IN_VECTOR_WITH_THREE_LAYERS_ERROR in str(
+            error.value
         )
-        assert expected_error_mssg in str(error.value)
 
     def test_load_forcing_model(self):
         bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
@@ -780,26 +915,7 @@ class TestT3D:
         assert quantityunitpairs[1].quantityunitpair[4].unit == "-"
 
 
-class TestVectorBC:
-    @pytest.mark.parametrize(
-        "bc_file_name",
-        [
-            "FlowFM_boundaryconditions2d_and_vectors.bc",
-            "FlowFM_boundaryconditions3d_and_vectors.bc",
-        ],
-    )
-    def test_load_and_save_model_with_vector_quantities(self, bc_file_name: str):
-        bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
-        output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
-        reference_file = test_reference_dir / "bc" / bc_file_name
-
-        forcingmodel = ForcingModel(bc_file)
-
-        forcingmodel.filepath = output_file
-        forcingmodel.save()
-
-        assert_files_equal(output_file, reference_file, [0])
-
+class TestVectorQuantityUnitPairs:
     def test_initialize_vectorqup_with_wrongly_named_vectorquantities(
         self,
     ):
@@ -996,5 +1112,63 @@ def _create_constant_values():
         ],
         datablock=[
             ["3.45"],
+        ],
+    )
+
+
+def _create_valid_vectorforcingtest_values():
+    return dict(
+        name="test",
+        function="testfunction",
+        quantityunitpair=[
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
+            _create_vectorqup(**_create_vectorvalues(2)),
+        ],
+        datablock=[
+            ["0", "1.23", "12.3"],
+            ["60", "2.34", "23.4"],
+            ["120", "3.45", "34.5"],
+        ],
+    )
+
+
+def _create_valid_vectorforcingtest_values_that_still_have_to_be_parsed():
+    return dict(
+        name="test",
+        function="testfunction",
+        vector="uxuyadvectionvelocitybnd:ux,uy",
+        quantity=["ux", "ux", "uy", "uy"],
+        unit=["m s-1", "m s-1", "m s-1", "m s-1"],
+        datablock=[
+            ["0", "1.23", "12.3"],
+            ["60", "2.34", "23.4"],
+            ["120", "3.45", "34.5"],
+        ],
+    )
+
+
+def _create_valid_vectorforcingtest_values_with_multiple_vectors_that_still_have_to_be_parsed():
+    return dict(
+        name="test",
+        function="testfunction",
+        vector=[
+            "uxuyadvectionvelocitybnd:ux,uy",
+            "randomvector:salinity,waterlevelbnd",
+        ],
+        quantity=[
+            "ux",
+            "ux",
+            "uy",
+            "uy",
+            "salinity",
+            "salinity",
+            "waterlevelbnd",
+            "waterlevelbnd",
+        ],
+        unit=["m s-1", "m s-1", "m s-1", "m s-1", "ppt", "ppt", "m", "m"],
+        datablock=[
+            ["0", "1.23", "12.3"],
+            ["60", "2.34", "23.4"],
+            ["120", "3.45", "34.5"],
         ],
     )

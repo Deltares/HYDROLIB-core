@@ -266,8 +266,11 @@ def validate_conditionally(
     return values
 
 
-def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str):
-    """Gets a value that corresponds with the default field value of one of the subclasses.
+def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str) -> str:
+    """
+    Gets a value that corresponds with the default field value of one of the subclasses.
+    If the subclass doesn't have the specified field, it will look into its own subclasses
+    recursively for the specified fieldname.
 
     Args:
         cls (Type[BaseModel]): The parent model type.
@@ -275,14 +278,91 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
         value (str): The value to compare with.
 
     Returns:
-        [type]: The field default that corresponds to the value.
+        str: The field default that corresponds to the value. If nothing is found return the input value.
     """
+    # Immediately check in direct subclasses, not in base cls itself:
     for c in cls.__subclasses__():
-        default = c.__fields__.get(fieldname).default
-        if default.lower() == value.lower():
+        default = _try_get_default_value(c, fieldname, value)
+        if default is not None:
             return default
 
+    # No matching default was found, return input value:
     return value
+
+
+def _try_get_default_value(
+    c: Type[BaseModel], fieldname: str, value: str
+) -> Optional[str]:
+    """Helper subroutine to get the default value for a particular field in
+    the given class or any of its descendant classes, if it matches the input
+    value (case insensitive).
+
+    This method recurses depth-first topdown into the class'es subclasses.
+
+        c (Type[BaseModel]): The base model type where the search starts.
+        fieldname (str): The field name for which retrieve the default for.
+        value (str): The value to compare with.
+
+    Returns:
+        Optional[str]: The field default that corresponds to the value. If nothing is found return None.
+    """
+    if (field := c.__fields__.get(fieldname)) is None:
+        return None
+
+    default = field.default
+
+    if default is not None and default.lower() == value.lower():
+        # If this class's default matches, directly return it to end the recursion.
+        return default
+
+    for sc in c.__subclasses__():
+        default = _try_get_default_value(sc, fieldname, value)
+        if default is not None:
+            return default
+
+    # Nothing found under c, return None to caller (e.g., to continue recursion).
+    return None
+
+
+def get_type_based_on_subclass_default_value(
+    cls: Type, fieldname: str, value: str
+) -> Optional[Type]:
+    """
+    Gets the type of the first subclass where the default value of the fieldname is equal
+    to the provided value. If there is no match in the subclass, it will recursively search
+    in the subclasses of the subclass.
+
+    Args:
+        cls (Type): The base type.
+        fieldname (str): The field name for which retrieve the default for.
+        value (str): The value to compare with.
+
+    Returns:
+        [type]: The type of the first subclass that has a default value for the provided fieldname
+        equal to the provided value. Returns None if the fieldname is not found in the subclasses
+        or if no match was found.
+    """
+    for c in cls.__subclasses__():
+        subclass_type = _get_type_based_on_default_value(c, fieldname, value)
+        if subclass_type is not None:
+            return subclass_type
+    return None
+
+
+def _get_type_based_on_default_value(cls, fieldname, value) -> Optional[Type]:
+    if (field := cls.__fields__.get(fieldname)) is None:
+        return None
+
+    default = field.default
+    if default is not None and default.lower() == value.lower():
+        return cls
+
+    for sc in cls.__subclasses__():
+        subclass_type = _get_type_based_on_default_value(sc, fieldname, value)
+        if subclass_type is not None:
+            return subclass_type
+
+    return None
 
 
 class LocationValidationConfiguration(BaseModel):
