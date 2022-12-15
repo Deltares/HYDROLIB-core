@@ -40,8 +40,8 @@ class NodeFileSerializer:
         px = node["px"]
         py = node["py"]
 
-        format = lambda v: f"{v:{config.float_format}}"
-        return f"id '{identifier}' nm '{nm}' ri '{ri}' mt 1 '{mt}' nt {nt} ObID '{obid}' px {format(px)} py {format(py)}"
+        float_format = lambda v: f"{v:{config.float_format}}"
+        return f"id '{identifier}' nm '{nm}' ri '{ri}' mt 1 '{mt}' nt {nt} ObID '{obid}' px {float_format(px)} py {float_format(py)}"
 
 
 class LinkFileSerializer:

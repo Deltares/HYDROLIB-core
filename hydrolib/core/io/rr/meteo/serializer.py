@@ -130,11 +130,11 @@ class BuiEventSerializer:
         Returns:
             str: Serialized string in .bui format.
         """
-        format = lambda v: f"{v:{config.float_format}}"
+        float_format = lambda v: f"{v:{config.float_format}}"
         serialized_data = str.join(
             "\n",
             [
-                str.join(" ", map(format, listed_data))
+                str.join(" ", map(float_format, listed_data))
                 for listed_data in data_to_serialize
             ],
         )

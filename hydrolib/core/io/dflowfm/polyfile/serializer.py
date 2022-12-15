@@ -55,9 +55,9 @@ class Serializer:
             str: The serialised equivalent of this Point
         """
         space = 4 * " "
-        format = lambda v: f"{v:{config.float_format}}"
+        float_format = lambda v: f"{v:{config.float_format}}"
         return space + space.join(
-            format(v) for v in Serializer._get_point_values(point)
+            float_format(v) for v in Serializer._get_point_values(point)
         )
 
     @staticmethod
