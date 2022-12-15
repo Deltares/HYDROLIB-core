@@ -1227,6 +1227,19 @@ You're not viewing the latest release version.
     ObservationPoint
   </a>
   
+    <nav class="md-nav" aria-label="ObservationPoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.obs.models.ObservationPoint.validate_that_location_specification_is_correct" class="md-nav__link">
+    validate_that_location_specification_is_correct()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1387,6 +1400,19 @@ You're not viewing the latest release version.
     ObservationPoint
   </a>
   
+    <nav class="md-nav" aria-label="ObservationPoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.obs.models.ObservationPoint.validate_that_location_specification_is_correct" class="md-nav__link">
+    validate_that_location_specification_is_correct()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1496,6 +1522,45 @@ ObservationPoint            (<a title="hydrolib.core.io.dflowfm.ini.models.INIBa
 
 
 
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.dflowfm.obs.models.ObservationPoint.validate_that_location_specification_is_correct" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dflowfm.obs.models.ObservationPoint.validate_that_location_specification_is_correct" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Validates that the correct location specification is given.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dflowfm/obs/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">validate_location_specification</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
+            <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate_num_coordinates</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">fields</span><span class="o">=</span><span class="n">LocationValidationFieldNames</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

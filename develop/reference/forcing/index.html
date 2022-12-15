@@ -1228,6 +1228,13 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.bc.models.T3D.rename_keys" class="md-nav__link">
+    rename_keys()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1271,6 +1278,19 @@ You're not viewing the latest release version.
   <a href="#hydrolib.core.io.dflowfm.bc.models.TimeSeries" class="md-nav__link">
     TimeSeries
   </a>
+  
+    <nav class="md-nav" aria-label="TimeSeries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.bc.models.TimeSeries.rename_keys" class="md-nav__link">
+    rename_keys()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1793,6 +1813,13 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.bc.models.T3D.rename_keys" class="md-nav__link">
+    rename_keys()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1836,6 +1863,19 @@ You're not viewing the latest release version.
   <a href="#hydrolib.core.io.dflowfm.bc.models.TimeSeries" class="md-nav__link">
     TimeSeries
   </a>
+  
+    <nav class="md-nav" aria-label="TimeSeries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.bc.models.TimeSeries.rename_keys" class="md-nav__link">
+    rename_keys()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2813,6 +2853,39 @@ T3D            (<a title="hydrolib.core.io.dflowfm.bc.models.VectorForcingBase" 
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.dflowfm.bc.models.T3D.rename_keys" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">rename_keys</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dflowfm.bc.models.T3D.rename_keys" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Renames some old keywords to the currently supported keywords.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dflowfm/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">rename_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Renames some old keywords to the currently supported keywords.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">rename_keys_for_backwards_compatibility</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_keys_to_rename</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
 
 
 
@@ -2971,6 +3044,44 @@ TimeSeries            (<a title="hydrolib.core.io.dflowfm.bc.models.VectorForcin
 
 
 
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.dflowfm.bc.models.TimeSeries.rename_keys" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">rename_keys</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dflowfm.bc.models.TimeSeries.rename_keys" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Renames some old keywords to the currently supported keywords.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dflowfm/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">rename_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Renames some old keywords to the currently supported keywords.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">rename_keys_for_backwards_compatibility</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;timeinterpolation&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;time_interpolation&quot;</span><span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

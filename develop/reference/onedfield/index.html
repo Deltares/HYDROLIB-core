@@ -1185,6 +1185,26 @@ You're not viewing the latest release version.
     OneDFieldBranch
   </a>
   
+    <nav class="md-nav" aria-label="OneDFieldBranch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_chainage" class="md-nav__link">
+    check_list_length_chainage()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_values" class="md-nav__link">
+    check_list_length_values()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1394,6 +1414,26 @@ You're not viewing the latest release version.
     OneDFieldBranch
   </a>
   
+    <nav class="md-nav" aria-label="OneDFieldBranch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_chainage" class="md-nav__link">
+    check_list_length_chainage()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_values" class="md-nav__link">
+    check_list_length_values()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1503,6 +1543,83 @@ OneDFieldBranch            (<a title="hydrolib.core.io.dflowfm.ini.models.INIBas
 
 
 
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_chainage" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">check_list_length_chainage</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_chainage" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Validates that the length of the chainage field is as expected.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dflowfm/onedfield/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_list_length_chainage</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validates that the length of the chainage field is as expected.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">validate_correct_length</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">,</span>
+        <span class="s2">&quot;chainage&quot;</span><span class="p">,</span>
+        <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlocations&quot;</span><span class="p">,</span>
+        <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_values" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">check_list_length_values</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.io.dflowfm.onedfield.models.OneDFieldBranch.check_list_length_values" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Validates that the length of the values field is as expected.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/io/dflowfm/onedfield/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_list_length_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validates that the length of the values field is as expected.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">validate_correct_length</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">,</span>
+        <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+        <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlocations&quot;</span><span class="p">,</span>
+        <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
