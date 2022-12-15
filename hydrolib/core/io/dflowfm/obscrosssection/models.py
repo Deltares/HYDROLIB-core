@@ -1,12 +1,13 @@
-from typing import List, Literal, Optional
+from typing import Dict, List, Literal, Optional
 
+from pydantic.class_validators import root_validator
 from pydantic.fields import Field
 
 from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
+    validate_location_specification,
 )
 
 
@@ -71,11 +72,15 @@ class ObservationCrossSection(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    _location_validator = get_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(
-            validate_node=False, minimum_num_coordinates=2
+    @root_validator(allow_reuse=True)
+    def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+        """Validates that the correct location specification is given."""
+        return validate_location_specification(
+            values,
+            config=LocationValidationConfiguration(
+                validate_node=False, minimum_num_coordinates=2
+            ),
         )
-    )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")

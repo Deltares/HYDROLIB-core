@@ -30,10 +30,10 @@ from hydrolib.core.io.dflowfm.ini.serializer import DataBlockINIBasedSerializerC
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
-    get_key_renaming_root_validator,
     get_split_string_on_delimiter_validator,
     get_type_based_on_subclass_default_value,
     make_list_validator,
+    rename_keys_for_backwards_compatibility,
 )
 from hydrolib.core.utils import to_list
 
@@ -486,11 +486,15 @@ class TimeSeries(VectorForcingBase):
         "timeinterpolation", enum=TimeInterpolation
     )
 
-    _key_renaming_root_validator = get_key_renaming_root_validator(
-        {
-            "timeinterpolation": ["time_interpolation"],
-        }
-    )
+    @root_validator(allow_reuse=True, pre=True)
+    def rename_keys(cls, values: Dict) -> Dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return rename_keys_for_backwards_compatibility(
+            values,
+            {
+                "timeinterpolation": ["time_interpolation"],
+            },
+        )
 
 
 class Harmonic(ForcingBase):
@@ -558,7 +562,10 @@ class T3D(VectorForcingBase):
         "vertpositionindex": ["vertical_position"],
     }
 
-    _key_renaming_root_validator = get_key_renaming_root_validator(_keys_to_rename)
+    @root_validator(allow_reuse=True, pre=True)
+    def rename_keys(cls, values: Dict) -> Dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return rename_keys_for_backwards_compatibility(values, cls._keys_to_rename)
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "vertpositions",
