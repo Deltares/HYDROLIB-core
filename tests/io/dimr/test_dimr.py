@@ -131,7 +131,9 @@ def test_serialize():
 def test_serialize_float_are_formatted():
     data = {"some_key": 1.23456}
 
-    file_path = Path(test_output_dir / "dimr" / "test_serialize_float_are_formatted.xml")
+    file_path = Path(
+        test_output_dir / "dimr" / "test_serialize_float_are_formatted.xml"
+    )
     reference_file = Path(
         test_reference_dir / "dimr" / "test_serialize_float_are_formatted.xml"
     )
