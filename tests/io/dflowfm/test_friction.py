@@ -130,6 +130,7 @@ def test_save():
     reference_file = Path(test_reference_dir / "fm" / "serialize_roughness.ini")
 
     m.filepath = output_file
+    m.serializer_config.float_format = ".2f"
     m.save()
 
     assert_files_equal(output_file, reference_file, [0])

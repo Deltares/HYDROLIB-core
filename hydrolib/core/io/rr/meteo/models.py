@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Callable, Dict, List, Tuple
 
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel, SerializerConfig
 
 from .parser import BuiParser
 from .serializer import write_bui_file
@@ -64,7 +65,7 @@ class BuiModel(ParsableFileModel):
         return ".bui"
 
     @classmethod
-    def _get_serializer(cls) -> Callable:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return write_bui_file
 
     @classmethod
