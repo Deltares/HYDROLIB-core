@@ -102,7 +102,7 @@ def validate_correct_length(
             For example, to require list length 1 when length value is given as 0.
 
     Raises:
-        ValueError: When the number of values for the given field_name is not as expected.
+        ValueError: When the number of values for any of the given field_names is not as expected.
 
     Returns:
         Dict: Dictionary of validated values.
