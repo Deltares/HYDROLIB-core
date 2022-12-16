@@ -1,5 +1,5 @@
 import logging
-from typing import List, Literal, Optional
+from typing import Dict, List, Literal, Optional
 
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
@@ -11,10 +11,10 @@ from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationFieldNames,
     get_enum_validator,
     get_from_subclass_defaults,
-    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
-    make_list_length_root_validator,
     make_list_validator,
+    validate_correct_length,
+    validate_location_specification,
 )
 
 logger = logging.getLogger(__name__)
@@ -361,12 +361,16 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     )
     _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
 
-    _check_list_length = make_list_length_root_validator(
-        "levels",
-        "flowwidths",
-        "totalwidths",
-        length_name="numlevels",
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_lengths(cls, values):
+        """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
+        return validate_correct_length(
+            values,
+            "levels",
+            "flowwidths",
+            "totalwidths",
+            length_name="numlevels",
+        )
 
 
 class ZWCrsDef(CrossSectionDefinition):
@@ -428,12 +432,16 @@ class ZWCrsDef(CrossSectionDefinition):
         "totalwidths",
     )
 
-    _check_list_length = make_list_length_root_validator(
-        "levels",
-        "flowwidths",
-        "totalwidths",
-        length_name="numlevels",
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_lengths(cls, values):
+        """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
+        return validate_correct_length(
+            values,
+            "levels",
+            "flowwidths",
+            "totalwidths",
+            length_name="numlevels",
+        )
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionid", "frictiontype", "frictionvalue"
@@ -522,23 +530,36 @@ class YZCrsDef(CrossSectionDefinition):
         "frictiontypes",
     )
 
-    _check_yzlist_length = make_list_length_root_validator(
-        "ycoordinates",
-        "zcoordinates",
-        length_name="yzcount",
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_lengths_coordinates(cls, values):
+        """Validates that the length of the ycoordinates and zcoordinates fields are as expected."""
+        return validate_correct_length(
+            values,
+            "ycoordinates",
+            "zcoordinates",
+            length_name="yzcount",
+        )
 
-    _check_frictlist_length = make_list_length_root_validator(
-        "frictionids",
-        "frictiontypes",
-        "frictionvalues",
-        length_name="sectioncount",
-    )
-    _check_frictlist_length1 = make_list_length_root_validator(
-        "frictionpositions",
-        length_name="sectioncount",
-        length_incr=1,  # 1 extra for frictionpositions
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_lengths_friction(cls, values):
+        """Validates that the length of the frictionids, frictiontypes and frictionvalues field are as expected."""
+        return validate_correct_length(
+            values,
+            "frictionids",
+            "frictiontypes",
+            "frictionvalues",
+            length_name="sectioncount",
+        )
+
+    @root_validator(allow_reuse=True)
+    def check_list_length_frictionpositions(cls, values):
+        """Validates that the length of the frictionpositions field is as expected."""
+        return validate_correct_length(
+            values,
+            "frictionpositions",
+            length_name="sectioncount",
+            length_incr=1,  # 1 extra for frictionpositions
+        )
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionids", "frictiontypes", "frictionvalues"
@@ -623,16 +644,16 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
             )
         return field_value
 
-    _check_yzlist_length = make_list_length_root_validator(
-        "ycoordinates",
-        "zcoordinates",
-        length_name="xyzcount",
-    )
-
-    _check_xlist_length = make_list_length_root_validator(
-        "xcoordinates",
-        length_name="xyzcount",
-    )
+    @root_validator(allow_reuse=True)
+    def check_list_lengths_coordinates(cls, values):
+        """Validates that the length of the xcoordinates, ycoordinates and zcoordinates field are as expected."""
+        return validate_correct_length(
+            values,
+            "xcoordinates",
+            "ycoordinates",
+            "zcoordinates",
+            length_name="xyzcount",
+        )
 
 
 class CrossSection(INIBasedModel):
@@ -684,12 +705,16 @@ class CrossSection(INIBasedModel):
     shift: Optional[float] = Field(0.0)
     definitionid: str = Field(alias="definitionId")
 
-    _location_validator = get_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(
-            validate_node=False, validate_num_coordinates=False
-        ),
-        fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+        """Validates that the correct location specification is given."""
+        return validate_location_specification(
+            values,
+            config=LocationValidationConfiguration(
+                validate_node=False, validate_num_coordinates=False
+            ),
+            fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
+        )
 
 
 class CrossLocModel(INIModel):

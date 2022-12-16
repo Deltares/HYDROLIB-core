@@ -1,3 +1,67 @@
+## 0.3.1 (2022-10-25)
+
+### Feat
+
+- option `resolve_casing` to fix filepath casing between different OS's.
+- Added support for the use of vectors within forcing models with a t3d or timeseries function type.
+- Added possibility to take structure positions into account when discretizing 1d mesh
+- Add support for branches.gui file ({{gh_pr(333)}})
+- Drop extra fields for INIBasedModels if they are not in file format definition
+- Support crs file for observation cross sections ({{gh_pr(289)}})
+- implement mesh generation for pipes ({{gh_pr(294)}}) and fix support different reference system ({{gh_pr(298)}}) ({{gh_pr(299)}})
+- removed the writeBalanceFile keyword from the mdu
+- support copying generic files/models ({{gh_pr(281)}})
+- Support extra MDU sections ({{gh_pr(284)}})
+- add binder support with a dockerfile ({{gh_pr(264)}})
+
+### Fix
+
+- Add backwards compatibility for the old "percentage from bed" vertical position type.
+- Fix freeze when printing a ForcingModel with multiple [forcing] blocks by omitting the datablocks.
+- T3D header is not correct ({{gh_pr(356)}})
+- Change AutoStart type from bool to int ({{gh_pr(349)}})
+- Skip serialization of empty INI properties when configured ({{gh_pr(336)}})
+- Net writer should not produce NaN as fill values ({{gh_pr(363)}})
+- Change type of xcoordinates and ycoordinates in Lateral class from int to float ({{gh_pr(351)}})
+- Fix that single structure in StructureModel class is correctly converted to a list ({{gh_pr(352)}})
+- Ensure poly files can be saved ({{gh_pr(344)}})
+- write correct branchorder to net file ({{gh_pr(335)}})
+- add zdatum vertical position type ({{gh_pr(324)}})
+- parse vertical positions to list ({{gh_pr(325)}})
+- make `has_z_values` parameter optional in `polyfile.parser.read_polyfile` ({{gh_pr(312)}})
+- Remove unnessary indent in .bc datablocks ({{gh_pr(304)}})
+- Fix the types of 4 fields in the MDU file ({{gh_pr(283)}})
+
+### Refactor
+- Location specification root validator ({{gh_pr(347)}})
+
+## 0.3.0 (2022-07-11)
+
+### Fix
+
+- Add water level location validation DamBreaks
+- allow empty file paths in the .fnm file
+- Add modeltype 21 to RR node for open water precipitation/evaporation ({{gh_pr(261)}})
+- **filemodel**: ResolveRelativeMode is incorrectly set when reading a model with 'pathsRelativeToParent' set to false ({{gh_pr(259)}})
+
+### Feat
+
+- **network**: additional mesh funcs dhydamo
+- support .bc files and more in lateral discharge ({{gh_pr(244)}})
+- add support for observation point ini file ({{gh_pr(236)}})
+- support .bc files and more in lateral discharge
+
+### Refactor
+
+- **rr**: place all RR-related code+tests in own rr subpackage ({{gh_pr(235)}})
+- remove dead code of _process_edges_for_branch
+
+## 0.2.1 (2022-03-15)
+
+### Fix
+
+- **parser**: correctly parse model input fields with leading digits, such as 1D2DLinkFile.- **parser**: allow empty friction specification in all crossdef types. ({{gh_pr(206)}}).
+
 ## 0.2.0 (2021-12-17)
 ### Added
 * RainfallRunoff files: [NodeFile][hydrolib.core.io.rr.topology.models.NodeFile] ({{gh_issue(138)}})

@@ -2,7 +2,7 @@ from itertools import chain, count, repeat
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.basemodel import BaseModel, SerializerConfig
 from hydrolib.core.io.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,
@@ -15,7 +15,7 @@ from hydrolib.core.io.dflowfm.ini.io_models import (
 from hydrolib.core.utils import str_is_empty_or_none
 
 
-class SerializerConfig(BaseModel):
+class INISerializerConfig(SerializerConfig):
     """SerializerConfig defines the configuration options of the Serializer
 
     Attributes:
@@ -32,7 +32,7 @@ class SerializerConfig(BaseModel):
             datablock_indent). Defaults to 8.
         datablock_spacing (int):
             The number of spaces between datablock columns. Note that there might be
-            additional offset to ensure . is lined out. Defaults to 4.
+            additional offset to ensure . is lined out. Defaults to 2.
         comment_delimiter (str):
             The character used to delimit comments. Defaults to '#'.
         skip_empty_properties (bool):
@@ -42,7 +42,7 @@ class SerializerConfig(BaseModel):
     section_indent: int = 0
     property_indent: int = 4
     datablock_indent: int = 8
-    datablock_spacing: int = 4
+    datablock_spacing: int = 2
     comment_delimiter: str = "#"
     skip_empty_properties: bool = True
 
@@ -55,6 +55,35 @@ class SerializerConfig(BaseModel):
     def total_datablock_indent(self) -> int:
         """The combined datablock indentation, i.e. section_indent + datablock_indent"""
         return self.section_indent + self.datablock_indent
+
+
+class DataBlockINIBasedSerializerConfig(INISerializerConfig):
+    """Class that holds the configuration settings for INI files with data blocks serialization."""
+
+    float_format_datablock: str = ""
+    """str: The string format that will be used for float serialization of the datablock. If empty, the original number will be serialized. Defaults to an empty string.
+    
+    Examples:
+        Input value = 123.456
+
+        Format    | Output          | Description
+        -------------------------------------------------------------------------------------------------------------------------------------
+        ".0f"     | 123             | Format float with 0 decimal places.
+        "f"       | 123.456000      | Format float with default (=6) decimal places.
+        ".2f"     | 123.46          | Format float with 2 decimal places.
+        "+.1f"    | +123.5          | Format float with 1 decimal place with a + or  sign.
+        "e"       | 1.234560e+02    | Format scientific notation with the letter 'e' with default (=6) decimal places.
+        "E"       | 1.234560E+02    | Format scientific notation with the letter 'E' with default (=6) decimal places.
+        ".3e"     | 1.235e+02       | Format scientific notation with the letter 'e' with 3 decimal places.
+        "<15"     | 123.456         | Left aligned in space with width 15
+        "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
+        ">15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
+        "*>15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
+        "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.     
+        ".3%"     | 12345.600%      | Format percentage with 3 decimal places.  
+
+        More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
+    """
 
 
 class MaxLengths(BaseModel):
@@ -138,7 +167,7 @@ class SectionSerializer:
     an actual instance and serializes the Section with it.
     """
 
-    def __init__(self, config: SerializerConfig, max_length: MaxLengths):
+    def __init__(self, config: INISerializerConfig, max_length: MaxLengths):
         """Create a new SectionSerializer
 
         Args:
@@ -149,7 +178,7 @@ class SectionSerializer:
         self._max_length = max_length
 
     @classmethod
-    def serialize(cls, section: Section, config: SerializerConfig) -> Lines:
+    def serialize(cls, section: Section, config: INISerializerConfig) -> Lines:
         """Serialize the provided section with the given config
 
         Args:
@@ -163,7 +192,7 @@ class SectionSerializer:
         return serializer._serialize_section(section)
 
     @property
-    def config(self) -> SerializerConfig:
+    def config(self) -> INISerializerConfig:
         """The SerializerConfig used while serializing the section."""
         return self._config
 
@@ -236,7 +265,7 @@ class SectionSerializer:
 class Serializer:
     """Serializer serializes Document to its corresponding lines."""
 
-    def __init__(self, config: SerializerConfig):
+    def __init__(self, config: INISerializerConfig):
         """Creates a new Serializer with the provided configuration.
 
         Args:
@@ -283,7 +312,7 @@ class Serializer:
 def write_ini(
     path: Path,
     document: Document,
-    config: Optional[SerializerConfig] = None,
+    config: Optional[INISerializerConfig] = None,
 ) -> None:
     """Write the provided document to the specified path
 
@@ -298,7 +327,7 @@ def write_ini(
             default to the standard SerializerConfig. Defaults to None.
     """
     if config is None:
-        config = SerializerConfig()
+        config = INISerializerConfig()
 
     serializer = Serializer(config)
 

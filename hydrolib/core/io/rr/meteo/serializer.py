@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
 
+from hydrolib.core.basemodel import SerializerConfig
+
 
 class BuiEventSerializer:
     """
@@ -21,12 +23,13 @@ class BuiEventSerializer:
     )
 
     @staticmethod
-    def serialize(event_data: Dict) -> str:
+    def serialize(event_data: Dict, config: SerializerConfig) -> str:
         """
         Serializes a dictionary representing an event into a text block.
 
         Args:
             event_data (Dict): Dictionary representing precipitation event.
+            config (SerializerConfig): The serialization configuration.
 
         Returns:
             str: Formatted string.
@@ -47,7 +50,7 @@ class BuiEventSerializer:
         event_data[
             "precipitation_per_timestep"
         ] = BuiEventSerializer.serialize_precipitation_per_timestep(
-            event_data["precipitation_per_timestep"]
+            event_data["precipitation_per_timestep"], config
         )
         if "event_idx" not in event_data.keys():
             event_data["event_idx"] = 1
@@ -113,20 +116,27 @@ class BuiEventSerializer:
         return f"{data_to_serialize.days} {total_hours} {total_minutes} {total_seconds}"
 
     @staticmethod
-    def serialize_precipitation_per_timestep(data_to_serialize: List[List[str]]) -> str:
+    def serialize_precipitation_per_timestep(
+        data_to_serialize: List[List[float]], config: SerializerConfig
+    ) -> str:
         """
         Serialized the data containing all the precipitations per timestep (and station)
         into a single string ready to be mapped.
 
         Args:
             data_to_serialize (List[List[str]]): Data to be mapped.
+            config (SerializerConfig): The serialization configuration.
 
         Returns:
             str: Serialized string in .bui format.
         """
+        float_format = lambda v: f"{v:{config.float_format}}"
         serialized_data = str.join(
             "\n",
-            [str.join(" ", map(str, listed_data)) for listed_data in data_to_serialize],
+            [
+                str.join(" ", map(float_format, listed_data))
+                for listed_data in data_to_serialize
+            ],
         )
         return serialized_data
 
@@ -153,7 +163,7 @@ class BuiSerializer:
     )
 
     @staticmethod
-    def serialize(bui_data: Dict) -> str:
+    def serialize(bui_data: Dict, config: SerializerConfig) -> str:
         """
         Formats the bui_template with the content of the given data.
         NOTE: It requires that caller injects file_path into bui_data prior to this call.
@@ -161,23 +171,30 @@ class BuiSerializer:
 
         Args:
             bui_data (Dict): Data to serialize.
+            config (SerializerConfig): The serialization configuration.
+
+        Returns:
+            str: The serialized data.
         """
         bui_data["datetime_now"] = datetime.now().strftime("%d-%m-%y %H:%M:%S")
         bui_data["name_of_stations"] = BuiSerializer.serialize_stations_ids(
             bui_data["name_of_stations"]
         )
         bui_data["precipitation_events"] = BuiSerializer.serialize_event_list(
-            bui_data["precipitation_events"]
+            bui_data["precipitation_events"], config
         )
         return BuiSerializer.bui_template.format(**bui_data)
 
     @staticmethod
-    def serialize_event_list(data_to_serialize: List[Dict]) -> str:
+    def serialize_event_list(
+        data_to_serialize: List[Dict], config: SerializerConfig
+    ) -> str:
         """
         Serializes a event list dictionary into a single text block.
 
         Args:
             data_to_serialize (Dict): Dictionary containing list of events.
+            config (SerializerConfig): The serialization configuration.
 
         Returns:
             str: Text block representing all precipitation events.
@@ -185,7 +202,7 @@ class BuiSerializer:
         serialized_list = []
         for n_event, event in enumerate(data_to_serialize):
             event["event_idx"] = n_event + 1
-            serialized_list.append(BuiEventSerializer.serialize(event))
+            serialized_list.append(BuiEventSerializer.serialize(event, config))
         return "\n".join(serialized_list)
 
     @staticmethod
@@ -202,16 +219,17 @@ class BuiSerializer:
         return str.join(" ", data_to_serialize)
 
 
-def write_bui_file(path: Path, data: Dict) -> None:
+def write_bui_file(path: Path, data: Dict, config: SerializerConfig) -> None:
     """
     Writes a .bui file in the given path based on the data given in a dictionary.
 
     Args:
         path (Path): Path where to output the text.
         data (Dict): Data to serialize into the file.
+        config (SerializerConfig): The serialization configuration.
     """
     data["filepath"] = path  # This is redundant as already exists in the data.
-    serialized_bui_data = BuiSerializer.serialize(data)
+    serialized_bui_data = BuiSerializer.serialize(data, config)
 
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(serialized_bui_data, encoding="utf8")

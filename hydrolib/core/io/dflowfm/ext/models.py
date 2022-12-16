@@ -8,13 +8,18 @@ from hydrolib.core.basemodel import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.io.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
-from hydrolib.core.io.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.models import (
+    INIBasedModel,
+    INIGeneral,
+    INIModel,
+    INISerializerConfig,
+)
+from hydrolib.core.io.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    get_location_specification_rootvalidator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
+    validate_location_specification,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
@@ -141,9 +146,12 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    _location_validator = get_location_specification_rootvalidator(
-        config=LocationValidationConfiguration(minimum_num_coordinates=1)
-    )
+    @root_validator(allow_reuse=True)
+    def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+        """Validates that the correct location specification is given."""
+        return validate_location_specification(
+            values, config=LocationValidationConfiguration(minimum_num_coordinates=1)
+        )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
@@ -196,7 +204,9 @@ class ExtModel(INIModel):
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = []
     lateral: List[Lateral] = []
-
+    serializer_config: INISerializerConfig = INISerializerConfig(
+        section_indent=0, property_indent=0
+    )
     _split_to_list = make_list_validator("boundary", "lateral")
 
     @classmethod
@@ -206,8 +216,3 @@ class ExtModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "bnd"
-
-    def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-        config = SerializerConfig(section_indent=0, property_indent=0)
-        write_ini(self._resolved_filepath, self._to_document(), config=config)

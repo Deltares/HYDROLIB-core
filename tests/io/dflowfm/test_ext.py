@@ -134,7 +134,9 @@ class TestModels:
             )
             def test_given_no_values_raises_valueerror(self, dict_values: dict):
                 with pytest.raises(ValueError) as exc_err:
-                    Lateral._location_validator(values=dict_values)
+                    Lateral.validate_that_location_specification_is_correct(
+                        values=dict_values
+                    )
                 assert str(exc_err.value) == TestModels.TestLateral.location_error
 
             @pytest.mark.parametrize(
@@ -153,7 +155,7 @@ class TestModels:
                 )
                 test_dict[missing_coordinates.lower()] = None
                 with pytest.raises(ValueError) as exc_error:
-                    Lateral._location_validator(test_dict)
+                    Lateral.validate_that_location_specification_is_correct(test_dict)
                 assert str(exc_error.value) == TestModels.TestLateral.location_error
 
             def test_given_numcoordinates_and_valid_coordinates(self):
@@ -165,12 +167,14 @@ class TestModels:
                     xcoordinates=[42, 24],
                     ycoordinates=[24, 42],
                 )
-                return_value = Lateral._location_validator(test_dict)
+                return_value = Lateral.validate_that_location_specification_is_correct(
+                    test_dict
+                )
                 assert return_value == test_dict
 
             def test_given_branchid_and_no_chainage_raises_valueerror(self):
                 with pytest.raises(ValueError) as exc_err:
-                    Lateral._location_validator(
+                    Lateral.validate_that_location_specification_is_correct(
                         dict(
                             nodeid=None,
                             branchid="aBranchId",
@@ -197,7 +201,7 @@ class TestModels:
                 )
                 test_dict = {**dict_values, **test_values}
                 with pytest.raises(ValueError) as exc_err:
-                    Lateral._location_validator(test_dict)
+                    Lateral.validate_that_location_specification_is_correct(test_dict)
                 assert (
                     str(exc_err.value) == "locationType should be 1d but was wrongType"
                 )
@@ -217,7 +221,9 @@ class TestModels:
                     locationtype="1d",
                 )
                 test_dict = {**dict_values, **test_values}
-                return_value = Lateral._location_validator(test_dict)
+                return_value = Lateral.validate_that_location_specification_is_correct(
+                    test_dict
+                )
                 assert return_value == test_dict
 
             @pytest.mark.parametrize(
@@ -241,7 +247,9 @@ class TestModels:
                 self, test_dict: dict, location_type: str
             ):
                 test_dict["locationtype"] = location_type
-                return_value = Lateral._location_validator(test_dict)
+                return_value = Lateral.validate_that_location_specification_is_correct(
+                    test_dict
+                )
                 assert return_value["locationtype"] == "1d"
 
         class TestValidateFromCtor:
@@ -575,3 +583,15 @@ class TestModels:
                     created_boundary.dict()["locationfile"]["filepath"]
                     == expected_locationfile
                 )
+
+    class TestExtModel:
+        def test_ext_model_correct_default_serializer_config(self):
+            model = ExtModel()
+
+            assert model.serializer_config.section_indent == 0
+            assert model.serializer_config.property_indent == 0
+            assert model.serializer_config.datablock_indent == 8
+            assert model.serializer_config.float_format == ""
+            assert model.serializer_config.datablock_spacing == 2
+            assert model.serializer_config.comment_delimiter == "#"
+            assert model.serializer_config.skip_empty_properties == True

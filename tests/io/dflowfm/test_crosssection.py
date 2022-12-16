@@ -1,7 +1,4 @@
-import inspect
-from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import Any, Callable, List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
@@ -19,7 +16,12 @@ from hydrolib.core.io.dflowfm.crosssection.models import (
 )
 from hydrolib.core.io.dflowfm.friction.models import FrictionType
 
-from ...utils import WrapperTest, test_data_dir, test_output_dir
+from ...utils import (
+    assert_files_equal,
+    test_data_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 class TestCrossSectionDefinition:
@@ -339,7 +341,7 @@ class TestCrossSectionLocation:
     )
     def test_wrong_values_raises_valueerror(self, dict_values: dict):
         with pytest.raises(ValueError) as exc_err:
-            CrossSection._location_validator(values=dict_values)
+            CrossSection.validate_that_location_specification_is_correct(dict_values)
         assert (
             str(exc_err.value) == "branchId and chainage or x and y should be provided"
         )
@@ -351,5 +353,33 @@ class TestCrossSectionLocation:
             x=42,
             y=24,
         )
-        return_value = CrossSection._location_validator(test_dict)
+        return_value = CrossSection.validate_that_location_specification_is_correct(
+            test_dict
+        )
         assert return_value == test_dict
+
+
+class TestCrossSectionModel:
+    def test_create_and_save_crosslocmodel_correctly_saves_file_with_correct_enum_value(
+        self,
+    ):
+        reference_file = Path(test_reference_dir / "crosssection" / "crsloc.ini")
+        output_file = Path(
+            test_output_dir
+            / self.test_create_and_save_crosslocmodel_correctly_saves_file_with_correct_enum_value.__name__
+        )
+
+        crossloc_model = CrossLocModel()
+
+        values = {
+            "id": "testCrossSection",
+            "branchid": "branch1",
+            "chainage": 123,
+            "definitionid": "randomDefinition",
+        }
+        crossloc_model.crosssection.append(CrossSection(**values))
+
+        crossloc_model.serializer_config.float_format = ".2f"
+        crossloc_model.save(filepath=output_file)
+
+        assert_files_equal(output_file, reference_file)
