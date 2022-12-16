@@ -12,7 +12,7 @@ import logging
 import re
 from enum import Enum
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional, Set, Union
+from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
@@ -26,14 +26,14 @@ from hydrolib.core.io.dflowfm.ini.models import (
     INIModel,
 )
 from hydrolib.core.io.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.io.dflowfm.ini.serializer import SerializerConfig, write_ini
+from hydrolib.core.io.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.io.dflowfm.ini.util import (
     get_enum_validator,
     get_from_subclass_defaults,
-    get_key_renaming_root_validator,
     get_split_string_on_delimiter_validator,
     get_type_based_on_subclass_default_value,
     make_list_validator,
+    rename_keys_for_backwards_compatibility,
 )
 from hydrolib.core.utils import to_list
 
@@ -124,7 +124,7 @@ class VectorQuantityUnitPairs(BaseModel):
 
     @root_validator
     @classmethod
-    def _validator_quantity_element_names(cls, values: Dict):
+    def _validate_quantity_element_names(cls, values: Dict):
         for idx, name in enumerate(
             [qup.quantity for qup in values["quantityunitpair"]]
         ):
@@ -256,8 +256,8 @@ class ForcingBase(DataBlockINIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    def _to_section(self) -> Section:
-        section = super()._to_section()
+    def _to_section(self, config: DataBlockINIBasedSerializerConfig) -> Section:
+        section = super()._to_section(config)
 
         for quantity in self.quantityunitpair:
             for prop in quantity._to_properties():
@@ -282,18 +282,32 @@ class VectorForcingBase(ForcingBase):
 
     @root_validator(pre=True)
     def validate_and_update_quantityunitpairs(cls, values: Dict) -> Dict:
+        """
+        Validates and, if required, updates vector quantity unit pairs.
+
+        Args:
+            values (Dict): Dictionary of values to be used to validate or
+            update vector quantity unit pairs.
+
+        Raises:
+            ValueError: When a quantity unit pair is found in a vector where it does not belong.
+            ValueError: When the number of quantity unit pairs in a vectors is not as expected.
+
+        Returns:
+            Dict: Dictionary of validates values.
+        """
         quantityunitpairs = values["quantityunitpair"]
         vector = values.get("vector")
         number_of_element_repetitions = cls.get_number_of_repetitions(values)
 
-        VectorForcingBase.process_vectordefinition_or_check_quantityunitpairs(
+        VectorForcingBase._process_vectordefinition_or_check_quantityunitpairs(
             vector, quantityunitpairs, number_of_element_repetitions
         )
 
         return values
 
     @staticmethod
-    def process_vectordefinition_or_check_quantityunitpairs(
+    def _process_vectordefinition_or_check_quantityunitpairs(
         vectordefs: Optional[List[str]],
         quantityunitpairs: List[ScalarOrVectorQUP],
         number_of_element_repetitions: int,
@@ -319,19 +333,19 @@ class VectorForcingBase(ForcingBase):
             map(lambda qup: isinstance(qup, VectorQuantityUnitPairs), quantityunitpairs)
         ):
             # Vector definition line still must be processed and VectorQUPs still created.
-            VectorForcingBase.validate_vectordefinition_and_update_quantityunitpairs(
+            VectorForcingBase._validate_vectordefinition_and_update_quantityunitpairs(
                 vectordefs, quantityunitpairs, number_of_element_repetitions
             )
         else:
             # VectorQUPs already present; directly validate their vector length.
             for qup in quantityunitpairs:
                 if isinstance(qup, VectorQuantityUnitPairs):
-                    VectorForcingBase.validate_vectorlength(
+                    VectorForcingBase._validate_vectorlength(
                         qup, number_of_element_repetitions
                     )
 
     @staticmethod
-    def validate_vectordefinition_and_update_quantityunitpairs(
+    def _validate_vectordefinition_and_update_quantityunitpairs(
         vectordefs: Optional[List[str]],
         quantityunitpairs: List[ScalarOrVectorQUP],
         number_of_element_repetitions: int,
@@ -373,37 +387,54 @@ class VectorForcingBase(ForcingBase):
         # For each vector definition line, greedily find the quantity unit pairs
         # that form the vector elements, and pack them into a single VectorQuantityUnitPairs oject.
         for vectordef in vectordefs:
-            vectorname, componentdefs = vectordef.split(":")
-            componentnames = re.split(r"[, \t]", componentdefs)
-            n_components = len(componentnames)
-
-            vqu_pair = VectorQuantityUnitPairs(
-                vectorname=vectorname, elementname=componentnames, quantityunitpair=[]
+            VectorForcingBase._find_and_pack_vector_qups(
+                number_of_element_repetitions,
+                qup_iter,
+                quantityunitpairs_with_vectors,
+                vectordef,
             )
 
-            n_rep = 0
-            for qu_pair in qup_iter:
-                if qu_pair.quantity in componentnames:
-                    # This vector element found, store it.
-                    vqu_pair.quantityunitpair.append(qu_pair)
-                    n_rep += 1
-                    if n_rep == n_components * number_of_element_repetitions:
-                        break
-                else:
-                    # This quantity was no vector element being searched for
-                    # so keep it as a regular (scalar) QuantityUnitPair.
-                    quantityunitpairs_with_vectors.append(qu_pair)
-
-            if VectorForcingBase.validate_vectorlength(
-                vqu_pair, number_of_element_repetitions
-            ):
-                # This VectorQuantityUnitPairs is now complete; add it to result list.
-                quantityunitpairs_with_vectors.append(vqu_pair)
+        for remaining_qu_pair in qup_iter:
+            quantityunitpairs_with_vectors.append(remaining_qu_pair)
 
         quantityunitpairs[:] = quantityunitpairs_with_vectors
 
     @staticmethod
-    def validate_vectorlength(
+    def _find_and_pack_vector_qups(
+        number_of_element_repetitions: int,
+        qup_iter: Iterator[ScalarOrVectorQUP],
+        quantityunitpairs_with_vectors: List[ScalarOrVectorQUP],
+        vectordef: str,
+    ):
+        vectorname, componentdefs = vectordef.split(":")
+        componentnames = re.split(r"[, \t]", componentdefs)
+        n_components = len(componentnames)
+
+        vqu_pair = VectorQuantityUnitPairs(
+            vectorname=vectorname, elementname=componentnames, quantityunitpair=[]
+        )
+
+        n_rep = 0
+        for qu_pair in qup_iter:
+            if qu_pair.quantity in componentnames:
+                # This vector element found, store it.
+                vqu_pair.quantityunitpair.append(qu_pair)
+                n_rep += 1
+                if n_rep == n_components * number_of_element_repetitions:
+                    break
+            else:
+                # This quantity was no vector element being searched for
+                # so keep it as a regular (scalar) QuantityUnitPair.
+                quantityunitpairs_with_vectors.append(qu_pair)
+
+        if VectorForcingBase._validate_vectorlength(
+            vqu_pair, number_of_element_repetitions
+        ):
+            # This VectorQuantityUnitPairs is now complete; add it to result list.
+            quantityunitpairs_with_vectors.append(vqu_pair)
+
+    @staticmethod
+    def _validate_vectorlength(
         vqu_pair: VectorQuantityUnitPairs,
         number_of_element_repetitions,
     ) -> bool:
@@ -472,11 +503,15 @@ class TimeSeries(VectorForcingBase):
         "timeinterpolation", enum=TimeInterpolation
     )
 
-    _key_renaming_root_validator = get_key_renaming_root_validator(
-        {
-            "timeinterpolation": ["time_interpolation"],
-        }
-    )
+    @root_validator(allow_reuse=True, pre=True)
+    def rename_keys(cls, values: Dict) -> Dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return rename_keys_for_backwards_compatibility(
+            values,
+            {
+                "timeinterpolation": ["time_interpolation"],
+            },
+        )
 
 
 class Harmonic(ForcingBase):
@@ -544,7 +579,10 @@ class T3D(VectorForcingBase):
         "vertpositionindex": ["vertical_position"],
     }
 
-    _key_renaming_root_validator = get_key_renaming_root_validator(_keys_to_rename)
+    @root_validator(allow_reuse=True, pre=True)
+    def rename_keys(cls, values: Dict) -> Dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return rename_keys_for_backwards_compatibility(values, cls._keys_to_rename)
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "vertpositions",
@@ -756,6 +794,12 @@ class ForcingModel(INIModel):
 
     _split_to_list = make_list_validator("forcing")
 
+    serializer_config: DataBlockINIBasedSerializerConfig = (
+        DataBlockINIBasedSerializerConfig(
+            section_indent=0, property_indent=0, datablock_indent=0
+        )
+    )
+
     @classmethod
     def _ext(cls) -> str:
         return ".bc"
@@ -780,13 +824,6 @@ class ForcingModel(INIModel):
                 parser.feed_line(line)
 
         return parser.finalize().flatten(True, False)
-
-    def _serialize(self, _: dict) -> None:
-        # We skip the passed dict for a better one.
-        config = SerializerConfig(
-            section_indent=0, property_indent=0, datablock_indent=0
-        )
-        write_ini(self._resolved_filepath, self._to_document(), config=config)
 
 
 class RealTime(str, Enum):

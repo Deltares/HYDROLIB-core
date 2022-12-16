@@ -1,9 +1,10 @@
-from typing import Callable, List, Optional
+from pathlib import Path
+from typing import Callable, Dict, List, Optional
 
 from pydantic.class_validators import root_validator
 from pydantic.fields import Field
 
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel, SerializerConfig
 from hydrolib.core.io.rr.topology.parser import NetworkTopologyFileParser
 from hydrolib.core.io.rr.topology.serializer import (
     LinkFileSerializer,
@@ -132,7 +133,7 @@ class NodeFile(ParsableFileModel):
         return "3b_nod"
 
     @classmethod
-    def _get_serializer(cls) -> Callable:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return NodeFileSerializer.serialize
 
     @classmethod
@@ -175,7 +176,7 @@ class LinkFile(ParsableFileModel):
         return "3b_link"
 
     @classmethod
-    def _get_serializer(cls) -> Callable:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return LinkFileSerializer.serialize
 
     @classmethod

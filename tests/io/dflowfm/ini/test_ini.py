@@ -21,10 +21,11 @@ from hydrolib.core.io.dflowfm.ini.parser import (
     _IntermediateSection,
 )
 from hydrolib.core.io.dflowfm.ini.serializer import (
+    DataBlockINIBasedSerializerConfig,
+    INISerializerConfig,
     MaxLengths,
     SectionSerializer,
     Serializer,
-    SerializerConfig,
     _serialize_comment_block,
     write_ini,
 )
@@ -794,23 +795,37 @@ class TestParser:
         assert result == expected_result
 
 
-class TestSerializerConfig:
+class TestINISerializerConfig:
     def test_total_property_indent_expected_result(self):
-        config = SerializerConfig(section_indent=5, property_indent=3)
+        config = INISerializerConfig(section_indent=5, property_indent=3)
         assert config.total_property_indent == 8
 
     def test_total_datablock_indent_expected_result(self):
-        config = SerializerConfig(section_indent=3, datablock_indent=10)
+        config = INISerializerConfig(section_indent=3, datablock_indent=10)
         assert config.total_datablock_indent == 13
 
     def test_default_serializer_config(self):
-        config = SerializerConfig()
+        config = INISerializerConfig()
         assert config.section_indent == 0
         assert config.property_indent == 4
         assert config.datablock_indent == 8
         assert config.datablock_spacing == 2
         assert config.comment_delimiter == "#"
         assert config.skip_empty_properties == True
+        assert config.float_format == ""
+
+
+class TestDataBlockINIBasedSerializerConfig:
+    def test_default_serializer_config(self):
+        config = DataBlockINIBasedSerializerConfig()
+        assert config.section_indent == 0
+        assert config.property_indent == 4
+        assert config.datablock_indent == 8
+        assert config.datablock_spacing == 2
+        assert config.comment_delimiter == "#"
+        assert config.skip_empty_properties == True
+        assert config.float_format == ""
+        assert config.float_format_datablock == ""
 
 
 class TestLengths:
@@ -1160,27 +1175,27 @@ class TestSerializer:
         [
             (
                 [],
-                SerializerConfig(),
+                INISerializerConfig(),
                 [],
             ),
             (
                 [CommentBlock(lines=[])],
-                SerializerConfig(),
+                INISerializerConfig(),
                 [""],
             ),
             (
                 [CommentBlock(lines=["angry badger noises"])],
-                SerializerConfig(),
+                INISerializerConfig(),
                 ["# angry badger noises", ""],
             ),
             (
                 [CommentBlock(lines=["one", "two", "three"])],
-                SerializerConfig(),
+                INISerializerConfig(),
                 ["# one", "# two", "# three", ""],
             ),
             (
                 [CommentBlock(lines=["comment"])],
-                SerializerConfig(comment_delimiter="*"),
+                INISerializerConfig(comment_delimiter="*"),
                 ["* comment", ""],
             ),
             (
@@ -1188,7 +1203,7 @@ class TestSerializer:
                     CommentBlock(lines=["one", "two", "three"]),
                     CommentBlock(lines=["four", "five", "six"]),
                 ],
-                SerializerConfig(),
+                INISerializerConfig(),
                 [
                     "# one",
                     "# two",
@@ -1205,7 +1220,7 @@ class TestSerializer:
     def test_serialize_comment_header(
         self,
         comment_header: List[CommentBlock],
-        config: SerializerConfig,
+        config: INISerializerConfig,
         expected_result: List[str],
     ):
         serializer = Serializer(config=config)
@@ -1216,15 +1231,15 @@ class TestSerializer:
     @pytest.mark.parametrize(
         "header,config,expected_result",
         [
-            ("header", SerializerConfig(section_indent=0), "[header]"),
-            ("header", SerializerConfig(section_indent=4), "    [header]"),
-            ("with spaces", SerializerConfig(section_indent=0), "[with spaces]"),
+            ("header", INISerializerConfig(section_indent=0), "[header]"),
+            ("header", INISerializerConfig(section_indent=4), "    [header]"),
+            ("with spaces", INISerializerConfig(section_indent=0), "[with spaces]"),
         ],
     )
     def test_serialize_section_header(
         self,
         header: str,
-        config: SerializerConfig,
+        config: INISerializerConfig,
         expected_result: str,
     ):
         lengths = MaxLengths(key=0, value=0, datablock=None)
@@ -1239,37 +1254,37 @@ class TestSerializer:
             (
                 Property(key="key", value="value", comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 "key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=4),
+                INISerializerConfig(section_indent=0, property_indent=4),
                 "    key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=4, property_indent=0),
+                INISerializerConfig(section_indent=4, property_indent=0),
                 "    key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=4, property_indent=4),
+                INISerializerConfig(section_indent=4, property_indent=4),
                 "        key = value # comment",
             ),
             (
                 Property(key="key", value="value", comment=None),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 "key = value",
             ),
             (
                 Property(key="key", value=None, comment=None),
                 MaxLengths(key=3, value=0),
-                SerializerConfig(
+                INISerializerConfig(
                     section_indent=0, property_indent=0, skip_empty_properties=False
                 ),
                 "key =",
@@ -1277,7 +1292,7 @@ class TestSerializer:
             (
                 Property(key="key", value=None, comment="comment"),
                 MaxLengths(key=3, value=5),
-                SerializerConfig(
+                INISerializerConfig(
                     section_indent=0, property_indent=0, skip_empty_properties=False
                 ),
                 "key =       # comment",
@@ -1285,19 +1300,19 @@ class TestSerializer:
             (
                 Property(key="key", value="value", comment="comment"),
                 MaxLengths(key=6, value=5),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 "key    = value # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
                 MaxLengths(key=6, value=12),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 "key    = value        # comment",
             ),
             (
                 Property(key="key", value="value", comment="comment"),
                 MaxLengths(key=6, value=12),
-                SerializerConfig(section_indent=2, property_indent=4),
+                INISerializerConfig(section_indent=2, property_indent=4),
                 "      key    = value        # comment",
             ),
         ],
@@ -1306,7 +1321,7 @@ class TestSerializer:
         self,
         property: Property,
         lengths: MaxLengths,
-        config: SerializerConfig,
+        config: INISerializerConfig,
         expected_result: str,
     ):
         serializer = SectionSerializer(config=config, max_length=lengths)
@@ -1320,25 +1335,25 @@ class TestSerializer:
             (
                 [],
                 MaxLengths(key=0, value=0),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 [],
             ),
             (
                 [Property(key="key", value="value", comment="comment")],
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 ["key = value # comment"],
             ),
             (
                 [CommentBlock(lines=["angry badger noises"])],
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 ["# angry badger noises"],
             ),
             (
                 [CommentBlock(lines=["comment 1", "comment 2"])],
                 MaxLengths(key=3, value=5),
-                SerializerConfig(section_indent=0, property_indent=4),
+                INISerializerConfig(section_indent=0, property_indent=4),
                 ["    # comment 1", "    # comment 2"],
             ),
             (
@@ -1353,7 +1368,7 @@ class TestSerializer:
                     CommentBlock(lines=["comment 3", "comment 4"]),
                 ],
                 MaxLengths(key=12, value=15),
-                SerializerConfig(section_indent=4, property_indent=4),
+                INISerializerConfig(section_indent=4, property_indent=4),
                 [
                     "        key          = value           # comment",
                     "        # comment 1",
@@ -1369,7 +1384,7 @@ class TestSerializer:
         self,
         content: Iterable[ContentElement],
         lengths: MaxLengths,
-        config: SerializerConfig,
+        config: INISerializerConfig,
         expected_result: List[str],
     ):
         serializer = SectionSerializer(config=config, max_length=lengths)
@@ -1383,7 +1398,7 @@ class TestSerializer:
             (
                 None,
                 MaxLengths(key=0, value=0),
-                SerializerConfig(),
+                INISerializerConfig(),
                 [],
             ),
             (
@@ -1393,7 +1408,7 @@ class TestSerializer:
                     value=0,
                     datablock=[3, 4, 5],
                 ),
-                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                INISerializerConfig(datablock_indent=2, datablock_spacing=4),
                 ["  1.0    2.0     3.0"],
             ),
             (
@@ -1406,7 +1421,7 @@ class TestSerializer:
                     value=0,
                     datablock=[3, 4, 5],
                 ),
-                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                INISerializerConfig(datablock_indent=2, datablock_spacing=4),
                 [
                     "  1.0    2.0     3.0",
                     "  4.0    10.0    200.0",
@@ -1419,7 +1434,7 @@ class TestSerializer:
                     value=0,
                     datablock=[3],
                 ),
-                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                INISerializerConfig(datablock_indent=2, datablock_spacing=4),
                 ["  1.0"],
             ),
             (
@@ -1429,7 +1444,7 @@ class TestSerializer:
                     value=0,
                     datablock=None,
                 ),
-                SerializerConfig(datablock_indent=2, datablock_spacing=4),
+                INISerializerConfig(datablock_indent=2, datablock_spacing=4),
                 [],
             ),
         ],
@@ -1438,7 +1453,7 @@ class TestSerializer:
         self,
         datablock: Optional[Datablock],
         lengths: MaxLengths,
-        config: SerializerConfig,
+        config: INISerializerConfig,
         expected_result: List[str],
     ):
         serializer = SectionSerializer(config=config, max_length=lengths)
@@ -1455,7 +1470,7 @@ class TestSerializer:
                     content=[],
                     datablock=None,
                 ),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 ["[header]"],
             ),
             (
@@ -1464,7 +1479,7 @@ class TestSerializer:
                     content=[CommentBlock(lines=["angry badger noises"])],
                     datablock=None,
                 ),
-                SerializerConfig(section_indent=0, property_indent=0),
+                INISerializerConfig(section_indent=0, property_indent=0),
                 ["[header]", "# angry badger noises"],
             ),
             (
@@ -1474,7 +1489,7 @@ class TestSerializer:
                         Property(key="key", value="value", comment="comment"),
                     ],
                 ),
-                SerializerConfig(section_indent=2, property_indent=4),
+                INISerializerConfig(section_indent=2, property_indent=4),
                 [
                     "  [header]",
                     "      key = value # comment",
@@ -1494,7 +1509,7 @@ class TestSerializer:
                         CommentBlock(lines=["comment 3", "comment 4"]),
                     ],
                 ),
-                SerializerConfig(section_indent=2, property_indent=4),
+                INISerializerConfig(section_indent=2, property_indent=4),
                 [
                     "  [header]",
                     "      key      = value      # comment",
@@ -1530,7 +1545,7 @@ class TestSerializer:
                         ],
                     ],
                 ),
-                SerializerConfig(
+                INISerializerConfig(
                     section_indent=0,
                     property_indent=4,
                     datablock_indent=6,
@@ -1577,7 +1592,7 @@ class TestSerializer:
                         ],
                     ],
                 ),
-                SerializerConfig(
+                INISerializerConfig(
                     section_indent=0,
                     property_indent=4,
                     datablock_indent=6,
@@ -1606,7 +1621,7 @@ class TestSerializer:
                     ],
                     datablock=[],
                 ),
-                SerializerConfig(
+                INISerializerConfig(
                     section_indent=0,
                     property_indent=4,
                     datablock_indent=6,
@@ -1631,7 +1646,7 @@ class TestSerializer:
                     ],
                     datablock=[],
                 ),
-                SerializerConfig(
+                INISerializerConfig(
                     section_indent=0,
                     property_indent=4,
                     datablock_indent=6,
@@ -1645,7 +1660,7 @@ class TestSerializer:
     def test_serialize_section(
         self,
         section: Section,
-        config: SerializerConfig,
+        config: INISerializerConfig,
         expected_result: List[str],
     ):
         result = list(SectionSerializer.serialize(section, config))
@@ -1683,7 +1698,7 @@ class TestSerializer:
 
         document = parser.finalize()
 
-        serializer = Serializer(config=SerializerConfig(skip_empty_properties=False))
+        serializer = Serializer(config=INISerializerConfig(skip_empty_properties=False))
         result = "\n".join(serializer.serialize(document))
 
         assert result == input_str
@@ -1777,7 +1792,7 @@ def test_serialize_deserialize_should_give_the_same_result():
     )
 
     path = test_output_dir / "tmp" / "test.pliz"
-    write_ini(path, document, config=SerializerConfig(skip_empty_properties=False))
+    write_ini(path, document, config=INISerializerConfig(skip_empty_properties=False))
 
     parser = Parser(config=ParserConfig(parse_datablocks=True))
     with path.open("r") as f:

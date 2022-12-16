@@ -9,6 +9,7 @@ from pydantic.types import FilePath
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
     ParsableFileModel,
+    SerializerConfig,
     validator_set_default_disk_only_file_model_when_none,
 )
 
@@ -513,8 +514,8 @@ class RainfallRunoffModel(ParsableFileModel):
 
     @classmethod
     def property_keys(cls) -> Iterable[str]:
-        # Skip first element corresponding with file_path introduced by the FileModel.
-        return list(cls.schema()["properties"].keys())[1:]
+        # Skip first two elements corresponding with file_path and serializer_config introduced by the FileModel.
+        return list(cls.schema()["properties"].keys())[2:]
 
     @classmethod
     def _ext(cls) -> str:
@@ -529,5 +530,5 @@ class RainfallRunoffModel(ParsableFileModel):
         return lambda path: read(cls.property_keys(), path)
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict], None]:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return write

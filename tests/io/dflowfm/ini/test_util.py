@@ -2,6 +2,7 @@ from typing import Dict, List, Literal, Optional
 
 import pytest
 from pydantic import Extra
+from pydantic.class_validators import root_validator
 from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import BaseModel
@@ -9,9 +10,9 @@ from hydrolib.core.io.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     get_from_subclass_defaults,
-    get_key_renaming_root_validator,
-    get_location_specification_rootvalidator,
     get_type_based_on_subclass_default_value,
+    rename_keys_for_backwards_compatibility,
+    validate_location_specification,
 )
 
 
@@ -49,9 +50,12 @@ class TestLocationSpecificationValidator:
         numcoordinates: Optional[int]
         locationtype: Optional[str]
 
-        validator = get_location_specification_rootvalidator(
-            config=LocationValidationConfiguration(minimum_num_coordinates=3)
-        )
+        @root_validator(allow_reuse=True)
+        def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+            return validate_location_specification(
+                values,
+                config=LocationValidationConfiguration(minimum_num_coordinates=3),
+            )
 
     @pytest.mark.parametrize(
         "values",
@@ -173,7 +177,7 @@ class TestLocationSpecificationValidator:
         ],
     )
     def test_correct_fields_initializes(self, values: dict):
-        validated_values = TestLocationSpecificationValidator.DummyModel.validator(
+        validated_values = TestLocationSpecificationValidator.DummyModel.validate_that_location_specification_is_correct(
             values
         )
         assert validated_values == values
@@ -198,7 +202,7 @@ class TestLocationSpecificationValidator:
     def test_correct_1d_fields_locationtype_is_added(
         self, values: dict, expected_values: dict
     ):
-        validated_values = TestLocationSpecificationValidator.DummyModel.validator(
+        validated_values = TestLocationSpecificationValidator.DummyModel.validate_that_location_specification_is_correct(
             values
         )
         assert validated_values == expected_values
@@ -210,15 +214,18 @@ class TestGetKeyRenamingRootValidator:
 
         randomproperty: str
 
-        validator = get_key_renaming_root_validator(
-            {
-                "randomproperty": [
-                    "randomProperty",
-                    "random_property",
-                    "oldRandomProperty",
-                ],
-            }
-        )
+        @root_validator(allow_reuse=True, pre=True)
+        def rename_keys(cls, values: Dict) -> Dict:
+            return rename_keys_for_backwards_compatibility(
+                values,
+                {
+                    "randomproperty": [
+                        "randomProperty",
+                        "random_property",
+                        "oldRandomProperty",
+                    ],
+                },
+            )
 
         class Config:
             extra = Extra.allow
