@@ -7,4 +7,4 @@ and [Deltares](glossary.md#deltares-conventions)-conventions.
 The net file is represented by the classes below.
 
 ## Model
-::: hydrolib.core.io.dflowfm.net.models
+::: hydrolib.core.dflowfm.net.models

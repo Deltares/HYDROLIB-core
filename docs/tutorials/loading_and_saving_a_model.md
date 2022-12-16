@@ -96,7 +96,7 @@ The file on disk is actually called `network/FlowFM_net.nc`.
 To load the model and simultaneously repair the file references in the in-memory model:
 
 ```python
-from hydrolib.core.io.dflowfm.mdu.models import FMModel
+from hydrolib.core.dflowfm.mdu.models import FMModel
 model = FMModel("FlowFM.mdu", resolve_casing=True)
 
 # assert that file reference has been updated from Network/flowfm_net.nc to network/FlowFM_net.nc

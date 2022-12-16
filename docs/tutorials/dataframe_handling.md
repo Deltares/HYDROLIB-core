@@ -14,7 +14,7 @@ Examples of such `ParsableFileModel`s with their `List` fields are:
 Say we load in a .bc file and want the resulting forcing in a dataframe.
 
 ```python
-from hydrolib.core.io.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel
 
 filepath = (
     "tests/data/input/e02/f101_1D-boundaries/c01_steady-state-flow/BoundaryConditions.bc"
