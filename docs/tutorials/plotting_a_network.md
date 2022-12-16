@@ -3,7 +3,7 @@
 We can visualise a Network with the following code:
 
 ```python
-from hydrolib.core.io.net.models import Network
+from hydrolib.core.dflowfm.net.models import Network
 
 import matplotlib
 from matplotlib.collections import LineCollection
