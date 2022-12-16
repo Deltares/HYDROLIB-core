@@ -1,10 +1,7 @@
 from pathlib import Path
 
 from hydrolib.core.basemodel import SerializerConfig
-from hydrolib.core.rr.topology.serializer import (
-    LinkFileSerializer,
-    NodeFileSerializer,
-)
+from hydrolib.core.rr.topology.serializer import LinkFileSerializer, NodeFileSerializer
 from tests.utils import assert_files_equal, test_output_dir, test_reference_dir
 
 
