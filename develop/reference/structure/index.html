@@ -1181,8 +1181,8 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location" class="md-nav__link">
-    check_location()
+  <a href="#hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location_dambreak" class="md-nav__link">
+    check_location_dambreak()
   </a>
   
 </li>
@@ -1673,8 +1673,8 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location" class="md-nav__link">
-    check_location()
+  <a href="#hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location_dambreak" class="md-nav__link">
+    check_location_dambreak()
   </a>
   
 </li>
@@ -2375,14 +2375,14 @@ Typically inside the structure list of a <a href="../mdu/#hydrolib.core.io.dflow
 
 
 
-<h4 id="hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">check_location</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span></code>
+<h4 id="hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location_dambreak" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">check_location_dambreak</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
   </span>
 
-<a href="#hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#hydrolib.core.io.dflowfm.structure.models.Dambreak.check_location_dambreak" class="headerlink" title="Permanent link">&para;</a></h4>
 
     <div class="doc doc-contents ">
 
@@ -2443,7 +2443,7 @@ Verifies whether de water level location specifications are valid.</p>
           <summary>Source code in <code>hydrolib/core/io/dflowfm/structure/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span>
 <span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">check_location</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">check_location_dambreak</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies whether the location for this structure contains valid values for</span>
 <span class="sd">    numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.</span>
@@ -2484,15 +2484,7 @@ Verifies whether de water level location specifications are valid.</p>
         <span class="s2">&quot;waterLevelDownstreamNodeId&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">Structure</span><span class="o">.</span><span class="n">validate_coordinates_in_model</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;polylinefile&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="n">values</span>
-
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="s2">&quot;`num/x/yCoordinates` or `polylineFile` are mandatory for a Dambreak structure.&quot;</span>
-    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">values</span>
 </code></pre></div>
         </details>
     </div>
@@ -3536,27 +3528,61 @@ otherwise numcoordinates xcoordinates and ycoordinates shall be expected.</p>
     <span class="n">filtered_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
     <span class="n">structype</span> <span class="o">=</span> <span class="n">filtered_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">structype</span> <span class="o">==</span> <span class="s2">&quot;compound&quot;</span> <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">(</span><span class="n">Compound</span><span class="p">,</span> <span class="n">Dambreak</span><span class="p">))):</span>
+    <span class="k">if</span> <span class="n">structype</span> <span class="o">==</span> <span class="s2">&quot;compound&quot;</span> <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">(</span><span class="n">Compound</span><span class="p">)):</span>
         <span class="c1"># Compound structure does not require a location specification.</span>
-        <span class="n">only_coordinates_structures</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">longculvert</span><span class="o">=</span><span class="s2">&quot;LongCulvert&quot;</span><span class="p">,</span> <span class="n">dambreak</span><span class="o">=</span><span class="s2">&quot;Dambreak&quot;</span>
-        <span class="p">)</span>
-        <span class="n">coordinates_in_model</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">validate_coordinates_in_model</span><span class="p">(</span>
-            <span class="n">filtered_values</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span>
 
-        <span class="c1"># Exception -&gt; LongCulvert requires coordinates_in_model, but not branchId and chainage.</span>
-        <span class="k">if</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">coordinates_in_model</span>
-            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`num/x/yCoordinates` are mandatory for a </span><span class="si">{</span><span class="n">only_coordinates_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
+    <span class="c1"># Backwards compatibility for old-style polylinefile input field (instead of num/x/yCoordinates):</span>
+    <span class="n">polyline_compatible_structures</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">pump</span><span class="o">=</span><span class="s2">&quot;Pump&quot;</span><span class="p">,</span>
+        <span class="n">dambreak</span><span class="o">=</span><span class="s2">&quot;Dambreak&quot;</span><span class="p">,</span>
+        <span class="n">gate</span><span class="o">=</span><span class="s2">&quot;Gate&quot;</span><span class="p">,</span>
+        <span class="n">weir</span><span class="o">=</span><span class="s2">&quot;Weir&quot;</span><span class="p">,</span>
+        <span class="n">generalstructure</span><span class="o">=</span><span class="s2">&quot;GeneralStructure&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">polylinefile_in_model</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">structype</span> <span class="ow">in</span> <span class="n">polyline_compatible_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="ow">and</span> <span class="n">filtered_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;polylinefile&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">)</span>
 
-        <span class="n">branch_and_chainage_in_model</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">Structure</span><span class="o">.</span><span class="n">validate_branch_and_chainage_in_model</span><span class="p">(</span><span class="n">filtered_values</span><span class="p">)</span>
-        <span class="p">)</span>
+    <span class="c1"># No branchId+chainage for some structures:</span>
+    <span class="n">only_coordinates_structures</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">longculvert</span><span class="o">=</span><span class="s2">&quot;LongCulvert&quot;</span><span class="p">,</span> <span class="n">dambreak</span><span class="o">=</span><span class="s2">&quot;Dambreak&quot;</span>
+    <span class="p">)</span>
+    <span class="n">coordinates_in_model</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">validate_coordinates_in_model</span><span class="p">(</span><span class="n">filtered_values</span><span class="p">)</span>
+
+    <span class="c1"># Error: do not allow both x/y and polyline file:</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">polylinefile_in_model</span> <span class="ow">and</span> <span class="n">coordinates_in_model</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both.&quot;</span>
+
+    <span class="c1"># Error: require x/y or polyline file:</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">structype</span> <span class="ow">in</span> <span class="n">polyline_compatible_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="p">):</span>
         <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">branch_and_chainage_in_model</span> <span class="ow">or</span> <span class="n">coordinates_in_model</span>
-        <span class="p">),</span> <span class="s2">&quot;Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` fields.&quot;</span>
+            <span class="n">coordinates_in_model</span> <span class="ow">or</span> <span class="n">polylinefile_in_model</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a </span><span class="si">{</span><span class="n">polyline_compatible_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
+
+    <span class="c1"># Error: Some structures require coordinates_in_model, but not branchId and chainage.</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">polylinefile_in_model</span>
+        <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">coordinates_in_model</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Specify location by setting `num/x/yCoordinates` for a </span><span class="si">{</span><span class="n">only_coordinates_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
+
+    <span class="c1"># Error: final check: at least one of x/y, branchId+chainage or polyline file must be given</span>
+    <span class="n">branch_and_chainage_in_model</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">validate_branch_and_chainage_in_model</span><span class="p">(</span>
+        <span class="n">filtered_values</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">branch_and_chainage_in_model</span>
+        <span class="ow">or</span> <span class="n">coordinates_in_model</span>
+        <span class="ow">or</span> <span class="n">polylinefile_in_model</span>
+    <span class="p">),</span> <span class="s2">&quot;Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields.&quot;</span>
 
     <span class="k">return</span> <span class="n">values</span>
 </code></pre></div>
