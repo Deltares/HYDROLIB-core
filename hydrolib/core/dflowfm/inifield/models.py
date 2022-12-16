@@ -8,6 +8,7 @@ from pydantic.class_validators import root_validator, validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     get_enum_validator,
@@ -76,19 +77,6 @@ class AveragingType(str, Enum):
     minabs = "minAbs"  # smallest absolute value
 
     allowedvaluestext = "Possible values: mean, nearestNb, max, min, invDist, minAbs."
-
-
-class LocationType(str, Enum):
-    """
-    Enum class containing the valid values for the locationType
-    attribute in several subclasses of AbstractIniField.
-    """
-
-    oned = "1d"  # interpolate only to 1d nodes/links
-    twod = "2d"  # interpolate only to 2d nodes/lin
-    all = "all"  # interpolate to all nodes/links
-
-    allowedvaluestext = "Possible values: 1d, 2d, all."
 
 
 class IniFieldGeneral(INIGeneral):
