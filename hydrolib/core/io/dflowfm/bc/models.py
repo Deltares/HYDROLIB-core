@@ -403,7 +403,7 @@ class VectorForcingBase(ForcingBase):
     def _find_and_pack_vector_qups(
         number_of_element_repetitions: int,
         qup_iter: Iterator[ScalarOrVectorQUP],
-        quantityunitpairs_with_vectors: list[ScalarOrVectorQUP],
+        quantityunitpairs_with_vectors: List[ScalarOrVectorQUP],
         vectordef: str,
     ):
         vectorname, componentdefs = vectordef.split(":")
