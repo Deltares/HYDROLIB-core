@@ -12,7 +12,7 @@ import logging
 import re
 from enum import Enum
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional, Set, Union
+from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
@@ -387,34 +387,51 @@ class VectorForcingBase(ForcingBase):
         # For each vector definition line, greedily find the quantity unit pairs
         # that form the vector elements, and pack them into a single VectorQuantityUnitPairs oject.
         for vectordef in vectordefs:
-            vectorname, componentdefs = vectordef.split(":")
-            componentnames = re.split(r"[, \t]", componentdefs)
-            n_components = len(componentnames)
-
-            vqu_pair = VectorQuantityUnitPairs(
-                vectorname=vectorname, elementname=componentnames, quantityunitpair=[]
+            VectorForcingBase._find_and_pack_vector_qups(
+                number_of_element_repetitions,
+                qup_iter,
+                quantityunitpairs_with_vectors,
+                vectordef,
             )
 
-            n_rep = 0
-            for qu_pair in qup_iter:
-                if qu_pair.quantity in componentnames:
-                    # This vector element found, store it.
-                    vqu_pair.quantityunitpair.append(qu_pair)
-                    n_rep += 1
-                    if n_rep == n_components * number_of_element_repetitions:
-                        break
-                else:
-                    # This quantity was no vector element being searched for
-                    # so keep it as a regular (scalar) QuantityUnitPair.
-                    quantityunitpairs_with_vectors.append(qu_pair)
-
-            if VectorForcingBase._validate_vectorlength(
-                vqu_pair, number_of_element_repetitions
-            ):
-                # This VectorQuantityUnitPairs is now complete; add it to result list.
-                quantityunitpairs_with_vectors.append(vqu_pair)
+        for remaining_qu_pair in qup_iter:
+            quantityunitpairs_with_vectors.append(remaining_qu_pair)
 
         quantityunitpairs[:] = quantityunitpairs_with_vectors
+
+    @staticmethod
+    def _find_and_pack_vector_qups(
+        number_of_element_repetitions: int,
+        qup_iter: Iterator[ScalarOrVectorQUP],
+        quantityunitpairs_with_vectors: List[ScalarOrVectorQUP],
+        vectordef: str,
+    ):
+        vectorname, componentdefs = vectordef.split(":")
+        componentnames = re.split(r"[, \t]", componentdefs)
+        n_components = len(componentnames)
+
+        vqu_pair = VectorQuantityUnitPairs(
+            vectorname=vectorname, elementname=componentnames, quantityunitpair=[]
+        )
+
+        n_rep = 0
+        for qu_pair in qup_iter:
+            if qu_pair.quantity in componentnames:
+                # This vector element found, store it.
+                vqu_pair.quantityunitpair.append(qu_pair)
+                n_rep += 1
+                if n_rep == n_components * number_of_element_repetitions:
+                    break
+            else:
+                # This quantity was no vector element being searched for
+                # so keep it as a regular (scalar) QuantityUnitPair.
+                quantityunitpairs_with_vectors.append(qu_pair)
+
+        if VectorForcingBase._validate_vectorlength(
+            vqu_pair, number_of_element_repetitions
+        ):
+            # This VectorQuantityUnitPairs is now complete; add it to result list.
+            quantityunitpairs_with_vectors.append(vqu_pair)
 
     @staticmethod
     def _validate_vectorlength(
