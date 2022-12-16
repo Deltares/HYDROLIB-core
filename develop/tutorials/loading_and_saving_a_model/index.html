@@ -1528,7 +1528,7 @@ To aid users in migrating their models, HYDROLIB-core offers a feature to resolv
 <p>Consider an MDU model file that references a network file: <code>Network/flowfm_net.nc</code>.
 The file on disk is actually called <code>network/FlowFM_net.nc</code>.</p>
 <p>To load the model and simultaneously repair the file references in the in-memory model:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hydrolib.core.io.dflowfm.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hydrolib.core.dflowfm.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="s2">&quot;FlowFM.mdu&quot;</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># assert that file reference has been updated from Network/flowfm_net.nc to network/FlowFM_net.nc</span>

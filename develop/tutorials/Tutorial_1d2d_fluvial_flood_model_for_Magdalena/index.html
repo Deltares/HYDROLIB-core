@@ -2521,15 +2521,15 @@ Licensed under the Apache License, Version 2.0.
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">box</span>
 
 <span class="c1"># HYDROLIB-core libraries</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span><span class="p">,</span> <span class="n">AutoStartOption</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.net.models</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.crosssection.models</span> <span class="kn">import</span> <span class="n">CrossLocModel</span><span class="p">,</span> <span class="n">CrossDefModel</span><span class="p">,</span> <span class="n">CrossSection</span><span class="p">,</span> <span class="n">YZCrsDef</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.friction.models</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.bc.models</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.ext.models</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.inifield.models</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.onedfield.models</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.structure.models</span> <span class="kn">import</span> <span class="n">Weir</span><span class="p">,</span> <span class="n">FlowDirection</span><span class="p">,</span> <span class="n">StructureModel</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span><span class="p">,</span> <span class="n">AutoStartOption</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.net.models</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.crosssection.models</span> <span class="kn">import</span> <span class="n">CrossLocModel</span><span class="p">,</span> <span class="n">CrossDefModel</span><span class="p">,</span> <span class="n">CrossSection</span><span class="p">,</span> <span class="n">YZCrsDef</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.friction.models</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.bc.models</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.ext.models</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.inifield.models</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.onedfield.models</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.structure.models</span> <span class="kn">import</span> <span class="n">Weir</span><span class="p">,</span> <span class="n">FlowDirection</span><span class="p">,</span> <span class="n">StructureModel</span>
 </pre></div>
 <div id="cell-1" class="clipboard-copy-txt"># basic packages
 import numpy as np
@@ -2545,15 +2545,15 @@ from shapely import wkt
 from shapely.geometry import box
 
 # HYDROLIB-core libraries
-from hydrolib.core.io.mdu.models import FMModel, AutoStartOption
-from hydrolib.core.io.net.models import *
-from hydrolib.core.io.crosssection.models import CrossLocModel, CrossDefModel, CrossSection, YZCrsDef
-from hydrolib.core.io.friction.models import *
-from hydrolib.core.io.bc.models import *
-from hydrolib.core.io.ext.models import *
-from hydrolib.core.io.inifield.models import *
-from hydrolib.core.io.onedfield.models import *
-from hydrolib.core.io.structure.models import Weir, FlowDirection, StructureModel
+from hydrolib.core.mdu.models import FMModel, AutoStartOption
+from hydrolib.core.net.models import *
+from hydrolib.core.crosssection.models import CrossLocModel, CrossDefModel, CrossSection, YZCrsDef
+from hydrolib.core.friction.models import *
+from hydrolib.core.bc.models import *
+from hydrolib.core.ext.models import *
+from hydrolib.core.inifield.models import *
+from hydrolib.core.onedfield.models import *
+from hydrolib.core.structure.models import Weir, FlowDirection, StructureModel
 </div>
     
         </div>
@@ -2626,7 +2626,7 @@ inputdir =
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="create-empty-d-flow-fm-model">Create empty D-Flow FM model<a class="anchor-link" href="#create-empty-d-flow-fm-model">&#182;</a></h2><p>To start a model from scratch you need to create first an empty model without data and assign a filepath to the model. In this case a D-Flow FM model is created. The MDU file (master definition file) is the main file of the D-Flow FM model. This is created with the <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/mdu/#hydrolib.core.io.mdu.models.FMModel"><code>FMModel()</code></a> function.
+<h2 id="create-empty-d-flow-fm-model">Create empty D-Flow FM model<a class="anchor-link" href="#create-empty-d-flow-fm-model">&#182;</a></h2><p>To start a model from scratch you need to create first an empty model without data and assign a filepath to the model. In this case a D-Flow FM model is created. The MDU file (master definition file) is the main file of the D-Flow FM model. This is created with the <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/mdu/#hydrolib.core.mdu.models.FMModel"><code>FMModel()</code></a> function.
 The <code>fm</code> model object is only created in memory. To save the actual model file, call <code>fm.save()</code>.</p>
 <p><strong>EX2</strong>: Set the <code>outputdir</code> of the model and give it a name. Verify that an MDU file has been written in your output directory.</p>
 
@@ -3031,7 +3031,7 @@ The crosslocfile contains the location of the cross-section on the branches. Thi
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="add-cross-section-locations">Add cross-section locations<a class="anchor-link" href="#add-cross-section-locations">&#182;</a></h3><p>Below the cross-section locations are read from a CSV-file and added to an empty <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/crosssection/#hydrolib.core.io.crosssection.models.CrossLocGeneral">CrossLocModel</a>. Note that the entire dataframe with the cross-section locations is converted at once to CrossLocModel. More about dataframe handling in HYDROLIB-core can be found <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/tutorials/dataframe_handling/">here</a>.</p>
+<h3 id="add-cross-section-locations">Add cross-section locations<a class="anchor-link" href="#add-cross-section-locations">&#182;</a></h3><p>Below the cross-section locations are read from a CSV-file and added to an empty <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/crosssection/#hydrolib.core.crosssection.models.CrossLocGeneral">CrossLocModel</a>. Note that the entire dataframe with the cross-section locations is converted at once to CrossLocModel. More about dataframe handling in HYDROLIB-core can be found <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/tutorials/dataframe_handling/">here</a>.</p>
 <p><strong>EX4</strong>: 
 Please investigate the <code>profile_loc</code> variable and answer the following questions for yourself:</p>
 <ul>
@@ -3132,9 +3132,9 @@ fm.geometry.crosslocfile = crsloc
 <p>Please see that the following steps are included:</p>
 <ol>
 <li>Read the cross-section definitions from an excel. Note that the cross-section definitions id's match with the definitions specified in the crossLocModel.</li>
-<li>Create an empty <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/crosssection/#hydrolib.core.io.crosssection.models.CrossDefModel">CrossDefModel</a> and assign filepath</li>
+<li>Create an empty <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/crosssection/#hydrolib.core.crosssection.models.CrossDefModel">CrossDefModel</a> and assign filepath</li>
 <li>Specify some characteristics for YZ profile. Please consult <a href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf">appendix C.16.1.6 from D-Flow FM 1D2D</a></li>
-<li>Create <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/crosssection/#hydrolib.core.io.crosssection.models.YZCrsDef">YZCrsDef</a> for each profile definition.</li>
+<li>Create <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/crosssection/#hydrolib.core.crosssection.models.YZCrsDef">YZCrsDef</a> for each profile definition.</li>
 <li>Append the definition to the CrossDefModel.</li>
 <li>Append the CrossDefModel to the D-Flow FM model.</li>
 </ol>
@@ -3267,7 +3267,7 @@ fm.geometry.crossdeffile = crsdef
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="add-roughness">Add roughness<a class="anchor-link" href="#add-roughness">&#182;</a></h2><p>The 1D model has now a network topology, computational 1D grid and cross-sections. Friction is a component that should be added to the model to get the proper bed roughness and channel conveyance.</p>
-<p>In this step you will add the <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/friction/#hydrolib.core.io.friction.models.FrictionModel">FrictionModel</a> to the D-Flow FM model by specifying the friction type and value at the upstream cross-section location (chainage=1000.0 m) of each branch in the model (<a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/friction/#hydrolib.core.io.friction.models.FrictBranch">FrictBranch</a>). Also a global roughness section is specified (<a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/friction/#hydrolib.core.io.friction.models.FrictGlobal">FrictGlobal</a>). This global section is used when there is no friction type and values specified for a specific branch. It also contains the frictionId. In the cross-section definition model a reference is made to this frictionId. You can check this with the commands below and search for <code>frictionIds</code>.</p>
+<p>In this step you will add the <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/friction/#hydrolib.core.friction.models.FrictionModel">FrictionModel</a> to the D-Flow FM model by specifying the friction type and value at the upstream cross-section location (chainage=1000.0 m) of each branch in the model (<a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/friction/#hydrolib.core.friction.models.FrictBranch">FrictBranch</a>). Also a global roughness section is specified (<a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/friction/#hydrolib.core.friction.models.FrictGlobal">FrictGlobal</a>). This global section is used when there is no friction type and values specified for a specific branch. It also contains the frictionId. In the cross-section definition model a reference is made to this frictionId. You can check this with the commands below and search for <code>frictionIds</code>.</p>
 
 </div>
 </div>
@@ -3581,8 +3581,8 @@ fm.geometry.frictfile =  # Note that the other friction needs to be added to the
 <p>In this tutorial you will model such a high discharge wave (time series) at the upstream 1D boundary (node id = '521410.278872_1056811.761107'). For the two downstream boundaries (node ids = [wkt_geom    Name    BridgeCount CrossSectio CulvertCoun GateCount   GeometryLen IsLengthCus LateralSour Length  LongName    OrderNumber PumpCount   Source  StructureCo Target  WeirCount   fric_type   fric_value  chainage]) a constant water level of 0 m AD is assumed. Note that this are tidal boundaries in reality.</p>
 <p>In order to apply boundary conditions on a model you need two components:</p>
 <ol>
-<li>Forcing (.bc) file <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/forcing/#hydrolib.core.io.bc.models.ForcingModel">ForcingModel</a>: This model contains the forcing value, time series, astronomical tide, realtime connection with other modules (D-RR) or QHtable. The first two options are created in this tutorial. </li>
-<li>External Forcing (.ext) file <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/ext/#hydrolib.core.io.ext.models.ExtModel">ExtModel</a>: The external forcing specifies the location and type of forcing. Types of forcing are <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/ext/#hydrolib.core.io.ext.models.Boundary">Boundary</a>, <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/ext/#hydrolib.core.io.ext.models.Lateral">Lateral</a> and meteo. </li>
+<li>Forcing (.bc) file <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/forcing/#hydrolib.core.bc.models.ForcingModel">ForcingModel</a>: This model contains the forcing value, time series, astronomical tide, realtime connection with other modules (D-RR) or QHtable. The first two options are created in this tutorial. </li>
+<li>External Forcing (.ext) file <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/ext/#hydrolib.core.ext.models.ExtModel">ExtModel</a>: The external forcing specifies the location and type of forcing. Types of forcing are <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/ext/#hydrolib.core.ext.models.Boundary">Boundary</a>, <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/ext/#hydrolib.core.ext.models.Lateral">Lateral</a> and meteo. </li>
 </ol>
 
 </div>
@@ -4074,8 +4074,8 @@ fm.save(recurse=True)</div>
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="create-2d-flexible-mesh">Create 2D flexible mesh<a class="anchor-link" href="#create-2d-flexible-mesh">&#182;</a></h2><p>We use a shapefile with the area of interest to define the extent of the new 2D mesh that is to be generated.
 First, a uniform rectilinear mesh is generated, after which it can be clipped.</p>
-<p><strong>EX7</strong>: Create a rectangular grid with a cell size of 2500 by 2500 meter. Use <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/net/#hydrolib.core.io.net.models.Mesh2d.create_rectilinear">create_rectilinear()</a> function.</p>
-<p><strong>EX8</strong>: Clip the rectangular grid with the <code>clip_geom</code> using <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/net/#hydrolib.core.io.net.models.Mesh2d.clip">clip()</a> function.</p>
+<p><strong>EX7</strong>: Create a rectangular grid with a cell size of 2500 by 2500 meter. Use <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/net/#hydrolib.core.net.models.Mesh2d.create_rectilinear">create_rectilinear()</a> function.</p>
+<p><strong>EX8</strong>: Clip the rectangular grid with the <code>clip_geom</code> using <a href="https://deltares.github.io/HYDROLIB-core/0.3.1/reference/net/#hydrolib.core.net.models.Mesh2d.clip">clip()</a> function.</p>
 
 </div>
 </div>

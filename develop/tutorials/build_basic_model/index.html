@@ -2472,14 +2472,14 @@ Licensed under the Apache License, Version 2.0.
                 </div>
             </clipboard-copy>
         </div>
-            <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">hydrolib.core.io.structure.models</span> <span class="kn">import</span> <span class="n">FlowDirection</span><span class="p">,</span> <span class="n">StructureModel</span><span class="p">,</span> <span class="n">Weir</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.io.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">hydrolib.core.structure.models</span> <span class="kn">import</span> <span class="n">FlowDirection</span><span class="p">,</span> <span class="n">StructureModel</span><span class="p">,</span> <span class="n">Weir</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.mdu.models</span> <span class="kn">import</span> <span class="n">FMModel</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Package import successful!&quot;</span><span class="p">)</span>
 </pre></div>
-<div id="cell-1" class="clipboard-copy-txt">from hydrolib.core.io.structure.models import FlowDirection, StructureModel, Weir
-from hydrolib.core.io.mdu.models import FMModel
+<div id="cell-1" class="clipboard-copy-txt">from hydrolib.core.structure.models import FlowDirection, StructureModel, Weir
+from hydrolib.core.mdu.models import FMModel
 from pathlib import Path
 
 print("Package import successful!")</div>
@@ -2619,7 +2619,7 @@ For instance, in the above example, if the <code>StructureModel</code> had been 
                 </div>
             </clipboard-copy>
         </div>
-            <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">hydrolib.core.io.dimr.models</span> <span class="kn">import</span> <span class="n">DIMR</span><span class="p">,</span> <span class="n">FMComponent</span>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">hydrolib.core.dimr.models</span> <span class="kn">import</span> <span class="n">DIMR</span><span class="p">,</span> <span class="n">FMComponent</span>
 
 <span class="n">dimr</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">()</span>
 <span class="n">dimr</span><span class="o">.</span><span class="n">component</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -2629,7 +2629,7 @@ For instance, in the above example, if the <code>StructureModel</code> had been 
 <span class="n">dimr_config</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;dimr_config.xml&quot;</span><span class="p">)</span>
 <span class="n">dimr</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">dimr_config</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
-<div id="cell-4" class="clipboard-copy-txt">from hydrolib.core.io.dimr.models import DIMR, FMComponent
+<div id="cell-4" class="clipboard-copy-txt">from hydrolib.core.dimr.models import DIMR, FMComponent
 
 dimr = DIMR()
 dimr.component.append(
