@@ -1,8 +1,4 @@
-from .models import (
-    BranchGeneral,
-    Branch,
-    BranchModel,
-)
+from .models import Branch, BranchGeneral, BranchModel
 
 __all__ = [
     "BranchGeneral",

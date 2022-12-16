@@ -1,4 +1,4 @@
-from .models import Boundary, Lateral, ExtGeneral, ExtModel
+from .models import Boundary, ExtGeneral, ExtModel, Lateral
 
 __all__ = [
     "Boundary",
