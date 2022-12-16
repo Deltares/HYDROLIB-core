@@ -1,4 +1,4 @@
-from .models import Node, NodeFile, Link, LinkFile
+from .models import Link, LinkFile, Node, NodeFile
 
 __all__ = [
     "Node",
