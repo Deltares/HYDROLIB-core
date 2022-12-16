@@ -977,7 +977,7 @@ class Dambreak(Structure):
 
     @root_validator
     @classmethod
-    def check_location(cls, values: dict) -> dict:
+    def check_location_dambreak(cls, values: dict) -> dict:
         """
         Verifies whether the location for this structure contains valid values for
         numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.

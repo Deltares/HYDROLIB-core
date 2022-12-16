@@ -1262,7 +1262,7 @@ class TestDambreak:
             ],
         )
         def test_given_valid_values_returns_values(self, dict_values: dict):
-            return_value = Dambreak.check_location(dict_values)
+            return_value = Dambreak.check_location_dambreak(dict_values)
             assert return_value == dict_values
 
         @pytest.mark.parametrize(
