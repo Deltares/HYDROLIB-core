@@ -1,7 +1,3 @@
-from .models import (
-    ObservationPointGeneral,
-    ObservationPoint,
-    ObservationPointModel,
-)
+from .models import ObservationPoint, ObservationPointGeneral, ObservationPointModel
 
 __all__ = ["ObservationPointGeneral", "ObservationPoint", "ObservationPointModel"]

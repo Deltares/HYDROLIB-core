@@ -1,6 +1,6 @@
 from .models import (
-    ObservationCrossSectionGeneral,
     ObservationCrossSection,
+    ObservationCrossSectionGeneral,
     ObservationCrossSectionModel,
 )
 
