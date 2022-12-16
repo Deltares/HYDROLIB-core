@@ -507,11 +507,11 @@ class Branch:
 
         # Determine the segments that are missing a mesh node
         # Anchor points are added on these segments, such that they will get a mesh node
-        in_range = in_range()
+        nodes_in_range = in_range()
 
         while not all(in_range):
             # Get the index of the first segment without grid point
-            i = in_range.index(False)
+            i = nodes_in_range.index(False)
 
             # Add it to the anchor pts
             anchor_pts.append((lower_limits[i] + upper_limits[i]) / 2.0)
@@ -521,7 +521,7 @@ class Branch:
             offsets = self._generate_1d_spacing(anchor_pts, mesh1d_edge_length)
 
             # Determine the segments that are missing a grid point
-            in_range = in_range()
+            nodes_in_range = in_range()
 
         if len(anchor_pts) > 2:
             logger.info(
