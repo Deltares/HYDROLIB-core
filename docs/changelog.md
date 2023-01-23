@@ -1,8 +1,25 @@
-# Start test
-- Support crs file for observation cross sections #289
-* Too strict validation of optional fields in culvert (#75).
-* https://www.github.com
-# End test
+## 0.4.0 (2023-01-23)
+
+### Feat
+
+- Remove io namespace and add convenient imports/API at several directory levels ({{gh_pr(438)}})
+- Added the option for all supported files to customize the float formatting when saving ({{gh_pr(406)}})
+- Suppress warning in polyfile parser that the white space at the start of the line is ignored ({{gh_pr(409)}})
+- Change data block default spacing from 4 to 2 ({{gh_pr(407)}})
+- Add support for non-recursively loading models ({{gh_pr(401)}})
+
+### Fix
+
+- Fixed polylinefile validation for Structure and its subclasses ({{gh_pr(416)}})
+- Rename variable in generate_nodes function ({{gh_pr(437)}})
+- Ensure that QuantityUnitPairs that are not part of a vector are correctly parsed ({{gh_pr(420)}})
+- Enum values are incorrectly written to files ({{gh_pr(403)}})
+
+### Refactor
+
+- Small refactoring of the VectorQuantityUnitPairs and VectorForcingBase ({{gh_pr(422)}})
+- Move the base module in XYZ back to IO ({{gh_pr(418)}})
+- Refactored support for vectors in .bc files ({{gh_pr(394)}})
 
 ## 0.3.1 (2022-10-25)
 
