@@ -75,6 +75,8 @@ To prepare for releasing, please make sure you have a clean checkout of the late
 	 ```
 	 cz bump --dry-run --increment PATCH
 	 ```
+	 * In the updated `docs/changelog.md`, manually add links to GitHub PR numbers (or issue numbers) at the end of each line, if appropriate.
+         It is recommended to use the macros `{{gh_pr(123)}}`, resp. `{{gh_issue(345)}}` to get automatic hyperlinks (where 123 and 345 are GitHub's PR and issue numbers, respectively).
 	 * Use MAJOR, MINOR or PATCH to increment the version
 	 ```
 	 cz bump --increment {MAJOR,MINOR,PATCH}
