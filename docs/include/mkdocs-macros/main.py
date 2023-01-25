@@ -12,7 +12,7 @@ def define_env(env):
     """
 
     dflowfm_um_url = (
-        "https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf"
+        "https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf"
     )
     sobek_um_url = (
         "https://content.oss.deltares.nl/delft3d/manuals/SOBEK_User_Manual.pdf"

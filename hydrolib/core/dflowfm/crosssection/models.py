@@ -177,7 +177,7 @@ class CircleCrsDef(CrossSectionDefinition):
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the circle input as described in
-    [UM Sec.C.16.1.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.1).
+    [UM Sec.C.16.1.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.1).
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -217,7 +217,7 @@ class RectangleCrsDef(CrossSectionDefinition):
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the rectangle input as described in
-    [UM Sec.C.16.1.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.2).
+    [UM Sec.C.16.1.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.2).
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -260,7 +260,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the zwRiver input as described in
-    [UM Sec.C.16.1.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.3).
+    [UM Sec.C.16.1.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.3).
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -379,7 +379,7 @@ class ZWCrsDef(CrossSectionDefinition):
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the zw input as described in
-    [UM Sec.C.16.1.4](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.4).
+    [UM Sec.C.16.1.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.4).
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -455,7 +455,7 @@ class YZCrsDef(CrossSectionDefinition):
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the yz input as described in
-    [UM Sec.C.16.1.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.6).
+    [UM Sec.C.16.1.6](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.6).
     """
 
     class Comments(CrossSectionDefinition.Comments):
@@ -573,7 +573,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
     All lowercased attributes match with the xyz input as described in
-    [UM Sec.C.16.1.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.5).
+    [UM Sec.C.16.1.5](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.16.1.5).
 
     This class extends the YZCrsDef class with x-coordinates and an optional
     branchId field. Most other attributes are inherited, but the coordcount
