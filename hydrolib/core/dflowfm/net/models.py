@@ -509,7 +509,7 @@ class Branch:
         # Anchor points are added on these segments, such that they will get a mesh node
         nodes_in_range = in_range()
 
-        while not all(in_range):
+        while not all(nodes_in_range):
             # Get the index of the first segment without grid point
             i = nodes_in_range.index(False)
 
