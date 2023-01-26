@@ -37,9 +37,7 @@ jobs:
           poetry config virtualenvs.path ~/.virtualenvs
 
       - name: Install Dependencies
-        run: |
-          poetry lock
-          poetry install
+        run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Test with pytest
