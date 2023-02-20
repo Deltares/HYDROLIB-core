@@ -1,4 +1,5 @@
 from pathlib import Path
+from enum import Enum
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator, validator
@@ -17,12 +18,31 @@ from hydrolib.core.dflowfm.ini.models import (
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
+    get_enum_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
     validate_location_specification,
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
+class ForcingFileType(str, Enum):
+    """
+    Enum class containing the valid values for the forcingFileType
+    attribute in Meteo class.
+    """
+    bcascii = "bcAscii"
+    netcdf = "netcdf"
+
+    allowedvaluestext = "Possible values: bcAscii, netcdf."
+
+
+class InterpolationMethod(str, Enum):
+    """
+    Enum class containing the valid values for the interpolationMethod
+    attribute in Meteo class.
+    """
+    nearestnb = "nearestNb" # only with forcingFileType=netcdf .
+    allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
 
 class Boundary(INIBasedModel):
     """
@@ -117,7 +137,6 @@ class Boundary(INIBasedModel):
 
         return None
 
-
 class Lateral(INIBasedModel):
     """
     A `[Lateral]` block for use inside an external forcings file,
@@ -180,6 +199,80 @@ class Lateral(INIBasedModel):
             )
         return v
 
+class Meteo(INIBasedModel):
+    """
+    A `[Meteo]` block for use inside an external forcings file,
+    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+
+    All lowercased attributes match with the lateral input as described in
+    [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
+    """
+
+
+    class Comments(INIBasedModel.Comments):
+        quantity: Optional[str] = Field(
+            "Name of the quantity. See UM Section C.5.3", alias="quantity"
+        )
+        forcingfile: Optional[str] = Field(
+            "Name of file containing the forcing for this meteo quantity.", alias="forcingFile"
+        )
+        forcingfiletype: Optional[str] = Field("Type of forcingFile.", alias="forcingFileType")
+        targetmaskfile: Optional[str] = Field(
+            "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
+            alias="targetMaskFile"
+        )
+        targetmaskinvert: Optional[str] = Field(
+            "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
+            alias="targetMaskInvert")
+        interpolationmethod: Optional[str] = Field(
+            "Type of (spatial) interpolation.", alias="interpolationmethod"
+        )
+
+    comments: Comments = Comments()
+
+    _disk_only_file_model_should_not_be_none = (
+        validator_set_default_disk_only_file_model_when_none()
+    )
+
+    _header: Literal["Meteo"] = "Meteo"
+    quantity: str = Field(alias="quantity")
+    forcingfile: ForcingModel = Field(alias="forcingFile")
+    forcingfiletype: str = Field(alias="forcingFileType")
+    targetmaskfile: Optional[DiskOnlyFileModel] = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="targetMaskFile"
+    )
+    targetmaskinvert: Optional[bool] = Field(alias="targetMaskInvert")
+    interpolationmethod: Optional[str] = Field(alias="interpolationMethod")
+
+    forcingfiletype_validator = get_enum_validator("forcingfiletype", enum=ForcingFileType)
+    interpolationmethod_validator = get_enum_validator(
+        "interpolationmethod", enum=InterpolationMethod
+    )
+
+    @property
+    def forcing(self) -> ForcingBase:
+        """Retrieves the corresponding forcing data for meteo.
+
+        Returns:
+            ForcingBase: The corresponding forcing data. None when meteo does not have a forcing file or when the data cannot be found. #FIXME check this part
+        """
+
+        if self.forcingfile is None:
+            return None
+
+        for forcing in self.forcingfile.forcing:
+
+            if forcing.name != "global":
+                continue
+
+            for quantity in forcing.quantityunitpair:
+                if quantity.quantity.startswith(self.quantity):
+                    return forcing
+
+        return None
+
+
+
 
 class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta data."""
@@ -199,15 +292,17 @@ class ExtModel(INIModel):
         general (ExtGeneral): `[General]` block with file metadata.
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
+        meteo List[Meteo]): List of `[Meteo]` blocks for all meteo forcings.
     """
 
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = []
     lateral: List[Lateral] = []
+    meteo: List[Meteo] = []
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )
-    _split_to_list = make_list_validator("boundary", "lateral")
+    _split_to_list = make_list_validator("boundary", "lateral", "meteo")
 
     @classmethod
     def _ext(cls) -> str:
