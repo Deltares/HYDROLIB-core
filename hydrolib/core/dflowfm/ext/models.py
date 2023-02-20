@@ -1,5 +1,5 @@
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator, validator
@@ -25,11 +25,13 @@ from hydrolib.core.dflowfm.ini.util import (
 )
 from hydrolib.core.utils import str_is_empty_or_none
 
+
 class ForcingFileType(str, Enum):
     """
     Enum class containing the valid values for the forcingFileType
     attribute in Meteo class.
     """
+
     bcascii = "bcAscii"
     netcdf = "netcdf"
 
@@ -41,8 +43,10 @@ class InterpolationMethod(str, Enum):
     Enum class containing the valid values for the interpolationMethod
     attribute in Meteo class.
     """
-    nearestnb = "nearestNb" # only with forcingFileType=netcdf .
+
+    nearestnb = "nearestNb"  # only with forcingFileType=netcdf .
     allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
+
 
 class Boundary(INIBasedModel):
     """
@@ -137,6 +141,7 @@ class Boundary(INIBasedModel):
 
         return None
 
+
 class Lateral(INIBasedModel):
     """
     A `[Lateral]` block for use inside an external forcings file,
@@ -199,6 +204,7 @@ class Lateral(INIBasedModel):
             )
         return v
 
+
 class Meteo(INIBasedModel):
     """
     A `[Meteo]` block for use inside an external forcings file,
@@ -208,22 +214,25 @@ class Meteo(INIBasedModel):
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
-
     class Comments(INIBasedModel.Comments):
         quantity: Optional[str] = Field(
             "Name of the quantity. See UM Section C.5.3", alias="quantity"
         )
         forcingfile: Optional[str] = Field(
-            "Name of file containing the forcing for this meteo quantity.", alias="forcingFile"
+            "Name of file containing the forcing for this meteo quantity.",
+            alias="forcingFile",
         )
-        forcingfiletype: Optional[str] = Field("Type of forcingFile.", alias="forcingFileType")
+        forcingfiletype: Optional[str] = Field(
+            "Type of forcingFile.", alias="forcingFileType"
+        )
         targetmaskfile: Optional[str] = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
-            alias="targetMaskFile"
+            alias="targetMaskFile",
         )
         targetmaskinvert: Optional[str] = Field(
             "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
-            alias="targetMaskInvert")
+            alias="targetMaskInvert",
+        )
         interpolationmethod: Optional[str] = Field(
             "Type of (spatial) interpolation.", alias="interpolationmethod"
         )
@@ -244,7 +253,9 @@ class Meteo(INIBasedModel):
     targetmaskinvert: Optional[bool] = Field(alias="targetMaskInvert")
     interpolationmethod: Optional[str] = Field(alias="interpolationMethod")
 
-    forcingfiletype_validator = get_enum_validator("forcingfiletype", enum=ForcingFileType)
+    forcingfiletype_validator = get_enum_validator(
+        "forcingfiletype", enum=ForcingFileType
+    )
     interpolationmethod_validator = get_enum_validator(
         "interpolationmethod", enum=InterpolationMethod
     )
@@ -270,8 +281,6 @@ class Meteo(INIBasedModel):
                     return forcing
 
         return None
-
-
 
 
 class ExtGeneral(INIGeneral):
