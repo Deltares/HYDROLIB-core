@@ -323,6 +323,38 @@ class Mesh2d(BaseModel):
         # Process
         self._process(self.meshkernel.mesh2d_get())
 
+    def refine_based_on_samples(self, samples): #FIXME: complete the documentation
+        """Refine the mesh based on a sample raster containing the steps
+
+        Args:
+            samples (GeometryList): Polygon in which to refine
+
+        """
+        # Add current mesh to Mesh2d instance
+        mesh2d_input = mk.Mesh2d(
+            node_x=self.mesh2d_node_x,
+            node_y=self.mesh2d_node_y,
+            edge_nodes=self.mesh2d_edge_nodes.ravel(),
+        )
+        self.meshkernel.mesh2d_set(mesh2d_input)
+
+        # Parameter
+        parameters = mk.MeshRefinementParameters(
+            refinement_type=2,
+            max_refinement_iterations=10,
+            refine_intersected=True,
+            account_for_samples_outside_face=False,
+            use_mass_center_when_refining=True,
+            min_face_size=1.0,
+            connect_hanging_nodes=True,
+        )
+
+        self.meshkernel.mesh2d_refine_based_on_samples(samples, relative_search_radius = 1,
+            minimum_num_samples=1, mesh_refinement_params=parameters)
+
+        # Process
+        self._process(self.meshkernel.mesh2d_get())
+
 
 class Branch:
     def __init__(
@@ -1188,6 +1220,9 @@ class Network:
 
     def mesh2d_refine_mesh(self, polygon: mk.GeometryList, level: int = 1) -> None:
         self._mesh2d.refine(polygon=polygon, level=level)
+
+    def mesh2d_refine_mesh_based_on_samples(self, samples: mk.GeometryList) -> None:
+        self._mesh2d.refine_based_on_samples(samples=samples)
 
     def mesh1d_add_branch(
         self,
