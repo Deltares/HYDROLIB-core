@@ -323,7 +323,7 @@ class Mesh2d(BaseModel):
         # Process
         self._process(self.meshkernel.mesh2d_get())
 
-    def refine_based_on_samples(self, samples): #FIXME: complete the documentation
+    def refine_based_on_samples(self, samples):  # FIXME: complete the documentation
         """Refine the mesh based on a sample raster containing the steps
 
         Args:
@@ -349,8 +349,12 @@ class Mesh2d(BaseModel):
             connect_hanging_nodes=True,
         )
 
-        self.meshkernel.mesh2d_refine_based_on_samples(samples, relative_search_radius = 1,
-            minimum_num_samples=1, mesh_refinement_params=parameters)
+        self.meshkernel.mesh2d_refine_based_on_samples(
+            samples,
+            relative_search_radius=1,
+            minimum_num_samples=1,
+            mesh_refinement_params=parameters,
+        )
 
         # Process
         self._process(self.meshkernel.mesh2d_get())
