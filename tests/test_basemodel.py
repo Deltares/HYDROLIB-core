@@ -7,20 +7,28 @@ import pytest
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
+    FileCasingResolver,
     FileLoadContext,
     FileModel,
     FileModelCache,
     FilePathResolver,
+    ModelLoadSettings,
     ParsableFileModel,
     ResolveRelativeMode,
+    SerializerConfig,
     context_file_loading,
     file_load_context,
 )
-from hydrolib.core.io.dimr.models import DIMR
-from hydrolib.core.io.mdu.models import FMModel
+from hydrolib.core.dflowfm.mdu.models import FMModel
+from hydrolib.core.dimr.models import DIMR
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
+
+
+def runs_from_docker() -> bool:
+    """Check to see if we are running from within docker."""
+    return Path("/.dockerenv").exists()
 
 
 class TestFileModel:
@@ -290,6 +298,21 @@ class TestFileModel:
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
+    @pytest.mark.skipif(
+        runs_from_docker(),
+        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
+    )
+    def test_initialize_model_with_resolve_casing_updates_file_references_recursively(
+        self,
+    ):
+        file_path = test_input_dir / "resolve_casing_file_load_test" / "fm.mdu"
+        model = FMModel(file_path, resolve_casing=True)
+
+        assert model.geometry.inifieldfile.filepath == Path("initial/initialFields.ini")
+        assert model.geometry.inifieldfile.initial[0].datafile.filepath == Path(
+            "InitialWaterLevel.ini"
+        )
+
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
@@ -538,6 +561,27 @@ class TestFileLoadContext:
         context.register_model(register_path, model)
         assert context.retrieve_model(retrieval_path) is model
 
+    def test_load_settings_property_raises_error_with_uninitialized_settings(self):
+        context = FileLoadContext()
+        with pytest.raises(ValueError) as error:
+            context.load_settings
+
+        assert (
+            str(error.value)
+            == f"The model load settings have not been initialized yet. Make sure to call `{context.initialize_load_settings.__name__}` first."
+        )
+
+    @pytest.mark.parametrize("first", [True, False])
+    @pytest.mark.parametrize("second", [True, False])
+    def test_can_only_set_load_settings_once(self, first: bool, second: bool):
+        context = FileLoadContext()
+        context.initialize_load_settings(first, first)
+        context.initialize_load_settings(second, second)
+
+        assert context.load_settings is not None
+        assert context.load_settings.recurse == first
+        assert context.load_settings.resolve_casing == first
+
 
 class TestDiskOnlyFileModel:
     _generic_file_model_path = Path("unsupported_file.blob")
@@ -654,3 +698,50 @@ class TestDiskOnlyFileModel:
         assert output_path.exists()
         assert output_path.is_file()
         assert filecmp.cmp(input_parent_path / input_file_name, output_path)
+
+
+class TestFileCasingResolver:
+    @pytest.mark.parametrize(
+        "input_file, expected_file",
+        [
+            pytest.param(
+                Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
+                Path("dflowfm_individual_files/FlowFM_boundaryconditions1d.bc"),
+                id="resolve_casing True: Matching file exists with different casing",
+            ),
+            pytest.param(
+                Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
+                Path("dflowfm_individual_files/beepboop.robot"),
+                id="resolve_casing True: No matching file",
+            ),
+        ],
+    )
+    @pytest.mark.skipif(
+        runs_from_docker(),
+        reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
+    )
+    def test_resolve_returns_correct_result(
+        self, input_file: str, expected_file: str
+    ) -> None:
+        resolver = FileCasingResolver()
+
+        file_path = test_input_dir / input_file
+
+        expected_file_path = test_input_dir / expected_file
+        actual_file_path = resolver.resolve(file_path)
+
+        assert actual_file_path == expected_file_path
+
+
+class TestModelLoadSettings:
+    @pytest.mark.parametrize("value", [True, False])
+    def test_recurse_property(self, value: bool):
+        settings = ModelLoadSettings(recurse=value, resolve_casing=value)
+        assert settings.recurse == value
+        assert settings.resolve_casing == value
+
+
+class TestSerializerConfig:
+    def test_default(self):
+        config = SerializerConfig()
+        assert config.float_format == ""

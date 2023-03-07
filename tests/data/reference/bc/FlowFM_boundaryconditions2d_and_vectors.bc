@@ -1,0 +1,42 @@
+# written by HYDROLIB-core 0.3.0
+
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name              = zuiduxuy_0002
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = MINUTES SINCE 1992-08-31 00:00:00 +00:00
+vector            = uxuyadvectionvelocitybnd:ux,uy
+quantity          = ux
+unit              = -
+quantity          = uy
+unit              = -
+0.0        0.5   0.2
+60.0       0.5   0.2
+120.0      -0.5  0.4
+9999999.0  -0.5  0.4
+
+[Forcing]
+name              = zuiduxuy_0001
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = MINUTES SINCE 1992-08-31 00:00:00 +00:00
+vector            = uxuyadvectionvelocitybnd:ux,uy
+quantity          = ux
+unit              = -
+quantity          = uy
+unit              = -
+0.0        0.5   0.2
+60.0       0.5   0.2
+120.0      -0.5  0.7
+9999999.0  -0.5  0.7
+
