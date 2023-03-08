@@ -175,3 +175,11 @@ def get_operating_system() -> OperatingSystem:
         return OperatingSystem.MACOS
 
     raise NotImplementedError(f"Operating system {operating_system} is not supported.")
+
+class PathStyle(Enum):
+    """Path style format."""
+
+    UNIXLIKE = auto()
+    """Unix-like path style."""
+    WINDOWSLIKE = auto()
+    """Windows-like path style."""
