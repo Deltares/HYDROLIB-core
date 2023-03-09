@@ -37,7 +37,7 @@ class ObservationPoint(INIBasedModel):
     An observation point that is included in the observation point file.
 
     All lowercased attributes match with the observation point input as described in
-    [UM Sec.F.2.2.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#section.F.2.2.1).
+    [UM Sec.F.2.2.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.2.1).
     """
 
     class Comments(INIBasedModel.Comments):
