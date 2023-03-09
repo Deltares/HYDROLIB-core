@@ -1,7 +1,15 @@
+from pathlib import Path
+
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.xyz.models import XYZModel, XYZPoint
+from hydrolib.core.dflowfm.xyz.parser import XYZParser
 from hydrolib.core.dflowfm.xyz.serializer import XYZSerializer
-from tests.utils import assert_files_equal, test_output_dir, test_reference_dir
+from tests.utils import (
+    assert_files_equal,
+    test_input_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 class TestXYZSerializer:
@@ -39,3 +47,18 @@ class TestXYZModel:
         model.save()
 
         assert_files_equal(output_file, reference_file)
+
+    def test_load(self):
+        input_file = test_input_dir / "dflowfm_individual_files" / "sample.xyz"
+        model = XYZModel(filepath=input_file)
+
+        points = [
+            XYZPoint(x=37115.2500000, y=419886.6875000, z=500.0000000),
+            XYZPoint(x=1, y=10, z=100),
+            XYZPoint(x=2, y=20, z=200),
+            XYZPoint(x=3, y=30, z=300),
+            XYZPoint(x=4, y=40, z=400, comment="fourth sample point"),
+        ]
+
+        assert len(model.points) == len(points)
+        assert model.points == points
