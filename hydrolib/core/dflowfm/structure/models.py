@@ -302,7 +302,7 @@ class Weir(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the weir input as described in
-    [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
+    [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
     """
 
     class Comments(Structure.Comments):
@@ -344,7 +344,7 @@ class UniversalWeir(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the universal weir input as described in
-    [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
+    [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
     """
 
     class Comments(Structure.Comments):
@@ -399,7 +399,7 @@ class Culvert(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the culvert input as described in
-    [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
+    [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
     """
 
     type: Literal["culvert"] = Field("culvert", alias="type")
@@ -485,7 +485,7 @@ class Pump(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the pump input as described in
-    [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
+    [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
     """
 
     type: Literal["pump"] = Field("pump", alias="type")
@@ -598,7 +598,7 @@ class Compound(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the compound input as described in
-    [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
+    [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
     """
 
     type: Literal["compound"] = Field("compound", alias="type")
@@ -616,7 +616,7 @@ class Orifice(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the orifice input as described in
-    [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
+    [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
     """
 
     type: Literal["orifice"] = Field("orifice", alias="type")
@@ -674,7 +674,7 @@ class GeneralStructure(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the orifice input as described in
-    [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
+    [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
     """
 
     class Comments(Structure.Comments):
@@ -828,7 +828,7 @@ class Dambreak(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the dambreak input as described in
-    [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
+    [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
     """
 
     class Comments(Structure.Comments):
@@ -1027,7 +1027,7 @@ class Bridge(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the bridge input as described in
-    [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
+    [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
     """
 
     class Comments(Structure.Comments):

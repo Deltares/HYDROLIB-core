@@ -34,7 +34,7 @@ class ObservationCrossSection(INIBasedModel):
 
     All lowercased attributes match with the observation cross
     section output as described in [UM Sec.F2.4.1]
-    (https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.4.1)
+    (https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.4.1)
     """
 
     class Comments(INIBasedModel.Comments):
