@@ -27,8 +27,9 @@ class XYZParser:
                 if len(line) < 5:  # 3 values, two whitespaces
                     continue
 
-                x, y, z, c = re.split(xyzpattern, line, maxsplit=3)
+                x, y, z, *c = re.split(xyzpattern, line.strip(), maxsplit=3)
 
+                c = c[0] if len(c) > 0 else ""
                 c = c.strip("#").strip()
                 if len(c) == 0:
                     c = None
