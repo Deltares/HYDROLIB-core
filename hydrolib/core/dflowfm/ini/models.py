@@ -168,15 +168,17 @@ class INIBasedModel(BaseModel, ABC):
         return Section(header=self._header, content=props)
 
 
+Datablock = List[List[Union[float, str]]]
+
+
 class DataBlockINIBasedModel(INIBasedModel):
     """DataBlockINIBasedModel defines the base model for ini models with datablocks.
 
     Attributes:
-        datablock (List[List[Union[float, str]]]): (class attribute) the actual data
-            columns.
+        datablock (Datablock): (class attribute) the actual data columns.
     """
 
-    datablock: List[List[Union[float, str]]] = []
+    datablock: Datablock = []
 
     _make_lists = make_list_validator("datablock")
 
@@ -206,19 +208,17 @@ class DataBlockINIBasedModel(INIBasedModel):
         return value
 
     @validator("datablock")
-    def _validate_no_nans_are_present(
-        cls, datablock: List[List[Union[float, str]]]
-    ) -> List[List[Union[float, str]]]:
+    def _validate_no_nans_are_present(cls, datablock: Datablock) -> Datablock:
         """Validates that the datablock does not have any NaN values.
 
         Args:
-            datablock (List[List[Union[float, str]]]): The datablock to verify.
+            datablock (Datablock): The datablock to verify.
 
         Raises:
             ValueError: When a NaN is present in the datablock.
 
         Returns:
-            List[List[Union[float, str]]]: The validated datablock.
+            Datablock: The validated datablock.
         """
         for list in datablock:
             for value in list:
