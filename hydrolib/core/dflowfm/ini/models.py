@@ -209,6 +209,17 @@ class DataBlockINIBasedModel(INIBasedModel):
     def _validate_no_nans_are_present(
         cls, datablock: List[List[Union[float, str]]]
     ) -> List[List[Union[float, str]]]:
+        """Validates that the datablock does not have any NaN values.
+
+        Args:
+            datablock (List[List[Union[float, str]]]): The datablock to verify.
+
+        Raises:
+            ValueError: When a NaN is present in the datablock.
+
+        Returns:
+            List[List[Union[float, str]]]: The validated datablock.
+        """
         for list in datablock:
             for value in list:
                 if cls._is_float_and_nan(value) or cls._is_string_and_nan(value):
