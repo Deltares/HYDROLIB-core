@@ -820,3 +820,15 @@ class TestFilePathStyleResolver:
 
         assert unix_path == Path("net/blah/FlowFM_net.nc")
         assert str(unix_path) == "net/blah/FlowFM_net.nc"
+
+    @pytest.mark.skipif(
+        runs_on_windows(),
+        reason="Platform dependent test: should only succeed on non-Windows OS.",
+    )
+    def test_should_succeed_on_linux_macos_relative2(self):
+        windows_path = "\\net\\blah\\FlowFM_net.nc"
+        resolver = FilePathStyleResolver()
+        unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
+
+        assert unix_path == Path("net/blah/FlowFM_net.nc")
+        assert str(unix_path) == "net/blah/FlowFM_net.nc"
