@@ -1,4 +1,5 @@
 import filecmp
+import platform
 import shutil
 from pathlib import Path
 from typing import Sequence, Tuple
@@ -754,6 +755,7 @@ class TestSerializerConfig:
         assert config.float_format == ""
 
 class TestFilePathStyleResolver:
+    @pytest.mark.skipif(platform.system() != "Windows", reason="Platform dependent test: should only succeed on Windows OS.")
     def test_should_succeed_on_windows_absolute(self):
         unix_path = "/c/net/blah/FlowFM_net.nc"
         resolver = FilePathStyleResolver()
@@ -762,6 +764,7 @@ class TestFilePathStyleResolver:
         assert windows_path == Path("c:/net/blah/FlowFM_net.nc")
         assert str(windows_path) == 'c:\\net\\blah\\FlowFM_net.nc'
 
+    @pytest.mark.skipif(platform.system() != "Windows", reason="Platform dependent test: should only succeed on Windows OS.")
     def test_should_succeed_on_windows_relative(self):
         unix_path = "net/blah/FlowFM_net.nc"
         resolver = FilePathStyleResolver()
@@ -770,6 +773,7 @@ class TestFilePathStyleResolver:
         assert windows_path == Path("net/blah/FlowFM_net.nc")
         assert str(windows_path) == 'net\\blah\\FlowFM_net.nc'
 
+    @pytest.mark.skipif(platform.system() == "Windows", reason="Platform dependent test: should only succeed on non-Windows OS.")
     def test_should_succeed_on_linux_macos_absolute(self):
         windows_path = "c:\\net\\blah\\FlowFM_net.nc"
         resolver = FilePathStyleResolver()
@@ -778,6 +782,7 @@ class TestFilePathStyleResolver:
         assert unix_path == Path("/c/net/blah/FlowFM_net.nc")
         assert str(unix_path) == '/c/net/blah/FlowFM_net.nc'
 
+    @pytest.mark.skipif(platform.system() == "Windows", reason="Platform dependent test: should only succeed on non-Windows OS.")
     def test_should_succeed_on_linux_macos_relative(self):
         windows_path = "net\\blah\\FlowFM_net.nc"
         resolver = FilePathStyleResolver()
