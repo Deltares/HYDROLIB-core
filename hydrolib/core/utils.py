@@ -1,3 +1,4 @@
+from pathlib import Path
 import platform
 import re
 from enum import Enum, auto
@@ -183,3 +184,26 @@ class PathStyle(Enum):
     """Unix-like path style."""
     WINDOWSLIKE = auto()
     """Windows-like path style."""
+
+def get_path_style_for_current_operating_system() -> PathStyle:
+    operating_system = get_operating_system()
+
+    if operating_system == OperatingSystem.WINDOWS:
+        return PathStyle.WINDOWSLIKE
+    else:
+        return PathStyle.UNIXLIKE
+
+def from_posix_to_windows_path(posix_path: Path) -> Path:
+    is_relative = not posix_path.as_posix().startswith('/')
+
+    if is_relative:
+        return posix_path
+    
+    root_path = Path(posix_path.parts[1] + ":/")
+    parts_path = Path(*posix_path.parts[2:])
+    windows_path = root_path / parts_path
+
+    return windows_path
+
+def from_windows_to_posix_path(windows_path: Path) -> Path:
+    raise NotImplementedError()
