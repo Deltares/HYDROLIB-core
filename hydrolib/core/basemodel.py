@@ -309,7 +309,7 @@ class FilePathStyleResolver:
             return posix_path
 
         root = posix_path.parts[1]
-        windows_root =  root + ":/"
+        windows_root = root + ":/"
         parts = posix_path.parts[2:]
 
         windows_path = Path(windows_root) / Path(*parts)
@@ -329,7 +329,7 @@ class FilePathStyleResolver:
 
         posix_root = "/" + root.split(":")[0]
         parts = windows_path.parts[1:]
-        
+
         posix_path = Path(posix_root) / Path(*parts)
 
         return posix_path
