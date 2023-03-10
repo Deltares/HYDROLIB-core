@@ -32,12 +32,12 @@ class ParseMsg(BaseModel):
     column: Optional[Tuple[int, int]]
     reason: str
 
-    def notify_as_warning(self, file_path: Optional[Path] = None):
-        """Call warnings.warn with a formatted string describing this ParseMsg
+    def _format_parsemsg_to_string(self, file_path: Optional[Path] = None):
+        """Format string describing this ParseMsg
 
         Args:
             file_path (Optional[Path], optional):
-                The file path mentioned in the warning if specified. Defaults to None.
+                The file path mentioned in the message if specified. Defaults to None.
         """
         if self.line_start != self.line_end:
             block_suffix = f"\nInvalid block {self.line_start}:{self.line_end}"
@@ -51,7 +51,29 @@ class ParseMsg(BaseModel):
         )
         file_suffix = f"\nFile: {file_path}" if file_path is not None else ""
 
-        warnings.warn(f"{self.reason}{block_suffix}{col_suffix}{file_suffix}")
+        message = f"{self.reason}{block_suffix}{col_suffix}{file_suffix}"
+
+        return message
+
+    def notify_as_warning(self, file_path: Optional[Path] = None):
+        """Call warnings.warn with a formatted string describing this ParseMsg
+
+        Args:
+            file_path (Optional[Path], optional):
+                The file path mentioned in the warning if specified. Defaults to None.
+        """
+        warning_message = self._format_parsemsg_to_string(file_path)
+        warnings.warn(warning_message)
+
+    def notify_as_error(self, file_path: Optional[Path] = None):
+        """Raise ValueError for invalid formatted plifile, with a formatted string describing this ParseMsg
+
+        Args:
+            file_path (Optional[Path], optional):
+                The file path mentioned in the error if specified. Defaults to None.
+        """
+        error_message = self._format_parsemsg_to_string(file_path)
+        raise ValueError(f"Invalid formatted plifile, {error_message}")
 
 
 class Block(BaseModel):
@@ -324,7 +346,7 @@ class Parser:
         self._error_builder.end_invalid_block(self._line)
         last_error_msg = self._error_builder.finalize_previous_error()
         if last_error_msg is not None:
-            self._handle_parse_msg(last_error_msg)
+            last_error_msg.notify_as_error(self._file_path)
 
         self._finalise[self._state]()
 
@@ -343,7 +365,7 @@ class Parser:
 
         last_error = self._error_builder.finalize_previous_error()
         if last_error is not None:
-            self._handle_parse_msg(last_error)
+            last_error.notify_as_error(self._file_path)
 
     def _increment_line(self) -> None:
         self._line += 1
@@ -358,7 +380,7 @@ class Parser:
             line_end=self._line,
             reason="EoF encountered before the block is finished.",
         )
-        self._handle_parse_msg(msg)
+        msg.notify_as_error(self._file_path)
 
     def _parse_name_or_new_description(self, line: str) -> None:
         if Parser._is_comment(line):
@@ -366,7 +388,7 @@ class Parser:
         elif Parser._is_name(line):
             self._handle_parse_name(line)
         elif self._state != StateType.INVALID_STATE:
-            self._handle_new_error("Expected a valid name or description")
+            self._handle_new_error("Settings of block might be incorrect, expected a valid name or description")
             return
 
         # If we come from an invalid state, and we started a correct new block
