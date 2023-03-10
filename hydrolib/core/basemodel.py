@@ -261,13 +261,14 @@ class ResolveRelativeMode(IntEnum):
     ToParent = 0
     ToAnchor = 1
 
+
 class FilePathStyleResolver:
     """Class for resolving the file path by taking into account the used path style in the files and the target file path style of the operating system."""
 
     def __init__(self) -> None:
         """Initializes a new instance of the FilePathStyleResolver class."""
         self._os_path_style = get_path_style_for_current_operating_system()
-        
+
     def resolve(self, file_path: Path, file_path_style: PathStyle) -> Path:
         """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
@@ -284,21 +285,29 @@ class FilePathStyleResolver:
 
         if file_path_style == self._os_path_style or file_path.is_absolute():
             return file_path
-        
-        if file_path_style == PathStyle.UNIXLIKE and self._os_path_style == PathStyle.WINDOWSLIKE:
+
+        if (
+            file_path_style == PathStyle.UNIXLIKE
+            and self._os_path_style == PathStyle.WINDOWSLIKE
+        ):
             return FilePathStyleResolver._from_posix_to_windows_path(file_path)
-        elif file_path_style == PathStyle.WINDOWSLIKE and self._os_path_style == PathStyle.UNIXLIKE:
+        elif (
+            file_path_style == PathStyle.WINDOWSLIKE
+            and self._os_path_style == PathStyle.UNIXLIKE
+        ):
             return FilePathStyleResolver._from_windows_to_posix_path(file_path)
         else:
-            raise NotImplementedError(f"Cannot convert {file_path_style} to {self._os_path_style}")
-    
+            raise NotImplementedError(
+                f"Cannot convert {file_path_style} to {self._os_path_style}"
+            )
+
     @classmethod
     def _from_posix_to_windows_path(cls, posix_path: Path) -> Path:
-        is_relative = not posix_path.as_posix().startswith('/')
+        is_relative = not posix_path.as_posix().startswith("/")
 
         if is_relative:
             return posix_path
-    
+
         windows_root = posix_path.parts[1] + ":/"
         root_path = Path(windows_root)
         parts_path = Path(*posix_path.parts[2:])
@@ -313,7 +322,7 @@ class FilePathStyleResolver:
 
         if is_relative:
             return windows_path
-    
+
         posix_root = "/" + windows_path.parts[0].split(":")[0]
         root_path = Path(posix_root)
         parts_path = Path(*windows_path.parts[1:])
@@ -503,7 +512,9 @@ class FileModelCache:
 class ModelLoadSettings:
     """A class that holds the global settings for model loading."""
 
-    def __init__(self, recurse: bool, resolve_casing: bool, path_style: PathStyle) -> None:
+    def __init__(
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+    ) -> None:
         """Initializes a new instance of the ModelLoadSettings class.
 
         Args:
@@ -532,7 +543,7 @@ class ModelLoadSettings:
             bool: Whether or not to resolve the file casing.
         """
         return self._resolve_casing
-    
+
     @property
     def path_style(self) -> PathStyle:
         """Gets the path style setting.
@@ -557,7 +568,9 @@ class FileLoadContext:
         self._file_path_style_resolver = FilePathStyleResolver()
         self._load_settings: Optional[ModelLoadSettings] = None
 
-    def initialize_load_settings(self, recurse: bool, resolve_casing: bool, path_style: PathStyle):
+    def initialize_load_settings(
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+    ):
         """Initialize the global model load setting. Can only be set once.
 
         Args:
@@ -678,7 +691,7 @@ class FileLoadContext:
         if self.load_settings.resolve_casing:
             return self._file_casing_resolver.resolve(file_path)
         return file_path
-    
+
     def resolve_path_style(self, file_path: Path) -> Path:
         """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
@@ -689,7 +702,9 @@ class FileLoadContext:
             Path: The resolved file path.
         """
 
-        return self._file_path_style_resolver.resolve(file_path, self.load_settings.path_style)
+        return self._file_path_style_resolver.resolve(
+            file_path, self.load_settings.path_style
+        )
 
 
 @contextmanager

@@ -33,9 +33,11 @@ def runs_from_docker() -> bool:
     """Check to see if we are running from within docker."""
     return Path("/.dockerenv").exists()
 
+
 def runs_on_windows() -> bool:
     """Check to see if we are running on Windows."""
     return platform.system() == "Windows"
+
 
 class TestFileModel:
     _reference_model_path = test_input_dir / "file_load_test" / "fm.mdu"
@@ -579,9 +581,19 @@ class TestFileLoadContext:
 
     @pytest.mark.parametrize("first_bool", [True, False])
     @pytest.mark.parametrize("second_bool", [True, False])
-    @pytest.mark.parametrize("first_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
-    @pytest.mark.parametrize("second_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
-    def test_can_only_set_load_settings_once(self, first_bool: bool, second_bool: bool, first_path_style: PathStyle, second_path_style: PathStyle):
+    @pytest.mark.parametrize(
+        "first_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE]
+    )
+    @pytest.mark.parametrize(
+        "second_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE]
+    )
+    def test_can_only_set_load_settings_once(
+        self,
+        first_bool: bool,
+        second_bool: bool,
+        first_path_style: PathStyle,
+        second_path_style: PathStyle,
+    ):
         context = FileLoadContext()
         context.initialize_load_settings(first_bool, first_bool, first_path_style)
         context.initialize_load_settings(second_bool, second_bool, second_path_style)
@@ -746,7 +758,9 @@ class TestModelLoadSettings:
     @pytest.mark.parametrize("value", [True, False])
     @pytest.mark.parametrize("path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
     def test_recurse_property(self, value: bool, path_style: PathStyle):
-        settings = ModelLoadSettings(recurse=value, resolve_casing=value, path_style=path_style)
+        settings = ModelLoadSettings(
+            recurse=value, resolve_casing=value, path_style=path_style
+        )
         assert settings.recurse == value
         assert settings.resolve_casing == value
         assert settings.path_style == path_style
@@ -757,39 +771,52 @@ class TestSerializerConfig:
         config = SerializerConfig()
         assert config.float_format == ""
 
+
 class TestFilePathStyleResolver:
-    @pytest.mark.skipif(not runs_on_windows(), reason="Platform dependent test: should only succeed on Windows OS.")
+    @pytest.mark.skipif(
+        not runs_on_windows(),
+        reason="Platform dependent test: should only succeed on Windows OS.",
+    )
     def test_should_succeed_on_windows_absolute(self):
         unix_path = "/c/net/blah/FlowFM_net.nc"
         resolver = FilePathStyleResolver()
         windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
 
         assert windows_path == Path("c:/net/blah/FlowFM_net.nc")
-        assert str(windows_path) == 'c:\\net\\blah\\FlowFM_net.nc'
+        assert str(windows_path) == "c:\\net\\blah\\FlowFM_net.nc"
 
-    @pytest.mark.skipif(not runs_on_windows(), reason="Platform dependent test: should only succeed on Windows OS.")
+    @pytest.mark.skipif(
+        not runs_on_windows(),
+        reason="Platform dependent test: should only succeed on Windows OS.",
+    )
     def test_should_succeed_on_windows_relative(self):
         unix_path = "net/blah/FlowFM_net.nc"
         resolver = FilePathStyleResolver()
         windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
 
         assert windows_path == Path("net/blah/FlowFM_net.nc")
-        assert str(windows_path) == 'net\\blah\\FlowFM_net.nc'
+        assert str(windows_path) == "net\\blah\\FlowFM_net.nc"
 
-    @pytest.mark.skipif(runs_on_windows(), reason="Platform dependent test: should only succeed on non-Windows OS.")
+    @pytest.mark.skipif(
+        runs_on_windows(),
+        reason="Platform dependent test: should only succeed on non-Windows OS.",
+    )
     def test_should_succeed_on_linux_macos_absolute(self):
         windows_path = "c:\\net\\blah\\FlowFM_net.nc"
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
         assert unix_path == Path("/c/net/blah/FlowFM_net.nc")
-        assert str(unix_path) == '/c/net/blah/FlowFM_net.nc'
+        assert str(unix_path) == "/c/net/blah/FlowFM_net.nc"
 
-    @pytest.mark.skipif(runs_on_windows(), reason="Platform dependent test: should only succeed on non-Windows OS.")
+    @pytest.mark.skipif(
+        runs_on_windows(),
+        reason="Platform dependent test: should only succeed on non-Windows OS.",
+    )
     def test_should_succeed_on_linux_macos_relative(self):
         windows_path = "net\\blah\\FlowFM_net.nc"
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
         assert unix_path == Path("net/blah/FlowFM_net.nc")
-        assert str(unix_path) == 'net/blah/FlowFM_net.nc'
+        assert str(unix_path) == "net/blah/FlowFM_net.nc"
