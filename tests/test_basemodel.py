@@ -780,11 +780,8 @@ class TestFilePathStyleResolver:
     def test_should_succeed_on_linux_macos_absolute(self):
         windows_path = "c:\\net\\blah\\FlowFM_net.nc"
         windows_path = windows_path.replace("\\", "/")
-        windows_path_path = Path(windows_path)
-        assert str(windows_path_path) == "test"
-
         resolver = FilePathStyleResolver()
-        unix_path = resolver.resolve(windows_path, PathStyle.WINDOWSLIKE)
+        unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
         assert unix_path == Path("/c/net/blah/FlowFM_net.nc")
         assert str(unix_path) == '/c/net/blah/FlowFM_net.nc'
