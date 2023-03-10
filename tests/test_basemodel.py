@@ -782,6 +782,7 @@ class TestFilePathStyleResolver:
         windows_path = windows_path.replace("\\", "/")
         windows_path_path = Path(windows_path)
         assert str(windows_path_path) == "test"
+
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(windows_path, PathStyle.WINDOWSLIKE)
 
