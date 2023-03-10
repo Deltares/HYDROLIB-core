@@ -769,3 +769,19 @@ class TestFilePathStyleResolver:
 
         assert windows_path == Path("net/blah/FlowFM_net.nc")
         assert str(windows_path) == 'net\\blah\\FlowFM_net.nc'
+
+    def test_should_succeed_on_linux_macos_absolute(self):
+        windows_path = "c:\\net\\blah\\FlowFM_net.nc"
+        resolver = FilePathStyleResolver()
+        unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
+
+        assert unix_path == Path("/c/net/blah/FlowFM_net.nc")
+        assert str(unix_path) == '/c/net/blah/FlowFM_net.nc'
+
+    def test_should_succeed_on_linux_macos_relative(self):
+        windows_path = "net\\blah\\FlowFM_net.nc"
+        resolver = FilePathStyleResolver()
+        unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
+
+        assert unix_path == Path("net/blah/FlowFM_net.nc")
+        assert str(unix_path) == 'net/blah/FlowFM_net.nc'
