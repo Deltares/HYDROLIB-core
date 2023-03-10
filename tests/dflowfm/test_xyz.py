@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.xyz.models import XYZModel, XYZPoint
 from hydrolib.core.dflowfm.xyz.parser import XYZParser
@@ -42,13 +44,25 @@ class TestXYZModel:
         ]
         model = XYZModel(points=points)
 
+        if output_file.is_file():
+            output_file.unlink()
+
         model.filepath = output_file
         model.serializer_config.float_format = ".2f"
+
+        assert not model.filepath.is_file()
         model.save()
+        assert model.filepath.is_file()
 
         assert_files_equal(output_file, reference_file)
 
-    def test_load(self):
+    def test_xyz_parser_correct_amount_of_points(self):
+        fn = test_input_dir / "dflowfm_individual_files" / "test.xyz"
+        data = XYZParser.parse(fn)
+        assert "points" in data
+        assert len(data.get("points", [])) == 7
+
+    def test_load_correct_file(self):
         input_file = test_input_dir / "dflowfm_individual_files" / "sample.xyz"
         model = XYZModel(filepath=input_file)
 
@@ -62,3 +76,12 @@ class TestXYZModel:
 
         assert len(model.points) == len(points)
         assert model.points == points
+
+    def test_load_wrong_file(self):
+        input_file = test_input_dir / "invalid_files" / "invalidsample.xyz"
+
+        with pytest.raises(ValueError) as error:
+            _ = XYZModel(filepath=input_file)
+
+        expected_message = f"Error parsing XYZ file '{input_file}', line 3."
+        assert expected_message in str(error.value)

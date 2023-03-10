@@ -22,12 +22,18 @@ class XYZParser:
         data: Dict = dict(points=[])
 
         with filepath.open() as f:
-            for line in f.readlines():
+            for linenr, line in enumerate(f.readlines()):
 
-                if len(line) < 5:  # 3 values, two whitespaces
+                line = line.strip()
+                if line.startswith("*") or len(line) == 0:
                     continue
 
-                x, y, z, *c = re.split(xyzpattern, line.strip(), maxsplit=3)
+                try:
+                    x, y, z, *c = re.split(xyzpattern, line, maxsplit=3)
+                except ValueError:
+                    raise ValueError(
+                        f"Error parsing XYZ file '{filepath}', line {linenr+1}."
+                    )
 
                 c = c[0] if len(c) > 0 else ""
                 c = c.strip("#").strip()
