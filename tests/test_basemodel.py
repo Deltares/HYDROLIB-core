@@ -810,7 +810,7 @@ class TestFilePathStyleResolver:
         assert str(unix_path) == "/c/path/to.file"
 
     @pytest.mark.skipif(
-        not runs_on_windows(),
+        runs_on_windows(),
         reason="Platform dependent test: should only succeed on non-Windows OS.",
     )
     @pytest.mark.parametrize(
