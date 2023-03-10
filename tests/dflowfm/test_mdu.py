@@ -30,6 +30,14 @@ class TestModels:
         model.filepath = mdu_file_out
         model.save(recurse=True)
 
+    def test_should_succeed_on_windows(self):
+        unix_path = "/c/net/blah/FlowFM_net.nc"
+        resolver = FilePathStyleResolver()
+        windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
+
+        assert windows_path == Path("c:/net/blah/FlowFM_net.nc")
+        assert str(windows_path) == 'c:\\net\\blah\\FlowFM_net.nc'
+
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
             test_input_dir
