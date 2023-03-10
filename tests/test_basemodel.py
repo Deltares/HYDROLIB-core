@@ -825,7 +825,18 @@ class TestFilePathStyleResolver:
     def test_convert_relative_windowslike_filepath_to_unixlike_filepath(
         self, windows_path: str
     ):
-        assert str(Path(windows_path)) == "test"
+        step1 = str(Path(windows_path))
+        assert step1 == '/path/to.file'
+        
+        step2 = step1.replace("\\", "/")
+        assert step2 == '/path/to.file'
+
+        step3 = step2.lstrip("/")
+        assert step3 == 'path/to.file'
+
+        step4 = Path(step3)
+        assert str(step4) == 'path/to.file'
+
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
