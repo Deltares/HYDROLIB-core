@@ -388,7 +388,9 @@ class Parser:
         elif Parser._is_name(line):
             self._handle_parse_name(line)
         elif self._state != StateType.INVALID_STATE:
-            self._handle_new_error("Settings of block might be incorrect, expected a valid name or description")
+            self._handle_new_error(
+                "Settings of block might be incorrect, expected a valid name or description"
+            )
             return
 
         # If we come from an invalid state, and we started a correct new block

@@ -549,7 +549,12 @@ name
                     1.0 2.0 3.0 4.0 5.0
                     2.0 3.0 4.0 5.0 6.0"""
                 ),
-                [((4, 5), "Settings of block might be incorrect, expected a valid name or description at line 4.")],
+                [
+                    (
+                        (4, 5),
+                        "Settings of block might be incorrect, expected a valid name or description at line 4.",
+                    )
+                ],
             ),
             (
                 inspect.cleandoc(
@@ -563,7 +568,12 @@ name
                     1.0 2.0 3.0 4.0 5.0
                     2.0 3.0 4.0 5.0 6.0"""
                 ),
-                [((7, 8), "Settings of block might be incorrect, expected a valid name or description at line 7.")],
+                [
+                    (
+                        (7, 8),
+                        "Settings of block might be incorrect, expected a valid name or description at line 7.",
+                    )
+                ],
             ),
             (
                 inspect.cleandoc(
@@ -679,7 +689,6 @@ name
         expected_part_of_error_msg = expected_msg_data[0][1]
         expected_error_msg = f"Invalid formatted plifile, {expected_part_of_error_msg}\nInvalid block {expected_affected_blocks_of_error_msg[0]}:{expected_affected_blocks_of_error_msg[1]}\nFile: dummy.pli"
         assert found_msg == expected_error_msg
-    
 
     def test_polyfile_can_be_saved_without_errors_and_is_same_as_input(self):
         infile = test_input_dir / "test.pli"
