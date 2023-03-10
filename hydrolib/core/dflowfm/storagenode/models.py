@@ -76,7 +76,7 @@ class StorageNode(INIBasedModel):
     A storage node that is included in the storage node file.
 
     All lowercased attributes match with the storage node input as described in
-    [UM Sec.C.17](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#section.C.17).
+    [UM Sec.C.17](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#section.C.17).
     """
 
     class Comments(INIBasedModel.Comments):
