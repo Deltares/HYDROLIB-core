@@ -12,6 +12,7 @@ from hydrolib.core.basemodel import (
     FileModel,
     FileModelCache,
     FilePathResolver,
+    FilePathStyleResolver,
     ModelLoadSettings,
     ParsableFileModel,
     ResolveRelativeMode,
@@ -21,6 +22,7 @@ from hydrolib.core.basemodel import (
 )
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.models import DIMR
+from hydrolib.core.utils import PathStyle
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
@@ -745,3 +747,20 @@ class TestSerializerConfig:
     def test_default(self):
         config = SerializerConfig()
         assert config.float_format == ""
+
+class TestFilePathStyleResolver:
+    def test_should_succeed_on_windows_absolute(self):
+        unix_path = "/c/net/blah/FlowFM_net.nc"
+        resolver = FilePathStyleResolver()
+        windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
+
+        assert windows_path == Path("c:/net/blah/FlowFM_net.nc")
+        assert str(windows_path) == 'c:\\net\\blah\\FlowFM_net.nc'
+
+    def test_should_succeed_on_windows_relative(self):
+        unix_path = "net/blah/FlowFM_net.nc"
+        resolver = FilePathStyleResolver()
+        windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
+
+        assert windows_path == Path("net/blah/FlowFM_net.nc")
+        assert str(windows_path) == 'net\\blah\\FlowFM_net.nc'

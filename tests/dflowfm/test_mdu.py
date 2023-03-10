@@ -1,9 +1,6 @@
 from pathlib import Path
-from typing import Callable, Dict, Union
 
-import pytest
-
-from hydrolib.core.basemodel import DiskOnlyFileModel, FilePathStyleResolver
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.mdu.models import (
     FMModel,
     InfiltrationMethod,
@@ -12,40 +9,13 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
-from hydrolib.core.utils import PathStyle
 
-from ..utils import test_input_dir, test_output_dir
+from ..utils import test_input_dir
 
 
 class TestModels:
     """Test class to test all classes and methods contained in the
     hydrolib.core.dflowfm.mdu.models.py module"""
-
-    def test_paths(self):
-        mdu_file_in = test_input_dir / "relative_path" / "FlowFM.mdu"
-
-        model = FMModel(mdu_file_in)
-
-        mdu_file_out = test_output_dir / "relative_path" / "FlowFM.mdu"
-
-        model.filepath = mdu_file_out
-        model.save(recurse=True)
-
-    def test_should_succeed_on_windows_absolute(self):
-        unix_path = "/c/net/blah/FlowFM_net.nc"
-        resolver = FilePathStyleResolver()
-        windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
-
-        assert windows_path == Path("c:/net/blah/FlowFM_net.nc")
-        assert str(windows_path) == 'c:\\net\\blah\\FlowFM_net.nc'
-
-    def test_should_succeed_on_windows_relative(self):
-        unix_path = "net/blah/FlowFM_net.nc"
-        resolver = FilePathStyleResolver()
-        windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
-
-        assert windows_path == Path("net/blah/FlowFM_net.nc")
-        assert str(windows_path) == 'net\\blah\\FlowFM_net.nc'
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
