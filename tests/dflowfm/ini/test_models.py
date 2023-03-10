@@ -1,10 +1,12 @@
 from math import nan
-from ...utils import error_occurs_only_once
-from pydantic.error_wrappers import ValidationError
-import pytest
 from typing import Union
 
+import pytest
+from pydantic.error_wrappers import ValidationError
+
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel
+
+from ...utils import error_occurs_only_once
 
 
 class TestDataBlockINIBasedModel:
