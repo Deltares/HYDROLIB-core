@@ -176,6 +176,7 @@ def get_operating_system() -> OperatingSystem:
 
     raise NotImplementedError(f"Operating system {operating_system} is not supported.")
 
+
 class PathStyle(Enum):
     """Path style format."""
 
@@ -183,6 +184,7 @@ class PathStyle(Enum):
     """Unix-like path style."""
     WINDOWSLIKE = auto()
     """Windows-like path style."""
+
 
 def get_path_style_for_current_operating_system() -> PathStyle:
     """Gets the file path style for the currently running operating system.
