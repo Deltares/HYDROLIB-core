@@ -778,57 +778,53 @@ class TestFilePathStyleResolver:
         reason="Platform dependent test: should only succeed on Windows OS.",
     )
     def test_should_succeed_on_windows_absolute(self):
-        unix_path = "/c/net/blah/FlowFM_net.nc"
+        unix_path = "/c/path/to.file"
         resolver = FilePathStyleResolver()
         windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
 
-        assert windows_path == Path("c:/net/blah/FlowFM_net.nc")
-        assert str(windows_path) == "c:\\net\\blah\\FlowFM_net.nc"
+        assert windows_path == Path("c:/path/to.file")
+        assert str(windows_path) == "c:\\path\\to.file"
 
     @pytest.mark.skipif(
         not runs_on_windows(),
         reason="Platform dependent test: should only succeed on Windows OS.",
     )
     def test_should_succeed_on_windows_relative(self):
-        unix_path = "net/blah/FlowFM_net.nc"
+        unix_path = "path/to.file"
         resolver = FilePathStyleResolver()
         windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
 
-        assert windows_path == Path("net/blah/FlowFM_net.nc")
-        assert str(windows_path) == "net\\blah\\FlowFM_net.nc"
+        assert windows_path == Path("path/to.file")
+        assert str(windows_path) == "path\\to.file"
 
     @pytest.mark.skipif(
         runs_on_windows(),
         reason="Platform dependent test: should only succeed on non-Windows OS.",
     )
     def test_should_succeed_on_linux_macos_absolute(self):
-        windows_path = "c:\\net\\blah\\FlowFM_net.nc"
+        windows_path = "c:\\path\\to.file"
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
-        assert unix_path == Path("/c/net/blah/FlowFM_net.nc")
-        assert str(unix_path) == "/c/net/blah/FlowFM_net.nc"
+        assert unix_path == Path("/c/path/to.file")
+        assert str(unix_path) == "/c/path/to.file"
 
     @pytest.mark.skipif(
         runs_on_windows(),
         reason="Platform dependent test: should only succeed on non-Windows OS.",
     )
-    def test_should_succeed_on_linux_macos_relative(self):
-        windows_path = "net\\blah\\FlowFM_net.nc"
-        resolver = FilePathStyleResolver()
-        unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
-
-        assert unix_path == Path("net/blah/FlowFM_net.nc")
-        assert str(unix_path) == "net/blah/FlowFM_net.nc"
-
-    @pytest.mark.skipif(
-        runs_on_windows(),
-        reason="Platform dependent test: should only succeed on non-Windows OS.",
+    @pytest.mark.parametrize(
+        "windows_path",
+        [
+            pytest.param("path\\to.file", id="Backward slashes + without slash before"),
+            pytest.param("\\path\\to.file", id="Backward slashes + with slash before"),
+            pytest.param("path/to.file", id="Forward slashes + without slash before"),
+            pytest.param("/path/to.file", id="Forward slashes + with slash before"),
+        ],
     )
-    def test_should_succeed_on_linux_macos_relative2(self):
-        windows_path = "\\net\\blah\\FlowFM_net.nc"
+    def test_should_succeed_on_linux_macos_relative2(self, windows_path: str):
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
-        assert unix_path == Path("net/blah/FlowFM_net.nc")
-        assert str(unix_path) == "net/blah/FlowFM_net.nc"
+        assert unix_path == Path("path/to.file")
+        assert str(unix_path) == "path/to.file"
