@@ -363,7 +363,7 @@ class TestForcingModel:
         datablock_list = datablock.tolist()
 
         with pytest.raises(ValidationError) as error:
-            steric = TimeSeries(
+            TimeSeries(
                 name="east2_0001",
                 quantityunitpair=[
                     QuantityUnitPair(
