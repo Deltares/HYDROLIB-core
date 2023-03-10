@@ -1,6 +1,7 @@
 import logging
 from abc import ABC
 from enum import Enum
+from math import isnan
 from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
@@ -203,6 +204,24 @@ class DataBlockINIBasedModel(INIBasedModel):
             return f"{value:{config.float_format_datablock}}"
 
         return value
+
+    @validator("datablock", each_item=True)
+    def _validate_no_nans_are_present(
+        cls, values: List[Union[float, str]]
+    ) -> List[Union[float, str]]:
+        for value in values:
+            if cls._is_float_and_nan(value) or cls._is_string_and_nan(value):
+                raise ValueError("NaN is not supported in datablocks.")
+
+        return values
+
+    @staticmethod
+    def _is_float_and_nan(value: float) -> bool:
+        return isinstance(value, float) and isnan(value)
+
+    @staticmethod
+    def _is_string_and_nan(value: str) -> bool:
+        return isinstance(value, str) and value.lower() == "nan"
 
 
 class INIGeneral(INIBasedModel):
