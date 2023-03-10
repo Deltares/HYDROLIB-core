@@ -293,21 +293,32 @@ class FilePathStyleResolver:
             raise NotImplementedError(f"Cannot convert {file_path_style} to {self._os_path_style}")
     
     @classmethod
-    def _from_posix_to_windows_path(posix_path: Path) -> Path:
+    def _from_posix_to_windows_path(cls, posix_path: Path) -> Path:
         is_relative = not posix_path.as_posix().startswith('/')
 
         if is_relative:
             return posix_path
     
-        root_path = Path(posix_path.parts[1] + ":/")
+        windows_root = posix_path.parts[1] + ":/"
+        root_path = Path(windows_root)
         parts_path = Path(*posix_path.parts[2:])
         windows_path = root_path / parts_path
 
         return windows_path
 
     @classmethod
-    def _from_windows_to_posix_path(windows_path: Path) -> Path:
-        raise NotImplementedError()
+    def _from_windows_to_posix_path(cls, windows_path: Path) -> Path:
+        is_relative = ":" not in windows_path.parts[0]
+
+        if is_relative:
+            return windows_path
+    
+        posix_root = "/" + windows_path.parts[0].split(":")[0]
+        root_path = Path(posix_root)
+        parts_path = Path(*windows_path.parts[1:])
+        posix_path = root_path / parts_path
+
+        return posix_path
 
 
 class FileCasingResolver:
