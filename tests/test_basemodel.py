@@ -573,16 +573,19 @@ class TestFileLoadContext:
             == f"The model load settings have not been initialized yet. Make sure to call `{context.initialize_load_settings.__name__}` first."
         )
 
-    @pytest.mark.parametrize("first", [True, False])
-    @pytest.mark.parametrize("second", [True, False])
-    def test_can_only_set_load_settings_once(self, first: bool, second: bool):
+    @pytest.mark.parametrize("first_bool", [True, False])
+    @pytest.mark.parametrize("second_bool", [True, False])
+    @pytest.mark.parametrize("first_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
+    @pytest.mark.parametrize("second_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
+    def test_can_only_set_load_settings_once(self, first_bool: bool, second_bool: bool, first_path_style: PathStyle, second_path_style: PathStyle):
         context = FileLoadContext()
-        context.initialize_load_settings(first, first)
-        context.initialize_load_settings(second, second)
+        context.initialize_load_settings(first_bool, first_bool, first_path_style)
+        context.initialize_load_settings(second_bool, second_bool, second_path_style)
 
         assert context.load_settings is not None
-        assert context.load_settings.recurse == first
-        assert context.load_settings.resolve_casing == first
+        assert context.load_settings.recurse == first_bool
+        assert context.load_settings.resolve_casing == first_bool
+        assert context.load_settings.path_style == first_path_style
 
 
 class TestDiskOnlyFileModel:
@@ -737,10 +740,12 @@ class TestFileCasingResolver:
 
 class TestModelLoadSettings:
     @pytest.mark.parametrize("value", [True, False])
-    def test_recurse_property(self, value: bool):
-        settings = ModelLoadSettings(recurse=value, resolve_casing=value)
+    @pytest.mark.parametrize("path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
+    def test_recurse_property(self, value: bool, path_style: PathStyle):
+        settings = ModelLoadSettings(recurse=value, resolve_casing=value, path_style=path_style)
         assert settings.recurse == value
         assert settings.resolve_casing == value
+        assert settings.path_style == path_style
 
 
 class TestSerializerConfig:
