@@ -205,15 +205,16 @@ class DataBlockINIBasedModel(INIBasedModel):
 
         return value
 
-    @validator("datablock", each_item=True)
+    @validator("datablock")
     def _validate_no_nans_are_present(
-        cls, values: List[Union[float, str]]
-    ) -> List[Union[float, str]]:
-        for value in values:
-            if cls._is_float_and_nan(value) or cls._is_string_and_nan(value):
-                raise ValueError("NaN is not supported in datablocks.")
+        cls, datablock: List[List[Union[float, str]]]
+    ) -> List[List[Union[float, str]]]:
+        for list in datablock:
+            for value in list:
+                if cls._is_float_and_nan(value) or cls._is_string_and_nan(value):
+                    raise ValueError("NaN is not supported in datablocks.")
 
-        return values
+        return datablock
 
     @staticmethod
     def _is_float_and_nan(value: float) -> bool:
