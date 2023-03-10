@@ -816,15 +816,16 @@ class TestFilePathStyleResolver:
     @pytest.mark.parametrize(
         "windows_path",
         [
-            pytest.param("path\\to.file", id="Backward slashes + without slash before"),
-            pytest.param("\\path\\to.file", id="Backward slashes + with slash before"),
-            pytest.param("path/to.file", id="Forward slashes + without slash before"),
-            #pytest.param("/path/to.file", id="Forward slashes + with slash before"),
+            #pytest.param("path\\to.file", id="Backward slashes + without slash before"),
+            #pytest.param("\\path\\to.file", id="Backward slashes + with slash before"),
+            #pytest.param("path/to.file", id="Forward slashes + without slash before"),
+            pytest.param("/path/to.file", id="Forward slashes + with slash before"),
         ],
     )
     def test_convert_relative_windowslike_filepath_to_unixlike_filepath(
         self, windows_path: str
     ):
+        assert str(Path(windows_path)) == "test"
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
