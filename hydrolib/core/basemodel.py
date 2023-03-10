@@ -308,10 +308,11 @@ class FilePathStyleResolver:
         if is_relative:
             return posix_path
 
-        windows_root = posix_path.parts[1] + ":/"
-        root_path = Path(windows_root)
-        parts_path = Path(*posix_path.parts[2:])
-        windows_path = root_path / parts_path
+        root = posix_path.parts[1]
+        windows_root =  root + ":/"
+        parts = posix_path.parts[2:]
+
+        windows_path = Path(windows_root) / Path(*parts)
 
         return windows_path
 
@@ -320,15 +321,16 @@ class FilePathStyleResolver:
         windows_path_str = str(windows_path).replace("\\", "/").lstrip("/")
         windows_path = Path(windows_path_str)
 
-        is_relative = ":" not in windows_path.parts[0]
+        root = windows_path.parts[0]
+        is_relative = ":" not in root
 
         if is_relative:
             return windows_path
 
-        posix_root = "/" + windows_path.parts[0].split(":")[0]
-        root_path = Path(posix_root)
-        parts_path = Path(*windows_path.parts[1:])
-        posix_path = root_path / parts_path
+        posix_root = "/" + root.split(":")[0]
+        parts = windows_path.parts[1:]
+        
+        posix_path = Path(posix_root) / Path(*parts)
 
         return posix_path
 
