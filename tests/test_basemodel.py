@@ -777,7 +777,7 @@ class TestFilePathStyleResolver:
         not runs_on_windows(),
         reason="Platform dependent test: should only succeed on Windows OS.",
     )
-    def test_should_succeed_on_windows_absolute(self):
+    def test_convert_absolute_unixlike_filepath_to_windowslike_filepath(self):
         unix_path = "/c/path/to.file"
         resolver = FilePathStyleResolver()
         windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
@@ -789,7 +789,7 @@ class TestFilePathStyleResolver:
         not runs_on_windows(),
         reason="Platform dependent test: should only succeed on Windows OS.",
     )
-    def test_should_succeed_on_windows_relative(self):
+    def test_convert_relative_unixlike_filepath_to_windowslike_filepath(self):
         unix_path = "path/to.file"
         resolver = FilePathStyleResolver()
         windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
@@ -801,7 +801,7 @@ class TestFilePathStyleResolver:
         runs_on_windows(),
         reason="Platform dependent test: should only succeed on non-Windows OS.",
     )
-    def test_should_succeed_on_linux_macos_absolute(self):
+    def test_convert_absolute_windowslike_filepath_to_unixlike_filepath(self):
         windows_path = "c:\\path\\to.file"
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
@@ -810,7 +810,7 @@ class TestFilePathStyleResolver:
         assert str(unix_path) == "/c/path/to.file"
 
     @pytest.mark.skipif(
-        runs_on_windows(),
+        not runs_on_windows(),
         reason="Platform dependent test: should only succeed on non-Windows OS.",
     )
     @pytest.mark.parametrize(
@@ -822,7 +822,7 @@ class TestFilePathStyleResolver:
             pytest.param("/path/to.file", id="Forward slashes + with slash before"),
         ],
     )
-    def test_should_succeed_on_linux_macos_relative2(self, windows_path: str):
+    def test_convert_relative_windowslike_filepath_to_unixlike_filepath(self, windows_path: str):
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
