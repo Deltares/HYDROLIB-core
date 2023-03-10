@@ -1,7 +1,8 @@
 from math import nan
-from pydantic.error_wrappers import ValidationError
-import pytest
 from typing import Union
+
+import pytest
+from pydantic.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel
 
