@@ -2,6 +2,7 @@ import inspect
 from pathlib import Path
 from typing import Dict, List, Literal
 
+import numpy as np
 import pytest
 from pydantic.error_wrappers import ValidationError
 
@@ -356,6 +357,26 @@ class TestForcingModel:
         assert model.serializer_config.datablock_spacing == 2
         assert model.serializer_config.comment_delimiter == "#"
         assert model.serializer_config.skip_empty_properties == True
+
+    def test_forcing_model_with_datablock_that_has_nan_values_should_raise_error(self):
+        datablock = np.random.uniform(low=-40, high=130.3, size=(4, 2)) * np.nan
+        datablock_list = datablock.tolist()
+
+        with pytest.raises(ValidationError) as error:
+            steric = TimeSeries(
+                name="east2_0001",
+                quantityunitpair=[
+                    QuantityUnitPair(
+                        quantity="time", unit="seconds since 2022-01-01 00:00:00 +00:00"
+                    ),
+                    QuantityUnitPair(quantity="waterlevel", unit="m"),
+                ],
+                timeInterpolation=TimeInterpolation.linear,
+                datablock=datablock_list,
+            )
+
+        expected_message = "NaN is not supported in datablocks."
+        assert expected_message in str(error.value)
 
 
 class TestVectorForcingBase:
