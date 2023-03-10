@@ -33,7 +33,9 @@ from pydantic.fields import ModelField, PrivateAttr
 from hydrolib.core.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import (
     OperatingSystem,
+    PathStyle,
     get_operating_system,
+    get_path_style_for_current_operating_system,
     str_is_empty_or_none,
     to_key,
 )
@@ -259,6 +261,54 @@ class ResolveRelativeMode(IntEnum):
     ToParent = 0
     ToAnchor = 1
 
+class FilePathStyleResolver:
+    """Class for resolving the file path by taking into account the used path style in the files and the target file path style of the operating system."""
+
+    def __init__(self) -> None:
+        """Initializes a new instance of the FilePathStyleResolver class."""
+        self._os_path_style = get_path_style_for_current_operating_system()
+        
+    def resolve(self, file_path: Path, file_path_style: PathStyle) -> Path:
+        """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+
+        Args:
+            file_path (Path): The file path to convert to the OS path style.
+            file_path_style (PathStyle): The file path style of the given file path.
+
+        Returns:
+            Path: The resolved file path with OS path style.
+
+        Raises:
+            NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
+        """
+
+        if file_path_style == self._os_path_style or file_path.is_absolute():
+            return file_path
+        
+        if file_path_style == PathStyle.UNIXLIKE and self._os_path_style == PathStyle.WINDOWSLIKE:
+            return FilePathStyleResolver._from_posix_to_windows_path(file_path)
+        elif file_path_style == PathStyle.WINDOWSLIKE and self._os_path_style == PathStyle.UNIXLIKE:
+            return FilePathStyleResolver._from_windows_to_posix_path(file_path)
+        else:
+            raise NotImplementedError(f"Cannot convert {file_path_style} to {self._os_path_style}")
+    
+    @classmethod
+    def _from_posix_to_windows_path(posix_path: Path) -> Path:
+        is_relative = not posix_path.as_posix().startswith('/')
+
+        if is_relative:
+            return posix_path
+    
+        root_path = Path(posix_path.parts[1] + ":/")
+        parts_path = Path(*posix_path.parts[2:])
+        windows_path = root_path / parts_path
+
+        return windows_path
+
+    @classmethod
+    def _from_windows_to_posix_path(windows_path: Path) -> Path:
+        raise NotImplementedError()
+
 
 class FileCasingResolver:
     """Class for resolving file path in a case-insensitive manner."""
@@ -441,15 +491,17 @@ class FileModelCache:
 class ModelLoadSettings:
     """A class that holds the global settings for model loading."""
 
-    def __init__(self, recurse: bool, resolve_casing: bool) -> None:
+    def __init__(self, recurse: bool, resolve_casing: bool, path_style: PathStyle) -> None:
         """Initializes a new instance of the ModelLoadSettings class.
 
         Args:
             recurse (bool): Whether or not to recursively load the whole model.
             resolve_casing (bool): Whether or not to resolve the file casing.
+            path_style (PathStyle): Which path style is used in the loaded files.
         """
         self._recurse = recurse
         self._resolve_casing = resolve_casing
+        self._path_style = path_style
 
     @property
     def recurse(self) -> bool:
@@ -468,6 +520,15 @@ class ModelLoadSettings:
             bool: Whether or not to resolve the file casing.
         """
         return self._resolve_casing
+    
+    @property
+    def path_style(self) -> PathStyle:
+        """Gets the path style setting.
+
+        Returns:
+            PathStyle: Which path style is used in the loaded files.
+        """
+        return self._path_style
 
 
 class FileLoadContext:
@@ -481,17 +542,19 @@ class FileLoadContext:
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
         self._file_casing_resolver = FileCasingResolver()
+        self._file_path_style_resolver = FilePathStyleResolver()
         self._load_settings: Optional[ModelLoadSettings] = None
 
-    def initialize_load_settings(self, recurse: bool, resolve_casing: bool):
+    def initialize_load_settings(self, recurse: bool, resolve_casing: bool, path_style: PathStyle):
         """Initialize the global model load setting. Can only be set once.
 
         Args:
             recurse (bool): Whether or not to recursively load the whole model.
             resolve_casing (bool): Whether or not to resolve the file casing.
+            path_style (PathStyle): Which path style is used in the loaded files.
         """
         if self._load_settings is None:
-            self._load_settings = ModelLoadSettings(recurse, resolve_casing)
+            self._load_settings = ModelLoadSettings(recurse, resolve_casing, path_style)
 
     @property
     def load_settings(self) -> ModelLoadSettings:
@@ -603,6 +666,18 @@ class FileLoadContext:
         if self.load_settings.resolve_casing:
             return self._file_casing_resolver.resolve(file_path)
         return file_path
+    
+    def resolve_path_style(self, file_path: Path) -> Path:
+        """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+
+        Args:
+            file_path (Path): The file path to convert to the OS path style.
+
+        Returns:
+            Path: The resolved file path.
+        """
+
+        return self._file_path_style_resolver.resolve(file_path, self.load_settings.path_style)
 
 
 @contextmanager
@@ -694,6 +769,7 @@ class FileModel(BaseModel, ABC):
         filepath: Optional[Path] = None,
         resolve_casing: bool = False,
         recurse: bool = True,
+        path_style: Optional[PathStyle] = None,
         *args,
         **kwargs,
     ):
@@ -707,13 +783,19 @@ class FileModel(BaseModel, ABC):
             filepath (Optional[Path], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
             recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
+            path_style (Optional[PathStyle], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
             return
 
+        if path_style is None:
+            path_style = get_path_style_for_current_operating_system()
+
         with file_load_context() as context:
-            context.initialize_load_settings(recurse, resolve_casing)
+            context.initialize_load_settings(recurse, resolve_casing, path_style)
+
+            filepath = context.resolve_path_style(filepath)
 
             if not FileModel._should_load_model(context):
                 super().__init__(*args, **kwargs)
