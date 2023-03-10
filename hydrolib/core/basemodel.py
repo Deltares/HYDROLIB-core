@@ -308,6 +308,7 @@ class FilePathStyleResolver:
 
     @classmethod
     def _from_windows_to_posix_path(cls, windows_path: Path) -> Path:
+        windows_path = Path(windows_path.as_posix())
         is_relative = ":" not in windows_path.parts[0]
 
         if is_relative:

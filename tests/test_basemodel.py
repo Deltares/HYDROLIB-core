@@ -779,7 +779,6 @@ class TestFilePathStyleResolver:
     @pytest.mark.skipif(runs_on_windows(), reason="Platform dependent test: should only succeed on non-Windows OS.")
     def test_should_succeed_on_linux_macos_absolute(self):
         windows_path = "c:\\net\\blah\\FlowFM_net.nc"
-        windows_path = windows_path.replace("\\", "/")
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
@@ -789,7 +788,6 @@ class TestFilePathStyleResolver:
     @pytest.mark.skipif(runs_on_windows(), reason="Platform dependent test: should only succeed on non-Windows OS.")
     def test_should_succeed_on_linux_macos_relative(self):
         windows_path = "net\\blah\\FlowFM_net.nc"
-        windows_path = windows_path.replace("\\", "/")
         resolver = FilePathStyleResolver()
         unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
 
