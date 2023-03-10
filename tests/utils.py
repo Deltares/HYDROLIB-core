@@ -2,8 +2,6 @@ import filecmp
 from pathlib import Path
 from typing import Generic, Optional, TypeVar
 
-import pytest
-from numpy import array
 from pydantic.generics import GenericModel
 
 TWrapper = TypeVar("TWrapper")
@@ -89,3 +87,20 @@ def assert_file_is_same_binary(
         assert filecmp.cmp(input_path, reference_path)
     else:
         assert not input_path.exists()
+
+
+def error_occurs_only_once(error_message: str, full_error: str) -> bool:
+    """Checks if the given error message occurs exactly once in the full error string.
+
+    Args:
+        error_message (str): The error to check for.
+        full_error (str): The full error as a string.
+
+    Returns:
+        bool: Returns True if the error message occurs exactly once in the full error.
+        Returns False otherwise.
+    """
+    if error_message is None or full_error is None:
+        return False
+
+    return full_error.count(error_message) == 1

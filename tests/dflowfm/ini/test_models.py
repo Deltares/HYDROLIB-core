@@ -1,4 +1,5 @@
 from math import nan
+from ...utils import error_occurs_only_once
 from pydantic.error_wrappers import ValidationError
 import pytest
 from typing import Union
@@ -50,3 +51,12 @@ class TestDataBlockINIBasedModel:
 
         expected_message = "NaN is not supported in datablocks."
         assert expected_message in str(error.value)
+
+    def test_datablock_with_multiple_nans_should_only_give_error_once(self):
+        model = DataBlockINIBasedModel()
+
+        with pytest.raises(ValidationError) as error:
+            model.datablock = [[nan, nan], [nan, nan]]
+
+        expected_message = "NaN is not supported in datablocks."
+        assert error_occurs_only_once(expected_message, str(error.value))
