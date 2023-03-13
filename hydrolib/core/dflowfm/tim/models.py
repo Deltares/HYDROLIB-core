@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Dict
+from typing import Callable, Dict, List
 
 from hydrolib.core.basemodel import  ParsableFileModel, SerializerConfig
 from .parser import TimParser
@@ -11,7 +11,7 @@ class TimModel(ParsableFileModel):
     Attributes:
         timeseries: Dictionary of [float, list[float]]
     """
-    timeseries : dict[float, list[float]]
+    timeseries : dict[float, list[float]] = {}
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict
