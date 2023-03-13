@@ -18,6 +18,20 @@ class XYZParser:
 
     @staticmethod
     def parse(filepath: Path) -> Dict:
+        """Parse an .xyz file into a Dict with the list of points read.
+
+        Args:
+            filepath (Path): .xyz file to be read.
+
+        Returns:
+            Dict: dictionary with "points" value set to a list of points
+                each of which is a dict itself, with keys 'x', 'y', 'z'
+                and 'c' for an optional comment.
+
+        Raises:
+            ValueError: if a line in the file contains no values that
+                could be parsed.
+        """
 
         data: Dict = dict(points=[])
 
