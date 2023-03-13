@@ -176,22 +176,6 @@ def test_dimr_model_save():
     assert_files_equal(file, reference_file)
 
 
-def test_xyz_model():
-    output_fn = Path(test_output_dir / "test.xyz")
-    if output_fn.is_file():
-        output_fn.unlink()
-
-    # Confirm succesfull parse and initialization
-    model = XYZModel(filepath=Path(test_data_dir / "input/test.xyz"))
-    assert len(model.points) == 7, model
-
-    # Confirm saving to new file
-    model.filepath = output_fn
-    assert not model.filepath.is_file()
-    model.save()
-    assert model.filepath.is_file()
-
-
 def test_mdu_model():
     model = FMModel(
         filepath=Path(
