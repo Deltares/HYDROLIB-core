@@ -32,7 +32,7 @@ class ParseMsg(BaseModel):
     column: Optional[Tuple[int, int]]
     reason: str
 
-    def _format_parsemsg_to_string(self, file_path: Optional[Path] = None):
+    def format_parsemsg_to_string(self, file_path: Optional[Path] = None) -> str:
         """Format string describing this ParseMsg
 
         Args:
@@ -54,27 +54,6 @@ class ParseMsg(BaseModel):
         message = f"{self.reason}{block_suffix}{col_suffix}{file_suffix}"
 
         return message
-
-    def notify_as_warning(self, file_path: Optional[Path] = None):
-        """Call warnings.warn with a formatted string describing this ParseMsg
-
-        Args:
-            file_path (Optional[Path], optional):
-                The file path mentioned in the warning if specified. Defaults to None.
-        """
-        warning_message = self._format_parsemsg_to_string(file_path)
-        warnings.warn(warning_message)
-
-    def notify_as_error(self, file_path: Optional[Path] = None):
-        """Raise ValueError for invalid formatted plifile, with a formatted string describing this ParseMsg
-
-        Args:
-            file_path (Optional[Path], optional):
-                The file path mentioned in the error if specified. Defaults to None.
-        """
-        error_message = self._format_parsemsg_to_string(file_path)
-        raise ValueError(f"Invalid formatted plifile, {error_message}")
-
 
 class Block(BaseModel):
     """Block is a temporary object which will be converted into a PolyObject.
@@ -346,7 +325,7 @@ class Parser:
         self._error_builder.end_invalid_block(self._line)
         last_error_msg = self._error_builder.finalize_previous_error()
         if last_error_msg is not None:
-            last_error_msg.notify_as_error(self._file_path)
+            self._notify_as_error(last_error_msg)
 
         self._finalise[self._state]()
 
@@ -361,11 +340,11 @@ class Parser:
         self._poly_objects.append(obj)
 
         for msg in warnings:
-            self._handle_parse_msg(msg)
+            self._notify_as_warning(msg)
 
         last_error = self._error_builder.finalize_previous_error()
         if last_error is not None:
-            last_error.notify_as_error(self._file_path)
+            self._notify_as_error(last_error)
 
     def _increment_line(self) -> None:
         self._line += 1
@@ -380,7 +359,7 @@ class Parser:
             line_end=self._line,
             reason="EoF encountered before the block is finished.",
         )
-        msg.notify_as_error(self._file_path)
+        self._notify_as_error(msg)
 
     def _parse_name_or_new_description(self, line: str) -> None:
         if Parser._is_comment(line):
@@ -460,8 +439,14 @@ class Parser:
         )
         self._state = StateType.INVALID_STATE
 
-    def _handle_parse_msg(self, msg: ParseMsg) -> None:
-        msg.notify_as_warning(self._file_path)
+    def _notify_as_warning(self, msg: ParseMsg) -> None:
+        warning_message = msg.format_parsemsg_to_string(self._file_path)
+        warnings.warn(warning_message)
+
+    def _notify_as_error(self, msg: ParseMsg) -> None:
+        error_message = msg.format_parsemsg_to_string(self._file_path)
+        raise ValueError(f"Invalid formatted plifile, {error_message}")
+
 
     @staticmethod
     def _is_empty_line(line: str) -> bool:
