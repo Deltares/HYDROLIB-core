@@ -681,7 +681,7 @@ name
                 ),
                 [((0, 4), "Expected a valid next point at line 3.")],
             ),
-                        (
+            (
                 inspect.cleandoc(
                     """
                     *description
