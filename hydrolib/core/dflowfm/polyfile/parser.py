@@ -319,6 +319,9 @@ class Parser:
     def finalize(self) -> Sequence[PolyObject]:
         """Finalize parsing and return the constructed PolyObject.
 
+        Raises:
+            ValueError: When the plifile is invalid.
+
         Returns:
             PolyObject:
                 A PolyObject containing the constructed PolyObject instances.
@@ -566,6 +569,9 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
             Path to the pli(z)/pol convention structured file.
         has_z_values:
             Whether to create points containing a z-value. Defaults to None.
+
+    Raises:
+        ValueError: When the plifile is invalid.
 
     Returns:
         Dict: The dictionary describing the data of a PolyObject.
