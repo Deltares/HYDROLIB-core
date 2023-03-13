@@ -55,6 +55,7 @@ class ParseMsg(BaseModel):
 
         return message
 
+
 class Block(BaseModel):
     """Block is a temporary object which will be converted into a PolyObject.
 
@@ -446,7 +447,6 @@ class Parser:
     def _notify_as_error(self, msg: ParseMsg) -> None:
         error_message = msg.format_parsemsg_to_string(self._file_path)
         raise ValueError(f"Invalid formatted plifile, {error_message}")
-
 
     @staticmethod
     def _is_empty_line(line: str) -> bool:
