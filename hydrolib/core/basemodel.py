@@ -968,11 +968,12 @@ class FileModel(BaseModel, ABC):
             value = {"filepath": Path(value)}
         return super().validate(value)
 
-    def save(self, 
-             filepath: Optional[Path] = None, 
-             recurse: bool = False, 
-             path_style: PathStyle = get_path_style_for_current_operating_system()
-        ) -> None:
+    def save(
+        self,
+        filepath: Optional[Path] = None,
+        recurse: bool = False,
+        path_style: PathStyle = get_path_style_for_current_operating_system(),
+    ) -> None:
         """Save the model to disk.
 
         If recurse is set to True, all of the child FileModels will be saved as well.
@@ -1024,7 +1025,9 @@ class FileModel(BaseModel, ABC):
             self.filepath = self._generate_name()
         self._save(save_settings)
 
-    def _save_tree(self, context: FileLoadContext, save_settings: ModelSaveSettings) -> None:
+    def _save_tree(
+        self, context: FileLoadContext, save_settings: ModelSaveSettings
+    ) -> None:
         # Ensure all names are generated prior to saving
         def execute_generate_name(
             model: BaseModel, acc: FileLoadContext
