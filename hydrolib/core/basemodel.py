@@ -292,12 +292,20 @@ class FilePathStyleConverter:
         if source_path_style == target_path_style:
             return str(file_path)
 
-        if source_path_style == PathStyle.UNIXLIKE and target_path_style == PathStyle.WINDOWSLIKE:
+        if (
+            source_path_style == PathStyle.UNIXLIKE
+            and target_path_style == PathStyle.WINDOWSLIKE
+        ):
             return FilePathStyleConverter._from_posix_to_windows_path(file_path)
-        elif source_path_style == PathStyle.WINDOWSLIKE and target_path_style == PathStyle.UNIXLIKE:
+        elif (
+            source_path_style == PathStyle.WINDOWSLIKE
+            and target_path_style == PathStyle.UNIXLIKE
+        ):
             return FilePathStyleConverter._from_windows_to_posix_path(file_path)
         else:
-            raise NotImplementedError(f"Cannot convert {source_path_style} to {target_path_style}")
+            raise NotImplementedError(
+                f"Cannot convert {source_path_style} to {target_path_style}"
+            )
 
     @classmethod
     def _from_posix_to_windows_path(cls, posix_path: Path) -> str:
