@@ -279,29 +279,25 @@ class FilePathStyleConverter:
             file_path_style (PathStyle): The file path style of the given file path.
 
         Returns:
-            Path: The resolved file path with OS path style.
+            Path: The converted file path with OS path style.
 
         Raises:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
+        
+        return FilePathStyleConverter.convert(file_path, source_path_style, self._os_path_style)
 
-        if source_path_style == self._os_path_style:
+    @classmethod 
+    def convert(cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle) -> Path:
+        if source_path_style == target_path_style:
             return file_path
 
-        if (
-            source_path_style == PathStyle.UNIXLIKE
-            and self._os_path_style == PathStyle.WINDOWSLIKE
-        ):
+        if source_path_style == PathStyle.UNIXLIKE and target_path_style == PathStyle.WINDOWSLIKE:
             return FilePathStyleConverter._from_posix_to_windows_path(file_path)
-        elif (
-            source_path_style == PathStyle.WINDOWSLIKE
-            and self._os_path_style == PathStyle.UNIXLIKE
-        ):
+        elif source_path_style == PathStyle.WINDOWSLIKE and target_path_style == PathStyle.UNIXLIKE:
             return FilePathStyleConverter._from_windows_to_posix_path(file_path)
         else:
-            raise NotImplementedError(
-                f"Cannot convert {source_path_style} to {self._os_path_style}"
-            )
+            raise NotImplementedError(f"Cannot convert {source_path_style} to {target_path_style}")
 
     @classmethod
     def _from_posix_to_windows_path(cls, posix_path: Path) -> Path:
