@@ -283,7 +283,7 @@ class FilePathStyleResolver:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
 
-        if file_path_style == self._os_path_style or file_path.is_absolute():
+        if file_path_style == self._os_path_style:
             return file_path
 
         if (
@@ -731,6 +731,9 @@ class FileLoadContext:
             Path: The resolved file path.
         """
 
+        if file_path.is_absolute():
+            return file_path
+        
         return self._file_path_style_resolver.resolve(
             file_path, self.load_settings.path_style
         )
