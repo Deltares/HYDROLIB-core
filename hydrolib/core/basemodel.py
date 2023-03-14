@@ -333,7 +333,7 @@ class FilePathStyleConverter:
         if is_relative:
             return str(windows_path)
 
-        posix_root = "/" + root.split(":")[0]
+        posix_root = "/" + root.split(":")[0] + "/"
         parts = windows_path.parts[1:]
 
         posix_path = posix_root + "/".join(parts)
