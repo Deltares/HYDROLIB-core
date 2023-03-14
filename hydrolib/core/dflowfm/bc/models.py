@@ -256,7 +256,11 @@ class ForcingBase(DataBlockINIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    def _to_section(self, config: DataBlockINIBasedSerializerConfig, save_settings: ModelSaveSettings) -> Section:
+    def _to_section(
+        self,
+        config: DataBlockINIBasedSerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> Section:
         section = super()._to_section(config, save_settings)
 
         for quantity in self.quantityunitpair:
