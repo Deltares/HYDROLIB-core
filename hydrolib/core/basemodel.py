@@ -262,14 +262,14 @@ class ResolveRelativeMode(IntEnum):
     ToAnchor = 1
 
 
-class FilePathStyleResolver:
-    """Class for resolving the file path by taking into account the used path style in the files and the target file path style of the operating system."""
+class FilePathStyleConverter:
+    """Class for converting file paths between different path styles."""
 
     def __init__(self) -> None:
         """Initializes a new instance of the FilePathStyleResolver class."""
         self._os_path_style = get_path_style_for_current_operating_system()
 
-    def resolve(self, file_path: Path, file_path_style: PathStyle) -> Path:
+    def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> Path:
         """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
         Args:
@@ -283,22 +283,22 @@ class FilePathStyleResolver:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
 
-        if file_path_style == self._os_path_style:
+        if source_path_style == self._os_path_style:
             return file_path
 
         if (
-            file_path_style == PathStyle.UNIXLIKE
+            source_path_style == PathStyle.UNIXLIKE
             and self._os_path_style == PathStyle.WINDOWSLIKE
         ):
-            return FilePathStyleResolver._from_posix_to_windows_path(file_path)
+            return FilePathStyleConverter._from_posix_to_windows_path(file_path)
         elif (
-            file_path_style == PathStyle.WINDOWSLIKE
+            source_path_style == PathStyle.WINDOWSLIKE
             and self._os_path_style == PathStyle.UNIXLIKE
         ):
-            return FilePathStyleResolver._from_windows_to_posix_path(file_path)
+            return FilePathStyleConverter._from_windows_to_posix_path(file_path)
         else:
             raise NotImplementedError(
-                f"Cannot convert {file_path_style} to {self._os_path_style}"
+                f"Cannot convert {source_path_style} to {self._os_path_style}"
             )
 
     @classmethod
@@ -594,7 +594,7 @@ class FileLoadContext:
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
         self._file_casing_resolver = FileCasingResolver()
-        self._file_path_style_resolver = FilePathStyleResolver()
+        self._file_path_style_converter = FilePathStyleConverter()
         self._load_settings: Optional[ModelLoadSettings] = None
 
     def initialize_load_settings(
@@ -721,7 +721,7 @@ class FileLoadContext:
             return self._file_casing_resolver.resolve(file_path)
         return file_path
 
-    def resolve_path_style(self, file_path: Path) -> Path:
+    def convert_path_style(self, file_path: Path) -> Path:
         """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
         Args:
@@ -734,7 +734,7 @@ class FileLoadContext:
         if file_path.is_absolute():
             return file_path
         
-        return self._file_path_style_resolver.resolve(
+        return self._file_path_style_converter.convert_to_os_style(
             file_path, self.load_settings.path_style
         )
 
@@ -854,7 +854,7 @@ class FileModel(BaseModel, ABC):
         with file_load_context() as context:
             context.initialize_load_settings(recurse, resolve_casing, path_style)
 
-            filepath = context.resolve_path_style(filepath)
+            filepath = context.convert_path_style(filepath)
 
             if not FileModel._should_load_model(context):
                 super().__init__(*args, **kwargs)

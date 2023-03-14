@@ -13,7 +13,7 @@ from hydrolib.core.basemodel import (
     FileModel,
     FileModelCache,
     FilePathResolver,
-    FilePathStyleResolver,
+    FilePathStyleConverter,
     ModelLoadSettings,
     ModelSaveSettings,
     ParsableFileModel,
@@ -791,15 +791,15 @@ class TestSerializerConfig:
         assert config.float_format == ""
 
 
-class TestFilePathStyleResolver:
+class TestFilePathStyleConverter:
     @pytest.mark.skipif(
         not runs_on_windows(),
         reason="Platform dependent test: should only succeed on Windows OS.",
     )
-    def test_convert_absolute_unixlike_filepath_to_windowslike_filepath(self):
+    def test_convert_to_os_style_absolute_unixlike_filepath(self):
         unix_path = "/c/path/to.file"
-        resolver = FilePathStyleResolver()
-        windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
+        resolver = FilePathStyleConverter()
+        windows_path = resolver.convert_to_os_style(Path(unix_path), PathStyle.UNIXLIKE)
 
         assert windows_path == Path("c:/path/to.file")
         assert str(windows_path) == "c:\\path\\to.file"
@@ -808,10 +808,10 @@ class TestFilePathStyleResolver:
         not runs_on_windows(),
         reason="Platform dependent test: should only succeed on Windows OS.",
     )
-    def test_convert_relative_unixlike_filepath_to_windowslike_filepath(self):
+    def test_convert_to_os_style_relative_unixlike_filepath(self):
         unix_path = "path/to.file"
-        resolver = FilePathStyleResolver()
-        windows_path = resolver.resolve(Path(unix_path), PathStyle.UNIXLIKE)
+        resolver = FilePathStyleConverter()
+        windows_path = resolver.convert_to_os_style(Path(unix_path), PathStyle.UNIXLIKE)
 
         assert windows_path == Path("path/to.file")
         assert str(windows_path) == "path\\to.file"
@@ -820,10 +820,10 @@ class TestFilePathStyleResolver:
         runs_on_windows(),
         reason="Platform dependent test: should only succeed on non-Windows OS.",
     )
-    def test_convert_absolute_windowslike_filepath_to_unixlike_filepath(self):
+    def test_convert_to_os_style_absolute_windowslike_filepath(self):
         windows_path = "c:\\path\\to.file"
-        resolver = FilePathStyleResolver()
-        unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
+        resolver = FilePathStyleConverter()
+        unix_path = resolver.convert_to_os_style(Path(windows_path), PathStyle.WINDOWSLIKE)
 
         assert unix_path == Path("/c/path/to.file")
         assert str(unix_path) == "/c/path/to.file"
@@ -839,11 +839,11 @@ class TestFilePathStyleResolver:
             pytest.param("path/to.file", id="Forward slashes"),
         ],
     )
-    def test_convert_relative_windowslike_filepath_to_unixlike_filepath(
+    def test_convert_to_os_style_relative_windowslike_filepath(
         self, windows_path: str
     ):
-        resolver = FilePathStyleResolver()
-        unix_path = resolver.resolve(Path(windows_path), PathStyle.WINDOWSLIKE)
+        resolver = FilePathStyleConverter()
+        unix_path = resolver.convert_to_os_style(Path(windows_path), PathStyle.WINDOWSLIKE)
 
         assert unix_path == Path("path/to.file")
         assert str(unix_path) == "path/to.file"
