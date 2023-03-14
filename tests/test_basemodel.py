@@ -799,7 +799,9 @@ class TestFilePathStyleConverter:
     def test_convert_to_os_style_absolute_unixlike_filepath(self):
         unix_path = "/c/path/to.file"
         converter = FilePathStyleConverter()
-        windows_path = converter.convert_to_os_style(Path(unix_path), PathStyle.UNIXLIKE)
+        windows_path = converter.convert_to_os_style(
+            Path(unix_path), PathStyle.UNIXLIKE
+        )
 
         assert windows_path == Path("c:/path/to.file")
         assert str(windows_path) == "c:\\path\\to.file"
@@ -811,7 +813,9 @@ class TestFilePathStyleConverter:
     def test_convert_to_os_style_relative_unixlike_filepath(self):
         unix_path = "path/to.file"
         converter = FilePathStyleConverter()
-        windows_path = converter.convert_to_os_style(Path(unix_path), PathStyle.UNIXLIKE)
+        windows_path = converter.convert_to_os_style(
+            Path(unix_path), PathStyle.UNIXLIKE
+        )
 
         assert windows_path == Path("path/to.file")
         assert str(windows_path) == "path\\to.file"
@@ -823,7 +827,9 @@ class TestFilePathStyleConverter:
     def test_convert_to_os_style_absolute_windowslike_filepath(self):
         windows_path = "c:\\path\\to.file"
         converter = FilePathStyleConverter()
-        unix_path = converter.convert_to_os_style(Path(windows_path), PathStyle.WINDOWSLIKE)
+        unix_path = converter.convert_to_os_style(
+            Path(windows_path), PathStyle.WINDOWSLIKE
+        )
 
         assert unix_path == Path("/c/path/to.file")
         assert str(unix_path) == "/c/path/to.file"
@@ -839,11 +845,11 @@ class TestFilePathStyleConverter:
             pytest.param("path/to.file", id="Forward slashes"),
         ],
     )
-    def test_convert_to_os_style_relative_windowslike_filepath(
-        self, windows_path: str
-    ):
+    def test_convert_to_os_style_relative_windowslike_filepath(self, windows_path: str):
         converter = FilePathStyleConverter()
-        unix_path = converter.convert_to_os_style(Path(windows_path), PathStyle.WINDOWSLIKE)
+        unix_path = converter.convert_to_os_style(
+            Path(windows_path), PathStyle.WINDOWSLIKE
+        )
 
         assert unix_path == Path("path/to.file")
         assert str(unix_path) == "path/to.file"
