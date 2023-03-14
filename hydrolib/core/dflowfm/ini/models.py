@@ -129,7 +129,13 @@ class INIBasedModel(BaseModel, ABC):
         return {"comments", "datablock", "_header"}
 
     @classmethod
-    def _convert_value(cls, key: str, v: Any, config: INISerializerConfig, save_settings: ModelSaveSettings) -> str:
+    def _convert_value(
+        cls,
+        key: str,
+        v: Any,
+        config: INISerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> str:
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
@@ -162,7 +168,9 @@ class INIBasedModel(BaseModel, ABC):
 
             prop = Property(
                 key=key,
-                value=self.__class__._convert_value(field_key, value, config, save_settings),
+                value=self.__class__._convert_value(
+                    field_key, value, config, save_settings
+                ),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)
