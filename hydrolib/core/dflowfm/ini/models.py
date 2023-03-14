@@ -209,7 +209,7 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     @validator("datablock")
     def _validate_no_nans_are_present(cls, datablock: Datablock) -> Datablock:
-        """Validates that the datablock does not have any NaN values.
+        """Validate that the datablock does not have any NaN values.
 
         Args:
             datablock (Datablock): The datablock to verify.
@@ -220,20 +220,14 @@ class DataBlockINIBasedModel(INIBasedModel):
         Returns:
             Datablock: The validated datablock.
         """
-        for list in datablock:
-            for value in list:
-                if cls._is_float_and_nan(value) or cls._is_string_and_nan(value):
-                    raise ValueError("NaN is not supported in datablocks.")
+        if any(cls._is_float_and_nan(value) for list in datablock for value in list):
+            raise ValueError("NaN is not supported in datablocks.")
 
         return datablock
 
     @staticmethod
     def _is_float_and_nan(value: float) -> bool:
         return isinstance(value, float) and isnan(value)
-
-    @staticmethod
-    def _is_string_and_nan(value: str) -> bool:
-        return isinstance(value, str) and value.lower() == "nan"
 
 
 class INIGeneral(INIBasedModel):
