@@ -966,7 +966,11 @@ class FileModel(BaseModel, ABC):
             value = {"filepath": Path(value)}
         return super().validate(value)
 
-    def save(self, filepath: Optional[Path] = None, recurse: bool = False) -> None:
+    def save(self, 
+             filepath: Optional[Path] = None, 
+             recurse: bool = False, 
+             path_style: PathStyle = get_path_style_for_current_operating_system()
+        ) -> None:
         """Save the model to disk.
 
         If recurse is set to True, all of the child FileModels will be saved as well.
@@ -995,25 +999,30 @@ class FileModel(BaseModel, ABC):
             recurse (bool, optional):
                 Whether to save all children of this FileModel (when set to True),
                 or only save this model (when set to False). Defaults to False.
+            path_style (PathStyle, optional):
+                With which file path style to save the model. File references will
+                be written with the specified path style.
         """
         if filepath is not None:
             self.filepath = filepath
+
+        save_settings = ModelSaveSettings(path_style=path_style)
 
         # Handle save
         with file_load_context() as context:
             context.push_new_parent(self._absolute_anchor_path, self._relative_mode)
 
             if recurse:
-                self._save_tree(context)
+                self._save_tree(context, save_settings)
             else:
-                self._save_instance()
+                self._save_instance(save_settings)
 
-    def _save_instance(self) -> None:
+    def _save_instance(self, save_settings: ModelSaveSettings) -> None:
         if self.filepath is None:
             self.filepath = self._generate_name()
-        self._save()
+        self._save(save_settings)
 
-    def _save_tree(self, context: FileLoadContext) -> None:
+    def _save_tree(self, context: FileLoadContext, save_settings: ModelSaveSettings) -> None:
         # Ensure all names are generated prior to saving
         def execute_generate_name(
             model: BaseModel, acc: FileLoadContext
@@ -1039,7 +1048,7 @@ class FileModel(BaseModel, ABC):
             if isinstance(model, FileModel):
                 acc.pop_last_parent()
                 model._absolute_anchor_path = acc.get_current_parent()
-                model._save()
+                model._save(save_settings)
             return acc
 
         save_traverser = ModelTreeTraverser[FileLoadContext](
@@ -1121,12 +1130,15 @@ class FileModel(BaseModel, ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def _save(self) -> None:
+    def _save(self, save_settings: ModelSaveSettings) -> None:
         """Save this instance to disk.
 
         This method needs to be implemented by any class deriving from
         FileModel, and is used in both the _save_instance and _save_tree
         methods.
+
+        Args:
+            save_settings (ModelSaveSettings): The model save settings.
         """
         raise NotImplementedError()
 
@@ -1205,11 +1217,14 @@ class ParsableFileModel(FileModel):
         else:
             raise ValueError(f"File: `{filepath}` not found, skipped parsing.")
 
-    def _save(self) -> None:
+    def _save(self, save_settings: ModelSaveSettings) -> None:
         """Save the data of this FileModel.
 
         _save provides a hook for child models to overwrite the save behaviour as
         called during the tree traversal.
+
+        Args:
+            save_settings (ModelSaveSettings): The model save settings.
         """
         self._serialize(self.dict())
 
@@ -1292,7 +1307,7 @@ class DiskOnlyFileModel(FileModel):
         # We de not load any additional data, as such we return an empty dict.
         return dict()
 
-    def _save(self) -> None:
+    def _save(self, save_settings: ModelSaveSettings) -> None:
         # The target_file_path contains the new path to write to, while the
         # _source_file_path contains the original data. If these are not the
         # same we copy the file and update the underlying source path.
