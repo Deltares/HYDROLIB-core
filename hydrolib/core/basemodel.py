@@ -269,9 +269,7 @@ class FilePathStyleConverter:
         """Initializes a new instance of the FilePathStyleResolver class."""
         self._os_path_style = get_path_style_for_current_operating_system()
 
-    def convert_to_os_style(
-        self, file_path: Path, source_path_style: PathStyle
-    ) -> str:
+    def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> str:
         """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
         Args:
@@ -284,11 +282,15 @@ class FilePathStyleConverter:
         Raises:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
-        
-        return FilePathStyleConverter._convert(file_path, source_path_style, self._os_path_style)
 
-    @classmethod 
-    def _convert(cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle) -> str:
+        return FilePathStyleConverter._convert(
+            file_path, source_path_style, self._os_path_style
+        )
+
+    @classmethod
+    def _convert(
+        cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle
+    ) -> str:
         if source_path_style == target_path_style:
             return str(file_path)
 
@@ -740,7 +742,9 @@ class FileLoadContext:
         if file_path.is_absolute():
             return file_path
 
-        converted_file_path = self._file_path_style_converter.convert_to_os_style(file_path, self.load_settings.path_style)
+        converted_file_path = self._file_path_style_converter.convert_to_os_style(
+            file_path, self.load_settings.path_style
+        )
         return Path(converted_file_path)
 
 
