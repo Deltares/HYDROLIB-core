@@ -90,14 +90,14 @@ def assert_file_is_same_binary(
 
 
 def error_occurs_only_once(error_message: str, full_error: str) -> bool:
-    """Checks if the given error message occurs exactly once in the full error string.
+    """Check if the given error message occurs exactly once in the full error string.
 
     Args:
         error_message (str): The error to check for.
         full_error (str): The full error as a string.
 
     Returns:
-        bool: Returns True if the error message occurs exactly once in the full error.
+        bool: Return True if the error message occurs exactly once in the full error.
         Returns False otherwise.
     """
     if error_message is None or full_error is None:
