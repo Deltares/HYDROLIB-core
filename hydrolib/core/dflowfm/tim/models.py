@@ -11,7 +11,7 @@ class TimModel(ParsableFileModel):
     Attributes:
         timeseries: Dictionary of [float, list[float]]
     """
-    timeseries : dict[float, List[float]] = {}
+    timeseries : Dict[float, List[float]]
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict

@@ -26,16 +26,17 @@ class TimParser:
                 if TimParser._line_is_comment(line):
                     continue
 
-                splitline = re.split(timpattern, line.lstrip().strip('\n'))
+                time, *series = re.split(timpattern, line.strip())
 
-                if TimParser._line_has_not_enough_information(splitline):
+                if TimParser._line_has_not_enough_information(series):
                     continue
 
                 try:
-                    timeserie = TimParser._set_timeserie(splitline)
-                    time = timeserie[0]
-                    serie = timeserie[1]
-                    timeseries[time] = serie
+                    listofvalues = []
+                    for value in series :
+                        listofvalues.append(float(value))
+                    
+                    timeseries[float(time)] = listofvalues
                 except:
                     continue
                 
@@ -43,20 +44,9 @@ class TimParser:
     
     @staticmethod
     def _line_is_comment(line:str):
-        return line.lstrip().startswith('#') or line.lstrip().startswith('*')
+        strippedline = line.lstrip() 
+        return strippedline.startswith('#') or strippedline.startswith('*')
     
     @staticmethod
     def _line_has_not_enough_information(line:list[str]):
-        return len(line) < 2
-    
-    @staticmethod
-    def _set_timeserie(timeserie:list):
-        time = float(timeserie[0])
-        series = timeserie
-        series.remove(timeserie[0])
-
-        listofvalues = []
-        for value in series :
-            listofvalues.append(float(value))
-
-        return [time, listofvalues]
+        return len(line) < 1
