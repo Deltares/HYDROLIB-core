@@ -754,11 +754,16 @@ class TestFileCasingResolver:
 
         assert actual_file_path == expected_file_path
 
+
 class TestModelSaveSettings:
     def test_initialize_new_instance_sets_os_path_style_by_default(self):
         settings = ModelSaveSettings()
 
-        exp_path_style = PathStyle.WINDOWSLIKE if platform.system() == "Windows" else PathStyle.UNIXLIKE
+        exp_path_style = (
+            PathStyle.WINDOWSLIKE
+            if platform.system() == "Windows"
+            else PathStyle.UNIXLIKE
+        )
 
         assert settings.path_style == exp_path_style
 
@@ -766,6 +771,7 @@ class TestModelSaveSettings:
     def test_properties(self, path_style: PathStyle):
         settings = ModelSaveSettings(path_style=path_style)
         assert settings.path_style == path_style
+
 
 class TestModelLoadSettings:
     @pytest.mark.parametrize("value", [True, False])
