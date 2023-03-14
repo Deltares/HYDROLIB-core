@@ -867,7 +867,9 @@ class TestFilePathStyleConverter:
             pytest.param("c:/path/to.file", id="Forward slashes"),
         ],
     )
-    def test_convert_from_os_style_to_absolute_unixlike_filepath(self, windows_path: str):
+    def test_convert_from_os_style_to_absolute_unixlike_filepath(
+        self, windows_path: str
+    ):
         converter = FilePathStyleConverter()
         unix_path = converter.convert_from_os_style(
             Path(windows_path), PathStyle.UNIXLIKE
@@ -886,15 +888,15 @@ class TestFilePathStyleConverter:
             pytest.param("path/to.file", id="Forward slashes"),
         ],
     )
-    def test_convert_from_os_style_to_relative_unixlike_filepath(self, windows_path: str):
+    def test_convert_from_os_style_to_relative_unixlike_filepath(
+        self, windows_path: str
+    ):
         converter = FilePathStyleConverter()
         unix_path = converter.convert_from_os_style(
             Path(windows_path), PathStyle.UNIXLIKE
         )
 
         assert unix_path == "path/to.file"
-
-
 
     @pytest.mark.skipif(
         runs_on_windows(),

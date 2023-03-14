@@ -282,8 +282,10 @@ class FilePathStyleConverter:
         Raises:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
-        
-        return FilePathStyleConverter._convert(file_path, source_path_style, self._os_path_style)
+
+        return FilePathStyleConverter._convert(
+            file_path, source_path_style, self._os_path_style
+        )
 
     def convert_from_os_style(
         self, file_path: Path, target_path_style: PathStyle
@@ -300,11 +302,15 @@ class FilePathStyleConverter:
         Raises:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
-        
-        return FilePathStyleConverter._convert(file_path, self._os_path_style, target_path_style)
-    
-    @classmethod 
-    def _convert(cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle) -> str:
+
+        return FilePathStyleConverter._convert(
+            file_path, self._os_path_style, target_path_style
+        )
+
+    @classmethod
+    def _convert(
+        cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle
+    ) -> str:
         if source_path_style == target_path_style:
             return str(file_path)
 
