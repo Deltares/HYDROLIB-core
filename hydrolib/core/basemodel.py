@@ -512,6 +512,29 @@ class FileModelCache:
         """
         return not any(self._cache_dict)
 
+class ModelSaveSettings:
+    """A class that holds the global settings for model saving."""
+    
+    def __init__(self, path_style: Optional[PathStyle] = None) -> None:
+        """Initializes a new instance of the ModelSaveSettings class.
+
+        Args:
+            path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.
+        """
+
+        if path_style is None:
+            path_style = get_path_style_for_current_operating_system()
+
+        self._path_style = path_style
+
+    @property
+    def path_style(self) -> PathStyle:
+        """Gets the path style setting.
+
+        Returns:
+            PathStyle: Which path style is used to save the files.
+        """
+        return self._path_style
 
 class ModelLoadSettings:
     """A class that holds the global settings for model loading."""
