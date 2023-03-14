@@ -287,6 +287,24 @@ class FilePathStyleConverter:
         
         return FilePathStyleConverter._convert(file_path, source_path_style, self._os_path_style)
 
+    def convert_from_os_style(
+        self, file_path: Path, target_path_style: PathStyle
+    ) -> str:
+        """Resolve the file path by converting it from the path style for the current operating system to the target path style.
+
+        Args:
+            file_path (Path): The file path to convert to the OS path style.
+            target_path_style (PathStyle): The target file path style to which the file path should be converted.
+
+        Returns:
+            str: The converted file path with the target path style.
+
+        Raises:
+            NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
+        """
+        
+        return FilePathStyleConverter._convert(file_path, self._os_path_style, target_path_style)
+    
     @classmethod 
     def _convert(cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle) -> str:
         if source_path_style == target_path_style:
@@ -331,7 +349,7 @@ class FilePathStyleConverter:
         is_relative = ":" not in root
 
         if is_relative:
-            return str(windows_path)
+            return windows_path_str
 
         posix_root = "/" + root.split(":")[0] + "/"
         parts = windows_path.parts[1:]

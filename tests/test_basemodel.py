@@ -855,3 +855,69 @@ class TestFilePathStyleConverter:
         )
 
         assert unix_path == "path/to.file"
+
+    @pytest.mark.skipif(
+        not runs_on_windows(),
+        reason="Platform dependent test: should only succeed on Windows OS.",
+    )
+    @pytest.mark.parametrize(
+        "windows_path",
+        [
+            pytest.param("c:\\path\\to.file", id="Backward slashes"),
+            pytest.param("c:/path/to.file", id="Forward slashes"),
+        ],
+    )
+    def test_convert_from_os_style_to_absolute_unixlike_filepath(self, windows_path: str):
+        converter = FilePathStyleConverter()
+        unix_path = converter.convert_from_os_style(
+            Path(windows_path), PathStyle.UNIXLIKE
+        )
+
+        assert unix_path == "/c/path/to.file"
+
+    @pytest.mark.skipif(
+        not runs_on_windows(),
+        reason="Platform dependent test: should only succeed on Windows OS.",
+    )
+    @pytest.mark.parametrize(
+        "windows_path",
+        [
+            pytest.param("path\\to.file", id="Backward slashes"),
+            pytest.param("path/to.file", id="Forward slashes"),
+        ],
+    )
+    def test_convert_from_os_style_to_relative_unixlike_filepath(self, windows_path: str):
+        converter = FilePathStyleConverter()
+        unix_path = converter.convert_from_os_style(
+            Path(windows_path), PathStyle.UNIXLIKE
+        )
+
+        assert unix_path == "path/to.file"
+
+
+
+    @pytest.mark.skipif(
+        runs_on_windows(),
+        reason="Platform dependent test: should only succeed on Windows OS.",
+    )
+    def test_convert_from_os_style_to_absolute_windowslike_filepath(self):
+        unix_path = "/c/path/to.file"
+        converter = FilePathStyleConverter()
+        windows_path = converter.convert_from_os_style(
+            Path(unix_path), PathStyle.WINDOWSLIKE
+        )
+
+        assert windows_path == "c:/path/to.file"
+
+    @pytest.mark.skipif(
+        runs_on_windows(),
+        reason="Platform dependent test: should only succeed on Windows OS.",
+    )
+    def test_convert_from_os_style_to_relative_windowslike_filepath(self):
+        unix_path = "path/to.file"
+        converter = FilePathStyleConverter()
+        windows_path = converter.convert_from_os_style(
+            Path(unix_path), PathStyle.WINDOWSLIKE
+        )
+
+        assert windows_path == "path/to.file"
