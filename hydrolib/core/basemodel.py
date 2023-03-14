@@ -733,7 +733,7 @@ class FileLoadContext:
 
         if file_path.is_absolute():
             return file_path
-        
+
         return self._file_path_style_resolver.resolve(
             file_path, self.load_settings.path_style
         )
