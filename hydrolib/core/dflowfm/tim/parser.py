@@ -46,7 +46,7 @@ class TimParser:
         return line.lstrip().startswith('#') or line.lstrip().startswith('*')
     
     @staticmethod
-    def _line_has_not_enough_information(line:str):
+    def _line_has_not_enough_information(line:list[str]):
         return len(line) < 2
     
     @staticmethod
