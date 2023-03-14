@@ -803,8 +803,7 @@ class TestFilePathStyleConverter:
             Path(unix_path), PathStyle.UNIXLIKE
         )
 
-        assert windows_path == Path("c:/path/to.file")
-        assert str(windows_path) == "c:\\path\\to.file"
+        assert windows_path == "c:/path/to.file"
 
     @pytest.mark.skipif(
         not runs_on_windows(),
@@ -817,22 +816,26 @@ class TestFilePathStyleConverter:
             Path(unix_path), PathStyle.UNIXLIKE
         )
 
-        assert windows_path == Path("path/to.file")
-        assert str(windows_path) == "path\\to.file"
+        assert windows_path == "path/to.file"
 
     @pytest.mark.skipif(
         runs_on_windows(),
         reason="Platform dependent test: should only succeed on non-Windows OS.",
     )
-    def test_convert_to_os_style_absolute_windowslike_filepath(self):
-        windows_path = "c:\\path\\to.file"
+    @pytest.mark.parametrize(
+        "windows_path",
+        [
+            pytest.param("c:\\path\\to.file", id="Backward slashes"),
+            pytest.param("c:/path/to.file", id="Forward slashes"),
+        ],
+    )
+    def test_convert_to_os_style_absolute_windowslike_filepath(self, windows_path: str):
         converter = FilePathStyleConverter()
         unix_path = converter.convert_to_os_style(
             Path(windows_path), PathStyle.WINDOWSLIKE
         )
 
-        assert unix_path == Path("/c/path/to.file")
-        assert str(unix_path) == "/c/path/to.file"
+        assert unix_path == "/c/path/to.file"
 
     @pytest.mark.skipif(
         runs_on_windows(),
@@ -851,5 +854,4 @@ class TestFilePathStyleConverter:
             Path(windows_path), PathStyle.WINDOWSLIKE
         )
 
-        assert unix_path == Path("path/to.file")
-        assert str(unix_path) == "path/to.file"
+        assert unix_path == "path/to.file"

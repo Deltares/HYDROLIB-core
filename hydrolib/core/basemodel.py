@@ -271,7 +271,7 @@ class FilePathStyleConverter:
 
     def convert_to_os_style(
         self, file_path: Path, source_path_style: PathStyle
-    ) -> Path:
+    ) -> str:
         """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
         Args:
@@ -279,18 +279,18 @@ class FilePathStyleConverter:
             file_path_style (PathStyle): The file path style of the given file path.
 
         Returns:
-            Path: The converted file path with OS path style.
+            str: The converted file path with OS path style.
 
         Raises:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
         
-        return FilePathStyleConverter.convert(file_path, source_path_style, self._os_path_style)
+        return FilePathStyleConverter._convert(file_path, source_path_style, self._os_path_style)
 
     @classmethod 
-    def convert(cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle) -> Path:
+    def _convert(cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle) -> str:
         if source_path_style == target_path_style:
-            return file_path
+            return str(file_path)
 
         if source_path_style == PathStyle.UNIXLIKE and target_path_style == PathStyle.WINDOWSLIKE:
             return FilePathStyleConverter._from_posix_to_windows_path(file_path)
@@ -300,22 +300,22 @@ class FilePathStyleConverter:
             raise NotImplementedError(f"Cannot convert {source_path_style} to {target_path_style}")
 
     @classmethod
-    def _from_posix_to_windows_path(cls, posix_path: Path) -> Path:
+    def _from_posix_to_windows_path(cls, posix_path: Path) -> str:
         is_relative = not posix_path.as_posix().startswith("/")
 
         if is_relative:
-            return posix_path
+            return posix_path.as_posix()
 
         root = posix_path.parts[1]
         windows_root = root + ":/"
         parts = posix_path.parts[2:]
 
-        windows_path = Path(windows_root) / Path(*parts)
+        windows_path = windows_root + "/".join(parts)
 
         return windows_path
 
     @classmethod
-    def _from_windows_to_posix_path(cls, windows_path: Path) -> Path:
+    def _from_windows_to_posix_path(cls, windows_path: Path) -> str:
         windows_path_str = str(windows_path).replace("\\", "/")
         windows_path = Path(windows_path_str)
 
@@ -323,12 +323,12 @@ class FilePathStyleConverter:
         is_relative = ":" not in root
 
         if is_relative:
-            return windows_path
+            return str(windows_path)
 
         posix_root = "/" + root.split(":")[0]
         parts = windows_path.parts[1:]
 
-        posix_path = Path(posix_root) / Path(*parts)
+        posix_path = posix_root + "/".join(parts)
 
         return posix_path
 
@@ -732,9 +732,8 @@ class FileLoadContext:
         if file_path.is_absolute():
             return file_path
 
-        return self._file_path_style_converter.convert_to_os_style(
-            file_path, self.load_settings.path_style
-        )
+        converted_file_path = self._file_path_style_converter.convert_to_os_style(file_path, self.load_settings.path_style)
+        return Path(converted_file_path)
 
 
 @contextmanager
