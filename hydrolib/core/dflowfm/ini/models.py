@@ -8,7 +8,7 @@ from pydantic.class_validators import validator
 from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
@@ -257,7 +257,7 @@ class INIModel(ParsableFileModel):
                 sections.append(value._to_section(self.serializer_config))
         return Document(header_comment=[header], sections=sections)
 
-    def _serialize(self, _: dict) -> None:
+    def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
         write_ini(
             self._resolved_filepath, self._to_document(), config=self.serializer_config
         )

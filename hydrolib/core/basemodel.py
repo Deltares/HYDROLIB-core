@@ -1228,9 +1228,9 @@ class ParsableFileModel(FileModel):
         Args:
             save_settings (ModelSaveSettings): The model save settings.
         """
-        self._serialize(self.dict())
+        self._serialize(self.dict(), save_settings)
 
-    def _serialize(self, data: dict) -> None:
+    def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
         """Serializes the data to file. Should not be called directly, only through `_save`."""
         path = self._resolved_filepath
         if path is None:
