@@ -512,9 +512,10 @@ class FileModelCache:
         """
         return not any(self._cache_dict)
 
+
 class ModelSaveSettings:
     """A class that holds the global settings for model saving."""
-    
+
     def __init__(self, path_style: Optional[PathStyle] = None) -> None:
         """Initializes a new instance of the ModelSaveSettings class.
 
@@ -535,6 +536,7 @@ class ModelSaveSettings:
             PathStyle: Which path style is used to save the files.
         """
         return self._path_style
+
 
 class ModelLoadSettings:
     """A class that holds the global settings for model loading."""
