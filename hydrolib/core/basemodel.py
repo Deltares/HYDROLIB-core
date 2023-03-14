@@ -318,7 +318,7 @@ class FilePathStyleResolver:
 
     @classmethod
     def _from_windows_to_posix_path(cls, windows_path: Path) -> Path:
-        windows_path_str = str(windows_path).replace("\\", "/").lstrip("/")
+        windows_path_str = str(windows_path).replace("\\", "/")
         windows_path = Path(windows_path_str)
 
         root = windows_path.parts[0]
