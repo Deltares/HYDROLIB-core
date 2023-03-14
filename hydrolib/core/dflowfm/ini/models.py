@@ -148,7 +148,7 @@ class INIBasedModel(BaseModel, ABC):
         else:
             return str(v)
 
-    def _to_section(self, config: INISerializerConfig) -> Section:
+    def _to_section(self, config: INISerializerConfig, save_settings: ModelSaveSettings) -> Section:
         props = []
         for key, value in self:
             if key in self._exclude_fields():
@@ -179,8 +179,8 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     _make_lists = make_list_validator("datablock")
 
-    def _to_section(self, config: DataBlockINIBasedSerializerConfig) -> Section:
-        section = super()._to_section(config)
+    def _to_section(self, config: DataBlockINIBasedSerializerConfig, save_settings: ModelSaveSettings) -> Section:
+        section = super()._to_section(config, save_settings)
         section.datablock = self._to_datablock(config)
         return section
 
@@ -244,7 +244,7 @@ class INIModel(ParsableFileModel):
     def _get_parser(cls) -> Callable:
         return Parser.parse_as_dict
 
-    def _to_document(self) -> Document:
+    def _to_document(self, save_settings: ModelSaveSettings) -> Document:
         header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
         sections = []
         for key, value in self:
@@ -252,12 +252,12 @@ class INIModel(ParsableFileModel):
                 continue
             if isinstance(value, list):
                 for v in value:
-                    sections.append(v._to_section(self.serializer_config))
+                    sections.append(v._to_section(self.serializer_config, save_settings))
             else:
-                sections.append(value._to_section(self.serializer_config))
+                sections.append(value._to_section(self.serializer_config, save_settings))
         return Document(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
         write_ini(
-            self._resolved_filepath, self._to_document(), config=self.serializer_config
+            self._resolved_filepath, self._to_document(save_settings), config=self.serializer_config
         )

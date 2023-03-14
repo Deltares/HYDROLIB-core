@@ -18,7 +18,7 @@ from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
 from pydantic.fields import Field
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.basemodel import BaseModel, ModelSaveSettings
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
 from hydrolib.core.dflowfm.ini.models import (
     DataBlockINIBasedModel,
@@ -256,8 +256,8 @@ class ForcingBase(DataBlockINIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    def _to_section(self, config: DataBlockINIBasedSerializerConfig) -> Section:
-        section = super()._to_section(config)
+    def _to_section(self, config: DataBlockINIBasedSerializerConfig, save_settings: ModelSaveSettings) -> Section:
+        section = super()._to_section(config, save_settings)
 
         for quantity in self.quantityunitpair:
             for prop in quantity._to_properties():
