@@ -98,7 +98,7 @@ def error_occurs_only_once(error_message: str, full_error: str) -> bool:
 
     Returns:
         bool: Return True if the error message occurs exactly once in the full error.
-        Returns False otherwise.
+            Returns False otherwise.
     """
     if error_message is None or full_error is None:
         return False
