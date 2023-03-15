@@ -1,8 +1,8 @@
-from pathlib import Path
 import platform
 import re
 from enum import Enum, auto
 from operator import eq, ge, gt, le, lt, ne
+from pathlib import Path
 from typing import Any, Callable, List, Optional
 
 
@@ -199,6 +199,7 @@ def get_path_style_for_current_operating_system() -> PathStyle:
         return PathStyle.WINDOWSLIKE
     else:
         return PathStyle.UNIXLIKE
+
 
 class FilePathStyleConverter:
     """Class for converting file paths between different path styles."""

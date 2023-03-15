@@ -1,16 +1,23 @@
-from pathlib import Path
 import platform
+from pathlib import Path
 
 import pytest
 
 from hydrolib.core.dflowfm.mdu.models import Geometry, Output
-from hydrolib.core.utils import FilePathStyleConverter, PathStyle, get_substring_between, str_is_empty_or_none
+from hydrolib.core.utils import (
+    FilePathStyleConverter,
+    PathStyle,
+    get_substring_between,
+    str_is_empty_or_none,
+)
 
 from .utils import test_input_dir
+
 
 def runs_on_windows() -> bool:
     """Check to see if we are running on Windows."""
     return platform.system() == "Windows"
+
 
 class TestSplitString:
     def test_split_string_strip_whitespace(self):
@@ -75,6 +82,7 @@ class TestGetSubstringBetween:
         result = get_substring_between(source, start, end)
 
         assert result == exp_result
+
 
 class TestFilePathStyleConverter:
     @pytest.mark.skipif(
