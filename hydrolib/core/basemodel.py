@@ -757,7 +757,7 @@ class FileModel(BaseModel, ABC):
         filepath: Optional[Path] = None,
         resolve_casing: bool = False,
         recurse: bool = True,
-        path_style: Optional[PathStyle] = None,
+        path_style: Optional[str] = None,
         *args,
         **kwargs,
     ):
@@ -771,14 +771,13 @@ class FileModel(BaseModel, ABC):
             filepath (Optional[Path], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
             recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
-            path_style (Optional[PathStyle], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system.
+            path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
             return
 
-        if path_style is None:
-            path_style = get_path_style_for_current_operating_system()
+        path_style = input_validation.path_style(path_style)
 
         with file_load_context() as context:
             context.initialize_load_settings(recurse, resolve_casing, path_style)
@@ -904,7 +903,7 @@ class FileModel(BaseModel, ABC):
         self,
         filepath: Optional[Path] = None,
         recurse: bool = False,
-        path_style: PathStyle = get_path_style_for_current_operating_system(),
+        path_style: Optional[str] = None,
     ) -> None:
         """Save the model to disk.
 
@@ -934,13 +933,15 @@ class FileModel(BaseModel, ABC):
             recurse (bool, optional):
                 Whether to save all children of this FileModel (when set to True),
                 or only save this model (when set to False). Defaults to False.
-            path_style (PathStyle, optional):
+            path_style (Optional[str], optional):
                 With which file path style to save the model. File references will
-                be written with the specified path style.
+                be written with the specified path style. Defaults to the path style
+                used by the current operating system.
         """
         if filepath is not None:
             self.filepath = filepath
 
+        path_style = input_validation.path_style(path_style)
         save_settings = ModelSaveSettings(path_style=path_style)
 
         # Handle save
@@ -1307,3 +1308,5 @@ class UserInputValidation:
         raise ValueError(
             f"Path style '{path_style}' not supported. Supported path styles: {supported_path_style_str}"
         )
+    
+input_validation = UserInputValidation()
