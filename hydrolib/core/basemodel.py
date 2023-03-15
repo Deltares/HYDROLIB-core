@@ -936,7 +936,7 @@ class FileModel(BaseModel, ABC):
             path_style (Optional[str], optional):
                 With which file path style to save the model. File references will
                 be written with the specified path style. Defaults to the path style
-                used by the current operating system.
+                used by the current operating system. Options: 'unix', 'windows'.
         """
         if filepath is not None:
             self.filepath = filepath
