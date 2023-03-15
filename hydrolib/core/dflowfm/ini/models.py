@@ -8,7 +8,7 @@ from pydantic.class_validators import validator
 from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
-from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, FileModel, FilePathStyleConverter, ModelSaveSettings, ParsableFileModel
 
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
@@ -38,6 +38,7 @@ class INIBasedModel(BaseModel, ABC):
     """
 
     _header: str
+    _file_path_style_converter = FilePathStyleConverter()
 
     class Config:
         extra = Extra.ignore
@@ -144,6 +145,8 @@ class INIBasedModel(BaseModel, ABC):
             return v.value
         elif isinstance(v, float):
             return f"{v:{config.float_format}}"
+        elif isinstance(v, FileModel) and v.filepath is not None:
+            return self._file_path_style_converter.convert_from_os_style(v.filepath, save_settings.path_style)
         elif v is None:
             return ""
         else:
