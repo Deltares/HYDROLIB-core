@@ -139,7 +139,9 @@ class INIBasedModel(BaseModel, ABC):
             return str(int(v))
         elif isinstance(v, list):
             format = lambda x: self._convert_value(key, x, config, save_settings)
-            return self.__class__.get_list_field_delimiter(key).join([format(x) for x in v])
+            return self.__class__.get_list_field_delimiter(key).join(
+                [format(x) for x in v]
+            )
         elif isinstance(v, Enum):
             return v.value
         elif isinstance(v, float):
@@ -163,9 +165,7 @@ class INIBasedModel(BaseModel, ABC):
 
             prop = Property(
                 key=key,
-                value=self._convert_value(
-                    field_key, value, config, save_settings
-                ),
+                value=self._convert_value(field_key, value, config, save_settings),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)
