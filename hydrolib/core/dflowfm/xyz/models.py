@@ -3,7 +3,7 @@ from typing import Callable, Dict, List, Optional
 
 from pydantic import Field
 
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel, SerializerConfig
+from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel, SerializerConfig
 
 from .parser import XYZParser
 from .serializer import XYZSerializer
@@ -55,7 +55,7 @@ class XYZModel(ParsableFileModel):
         return "sample"
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return XYZSerializer.serialize
 
     @classmethod

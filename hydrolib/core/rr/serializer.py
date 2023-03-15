@@ -4,7 +4,7 @@ import inspect
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Union
 
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 from hydrolib.core.utils import get_str_len
 
 
@@ -194,7 +194,7 @@ def serialize(data: Dict) -> str:
     # fmt: on
 
 
-def write(path: Path, data: Dict, config: SerializerConfig) -> None:
+def write(path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings) -> None:
     """Write the specified model to the specified path.
 
     If the parent of the path does not exist, it will be created.

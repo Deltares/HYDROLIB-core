@@ -5,14 +5,14 @@ from xml.dom import minidom
 
 from lxml import etree as e
 
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
 
 class DIMRSerializer:
     """A serializer for DIMR files."""
 
     @staticmethod
-    def serialize(path: Path, data: dict, config: SerializerConfig):
+    def serialize(path: Path, data: dict, config: SerializerConfig, save_settings: ModelSaveSettings):
         """
         Serializes the DIMR data to the file at the specified path.
 
