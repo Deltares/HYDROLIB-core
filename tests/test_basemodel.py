@@ -18,6 +18,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
     ResolveRelativeMode,
     SerializerConfig,
+    UserInputValidation,
     context_file_loading,
     file_load_context,
 )
@@ -783,3 +784,38 @@ class TestSerializerConfig:
     def test_default(self):
         config = SerializerConfig()
         assert config.float_format == ""
+
+
+class TestUserInputValidation:
+    def test_path_style_none_returns_current_os_path_style(self):
+        validation = UserInputValidation()
+        path_style = validation.path_style(None)
+
+        exp_path_style = (
+            PathStyle.WINDOWSLIKE
+            if platform.system() == "Windows"
+            else PathStyle.UNIXLIKE
+        )
+
+        assert path_style == exp_path_style
+    
+    def test_path_style_windows_returns_windows_path_style(self):
+        validation = UserInputValidation()
+        path_style = validation.path_style("windows")
+
+        assert path_style == PathStyle.WINDOWSLIKE
+
+    def test_path_style_unix_returns_unix_path_style(self):
+        validation = UserInputValidation()
+        path_style = validation.path_style("unix")
+
+        assert path_style == PathStyle.UNIXLIKE
+
+    def test_path_style_unknown_raises_error(self):
+        validation = UserInputValidation()
+
+        with pytest.raises(ValueError) as error:
+            validation.path_style("unknown")
+
+        expected_message ="Path style 'unknown' not supported. Supported path styles: unix, windows"
+        assert expected_message in str(error.value)
