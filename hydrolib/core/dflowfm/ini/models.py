@@ -128,9 +128,8 @@ class INIBasedModel(BaseModel, ABC):
     def _exclude_fields(cls) -> Set:
         return {"comments", "datablock", "_header"}
 
-    @classmethod
     def _convert_value(
-        cls,
+        self,
         key: str,
         v: Any,
         config: INISerializerConfig,
@@ -139,12 +138,8 @@ class INIBasedModel(BaseModel, ABC):
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
-            float_format = (
-                lambda x: f"{x:{config.float_format}}"
-                if isinstance(x, float)
-                else str(x)
-            )
-            return cls.get_list_field_delimiter(key).join([float_format(x) for x in v])
+            format = lambda x: self._convert_value(key, x, config, save_settings)
+            return self.__class__.get_list_field_delimiter(key).join([format(x) for x in v])
         elif isinstance(v, Enum):
             return v.value
         elif isinstance(v, float):
@@ -168,7 +163,7 @@ class INIBasedModel(BaseModel, ABC):
 
             prop = Property(
                 key=key,
-                value=self.__class__._convert_value(
+                value=self._convert_value(
                     field_key, value, config, save_settings
                 ),
                 comment=getattr(self.comments, key.lower(), None),
