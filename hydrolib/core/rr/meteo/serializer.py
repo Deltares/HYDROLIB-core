@@ -219,7 +219,9 @@ class BuiSerializer:
         return str.join(" ", data_to_serialize)
 
 
-def write_bui_file(path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings) -> None:
+def write_bui_file(
+    path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings
+) -> None:
     """
     Writes a .bui file in the given path based on the data given in a dictionary.
 

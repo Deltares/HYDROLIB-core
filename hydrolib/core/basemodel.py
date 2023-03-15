@@ -1203,7 +1203,9 @@ class ParsableFileModel(FileModel):
         return ".test"
 
     @abstractclassmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return DummySerializer.serialize
 
     @abstractclassmethod

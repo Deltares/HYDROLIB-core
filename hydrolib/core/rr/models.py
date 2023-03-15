@@ -531,5 +531,7 @@ class RainfallRunoffModel(ParsableFileModel):
         return lambda path: read(cls.property_keys(), path)
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return write

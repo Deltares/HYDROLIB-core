@@ -194,7 +194,9 @@ def serialize(data: Dict) -> str:
     # fmt: on
 
 
-def write(path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings) -> None:
+def write(
+    path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings
+) -> None:
     """Write the specified model to the specified path.
 
     If the parent of the path does not exist, it will be created.

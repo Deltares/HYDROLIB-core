@@ -334,7 +334,9 @@ class DIMR(ParsableFileModel):
         return "dimr_config"
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return DIMRSerializer.serialize
 
     @classmethod

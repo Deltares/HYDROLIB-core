@@ -122,7 +122,9 @@ def test_serialize():
         },
     }
 
-    DIMRSerializer.serialize(file, data, config=SerializerConfig(), save_settings=ModelSaveSettings())
+    DIMRSerializer.serialize(
+        file, data, config=SerializerConfig(), save_settings=ModelSaveSettings()
+    )
 
     assert file.is_file()
     assert_files_equal(file, reference_file)

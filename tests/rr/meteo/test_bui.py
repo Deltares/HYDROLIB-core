@@ -601,7 +601,12 @@ class TestSerializer:
     def test_write_bui_file_given_valid_file(self):
         default_bui_model = BuiTestData.bui_model()
         new_path = test_output_dir / "new_path.bui"
-        write_bui_file(new_path, default_bui_model.dict(), config=SerializerConfig(), save_settings=ModelSaveSettings())
+        write_bui_file(
+            new_path,
+            default_bui_model.dict(),
+            config=SerializerConfig(),
+            save_settings=ModelSaveSettings(),
+        )
         assert new_path.is_file()
         written_text = new_path.read_text(encoding="utf8")
         assert str(new_path) in written_text

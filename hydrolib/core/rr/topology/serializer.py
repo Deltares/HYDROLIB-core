@@ -2,14 +2,19 @@ import os
 from pathlib import Path
 from typing import Any, Dict
 
-from hydrolib.core.basemodel import SerializerConfig, ModelSaveSettings
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
 
 class NodeFileSerializer:
     """Serializer for the RR node topology data."""
 
     @staticmethod
-    def serialize(path: Path, data: dict, config: SerializerConfig, save_settings: ModelSaveSettings):
+    def serialize(
+        path: Path,
+        data: dict,
+        config: SerializerConfig,
+        save_settings: ModelSaveSettings,
+    ):
         """
         Serializes the RR node topology data to the file at the specified path.
 
@@ -48,7 +53,12 @@ class LinkFileSerializer:
     """Serializer for the RR link topology data."""
 
     @staticmethod
-    def serialize(path: Path, data: dict, config: SerializerConfig, save_settings: ModelSaveSettings):
+    def serialize(
+        path: Path,
+        data: dict,
+        config: SerializerConfig,
+        save_settings: ModelSaveSettings,
+    ):
         """
         Serializes the RR link topology data to the file at the specified path.
 

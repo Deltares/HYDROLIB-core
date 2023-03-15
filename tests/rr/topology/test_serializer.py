@@ -15,7 +15,9 @@ class TestNodeFileSerializer:
             node=[create_node_values(), create_node_values(), create_node_values()]
         )
         config = SerializerConfig(float_format=".3f")
-        NodeFileSerializer.serialize(output_file, data, config, save_settings=ModelSaveSettings())
+        NodeFileSerializer.serialize(
+            output_file, data, config, save_settings=ModelSaveSettings()
+        )
 
         assert_files_equal(output_file, reference_file)
 
@@ -42,7 +44,12 @@ class TestLinkFileSerializer:
         data = dict(
             link=[create_link_values(), create_link_values(), create_link_values()]
         )
-        LinkFileSerializer.serialize(output_file, data, config=SerializerConfig(), save_settings=ModelSaveSettings())
+        LinkFileSerializer.serialize(
+            output_file,
+            data,
+            config=SerializerConfig(),
+            save_settings=ModelSaveSettings(),
+        )
 
         assert_files_equal(output_file, reference_file)
 

@@ -6,7 +6,12 @@ from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
 class XYZSerializer:
     @staticmethod
-    def serialize(path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings) -> None:
+    def serialize(
+        path: Path,
+        data: Dict,
+        config: SerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> None:
         """
         Serializes the XYZ data to the file at the specified path.
 

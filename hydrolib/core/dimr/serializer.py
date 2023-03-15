@@ -12,7 +12,12 @@ class DIMRSerializer:
     """A serializer for DIMR files."""
 
     @staticmethod
-    def serialize(path: Path, data: dict, config: SerializerConfig, save_settings: ModelSaveSettings):
+    def serialize(
+        path: Path,
+        data: dict,
+        config: SerializerConfig,
+        save_settings: ModelSaveSettings,
+    ):
         """
         Serializes the DIMR data to the file at the specified path.
 
