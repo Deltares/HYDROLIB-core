@@ -27,7 +27,7 @@ class Serializer:
             return [
                 "*",
             ]
-        return (f"*{v.rstrip()}" for v in description.content.splitlines())
+        return (f"*{v.rstrip()}" for v in (description.content + "\n").splitlines())
 
     @staticmethod
     def serialize_metadata(metadata: Metadata) -> Iterable[str]:
