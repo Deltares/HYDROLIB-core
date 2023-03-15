@@ -145,9 +145,9 @@ class INIBasedModel(BaseModel, ABC):
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
-            format = lambda x: self._convert_value(key, x, config, save_settings)
+            convert_value = lambda x: self._convert_value(key, x, config, save_settings)
             return self.__class__.get_list_field_delimiter(key).join(
-                [format(x) for x in v]
+                [convert_value(x) for x in v]
             )
         elif isinstance(v, Enum):
             return v.value
