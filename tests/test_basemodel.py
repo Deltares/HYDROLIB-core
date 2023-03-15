@@ -798,7 +798,7 @@ class TestUserInputValidation:
         )
 
         assert path_style == exp_path_style
-    
+
     def test_path_style_windows_returns_windows_path_style(self):
         validation = UserInputValidation()
         path_style = validation.path_style("windows")
@@ -817,5 +817,7 @@ class TestUserInputValidation:
         with pytest.raises(ValueError) as error:
             validation.path_style("unknown")
 
-        expected_message ="Path style 'unknown' not supported. Supported path styles: unix, windows"
+        expected_message = (
+            "Path style 'unknown' not supported. Supported path styles: unix, windows"
+        )
         assert expected_message in str(error.value)

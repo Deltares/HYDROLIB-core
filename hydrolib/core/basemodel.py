@@ -1290,18 +1290,20 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
 
     return validator("*", allow_reuse=True, pre=True)(adjust_none)
 
-class UserInputValidation:
 
+class UserInputValidation:
     def __init__(self) -> None:
         self._os_path_style = get_path_style_for_current_operating_system()
 
     def path_style(self, path_style: str) -> PathStyle:
         if path_style is None:
             return self._os_path_style
-        
+
         supported_path_styles = list(PathStyle)
         if path_style in supported_path_styles:
             return PathStyle(path_style)
-        
+
         supported_path_style_str = ", ".join(([x.value for x in supported_path_styles]))
-        raise ValueError(f"Path style '{path_style}' not supported. Supported path styles: {supported_path_style_str}")
+        raise ValueError(
+            f"Path style '{path_style}' not supported. Supported path styles: {supported_path_style_str}"
+        )
