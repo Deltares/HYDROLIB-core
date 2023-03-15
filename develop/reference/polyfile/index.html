@@ -1332,8 +1332,8 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.polyfile.parser.ParseMsg.notify_as_warning" class="md-nav__link">
-    notify_as_warning()
+  <a href="#hydrolib.core.dflowfm.polyfile.parser.ParseMsg.format_parsemsg_to_string" class="md-nav__link">
+    format_parsemsg_to_string()
   </a>
   
 </li>
@@ -1757,8 +1757,8 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.polyfile.parser.ParseMsg.notify_as_warning" class="md-nav__link">
-    notify_as_warning()
+  <a href="#hydrolib.core.dflowfm.polyfile.parser.ParseMsg.format_parsemsg_to_string" class="md-nav__link">
+    format_parsemsg_to_string()
   </a>
   
 </li>
@@ -2957,25 +2957,19 @@ ParseMsg            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
 
 
 
-
-
-
-
-
-
   <div class="doc doc-object doc-method">
 
 
 
-<h4 id="hydrolib.core.dflowfm.polyfile.parser.ParseMsg.notify_as_warning" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">notify_as_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+<h4 id="hydrolib.core.dflowfm.polyfile.parser.ParseMsg.format_parsemsg_to_string" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">format_parsemsg_to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
 
 
-<a href="#hydrolib.core.dflowfm.polyfile.parser.ParseMsg.notify_as_warning" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#hydrolib.core.dflowfm.polyfile.parser.ParseMsg.format_parsemsg_to_string" class="headerlink" title="Permanent link">&para;</a></h4>
 
     <div class="doc doc-contents ">
 
-      <p>Call warnings.warn with a formatted string describing this ParseMsg</p>
+      <p>Format string describing this ParseMsg</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -2991,19 +2985,19 @@ ParseMsg            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
       <tr>
         <td><code>file_path</code></td>
         <td><code>Optional[Path]</code></td>
-        <td><p>The file path mentioned in the warning if specified. Defaults to None.</p></td>
+        <td><p>The file path mentioned in the message if specified. Defaults to None.</p></td>
         <td><code>None</code></td>
       </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/polyfile/parser.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">notify_as_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call warnings.warn with a formatted string describing this ParseMsg</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">format_parsemsg_to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Format string describing this ParseMsg</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Optional[Path], optional):</span>
-<span class="sd">            The file path mentioned in the warning if specified. Defaults to None.</span>
+<span class="sd">            The file path mentioned in the message if specified. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_start</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_end</span><span class="p">:</span>
         <span class="n">block_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Invalid block </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">line_start</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">line_end</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -3017,12 +3011,20 @@ ParseMsg            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
     <span class="p">)</span>
     <span class="n">file_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">File: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reason</span><span class="si">}{</span><span class="n">block_suffix</span><span class="si">}{</span><span class="n">col_suffix</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reason</span><span class="si">}{</span><span class="n">block_suffix</span><span class="si">}{</span><span class="n">col_suffix</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">message</span>
 </code></pre></div>
         </details>
     </div>
 
   </div>
+
+
+
+
+
+
 
 
 
@@ -3245,6 +3247,21 @@ Defaults to False.</p></td>
 
       <p>Finalize parsing and return the constructed PolyObject.</p>
 
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>When the plifile is invalid.</p></td>
+      </tr>
+  </tbody>
+</table>
 <p><strong>Returns:</strong></p>
 <table>
   <thead>
@@ -3265,6 +3282,9 @@ Defaults to False.</p></td>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">PolyObject</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Finalize parsing and return the constructed PolyObject.</span>
 
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: When the plifile is invalid.</span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        PolyObject:</span>
 <span class="sd">            A PolyObject containing the constructed PolyObject instances.</span>
@@ -3272,7 +3292,7 @@ Defaults to False.</p></td>
     <span class="bp">self</span><span class="o">.</span><span class="n">_error_builder</span><span class="o">.</span><span class="n">end_invalid_block</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_line</span><span class="p">)</span>
     <span class="n">last_error_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_builder</span><span class="o">.</span><span class="n">finalize_previous_error</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">last_error_msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_parse_msg</span><span class="p">(</span><span class="n">last_error_msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notify_as_error</span><span class="p">(</span><span class="n">last_error_msg</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_finalise</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">]()</span>
 
@@ -3421,6 +3441,21 @@ be reported as warnings.</p>
       </tr>
   </tbody>
 </table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>When the plifile is invalid.</p></td>
+      </tr>
+  </tbody>
+</table>
 <p><strong>Returns:</strong></p>
 <table>
   <thead>
@@ -3487,6 +3522,9 @@ be reported as warnings.</p>
 <span class="sd">            Path to the pli(z)/pol convention structured file.</span>
 <span class="sd">        has_z_values:</span>
 <span class="sd">            Whether to create points containing a z-value. Defaults to None.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: When the plifile is invalid.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: The dictionary describing the data of a PolyObject.</span>
