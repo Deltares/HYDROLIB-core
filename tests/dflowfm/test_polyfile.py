@@ -524,11 +524,56 @@ name
             assert found_msg == expected_msg
 
     @pytest.mark.parametrize(
-        "input,errors_description",
+        "input,expected_msg_data",
         [
             (
                 "*description",
                 [((0, 1), "EoF encountered before the block is finished.")],
+            ),
+            (
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    2  5   
+                    1.0 2.0 3.0 4.0 5.0"""
+                ),
+                [((0, 4), "EoF encountered before the block is finished.")],
+            ),
+            (
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    1.0 2.0 3.0 4.0 5.0
+                    2.0 3.0 4.0 5.0 6.0"""
+                ),
+                [
+                    (
+                        (4, 5),
+                        "Settings of block might be incorrect, expected a valid name or description at line 4.",
+                    )
+                ],
+            ),
+            (
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5
+                    1.0 2.0 3.0 4.0 5.0
+                    name
+                    1  5
+                    1.0 2.0 3.0 4.0 5.0
+                    2.0 3.0 4.0 5.0 6.0"""
+                ),
+                [
+                    (
+                        (7, 8),
+                        "Settings of block might be incorrect, expected a valid name or description at line 7.",
+                    )
+                ],
             ),
             (
                 inspect.cleandoc(
@@ -616,30 +661,54 @@ name
                 ),
                 [((0, 3), "Expected a valid next point at line 3.")],
             ),
+            (
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    1.0 2.0 3.0 4.0 5.0 Comment after the values is invalid"""
+                ),
+                [((0, 4), "Expected a valid next point at line 3.")],
+            ),
+            (
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    # 1.0 2.0 3.0 4.0 5.0 Comment after the values is invalid"""
+                ),
+                [((0, 4), "Expected a valid next point at line 3.")],
+            ),
+            (
+                inspect.cleandoc(
+                    """
+                    *description
+                    name
+                    1  5   
+                    1.0 2.0 3.0 4.0 5.0 # Comment after the values is invalid"""
+                ),
+                [((0, 4), "Expected a valid next point at line 3.")],
+            ),
         ],
     )
-    def test_invalid_block_is_correctly_logged(
-        self, input: str, errors_description: List, recwarn
+    def test_invalid_block_correctly_raises_error(
+        self, input: str, expected_msg_data: str
     ):
         parser = Parser(self.file_path)
 
-        for l in input.splitlines():
-            parser.feed_line(l)
+        with pytest.raises(ValueError) as error:
+            for l in input.splitlines():
+                parser.feed_line(l)
 
-        _ = parser.finalize()
+            _ = parser.finalize()
 
-        assert len(recwarn) == len(errors_description)
-
-        for warning, (lines, reason) in zip(recwarn, errors_description):
-            block_suffix = (
-                f"Invalid block {lines[0]}:{lines[1]}"
-                if lines[0] != lines[1]
-                else f"Invalid line {lines[0]}"
-            )
-
-            found_msg = warning.message.args[0]
-            expected_msg = f"{reason}\n{block_suffix}\nFile: {self.file_path}"
-            assert found_msg == expected_msg
+        found_msg = error.value.args[0]
+        expected_affected_blocks_of_error_msg = expected_msg_data[0][0]
+        expected_part_of_error_msg = expected_msg_data[0][1]
+        expected_error_msg = f"Invalid formatted plifile, {expected_part_of_error_msg}\nInvalid block {expected_affected_blocks_of_error_msg[0]}:{expected_affected_blocks_of_error_msg[1]}\nFile: dummy.pli"
+        assert found_msg == expected_error_msg
 
     def test_polyfile_can_be_saved_without_errors_and_is_same_as_input(self):
         infile = test_input_dir / "dflowfm_individual_files" / "test.pli"
