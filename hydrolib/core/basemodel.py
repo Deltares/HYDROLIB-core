@@ -1308,5 +1308,6 @@ class UserInputValidation:
         raise ValueError(
             f"Path style '{path_style}' not supported. Supported path styles: {supported_path_style_str}"
         )
-    
+
+
 input_validation = UserInputValidation()
