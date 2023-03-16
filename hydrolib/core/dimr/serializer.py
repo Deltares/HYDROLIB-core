@@ -6,6 +6,7 @@ from xml.dom import minidom
 from lxml import etree as e
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.utils import FilePathStyleConverter
 
 
 class DIMRSerializer:
@@ -42,7 +43,9 @@ class DIMRSerializer:
             attrib=attrib,
             nsmap=namespaces,
         )
-        DIMRSerializer._build_tree(root, data, config)
+
+        path_style_converter = FilePathStyleConverter()
+        DIMRSerializer._build_tree(root, data, config, save_settings, path_style_converter)
 
         to_string = minidom.parseString(e.tostring(root))
         xml = to_string.toprettyxml(indent="  ", encoding="utf-8")
@@ -51,7 +54,11 @@ class DIMRSerializer:
             f.write(xml)
 
     @staticmethod
-    def _build_tree(root, data: dict, config: SerializerConfig):
+    def _build_tree(root, 
+                    data: dict, 
+                    config: SerializerConfig, 
+                    save_settings: ModelSaveSettings, 
+                    path_style_converter: FilePathStyleConverter):
         name = data.pop("name", None)
         if name:
             root.set("name", name)
@@ -59,12 +66,12 @@ class DIMRSerializer:
         for key, val in data.items():
             if isinstance(val, dict):
                 c = e.Element(key)
-                DIMRSerializer._build_tree(c, val, config)
+                DIMRSerializer._build_tree(c, val, config, save_settings, path_style_converter)
                 root.append(c)
             elif isinstance(val, List):
                 for item in val:
                     c = e.Element(key)
-                    DIMRSerializer._build_tree(c, item, config)
+                    DIMRSerializer._build_tree(c, item, config, save_settings, path_style_converter)
                     root.append(c)
             else:
                 c = e.Element(key)
@@ -72,6 +79,8 @@ class DIMRSerializer:
                     c.text = val.isoformat(sep="T", timespec="auto")
                 elif isinstance(val, float):
                     c.text = f"{val:{config.float_format}}"
+                elif isinstance(val, Path):
+                    c.text = path_style_converter.convert_from_os_style(val, save_settings.path_style)
                 else:
                     c.text = str(val)
                 root.append(c)
