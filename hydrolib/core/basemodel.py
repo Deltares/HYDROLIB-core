@@ -1299,10 +1299,23 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
 
 
 class UserInputValidation:
+    """Class to take care of user input validation"""
     def __init__(self) -> None:
         self._os_path_style = get_path_style_for_current_operating_system()
 
-    def path_style(self, path_style: str) -> PathStyle:
+
+    def path_style(self, path_style: Optional[str]) -> PathStyle:
+        """ Validates the path style as string.
+    
+        Args:
+            path_style (Optional[str]): The path style as string value.
+
+        Returns: 
+            PathStyle: The converted PathStyle object.
+            
+        Raises:
+            ValueError: When an unsupported path style is passed.
+        """
         if path_style is None:
             return self._os_path_style
 
