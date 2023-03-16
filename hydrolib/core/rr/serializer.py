@@ -41,7 +41,9 @@ def _get_string_value(
     if path is None:
         value = ""
     else:
-        value = file_path_style_converter.convert_from_os_style(path, save_settings.path_style)
+        value = file_path_style_converter.convert_from_os_style(
+            path, save_settings.path_style
+        )
 
     return f"'{value}'"
 

@@ -772,7 +772,7 @@ class FileModel(BaseModel, ABC):
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
             recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
             path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
-        
+
         Raises:
             ValueError: When an unsupported path style is passed.
         """
