@@ -92,13 +92,13 @@ class TestFilePathStyleConverter:
     )
     class TestOnWindows:
         class TestConvertToOSStyle:
-            def test_convert_to_os_style_from_absolute_unixlike_filepath(self):
+            def test_from_absolute_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
                 assert target_path == "c:/path/to.file"
 
-            def test_convert_to_os_style_from_relative_unixlike_filepath(self):
+            def test_from_relative_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
@@ -111,7 +111,7 @@ class TestFilePathStyleConverter:
                     pytest.param("c:/path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_to_os_style_from_absolute_windowslike_filepath(self, source_path: str):
+            def test_from_absolute_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "c:/path/to.file"
@@ -123,7 +123,7 @@ class TestFilePathStyleConverter:
                     pytest.param("path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_to_os_style_from_relative_windowslike(self, source_path: str):
+            def test_from_relative_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "path/to.file"
@@ -136,7 +136,7 @@ class TestFilePathStyleConverter:
                     pytest.param("c:/path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_from_os_style_to_absolute_unixlike_filepath(self, source_path: str):
+            def test_to_absolute_unixlike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
                 assert target_path == "/c/path/to.file"
@@ -148,7 +148,7 @@ class TestFilePathStyleConverter:
                     pytest.param("path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_from_os_style_to_relative_unixlike_filepath(self, source_path: str):
+            def test_to_relative_unixlike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
                 assert target_path == "path/to.file"
@@ -160,7 +160,7 @@ class TestFilePathStyleConverter:
                     pytest.param("c:/path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_from_os_style_from_absolute_windowslike_filepath(self, source_path: str):
+            def test_to_absolute_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "c:/path/to.file"
@@ -172,7 +172,7 @@ class TestFilePathStyleConverter:
                     pytest.param("path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_from_os_style_from_relative_windowslike_filepath(self, source_path: str):
+            def test_to_relative_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "path/to.file"
@@ -190,7 +190,7 @@ class TestFilePathStyleConverter:
                     pytest.param("c:/path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_to_os_style_from_absolute_windowslike_filepath(self, source_path: str):
+            def test_from_absolute_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "/c/path/to.file"
@@ -202,43 +202,43 @@ class TestFilePathStyleConverter:
                     pytest.param("path/to.file", id="Forward slashes"),
                 ],
             )
-            def test_convert_to_os_style_from_relative_windowslike_filepath(self, source_path: str):
+            def test_from_relative_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "path/to.file"
             
-            def test_convert_to_os_style_from_absolute_unixlike_filepath(self):
+            def test_from_absolute_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
                 assert target_path == "c/path/to.file"
     
-            def test_convert_to_os_style_from_relative_unixlike_filepath(self):
+            def test_from_relative_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
                 assert target_path == "path/to.file"
 
         class TestConvertFromOSStyle:
-            def test_convert_from_os_style_to_absolute_windowslike_filepath(self):
+            def test_to_absolute_windowslike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "c:/path/to.file"
 
-            def test_convert_from_os_style_to_relative_windowslike_filepath(self):
+            def test_to_relative_windowslike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
                 assert target_path == "path/to.file"
 
-            def test_convert_from_os_style_to_absolute_unixlike_filepath(self):
+            def test_to_absolute_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
                 assert target_path == "/c/path/to.file"
 
-            def test_convert_from_os_style_to_relative_unixlike_filepath(self, source_path: str):
+            def test_to_relative_unixlike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
