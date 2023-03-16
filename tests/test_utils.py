@@ -85,7 +85,6 @@ class TestGetSubstringBetween:
 
 
 class TestFilePathStyleConverter:
-
     @pytest.mark.skipif(
         not runs_on_windows(),
         reason="Platform dependent test: should only succeed on Windows OS.",
@@ -95,13 +94,17 @@ class TestFilePathStyleConverter:
             def test_from_absolute_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "c:/path/to.file"
 
             def test_from_relative_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "path/to.file"
 
             @pytest.mark.parametrize(
@@ -113,7 +116,9 @@ class TestFilePathStyleConverter:
             )
             def test_from_absolute_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "c:/path/to.file"
 
             @pytest.mark.parametrize(
@@ -125,7 +130,9 @@ class TestFilePathStyleConverter:
             )
             def test_from_relative_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "path/to.file"
 
         class TestConvertFromOSStyle:
@@ -138,9 +145,11 @@ class TestFilePathStyleConverter:
             )
             def test_to_absolute_unixlike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "/c/path/to.file"
-    
+
             @pytest.mark.parametrize(
                 "source_path",
                 [
@@ -150,9 +159,11 @@ class TestFilePathStyleConverter:
             )
             def test_to_relative_unixlike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "path/to.file"
-    
+
             @pytest.mark.parametrize(
                 "source_path",
                 [
@@ -162,9 +173,11 @@ class TestFilePathStyleConverter:
             )
             def test_to_absolute_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "c:/path/to.file"
-            
+
             @pytest.mark.parametrize(
                 "source_path",
                 [
@@ -174,7 +187,9 @@ class TestFilePathStyleConverter:
             )
             def test_to_relative_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "path/to.file"
 
     @pytest.mark.skipif(
@@ -192,7 +207,9 @@ class TestFilePathStyleConverter:
             )
             def test_from_absolute_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "/c/path/to.file"
 
             @pytest.mark.parametrize(
@@ -204,42 +221,56 @@ class TestFilePathStyleConverter:
             )
             def test_from_relative_windowslike_filepath(self, source_path: str):
                 converter = FilePathStyleConverter()
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "path/to.file"
-            
+
             def test_from_absolute_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "/c/path/to.file"
-    
+
             def test_from_relative_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
-                target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_to_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "path/to.file"
 
         class TestConvertFromOSStyle:
             def test_to_absolute_windowslike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "c:/path/to.file"
 
             def test_to_relative_windowslike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.WINDOWSLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.WINDOWSLIKE
+                )
                 assert target_path == "path/to.file"
 
             def test_to_absolute_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "/c/path/to.file"
 
             def test_to_relative_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
-                target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
+                target_path = converter.convert_from_os_style(
+                    Path(source_path), PathStyle.UNIXLIKE
+                )
                 assert target_path == "path/to.file"
