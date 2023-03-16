@@ -674,7 +674,7 @@ class FileModel(BaseModel, ABC):
     # Absolute anchor is used to resolve the save location when the filepath is relative.
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
 
-    def __new__(cls, filepath: Optional[Union[Path,str]] = None, *args, **kwargs):
+    def __new__(cls, filepath: Optional[Union[Path, str]] = None, *args, **kwargs):
         """Create a new model.
         If the file at the provided file path was already parsed, this instance is returned.
 
@@ -693,7 +693,7 @@ class FileModel(BaseModel, ABC):
 
     def __init__(
         self,
-        filepath: Optional[Union[Path,str]] = None,
+        filepath: Optional[Union[Path, str]] = None,
         resolve_casing: bool = False,
         recurse: bool = True,
         *args,
@@ -1015,11 +1015,11 @@ class FileModel(BaseModel, ABC):
 
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
-    
+
     @staticmethod
     def _change_to_path(filepath):
         if filepath is None:
-            return filepath        
+            return filepath
         if isinstance(filepath, Path):
             return filepath
         else:
