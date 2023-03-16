@@ -229,6 +229,7 @@ def write_bui_file(
         path (Path): Path where to output the text.
         data (Dict): Data to serialize into the file.
         config (SerializerConfig): The serialization configuration.
+        save_settings (ModelSaveSettings): The model save settings.
     """
     data["filepath"] = path  # This is redundant as already exists in the data.
     serialized_bui_data = BuiSerializer.serialize(data, config)

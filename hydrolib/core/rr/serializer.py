@@ -21,6 +21,7 @@ def _get_string_value(path_value: Optional[Union[dict, Path, str]], save_setting
 
     Args:
         path_value (Union[dict, Path, str]): path-like value to be printed.
+        save_settings (ModelSaveSettings): The model save settings.
     Returns:
         str: The str representation of input path_value.
     """
@@ -208,6 +209,7 @@ def write(path: Path, data: Dict, config: SerializerConfig, save_settings: Model
         model (RainfallRunoffModel): The model to write to file
         path (Path): The file path to write to.
         config (SerializerConfig): The serialization configuration.
+        save_settings (ModelSaveSettings): The model save settings.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:

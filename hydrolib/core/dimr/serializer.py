@@ -25,6 +25,7 @@ class DIMRSerializer:
             path (Path): The path to the destination file.
             data (Dict): The data to be serialized.
             config (SerializerConfig): The serialization configuration.
+            save_settings (ModelSaveSettings): The model save settings.
         """
 
         path.parent.mkdir(parents=True, exist_ok=True)
