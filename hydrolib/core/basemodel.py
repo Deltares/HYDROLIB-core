@@ -22,6 +22,7 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
+    Union,
 )
 from weakref import WeakValueDictionary
 
@@ -673,16 +674,17 @@ class FileModel(BaseModel, ABC):
     # Absolute anchor is used to resolve the save location when the filepath is relative.
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
 
-    def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
+    def __new__(cls, filepath: Optional[Union[Path,str]] = None, *args, **kwargs):
         """Create a new model.
         If the file at the provided file path was already parsed, this instance is returned.
 
         Args:
-            filepath (Optional[Path], optional): The file path to the file. Defaults to None.
+            filepath (Optional[Union[Path,str]], optional): The file path to the file. Defaults to None.
 
         Returns:
             FileModel: A file model.
         """
+        filepath = FileModel._change_to_path(filepath)
         with file_load_context() as context:
             if (file_model := context.retrieve_model(filepath)) is not None:
                 return file_model
@@ -691,7 +693,7 @@ class FileModel(BaseModel, ABC):
 
     def __init__(
         self,
-        filepath: Optional[Path] = None,
+        filepath: Optional[Union[Path,str]] = None,
         resolve_casing: bool = False,
         recurse: bool = True,
         *args,
@@ -704,13 +706,15 @@ class FileModel(BaseModel, ABC):
         If the filepath is provided, it is read from disk.
 
         Args:
-            filepath (Optional[Path], optional): The file path. Defaults to None.
+            filepath (Optional[Union[Path,str]], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
             recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
             return
+
+        filepath = FileModel._change_to_path(filepath)
 
         with file_load_context() as context:
             context.initialize_load_settings(recurse, resolve_casing)
@@ -1011,6 +1015,19 @@ class FileModel(BaseModel, ABC):
 
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
+    
+    @staticmethod
+    def _change_to_path(filepath):
+        if filepath is None:
+            return filepath        
+        if isinstance(filepath, Path):
+            return filepath
+        else:
+            return Path(filepath)
+
+    @validator("filepath")
+    def _conform_filepath_to_hydrolib_standard(cls, value):
+        return FileModel._change_to_path(value)
 
 
 class SerializerConfig(BaseModel, ABC):
