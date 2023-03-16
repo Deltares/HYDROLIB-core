@@ -771,7 +771,10 @@ class FileModel(BaseModel, ABC):
             filepath (Optional[Path], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
             recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
-            path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system.
+            path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
+        
+        Raises:
+            ValueError: When an unsupported path style is passed.
         """
         if not filepath:
             super().__init__(*args, **kwargs)
@@ -937,6 +940,9 @@ class FileModel(BaseModel, ABC):
                 With which file path style to save the model. File references will
                 be written with the specified path style. Defaults to the path style
                 used by the current operating system. Options: 'unix', 'windows'.
+
+        Raises:
+            ValueError: When an unsupported path style is passed.
         """
         if filepath is not None:
             self.filepath = filepath
@@ -1299,13 +1305,14 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
 
 
 class UserInputValidation:
-    """Class to take care of user input validation"""
+    """Class to take care of user input validation."""
 
     def __init__(self) -> None:
+        """Initializes a new instance of the `UserInputValidation` class."""
         self._os_path_style = get_path_style_for_current_operating_system()
 
     def path_style(self, path_style: Optional[str]) -> PathStyle:
-        """Validates the path style as string.
+        """Validates the path style as string on whether it is a supported path style.
 
         Args:
             path_style (Optional[str]): The path style as string value.

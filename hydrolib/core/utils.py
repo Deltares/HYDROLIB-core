@@ -209,7 +209,7 @@ class FilePathStyleConverter:
         self._os_path_style = get_path_style_for_current_operating_system()
 
     def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> str:
-        """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+        """Convert the file path from the source path style to the path style of the current operating system.
 
         Args:
             file_path (Path): The file path to convert to the OS path style.
@@ -229,11 +229,11 @@ class FilePathStyleConverter:
     def convert_from_os_style(
         self, file_path: Path, target_path_style: PathStyle
     ) -> str:
-        """Resolve the file path by converting it from the path style for the current operating system to the target path style.
+        """Convert the file path from the path style of the current operating system to the target path style.
 
         Args:
-            file_path (Path): The file path to convert to the OS path style.
-            target_path_style (PathStyle): The target file path style to which the file path should be converted.
+            file_path (Path): The file path to convert to the target path style.
+            target_path_style (PathStyle): The target path style to convert the file path to.
 
         Returns:
             str: The converted file path with the target path style.

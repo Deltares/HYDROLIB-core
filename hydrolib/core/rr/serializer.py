@@ -38,13 +38,10 @@ def _get_string_value(
     elif isinstance(path_value, str):
         path = Path(path_value)
 
-    value = (
-        ""
-        if path is None
-        else file_path_style_converter.convert_from_os_style(
-            path, save_settings.path_style
-        )
-    )
+    if path is None:
+        value = ""
+    else:
+        value = file_path_style_converter.convert_from_os_style(path, save_settings.path_style)
 
     return f"'{value}'"
 
