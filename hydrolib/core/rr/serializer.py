@@ -12,7 +12,9 @@ def _calculate_max_value_length(data: Iterable) -> int:
     return max(map(get_str_len, data))
 
 
-def _get_string_value(path_value: Optional[Union[dict, Path, str]], save_settings: ModelSaveSettings) -> str:
+def _get_string_value(
+    path_value: Optional[Union[dict, Path, str]], save_settings: ModelSaveSettings
+) -> str:
     """Get printable string value of the path value in a typical
     RainfallRunoffModel.
 
@@ -29,9 +31,13 @@ def _get_string_value(path_value: Optional[Union[dict, Path, str]], save_setting
 
     value = ""
     if isinstance(path_value, dict) and (file_path := path_value.get("filepath", None)):
-        value = file_path_style_converter.convert_from_os_style(file_path, save_settings.path_style)
+        value = file_path_style_converter.convert_from_os_style(
+            file_path, save_settings.path_style
+        )
     elif isinstance(path_value, Path):
-        value = file_path_style_converter.convert_from_os_style(path_value, save_settings.path_style)
+        value = file_path_style_converter.convert_from_os_style(
+            path_value, save_settings.path_style
+        )
     elif isinstance(path_value, str):
         value = path_value
 
@@ -198,7 +204,9 @@ def serialize(data: Dict, save_settings: ModelSaveSettings) -> str:
     # fmt: on
 
 
-def write(path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings) -> None:
+def write(
+    path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings
+) -> None:
     """Write the specified model to the specified path.
 
     If the parent of the path does not exist, it will be created.
