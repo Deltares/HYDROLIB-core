@@ -28,6 +28,7 @@ def _get_string_value(path_value: Optional[Union[dict, Path, str]], save_setting
 
     file_path_style_converter = FilePathStyleConverter()
 
+    path = None
     if isinstance(path_value, dict) and (file_path := path_value.get("filepath", None)):
         path = file_path
     elif isinstance(path_value, Path):
