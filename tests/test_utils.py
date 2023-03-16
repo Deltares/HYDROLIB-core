@@ -211,7 +211,7 @@ class TestFilePathStyleConverter:
                 converter = FilePathStyleConverter()
                 source_path = "/c/path/to.file"
                 target_path = converter.convert_to_os_style(Path(source_path), PathStyle.UNIXLIKE)
-                assert target_path == "c/path/to.file"
+                assert target_path == "/c/path/to.file"
     
             def test_from_relative_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
@@ -238,7 +238,7 @@ class TestFilePathStyleConverter:
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
                 assert target_path == "/c/path/to.file"
 
-            def test_to_relative_unixlike_filepath(self, source_path: str):
+            def test_to_relative_unixlike_filepath(self):
                 converter = FilePathStyleConverter()
                 source_path = "path/to.file"
                 target_path = converter.convert_from_os_style(Path(source_path), PathStyle.UNIXLIKE)
