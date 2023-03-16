@@ -251,7 +251,7 @@ class FilePathStyleConverter:
         cls, file_path: Path, source_path_style: PathStyle, target_path_style: PathStyle
     ) -> str:
         if source_path_style == target_path_style:
-            return str(file_path)
+            return file_path.as_posix()
 
         if (
             source_path_style == PathStyle.UNIXLIKE

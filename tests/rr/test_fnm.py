@@ -185,7 +185,7 @@ def test_parse_serialize_should_return_same_result():
     *
     *
     'delft_3b.ini'             *   1. Control file                                                         I
-    '___somewhere\else'        *   2. Knoop data                                                           I
+    '___somewhere/else'        *   2. Knoop data                                                           I
     '3b_link.tp'               *   3. Tak data                                                             I
     '3brunoff.tp'              *   4. Open water data                                                      I
     'paved.3b'                 *   5. Verhard gebied algemeen                                              I
