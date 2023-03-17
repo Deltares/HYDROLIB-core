@@ -11,6 +11,7 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
+from hydrolib.core.dflowfm.obs.models import ObservationPointModel, ObservationPoint
 
 from hydrolib.core.dflowfm.xyn.models import XYNPoint, XYNModel
 
@@ -106,3 +107,24 @@ class TestModels:
 
         assert isinstance(obsfile, XYNModel)
         assert obsfile.points == expected_points
+
+    def test_loading_fmmodel_model_with_ini_obsfile(self):
+        file_path = test_input_dir / "obsfile_cases" / "single_ini" / "fm.mdu"
+        model = FMModel(file_path)
+
+        expected_points = [
+            ObservationPoint(x=1.1, y=2.2, name="ObservationPoint_2D_01"),
+            ObservationPoint(x=3.3, y=4.4, name="ObservationPoint_2D_02"),
+        ]
+
+        obsfile = model.output.obsfile[0]
+
+        assert isinstance(obsfile, ObservationPointModel)
+
+        assert len(obsfile.observationpoint) == len(expected_points)
+        for actual_point, expected_point in zip(
+            obsfile.observationpoint, expected_points
+        ):
+            assert actual_point.x == expected_point.x
+            assert actual_point.y == expected_point.y
+            assert actual_point.name == expected_point.name
