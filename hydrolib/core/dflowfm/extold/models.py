@@ -131,7 +131,9 @@ class ExtForcing(BaseModel):
     averagingtype: Optional[float] = Field(None, alias="AVERAGINGTYPE")
     """Optional[float]: The averging type."""
 
-    relativesearchcellsize: Optional[float] = Field(None, alias="RELATIVESEARCHCELLSIZE")
+    relativesearchcellsize: Optional[float] = Field(
+        None, alias="RELATIVESEARCHCELLSIZE"
+    )
     """Optional[float]: The relative search cell size."""
 
     extrapoltol: Optional[float] = Field(None, alias="EXTRAPOLTOL")
