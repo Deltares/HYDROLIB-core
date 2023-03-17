@@ -8,6 +8,7 @@ from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.mdu.models import (
     FMModel,
+    Geometry,
     InfiltrationMethod,
     Output,
     ParticlesThreeDType,
@@ -88,13 +89,13 @@ class TestModels:
         assert fm_model.veg.stemheightstd == 0.0
 
     def test_disk_only_file_model_list_fields_are_initialized_correctly(self):
-        data = {"crsfile": [Path("test.crs")]}
+        data = {"landboundaryfile": [Path("test.ldb")]}
 
-        model = Output(**data)
+        model = Geometry(**data)
 
-        assert model.crsfile is not None
-        assert len(model.crsfile) == 1
-        assert isinstance(model.crsfile[0], DiskOnlyFileModel)
+        assert model.landboundaryfile is not None
+        assert len(model.landboundaryfile) == 1
+        assert isinstance(model.landboundaryfile[0], DiskOnlyFileModel)
 
 
 class TestOutput:
