@@ -76,6 +76,15 @@ class Quantity:
         DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
         """Discharge, salinity and heat sources"""
 
+    class Struc(QuantityBase):
+        Pump = "pump"
+        """Pump capacity"""
+        DamLevel = "damlevel"
+        """Dam level"""
+        GateLowerEdgeLevel = "gateloweredgelevel"
+        """Gate lower edge level"""
+        GeneralStructure = "generalstructure"
+        """General structure"""
 
 class FileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
