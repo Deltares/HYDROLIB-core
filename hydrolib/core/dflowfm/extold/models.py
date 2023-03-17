@@ -102,6 +102,7 @@ class Quantity:
         InitialTracer = "initialtracer"
         """Initial tracer"""
 
+
 class FileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
