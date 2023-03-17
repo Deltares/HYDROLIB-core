@@ -5,6 +5,47 @@ from pyparsing import Optional
 
 from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
 
+class Quantity:
+    """Class contains the different external forcing category classes."""
+    
+    class QuantityBase(str, Enum):
+        pass
+
+    class Bnd(QuantityBase):
+        """Enum class containing the valid values for the boundary conditions category
+        of the external forcings.
+        """
+        
+        waterlevel = "waterlevelbnd"
+        """Water level"""
+        neumann="neumannbnd"
+        """Water level gradient"""
+        riemann="riemannbnd"
+        """Riemann invariant"""
+        outflow="outflowbnd"
+        """Outflow"""
+        velocity="velocitybnd"
+        """Velocity"""
+        discharge="dischargebnd"
+        """Discharge"""
+        riemannvelocity="riemann_velocitybnd"
+        """Riemann invariant velocity"""
+        salinity="salinitybnd"
+        """Salinity"""
+        temperature="temperaturebnd"
+        """Temperature"""
+        sediment="sedimentbnd"
+        """Suspended sediment"""
+        uxuyadvectionvelocity="uxuyadvectionvelocitybnd"
+        """ux-uy advection velocity"""
+        normalvelocity="normalvelocitybnd"
+        """Normal velocity"""
+        tangentialvelocity="tangentialvelocitybnd"
+        """Tangentional velocity"""
+        qh="qhbnd"
+        """Discharge-water level dependency"""
+        tracer="tracerbnd"
+        """User-defined tracer"""
 
 class FileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
