@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 from pydantic import Field
 from pyparsing import Optional
 
@@ -50,6 +50,17 @@ class Method(IntEnum):
     InterpolateExtrapolateTime = 7
     """7. Interpolate/Extrapolate time"""
 
+class Operand(str, Enum):
+    """Enum class containing the valid values for the `operand` attribute 
+    in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
+    """
+
+    OverwriteExistingValues = "O"
+    """Existing values are overwritten."""
+    SuperimposeNewValues = "+"
+    """New values are superimposed."""
+
+    
 class ExtForcing(BaseModel):
     """Class holding the external forcing values."""
 
@@ -98,8 +109,8 @@ class ExtForcing(BaseModel):
     7. Interpolate/Extrapolate time
     """
 
-    operand: str = Field(alias="OPERAND")
-    """str: Overwriting or superimposing values already set for this quantity:
+    operand: Operand = Field(alias="OPERAND")
+    """Operand: Overwriting or superimposing values already set for this quantity:
     'O' Values are overwritten.
     '+' New value is superimposed.
     """
