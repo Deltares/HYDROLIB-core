@@ -636,7 +636,9 @@ def _should_traverse(model: BaseModel, _: FileLoadContext) -> bool:
 def _should_execute(model: BaseModel, _: FileLoadContext) -> bool:
     return model.is_file_link()
 
+
 PathOrStr = Union[Path, str]
+
 
 class FileModel(BaseModel, ABC):
     """Base class to represent models with a file representation.
