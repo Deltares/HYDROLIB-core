@@ -1,7 +1,7 @@
 from enum import Enum, IntEnum
+from typing import Optional
 
-from pydantic import Field
-from pyparsing import Optional
+from pydantic import Field, validator
 
 from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
 
@@ -269,3 +269,14 @@ class ExtForcing(BaseModel):
 
     nummin: Optional[int] = Field(None, alias="NUMMIN")
     """Optional[int]: The area for sources and sinks."""
+
+    @validator("quantity", pre=True)
+    def validate_quantity(cls, value):
+        supported_values = list(Quantity)
+        if value in supported_values:
+            return value
+
+        supported_values_str = ", ".join(([x.value for x in supported_values]))
+        raise ValueError(
+            f"Quantity '{value}' not supported. Supported values: {supported_values_str}"
+        )
