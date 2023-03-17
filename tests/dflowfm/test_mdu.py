@@ -93,13 +93,13 @@ class TestModels:
         assert len(model.crsfile) == 1
         assert isinstance(model.crsfile[0], DiskOnlyFileModel)
 
-    def test_loading_fmmodel_model_with_xyn_file(self):
+    def test_loading_fmmodel_model_with_xyn_obsfile(self):
         file_path = test_input_dir / "obsfile_cases" / "single_xyn" / "fm.mdu"
         model = FMModel(file_path)
 
         expected_points = [
-            XYNPoint(x=1.1, y=2.2, n="'ObservationPoint_2D_01'", comment=None),
-            XYNPoint(x=3.3, y=4.4, n="'ObservationPoint_2D_02'", comment=None),
+            XYNPoint(x=1.1, y=2.2, n="ObservationPoint_2D_01"),
+            XYNPoint(x=3.3, y=4.4, n="ObservationPoint_2D_02"),
         ]
 
         obsfile = model.output.obsfile[0]
