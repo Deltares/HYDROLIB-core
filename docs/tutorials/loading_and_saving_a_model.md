@@ -105,6 +105,46 @@ assert model.geometry.netfile.filepath == Path("network/FlowFM_net.nc")
 
 The `resolve_casing` argument is by default `False`. Using the `resolve_casing` functionality might heavily influence the performance of model loading depending on the model size, the file tree structure and the operating system.
 
+## Saving and loading models between different operating systems
+In some cases, it is desired to be able to switch easily between operating systems (OS) with the same model, so that the model can be loaded both on a Unix system and a Windows system. 
+Absolute paths look different for both OSs. Unix systems do not allow backward slashes; Windows supports both forward and backward slashes in file paths. Because of these differences, file references in models cannot be interpreted correctly when used on another OS.
+
+To solve this, HYDROLIB-core supports a feature to convert the file paths from one OS path style to the other.
+
+### Examples
+**Loading a model with Unix file paths on Windows:**
+```python
+model = FMModel(filepath=Path("p:/model/FlowFM.mdu"), path_style="unix")
+```
+
+**Loading a model with Windows file paths on Linux/MacOS:**
+```python
+model = FMModel(filepath=Path("/p/model/FlowFM.mdu"), path_style="windows")
+```
+
+In the two above examples the `path_style` option describes the path style in the to be loaded model files. As a result, HYDROLIB-core knows how to convert the file paths to the running OS path style and interpret them correctly.
+
+**Saving a model with Unix file paths on Windows:**
+```python
+model.save(filepath=Path("p:/model/FlowFM.mdu"), recurse=True, path_style="unix")
+```
+
+**Saving a model with Windows file paths on Linux/MacOS:**
+```python
+model.save(filepath=Path("/p/model/FlowFM.mdu"), recurse=True, path_style="windows")
+```
+
+In the two above examples the `path_style` option describes the desired path style of the saved model files.
+
+When the `path_style` option is not passed to the initialize or save function of the model, the option will be set to the path style of the currently running OS.
+
+The `path_style` option supports these three values:
+* `None` (will default to either `"windows"` or `"unix"` depending on the running OS)
+* `"windows"`
+* `"unix"`
+
+Other values are not supported and an error will be raised.
+
 ## Caveats when saving models
 
 There are some caveats to take into account when saving models.
