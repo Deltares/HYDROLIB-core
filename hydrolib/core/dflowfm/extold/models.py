@@ -119,23 +119,29 @@ class ExtForcing(BaseModel):
     '+' New value is superimposed.
     """
 
-    value: Optional[float] = Field(None, alias="SOURCEMASK")
+    value: Optional[float] = Field(None, alias="VALUE")
     """Optional[float]: custom coefficients for transformation."""
 
-    factor: Optional[float] = Field(None, alias="SOURCEMASK")
+    factor: Optional[float] = Field(None, alias="FACTOR")
     """Optional[float]: The factor."""
 
-    ifrctyp: Optional[float] = Field(None, alias="SOURCEMASK")
+    ifrctyp: Optional[float] = Field(None, alias="IFRCTYP")
     """Optional[float]: The friction type."""
 
-    averagingtype: Optional[float] = Field(None, alias="SOURCEMASK")
+    averagingtype: Optional[float] = Field(None, alias="AVERAGINGTYPE")
     """Optional[float]: The averging type."""
 
-    relativesearchcellsize: Optional[float] = Field(None, alias="SOURCEMASK")
+    relativesearchcellsize: Optional[float] = Field(None, alias="RELATIVESEARCHCELLSIZE")
     """Optional[float]: The relative search cell size."""
 
-    extrapoltol: Optional[float] = Field(None, alias="SOURCEMASK")
+    extrapoltol: Optional[float] = Field(None, alias="EXTRAPOLTOL")
     """Optional[float]: The extrapolation tolerance."""
 
-    area: Optional[float] = Field(None, alias="SOURCEMASK")
+    percentileminmax: Optional[float] = Field(None, alias="PERCENTILEMINMAX")
+    """Optional[float]: The percentile min max."""
+
+    area: Optional[float] = Field(None, alias="AREA")
     """Optional[float]: The area for sources and sinks."""
+
+    nummin: Optional[int] = Field(None, alias="NUMMIN")
+    """Optional[int]: The area for sources and sinks."""
