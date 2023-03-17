@@ -1,5 +1,5 @@
 from enum import Enum, IntEnum
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import Field, validator
 
@@ -190,8 +190,8 @@ class Operand(str, Enum):
 class ExtForcing(BaseModel):
     """Class holding the external forcing values."""
 
-    quantity: Quantity = Field(alias="QUANTITY")
-    """Quantity: The name of the quantity."""
+    quantity: Union[Quantity, str] = Field(alias="QUANTITY")
+    """Union[Quantity, str]: The name of the quantity."""
 
     filename: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="FILENAME"
@@ -272,11 +272,17 @@ class ExtForcing(BaseModel):
 
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
-        supported_values = list(Quantity)
-        if value in supported_values:
-            return value
+        if isinstance(value, str):
+            if value.startswith(Quantity.TracerBnd) or value.startswith(Quantity.InitialTracer):
+                return value
+            
+            supported_values = list(Quantity)
+            if value in supported_values:
+                return Quantity(value)
 
-        supported_values_str = ", ".join(([x.value for x in supported_values]))
-        raise ValueError(
-            f"Quantity '{value}' not supported. Supported values: {supported_values_str}"
-        )
+            supported_value_str = ", ".join(([x.value for x in supported_values]))
+            raise ValueError(
+                f"Quantity '{value}' not supported. Supported values: {supported_value_str}"
+            )
+        
+        return value
