@@ -1,9 +1,11 @@
+import inspect
 from pathlib import Path
 from typing import Callable, Dict, Union
 
 import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.mdu.models import (
     FMModel,
     InfiltrationMethod,
@@ -12,8 +14,10 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
+from hydrolib.core.dflowfm.obscrosssection.models import ObservationCrossSectionModel
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
-from ..utils import test_input_dir
+from ..utils import WrapperTest, test_input_dir
 
 
 class TestModels:
@@ -91,3 +95,41 @@ class TestModels:
         assert model.crsfile is not None
         assert len(model.crsfile) == 1
         assert isinstance(model.crsfile[0], DiskOnlyFileModel)
+
+
+class TestOutput:
+    """Test class to test the [output] section in an MDU file."""
+
+    def test_mixed_obs_crs_files(self):
+        """Test the construction of correct types of observation crosssection
+        objects, when both old and new formatted input files are given."""
+
+        input = inspect.cleandoc(
+            f"""
+            [output]
+            CrsFile = {test_input_dir / 'dflowfm_individual_files/test.pli'} {test_input_dir / 'e02/f101_1D-boundaries/c01_steady-state-flow/ObservationPoints_crs.ini'}
+            """
+        )
+
+        parser = Parser(ParserConfig())
+        for l in input.splitlines():
+            parser.feed_line(l)
+
+        document = parser.finalize()
+        wrapper = WrapperTest[Output].parse_obj({"val": document.sections[0]})
+        output = wrapper.val
+
+        assert len(output.crsfile) == 2
+
+        assert isinstance(output.crsfile[0], PolyFile)
+        assert isinstance(output.crsfile[1], ObservationCrossSectionModel)
+
+        # Check recursive construction of PolyFile object
+        assert len(output.crsfile[0].objects) == 3
+        assert output.crsfile[0].objects[0].metadata.name == "name1"
+        assert len(output.crsfile[0].objects[2].points) == 2
+
+        # Check recursive construction of ObservationCrossSectionModel object
+        assert len(output.crsfile[1].observationcrosssection) == 4
+        assert output.crsfile[1].observationcrosssection[0].name == "ObservCross_Chg_T1"
+        assert len(output.crsfile[1].observationcrosssection[3].xcoordinates) == 2
