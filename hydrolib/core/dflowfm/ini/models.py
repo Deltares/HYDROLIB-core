@@ -1,6 +1,7 @@
 import logging
 from abc import ABC
 from enum import Enum
+from math import isnan
 from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic import Extra, Field, root_validator
@@ -167,15 +168,17 @@ class INIBasedModel(BaseModel, ABC):
         return Section(header=self._header, content=props)
 
 
+Datablock = List[List[Union[float, str]]]
+
+
 class DataBlockINIBasedModel(INIBasedModel):
     """DataBlockINIBasedModel defines the base model for ini models with datablocks.
 
     Attributes:
-        datablock (List[List[Union[float, str]]]): (class attribute) the actual data
-            columns.
+        datablock (Datablock): (class attribute) the actual data columns.
     """
 
-    datablock: List[List[Union[float, str]]] = []
+    datablock: Datablock = []
 
     _make_lists = make_list_validator("datablock")
 
@@ -203,6 +206,28 @@ class DataBlockINIBasedModel(INIBasedModel):
             return f"{value:{config.float_format_datablock}}"
 
         return value
+
+    @validator("datablock")
+    def _validate_no_nans_are_present(cls, datablock: Datablock) -> Datablock:
+        """Validate that the datablock does not have any NaN values.
+
+        Args:
+            datablock (Datablock): The datablock to verify.
+
+        Raises:
+            ValueError: When a NaN is present in the datablock.
+
+        Returns:
+            Datablock: The validated datablock.
+        """
+        if any(cls._is_float_and_nan(value) for list in datablock for value in list):
+            raise ValueError("NaN is not supported in datablocks.")
+
+        return datablock
+
+    @staticmethod
+    def _is_float_and_nan(value: float) -> bool:
+        return isinstance(value, float) and isnan(value)
 
 
 class INIGeneral(INIBasedModel):
