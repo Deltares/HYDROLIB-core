@@ -1,8 +1,36 @@
+from enum import IntEnum
 from pydantic import Field
 from pyparsing import Optional
 
 from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
 
+class FileType(IntEnum):
+    """Enum class containing the valid values for the `filetype` attribute 
+    in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
+    """
+
+    TimeSeries = 1
+    """1. Time series"""
+    TimeSeriesMagnitudeAndDirection = 2
+    """2. Time series magnitude and direction"""
+    SpatiallyVaryingWeather = 3
+    """3. Spatially varying weather"""
+    ArcInfo = 4
+    """4. ArcInfo"""
+    SpiderWebData = 5
+    """5. Spiderweb data (cyclones)"""
+    CurvilinearData = 6
+    """6. Curvilinear data"""
+    Samples = 7
+    """7. Samples"""
+    TriangulationMagnitudeAndDirection = 8
+    """8. Triangulation magnitude and direction"""
+    Polyline = 9
+    """9. Polyline (<*.pli>-file)"""
+    NetCDFGridData = 11
+    """11. NetCDF grid data (e.g. meteo fields)"""
+    NetCDFWaveData = 14
+    """14. NetCDF wave data"""
 
 class ExtForcing(BaseModel):
     """Class holding the external forcing values."""
@@ -23,8 +51,8 @@ class ExtForcing(BaseModel):
     )
     """DiskOnlyFileModel: The file containing a mask."""
 
-    filetype: int = Field(alias="FILETYPE")
-    """int: Indication of the file type.
+    filetype: FileType = Field(alias="FILETYPE")
+    """FileType: Indication of the file type.
     
     Options:
     1. Time series
@@ -35,7 +63,7 @@ class ExtForcing(BaseModel):
     6. Curvilinear data
     7. Samples (C.3)
     8. Triangulation magnitude and direction
-    9. Polyline (<∗.pli>-file, C.2)
+    9. Polyline (<*.pli>-file, C.2)
     11. NetCDF grid data (e.g. meteo fields)
     14. NetCDF wave data
     """
