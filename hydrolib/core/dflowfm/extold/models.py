@@ -6,7 +6,6 @@ from pyparsing import Optional
 from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
 
 
-
 class Quantity(str, Enum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
@@ -81,7 +80,7 @@ class Quantity(str, Enum):
     """Gate lower edge level"""
     GeneralStructure = "generalstructure"
     """General structure"""
-    
+
     # Initial fields
     InitialWaterLevel = "initialwaterlevel"
     """Initial water level"""
@@ -109,9 +108,9 @@ class Quantity(str, Enum):
     """Advection type"""
     IBotLevType = "ibotlevtype"
     """ibotlevtype"""
-    
+
     # Miscellaneous
-    ShiptXY= "shiptxy"
+    ShiptXY = "shiptxy"
     """shiptxy"""
     MovingStationXY = "movingstationxy"
     """Moving observation point for output (time, x, y)"""
@@ -119,6 +118,7 @@ class Quantity(str, Enum):
     """Wave significant heigth"""
     WavePeriod = "waveperiod"
     """Wave period"""
+
 
 class FileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
