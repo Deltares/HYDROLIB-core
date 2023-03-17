@@ -317,6 +317,37 @@ class TestFileModel:
             "InitialWaterLevel.ini"
         )
 
+    @pytest.mark.parametrize(
+        ("given_path", "expected_path"),
+        [
+            pytest.param(Path("test/path"), Path("test/path")),
+            pytest.param("test/path", Path("test/path")),
+            pytest.param(None, None),
+        ],
+    )
+    def test_setting_filepath(self, given_path, expected_path):
+        model = FMModel()
+        model.filepath = given_path
+        assert model.filepath == expected_path
+
+    @pytest.mark.parametrize(
+        ("given_path", "expected_path"),
+        [
+            pytest.param(
+                f"{test_input_dir}/file_load_test/fm.mdu",
+                Path(f"{test_input_dir}/file_load_test/fm.mdu"),
+            ),
+            pytest.param(
+                Path(f"{test_input_dir}/file_load_test/fm.mdu"),
+                Path(f"{test_input_dir}/file_load_test/fm.mdu"),
+            ),
+            pytest.param(None, None),
+        ],
+    )
+    def test_constuctor_filepath(self, given_path, expected_path):
+        model = FMModel(given_path)
+        assert model.filepath == expected_path
+
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
