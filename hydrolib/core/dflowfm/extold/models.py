@@ -114,6 +114,15 @@ class Quantity:
         IBotLevType = "ibotlevtype"
         """ibotlevtype"""
 
+    class Misc(QuantityBase):
+        shiptxy = "shiptxy"
+        """shiptxy"""
+        movingstationxy = "movingstationxy"
+        """Moving observation point for output (time, x, y)"""
+        wavesignificantheight = "wavesignificantheight"
+        """Wave significant heigth"""
+        waveperiod = "waveperiod"
+        """Wave period"""
 
 
 class FileType(IntEnum):
