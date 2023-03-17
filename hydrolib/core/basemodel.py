@@ -1020,7 +1020,7 @@ class FileModel(BaseModel, ABC):
     def _change_to_path(filepath):
         if filepath is None:
             return filepath
-        if isinstance(filepath, Path):
+        elif isinstance(filepath, Path):
             return filepath
         else:
             return Path(filepath)
