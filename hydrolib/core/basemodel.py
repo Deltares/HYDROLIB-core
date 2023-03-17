@@ -636,6 +636,7 @@ def _should_traverse(model: BaseModel, _: FileLoadContext) -> bool:
 def _should_execute(model: BaseModel, _: FileLoadContext) -> bool:
     return model.is_file_link()
 
+PathOrStr = Union[Path, str]
 
 class FileModel(BaseModel, ABC):
     """Base class to represent models with a file representation.
@@ -674,12 +675,12 @@ class FileModel(BaseModel, ABC):
     # Absolute anchor is used to resolve the save location when the filepath is relative.
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
 
-    def __new__(cls, filepath: Optional[Union[Path, str]] = None, *args, **kwargs):
+    def __new__(cls, filepath: Optional[PathOrStr] = None, *args, **kwargs):
         """Create a new model.
         If the file at the provided file path was already parsed, this instance is returned.
 
         Args:
-            filepath (Optional[Union[Path,str]], optional): The file path to the file. Defaults to None.
+            filepath (Optional[PathOrStr], optional): The file path to the file. Defaults to None.
 
         Returns:
             FileModel: A file model.
@@ -693,7 +694,7 @@ class FileModel(BaseModel, ABC):
 
     def __init__(
         self,
-        filepath: Optional[Union[Path, str]] = None,
+        filepath: Optional[PathOrStr] = None,
         resolve_casing: bool = False,
         recurse: bool = True,
         *args,
@@ -706,7 +707,7 @@ class FileModel(BaseModel, ABC):
         If the filepath is provided, it is read from disk.
 
         Args:
-            filepath (Optional[Union[Path,str]], optional): The file path. Defaults to None.
+            filepath (Optional[PathOrStr], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
             recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
         """
