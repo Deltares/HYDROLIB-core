@@ -16,12 +16,7 @@ from hydrolib.core.dflowfm.polyfile.models import (
     PolyFile,
     PolyObject,
 )
-from tests.utils import (
-    assert_files_equal,
-    test_input_dir,
-    test_output_dir,
-    test_reference_dir,
-)
+from tests.utils import assert_files_equal, test_input_dir, test_output_dir
 
 
 class TestObservationCrossSectionGeneral:
@@ -264,8 +259,7 @@ class TestObservationCrossSectionModelPli:
         crs_data = self._get_crs_data()
         crs_objects = self._construct_crs_objects_from_dict(crs_data)
 
-        # model = PolyFile(objects=crs_objects)
-        model = PolyFile(filepath=reference_file)
+        model = PolyFile(objects=crs_objects)
         model.filepath = output_file
         model.serializer_config.float_format = "25.15E"
         model.save()
