@@ -190,8 +190,8 @@ class Operand(str, Enum):
 class ExtForcing(BaseModel):
     """Class holding the external forcing values."""
 
-    quantity: str = Field(alias="QUANTITY")
-    """str: The name of the quantity."""
+    quantity: Quantity = Field(alias="QUANTITY")
+    """Quantity: The name of the quantity."""
 
     filename: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="FILENAME"
