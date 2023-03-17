@@ -273,9 +273,11 @@ class ExtForcing(BaseModel):
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
         if isinstance(value, str):
-            if value.startswith(Quantity.TracerBnd) or value.startswith(Quantity.InitialTracer):
+            if value.startswith(Quantity.TracerBnd) or value.startswith(
+                Quantity.InitialTracer
+            ):
                 return value
-            
+
             supported_values = list(Quantity)
             if value in supported_values:
                 return Quantity(value)
@@ -284,5 +286,5 @@ class ExtForcing(BaseModel):
             raise ValueError(
                 f"Quantity '{value}' not supported. Supported values: {supported_value_str}"
             )
-        
+
         return value
