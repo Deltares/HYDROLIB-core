@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Callable, Dict, Union
 
 import pytest
 
@@ -12,6 +11,8 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
+
+from hydrolib.core.dflowfm.xyn.models import XYNPoint, XYNModel
 
 from ..utils import test_input_dir
 
@@ -91,3 +92,17 @@ class TestModels:
         assert model.crsfile is not None
         assert len(model.crsfile) == 1
         assert isinstance(model.crsfile[0], DiskOnlyFileModel)
+
+    def test_loading_fmmodel_model_with_xyn_file(self):
+        file_path = test_input_dir / "obsfile_cases" / "single_xyn" / "fm.mdu"
+        model = FMModel(file_path)
+
+        expected_points = [
+            XYNPoint(x=1.1, y=2.2, n="'ObservationPoint_2D_01'", comment=None),
+            XYNPoint(x=3.3, y=4.4, n="'ObservationPoint_2D_02'", comment=None),
+        ]
+
+        obsfile = model.output.obsfile[0]
+
+        assert isinstance(obsfile, XYNModel)
+        assert obsfile.points == expected_points
