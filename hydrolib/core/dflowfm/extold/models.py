@@ -10,13 +10,17 @@ class ExtForcing(BaseModel):
     quantity: str = Field(alias="QUANTITY")
     """str: The name of the quantity."""
 
-    filename: DiskOnlyFileModel = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="FILENAME")
+    filename: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="FILENAME"
+    )
     """DiskOnlyFileModel: The file associated to this forcing."""
 
     varname: Optional[str] = Field(None, alias="VARNAME")
     """Optional[str]: The variable name used in `filename` associated with this forcing; some input files may contain multiple variables."""
 
-    sourcemask: DiskOnlyFileModel = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="SOURCEMASK")
+    sourcemask: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="SOURCEMASK"
+    )
     """DiskOnlyFileModel: The file containing a mask."""
 
     filetype: int = Field(alias="FILETYPE")
