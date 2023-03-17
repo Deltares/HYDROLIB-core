@@ -101,7 +101,7 @@ class Quantity:
         """Initial vertical salinity profile"""
         InitialTracer = "initialtracer"
         """Initial tracer"""
-    
+
     class SpatVar(QuantityBase):
         FrictionCoefficient = "frictioncoefficient"
         """Firction coefficient"""
