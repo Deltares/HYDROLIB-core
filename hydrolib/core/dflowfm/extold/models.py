@@ -86,6 +86,22 @@ class Quantity:
         GeneralStructure = "generalstructure"
         """General structure"""
 
+    class IniField(QuantityBase):
+        InitialWaterLevel = "initialwaterlevel"
+        """Initial water level"""
+        InitialSalinity = "initialsalinity"
+        """Initial salinity"""
+        InitialSalinityTop = "initialsalinitytop"
+        """Initial salinity top"""
+        InitialTemperature = "initialtemperature"
+        """Initial temperature"""
+        InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
+        """Initial vertical temperature profile"""
+        InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
+        """Initial vertical salinity profile"""
+        InitialTracer = "initialtracer"
+        """Initial tracer"""
+
 class FileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
