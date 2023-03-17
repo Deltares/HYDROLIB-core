@@ -128,3 +128,34 @@ class TestModels:
             assert actual_point.x == expected_point.x
             assert actual_point.y == expected_point.y
             assert actual_point.name == expected_point.name
+
+    def test_loading_fmmodel_model_with_both_ini_and_xyn_obsfiles(self):
+        file_path = test_input_dir / "obsfile_cases" / "both_ini_and_xyn" / "fm.mdu"
+        model = FMModel(file_path)
+
+        assert len(model.output.obsfile) == 2
+
+        obsfile = model.output.obsfile
+        xyn_file = obsfile[0]
+        assert isinstance(xyn_file, XYNModel)
+
+        expected_xyn_points = [
+            XYNPoint(x=1.1, y=2.2, n="ObservationPoint_2D_01"),
+            XYNPoint(x=3.3, y=4.4, n="ObservationPoint_2D_02"),
+        ]
+        assert xyn_file.points == expected_xyn_points
+
+        ini_file = obsfile[1]
+        assert isinstance(ini_file, ObservationPointModel)
+        assert len(ini_file.observationpoint) == len(expected_ini_points)
+
+        expected_ini_points = [
+            ObservationPoint(x=1.1, y=2.2, name="ObservationPoint_2D_01"),
+            ObservationPoint(x=3.3, y=4.4, name="ObservationPoint_2D_02"),
+        ]
+        for actual_point, expected_point in zip(
+            ini_file.observationpoint, expected_ini_points
+        ):
+            assert actual_point.x == expected_point.x
+            assert actual_point.y == expected_point.y
+            assert actual_point.name == expected_point.name
