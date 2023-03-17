@@ -21,12 +21,12 @@ class TestExtForcing:
             forcing = ExtForcing(quantity=quantity_str, filename="", filetype=9, method=1, operand="O")
             assert forcing.quantity == quantity_str
 
-        def test_quantity_validation_with_valid_tracerbnd_quantity_string(self):
+        def test_quantity_validation_with_valid_initialtracer_quantity_string(self):
             quantity_str = Quantity.InitialTracer.value + "some_tracer_name"
             forcing = ExtForcing(quantity=quantity_str, filename="", filetype=9, method=1, operand="O")
             assert forcing.quantity == quantity_str
 
-        def test_quantity_validation_with_invalid_quantity_string(self):
+        def test_quantity_validation_with_invalid_quantity_string_raises_value_error(self):
             quantity_str = "invalid"
 
             with pytest.raises(ValueError) as error:
