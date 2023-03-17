@@ -65,7 +65,9 @@ class Quantity:
         """Precipitation"""
         HumidityAirTemperatureCloudiness = "humidity_airtemperature_cloudiness"
         """Combined heat flux terms"""
-        HumidityAirTemperatureCloudinessSolarRadiation = "humidity_airtemperature_cloudiness_solarradiation"
+        HumidityAirTemperatureCloudinessSolarRadiation = (
+            "humidity_airtemperature_cloudiness_solarradiation"
+        )
         """Combined heat flux terms"""
         LongWaveRadiation = "longwaveradiation"
         """Long wave radiation"""
@@ -73,6 +75,7 @@ class Quantity:
         """Solar radiation"""
         DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
         """Discharge, salinity and heat sources"""
+
 
 class FileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
