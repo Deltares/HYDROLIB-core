@@ -101,6 +101,19 @@ class Quantity:
         """Initial vertical salinity profile"""
         InitialTracer = "initialtracer"
         """Initial tracer"""
+    
+    class SpatVar(QuantityBase):
+        FrictionCoefficient = "frictioncoefficient"
+        """Firction coefficient"""
+        HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
+        """Horizontal eddy viscosity coefficient"""
+        HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
+        """Horizontal eddy diffusivity coefficient"""
+        AdvectionType = "advectiontype"
+        """Advection type"""
+        IBotLevType = "ibotlevtype"
+        """ibotlevtype"""
+
 
 
 class FileType(IntEnum):
