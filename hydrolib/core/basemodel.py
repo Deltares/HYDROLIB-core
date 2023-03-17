@@ -1026,7 +1026,7 @@ class FileModel(BaseModel, ABC):
             return Path(filepath)
 
     @validator("filepath")
-    def _conform_filepath_to_hydrolib_standard(cls, value):
+    def _conform_filepath_to_pathlib(cls, value):
         return FileModel._change_to_path(value)
 
 
