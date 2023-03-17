@@ -5,9 +5,10 @@ from pyparsing import Optional
 
 from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
 
+
 class Quantity:
     """Class contains the different external forcing category classes."""
-    
+
     class QuantityBase(str, Enum):
         pass
 
@@ -15,37 +16,38 @@ class Quantity:
         """Enum class containing the valid values for the boundary conditions category
         of the external forcings.
         """
-        
+
         waterlevel = "waterlevelbnd"
         """Water level"""
-        neumann="neumannbnd"
+        neumann = "neumannbnd"
         """Water level gradient"""
-        riemann="riemannbnd"
+        riemann = "riemannbnd"
         """Riemann invariant"""
-        outflow="outflowbnd"
+        outflow = "outflowbnd"
         """Outflow"""
-        velocity="velocitybnd"
+        velocity = "velocitybnd"
         """Velocity"""
-        discharge="dischargebnd"
+        discharge = "dischargebnd"
         """Discharge"""
-        riemannvelocity="riemann_velocitybnd"
+        riemannvelocity = "riemann_velocitybnd"
         """Riemann invariant velocity"""
-        salinity="salinitybnd"
+        salinity = "salinitybnd"
         """Salinity"""
-        temperature="temperaturebnd"
+        temperature = "temperaturebnd"
         """Temperature"""
-        sediment="sedimentbnd"
+        sediment = "sedimentbnd"
         """Suspended sediment"""
-        uxuyadvectionvelocity="uxuyadvectionvelocitybnd"
+        uxuyadvectionvelocity = "uxuyadvectionvelocitybnd"
         """ux-uy advection velocity"""
-        normalvelocity="normalvelocitybnd"
+        normalvelocity = "normalvelocitybnd"
         """Normal velocity"""
-        tangentialvelocity="tangentialvelocitybnd"
+        tangentialvelocity = "tangentialvelocitybnd"
         """Tangentional velocity"""
-        qh="qhbnd"
+        qh = "qhbnd"
         """Discharge-water level dependency"""
-        tracer="tracerbnd"
+        tracer = "tracerbnd"
         """User-defined tracer"""
+
 
 class FileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
