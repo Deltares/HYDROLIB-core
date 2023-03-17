@@ -3602,7 +3602,7 @@ cwd / filename.extension</p></td>
 
 
 <h4 id="hydrolib.core.basemodel.FileModel.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">recurse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">recurse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -3630,7 +3630,7 @@ If the filepath is provided, it is read from disk.</p>
   <tbody>
       <tr>
         <td><code>filepath</code></td>
-        <td><code>Optional[Path]</code></td>
+        <td><code>Optional[PathOrStr]</code></td>
         <td><p>The file path. Defaults to None.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -3652,7 +3652,7 @@ If the filepath is provided, it is read from disk.</p>
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathOrStr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">recurse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -3665,13 +3665,15 @@ If the filepath is provided, it is read from disk.</p>
 <span class="sd">    If the filepath is provided, it is read from disk.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        filepath (Optional[Path], optional): The file path. Defaults to None.</span>
+<span class="sd">        filepath (Optional[PathOrStr], optional): The file path. Defaults to None.</span>
 <span class="sd">        resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.</span>
 <span class="sd">        recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span>
+
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">FileModel</span><span class="o">.</span><span class="n">_change_to_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
         <span class="n">context</span><span class="o">.</span><span class="n">initialize_load_settings</span><span class="p">(</span><span class="n">recurse</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">)</span>
@@ -3722,7 +3724,7 @@ If the filepath is provided, it is read from disk.</p>
 
 
 <h4 id="hydrolib.core.basemodel.FileModel.__new__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -3749,7 +3751,7 @@ If the file at the provided file path was already parsed, this instance is retur
   <tbody>
       <tr>
         <td><code>filepath</code></td>
-        <td><code>Optional[Path]</code></td>
+        <td><code>Optional[PathOrStr]</code></td>
         <td><p>The file path to the file. Defaults to None.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -3772,16 +3774,17 @@ If the file at the provided file path was already parsed, this instance is retur
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathOrStr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a new model.</span>
 <span class="sd">    If the file at the provided file path was already parsed, this instance is returned.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        filepath (Optional[Path], optional): The file path to the file. Defaults to None.</span>
+<span class="sd">        filepath (Optional[PathOrStr], optional): The file path to the file. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        FileModel: A file model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">FileModel</span><span class="o">.</span><span class="n">_change_to_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">file_model</span> <span class="o">:=</span> <span class="n">context</span><span class="o">.</span><span class="n">retrieve_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">file_model</span>
@@ -5135,6 +5138,9 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
     </div>
 
   </div>
+
+
+
 
 
 
