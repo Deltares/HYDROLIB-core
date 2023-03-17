@@ -32,6 +32,24 @@ class FileType(IntEnum):
     NetCDFWaveData = 14
     """14. NetCDF wave data"""
 
+class Method(IntEnum):
+    """Enum class containing the valid values for the `method` attribute 
+    in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
+    """
+
+    PassThrough = 1
+    """1. Pass through (no interpolation)"""
+    InterpolateTimeAndSpace = 2
+    """2. Interpolate time and space"""
+    InterpolateTimeAndSpaceSaveWeights = 3
+    """3. Interpolate time and space, save weights"""
+    InterpolateSpace = 4
+    """4. Interpolate space"""
+    InterpolateTime = 5
+    """5. Interpolate time"""
+    InterpolateExtrapolateTime = 7
+    """7. Interpolate/Extrapolate time"""
+
 class ExtForcing(BaseModel):
     """Class holding the external forcing values."""
 
@@ -68,8 +86,8 @@ class ExtForcing(BaseModel):
     14. NetCDF wave data
     """
 
-    method: int = Field(alias="METHOD")
-    """int: The method of interpolation.
+    method: Method = Field(alias="METHOD")
+    """Method: The method of interpolation.
     
     Options:
     1. Pass through (no interpolation)
