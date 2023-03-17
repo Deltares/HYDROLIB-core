@@ -1,11 +1,13 @@
 from enum import Enum, IntEnum
+
 from pydantic import Field
 from pyparsing import Optional
 
 from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
 
+
 class FileType(IntEnum):
-    """Enum class containing the valid values for the `filetype` attribute 
+    """Enum class containing the valid values for the `filetype` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
     """
 
@@ -32,8 +34,9 @@ class FileType(IntEnum):
     NetCDFWaveData = 14
     """14. NetCDF wave data"""
 
+
 class Method(IntEnum):
-    """Enum class containing the valid values for the `method` attribute 
+    """Enum class containing the valid values for the `method` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
     """
 
@@ -50,8 +53,9 @@ class Method(IntEnum):
     InterpolateExtrapolateTime = 7
     """7. Interpolate/Extrapolate time"""
 
+
 class Operand(str, Enum):
-    """Enum class containing the valid values for the `operand` attribute 
+    """Enum class containing the valid values for the `operand` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
     """
 
@@ -60,7 +64,7 @@ class Operand(str, Enum):
     SuperimposeNewValues = "+"
     """New values are superimposed."""
 
-    
+
 class ExtForcing(BaseModel):
     """Class holding the external forcing values."""
 
