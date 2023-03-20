@@ -414,3 +414,36 @@ class TestExtForcing:
 
             exp_msg = "PERCENTILEMINMAX only allowed when METHOD is 6"
             assert exp_msg in str(error.value)
+
+    class TestValidateArea:
+        def test_validate_area_with_valid_quantity_discharge_salinity_temperature_sorsin(self):
+            quantity = Quantity.DischargeSalinityTemperatureSorSin
+            area = 1.23
+
+            forcing = ExtForcing(
+                quantity=quantity,
+                filename="",
+                filetype=9,
+                method=1,
+                operand="O",
+                area=area,
+            )
+
+            assert forcing.area == area
+
+        def test_validate_area_with_invalid_quantity(self):
+            quantity = Quantity.WaterLevelBnd
+            area = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=quantity,
+                    filename="",
+                    filetype=9,
+                    method=1,
+                    operand="O",
+                    area=area,
+                )
+
+            exp_msg = f"AREA only allowed when QUANTITY is discharge_salinity_temperature_sorsin"
+            assert exp_msg in str(error.value)

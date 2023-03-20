@@ -386,5 +386,12 @@ class ExtForcing(BaseModel):
             raise ValueError(
                 f"{key} only allowed when {method_key} is 6"
             )
+        
+        area = values["area"]
+        if area is not None and quantity != Quantity.DischargeSalinityTemperatureSorSin:
+            key = alias("area")
+            raise ValueError(
+                f"{key} only allowed when {quantity_key} is {Quantity.DischargeSalinityTemperatureSorSin}"
+            )
 
         return values
