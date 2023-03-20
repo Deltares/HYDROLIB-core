@@ -331,7 +331,7 @@ class ExtForcing(BaseModel):
                 raise ValueError(
                     f"{key} only allowed when {method_key} is {valid_method}"
                 )
-            
+
         def validate_filetype(field: str, valid_filetype: FileType):
             value = values[field]
             if value is not None and filetype != valid_filetype:
