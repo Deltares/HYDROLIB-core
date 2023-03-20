@@ -1,7 +1,7 @@
 from enum import Enum, IntEnum
 from typing import Optional, Union
 
-from pydantic import Field, validator
+from pydantic import Field, root_validator, validator
 
 from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
 
@@ -308,3 +308,14 @@ class ExtForcing(BaseModel):
             )
 
         return value
+
+    @root_validator()
+    def validate_forcing(cls, values):
+        filetype = values["filetype"]
+
+        varname = values["varname"]
+        if varname is not None:
+            if filetype != 11:
+                raise ValueError("VARNAME only allowed when FILETYPE is 11 (NetCDF grid data)")
+            
+        return values

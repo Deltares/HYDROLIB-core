@@ -117,3 +117,36 @@ class TestExtForcing:
                 f"OPERAND 'invalid' not supported. Supported values: {supported_values_str}"
                 in str(error.value)
             )
+
+    class TestValidateVarName:
+        def test_validate_varname_with_valid_filetype_11(self):
+            filetype = 11
+            varname = "some_varname" 
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                varname=varname,
+                filetype=filetype,
+                method=1,
+                operand="O",
+            )
+
+            assert forcing.varname == varname
+
+        def test_validate_varname_with_invalid_filetype(self):
+            filetype = 9
+            varname = "some_varname" 
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    varname=varname,
+                    filetype=filetype,
+                    method=1,
+                    operand="O",
+                )
+
+            exp_msg = "VARNAME only allowed when FILETYPE is 11 (NetCDF grid data)"
+            assert exp_msg in str(error.value)
