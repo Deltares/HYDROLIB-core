@@ -273,12 +273,19 @@ class ExtForcing(BaseModel):
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
         if isinstance(value, str):
-            if value.startswith(Quantity.TracerBnd) or value.startswith(Quantity.InitialTracer):
-                return value
+            lower_value = value.lower()
+            
+            if lower_value.startswith(Quantity.TracerBnd):
+                n = len(Quantity.TracerBnd.value)
+                return Quantity.TracerBnd.value + value[n:] 
+            
+            if lower_value.startswith(Quantity.InitialTracer):
+                n = len(Quantity.InitialTracer.value)
+                return Quantity.InitialTracer.value + value[n:] 
             
             supported_values = list(Quantity)
-            if value in supported_values:
-                return Quantity(value)
+            if lower_value in supported_values:
+                return Quantity(lower_value)
 
             supported_value_str = ", ".join(([x.value for x in supported_values]))
             raise ValueError(
