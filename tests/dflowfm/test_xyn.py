@@ -3,8 +3,11 @@ from tempfile import TemporaryDirectory
 from contextlib import contextmanager
 
 import pytest
+from hydrolib.core.basemodel import SerializerConfig
 
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
+from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
+from hydrolib.core.dflowfm.xyn.models import XYNPoint
 from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 
 
@@ -34,6 +37,32 @@ class TestXYNParser:
             with open(xyn_file, "w") as f:
                 f.write(content)
             yield xyn_file
+
+
+class TestXYNSerializer:
+    def test_serialize_xyn_point(self):
+        expected_file_content = ["1.10 2.20 randomName\n", "3.30 4.40 'randomName 2'\n"]
+
+        data = {
+            "points": [
+                XYNPoint(x=1.1, y=2.2, n="randomName"),
+                XYNPoint(x=3.3, y=4.4, n="randomName 2"),
+            ]
+        }
+
+        config = SerializerConfig(float_format=".2f")
+
+        with TestXYNSerializer._create_temp_xyn_file() as xyn_file:
+            XYNSerializer.serialize(xyn_file, data, config)
+
+            with open(xyn_file) as file:
+                file_content = file.readlines()
+                assert file_content == expected_file_content
+
+    @contextmanager
+    def _create_temp_xyn_file():
+        with TemporaryDirectory() as temp_dir:
+            yield Path(temp_dir, "test.xyn")
 
 
 class TestNameExtractor:
