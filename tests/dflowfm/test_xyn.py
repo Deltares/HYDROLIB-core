@@ -2,7 +2,10 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from contextlib import contextmanager
 
+import pytest
+
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
+from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 
 
 class TestXYNParser:
@@ -31,3 +34,44 @@ class TestXYNParser:
             with open(xyn_file, "w") as f:
                 f.write(content)
             yield xyn_file
+
+
+class TestNameExtractor:
+    @pytest.mark.parametrize(
+        ("input", "expected_output"),
+        [
+            pytest.param("randomName", "randomName", id="Name without spaces"),
+            pytest.param(
+                "'random name'", "random name", id="Name with spaces and quotes"
+            ),
+            pytest.param("    randomName   ", "randomName", id="Name with whitespace"),
+            pytest.param(
+                "'  randomName '", "  randomName ", id="Name with whitespace and quotes"
+            ),
+            pytest.param(
+                "randomName #randomComment", "randomName", id="Name followed by comment"
+            ),
+        ],
+    )
+    def test_extract_name(self, input: str, expected_output: str):
+        output = NameExtractor.extract_name(input)
+        assert output == expected_output
+
+    @pytest.mark.parametrize(
+        ("input"),
+        [
+            pytest.param("#randomName", id="Name starting with hashtag"),
+            pytest.param("'#randomName'", id="Name with quotes starting with hashtag"),
+            pytest.param("random name", id="Name with spaces without quotes"),
+            pytest.param("'random name", id="Name with only starting quote"),
+            pytest.param("random name'", id="Name with only ending quote"),
+            pytest.param(None, id="None value"),
+            pytest.param("", id="Empty string"),
+            pytest.param("''", id="Empty string with quotes"),
+            pytest.param("     ", id="Whitespace only"),
+            pytest.param("'     '", id="Whitespace only with quotes"),
+        ],
+    )
+    def test_extract_invalid_name_raises_error(self, input: str):
+        with pytest.raises(ValueError):
+            _ = NameExtractor.extract_name(input)
