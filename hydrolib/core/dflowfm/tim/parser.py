@@ -4,15 +4,17 @@ from typing import List
 
 timpattern = re.compile(r"\s+")
 
-class TimTimeSerie():
-    comment : str
-    time : float
-    serie : List[float]
 
-    def __init__(self, time = None, series = None, comment = None):
+class TimTimeSerie:
+    comment: str
+    time: float
+    serie: List[float]
+
+    def __init__(self, time=None, series=None, comment=None):
         self.time = time
         self.series = series
         self.comment = comment
+
 
 class TimParser:
     """
@@ -33,7 +35,7 @@ class TimParser:
 
         with filepath.open() as f:
             for line in f.readlines():
-                
+
                 if TimParser._line_is_comment(line):
                     timeseries.append(TimTimeSerie(comment=line))
                     continue
@@ -45,21 +47,21 @@ class TimParser:
 
                 try:
                     listofvalues = []
-                    for value in series :
+                    for value in series:
                         listofvalues.append(float(value))
-                
+
                     timeserie = TimTimeSerie(time=float(time), series=listofvalues)
                     timeseries.append(timeserie)
                 except:
                     continue
-                
+
         return timeseries
-    
+
     @staticmethod
-    def _line_is_comment(line:str):
-        strippedline = line.lstrip() 
-        return strippedline.startswith('#') or strippedline.startswith('*')
-    
+    def _line_is_comment(line: str):
+        strippedline = line.lstrip()
+        return strippedline.startswith("#") or strippedline.startswith("*")
+
     @staticmethod
-    def _line_has_not_enough_information(line:List[str]):
+    def _line_has_not_enough_information(line: List[str]):
         return len(line) < 1

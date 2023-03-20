@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import Callable, Dict, List
 
-from hydrolib.core.basemodel import  ParsableFileModel, SerializerConfig
+from hydrolib.core.basemodel import ParsableFileModel, SerializerConfig
+
 from .parser import TimParser
 from .serializer import TimSerializer, TimTimeSerie
+
 
 class TimModel(ParsableFileModel):
     """Sample or forcing file.
@@ -11,7 +13,8 @@ class TimModel(ParsableFileModel):
     Attributes:
         timeseries: Dictionary of [float, list[float]]
     """
-    timeseries : List[TimTimeSerie]
+
+    timeseries: List[TimTimeSerie]
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict
