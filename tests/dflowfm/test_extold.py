@@ -416,7 +416,9 @@ class TestExtForcing:
             assert exp_msg in str(error.value)
 
     class TestValidateArea:
-        def test_validate_area_with_valid_quantity_discharge_salinity_temperature_sorsin(self):
+        def test_validate_area_with_valid_quantity_discharge_salinity_temperature_sorsin(
+            self,
+        ):
             quantity = Quantity.DischargeSalinityTemperatureSorSin
             area = 1.23
 

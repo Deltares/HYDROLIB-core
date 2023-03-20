@@ -335,16 +335,12 @@ class ExtForcing(BaseModel):
         varname = values["varname"]
         if varname is not None and filetype != 11:
             key = alias("varname")
-            raise ValueError(
-                f"{key} only allowed when {filetype_key} is 11"
-            )
+            raise ValueError(f"{key} only allowed when {filetype_key} is 11")
 
         sourcemask = values["sourcemask"]
         if sourcemask.filepath is not None and filetype not in [4, 6]:
             key = alias("sourcemask")
-            raise ValueError(
-                f"{key} only allowed when {filetype_key} is 4 or 6"
-            )
+            raise ValueError(f"{key} only allowed when {filetype_key} is 4 or 6")
 
         validate_method("value", 4) 
 
