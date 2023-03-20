@@ -270,7 +270,7 @@ class ExtForcing(BaseModel):
     """Optional[float]: The area for sources and sinks."""
 
     nummin: Optional[int] = Field(None, alias="NUMMIN")
-    """Optional[int]: The area for sources and sinks."""
+    """Optional[int]: The nummin."""
 
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
@@ -392,6 +392,13 @@ class ExtForcing(BaseModel):
             key = alias("area")
             raise ValueError(
                 f"{key} only allowed when {quantity_key} is {Quantity.DischargeSalinityTemperatureSorSin}"
+            )
+        
+        nummin = values["nummin"]
+        if nummin is not None and method != 6:
+            key = alias("nummin")
+            raise ValueError(
+                f"{key} only allowed when {method_key} is 6"
             )
 
         return values

@@ -447,3 +447,36 @@ class TestExtForcing:
 
             exp_msg = f"AREA only allowed when QUANTITY is discharge_salinity_temperature_sorsin"
             assert exp_msg in str(error.value)
+
+    class TestValidateNumMin:
+        def test_validate_nummin_with_valid_method_6(self):
+            method = 6
+            nummin = 123
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                operand="O",
+                nummin=nummin,
+            )
+
+            assert forcing.nummin == nummin
+
+        def test_validate_nummin_with_invalid_method(self):
+            method = 1
+            nummin = 123
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    operand="O",
+                    nummin=nummin,
+                )
+
+            exp_msg = "NUMMIN only allowed when METHOD is 6"
+            assert exp_msg in str(error.value)
