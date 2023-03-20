@@ -331,11 +331,16 @@ class ExtForcing(BaseModel):
                 raise ValueError(
                     f"{key} only allowed when {method_key} is {valid_method}"
                 )
+            
+        def validate_filetype(field: str, valid_filetype: FileType):
+            value = values[field]
+            if value is not None and filetype != valid_filetype:
+                key = alias(field)
+                raise ValueError(
+                    f"{key} only allowed when {filetype_key} is {valid_filetype}"
+                )
 
-        varname = values["varname"]
-        if varname is not None and filetype != 11:
-            key = alias("varname")
-            raise ValueError(f"{key} only allowed when {filetype_key} is 11")
+        validate_filetype("varname", 11)
 
         sourcemask = values["sourcemask"]
         if sourcemask.filepath is not None and filetype not in [4, 6]:
