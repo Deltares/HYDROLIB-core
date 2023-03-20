@@ -293,3 +293,18 @@ class ExtForcing(BaseModel):
             )
 
         return value
+    
+    @validator("operand", pre=True)
+    def validate_operand(cls, value):
+        if isinstance(value, str):
+
+            for operand in Operand:
+                if value.lower() == operand.value.lower():
+                    return operand
+
+            supported_value_str = ", ".join(([x.value for x in Operand]))
+            raise ValueError(
+                f"OPERAND '{value}' not supported. Supported values: {supported_value_str}"
+            )
+
+        return value

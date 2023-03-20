@@ -1,5 +1,5 @@
 import pytest
-from hydrolib.core.dflowfm.extold.models import ExtForcing, Quantity
+from hydrolib.core.dflowfm.extold.models import ExtForcing, Operand, Quantity
 
 
 class TestExtForcing:
@@ -61,3 +61,42 @@ class TestExtForcing:
 
             supported_values_str = ", ".join(([x.value for x in Quantity]))
             assert f"QUANTITY 'invalid' not supported. Supported values: {supported_values_str}" in str(error.value)
+
+    class TestValidateOperand:
+        @pytest.mark.parametrize("operand", Operand)
+        def test_operand_validation_with_valid_operand_string_equal_casing(
+            self, operand
+        ):
+            operand_str = operand.value
+            forcing = ExtForcing(quantity=Quantity.WaterLevelBnd, filename="", filetype=9, method=1, operand=operand_str)
+            assert forcing.operand == operand
+
+        @pytest.mark.parametrize("operand", Operand)
+        def test_operand_validation_with_valid_operand_string_different_casing(
+            self, operand
+        ):
+            operand_str = operand.value.lower()
+            forcing = ExtForcing(quantity=Quantity.WaterLevelBnd, filename="", filetype=9, method=1, operand=operand_str)
+            assert forcing.operand == operand
+
+        @pytest.mark.parametrize("operand", Operand)
+        def test_operand_validation_with_valid_operand_enum(self, operand):
+            forcing = ExtForcing(quantity=Quantity.WaterLevelBnd, filename="", filetype=9, method=1, operand=operand)
+            assert forcing.operand == operand
+
+        def test_operand_validation_with_invalid_operand_string_raises_value_error(
+            self,
+        ):
+            operand_str = "invalid"
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=1,
+                    operand=operand_str,
+                )
+
+            supported_values_str = ", ".join(([x.value for x in Operand]))
+            assert f"OPERAND 'invalid' not supported. Supported values: {supported_values_str}" in str(error.value)
