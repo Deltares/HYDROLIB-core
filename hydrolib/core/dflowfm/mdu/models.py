@@ -18,14 +18,12 @@ from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.net.models import NetworkModel
-from hydrolib.core.dflowfm.obs.models import (
-    ObservationPointModel,
-)
+from hydrolib.core.dflowfm.obs.models import ObservationPointModel
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.storagenode.models import StorageNodeModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
-from hydrolib.core.dflowfm.xyz.models import XYZModel
 from hydrolib.core.dflowfm.xyn.models import XYNModel
+from hydrolib.core.dflowfm.xyz.models import XYZModel
 
 
 class AutoStartOption(IntEnum):

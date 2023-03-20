@@ -11,9 +11,8 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
-from hydrolib.core.dflowfm.obs.models import ObservationPointModel, ObservationPoint
-
-from hydrolib.core.dflowfm.xyn.models import XYNPoint, XYNModel
+from hydrolib.core.dflowfm.obs.models import ObservationPoint, ObservationPointModel
+from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 
 from ..utils import test_input_dir
 

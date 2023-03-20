@@ -1,14 +1,14 @@
+from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from contextlib import contextmanager
 
 import pytest
-from hydrolib.core.basemodel import SerializerConfig
 
-from hydrolib.core.dflowfm.xyn.parser import XYNParser
-from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
+from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.xyn.models import XYNPoint
 from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
+from hydrolib.core.dflowfm.xyn.parser import XYNParser
+from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
 
 
 class TestXYNParser:
