@@ -5,7 +5,7 @@ from hydrolib.core.dflowfm.extold.models import ExtForcing, Operand, Quantity
 class TestExtForcing:
     class TestValidateQuantity:
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_quantity_validation_with_valid_quantity_string_equal_casing(
+        def test_with_valid_quantity_string_equal_casing(
             self, quantity
         ):
             quantity_str = quantity.value
@@ -15,7 +15,7 @@ class TestExtForcing:
             assert forcing.quantity == quantity
 
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_quantity_validation_with_valid_quantity_string_different_casing(
+        def test_with_valid_quantity_string_different_casing(
             self, quantity
         ):
             quantity_str = quantity.value.upper()
@@ -25,27 +25,27 @@ class TestExtForcing:
             assert forcing.quantity == quantity
 
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_quantity_validation_with_valid_quantity_enum(self, quantity):
+        def test_with_valid_quantity_enum(self, quantity):
             forcing = ExtForcing(
                 quantity=quantity, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity
 
-        def test_quantity_validation_with_valid_tracerbnd_quantity_string(self):
+        def test_with_valid_tracerbnd_quantity_string(self):
             quantity_str = Quantity.TracerBnd.value + "Some_Tracer_Name"
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity_str
 
-        def test_quantity_validation_with_valid_initialtracer_quantity_string(self):
+        def test_with_valid_initialtracer_quantity_string(self):
             quantity_str = Quantity.InitialTracer.value + "Some_Tracer_Name"
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity_str
 
-        def test_quantity_validation_with_invalid_quantity_string_raises_value_error(
+        def test_with_invalid_quantity_string_raises_value_error(
             self,
         ):
             quantity_str = "invalid"
@@ -64,7 +64,7 @@ class TestExtForcing:
 
     class TestValidateOperand:
         @pytest.mark.parametrize("operand", Operand)
-        def test_operand_validation_with_valid_operand_string_equal_casing(
+        def test_with_valid_operand_string_equal_casing(
             self, operand
         ):
             operand_str = operand.value
@@ -72,7 +72,7 @@ class TestExtForcing:
             assert forcing.operand == operand
 
         @pytest.mark.parametrize("operand", Operand)
-        def test_operand_validation_with_valid_operand_string_different_casing(
+        def test_with_valid_operand_string_different_casing(
             self, operand
         ):
             operand_str = operand.value.lower()
@@ -80,11 +80,11 @@ class TestExtForcing:
             assert forcing.operand == operand
 
         @pytest.mark.parametrize("operand", Operand)
-        def test_operand_validation_with_valid_operand_enum(self, operand):
+        def test_with_valid_operand_enum(self, operand):
             forcing = ExtForcing(quantity=Quantity.WaterLevelBnd, filename="", filetype=9, method=1, operand=operand)
             assert forcing.operand == operand
 
-        def test_operand_validation_with_invalid_operand_string_raises_value_error(
+        def test_with_invalid_operand_string_raises_value_error(
             self,
         ):
             operand_str = "invalid"
