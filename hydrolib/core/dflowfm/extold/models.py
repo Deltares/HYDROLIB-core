@@ -324,7 +324,7 @@ class ExtForcing(BaseModel):
         filetype_key = alias("filetype")
         method_key = alias("method")
 
-        def validate_method(field: str, valid_method: Method):
+        def allowed_by_method(field: str, valid_method: Method):
             value = values[field]
             if value is not None and method != valid_method:
                 key = alias(field)
@@ -332,7 +332,7 @@ class ExtForcing(BaseModel):
                     f"{key} only allowed when {method_key} is {valid_method}"
                 )
 
-        def validate_filetype(field: str, valid_filetype: FileType):
+        def allowed_by_filetype(field: str, valid_filetype: FileType):
             value = values[field]
             if value is not None and filetype != valid_filetype:
                 key = alias(field)
@@ -340,7 +340,7 @@ class ExtForcing(BaseModel):
                     f"{key} only allowed when {filetype_key} is {valid_filetype}"
                 )
 
-        def validate_quantity(field: str, valid_quantity: Quantity):
+        def allowed_by_quantity(field: str, valid_quantity: Quantity):
             value = values[field]
             if value is not None and quantity != valid_quantity:
                 key = alias(field)
@@ -348,14 +348,14 @@ class ExtForcing(BaseModel):
                     f"{key} only allowed when {quantity_key} is {valid_quantity}"
                 )
 
-        validate_filetype("varname", 11)
+        allowed_by_filetype("varname", 11)
 
         sourcemask = values["sourcemask"]
         if sourcemask.filepath is not None and filetype not in [4, 6]:
             key = alias("sourcemask")
             raise ValueError(f"{key} only allowed when {filetype_key} is 4 or 6")
 
-        validate_method("value", 4)
+        allowed_by_method("value", 4)
 
         factor = values["factor"]
         if factor is not None and not quantity.startswith(Quantity.InitialTracer):
@@ -364,12 +364,12 @@ class ExtForcing(BaseModel):
                 f"{key} only allowed when {quantity_key} starts with {Quantity.InitialTracer}"
             )
 
-        validate_quantity("ifrctyp", Quantity.FrictionCoefficient)
-        validate_method("averagingtype", 6)
-        validate_method("relativesearchcellsize", 6)
-        validate_method("extrapoltol", 5)
-        validate_method("percentileminmax", 6)
-        validate_quantity("area", Quantity.DischargeSalinityTemperatureSorSin)
-        validate_method("nummin", 6)
+        allowed_by_quantity("ifrctyp", Quantity.FrictionCoefficient)
+        allowed_by_method("averagingtype", 6)
+        allowed_by_method("relativesearchcellsize", 6)
+        allowed_by_method("extrapoltol", 5)
+        allowed_by_method("percentileminmax", 6)
+        allowed_by_quantity("area", Quantity.DischargeSalinityTemperatureSorSin)
+        allowed_by_method("nummin", 6)
 
         return values
