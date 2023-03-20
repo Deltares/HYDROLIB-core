@@ -316,8 +316,11 @@ class ExtForcing(BaseModel):
         varname = values["varname"]
         if varname is not None:
             if filetype != 11:
-                raise ValueError(
-                    "VARNAME only allowed when FILETYPE is 11 (NetCDF grid data)"
-                )
+                raise ValueError("VARNAME only allowed when FILETYPE is 11 (NetCDF grid data)")
+        
+        sourcemask = values["sourcemask"]
+        if sourcemask is not None:
+            if filetype not in [4, 6]:
+                raise ValueError("SOURCEMASK only allowed when FILETYPE is 4 (ArcInfo) or 6 (Curvilinear data)")
 
         return values

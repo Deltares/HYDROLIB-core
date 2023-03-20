@@ -150,3 +150,36 @@ class TestExtForcing:
 
             exp_msg = "VARNAME only allowed when FILETYPE is 11 (NetCDF grid data)"
             assert exp_msg in str(error.value)
+
+    class TestValidateSourceMask:
+        @pytest.mark.parametrize("filetype", [4,6])
+        def test_validate_sourcemask_with_valid_filetype_4_or_6(self, filetype):
+            sourcemask = "sourcemask.file" 
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                sourcemask=sourcemask,
+                filetype=filetype,
+                method=1,
+                operand="O",
+            )
+
+            assert forcing.sourcemask.filepath.name == sourcemask
+
+        def test_validate_sourcemask_with_invalid_filetype(self):
+            filetype = 9
+            sourcemask = "sourcemask.file"  
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    sourcemask=sourcemask,
+                    filetype=filetype,
+                    method=1,
+                    operand="O",
+                )
+
+            exp_msg = "SOURCEMASK only allowed when FILETYPE is 4 (ArcInfo) or 6 (Curvilinear data)"
+            assert exp_msg in str(error.value)
