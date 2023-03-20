@@ -248,6 +248,41 @@ class TestExtForcing:
                 )
 
             exp_msg = (
-                f"FACTOR only allowed when QUANTITY start with {Quantity.InitialTracer}"
+                f"FACTOR only allowed when QUANTITY starts with {Quantity.InitialTracer}"
+            )
+            assert exp_msg in str(error.value)
+
+    class TestValidateIFrcTyp:
+        def test_validate_ifrctyp_with_valid_quantity_frictioncoefficient(self):
+            quantity = Quantity.FrictionCoefficient
+            ifrctyp = 1.23
+
+            forcing = ExtForcing(
+                quantity=quantity,
+                filename="",
+                filetype=9,
+                method=1,
+                operand="O",
+                ifrctyp=ifrctyp,
+            )
+
+            assert forcing.ifrctyp == ifrctyp
+
+        def test_validate_ifrctyp_with_invalid_quantity(self):
+            quantity = Quantity.WaterLevelBnd
+            ifrctyp = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=quantity,
+                    filename="",
+                    filetype=9,
+                    method=1,
+                    operand="O",
+                    ifrctyp=ifrctyp,
+                )
+
+            exp_msg = (
+                f"IFRCTYP only allowed when QUANTITY is {Quantity.FrictionCoefficient}"
             )
             assert exp_msg in str(error.value)

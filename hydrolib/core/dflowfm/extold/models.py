@@ -340,7 +340,14 @@ class ExtForcing(BaseModel):
         if factor is not None:
             if not quantity.startswith(Quantity.InitialTracer):
                 raise ValueError(
-                    f"FACTOR only allowed when QUANTITY start with {Quantity.InitialTracer}"
+                    f"FACTOR only allowed when QUANTITY starts with {Quantity.InitialTracer}"
                 )
 
+        ifrctyp = values["ifrctyp"]
+        if ifrctyp is not None:
+            if quantity != Quantity.FrictionCoefficient:
+                raise ValueError(
+                    f"IFRCTYP only allowed when QUANTITY is {Quantity.FrictionCoefficient}"
+                )
+        
         return values
