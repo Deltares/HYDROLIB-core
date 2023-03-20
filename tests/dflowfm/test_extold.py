@@ -183,3 +183,36 @@ class TestExtForcing:
 
             exp_msg = "SOURCEMASK only allowed when FILETYPE is 4 (ArcInfo) or 6 (Curvilinear data)"
             assert exp_msg in str(error.value)
+
+    class TestValidateValue:
+        def test_validate_value_with_valid_method_4(self):
+            method = 4
+            value = 1.23
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                operand="O",
+                value=value
+            )
+
+            assert forcing.value == value
+
+        def test_validate_sourcemask_with_invalid_method(self):
+            method = 1 
+            value = 1.23 
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    operand="O",
+                    value=value
+                )
+
+            exp_msg = "VALUE only allowed when METHOD is 4 (Interpolate space)"
+            assert exp_msg in str(error.value)

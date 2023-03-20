@@ -312,6 +312,7 @@ class ExtForcing(BaseModel):
     @root_validator()
     def validate_forcing(cls, values):
         filetype = values["filetype"]
+        method = values["method"]
 
         varname = values["varname"]
         if varname is not None:
@@ -327,4 +328,11 @@ class ExtForcing(BaseModel):
                     "SOURCEMASK only allowed when FILETYPE is 4 (ArcInfo) or 6 (Curvilinear data)"
                 )
 
+        value = values["value"]
+        if value is not None:
+            if method != 4:
+                raise ValueError(
+                    "VALUE only allowed when METHOD is 4 (Interpolate space)"
+                )
+            
         return values
