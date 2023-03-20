@@ -3,83 +3,78 @@ from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer
 from hydrolib.core.dflowfm.tim.parser import TimParser, TimTimeSerie
 from tests.utils import assert_files_equal, test_output_dir, test_input_dir, test_reference_dir
-
 from pathlib import Path
 import pytest
 
+def _get_triple_data_for_timeseries():
+    data = []
+    data.append(TimTimeSerie(time=10.0, series=[1.232,  2.343,  3.454]))
+    data.append(TimTimeSerie(time=20.0, series=[4.565,   5.676,  6.787]))
+    data.append(TimTimeSerie(time=30.0, series=[1.5,     2.6,    3.7]))   
+    return data
+
+def _get_triple_data_with_comments_for_timeseries():
+    data = []
+    data.append(TimTimeSerie(comment="#comments\n"))
+    data.append(TimTimeSerie(time=10.0, series=[1.232,  2.343,  3.454]))
+    data.append(TimTimeSerie(time=20.0, series=[4.565,   5.676,  6.787]))
+    data.append(TimTimeSerie(time=30.0, series=[1.5,     2.6,    3.7]))     
+    data.append(TimTimeSerie(comment="* 40 1.5 2.6 3.7\n"))
+    data.append(TimTimeSerie(comment="# 50 1.5 2.6 3.7"))  
+    return data
+
+def _get_single_data_for_timeseries():
+    data = []
+    data.append(TimTimeSerie(time=0.0, series=[0.0000000]))
+    data.append(TimTimeSerie(time=10.0, series=[0.0100000]))
+    data.append(TimTimeSerie(time=20.0, series=[0.0000000]))   
+    data.append(TimTimeSerie(time=30.0, series=[-0.0100000]))
+    data.append(TimTimeSerie(time=40.0, series=[0.0000000]))
+    data.append(TimTimeSerie(time=50.0, series=[0.0100000] ))
+    data.append(TimTimeSerie(time=60.0, series=[0.0000000]))
+    data.append(TimTimeSerie(time=70.0, series=[-0.0100000]))
+    data.append(TimTimeSerie(time=80.0, series=[0.0000000]))
+    data.append(TimTimeSerie(time=90.0, series=[0.0100000]))
+    data.append(TimTimeSerie(time=100.0, series=[0.0000000]))
+    data.append(TimTimeSerie(time=110.0, series=[-0.0100000]))
+    data.append(TimTimeSerie(time=120.0, series=[0.0000000]))
+    return data
+
 class TestTimSerializer:
-    @pytest.mark.parametrize(
-        "input, output_path, reference_path, config",
-        [
-            (
-                {10:[1.232, 2.343, 3.454],
-                20:[4.565, 5.676, 6.787],
-                30:[1.5, 2.6, 3.7]},
-                Path(test_output_dir / "tim" / "test_serialize.tim"),
-                Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim"),
-                SerializerConfig(float_format=".3f")
-            ),
-            (
-                {0.000000   :[0.0000000],
-                10.000000   :[0.0100000],
-                20.000000   :[0.0000000],
-                30.000000   :[-0.0100000],
-                40.000000   :[0.0000000],
-                50.000000   :[0.0100000],
-                60.000000   :[0.0000000],
-                70.000000   :[-0.0100000],
-                80.000000   :[0.0000000],
-                90.000000   :[0.0100000],
-                100.000000  :[0.0000000],
-                110.000000  :[-0.0100000],
-                120.000000  :[0.0000000]},
-                Path(test_output_dir / "tim" / "test_serialize.tim"),
-                Path(test_reference_dir / "tim" / "single_data_for_timeseries.tim"),
-                SerializerConfig(float_format=".6f")
-            ),
-        ],
-    )
-    def test_serialize(self, input: dict[float, list[float]], output_path, reference_path, config):
+    def test_serialize_triple_data_for_timeseries(self): 
+        input = _get_triple_data_for_timeseries()
+        output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
+        reference_path = Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim")
+        config = SerializerConfig(float_format=".3f")
         TimSerializer.serialize(output_path, input, config)
         assert_files_equal(output_path, reference_path)
 
+    def test_serialize_single_data_for_timeseries(self):
+        input = _get_single_data_for_timeseries()
+
+        output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
+        reference_path = Path(test_reference_dir / "tim" / "single_data_for_timeseries.tim")
+        config = SerializerConfig(float_format=".6f")
+
+        TimSerializer.serialize(output_path, input, config)
+        assert_files_equal(output_path, reference_path)
 
 class TestTimModel:
-    @pytest.mark.parametrize(
-        "input, output_path, reference_path, float_format",
-        [
-            (
-                {10:[1.232, 2.343, 3.454],
-                20:[4.565, 5.676, 6.787],
-                30:[1.5, 2.6, 3.7]},
-                Path(test_output_dir / "tim" / "test_save.tim"),
-                Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim"),
-                ".3f"
-            ),
-            (
-                {0.000000   :[0.0000000],
-                10.000000   :[0.0100000],
-                20.000000   :[0.0000000],
-                30.000000   :[-0.0100000],
-                40.000000   :[0.0000000],
-                50.000000   :[0.0100000],
-                60.000000   :[0.0000000],
-                70.000000   :[-0.0100000],
-                80.000000   :[0.0000000],
-                90.000000   :[0.0100000],
-                100.000000  :[0.0000000],
-                110.000000  :[-0.0100000],
-                120.000000  :[0.0000000]},
-                Path(test_output_dir / "tim" / "test_save.tim"),
-                Path(test_reference_dir / "tim" / "single_data_for_timeseries.tim"),
-                ".6f"
-            ),
-        ],
-    )
-    def test_save(self, input: dict[float, list[float]], output_path, reference_path, float_format):
-        model = TimModel(timeseries=input)
+    def test_save_triple_data_for_timeseries(self):
+        model = TimModel(timeseries=_get_triple_data_for_timeseries())
+        output_path = Path(test_output_dir / "tim" / "test_save.tim")
+        reference_path = Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim")
         model.filepath = output_path
-        model.serializer_config.float_format = float_format
+        model.serializer_config.float_format = ".3f"
+        model.save()
+        assert_files_equal(output_path, reference_path)
+
+    def test_save_single_data_for_timeseries(self):
+        model = TimModel(timeseries=_get_single_data_for_timeseries())
+        output_path = Path(test_output_dir / "tim" / "test_save.tim")
+        reference_path = Path(test_reference_dir / "tim" / "single_data_for_timeseries.tim")
+        model.filepath = output_path
+        model.serializer_config.float_format = ".6f"
         model.save()
         assert_files_equal(output_path, reference_path)
 
@@ -96,10 +91,7 @@ class TestTimParser:
     def test_parse_with_triple_data_for_timeseries(self, input_path):        
         data = TimParser.parse(input_path)
 
-        expected_output = []
-        expected_output.append(TimTimeSerie(time=10.0, series=[1.232,  2.343,  3.454]))
-        expected_output.append(TimTimeSerie(time=20.0, series=[4.565,   5.676,  6.787]))
-        expected_output.append(TimTimeSerie(time=30.0, series=[1.5,     2.6,    3.7]))     
+        expected_output = _get_triple_data_for_timeseries() 
 
         for i in range(len(expected_output)):
             assert(data[i].time == expected_output[i].time)
@@ -110,20 +102,7 @@ class TestTimParser:
         input_path = Path(test_input_dir / "tim" / "single_data_for_timeseries.tim")
         data = TimParser.parse(input_path)
 
-        expected_output = []
-        expected_output.append(TimTimeSerie(time=0.0, series=[0.0000000]))
-        expected_output.append(TimTimeSerie(time=10.0, series=[0.0100000]))
-        expected_output.append(TimTimeSerie(time=20.0, series=[0.0000000]))   
-        expected_output.append(TimTimeSerie(time=30.0, series=[-0.0100000]))
-        expected_output.append(TimTimeSerie(time=40.0, series=[0.0000000]))
-        expected_output.append(TimTimeSerie(time=50.0, series=[0.0100000] ))
-        expected_output.append(TimTimeSerie(time=60.0, series=[0.0000000]))
-        expected_output.append(TimTimeSerie(time=70.0, series=[-0.0100000]))
-        expected_output.append(TimTimeSerie(time=80.0, series=[0.0000000]))
-        expected_output.append(TimTimeSerie(time=90.0, series=[0.0100000]))
-        expected_output.append(TimTimeSerie(time=100.0, series=[0.0000000]))
-        expected_output.append(TimTimeSerie(time=110.0, series=[-0.0100000]))
-        expected_output.append(TimTimeSerie(time=120.0, series=[0.0000000]))
+        expected_output = _get_single_data_for_timeseries() 
 
 
         for i in range(len(expected_output)):
@@ -135,13 +114,7 @@ class TestTimParser:
         input_path = Path(test_input_dir / "tim" / "triple_data_for_timeseries_with_comments.tim")   
         data = TimParser.parse(input_path)
 
-        expected_output = []
-        expected_output.append(TimTimeSerie(comment="#comments\n"))
-        expected_output.append(TimTimeSerie(time=10.0, series=[1.232,  2.343,  3.454]))
-        expected_output.append(TimTimeSerie(time=20.0, series=[4.565,   5.676,  6.787]))
-        expected_output.append(TimTimeSerie(time=30.0, series=[1.5,     2.6,    3.7]))     
-        expected_output.append(TimTimeSerie(comment="* 40 1.5 2.6 3.7\n"))
-        expected_output.append(TimTimeSerie(comment="# 50 1.5 2.6 3.7"))
+        expected_output = _get_triple_data_with_comments_for_timeseries() 
 
         for i in range(len(expected_output)):
             assert(data[i].time == expected_output[i].time)

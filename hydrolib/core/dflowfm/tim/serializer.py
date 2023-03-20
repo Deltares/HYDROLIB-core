@@ -1,11 +1,62 @@
 from pathlib import Path
-from typing import Dict
+from typing import List, Optional, Iterable
+from hydrolib.core.dflowfm.tim.parser import TimTimeSerie
+from itertools import count
+from hydrolib.core.dflowfm.ini.io_models import (
+    Datablock,
+    DatablockRow,
+)
 
+from hydrolib.core.dflowfm.ini.serializer import SectionSerializer, INISerializerConfig, MaxLengths
 from hydrolib.core.basemodel import SerializerConfig
+
+def tim_get_offset_whitespace(key: Optional[str], max_length: int) -> str:
+    key_length = len(key) if key is not None else 0
+    return " " * max(max_length - key_length, 0)
+
+class TimTimeSeriesSerializer(SectionSerializer):
+    
+    Lines = Iterable[str]
+    def serialize_timtimeseries(self, timeserie: TimTimeSerie, config) -> Lines:
+        Datablock = self._create_tim_datablock(timeserie, config)
+        value = self.tim_serialize_datablock(Datablock)
+        return value
+    
+    def _create_tim_datablock(self, timeserie: TimTimeSerie, config) -> Datablock:
+        format_float = lambda x: f"{x:{config.float_format}}"
+        series = [str(format_float(p)) for p in timeserie.series]
+        row = []
+        row.append(str(timeserie.time))
+        row.extend(series)
+
+        Datablock: Datablock = []
+        Datablock.append(row)
+        return Datablock
+        
+
+    def tim_serialize_datablock(self, datablock: Optional[Datablock]) -> Lines:
+        if datablock is None or self.max_length.datablock is None:
+            return []
+
+        indent = " " * self._config.total_datablock_indent
+        return (self.tim_serialize_row(datablock[0], indent))
+
+    def tim_serialize_row(self, row: DatablockRow, indent: str) -> str:
+        elem_spacing = " " * self.config.datablock_spacing
+        elems = (self.tim_serialize_row_element(elem, i) for elem, i in zip(row, count()))
+
+        value  = indent + elem_spacing.join(elems).rstrip()
+        return value
+
+    def tim_serialize_row_element(self, elem: str, index: int) -> str:
+        max_length = 10  # type: ignore
+        whitespace = tim_get_offset_whitespace(elem, max_length)
+        return elem + whitespace
+
 
 class TimSerializer:
     @staticmethod
-    def serialize(path: Path, data: Dict, config: SerializerConfig) -> None:
+    def serialize(path: Path, data: List[TimTimeSerie], config: SerializerConfig) -> None:
         """
         Serializes the timeseries data to the file at the specified path in .tim format.
 
@@ -15,12 +66,19 @@ class TimSerializer:
             config (SerializerConfig): The serialization configuration.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
+        cnfg = INISerializerConfig()
+        timtimeseriesserializer = TimTimeSeriesSerializer(cnfg, MaxLengths(key=0, value=0, datablock=[3, 4, 5,6,8],))
+        
 
         space = 1 * " "
-        format_float = lambda x: f"{x:{config.float_format}}"
+        
 
         with path.open("w") as f:
-            for time in data:
-                series = space.join([format_float(p) for p in data[time]])
-                timeserie = f"{format_float(time)}{space}{series}"
-                f.write(f"{timeserie}\n")
+            for timeserie in data:
+                if(timeserie.comment):
+                    f.write(timeserie.comment)
+                else:
+                    string = timtimeseriesserializer.serialize_timtimeseries(timeserie, config)
+                    f.write(f"{string}\n")
+                    #series = space.join([format_float(p) for p in timeserie.series])
+                    #f.write(f"{format_float(timeserie.time)}{space}{series}\n")
