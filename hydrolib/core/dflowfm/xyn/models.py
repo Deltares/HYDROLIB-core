@@ -1,6 +1,10 @@
-from typing import Optional
+from pathlib import Path
+from typing import Callable, Dict, List, Optional
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.basemodel import BaseModel, ParsableFileModel, SerializerConfig
+
+from .parser import XYNParser
+from .serializer import XYNSerializer
 
 
 class XYNPoint(BaseModel):
@@ -21,3 +25,33 @@ class XYNPoint(BaseModel):
         y = data.get("y")
         n = data.get("n")
         return f"x:{x} y:{y} n:{n}"
+
+
+class XYNModel(ParsableFileModel):
+    """XYN file.
+
+    Attributes:
+        points: List of [`XYNPoint`][hydrolib.core.dflowfm.xyn.models.XYNPoint]
+    """
+
+    points: List[XYNPoint]
+
+    def dict(self, *args, **kwargs):
+        # speed up serializing by not converting these lowest models to dict
+        return dict(points=self.points)
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".xyn"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "sample"
+
+    @classmethod
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
+        return XYNSerializer.serialize
+
+    @classmethod
+    def _get_parser(cls) -> Callable:
+        return XYNParser.parse
