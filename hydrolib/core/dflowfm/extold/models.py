@@ -379,5 +379,12 @@ class ExtForcing(BaseModel):
             raise ValueError(
                 f"{key} only allowed when {method_key} is 5"
             )
+        
+        percentileminmax = values["percentileminmax"]
+        if percentileminmax is not None and method != 6:
+            key = alias("percentileminmax")
+            raise ValueError(
+                f"{key} only allowed when {method_key} is 6"
+            )
 
         return values

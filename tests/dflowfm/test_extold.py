@@ -381,3 +381,36 @@ class TestExtForcing:
 
             exp_msg = "EXTRAPOLTOL only allowed when METHOD is 5"
             assert exp_msg in str(error.value)
+
+    class TestValidatePercentileMinMax:
+        def test_validate_percentileminmax_with_valid_method_6(self):
+            method = 6
+            percentileminmax = 1.23
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                operand="O",
+                percentileminmax=percentileminmax,
+            )
+
+            assert forcing.percentileminmax == percentileminmax
+
+        def test_validate_percentileminmax_with_invalid_method(self):
+            method = 1
+            percentileminmax = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    operand="O",
+                    percentileminmax=percentileminmax,
+                )
+
+            exp_msg = "PERCENTILEMINMAX only allowed when METHOD is 6"
+            assert exp_msg in str(error.value)
