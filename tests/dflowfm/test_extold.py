@@ -1,4 +1,5 @@
 import pytest
+
 from hydrolib.core.dflowfm.extold.models import ExtForcing, Quantity
 
 
@@ -60,4 +61,7 @@ class TestExtForcing:
                 )
 
             supported_values_str = ", ".join(([x.value for x in Quantity]))
-            assert f"QUANTITY 'invalid' not supported. Supported values: {supported_values_str}" in str(error.value)
+            assert (
+                f"QUANTITY 'invalid' not supported. Supported values: {supported_values_str}"
+                in str(error.value)
+            )
