@@ -101,6 +101,27 @@ class TestModels:
 class TestOutput:
     """Test class to test the [output] section in an MDU file."""
 
+    def test_obs_crs_from_mdu(self):
+        fmmodel = FMModel(
+            filepath=test_input_dir
+            / "e02"
+            / "f101_1D-boundaries"
+            / "c01_steady-state-flow"
+            / "Boundary.mdu"
+        )
+
+        assert isinstance(fmmodel.output.crsfile[0], ObservationCrossSectionModel)
+
+        # Check recursive construction of ObservationCrossSectionModel object
+        assert len(fmmodel.output.crsfile[0].observationcrosssection) == 4
+        assert (
+            fmmodel.output.crsfile[0].observationcrosssection[0].name
+            == "ObservCross_Chg_T1"
+        )
+        assert (
+            len(fmmodel.output.crsfile[0].observationcrosssection[3].xcoordinates) == 2
+        )
+
     def test_mixed_obs_crs_files(self):
         """Test the construction of correct types of observation crosssection
         objects, when both old and new formatted input files are given."""
@@ -111,7 +132,6 @@ class TestOutput:
             CrsFile = {test_input_dir / 'dflowfm_individual_files/test.pli'} {test_input_dir / 'e02/f101_1D-boundaries/c01_steady-state-flow/ObservationPoints_crs.ini'}
             """
         )
-
         parser = Parser(ParserConfig())
         for l in input.splitlines():
             parser.feed_line(l)
