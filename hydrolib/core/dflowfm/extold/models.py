@@ -328,21 +328,21 @@ class ExtForcing(BaseModel):
         if varname is not None and filetype != 11:
             key = alias("varname")
             raise ValueError(
-                f"{key} only allowed when {filetype_key} is 11 (NetCDF grid data)"
+                f"{key} only allowed when {filetype_key} is 11"
             )
 
         sourcemask = values["sourcemask"]
         if sourcemask.filepath is not None and filetype not in [4, 6]:
             key = alias("sourcemask")
             raise ValueError(
-                f"{key} only allowed when {filetype_key} is 4 (ArcInfo) or 6 (Curvilinear data)"
+                f"{key} only allowed when {filetype_key} is 4 or 6"
             )
 
         value = values["value"]
         if value is not None and method != 4:
             key = alias("value")
             raise ValueError(
-                f"{key} only allowed when {method_key} is 4 (Interpolate space)"
+                f"{key} only allowed when {method_key} is 4"
             )
 
         factor = values["factor"]
@@ -362,6 +362,8 @@ class ExtForcing(BaseModel):
         averagingtype = values["averagingtype"]
         if averagingtype is not None and method != 6:
             key = alias("averagingtype")
-            raise ValueError(f"{key} only allowed when {method_key} is 6 (Averaging)")
+            raise ValueError(
+                f"{key} only allowed when {method_key} is 6"
+            )
 
         return values

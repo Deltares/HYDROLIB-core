@@ -148,7 +148,7 @@ class TestExtForcing:
                     operand="O",
                 )
 
-            exp_msg = "VARNAME only allowed when FILETYPE is 11 (NetCDF grid data)"
+            exp_msg = "VARNAME only allowed when FILETYPE is 11"
             assert exp_msg in str(error.value)
 
     class TestValidateSourceMask:
@@ -181,7 +181,7 @@ class TestExtForcing:
                     operand="O",
                 )
 
-            exp_msg = "SOURCEMASK only allowed when FILETYPE is 4 (ArcInfo) or 6 (Curvilinear data)"
+            exp_msg = "SOURCEMASK only allowed when FILETYPE is 4 or 6"
             assert exp_msg in str(error.value)
 
     class TestValidateValue:
@@ -214,7 +214,7 @@ class TestExtForcing:
                     value=value,
                 )
 
-            exp_msg = "VALUE only allowed when METHOD is 4 (Interpolate space)"
+            exp_msg = "VALUE only allowed when METHOD is 4"
             assert exp_msg in str(error.value)
 
     class TestValidateFactor:
@@ -313,5 +313,5 @@ class TestExtForcing:
                     averagingtype=averagingtype,
                 )
 
-            exp_msg = "AVERAGINGTYPE only allowed when METHOD is 6 (Averaging)"
+            exp_msg = "AVERAGINGTYPE only allowed when METHOD is 6"
             assert exp_msg in str(error.value)
