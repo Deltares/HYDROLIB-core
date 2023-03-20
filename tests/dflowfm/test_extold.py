@@ -1,4 +1,5 @@
 import pytest
+
 from hydrolib.core.dflowfm.extold.models import ExtForcing, Operand, Quantity
 
 
@@ -60,7 +61,10 @@ class TestExtForcing:
                 )
 
             supported_values_str = ", ".join(([x.value for x in Quantity]))
-            assert f"QUANTITY 'invalid' not supported. Supported values: {supported_values_str}" in str(error.value)
+            assert (
+                f"QUANTITY 'invalid' not supported. Supported values: {supported_values_str}"
+                in str(error.value)
+            )
 
     class TestValidateOperand:
         @pytest.mark.parametrize("operand", Operand)
@@ -68,7 +72,13 @@ class TestExtForcing:
             self, operand
         ):
             operand_str = operand.value
-            forcing = ExtForcing(quantity=Quantity.WaterLevelBnd, filename="", filetype=9, method=1, operand=operand_str)
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=1,
+                operand=operand_str,
+            )
             assert forcing.operand == operand
 
         @pytest.mark.parametrize("operand", Operand)
@@ -76,7 +86,13 @@ class TestExtForcing:
             self, operand
         ):
             operand_str = operand.value.lower()
-            forcing = ExtForcing(quantity=Quantity.WaterLevelBnd, filename="", filetype=9, method=1, operand=operand_str)
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=1,
+                operand=operand_str,
+            )
             assert forcing.operand == operand
 
         @pytest.mark.parametrize("operand", Operand)
@@ -99,4 +115,7 @@ class TestExtForcing:
                 )
 
             supported_values_str = ", ".join(([x.value for x in Operand]))
-            assert f"OPERAND 'invalid' not supported. Supported values: {supported_values_str}" in str(error.value)
+            assert (
+                f"OPERAND 'invalid' not supported. Supported values: {supported_values_str}"
+                in str(error.value)
+            )
