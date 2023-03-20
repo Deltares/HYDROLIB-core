@@ -6,7 +6,9 @@ from hydrolib.core.dflowfm.extold.models import ExtForcing, Operand, Quantity
 class TestExtForcing:
     class TestValidateQuantity:
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_quantity_validation_with_valid_quantity_string_equal_casing(self, quantity):
+        def test_quantity_validation_with_valid_quantity_string_equal_casing(
+            self, quantity
+        ):
             quantity_str = quantity.value
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
@@ -14,9 +16,13 @@ class TestExtForcing:
             assert forcing.quantity == quantity
 
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_quantity_validation_with_valid_quantity_string_different_casing(self, quantity):
+        def test_quantity_validation_with_valid_quantity_string_different_casing(
+            self, quantity
+        ):
             quantity_str = quantity.value.upper()
-            forcing = ExtForcing(quantity=quantity_str, filename="", filetype=9, method=1, operand="O")
+            forcing = ExtForcing(
+                quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
+            )
             assert forcing.quantity == quantity
 
         @pytest.mark.parametrize("quantity", Quantity)
@@ -28,12 +34,16 @@ class TestExtForcing:
 
         def test_quantity_validation_with_valid_tracerbnd_quantity_string(self):
             quantity_str = Quantity.TracerBnd.value + "Some_Tracer_Name"
-            forcing = ExtForcing(quantity=quantity_str, filename="", filetype=9, method=1, operand="O")
+            forcing = ExtForcing(
+                quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
+            )
             assert forcing.quantity == quantity_str
 
         def test_quantity_validation_with_valid_initialtracer_quantity_string(self):
             quantity_str = Quantity.InitialTracer.value + "Some_Tracer_Name"
-            forcing = ExtForcing(quantity=quantity_str, filename="", filetype=9, method=1, operand="O")
+            forcing = ExtForcing(
+                quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
+            )
             assert forcing.quantity == quantity_str
 
         def test_quantity_validation_with_invalid_quantity_string_raises_value_error(
