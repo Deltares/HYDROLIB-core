@@ -354,9 +354,9 @@ class ExtForcing(BaseModel):
 
         averagingtype = values["averagingtype"]
         if averagingtype is not None:
-            if method != 6: 
+            if method != 6:
                 raise ValueError(
                     "AVERAGINGTYPE only allowed when METHOD is 6 (Averaging)"
                 )
-            
+
         return values
