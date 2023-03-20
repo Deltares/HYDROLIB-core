@@ -152,9 +152,9 @@ class TestExtForcing:
             assert exp_msg in str(error.value)
 
     class TestValidateSourceMask:
-        @pytest.mark.parametrize("filetype", [4,6])
+        @pytest.mark.parametrize("filetype", [4, 6])
         def test_validate_sourcemask_with_valid_filetype_4_or_6(self, filetype):
-            sourcemask = "sourcemask.file" 
+            sourcemask = "sourcemask.file"
 
             forcing = ExtForcing(
                 quantity=Quantity.WaterLevelBnd,
@@ -169,7 +169,7 @@ class TestExtForcing:
 
         def test_validate_sourcemask_with_invalid_filetype(self):
             filetype = 9
-            sourcemask = "sourcemask.file"  
+            sourcemask = "sourcemask.file"
 
             with pytest.raises(ValueError) as error:
                 _ = ExtForcing(
