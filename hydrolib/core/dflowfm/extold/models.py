@@ -311,6 +311,7 @@ class ExtForcing(BaseModel):
 
     @root_validator()
     def validate_forcing(cls, values):
+        quantity = values["quantity"]
         filetype = values["filetype"]
         method = values["method"]
 
@@ -333,6 +334,13 @@ class ExtForcing(BaseModel):
             if method != 4:
                 raise ValueError(
                     "VALUE only allowed when METHOD is 4 (Interpolate space)"
+                )
+            
+        factor = values["factor"]
+        if factor is not None:
+            if not quantity.startswith(Quantity.InitialTracer):
+                raise ValueError(
+                    f"FACTOR only allowed when QUANTITY start with {Quantity.InitialTracer}"
                 )
 
         return values

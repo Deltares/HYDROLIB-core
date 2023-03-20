@@ -216,3 +216,36 @@ class TestExtForcing:
 
             exp_msg = "VALUE only allowed when METHOD is 4 (Interpolate space)"
             assert exp_msg in str(error.value)
+
+    class TestValidateFactor:
+        def test_validate_factor_with_valid_quantity_initialtracer(self):
+            quantity = Quantity.InitialTracer + "Some_Tracer_Name"
+            factor = 1.23
+
+            forcing = ExtForcing(
+                quantity=quantity,
+                filename="",
+                filetype=9,
+                method=1,
+                operand="O",
+                factor=factor,
+            )
+
+            assert forcing.factor == factor
+
+        def test_validate_factor_with_invalid_quantity(self):
+            quantity = Quantity.WaterLevelBnd
+            factor = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=quantity,
+                    filename="",
+                    filetype=9,
+                    method=1,
+                    operand="O",
+                    factor=factor,
+                )
+
+            exp_msg = f"FACTOR only allowed when QUANTITY start with {Quantity.InitialTracer}"
+            assert exp_msg in str(error.value)
