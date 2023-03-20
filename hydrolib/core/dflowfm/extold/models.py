@@ -313,50 +313,64 @@ class ExtForcing(BaseModel):
 
     @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
+
+        def alias(key: str):
+            return cls.__fields__[key].alias
+        
         quantity = values["quantity"]
         filetype = values["filetype"]
         method = values["method"]
 
+        quantity_key = alias("quantity")
+        filetype_key = alias("filetype")
+        method_key = alias("method")
+
         varname = values["varname"]
         if varname is not None:
             if filetype != 11:
+                key = alias("varname")
                 raise ValueError(
-                    "VARNAME only allowed when FILETYPE is 11 (NetCDF grid data)"
+                    f"{key} only allowed when {filetype_key} is 11 (NetCDF grid data)"
                 )
 
         sourcemask = values["sourcemask"]
         if sourcemask.filepath is not None:
             if filetype not in [4, 6]:
+                key = alias("sourcemask")
                 raise ValueError(
-                    "SOURCEMASK only allowed when FILETYPE is 4 (ArcInfo) or 6 (Curvilinear data)"
+                    f"{key} only allowed when {filetype_key} is 4 (ArcInfo) or 6 (Curvilinear data)"
                 )
 
         value = values["value"]
         if value is not None:
             if method != 4:
+                key = alias("value")
                 raise ValueError(
-                    "VALUE only allowed when METHOD is 4 (Interpolate space)"
+                    f"{key} only allowed when {method_key} is 4 (Interpolate space)"
                 )
 
         factor = values["factor"]
         if factor is not None:
             if not quantity.startswith(Quantity.InitialTracer):
+                key = alias("factor")
                 raise ValueError(
-                    f"FACTOR only allowed when QUANTITY starts with {Quantity.InitialTracer}"
+                    f"{key} only allowed when {quantity_key} starts with {Quantity.InitialTracer}"
                 )
 
         ifrctyp = values["ifrctyp"]
         if ifrctyp is not None:
             if quantity != Quantity.FrictionCoefficient:
+                key = alias("ifrctyp")
                 raise ValueError(
-                    f"IFRCTYP only allowed when QUANTITY is {Quantity.FrictionCoefficient}"
+                    f"{key} only allowed when {quantity_key} is {Quantity.FrictionCoefficient}"
                 )
 
         averagingtype = values["averagingtype"]
         if averagingtype is not None:
             if method != 6:
+                key = alias("averagingtype")
                 raise ValueError(
-                    "AVERAGINGTYPE only allowed when METHOD is 6 (Averaging)"
+                    f"{key} only allowed when {method_key} is 6 (Averaging)"
                 )
 
         return values

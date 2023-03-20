@@ -247,7 +247,7 @@ class TestExtForcing:
                     factor=factor,
                 )
 
-            exp_msg = f"FACTOR only allowed when QUANTITY starts with {Quantity.InitialTracer}"
+            exp_msg = f"FACTOR only allowed when QUANTITY starts with initialtracer"
             assert exp_msg in str(error.value)
 
     class TestValidateIFrcTyp:
@@ -281,7 +281,7 @@ class TestExtForcing:
                 )
 
             exp_msg = (
-                f"IFRCTYP only allowed when QUANTITY is {Quantity.FrictionCoefficient}"
+                f"IFRCTYP only allowed when QUANTITY is frictioncoefficient"
             )
             assert exp_msg in str(error.value)
 
