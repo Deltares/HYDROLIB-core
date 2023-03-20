@@ -30,8 +30,9 @@ class TestXYNParser:
             parsed_contents = XYNParser.parse(xyn_file)
             assert expected_result == parsed_contents
 
+    @classmethod
     @contextmanager
-    def _create_temp_xyn_file(content: str):
+    def _create_temp_xyn_file(cls, content: str):
         with TemporaryDirectory() as temp_dir:
             xyn_file = Path(temp_dir, "test.xyn")
             with open(xyn_file, "w") as f:
@@ -59,8 +60,9 @@ class TestXYNSerializer:
                 file_content = file.readlines()
                 assert file_content == expected_file_content
 
+    @classmethod
     @contextmanager
-    def _create_temp_xyn_file():
+    def _create_temp_xyn_file(cls):
         with TemporaryDirectory() as temp_dir:
             yield Path(temp_dir, "test.xyn")
 
