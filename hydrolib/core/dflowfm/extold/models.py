@@ -366,4 +366,10 @@ class ExtForcing(BaseModel):
                 f"{key} only allowed when {method_key} is 6"
             )
 
+        relativesearchcellsize = values["relativesearchcellsize"]
+        if relativesearchcellsize is not None and method != 6:
+            key = alias("relativesearchcellsize")
+            raise ValueError(
+                f"{key} only allowed when {method_key} is 6"
+            )
         return values

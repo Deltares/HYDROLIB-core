@@ -299,7 +299,7 @@ class TestExtForcing:
 
             assert forcing.averagingtype == averagingtype
 
-        def test_validate_sourcemask_with_invalid_method(self):
+        def test_validate_averagingtype_with_invalid_method(self):
             method = 1
             averagingtype = 1.23
 
@@ -314,4 +314,37 @@ class TestExtForcing:
                 )
 
             exp_msg = "AVERAGINGTYPE only allowed when METHOD is 6"
+            assert exp_msg in str(error.value)
+
+    class TestValidateRelativeSearchCellSize:
+        def test_validate_relativesearchcellsize_with_valid_method_6(self):
+            method = 6
+            relativesearchcellsize = 1.23
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                operand="O",
+                relativesearchcellsize=relativesearchcellsize,
+            )
+
+            assert forcing.relativesearchcellsize == relativesearchcellsize
+
+        def test_validate_relativesearchcellsize_with_invalid_method(self):
+            method = 1
+            relativesearchcellsize = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    operand="O",
+                    relativesearchcellsize=relativesearchcellsize,
+                )
+
+            exp_msg = "RELATIVESEARCHCELLSIZE only allowed when METHOD is 6"
             assert exp_msg in str(error.value)
