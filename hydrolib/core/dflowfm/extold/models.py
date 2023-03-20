@@ -349,5 +349,5 @@ class ExtForcing(BaseModel):
                 raise ValueError(
                     f"IFRCTYP only allowed when QUANTITY is {Quantity.FrictionCoefficient}"
                 )
-        
+
         return values
