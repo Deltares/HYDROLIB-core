@@ -291,5 +291,5 @@ class ExtForcing(BaseModel):
             raise ValueError(
                 f"Quantity '{value}' not supported. Supported values: {supported_value_str}"
             )
-        
+
         return value
