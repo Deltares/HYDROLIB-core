@@ -325,51 +325,45 @@ class ExtForcing(BaseModel):
         method_key = alias("method")
 
         varname = values["varname"]
-        if varname is not None:
-            if filetype != 11:
-                key = alias("varname")
-                raise ValueError(
-                    f"{key} only allowed when {filetype_key} is 11 (NetCDF grid data)"
-                )
+        if varname is not None and filetype != 11:
+            key = alias("varname")
+            raise ValueError(
+                f"{key} only allowed when {filetype_key} is 11 (NetCDF grid data)"
+            )
 
         sourcemask = values["sourcemask"]
-        if sourcemask.filepath is not None:
-            if filetype not in [4, 6]:
-                key = alias("sourcemask")
-                raise ValueError(
-                    f"{key} only allowed when {filetype_key} is 4 (ArcInfo) or 6 (Curvilinear data)"
-                )
+        if sourcemask.filepath is not None and filetype not in [4, 6]:
+            key = alias("sourcemask")
+            raise ValueError(
+                f"{key} only allowed when {filetype_key} is 4 (ArcInfo) or 6 (Curvilinear data)"
+            )
 
         value = values["value"]
-        if value is not None:
-            if method != 4:
-                key = alias("value")
-                raise ValueError(
-                    f"{key} only allowed when {method_key} is 4 (Interpolate space)"
-                )
+        if value is not None and method != 4:
+            key = alias("value")
+            raise ValueError(
+                f"{key} only allowed when {method_key} is 4 (Interpolate space)"
+            )
 
         factor = values["factor"]
-        if factor is not None:
-            if not quantity.startswith(Quantity.InitialTracer):
-                key = alias("factor")
-                raise ValueError(
-                    f"{key} only allowed when {quantity_key} starts with {Quantity.InitialTracer}"
-                )
+        if factor is not None and not quantity.startswith(Quantity.InitialTracer):
+            key = alias("factor")
+            raise ValueError(
+                f"{key} only allowed when {quantity_key} starts with {Quantity.InitialTracer}"
+            )
 
         ifrctyp = values["ifrctyp"]
-        if ifrctyp is not None:
-            if quantity != Quantity.FrictionCoefficient:
-                key = alias("ifrctyp")
-                raise ValueError(
-                    f"{key} only allowed when {quantity_key} is {Quantity.FrictionCoefficient}"
-                )
+        if ifrctyp is not None and quantity != Quantity.FrictionCoefficient:
+            key = alias("ifrctyp")
+            raise ValueError(
+                f"{key} only allowed when {quantity_key} is {Quantity.FrictionCoefficient}"
+            )
 
         averagingtype = values["averagingtype"]
-        if averagingtype is not None:
-            if method != 6:
-                key = alias("averagingtype")
-                raise ValueError(
-                    f"{key} only allowed when {method_key} is 6 (Averaging)"
-                )
+        if averagingtype is not None and method != 6:
+            key = alias("averagingtype")
+            raise ValueError(
+                f"{key} only allowed when {method_key} is 6 (Averaging)"
+            )
 
         return values
