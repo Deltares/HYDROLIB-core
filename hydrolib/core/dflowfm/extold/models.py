@@ -362,8 +362,6 @@ class ExtForcing(BaseModel):
         averagingtype = values["averagingtype"]
         if averagingtype is not None and method != 6:
             key = alias("averagingtype")
-            raise ValueError(
-                f"{key} only allowed when {method_key} is 6 (Averaging)"
-            )
+            raise ValueError(f"{key} only allowed when {method_key} is 6 (Averaging)")
 
         return values
