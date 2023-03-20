@@ -7,7 +7,8 @@ from hydrolib.core.dflowfm.xyn.parser import XYNParser
 
 class TestXYNParser:
     def test_parse_xyn_file(self):
-        file_content = """1.1 2.2 'ObservationPoint_2D_01'
+        file_content = """*This is a comment and should not be parsed.
+                          1.1 2.2 'ObservationPoint_2D_01'
                           3.3 4.4 'ObservationPoint_2D_02'"""
 
         expected_result = {
