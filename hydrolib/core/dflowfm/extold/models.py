@@ -335,7 +335,7 @@ class ExtForcing(BaseModel):
                 raise ValueError(
                     "VALUE only allowed when METHOD is 4 (Interpolate space)"
                 )
-            
+
         factor = values["factor"]
         if factor is not None:
             if not quantity.startswith(Quantity.InitialTracer):

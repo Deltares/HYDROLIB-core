@@ -247,5 +247,7 @@ class TestExtForcing:
                     factor=factor,
                 )
 
-            exp_msg = f"FACTOR only allowed when QUANTITY start with {Quantity.InitialTracer}"
+            exp_msg = (
+                f"FACTOR only allowed when QUANTITY start with {Quantity.InitialTracer}"
+            )
             assert exp_msg in str(error.value)
