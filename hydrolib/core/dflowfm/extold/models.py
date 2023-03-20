@@ -342,7 +342,7 @@ class ExtForcing(BaseModel):
             key = alias("sourcemask")
             raise ValueError(f"{key} only allowed when {filetype_key} is 4 or 6")
 
-        validate_method("value", 4) 
+        validate_method("value", 4)
 
         factor = values["factor"]
         if factor is not None and not quantity.startswith(Quantity.InitialTracer):
@@ -358,18 +358,18 @@ class ExtForcing(BaseModel):
                 f"{key} only allowed when {quantity_key} is {Quantity.FrictionCoefficient}"
             )
 
-        validate_method("averagingtype", 6) 
-        validate_method("relativesearchcellsize", 6)      
+        validate_method("averagingtype", 6)
+        validate_method("relativesearchcellsize", 6)
         validate_method("extrapoltol", 5)
         validate_method("percentileminmax", 6)
-        
+
         area = values["area"]
         if area is not None and quantity != Quantity.DischargeSalinityTemperatureSorSin:
             key = alias("area")
             raise ValueError(
                 f"{key} only allowed when {quantity_key} is {Quantity.DischargeSalinityTemperatureSorSin}"
             )
-        
+
         validate_method("nummin", 6)
 
         return values
