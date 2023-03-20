@@ -340,6 +340,14 @@ class ExtForcing(BaseModel):
                     f"{key} only allowed when {filetype_key} is {valid_filetype}"
                 )
 
+        def validate_quantity(field: str, valid_quantity: Quantity):
+            value = values[field]
+            if value is not None and quantity != valid_quantity:
+                key = alias(field)
+                raise ValueError(
+                    f"{key} only allowed when {quantity_key} is {valid_quantity}"
+                )
+
         validate_filetype("varname", 11)
 
         sourcemask = values["sourcemask"]
@@ -356,25 +364,12 @@ class ExtForcing(BaseModel):
                 f"{key} only allowed when {quantity_key} starts with {Quantity.InitialTracer}"
             )
 
-        ifrctyp = values["ifrctyp"]
-        if ifrctyp is not None and quantity != Quantity.FrictionCoefficient:
-            key = alias("ifrctyp")
-            raise ValueError(
-                f"{key} only allowed when {quantity_key} is {Quantity.FrictionCoefficient}"
-            )
-
+        validate_quantity("ifrctyp", Quantity.FrictionCoefficient)
         validate_method("averagingtype", 6)
         validate_method("relativesearchcellsize", 6)
         validate_method("extrapoltol", 5)
         validate_method("percentileminmax", 6)
-
-        area = values["area"]
-        if area is not None and quantity != Quantity.DischargeSalinityTemperatureSorSin:
-            key = alias("area")
-            raise ValueError(
-                f"{key} only allowed when {quantity_key} is {Quantity.DischargeSalinityTemperatureSorSin}"
-            )
-
+        validate_quantity("area", Quantity.DischargeSalinityTemperatureSorSin)
         validate_method("nummin", 6)
 
         return values
