@@ -324,6 +324,14 @@ class ExtForcing(BaseModel):
         filetype_key = alias("filetype")
         method_key = alias("method")
 
+        def validate_method(field: str, valid_method: Method):
+            value = values[field]
+            if value is not None and method != valid_method:
+                key = alias(field)
+                raise ValueError(
+                    f"{key} only allowed when {method_key} is {valid_method}"
+                )
+
         varname = values["varname"]
         if varname is not None and filetype != 11:
             key = alias("varname")
@@ -338,12 +346,7 @@ class ExtForcing(BaseModel):
                 f"{key} only allowed when {filetype_key} is 4 or 6"
             )
 
-        value = values["value"]
-        if value is not None and method != 4:
-            key = alias("value")
-            raise ValueError(
-                f"{key} only allowed when {method_key} is 4"
-            )
+        validate_method("value", 4) 
 
         factor = values["factor"]
         if factor is not None and not quantity.startswith(Quantity.InitialTracer):
@@ -359,33 +362,10 @@ class ExtForcing(BaseModel):
                 f"{key} only allowed when {quantity_key} is {Quantity.FrictionCoefficient}"
             )
 
-        averagingtype = values["averagingtype"]
-        if averagingtype is not None and method != 6:
-            key = alias("averagingtype")
-            raise ValueError(
-                f"{key} only allowed when {method_key} is 6"
-            )
-
-        relativesearchcellsize = values["relativesearchcellsize"]
-        if relativesearchcellsize is not None and method != 6:
-            key = alias("relativesearchcellsize")
-            raise ValueError(
-                f"{key} only allowed when {method_key} is 6"
-            )
-        
-        extrapoltol = values["extrapoltol"]
-        if extrapoltol is not None and method != 5:
-            key = alias("extrapoltol")
-            raise ValueError(
-                f"{key} only allowed when {method_key} is 5"
-            )
-        
-        percentileminmax = values["percentileminmax"]
-        if percentileminmax is not None and method != 6:
-            key = alias("percentileminmax")
-            raise ValueError(
-                f"{key} only allowed when {method_key} is 6"
-            )
+        validate_method("averagingtype", 6) 
+        validate_method("relativesearchcellsize", 6)      
+        validate_method("extrapoltol", 5)
+        validate_method("percentileminmax", 6)
         
         area = values["area"]
         if area is not None and quantity != Quantity.DischargeSalinityTemperatureSorSin:
@@ -394,11 +374,6 @@ class ExtForcing(BaseModel):
                 f"{key} only allowed when {quantity_key} is {Quantity.DischargeSalinityTemperatureSorSin}"
             )
         
-        nummin = values["nummin"]
-        if nummin is not None and method != 6:
-            key = alias("nummin")
-            raise ValueError(
-                f"{key} only allowed when {method_key} is 6"
-            )
+        validate_method("nummin", 6)
 
         return values
