@@ -284,3 +284,36 @@ class TestExtForcing:
                 f"IFRCTYP only allowed when QUANTITY is {Quantity.FrictionCoefficient}"
             )
             assert exp_msg in str(error.value)
+
+    class TestValidateAveragingType:
+        def test_validate_averagingtype_with_valid_method_6(self):
+            method = 6
+            averagingtype = 1.23
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                operand="O",
+                averagingtype=averagingtype,
+            )
+
+            assert forcing.averagingtype == averagingtype
+
+        def test_validate_sourcemask_with_invalid_method(self):
+            method = 1
+            averagingtype = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    operand="O",
+                    averagingtype=averagingtype,
+                )
+
+            exp_msg = "AVERAGINGTYPE only allowed when METHOD is 6 (Averaging)"
+            assert exp_msg in str(error.value)
