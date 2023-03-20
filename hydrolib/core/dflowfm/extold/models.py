@@ -309,7 +309,7 @@ class ExtForcing(BaseModel):
 
         return value
 
-    @root_validator()
+    @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
         quantity = values["quantity"]
         filetype = values["filetype"]
