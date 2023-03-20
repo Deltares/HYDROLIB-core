@@ -172,6 +172,8 @@ class Method(IntEnum):
     """4. Interpolate space"""
     InterpolateTime = 5
     """5. Interpolate time"""
+    Averaging = 6
+    """6. Averaging"""
     InterpolateExtrapolateTime = 7
     """7. Interpolate/Extrapolate time"""
 
