@@ -4,7 +4,7 @@ from typing import Callable, Dict, List
 from hydrolib.core.basemodel import ParsableFileModel, SerializerConfig
 
 from .parser import TimParser
-from .serializer import TimSerializer, TimTimeSerie, TimSerializerConfig
+from .serializer import TimSerializer, TimSerializerConfig, TimTimeSerie
 
 
 class TimModel(ParsableFileModel):
@@ -13,6 +13,7 @@ class TimModel(ParsableFileModel):
     Attributes:
         timeseries: List[TimTimeSerie]
     """
+
     serializer_config = TimSerializerConfig()
     timeseries: List[TimTimeSerie]
 

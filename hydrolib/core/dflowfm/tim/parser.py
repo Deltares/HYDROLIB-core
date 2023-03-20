@@ -35,7 +35,7 @@ class TimParser:
             for line in file.readlines():
                 TimParser._read_line(line, timeseries)
         return timeseries
-    
+
     @staticmethod
     def _read_line(line, timeseries):
         if TimParser._line_is_comment(line):
@@ -46,7 +46,7 @@ class TimParser:
 
         if TimParser._line_has_not_enough_information(series):
             return
-        
+
         TimParser._add_valid_timeserie(time, series, timeseries)
 
     @staticmethod
@@ -59,7 +59,7 @@ class TimParser:
             return
 
     @staticmethod
-    def _create_timeserie(time, series)->TimTimeSerie:
+    def _create_timeserie(time, series) -> TimTimeSerie:
         listofvalues = []
         for value in series:
             listofvalues.append(float(value))

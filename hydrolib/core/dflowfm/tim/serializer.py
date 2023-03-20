@@ -3,15 +3,14 @@ from typing import Iterable, List, Optional
 
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.ini.io_models import Datablock, DatablockRow
-from hydrolib.core.dflowfm.ini.serializer import (
-    MaxLengths,
-    SectionSerializer,
-)
+from hydrolib.core.dflowfm.ini.serializer import MaxLengths, SectionSerializer
 from hydrolib.core.dflowfm.tim.parser import TimTimeSerie
+
 
 class TimSerializerConfig(SerializerConfig):
     datablock_indent: int = 4
     datablock_spacing: int = 2
+
 
 class TimTimeSeriesSerializer(SectionSerializer):
 
@@ -27,8 +26,8 @@ class TimTimeSeriesSerializer(SectionSerializer):
         row = self._create_tim_data_row(timeserie, config.float_format)
         datablock.append(row)
         return datablock
-    
-    def _create_tim_data_row(self, timeserie: TimTimeSerie, float_format:str):
+
+    def _create_tim_data_row(self, timeserie: TimTimeSerie, float_format: str):
         format_float = lambda x: f"{x:{float_format}}"
         series = [str(format_float(p)) for p in timeserie.series]
         row = []
@@ -72,20 +71,21 @@ class TimSerializer:
             config (SerializerConfig): The serialization configuration.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
-        serializer = TimTimeSeriesSerializer(
-            config, MaxLengths(key=0, value=0)
-        )
+        serializer = TimTimeSeriesSerializer(config, MaxLengths(key=0, value=0))
 
         with path.open("w") as file:
             for timeserie in data:
                 TimSerializer._write_row(file, serializer, timeserie, config)
 
     @staticmethod
-    def _write_row(file, serializer:TimTimeSeriesSerializer, timeserie: TimTimeSerie, config: TimSerializerConfig):
+    def _write_row(
+        file,
+        serializer: TimTimeSeriesSerializer,
+        timeserie: TimTimeSerie,
+        config: TimSerializerConfig,
+    ):
         if timeserie.comment:
             file.write(timeserie.comment)
         else:
-            row = serializer.serialize_timtimeseries(
-                timeserie, config
-            )
+            row = serializer.serialize_timtimeseries(timeserie, config)
             file.write(f"{row}\n")
