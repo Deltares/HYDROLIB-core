@@ -334,5 +334,5 @@ class ExtForcing(BaseModel):
                 raise ValueError(
                     "VALUE only allowed when METHOD is 4 (Interpolate space)"
                 )
-            
+
         return values

@@ -195,14 +195,14 @@ class TestExtForcing:
                 filetype=9,
                 method=method,
                 operand="O",
-                value=value
+                value=value,
             )
 
             assert forcing.value == value
 
         def test_validate_sourcemask_with_invalid_method(self):
-            method = 1 
-            value = 1.23 
+            method = 1
+            value = 1.23
 
             with pytest.raises(ValueError) as error:
                 _ = ExtForcing(
@@ -211,7 +211,7 @@ class TestExtForcing:
                     filetype=9,
                     method=method,
                     operand="O",
-                    value=value
+                    value=value,
                 )
 
             exp_msg = "VALUE only allowed when METHOD is 4 (Interpolate space)"
