@@ -30,32 +30,41 @@ class TimParser:
 
     @staticmethod
     def parse(filepath: Path) -> List[TimTimeSerie]:
-
         timeseries = []
-
-        with filepath.open() as f:
-            for line in f.readlines():
-
-                if TimParser._line_is_comment(line):
-                    timeseries.append(TimTimeSerie(comment=line))
-                    continue
-
-                time, *series = re.split(timpattern, line.strip())
-
-                if TimParser._line_has_not_enough_information(series):
-                    continue
-
-                try:
-                    listofvalues = []
-                    for value in series:
-                        listofvalues.append(float(value))
-
-                    timeserie = TimTimeSerie(time=float(time), series=listofvalues)
-                    timeseries.append(timeserie)
-                except:
-                    continue
-
+        with filepath.open() as file:
+            for line in file.readlines():
+                TimParser._read_line(line, timeseries)
         return timeseries
+    
+    @staticmethod
+    def _read_line(line, timeseries):
+        if TimParser._line_is_comment(line):
+            timeseries.append(TimTimeSerie(comment=line))
+            return
+
+        time, *series = re.split(timpattern, line.strip())
+
+        if TimParser._line_has_not_enough_information(series):
+            return
+        
+        TimParser._add_valid_timeserie(time, series, timeseries)
+
+    @staticmethod
+    def _add_valid_timeserie(time, series, timeseries):
+        try:
+            timeserie = TimParser._create_timeserie(time, series)
+            timeseries.append(timeserie)
+            return
+        except:
+            return
+
+    @staticmethod
+    def _create_timeserie(time, series)->TimTimeSerie:
+        listofvalues = []
+        for value in series:
+            listofvalues.append(float(value))
+
+        return TimTimeSerie(time=float(time), series=listofvalues)
 
     @staticmethod
     def _line_is_comment(line: str):

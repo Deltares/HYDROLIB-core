@@ -5,7 +5,7 @@ import pytest
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser, TimTimeSerie
-from hydrolib.core.dflowfm.tim.serializer import TimSerializer
+from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
 from tests.utils import (
     assert_files_equal,
     test_input_dir,
@@ -59,7 +59,7 @@ class TestTimSerializer:
         input_data = _get_triple_data_for_timeseries()
         output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
         reference_path = Path(test_reference_dir / "tim" / TRIPLE_DATA)
-        config = SerializerConfig(float_format=".3f")
+        config = TimSerializerConfig(float_format=".3f")
         TimSerializer.serialize(output_path, input_data, config)
         assert_files_equal(output_path, reference_path)
 
@@ -68,7 +68,7 @@ class TestTimSerializer:
 
         output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
         reference_path = Path(test_reference_dir / "tim" / SINGLE_DATA)
-        config = SerializerConfig(float_format=".6f")
+        config = TimSerializerConfig(float_format=".6f")
 
         TimSerializer.serialize(output_path, input_data, config)
         assert_files_equal(output_path, reference_path)

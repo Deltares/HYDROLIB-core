@@ -4,16 +4,16 @@ from typing import Callable, Dict, List
 from hydrolib.core.basemodel import ParsableFileModel, SerializerConfig
 
 from .parser import TimParser
-from .serializer import TimSerializer, TimTimeSerie
+from .serializer import TimSerializer, TimTimeSerie, TimSerializerConfig
 
 
 class TimModel(ParsableFileModel):
-    """Sample or forcing file.
+    """Model or tim data.
 
     Attributes:
-        timeseries: Dictionary of [float, list[float]]
+        timeseries: List[TimTimeSerie]
     """
-
+    serializer_config = TimSerializerConfig()
     timeseries: List[TimTimeSerie]
 
     def dict(self, *args, **kwargs):
@@ -29,7 +29,7 @@ class TimModel(ParsableFileModel):
         return "sample"
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
+    def _get_serializer(cls) -> Callable[[Path, Dict, TimSerializerConfig], None]:
         return TimSerializer.serialize
 
     @classmethod
