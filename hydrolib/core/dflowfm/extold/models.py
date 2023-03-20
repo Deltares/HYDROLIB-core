@@ -372,4 +372,12 @@ class ExtForcing(BaseModel):
             raise ValueError(
                 f"{key} only allowed when {method_key} is 6"
             )
+        
+        extrapoltol = values["extrapoltol"]
+        if extrapoltol is not None and method != 5:
+            key = alias("extrapoltol")
+            raise ValueError(
+                f"{key} only allowed when {method_key} is 5"
+            )
+
         return values

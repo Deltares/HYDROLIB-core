@@ -348,3 +348,36 @@ class TestExtForcing:
 
             exp_msg = "RELATIVESEARCHCELLSIZE only allowed when METHOD is 6"
             assert exp_msg in str(error.value)
+
+    class TestValidateExtrapolTol:
+        def test_validate_extrapoltol_with_valid_method_6(self):
+            method = 5
+            extrapoltol = 1.23
+
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                operand="O",
+                extrapoltol=extrapoltol,
+            )
+
+            assert forcing.extrapoltol == extrapoltol
+
+        def test_validate_extrapoltol_with_invalid_method(self):
+            method = 1
+            extrapoltol = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtForcing(
+                    quantity=Quantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    operand="O",
+                    extrapoltol=extrapoltol,
+                )
+
+            exp_msg = "EXTRAPOLTOL only allowed when METHOD is 5"
+            assert exp_msg in str(error.value)
