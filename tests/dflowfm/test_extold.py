@@ -121,7 +121,7 @@ class TestExtForcing:
     class TestValidateVarName:
         def test_validate_varname_with_valid_filetype_11(self):
             filetype = 11
-            varname = "some_varname" 
+            varname = "some_varname"
 
             forcing = ExtForcing(
                 quantity=Quantity.WaterLevelBnd,
@@ -136,7 +136,7 @@ class TestExtForcing:
 
         def test_validate_varname_with_invalid_filetype(self):
             filetype = 9
-            varname = "some_varname" 
+            varname = "some_varname"
 
             with pytest.raises(ValueError) as error:
                 _ = ExtForcing(
