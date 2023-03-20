@@ -113,9 +113,9 @@ class Quantity(str, Enum):
     HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
     """Horizontal eddy diffusivity coefficient"""
     AdvectionType = "advectiontype"
-    """Advection type"""
+    """Type of advection scheme"""
     IBotLevType = "ibotlevtype"
-    """ibotlevtype"""
+    """Type of bed-level handling"""
 
     # Miscellaneous
     ShiptXY = "shiptxy"
