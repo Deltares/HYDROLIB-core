@@ -1,8 +1,18 @@
 import re
 from pathlib import Path
-from typing import Dict
+from typing import List
 
 timpattern = re.compile(r"\s+")
+
+class TimTimeSerie():
+    comment : str
+    time : float
+    serie : List[float]
+
+    def __init__(self, time = None, series = None, comment = None):
+        self.time = time
+        self.series = series
+        self.comment = comment
 
 class TimParser:
     """
@@ -16,14 +26,15 @@ class TimParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> Dict:
+    def parse(filepath: Path) -> List[TimTimeSerie]:
 
-        timeseries: Dict = dict()
+        timeseries = []
 
         with filepath.open() as f:
             for line in f.readlines():
-
+                
                 if TimParser._line_is_comment(line):
+                    timeseries.append(TimTimeSerie(comment=line))
                     continue
 
                 time, *series = re.split(timpattern, line.strip())
@@ -35,8 +46,9 @@ class TimParser:
                     listofvalues = []
                     for value in series :
                         listofvalues.append(float(value))
-                    
-                    timeseries[float(time)] = listofvalues
+                
+                    timeserie = TimTimeSerie(time=float(time), series=listofvalues)
+                    timeseries.append(timeserie)
                 except:
                     continue
                 
