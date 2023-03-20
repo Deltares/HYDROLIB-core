@@ -724,11 +724,11 @@ class FileModel(BaseModel, ABC):
             loading_path = context.resolve(filepath)
             loading_path = context.resolve_casing(loading_path)
             filepath = self._get_updated_file_path(filepath, loading_path)
-            context.register_model(filepath, self)
 
             logger.info(f"Loading data from {filepath}")
 
             data = self._load(loading_path)
+            context.register_model(filepath, self)
             data["filepath"] = filepath
             kwargs.update(data)
 
