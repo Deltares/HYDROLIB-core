@@ -147,12 +147,13 @@ class TestModels:
 
         ini_file = obsfile[1]
         assert isinstance(ini_file, ObservationPointModel)
-        assert len(ini_file.observationpoint) == len(expected_ini_points)
 
         expected_ini_points = [
             ObservationPoint(x=1.1, y=2.2, name="ObservationPoint_2D_01"),
             ObservationPoint(x=3.3, y=4.4, name="ObservationPoint_2D_02"),
         ]
+        assert len(ini_file.observationpoint) == len(expected_ini_points)
+
         for actual_point, expected_point in zip(
             ini_file.observationpoint, expected_ini_points
         ):
