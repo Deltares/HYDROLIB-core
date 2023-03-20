@@ -6,9 +6,7 @@ from hydrolib.core.dflowfm.extold.models import ExtForcing, Operand, Quantity
 class TestExtForcing:
     class TestValidateQuantity:
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_with_valid_quantity_string_equal_casing(
-            self, quantity
-        ):
+        def test_with_valid_quantity_string_equal_casing(self, quantity):
             quantity_str = quantity.value
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
@@ -16,9 +14,7 @@ class TestExtForcing:
             assert forcing.quantity == quantity
 
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_with_valid_quantity_string_different_casing(
-            self, quantity
-        ):
+        def test_with_valid_quantity_string_different_casing(self, quantity):
             quantity_str = quantity.value.upper()
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
@@ -68,9 +64,7 @@ class TestExtForcing:
 
     class TestValidateOperand:
         @pytest.mark.parametrize("operand", Operand)
-        def test_with_valid_operand_string_equal_casing(
-            self, operand
-        ):
+        def test_with_valid_operand_string_equal_casing(self, operand):
             operand_str = operand.value
             forcing = ExtForcing(
                 quantity=Quantity.WaterLevelBnd,
@@ -82,9 +76,7 @@ class TestExtForcing:
             assert forcing.operand == operand
 
         @pytest.mark.parametrize("operand", Operand)
-        def test_with_valid_operand_string_different_casing(
-            self, operand
-        ):
+        def test_with_valid_operand_string_different_casing(self, operand):
             operand_str = operand.value.lower()
             forcing = ExtForcing(
                 quantity=Quantity.WaterLevelBnd,
@@ -97,7 +89,13 @@ class TestExtForcing:
 
         @pytest.mark.parametrize("operand", Operand)
         def test_with_valid_operand_enum(self, operand):
-            forcing = ExtForcing(quantity=Quantity.WaterLevelBnd, filename="", filetype=9, method=1, operand=operand)
+            forcing = ExtForcing(
+                quantity=Quantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=1,
+                operand=operand,
+            )
             assert forcing.operand == operand
 
         def test_with_invalid_operand_string_raises_value_error(
