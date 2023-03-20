@@ -1,6 +1,5 @@
 import pytest
-
-from hydrolib.core.dflowfm.extold.models import ExtForcing, Operand, Quantity
+from hydrolib.core.dflowfm.extold.models import ExtForcing, Quantity
 
 
 class TestExtForcing:
@@ -26,7 +25,7 @@ class TestExtForcing:
             assert forcing.quantity == quantity
 
         @pytest.mark.parametrize("quantity", Quantity)
-        def test_quantity_validation_with_valid_quantity(self, quantity):
+        def test_quantity_validation_with_valid_quantity_enum(self, quantity):
             forcing = ExtForcing(
                 quantity=quantity, filename="", filetype=9, method=1, operand="O"
             )
@@ -61,7 +60,4 @@ class TestExtForcing:
                 )
 
             supported_values_str = ", ".join(([x.value for x in Quantity]))
-            assert (
-                f"Quantity 'invalid' not supported. Supported values: {supported_values_str}"
-                in str(error.value)
-            )
+            assert f"QUANTITY 'invalid' not supported. Supported values: {supported_values_str}" in str(error.value)

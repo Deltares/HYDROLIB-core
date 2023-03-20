@@ -289,7 +289,7 @@ class ExtForcing(BaseModel):
 
             supported_value_str = ", ".join(([x.value for x in supported_values]))
             raise ValueError(
-                f"Quantity '{value}' not supported. Supported values: {supported_value_str}"
+                f"QUANTITY '{value}' not supported. Supported values: {supported_value_str}"
             )
 
         return value
