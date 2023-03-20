@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 from typing import Dict
+from .name_extrator import NameExtractor
 
 xynpattern = re.compile(r"\s+")
 
@@ -29,7 +30,6 @@ class XYNParser:
             ValueError: if a line in the file contains no values that
                 could be parsed.
         """
-
         data: Dict = dict(points=[])
 
         with filepath.open() as f:
@@ -40,13 +40,12 @@ class XYNParser:
                     continue
 
                 try:
-                    x, y, n = re.split(xynpattern, line, maxsplit=2)
+                    x, y, remainder = re.split(xynpattern, line, maxsplit=2)
+                    n = NameExtractor.extract_name(remainder)
                 except ValueError:
                     raise ValueError(
                         f"Error parsing XYN file '{filepath}', line {linenr+1}."
                     )
-
-                n = n.strip("'")
 
                 data["points"].append(dict(x=x, y=y, n=n))
 
