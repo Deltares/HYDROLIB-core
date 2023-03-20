@@ -6,6 +6,9 @@ from tests.utils import assert_files_equal, test_output_dir, test_input_dir, tes
 from pathlib import Path
 import pytest
 
+TRIPLE_DATA = "triple_data_for_timeseries.tim"
+SINGLE_DATA = "single_data_for_timeseries.tim"
+
 def _get_triple_data_for_timeseries():
     data = []
     data.append(TimTimeSerie(time=10.0, series=[1.232,  2.343,  3.454]))
@@ -42,28 +45,28 @@ def _get_single_data_for_timeseries():
 
 class TestTimSerializer:
     def test_serialize_triple_data_for_timeseries(self): 
-        input = _get_triple_data_for_timeseries()
+        input_data = _get_triple_data_for_timeseries()
         output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
-        reference_path = Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim")
+        reference_path = Path(test_reference_dir / "tim" / TRIPLE_DATA)
         config = SerializerConfig(float_format=".3f")
-        TimSerializer.serialize(output_path, input, config)
+        TimSerializer.serialize(output_path, input_data, config)
         assert_files_equal(output_path, reference_path)
 
     def test_serialize_single_data_for_timeseries(self):
-        input = _get_single_data_for_timeseries()
+        input_data = _get_single_data_for_timeseries()
 
         output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
-        reference_path = Path(test_reference_dir / "tim" / "single_data_for_timeseries.tim")
+        reference_path = Path(test_reference_dir / "tim" / SINGLE_DATA)
         config = SerializerConfig(float_format=".6f")
 
-        TimSerializer.serialize(output_path, input, config)
+        TimSerializer.serialize(output_path, input_data, config)
         assert_files_equal(output_path, reference_path)
 
 class TestTimModel:
     def test_save_triple_data_for_timeseries(self):
         model = TimModel(timeseries=_get_triple_data_for_timeseries())
         output_path = Path(test_output_dir / "tim" / "test_save.tim")
-        reference_path = Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim")
+        reference_path = Path(test_reference_dir / "tim" / TRIPLE_DATA)
         model.filepath = output_path
         model.serializer_config.float_format = ".3f"
         model.save()
@@ -72,7 +75,7 @@ class TestTimModel:
     def test_save_single_data_for_timeseries(self):
         model = TimModel(timeseries=_get_single_data_for_timeseries())
         output_path = Path(test_output_dir / "tim" / "test_save.tim")
-        reference_path = Path(test_reference_dir / "tim" / "single_data_for_timeseries.tim")
+        reference_path = Path(test_reference_dir / "tim" / SINGLE_DATA)
         model.filepath = output_path
         model.serializer_config.float_format = ".6f"
         model.save()
@@ -82,7 +85,7 @@ class TestTimParser:
     @pytest.mark.parametrize(
         "input_path",
         [
-            Path(test_input_dir / "tim" / "triple_data_for_timeseries.tim"),
+            Path(test_input_dir / "tim" / TRIPLE_DATA),
             Path(test_input_dir / "tim" / "triple_data_for_timeseries_different_whitespaces_between_data.tim"),
             Path(test_input_dir / "tim" / "triple_data_for_timeseries_with_one_line_with_not_enough_information.tim"),
             Path(test_input_dir / "tim" / "triple_data_for_timeseries_with_comments_after_data.tim"),
@@ -99,11 +102,10 @@ class TestTimParser:
             assert(data[i].comment == expected_output[i].comment)
 
     def test_parse_with_single_data_for_timeseries(self):
-        input_path = Path(test_input_dir / "tim" / "single_data_for_timeseries.tim")
+        input_path = Path(test_input_dir / "tim" / SINGLE_DATA)
         data = TimParser.parse(input_path)
 
         expected_output = _get_single_data_for_timeseries() 
-
 
         for i in range(len(expected_output)):
             assert(data[i].time == expected_output[i].time)

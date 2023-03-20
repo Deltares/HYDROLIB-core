@@ -18,8 +18,9 @@ class TimParser:
     """
     A parser for .tim files which are like this:
 
-    number number    number
-    number number number # comment
+    #comment
+    number number number
+    number number number
 
     Note that the whitespace can vary and the comment
     left out.
@@ -60,5 +61,5 @@ class TimParser:
         return strippedline.startswith('#') or strippedline.startswith('*')
     
     @staticmethod
-    def _line_has_not_enough_information(line:list[str]):
+    def _line_has_not_enough_information(line:List[str]):
         return len(line) < 1

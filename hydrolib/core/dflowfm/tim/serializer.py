@@ -10,16 +10,21 @@ from hydrolib.core.dflowfm.ini.io_models import (
 from hydrolib.core.dflowfm.ini.serializer import SectionSerializer, INISerializerConfig, MaxLengths
 from hydrolib.core.basemodel import SerializerConfig
 
-def tim_get_offset_whitespace(key: Optional[str], max_length: int) -> str:
-    key_length = len(key) if key is not None else 0
-    return " " * max(max_length - key_length, 0)
+class TimSerializerConfig(SerializerConfig):
+    datablock_indent: int = 4
+    datablock_spacing: int = 2
+
+    @property
+    def total_datablock_indent(self) -> int:
+        """The combined datablock indentation, i.e. datablock_indent"""
+        return self.datablock_indent
 
 class TimTimeSeriesSerializer(SectionSerializer):
     
     Lines = Iterable[str]
     def serialize_timtimeseries(self, timeserie: TimTimeSerie, config) -> Lines:
-        Datablock = self._create_tim_datablock(timeserie, config)
-        value = self.tim_serialize_datablock(Datablock)
+        datablock = self._create_tim_datablock(timeserie, config)
+        value = self._tim_serialize_datablock(datablock)
         return value
     
     def _create_tim_datablock(self, timeserie: TimTimeSerie, config) -> Datablock:
@@ -29,56 +34,53 @@ class TimTimeSeriesSerializer(SectionSerializer):
         row.append(str(timeserie.time))
         row.extend(series)
 
-        Datablock: Datablock = []
-        Datablock.append(row)
-        return Datablock
+        datablock: Datablock = []
+        datablock.append(row)
+        return datablock
         
 
-    def tim_serialize_datablock(self, datablock: Optional[Datablock]) -> Lines:
-        if datablock is None or self.max_length.datablock is None:
+    def _tim_serialize_datablock(self, datablock: Optional[Datablock]) -> Lines:
+        if datablock is None:
             return []
 
         indent = " " * self._config.total_datablock_indent
-        return (self.tim_serialize_row(datablock[0], indent))
+        return (self._tim_serialize_row(datablock[0], indent))
 
-    def tim_serialize_row(self, row: DatablockRow, indent: str) -> str:
+    def _tim_serialize_row(self, row: DatablockRow, indent: str) -> str:
         elem_spacing = " " * self.config.datablock_spacing
-        elems = (self.tim_serialize_row_element(elem, i) for elem, i in zip(row, count()))
+        elems = (self._tim_serialize_row_element(elem, i) for elem, i in zip(row, count()))
 
         value  = indent + elem_spacing.join(elems).rstrip()
         return value
 
-    def tim_serialize_row_element(self, elem: str, index: int) -> str:
-        max_length = 10  # type: ignore
-        whitespace = tim_get_offset_whitespace(elem, max_length)
+    def _tim_serialize_row_element(self, elem: str, index: int) -> str:
+        max_length = 10
+        whitespace = _tim_get_offset_whitespace(elem, max_length)
         return elem + whitespace
+    
+def _tim_get_offset_whitespace(key: Optional[str], max_length: int) -> str:
+    key_length = len(key) if key is not None else 0
+    return " " * max(max_length - key_length, 0)
 
 
 class TimSerializer:
     @staticmethod
-    def serialize(path: Path, data: List[TimTimeSerie], config: SerializerConfig) -> None:
+    def serialize(path: Path, data: List[TimTimeSerie], config: TimSerializerConfig) -> None:
         """
         Serializes the timeseries data to the file at the specified path in .tim format.
 
         Attributes:
             path (Path): The path to the destination file.
-            data (Dict): The data to be serialized.
+            data (List): The data to be serialized.
             config (SerializerConfig): The serialization configuration.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
-        cnfg = INISerializerConfig()
-        timtimeseriesserializer = TimTimeSeriesSerializer(cnfg, MaxLengths(key=0, value=0, datablock=[3, 4, 5,6,8],))
-        
-
-        space = 1 * " "
-        
+        timtimeseriesserializer = TimTimeSeriesSerializer(TimSerializerConfig(), MaxLengths(key=0, value=0))
 
         with path.open("w") as f:
             for timeserie in data:
                 if(timeserie.comment):
                     f.write(timeserie.comment)
                 else:
-                    string = timtimeseriesserializer.serialize_timtimeseries(timeserie, config)
-                    f.write(f"{string}\n")
-                    #series = space.join([format_float(p) for p in timeserie.series])
-                    #f.write(f"{format_float(timeserie.time)}{space}{series}\n")
+                    row = timtimeseriesserializer.serialize_timtimeseries(timeserie, config)
+                    f.write(f"{row}\n")
