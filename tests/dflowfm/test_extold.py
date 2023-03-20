@@ -280,9 +280,7 @@ class TestExtForcing:
                     ifrctyp=ifrctyp,
                 )
 
-            exp_msg = (
-                f"IFRCTYP only allowed when QUANTITY is frictioncoefficient"
-            )
+            exp_msg = f"IFRCTYP only allowed when QUANTITY is frictioncoefficient"
             assert exp_msg in str(error.value)
 
     class TestValidateAveragingType:

@@ -313,10 +313,9 @@ class ExtForcing(BaseModel):
 
     @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
-
         def alias(key: str):
             return cls.__fields__[key].alias
-        
+
         quantity = values["quantity"]
         filetype = values["filetype"]
         method = values["method"]
