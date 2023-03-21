@@ -8,7 +8,7 @@ from .serializer import XYNSerializer
 
 
 class XYNPoint(BaseModel):
-    """Single XYN point.
+    """Single XYN point, representing a named station location.
 
     Attributes:
         x: x or λ coordinate
