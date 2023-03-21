@@ -37,7 +37,7 @@ class TimParser:
         return timeseries
 
     @staticmethod
-    def _read_line(line, timeseries):
+    def _read_line(line, timeseries : List[TimTimeSerie]):
         if TimParser._line_is_comment(line):
             timeseries.append(TimTimeSerie(comment=line))
             return
@@ -50,21 +50,30 @@ class TimParser:
         TimParser._add_valid_timeserie(time, series, timeseries)
 
     @staticmethod
-    def _add_valid_timeserie(time, series, timeseries):
-        try:
-            timeserie = TimParser._create_timeserie(time, series)
-            timeseries.append(timeserie)
+    def _add_valid_timeserie(time : str, series : List[str], timeseries : List[TimTimeSerie]):       
+        timeserie = TimParser._create_timeserie(time, series)
+        
+        if timeserie is None:
             return
-        except:
-            return
+        
+        timeseries.append(timeserie)
 
     @staticmethod
-    def _create_timeserie(time, series) -> TimTimeSerie:
+    def _create_timeserie(time : str, series : List[str])->TimTimeSerie:
+        if TimParser._not_numeric(time):
+            return
+        
         listofvalues = []
         for value in series:
+            if TimParser._not_numeric(value):
+                return
             listofvalues.append(float(value))
 
         return TimTimeSerie(time=float(time), series=listofvalues)
+
+    @staticmethod
+    def _not_numeric(value: str):
+        return not value.replace(",", "").replace(".", "").replace("-", "").isnumeric()
 
     @staticmethod
     def _line_is_comment(line: str):
