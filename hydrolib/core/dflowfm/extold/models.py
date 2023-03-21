@@ -320,14 +320,17 @@ class ExtForcing(BaseModel):
             field_key: str, dependency_key: str, valid_dependency_value: Any
         ):
             field_value = values[field_key]
-            field_alias = alias(field_key)
             dependency_value = values[dependency_key]
+
+            if field_value is None or dependency_value == valid_dependency_value: 
+                return
+            
+            field_alias = alias(field_key)
             dependency_alias = alias(dependency_key)
 
-            if field_value is not None and dependency_value != valid_dependency_value:
-                raise ValueError(
-                    f"{field_alias} only allowed when {dependency_alias} is {valid_dependency_value}"
-                )
+            raise ValueError(
+                f"{field_alias} only allowed when {dependency_alias} is {valid_dependency_value}"
+            )
 
         quantity_key = "quantity"
         filetype_key = "filetype"
