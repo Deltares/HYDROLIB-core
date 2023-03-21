@@ -319,6 +319,7 @@ class ExtForcing(BaseModel):
         def only_allowed_when(
             field_key: str, dependency_key: str, valid_dependency_value: Any
         ):
+            """This function checks if a particular field is allowed to have a value only when a dependency field has a specific value."""
             field_value = values[field_key]
             dependency_value = values[dependency_key]
 
