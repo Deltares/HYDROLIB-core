@@ -28,7 +28,7 @@ class XYNPoint(BaseModel):
 
 
 class XYNModel(ParsableFileModel):
-    """XYN file.
+    """Observation station (.xyn) file.
 
     Attributes:
         points: List of [`XYNPoint`][hydrolib.core.dflowfm.xyn.models.XYNPoint]
