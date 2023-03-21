@@ -322,9 +322,9 @@ class ExtForcing(BaseModel):
             field_value = values[field_key]
             dependency_value = values[dependency_key]
 
-            if field_value is None or dependency_value == valid_dependency_value: 
+            if field_value is None or dependency_value == valid_dependency_value:
                 return
-            
+
             field_alias = alias(field_key)
             dependency_alias = alias(dependency_key)
 
