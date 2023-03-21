@@ -8,7 +8,7 @@ class XYNSerializer:
     @staticmethod
     def serialize(path: Path, data: Dict, config: SerializerConfig) -> None:
         """
-        Serializes the XYN data to the file at the specified path.
+        Serializes the observation point data to an .xyn file at the specified path.
 
         If the name contains spaces, it will be surrounded with single quotes.
 
