@@ -316,17 +316,19 @@ class ExtForcing(BaseModel):
         def alias(field_key: str):
             return cls.__fields__[field_key].alias
 
-        def only_allowed_when(field_key: str, dependency_key: str, valid_dependency_value: Any):
+        def only_allowed_when(
+            field_key: str, dependency_key: str, valid_dependency_value: Any
+        ):
             field_value = values[field_key]
             field_alias = alias(field_key)
             dependency_value = values[dependency_key]
             dependency_alias = alias(dependency_key)
-            
+
             if field_value is not None and dependency_value != valid_dependency_value:
                 raise ValueError(
                     f"{field_alias} only allowed when {dependency_alias} is {valid_dependency_value}"
                 )
-            
+
         quantity_key = "quantity"
         filetype_key = "filetype"
         method_key = "method"
@@ -356,7 +358,9 @@ class ExtForcing(BaseModel):
         only_allowed_when("relativesearchcellsize", method_key, 6)
         only_allowed_when("extrapoltol", method_key, 5)
         only_allowed_when("percentileminmax", method_key, 6)
-        only_allowed_when("area", quantity_key, Quantity.DischargeSalinityTemperatureSorSin)
+        only_allowed_when(
+            "area", quantity_key, Quantity.DischargeSalinityTemperatureSorSin
+        )
         only_allowed_when("nummin", method_key, 6)
 
         return values
