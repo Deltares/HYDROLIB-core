@@ -340,7 +340,9 @@ class ExtForcing(BaseModel):
         only_allowed_when("relativesearchcellsize", method_key, 6)
         only_allowed_when("extrapoltol", method_key, 5)
         only_allowed_when("percentileminmax", method_key, 6)
-        only_allowed_when("area", quantity_key, Quantity.DischargeSalinityTemperatureSorSin)
+        only_allowed_when(
+            "area", quantity_key, Quantity.DischargeSalinityTemperatureSorSin
+        )
         only_allowed_when("nummin", method_key, 6)
 
         sourcemask = values["sourcemask"]
@@ -349,7 +351,7 @@ class ExtForcing(BaseModel):
         if sourcemask.filepath is not None and filetype not in [4, 6]:
             key = alias("sourcemask")
             raise ValueError(f"{key} only allowed when {filetype_alias} is 4 or 6")
-        
+
         factor = values["factor"]
         quantity = values[quantity_key]
         quantity_alias = alias(quantity_key)
