@@ -316,7 +316,9 @@ class ExtForcing(BaseModel):
         def alias(field_key: str):
             return cls.__fields__[field_key].alias
 
-        def raise_error_only_allowed_when(field_key: str, dependency_key: str, valid_dependency_value: str):
+        def raise_error_only_allowed_when(
+            field_key: str, dependency_key: str, valid_dependency_value: str
+        ):
             field_alias = alias(field_key)
             dependency_alias = alias(dependency_key)
 
@@ -331,10 +333,12 @@ class ExtForcing(BaseModel):
             field_value = values[field_key]
             dependency_value = values[dependency_key]
 
-            if field_value is None or dependency_value == valid_dependency_value: 
+            if field_value is None or dependency_value == valid_dependency_value:
                 return
-            
-            raise_error_only_allowed_when(field_key, dependency_key, valid_dependency_value)
+
+            raise_error_only_allowed_when(
+                field_key, dependency_key, valid_dependency_value
+            )
 
         quantity_key = "quantity"
         filetype_key = "filetype"
@@ -355,7 +359,9 @@ class ExtForcing(BaseModel):
         sourcemask = values["sourcemask"]
         filetype = values[filetype_key]
         if sourcemask.filepath is not None and filetype not in [4, 6]:
-            raise_error_only_allowed_when("sourcemask", filetype_key, valid_dependency_value="4 or 6")
+            raise_error_only_allowed_when(
+                "sourcemask", filetype_key, valid_dependency_value="4 or 6"
+            )
 
         factor = values["factor"]
         quantity = values[quantity_key]
