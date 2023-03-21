@@ -18,7 +18,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
     ResolveRelativeMode,
     SerializerConfig,
-    UserInputValidation,
+    PathStyleValidator,
     context_file_loading,
     file_load_context,
 )
@@ -817,10 +817,10 @@ class TestSerializerConfig:
         assert config.float_format == ""
 
 
-class TestUserInputValidation:
-    def test_path_style_none_returns_current_os_path_style(self):
-        validation = UserInputValidation()
-        path_style = validation.path_style(None)
+class TestPathStyleValidator:
+    def test_validate_none_returns_current_os_path_style(self):
+        validator = PathStyleValidator()
+        path_style = validator.validate(None)
 
         exp_path_style = (
             PathStyle.WINDOWSLIKE
@@ -830,23 +830,23 @@ class TestUserInputValidation:
 
         assert path_style == exp_path_style
 
-    def test_path_style_windows_returns_windows_path_style(self):
-        validation = UserInputValidation()
-        path_style = validation.path_style("windows")
+    def test_validate_windows_returns_windows_path_style(self):
+        validator = PathStyleValidator()
+        path_style = validator.validate("windows")
 
         assert path_style == PathStyle.WINDOWSLIKE
 
-    def test_path_style_unix_returns_unix_path_style(self):
-        validation = UserInputValidation()
-        path_style = validation.path_style("unix")
+    def test_validate_unix_returns_unix_path_style(self):
+        validator = PathStyleValidator()
+        path_style = validator.validate("unix")
 
         assert path_style == PathStyle.UNIXLIKE
 
-    def test_path_style_unknown_raises_error(self):
-        validation = UserInputValidation()
+    def test_validate_unknown_raises_error(self):
+        validator = PathStyleValidator()
 
         with pytest.raises(ValueError) as error:
-            validation.path_style("unknown")
+            validator.validate("unknown")
 
         expected_message = (
             "Path style 'unknown' not supported. Supported path styles: unix, windows"

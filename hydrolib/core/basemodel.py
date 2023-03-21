@@ -786,7 +786,7 @@ class FileModel(BaseModel, ABC):
             return
 
         filepath = FileModel._change_to_path(filepath)
-        path_style = input_validation.path_style(path_style)
+        path_style = path_style_validator.validate(path_style)
 
         with file_load_context() as context:
             context.initialize_load_settings(recurse, resolve_casing, path_style)
@@ -953,7 +953,7 @@ class FileModel(BaseModel, ABC):
         if filepath is not None:
             self.filepath = filepath
 
-        path_style = input_validation.path_style(path_style)
+        path_style = path_style_validator.validate(path_style)
         save_settings = ModelSaveSettings(path_style=path_style)
 
         # Handle save
@@ -1323,15 +1323,16 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
     return validator("*", allow_reuse=True, pre=True)(adjust_none)
 
 
-class UserInputValidation:
-    """Class to take care of user input validation."""
+class PathStyleValidator:
+    """Class to take care of path style validation."""
 
     def __init__(self) -> None:
         """Initializes a new instance of the `UserInputValidation` class."""
         self._os_path_style = get_path_style_for_current_operating_system()
 
-    def path_style(self, path_style: Optional[str]) -> PathStyle:
+    def validate(self, path_style: Optional[str]) -> PathStyle:
         """Validates the path style as string on whether it is a supported path style.
+        If it is a valid path style the path style enum value will be return as a result.
 
         Args:
             path_style (Optional[str]): The path style as string value.
@@ -1355,4 +1356,4 @@ class UserInputValidation:
         )
 
 
-input_validation = UserInputValidation()
+path_style_validator = PathStyleValidator()
