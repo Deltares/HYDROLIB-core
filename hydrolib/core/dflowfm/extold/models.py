@@ -1,5 +1,5 @@
 from enum import Enum, IntEnum
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from pydantic import Field, root_validator, validator
 
@@ -313,63 +313,50 @@ class ExtForcing(BaseModel):
 
     @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
-        def alias(key: str):
-            return cls.__fields__[key].alias
+        def alias(field_key: str):
+            return cls.__fields__[field_key].alias
 
-        quantity = values["quantity"]
-        filetype = values["filetype"]
-        method = values["method"]
-
-        quantity_key = alias("quantity")
-        filetype_key = alias("filetype")
-        method_key = alias("method")
-
-        def allowed_by_method(field: str, valid_method: Method):
-            value = values[field]
-            if value is not None and method != valid_method:
-                key = alias(field)
+        def only_allowed_when(field_key: str, dependency_key: str, valid_dependency_value: Any):
+            field_value = values[field_key]
+            field_alias = alias(field_key)
+            dependency_value = values[dependency_key]
+            dependency_alias = alias(dependency_key)
+            
+            if field_value is not None and dependency_value != valid_dependency_value:
                 raise ValueError(
-                    f"{key} only allowed when {method_key} is {valid_method}"
+                    f"{field_alias} only allowed when {dependency_alias} is {valid_dependency_value}"
                 )
+            
+        quantity_key = "quantity"
+        filetype_key = "filetype"
+        method_key = "method"
 
-        def allowed_by_filetype(field: str, valid_filetype: FileType):
-            value = values[field]
-            if value is not None and filetype != valid_filetype:
-                key = alias(field)
-                raise ValueError(
-                    f"{key} only allowed when {filetype_key} is {valid_filetype}"
-                )
-
-        def allowed_by_quantity(field: str, valid_quantity: Quantity):
-            value = values[field]
-            if value is not None and quantity != valid_quantity:
-                key = alias(field)
-                raise ValueError(
-                    f"{key} only allowed when {quantity_key} is {valid_quantity}"
-                )
-
-        allowed_by_filetype("varname", 11)
+        only_allowed_when("varname", filetype_key, 11)
 
         sourcemask = values["sourcemask"]
+        filetype = values[filetype_key]
+        filetype_alias = alias(filetype_key)
         if sourcemask.filepath is not None and filetype not in [4, 6]:
             key = alias("sourcemask")
-            raise ValueError(f"{key} only allowed when {filetype_key} is 4 or 6")
+            raise ValueError(f"{key} only allowed when {filetype_alias} is 4 or 6")
 
-        allowed_by_method("value", 4)
+        only_allowed_when("value", method_key, 4)
 
         factor = values["factor"]
+        quantity = values[quantity_key]
+        quantity_alias = alias(quantity_key)
         if factor is not None and not quantity.startswith(Quantity.InitialTracer):
             key = alias("factor")
             raise ValueError(
-                f"{key} only allowed when {quantity_key} starts with {Quantity.InitialTracer}"
+                f"{key} only allowed when {quantity_alias} starts with {Quantity.InitialTracer}"
             )
 
-        allowed_by_quantity("ifrctyp", Quantity.FrictionCoefficient)
-        allowed_by_method("averagingtype", 6)
-        allowed_by_method("relativesearchcellsize", 6)
-        allowed_by_method("extrapoltol", 5)
-        allowed_by_method("percentileminmax", 6)
-        allowed_by_quantity("area", Quantity.DischargeSalinityTemperatureSorSin)
-        allowed_by_method("nummin", 6)
+        only_allowed_when("ifrctyp", quantity_key, Quantity.FrictionCoefficient)
+        only_allowed_when("averagingtype", method_key, 6)
+        only_allowed_when("relativesearchcellsize", method_key, 6)
+        only_allowed_when("extrapoltol", method_key, 5)
+        only_allowed_when("percentileminmax", method_key, 6)
+        only_allowed_when("area", quantity_key, Quantity.DischargeSalinityTemperatureSorSin)
+        only_allowed_when("nummin", method_key, 6)
 
         return values
