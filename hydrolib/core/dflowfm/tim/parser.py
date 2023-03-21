@@ -61,7 +61,7 @@ class TimParser:
         timeseries.append(timeserie)
 
     @staticmethod
-    def _create_timeserie(time : str, series : List[str]):
+    def _create_timeserie(time: str, series: List[str]):
         if TimParser._not_numeric(time):
             return
 
