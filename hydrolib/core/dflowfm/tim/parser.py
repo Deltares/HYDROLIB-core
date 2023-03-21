@@ -18,18 +18,22 @@ class TimTimeSerie:
 
 class TimParser:
     """
-    A parser for .tim files which are like this:
-
-    #comment
-    number number number
-    number number number
-
-    Note that the whitespace can vary and the comment
-    left out.
+    A parser for .tim files.
+    Full line comments are supported.
+    Partial comments will have the line skipped. 
     """
 
     @staticmethod
     def parse(filepath: Path) -> List[TimTimeSerie]:
+        """Parse an .tim file into a List of TimTimeSeries.
+
+        Args:
+            filepath (Path): .tim file to be read.
+
+        Returns:
+            List: List of "TimTimeSerie".\n
+            When file is empty returns an empty list.
+        """
         timeseries = []
         with filepath.open() as file:
             for line in file.readlines():

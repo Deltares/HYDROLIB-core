@@ -12,6 +12,7 @@ class TimModel(ParsableFileModel):
 
     Attributes:
         timeseries: List[TimTimeSerie]
+        serializer_config: TimSerializerConfig
     """
 
     serializer_config = TimSerializerConfig()

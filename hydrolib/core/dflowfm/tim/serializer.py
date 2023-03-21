@@ -17,7 +17,16 @@ class TimTimeSeriesSerializer(SectionSerializer):
     Lines = Iterable[str]
     MAX_LENGTH = 10
 
-    def serialize_timtimeseries(self, timeserie: TimTimeSerie, config) -> Lines:
+    def serialize(self, timeserie: TimTimeSerie, config : TimSerializerConfig) -> Lines:
+        """Serialize the provided timeserie with the given config
+
+        Args:
+            timeserie (TimTimeSerie): The timeserie to serialize
+            config (TimSerializerConfig): The config describing the serialization options
+
+        Returns:
+            Lines: The iterable lines of the serialized timeserie
+        """
         datablock = self._create_tim_datablock(timeserie, config)
         return self._tim_serialize_datablock(datablock)
 
@@ -68,7 +77,7 @@ class TimSerializer:
         Attributes:
             path (Path): The path to the destination file.
             data (List): The data to be serialized.
-            config (SerializerConfig): The serialization configuration.
+            config (TimSerializerConfig): The serialization configuration.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
         serializer = TimTimeSeriesSerializer(config, MaxLengths(key=0, value=0))
@@ -87,5 +96,5 @@ class TimSerializer:
         if timeserie.comment:
             file.write(timeserie.comment)
         else:
-            row = serializer.serialize_timtimeseries(timeserie, config)
+            row = serializer.serialize(timeserie, config)
             file.write(f"{row}\n")
