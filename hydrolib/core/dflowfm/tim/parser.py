@@ -20,7 +20,7 @@ class TimParser:
     """
     A parser for .tim files.
     Full line comments are supported.
-    Partial comments will have the line skipped. 
+    Partial comments will have the line skipped.
     """
 
     @staticmethod

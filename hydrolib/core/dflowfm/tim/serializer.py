@@ -17,7 +17,7 @@ class TimTimeSeriesSerializer(SectionSerializer):
     Lines = Iterable[str]
     MAX_LENGTH = 10
 
-    def serialize(self, timeserie: TimTimeSerie, config : TimSerializerConfig) -> Lines:
+    def serialize(self, timeserie: TimTimeSerie, config: TimSerializerConfig) -> Lines:
         """Serialize the provided timeserie with the given config
 
         Args:
