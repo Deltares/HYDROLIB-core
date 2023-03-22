@@ -278,6 +278,7 @@ class Start(ControlModel):
 DIMRControlUnion = Union[Start, Parallel]
 DIMRComponentUnion = Union[RRComponent, FMComponent, Component]
 
+
 class DIMR(ParsableFileModel):
     """DIMR model representation.
 
