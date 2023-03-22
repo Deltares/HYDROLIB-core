@@ -608,14 +608,11 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
             length_name="xyzcount",
         )
 
+
 CrossSectionDefinitionUnion = Union[
-    CircleCrsDef,
-    RectangleCrsDef,
-    ZWRiverCrsDef,
-    ZWCrsDef,
-    YZCrsDef,
-    XYZCrsDef
+    CircleCrsDef, RectangleCrsDef, ZWRiverCrsDef, ZWCrsDef, YZCrsDef, XYZCrsDef
 ]
+
 
 class CrossDefModel(INIModel):
     """
@@ -636,6 +633,7 @@ class CrossDefModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "crsdef"
+
 
 class CrossSection(INIBasedModel):
     """
@@ -696,7 +694,6 @@ class CrossSection(INIBasedModel):
             ),
             fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
-
 
 
 class CrossLocModel(INIModel):
