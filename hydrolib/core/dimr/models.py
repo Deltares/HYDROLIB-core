@@ -275,6 +275,9 @@ class Start(ControlModel):
     name: str
 
 
+DIMRControlUnion = Union[Start, Parallel]
+DIMRComponentUnion = Union[RRComponent, FMComponent, Component]
+
 class DIMR(ParsableFileModel):
     """DIMR model representation.
 
@@ -298,8 +301,8 @@ class DIMR(ParsableFileModel):
     """
 
     documentation: Documentation = Documentation()
-    control: List[Union[Start, Parallel]] = Field([])
-    component: List[Union[RRComponent, FMComponent, Component]] = []
+    control: List[DIMRControlUnion] = []
+    component: List[DIMRComponentUnion] = []
     coupler: Optional[List[Coupler]] = []
     waitFile: Optional[str]
     global_settings: Optional[GlobalSettings]
