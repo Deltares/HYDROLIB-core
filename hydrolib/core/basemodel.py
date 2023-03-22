@@ -660,6 +660,9 @@ class FileLoadContext:
             Path: The resolved file path.
         """
 
+        if file_path.is_absolute():
+            return file_path
+
         converted_file_path = self._file_path_style_converter.convert_to_os_style(
             file_path, self.load_settings.path_style
         )
