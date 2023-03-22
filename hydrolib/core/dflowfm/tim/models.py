@@ -8,7 +8,7 @@ from .serializer import TimSerializer, TimSerializerConfig, TimTimeSerie
 
 
 class TimModel(ParsableFileModel):
-    """Model or tim data.
+    """Class representing a tim (*.tim) file.
 
     Attributes:
         timeseries: List[TimTimeSerie]
