@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, root_validator
 from pydantic.class_validators import validator
@@ -82,32 +82,6 @@ class CrossSectionDefinition(INIBasedModel):
     def _validate_type(cls, value):
         return get_from_subclass_defaults(CrossSectionDefinition, "type", value)
 
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `type` field.
-        This field is compared to each `type` field of the derived models of `CrossSectionDefinition`.
-        The derived model with an equal crosssection definition type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known crosssection definition type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("type").default.lower()
-                    == v.get("type", "").lower()
-                ):
-                    v = c(**v)
-                    break
-            else:
-                raise ValueError(
-                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
-                )
-        return super().validate(v)
-
     @staticmethod
     def _get_friction_root_validator(
         frictionid_attr: str,
@@ -148,27 +122,6 @@ class CrossSectionDefinition(INIBasedModel):
             return values
 
         return root_validator(allow_reuse=True)(validate_friction_specification)
-
-
-class CrossDefModel(INIModel):
-    """
-    The overall crosssection definition model that contains the contents of one crossdef file.
-
-    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile`.
-
-    Attributes:
-        general (CrossdefGeneral): `[General]` block with file metadata.
-        definition (List[CrossSectionDefinition]): List of `[Definition]` blocks for all cross sections.
-    """
-
-    general: CrossDefGeneral = CrossDefGeneral()
-    definition: List[CrossSectionDefinition] = []
-
-    _make_list = make_list_validator("definition")
-
-    @classmethod
-    def _filename(cls) -> str:
-        return "crsdef"
 
 
 class CircleCrsDef(CrossSectionDefinition):
@@ -655,6 +608,34 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
             length_name="xyzcount",
         )
 
+CrossSectionDefinitionUnion = Union[
+    CircleCrsDef,
+    RectangleCrsDef,
+    ZWRiverCrsDef,
+    ZWCrsDef,
+    YZCrsDef,
+    XYZCrsDef
+]
+
+class CrossDefModel(INIModel):
+    """
+    The overall crosssection definition model that contains the contents of one crossdef file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile`.
+
+    Attributes:
+        general (CrossdefGeneral): `[General]` block with file metadata.
+        definition (List[CrossSectionDefinition]): List of `[Definition]` blocks for all cross sections.
+    """
+
+    general: CrossDefGeneral = CrossDefGeneral()
+    definition: List[CrossSectionDefinitionUnion] = []
+
+    _make_list = make_list_validator("definition")
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "crsdef"
 
 class CrossSection(INIBasedModel):
     """
@@ -715,6 +696,7 @@ class CrossSection(INIBasedModel):
             ),
             fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
+
 
 
 class CrossLocModel(INIModel):
