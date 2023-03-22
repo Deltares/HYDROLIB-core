@@ -1,9 +1,9 @@
 from enum import Enum, IntEnum
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 
 from pydantic import Field, root_validator, validator
 
-from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel
+from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel, ParsableFileModel
 
 
 class Quantity(str, Enum):
@@ -373,3 +373,23 @@ class ExtForcing(BaseModel):
             )
 
         return values
+
+class ExtOldModel(ParsableFileModel):
+    """
+    The overall external forcings model that contains the contents of one external forcings file (old format).
+
+    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefile`.
+
+    Attributes:
+        forcing (List[ExtForcing]): List of `[ExtForcing]` blocks for all external forcings.
+    """
+
+    forcing: List[ExtForcing] = []
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".ext"
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "externalforcings"

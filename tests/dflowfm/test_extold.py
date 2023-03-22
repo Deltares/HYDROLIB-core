@@ -1,6 +1,6 @@
 import pytest
 
-from hydrolib.core.dflowfm.extold.models import ExtForcing, Operand, Quantity
+from hydrolib.core.dflowfm.extold.models import ExtForcing, ExtOldModel, Operand, Quantity
 
 
 class TestExtForcing:
@@ -482,3 +482,9 @@ class TestExtForcing:
 
             exp_msg = "NUMMIN only allowed when METHOD is 6"
             assert exp_msg in str(error.value)
+
+class TestExtOldModel:
+    def test_initialization(self):
+        model = ExtOldModel()
+
+        assert len(model.forcing) == 0
