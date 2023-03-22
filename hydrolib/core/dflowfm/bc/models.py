@@ -156,6 +156,7 @@ class VectorQuantityUnitPairs(BaseModel):
 
 ScalarOrVectorQUP = Union[QuantityUnitPair, VectorQuantityUnitPairs]
 
+
 class ForcingBase(DataBlockINIBasedModel):
     """
     The base class of a single [Forcing] block in a .bc forcings file.
@@ -737,6 +738,7 @@ class Constant(ForcingBase):
     factor: float = Field(1.0, alias="factor")
     """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
+
 class ForcingGeneral(INIGeneral):
     """`[General]` section with .bc file metadata."""
 
@@ -745,7 +747,18 @@ class ForcingGeneral(INIGeneral):
 
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
-FunctionUnion = Union[TimeSeries, T3D, Harmonic, Astronomic, HarmonicCorrection, AstronomicCorrection, QHTable, Constant]
+
+FunctionUnion = Union[
+    TimeSeries,
+    T3D,
+    Harmonic,
+    Astronomic,
+    HarmonicCorrection,
+    AstronomicCorrection,
+    QHTable,
+    Constant,
+]
+
 
 class ForcingModel(INIModel):
     """
