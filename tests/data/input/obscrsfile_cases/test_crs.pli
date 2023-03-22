@@ -1,0 +1,17 @@
+*
+* description
+* more description
+*
+name1
+2    2
+    1.0    2.0
+    3.0    4.0
+* oneline description (and last polyline will have NO comment)
+name2
+2    2
+    11.0    2.0
+    13.0    4.0
+name3
+2    2
+    21.0    2.0
+    23.0    4.0
