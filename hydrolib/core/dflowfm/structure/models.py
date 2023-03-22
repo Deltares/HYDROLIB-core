@@ -231,32 +231,6 @@ class Structure(INIBasedModel):
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `type` field.
-        This field is compared to each `type` field of the derived models of `Structure`.
-        The derived model with an equal structure type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known structure type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("type").default.lower()
-                    == v.get("type", "").lower()
-                ):
-                    v = c(**v)
-                    break
-            else:
-                raise ValueError(
-                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
-                )
-        return super().validate(v)
-
     def _exclude_fields(self) -> Set:
         # exclude the non-applicable, or unset props like coordinates or branches
         if self.type == "compound":
@@ -1083,6 +1057,7 @@ class StructureGeneral(INIGeneral):
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
+StructureUnion = Union[Weir, UniversalWeir, Culvert, Pump, Compound, Orifice, GeneralStructure, Dambreak, Bridge]
 
 class StructureModel(INIModel):
     """
@@ -1096,7 +1071,7 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: List[Structure] = []
+    structure: List[StructureUnion] = []
 
     @classmethod
     def _ext(cls) -> str:
