@@ -1057,7 +1057,19 @@ class StructureGeneral(INIGeneral):
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
-StructureUnion = Union[Weir, UniversalWeir, Culvert, Pump, Compound, Orifice, GeneralStructure, Dambreak, Bridge]
+
+StructureUnion = Union[
+    Weir,
+    UniversalWeir,
+    Culvert,
+    Pump,
+    Compound,
+    Orifice,
+    GeneralStructure,
+    Dambreak,
+    Bridge,
+]
+
 
 class StructureModel(INIModel):
     """
