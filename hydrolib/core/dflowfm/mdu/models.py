@@ -2,7 +2,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import Field, PositiveFloat
+from pydantic import Field
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
@@ -1437,7 +1437,7 @@ class Geometry(INIBasedModel):
     )
     partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
-    dxwuimin2d: PositiveFloat = Field(0.0, alias="dxWuiMin2D")
+    dxwuimin2d: float = Field(0.0, alias="dxWuiMin2D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
     bedlevuni: float = Field(-5.0, alias="bedLevUni")
     bedslope: float = Field(0.0, alias="bedSlope")
@@ -1460,7 +1460,7 @@ class Geometry(INIBasedModel):
     numtopsig: int = Field(0, alias="numTopSig")
     numtopsiguniform: bool = Field(True, alias="numTopSigUniform")
     sigmagrowthfactor: float = Field(1.0, alias="sigmaGrowthFactor")
-    dztop: Optional[PositiveFloat] = Field(None, alias="dzTop")
+    dztop: Optional[float] = Field(None, alias="dzTop")
     floorlevtoplay: Optional[float] = Field(None, alias="floorLevTopLay")
     dztopuniabovez: Optional[float] = Field(None, alias="dzTopUniAboveZ")
     keepzlayeringatbed: int = Field(2, alias="keepZLayeringAtBed")
