@@ -82,6 +82,22 @@ class TestNameExtractor:
             pytest.param(
                 "randomName #randomComment", "randomName", id="Name followed by comment"
             ),
+            pytest.param("#randomName", "#randomName", id="Name starting with hashtag"),
+            pytest.param(
+                "'#randomName'",
+                "#randomName",
+                id="Name with quotes starting with hashtag",
+            ),
+            pytest.param(
+                "randomName bla bla bla",
+                "randomName",
+                id="Valid name followed by additional content",
+            ),
+            pytest.param(
+                "'randomName' bla bla bla",
+                "randomName",
+                id="Valid name with quotes followed by additional content",
+            ),
         ],
     )
     def test_extract_name(self, input: str, expected_output: str):
@@ -91,8 +107,6 @@ class TestNameExtractor:
     @pytest.mark.parametrize(
         ("input"),
         [
-            pytest.param("#randomName", id="Name starting with hashtag"),
-            pytest.param("'#randomName'", id="Name with quotes starting with hashtag"),
             pytest.param("random name", id="Name with spaces without quotes"),
             pytest.param("'random name", id="Name with only starting quote"),
             pytest.param("random name'", id="Name with only ending quote"),
