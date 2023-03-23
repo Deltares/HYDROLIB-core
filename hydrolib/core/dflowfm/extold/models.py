@@ -4,7 +4,12 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic import Field, root_validator, validator
 
-from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel, ParsableFileModel, SerializerConfig
+from hydrolib.core.basemodel import (
+    BaseModel,
+    DiskOnlyFileModel,
+    ParsableFileModel,
+    SerializerConfig,
+)
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 
 
@@ -376,6 +381,7 @@ class ExtForcing(BaseModel):
 
         return values
 
+
 class ExtOldModel(ParsableFileModel):
     """
     The overall external forcings model that contains the contents of one external forcings file (old format).
@@ -395,7 +401,7 @@ class ExtOldModel(ParsableFileModel):
     @classmethod
     def _filename(cls) -> str:
         return "externalforcings"
-    
+
     @classmethod
     def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return Serializer.serialize
