@@ -404,7 +404,7 @@ class ExtOldModel(ParsableFileModel):
 
     def dict(self, *args, **kwargs):
         return dict(forcing=self.forcing)
-    
+
     @classmethod
     def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
         return Serializer.serialize
