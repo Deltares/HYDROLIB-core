@@ -1,9 +1,10 @@
 from enum import Enum, IntEnum
-from typing import Any, List, Optional, Union
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic import Field, root_validator, validator
 
-from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, DiskOnlyFileModel, ParsableFileModel, SerializerConfig
 
 
 class Quantity(str, Enum):
@@ -393,3 +394,11 @@ class ExtOldModel(ParsableFileModel):
     @classmethod
     def _filename(cls) -> str:
         return "externalforcings"
+    
+    @classmethod
+    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
+        pass
+
+    @classmethod
+    def _get_parser(cls) -> Callable[[Path], Dict]:
+        pass
