@@ -273,14 +273,14 @@ class Meteo(INIBasedModel):
     )
 
     @property
-    def forcing(self) -> ForcingBase:
+    def forcing(self) -> Optional[ForcingBase]:
         """Retrieves the corresponding forcing data for meteo.
 
         Returns:
             ForcingBase: The corresponding forcing data. None when meteo does not have a forcing file or when the data cannot be found. #FIXME check this part
         """
 
-        if self.forcingfile is None:
+        if self.forcingfile is None or not isinstance(self.forcingfile, ForcingModel):
             return None
 
         for forcing in self.forcingfile.forcing:
