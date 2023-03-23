@@ -23,29 +23,8 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     validate_location_specification,
 )
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.utils import str_is_empty_or_none
-
-
-class ForcingFileType(str, Enum):
-    """
-    Enum class containing the valid values for the forcingFileType
-    attribute in Meteo class.
-    """
-
-    bcascii = "bcAscii"
-    netcdf = "netcdf"
-
-    allowedvaluestext = "Possible values: bcAscii, netcdf."
-
-
-class InterpolationMethod(str, Enum):
-    """
-    Enum class containing the valid values for the interpolationMethod
-    attribute in Meteo class.
-    """
-
-    nearestnb = "nearestNb"  # only with forcingFileType=netcdf .
-    allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
 
 
 class Boundary(INIBasedModel):
@@ -205,12 +184,42 @@ class Lateral(INIBasedModel):
         return v
 
 
+class MeteoForcingFileType(str, Enum):
+    """
+    Enum class containing the valid values for the forcingFileType
+    attribute in Meteo class.
+    """
+
+    bcascii = "bcAscii"
+    """str: Space-uniform time series in <*.bc> file."""
+
+    netcdf = "netcdf"
+    """str: NetCDF, either with gridded data, or multiple station time series."""
+
+    uniform = "uniform"
+    """str: Space-uniform time series in <*.tim> file."""
+
+    allowedvaluestext = "Possible values: bcAscii, netcdf, uniform."
+
+
+class MeteoInterpolationMethod(str, Enum):
+    """
+    Enum class containing the valid values for the interpolationMethod
+    attribute in Meteo class.
+    """
+
+    nearestnb = "nearestNb"
+    """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
+
+    allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
+
+
 class Meteo(INIBasedModel):
     """
     A `[Meteo]` block for use inside an external forcings file,
     i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
-    All lowercased attributes match with the lateral input as described in
+    All lowercased attributes match with the meteo input as described in
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
@@ -234,7 +243,7 @@ class Meteo(INIBasedModel):
             alias="targetMaskInvert",
         )
         interpolationmethod: Optional[str] = Field(
-            "Type of (spatial) interpolation.", alias="interpolationmethod"
+            "Type of (spatial) interpolation.", alias="interpolationMethod"
         )
 
     comments: Comments = Comments()
@@ -246,18 +255,21 @@ class Meteo(INIBasedModel):
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
     forcingfile: ForcingModel = Field(alias="forcingFile")
-    forcingfiletype: str = Field(alias="forcingFileType")
-    targetmaskfile: Optional[DiskOnlyFileModel] = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="targetMaskFile"
+    forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
+    targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
+    targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
+    interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
+        alias="interpolationMethod"
     )
-    targetmaskinvert: Optional[bool] = Field(alias="targetMaskInvert")
-    interpolationmethod: Optional[str] = Field(alias="interpolationMethod")
+
+    def is_intermediate_link(self) -> bool:
+        return True
 
     forcingfiletype_validator = get_enum_validator(
-        "forcingfiletype", enum=ForcingFileType
+        "forcingfiletype", enum=MeteoForcingFileType
     )
     interpolationmethod_validator = get_enum_validator(
-        "interpolationmethod", enum=InterpolationMethod
+        "interpolationmethod", enum=MeteoInterpolationMethod
     )
 
     @property
@@ -300,8 +312,8 @@ class ExtModel(INIModel):
     Attributes:
         general (ExtGeneral): `[General]` block with file metadata.
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
-        lateral List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
-        meteo List[Meteo]): List of `[Meteo]` blocks for all meteo forcings.
+        lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
+        meteo (List[Meteo]): List of `[Meteo]` blocks for all meteorological forcings.
     """
 
     general: ExtGeneral = ExtGeneral()
