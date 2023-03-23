@@ -1,3 +1,6 @@
+import re
+
+
 class NameExtractor:
     """
     Class used to extract the name from a given text.
@@ -8,70 +11,42 @@ class NameExtractor:
     @staticmethod
     def extract_name(text: str) -> str:
         """
-        Extracts a valid name from the given text.
+        Extract the first name from a given text string.
 
-        This function takes a string input, removes comments starting with "#", trims whitespaces,
-        and validates the extracted name based on a set of rules. The name can be extracted from
-        either a plain string without spaces or a string surrounded by single quotes.
-
-        Rules for a valid name:
-        1. Name cannot be empty.
-        2. Name cannot contain a "#".
-        3. If the name contains spaces, it must be surrounded by single quotes.
-        4. If the name starts with a single quote, it must end with a single quote, and vice versa.
+        This function is designed to handle names enclosed with single quotes
+        and normal unquoted names. For names enclosed with single quotes,
+        it will extract the name within the quotes. For normal names, it
+        will extract the first word in the text string.
 
         Args:
-            text (str): The input text containing the name to be extracted.
+        text (str): The input text string containing the name.
 
         Returns:
-            str: The extracted valid name.
+        str: The extracted first name.
 
         Raises:
-            ValueError: If the extracted name does not meet the specified rules.
-
-        Example:
-            >>> extract_name("John")
-            'John'
-            >>> extract_name(" 'John Doe' ")
-            'John Doe'
-            >>> extract_name(" 'John Doe")
-            ValueError: Name cannot be empty, contain a `#` or miss closing `'`.
+        ValueError: If the input text is empty, contains only whitespace,
+        or if the name contains a single quote not properly enclosed.
         """
-
-        def _remove_comment(text: str) -> str:
-            if "#" in text:
-                text = text.split("#", 1)[0]
-            return text
-
-        def _extract_name_between_quotes(text: str) -> str:
-            if len(text) <= 2:
-                raise ValueError("Name cannot be empty or contain a `#`.")
-            name = text.strip("'")
-            if len(name.strip()) == 0:
-                raise ValueError("Name cannot be empty or contain a `#`.")
-            return name
-
-        if not text:
+        if not text or text.isspace():
             raise ValueError("Name cannot be empty.")
 
-        text = _remove_comment(text)
-
         text = text.strip()
-        if len(text) == 0:
-            raise ValueError("Name cannot be empty or contain a `#`.")
 
-        if text.startswith("'") and text.endswith("'"):
-            return _extract_name_between_quotes(text)
+        if text.startswith("'"):
+            match = re.search(r"'(.*?)'", text)
+            if not match:
+                raise ValueError(
+                    "Name that starts with a `'` should also end with a `'`"
+                )
 
-        if text.startswith("'") and not text.endswith("'"):
-            raise ValueError("Name cannot be empty, contain a `#` or miss closing `'`.")
+            name = match.group(1).strip("'")
+            if len(name) == 0 or name.isspace():
+                raise ValueError("Name cannot be empty.")
+            else:
+                return name
 
-        if not text.startswith("'") and text.endswith("'"):
-            raise ValueError("Name cannot be empty, contain a `#` or miss opening `'`.")
+        if "'" in text:
+            raise ValueError("Name cannot contain `'`.")
 
-        if " " in text:
-            raise ValueError(
-                "Name that contains spaces should be surrounded by double `'`."
-            )
-
-        return text
+        return text.split()[0]
