@@ -129,3 +129,20 @@ def assert_objects_equal(
     else:
         # Input is more basic/something else
         assert obj_cmp == obj_ref
+
+
+def error_occurs_only_once(error_message: str, full_error: str) -> bool:
+    """Check if the given error message occurs exactly once in the full error string.
+
+    Args:
+        error_message (str): The error to check for.
+        full_error (str): The full error as a string.
+
+    Returns:
+        bool: Return True if the error message occurs exactly once in the full error.
+            Returns False otherwise.
+    """
+    if error_message is None or full_error is None:
+        return False
+
+    return full_error.count(error_message) == 1
