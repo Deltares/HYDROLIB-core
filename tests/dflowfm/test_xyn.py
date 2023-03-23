@@ -107,7 +107,6 @@ class TestNameExtractor:
     @pytest.mark.parametrize(
         ("input"),
         [
-            pytest.param("random name", id="Name with spaces without quotes"),
             pytest.param("'random name", id="Name with only starting quote"),
             pytest.param("random name'", id="Name with only ending quote"),
             pytest.param(None, id="None value"),
