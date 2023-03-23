@@ -1,5 +1,4 @@
 import filecmp
-import inspect
 from pathlib import Path
 from typing import Generic, List, Optional, TypeVar
 
