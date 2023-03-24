@@ -17,7 +17,7 @@ class Parser:
         Returns:
             Dict: A dictionary containing the forcing data under the key 'forcing'.
         """
-        
+
         forcings = []
         current_forcing = {}
 
@@ -34,7 +34,7 @@ class Parser:
                     current_forcing = {}
                     continue
 
-                key, value = line.split('=', 1)
+                key, value = line.split("=", 1)
                 current_forcing[key.strip()] = value.strip()
 
         return dict(forcing=forcings)
