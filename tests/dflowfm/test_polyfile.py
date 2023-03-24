@@ -372,7 +372,24 @@ class TestParser:
                 ),
             ),
             ("    a    2    3    4    5        ", 5, True, None),
-            ("    1.0    2.0    3.0    4.0    5.0        ", 3, True, None),
+            (
+                "    1.0    2.0    3.0    4.0    5.0        ",
+                3,
+                True,
+                Point(x=1.0, y=2.0, z=3.0, data=[]),
+            ),
+            (
+                "    1.0    2.0    3.0    # comment does not exist, but trailing data is ignored",
+                3,
+                True,
+                Point(x=1.0, y=2.0, z=3.0, data=[]),
+            ),
+            (
+                "    1.0    2.0    3.0    4.0 5 As said, trailing data is ignored",
+                5,
+                True,
+                Point(x=1.0, y=2.0, z=3.0, data=[4.0, 5.0]),
+            ),
             ("    1.0    2.0    3.0    4.0    5.0        ", 6, True, None),
             ("1.0,  2.0,", 2, False, None),
             ("1.a  2.b", 2, False, None),
@@ -608,16 +625,6 @@ name
                     *description
                     name
                     1  5   
-                    1.0 2.0 3.0 4.0 5.0 6.0"""
-                ),
-                [((0, 4), "Expected a valid next point at line 3.")],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    name
-                    1  5   
                         1.0 2.0 3.0 4.0 5.0
                     another-name
                     1 3
@@ -667,27 +674,7 @@ name
                     *description
                     name
                     1  5   
-                    1.0 2.0 3.0 4.0 5.0 Comment after the values is invalid"""
-                ),
-                [((0, 4), "Expected a valid next point at line 3.")],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    name
-                    1  5   
-                    # 1.0 2.0 3.0 4.0 5.0 Comment after the values is invalid"""
-                ),
-                [((0, 4), "Expected a valid next point at line 3.")],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    name
-                    1  5   
-                    1.0 2.0 3.0 4.0 5.0 # Comment after the values is invalid"""
+                    # 1.0 2.0 3.0 4.0 5.0 Comment after the values is valid"""
                 ),
                 [((0, 4), "Expected a valid next point at line 3.")],
             ),
