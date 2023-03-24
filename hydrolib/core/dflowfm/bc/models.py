@@ -12,7 +12,7 @@ import logging
 import re
 from enum import Enum
 from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union
+from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union, TextIO
 
 from pydantic import Extra
 from pydantic.class_validators import root_validator, validator
@@ -813,15 +813,14 @@ class ForcingModel(INIModel):
         return cls.parse
 
     @classmethod
-    def parse(cls, filepath: Path):
+    def parse(cls, file: TextIO):
         # It's odd to have to disable parsing something as comments
         # but also need to pass it to the *flattener*.
         # This method now only supports per model settings, not per section.
         parser = Parser(ParserConfig(parse_datablocks=True, parse_comments=False))
 
-        with filepath.open() as f:
-            for line in f:
-                parser.feed_line(line)
+        for line in file:
+            parser.feed_line(line)
 
         return parser.finalize().flatten(True, False)
 

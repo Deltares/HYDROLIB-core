@@ -1118,7 +1118,9 @@ class ParsableFileModel(FileModel):
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
-        return cls._get_parser()(path)
+        parser = cls._get_parser()
+        with open(path, "r") as file:
+            return parser(file)
 
     @classmethod
     def _generate_name(cls) -> Path:

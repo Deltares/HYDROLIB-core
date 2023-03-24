@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, Iterator, List, Tuple, TextIO
 
 
 class BuiEventParser:
@@ -147,7 +147,7 @@ class BuiParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> Dict:
+    def parse(file: TextIO) -> Dict:
         """
         Parses a given file, in case valid, into a dictionary which can later be mapped
         to the BuiModel.
@@ -166,11 +166,7 @@ class BuiParser:
             n_events_timestep = line.split()
             return (int(n_events_timestep[0]), int(n_events_timestep[1]))
 
-        bui_lines = [
-            line
-            for line in filepath.read_text(encoding="utf8").splitlines()
-            if not line.startswith("*")
-        ]
+        bui_lines = [line for line in file.splitlines() if not line.startswith("*")]
 
         n_events, timestep = parse_events_and_timestep(bui_lines[3])
 

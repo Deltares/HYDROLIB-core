@@ -4,7 +4,17 @@
 import warnings
 from enum import IntEnum
 from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
+from typing import (
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    TextIO,
+)
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.polyfile.models import (
@@ -517,10 +527,10 @@ class Parser:
 
 
 def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
-    return isinstance(input_val, Path) and input_val.suffix == ".pliz"
+    return isinstance(input_val, TextIO) and input_val.suffix == ".pliz"
 
 
-def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
+def read_polyfile(file: TextIO, has_z_values: Optional[bool] = None) -> Dict:
     """Read the specified file and return the corresponding data.
 
     The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
@@ -577,13 +587,12 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
         Dict: The dictionary describing the data of a PolyObject.
     """
     if has_z_values is None:
-        has_z_values = _determine_has_z_value(filepath)
+        has_z_values = _determine_has_z_value(file)
 
-    parser = Parser(filepath, has_z_value=has_z_values)
+    parser = Parser(file, has_z_value=has_z_values)
 
-    with filepath.open("r") as f:
-        for line in f:
-            parser.feed_line(line)
+    for line in file:
+        parser.feed_line(line)
 
     objs = parser.finalize()
 

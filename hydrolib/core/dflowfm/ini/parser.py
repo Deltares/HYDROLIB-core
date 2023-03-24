@@ -1,7 +1,7 @@
 import re
 from enum import IntEnum
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union, TextIO
 
 from pydantic import validator
 
@@ -343,7 +343,7 @@ class Parser:
         return self._config.parse_datablocks
 
     @classmethod
-    def parse_as_dict(cls, filepath: Path, config: ParserConfig = None) -> dict:
+    def parse_as_dict(cls, file: TextIO, config: ParserConfig = None) -> dict:
         """
         Parses an INI file without a specific model type and returns it as a dictionary.
 
@@ -354,10 +354,10 @@ class Parser:
         Returns:
             dict: Representation of the parsed INI-file.
         """
-        return cls.parse(filepath, config).flatten()
+        return cls.parse(file, config).flatten()
 
     @classmethod
-    def parse(cls, filepath: Path, config: ParserConfig = None) -> Document:
+    def parse(cls, file: TextIO, config: ParserConfig = None) -> Document:
         """
         Parses an INI file without a specific model type and returns it as a Document.
 
@@ -379,20 +379,19 @@ class Parser:
             r"([\d.]+)([dD])([+\-]?\d+)"
         )  # matches a float value: 1d9, 1D-3, 1.D+4, etc.
 
-        with filepath.open() as f:
-            for line in f:
-                # Replace Fortran scientific notation for doubles
-                # Match number d/D +/- number (e.g. 1d-05 or 1.23D+01 or 1.d-4)
-                match = progline.match(line)
-                if match:  # Only process value
-                    line = (
-                        match.group(1)
-                        + progfloat.sub(r"\1e\3", match.group(2))
-                        + str(match.group(3) or "")
-                    )
-                else:  # Process full line
-                    line = progfloat.sub(r"\1e\3", line)
+        for line in file:
+            # Replace Fortran scientific notation for doubles
+            # Match number d/D +/- number (e.g. 1d-05 or 1.23D+01 or 1.d-4)
+            match = progline.match(line)
+            if match:  # Only process value
+                line = (
+                    match.group(1)
+                    + progfloat.sub(r"\1e\3", match.group(2))
+                    + str(match.group(3) or "")
+                )
+            else:  # Process full line
+                line = progfloat.sub(r"\1e\3", line)
 
-                parser.feed_line(line)
+            parser.feed_line(line)
 
         return parser.finalize()
