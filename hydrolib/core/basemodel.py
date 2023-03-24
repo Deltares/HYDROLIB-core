@@ -445,6 +445,8 @@ class FileModelCache:
 class ModelSaveSettings:
     """A class that holds the global settings for model saving."""
 
+    _os_path_style = get_path_style_for_current_operating_system()
+
     def __init__(self, path_style: Optional[PathStyle] = None) -> None:
         """Initializes a new instance of the ModelSaveSettings class.
 
@@ -453,7 +455,7 @@ class ModelSaveSettings:
         """
 
         if path_style is None:
-            path_style = get_path_style_for_current_operating_system()
+            path_style = self._os_path_style
 
         self._path_style = path_style
 
@@ -1326,9 +1328,7 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
 class PathStyleValidator:
     """Class to take care of path style validation."""
 
-    def __init__(self) -> None:
-        """Initializes a new instance of the `UserInputValidation` class."""
-        self._os_path_style = get_path_style_for_current_operating_system()
+    _os_path_style = get_path_style_for_current_operating_system()
 
     def validate(self, path_style: Optional[str]) -> PathStyle:
         """Validates the path style as string on whether it is a supported path style.

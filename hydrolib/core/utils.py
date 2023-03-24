@@ -204,9 +204,7 @@ def get_path_style_for_current_operating_system() -> PathStyle:
 class FilePathStyleConverter:
     """Class for converting file paths between different path styles."""
 
-    def __init__(self) -> None:
-        """Initializes a new instance of the FilePathStyleConverter class."""
-        self._os_path_style = get_path_style_for_current_operating_system()
+    _os_path_style = get_path_style_for_current_operating_system()
 
     def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> str:
         """Convert the file path from the source path style to the path style of the current operating system.
