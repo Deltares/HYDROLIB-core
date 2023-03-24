@@ -4,7 +4,7 @@ import pytest
 
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.tim.models import TimModel
-from hydrolib.core.dflowfm.tim.parser import TimParser, TimTimeSerie
+from hydrolib.core.dflowfm.tim.parser import TimParser, TimTimeData
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
 from tests.utils import (
     assert_files_equal,
@@ -19,38 +19,38 @@ SINGLE_DATA = "single_data_for_timeseries.tim"
 
 def _get_triple_data_for_timeseries():
     data = []
-    data.append(TimTimeSerie(time=10.0, series=[1.232, 2.343, 3.454]))
-    data.append(TimTimeSerie(time=20.0, series=[4.565, 5.676, 6.787]))
-    data.append(TimTimeSerie(time=30.0, series=[1.5, 2.6, 3.7]))
+    data.append(TimTimeData(time=10.0, series=[1.232, 2.343, 3.454]))
+    data.append(TimTimeData(time=20.0, series=[4.565, 5.676, 6.787]))
+    data.append(TimTimeData(time=30.0, series=[1.5, 2.6, 3.7]))
     return data
 
 
 def _get_triple_data_with_comments_for_timeseries():
     data = []
-    data.append(TimTimeSerie(comment="#comments\n"))
-    data.append(TimTimeSerie(time=10.0, series=[1.232, 2.343, 3.454]))
-    data.append(TimTimeSerie(time=20.0, series=[4.565, 5.676, 6.787]))
-    data.append(TimTimeSerie(time=30.0, series=[1.5, 2.6, 3.7]))
-    data.append(TimTimeSerie(comment="* 40 1.5 2.6 3.7\n"))
-    data.append(TimTimeSerie(comment="# 50 1.5 2.6 3.7"))
+    data.append(TimTimeData(comment="#comments\n"))
+    data.append(TimTimeData(time=10.0, series=[1.232, 2.343, 3.454]))
+    data.append(TimTimeData(time=20.0, series=[4.565, 5.676, 6.787]))
+    data.append(TimTimeData(time=30.0, series=[1.5, 2.6, 3.7]))
+    data.append(TimTimeData(comment="* 40 1.5 2.6 3.7\n"))
+    data.append(TimTimeData(comment="# 50 1.5 2.6 3.7"))
     return data
 
 
 def _get_single_data_for_timeseries():
     data = []
-    data.append(TimTimeSerie(time=0.0, series=[0.0000000]))
-    data.append(TimTimeSerie(time=10.0, series=[0.0100000]))
-    data.append(TimTimeSerie(time=20.0, series=[0.0000000]))
-    data.append(TimTimeSerie(time=30.0, series=[-0.0100000]))
-    data.append(TimTimeSerie(time=40.0, series=[0.0000000]))
-    data.append(TimTimeSerie(time=50.0, series=[0.0100000]))
-    data.append(TimTimeSerie(time=60.0, series=[0.0000000]))
-    data.append(TimTimeSerie(time=70.0, series=[-0.0100000]))
-    data.append(TimTimeSerie(time=80.0, series=[0.0000000]))
-    data.append(TimTimeSerie(time=90.0, series=[0.0100000]))
-    data.append(TimTimeSerie(time=100.0, series=[0.0000000]))
-    data.append(TimTimeSerie(time=110.0, series=[-0.0100000]))
-    data.append(TimTimeSerie(time=120.0, series=[0.0000000]))
+    data.append(TimTimeData(time=0.0, series=[0.0000000]))
+    data.append(TimTimeData(time=10.0, series=[0.0100000]))
+    data.append(TimTimeData(time=20.0, series=[0.0000000]))
+    data.append(TimTimeData(time=30.0, series=[-0.0100000]))
+    data.append(TimTimeData(time=40.0, series=[0.0000000]))
+    data.append(TimTimeData(time=50.0, series=[0.0100000]))
+    data.append(TimTimeData(time=60.0, series=[0.0000000]))
+    data.append(TimTimeData(time=70.0, series=[-0.0100000]))
+    data.append(TimTimeData(time=80.0, series=[0.0000000]))
+    data.append(TimTimeData(time=90.0, series=[0.0100000]))
+    data.append(TimTimeData(time=100.0, series=[0.0000000]))
+    data.append(TimTimeData(time=110.0, series=[-0.0100000]))
+    data.append(TimTimeData(time=120.0, series=[0.0000000]))
     return data
 
 
