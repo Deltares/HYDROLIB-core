@@ -10,6 +10,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 
 
@@ -411,4 +412,4 @@ class ExtOldModel(ParsableFileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
-        pass
+        return Parser.parse
