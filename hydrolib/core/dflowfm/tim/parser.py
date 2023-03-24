@@ -5,9 +5,9 @@ from typing import List
 timpattern = re.compile(r"\s+")
 
 
-class TimTimeSerie:
+class TimTimeData:
     """
-    TimTimeSerie provides a simple structurefor timeseries from the .tim file.
+    TimTimeData provides a simple structurefor timeseries from the .tim file.
     """
 
     comment: str
@@ -15,7 +15,7 @@ class TimTimeSerie:
     series: List[float]
 
     def __init__(self, time=None, series=None, comment=None):
-        """Initializes a new instance of the TimTimeSerie class.
+        """Initializes a new instance of the TimTimeData class.
 
         Args:
             time (float): Time linked to the series.
@@ -35,14 +35,14 @@ class TimParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> List[TimTimeSerie]:
-        """Parse an .tim file into a List of TimTimeSeries.
+    def parse(filepath: Path) -> List[TimTimeData]:
+        """Parse an .tim file into a List of TimTimeDatas.
 
         Args:
             filepath (Path): .tim file to be read.
 
         Returns:
-            List: List of "TimTimeSerie".\n
+            List: List of "TimTimeData".\n
             When file is empty returns an empty list.
         """
         timeseries = []
@@ -52,9 +52,9 @@ class TimParser:
         return timeseries
 
     @staticmethod
-    def _read_line(line, timeseries: List[TimTimeSerie]):
+    def _read_line(line, timeseries: List[TimTimeData]):
         if TimParser._line_is_comment(line):
-            timeseries.append(TimTimeSerie(comment=line))
+            timeseries.append(TimTimeData(comment=line))
             return
 
         time, *series = re.split(timpattern, line.strip())
@@ -66,7 +66,7 @@ class TimParser:
 
     @staticmethod
     def _add_valid_timeserie(
-        time: str, series: List[str], timeseries: List[TimTimeSerie]
+        time: str, series: List[str], timeseries: List[TimTimeData]
     ):
         timeserie = TimParser._create_timeserie(time, series)
 
@@ -86,7 +86,7 @@ class TimParser:
                 return
             listofvalues.append(float(value))
 
-        return TimTimeSerie(time=float(time), series=listofvalues)
+        return TimTimeData(time=float(time), series=listofvalues)
 
     @staticmethod
     def _not_numeric(value: str):

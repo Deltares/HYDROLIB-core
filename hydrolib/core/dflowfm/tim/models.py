@@ -4,19 +4,19 @@ from typing import Callable, Dict, List
 from hydrolib.core.basemodel import ParsableFileModel, SerializerConfig
 
 from .parser import TimParser
-from .serializer import TimSerializer, TimSerializerConfig, TimTimeSerie
+from .serializer import TimSerializer, TimSerializerConfig, TimTimeData
 
 
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
 
     Attributes:
-        timeseries: List[TimTimeSerie]
+        timeseries: List[TimTimeData]
         serializer_config: TimSerializerConfig
     """
 
     serializer_config = TimSerializerConfig()
-    timeseries: List[TimTimeSerie]
+    timeseries: List[TimTimeData]
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict

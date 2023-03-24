@@ -4,7 +4,7 @@ from typing import Iterable, List, Optional
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.ini.io_models import Datablock, DatablockRow
 from hydrolib.core.dflowfm.ini.serializer import MaxLengths, SectionSerializer
-from hydrolib.core.dflowfm.tim.parser import TimTimeSerie
+from hydrolib.core.dflowfm.tim.parser import TimTimeData
 
 
 class TimSerializerConfig(SerializerConfig):
@@ -12,16 +12,16 @@ class TimSerializerConfig(SerializerConfig):
     datablock_spacing: int = 2
 
 
-class TimTimeSeriesSerializer(SectionSerializer):
+class TimTimeDatasSerializer(SectionSerializer):
 
     Lines = Iterable[str]
     MAX_LENGTH = 10
 
-    def serialize(self, timeserie: TimTimeSerie, config: TimSerializerConfig) -> Lines:
+    def serialize(self, timeserie: TimTimeData, config: TimSerializerConfig) -> Lines:
         """Serialize the provided timeserie with the given config
 
         Args:
-            timeserie (TimTimeSerie): The timeserie to serialize
+            timeserie (TimTimeData): The timeserie to serialize
             config (TimSerializerConfig): The config describing the serialization options
 
         Returns:
@@ -30,13 +30,13 @@ class TimTimeSeriesSerializer(SectionSerializer):
         datablock = self._create_tim_datablock(timeserie, config)
         return self._tim_serialize_datablock(datablock)
 
-    def _create_tim_datablock(self, timeserie: TimTimeSerie, config) -> Datablock:
+    def _create_tim_datablock(self, timeserie: TimTimeData, config) -> Datablock:
         datablock = []
         row = self._create_tim_data_row(timeserie, config.float_format)
         datablock.append(row)
         return datablock
 
-    def _create_tim_data_row(self, timeserie: TimTimeSerie, float_format: str):
+    def _create_tim_data_row(self, timeserie: TimTimeData, float_format: str):
         format_float = lambda x: f"{x:{float_format}}"
         series = [str(format_float(p)) for p in timeserie.series]
         row = []
@@ -69,7 +69,7 @@ def _tim_get_offset_whitespace(key: Optional[str], max_length: int) -> str:
 class TimSerializer:
     @staticmethod
     def serialize(
-        path: Path, data: List[TimTimeSerie], config: TimSerializerConfig
+        path: Path, data: List[TimTimeData], config: TimSerializerConfig
     ) -> None:
         """
         Serializes the timeseries data to the file at the specified path in .tim format.
@@ -80,7 +80,7 @@ class TimSerializer:
             config (TimSerializerConfig): The serialization configuration.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
-        serializer = TimTimeSeriesSerializer(config, MaxLengths(key=0, value=0))
+        serializer = TimTimeDatasSerializer(config, MaxLengths(key=0, value=0))
 
         with path.open("w") as file:
             for timeserie in data:
@@ -89,8 +89,8 @@ class TimSerializer:
     @staticmethod
     def _write_row(
         file,
-        serializer: TimTimeSeriesSerializer,
-        timeserie: TimTimeSerie,
+        serializer: TimTimeDatasSerializer,
+        timeserie: TimTimeData,
         config: TimSerializerConfig,
     ):
         if timeserie.comment:
