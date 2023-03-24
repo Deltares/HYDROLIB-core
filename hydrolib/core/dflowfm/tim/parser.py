@@ -8,7 +8,7 @@ timpattern = re.compile(r"\s+")
 class TimTimeSerie:
     comment: str
     time: float
-    serie: List[float]
+    series: List[float]
 
     def __init__(self, time=None, series=None, comment=None):
         self.time = time
