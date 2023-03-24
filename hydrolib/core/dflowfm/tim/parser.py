@@ -6,11 +6,22 @@ timpattern = re.compile(r"\s+")
 
 
 class TimTimeSerie:
+    """
+    TimTimeSerie provides a simple structurefor timeseries from the .tim file.
+    """
+
     comment: str
     time: float
     series: List[float]
 
     def __init__(self, time=None, series=None, comment=None):
+        """Initializes a new instance of the TimTimeSerie class.
+
+        Args:
+            time (float): Time linked to the series.
+            series (List[float]): Series of values linked to the time.
+            comment (str): comment line, when the line is a full comment.
+        """
         self.time = time
         self.series = series
         self.comment = comment
