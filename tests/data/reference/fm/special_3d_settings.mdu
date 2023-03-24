@@ -197,7 +197,7 @@
     outputDir                         =                                                                                 # Output directory of map-, his-, rst-, dat- and timings-files, default: DFM_OUTPUT_<modelname>. Set to . for current dir.
     waqOutputDir                      =                                                                                 # Output directory of Water Quality files.
     flowGeomFile                      =                                                                                 # *_flowgeom.nc Flow geometry file in netCDF format.
-    obsFile                           = \p\i1000668-tcoms\03_newModel\01_input\05_obs\UHSLCandIHO_obs.xyn cells_obs.xyn # Points file *.xyn with observation stations with rows x, y, station name
+    obsFile                           = /p/i1000668-tcoms/03_newModel/01_input/05_obs/UHSLCandIHO_obs.xyn cells_obs.xyn # Points file *.xyn with observation stations with rows x, y, station name
     crsFile                           =                                                                                 # Polyline file *_crs.pli defining observation cross sections
     hisFile                           =                                                                                 # HisFile name *_his.nc
     hisInterval                       = 600.0                                                                           # History output times, given as "interval" "start period" "end period" (s)
