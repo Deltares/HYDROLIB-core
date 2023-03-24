@@ -46,7 +46,11 @@ class XYNModel(ParsableFileModel):
 
     @classmethod
     def _filename(cls) -> str:
-        return "stations_obs.xyn"
+        return "stations_obs"
+
+    @abstractclassmethod
+    def _ext(cls) -> str:
+        return ".xyn"
 
     @classmethod
     def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
