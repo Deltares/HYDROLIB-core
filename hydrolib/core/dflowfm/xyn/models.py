@@ -48,7 +48,7 @@ class XYNModel(ParsableFileModel):
     def _filename(cls) -> str:
         return "stations_obs"
 
-    @abstractclassmethod
+    @classmethod
     def _ext(cls) -> str:
         return ".xyn"
 
