@@ -9,6 +9,7 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import (
     BaseModel,
     FileModel,
+    ModelSaveSettings,
     ParsableFileModel,
     SerializerConfig,
 )
@@ -333,7 +334,9 @@ class DIMR(ParsableFileModel):
         return "dimr_config"
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return DIMRSerializer.serialize
 
     @classmethod
