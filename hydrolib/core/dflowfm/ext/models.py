@@ -33,7 +33,7 @@ class Boundary(INIBasedModel):
     i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the boundary input as described in
-    [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
+    [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
     """
 
     _disk_only_file_model_should_not_be_none = (
@@ -127,7 +127,7 @@ class Lateral(INIBasedModel):
     i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the lateral input as described in
-    [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
+    [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
     """
 
     _header: Literal["Lateral"] = "Lateral"
