@@ -3439,7 +3439,7 @@ DIMRSerializer        </code>
 
 
 <h4 id="hydrolib.core.dimr.serializer.DIMRSerializer.serialize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -3476,12 +3476,22 @@ DIMRSerializer        </code>
         <td><code>SerializerConfig</code></td>
         <td><p>The serialization configuration.</p></td>
       </tr>
+      <tr>
+        <td><code>save_settings</code></td>
+        <td><code>ModelSaveSettings</code></td>
+        <td><p>The model save settings.</p></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dimr/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span>
+    <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes the DIMR data to the file at the specified path.</span>
 
@@ -3489,6 +3499,7 @@ DIMRSerializer        </code>
 <span class="sd">        path (Path): The path to the destination file.</span>
 <span class="sd">        data (Dict): The data to be serialized.</span>
 <span class="sd">        config (SerializerConfig): The serialization configuration.</span>
+<span class="sd">        save_settings (ModelSaveSettings): The model save settings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -3505,7 +3516,11 @@ DIMRSerializer        </code>
         <span class="n">attrib</span><span class="o">=</span><span class="n">attrib</span><span class="p">,</span>
         <span class="n">nsmap</span><span class="o">=</span><span class="n">namespaces</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">DIMRSerializer</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+    <span class="n">path_style_converter</span> <span class="o">=</span> <span class="n">FilePathStyleConverter</span><span class="p">()</span>
+    <span class="n">DIMRSerializer</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span>
+        <span class="n">root</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">,</span> <span class="n">path_style_converter</span>
+    <span class="p">)</span>
 
     <span class="n">to_string</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
     <span class="n">xml</span> <span class="o">=</span> <span class="n">to_string</span><span class="o">.</span><span class="n">toprettyxml</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>

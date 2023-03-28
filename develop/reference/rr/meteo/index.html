@@ -3516,7 +3516,7 @@ Otherwise it will crash.</p>
 
 
 <h3 id="hydrolib.core.rr.meteo.serializer.write_bui_file" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">write_bui_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<code class="highlight language-python"><span class="n">write_bui_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
 
 
 <a href="#hydrolib.core.rr.meteo.serializer.write_bui_file" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3554,11 +3554,19 @@ Otherwise it will crash.</p>
         <td><p>The serialization configuration.</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>save_settings</code></td>
+        <td><code>ModelSaveSettings</code></td>
+        <td><p>The model save settings.</p></td>
+        <td><em>required</em></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/rr/meteo/serializer.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_bui_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_bui_file</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes a .bui file in the given path based on the data given in a dictionary.</span>
 
@@ -3566,6 +3574,7 @@ Otherwise it will crash.</p>
 <span class="sd">        path (Path): Path where to output the text.</span>
 <span class="sd">        data (Dict): Data to serialize into the file.</span>
 <span class="sd">        config (SerializerConfig): The serialization configuration.</span>
+<span class="sd">        save_settings (ModelSaveSettings): The model save settings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>  <span class="c1"># This is redundant as already exists in the data.</span>
     <span class="n">serialized_bui_data</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>

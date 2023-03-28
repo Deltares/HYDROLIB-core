@@ -753,6 +753,26 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#saving-and-loading-models-between-different-operating-systems" class="md-nav__link">
+    Saving and loading models between different operating systems
+  </a>
+  
+    <nav class="md-nav" aria-label="Saving and loading models between different operating systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats-when-saving-models" class="md-nav__link">
     Caveats when saving models
   </a>
@@ -1422,6 +1442,26 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#saving-and-loading-models-between-different-operating-systems" class="md-nav__link">
+    Saving and loading models between different operating systems
+  </a>
+  
+    <nav class="md-nav" aria-label="Saving and loading models between different operating systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats-when-saving-models" class="md-nav__link">
     Caveats when saving models
   </a>
@@ -1535,6 +1575,29 @@ The file on disk is actually called <code>network/FlowFM_net.nc</code>.</p>
 <span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">netfile</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;network/FlowFM_net.nc&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>resolve_casing</code> argument is by default <code>False</code>. Using the <code>resolve_casing</code> functionality might heavily influence the performance of model loading depending on the model size, the file tree structure and the operating system.</p>
+<h2 id="saving-and-loading-models-between-different-operating-systems">Saving and loading models between different operating systems<a class="headerlink" href="#saving-and-loading-models-between-different-operating-systems" title="Permanent link">&para;</a></h2>
+<p>In certain cases, it may be necessary to switch effortlessly between operating systems (OS) using the same model. This allows the model to be loaded seamlessly on both Unix and Windows systems. However, it is important to note that the file paths look different for both OSs. Absolute file paths on Unix have a leading slash, while on Windows systems they start with a drive letter. Additionally, Unix systems don't allow backward slashes, whereas Windows supports both forward and backward slashes in file paths. These unique differences may cause issues when attempting to interpret files references within the model on another OS.</p>
+<p>Fortunately, HYDROLIB-core features a functionality that allows the conversion of file paths from one OS path style to another. This resolves the issue and ensures that the model functions seamlessly on both Unix and Windows systems.</p>
+<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
+<p><strong>Loading a model with Unix file paths on Windows:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;p:/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;unix&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Loading a model with Windows file paths on Linux/MacOS:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/p/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;windows&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p>In the two examples mentioned above, the <code>path_style</code> option specifies the path style that is used in the model files to be loaded. This information allows HYDROLIB-core to accurately convert the file paths to match the path style of the running operating system and interpret them correctly.</p>
+<p><strong>Saving a model with Unix file paths on Windows:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;p:/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;unix&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Saving a model with Windows file paths on Linux/MacOS:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/p/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;windows&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p>In the two examples mentioned above, the <code>path_style</code> option specifies the preferred path style of the saved model files. However, if this option is not specified when initializing or saving the model, it will default to the path style of the current operating system.</p>
+<p>The <code>path_style</code> option supports these three values:
+* <code>None</code> (will default to either <code>"windows"</code> or <code>"unix"</code> depending on the running OS)
+* <code>"windows"</code>
+* <code>"unix"</code></p>
+<p>Other values are not supported and an error will be raised.</p>
 <h2 id="caveats-when-saving-models">Caveats when saving models<a class="headerlink" href="#caveats-when-saving-models" title="Permanent link">&para;</a></h2>
 <p>There are some caveats to take into account when saving models.</p>
 <h3 id="filepath-changes-do-not-automatically-propagate">Filepath changes do not automatically propagate<a class="headerlink" href="#filepath-changes-do-not-automatically-propagate" title="Permanent link">&para;</a></h3>
