@@ -3687,11 +3687,11 @@ If the filepath is provided, it is read from disk.</p>
         <span class="n">loading_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">loading_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">resolve_casing</span><span class="p">(</span><span class="n">loading_path</span><span class="p">)</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_updated_file_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">loading_path</span><span class="p">)</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading data from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">loading_path</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filepath</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
