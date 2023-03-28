@@ -1,7 +1,4 @@
 from pathlib import Path
-from typing import Callable, Dict, Union
-
-import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.mdu.models import (
@@ -12,6 +9,8 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
+from hydrolib.core.dflowfm.obs.models import ObservationPoint, ObservationPointModel
+from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 
 from ..utils import (
     assert_files_equal,
@@ -121,3 +120,70 @@ class TestModels:
         assert model.crsfile is not None
         assert len(model.crsfile) == 1
         assert isinstance(model.crsfile[0], DiskOnlyFileModel)
+
+    def test_loading_fmmodel_model_with_xyn_obsfile(self):
+        file_path = test_input_dir / "obsfile_cases" / "single_xyn" / "fm.mdu"
+        model = FMModel(file_path)
+
+        expected_points = [
+            XYNPoint(x=1.1, y=2.2, n="ObservationPoint_2D_01"),
+            XYNPoint(x=3.3, y=4.4, n="ObservationPoint_2D_02"),
+        ]
+
+        obsfile = model.output.obsfile[0]
+
+        assert isinstance(obsfile, XYNModel)
+        assert obsfile.points == expected_points
+
+    def test_loading_fmmodel_model_with_ini_obsfile(self):
+        file_path = test_input_dir / "obsfile_cases" / "single_ini" / "fm.mdu"
+        model = FMModel(file_path)
+
+        expected_points = [
+            ObservationPoint(x=1.1, y=2.2, name="ObservationPoint_2D_01"),
+            ObservationPoint(x=3.3, y=4.4, name="ObservationPoint_2D_02"),
+        ]
+
+        obsfile = model.output.obsfile[0]
+
+        assert isinstance(obsfile, ObservationPointModel)
+
+        assert len(obsfile.observationpoint) == len(expected_points)
+        for actual_point, expected_point in zip(
+            obsfile.observationpoint, expected_points
+        ):
+            assert actual_point.x == expected_point.x
+            assert actual_point.y == expected_point.y
+            assert actual_point.name == expected_point.name
+
+    def test_loading_fmmodel_model_with_both_ini_and_xyn_obsfiles(self):
+        file_path = test_input_dir / "obsfile_cases" / "both_ini_and_xyn" / "fm.mdu"
+        model = FMModel(file_path)
+
+        assert len(model.output.obsfile) == 2
+
+        obsfile = model.output.obsfile
+        xyn_file = obsfile[0]
+        assert isinstance(xyn_file, XYNModel)
+
+        expected_xyn_points = [
+            XYNPoint(x=1.1, y=2.2, n="ObservationPoint_2D_01"),
+            XYNPoint(x=3.3, y=4.4, n="ObservationPoint_2D_02"),
+        ]
+        assert xyn_file.points == expected_xyn_points
+
+        ini_file = obsfile[1]
+        assert isinstance(ini_file, ObservationPointModel)
+
+        expected_ini_points = [
+            ObservationPoint(x=1.1, y=2.2, name="ObservationPoint_2D_01"),
+            ObservationPoint(x=3.3, y=4.4, name="ObservationPoint_2D_02"),
+        ]
+        assert len(ini_file.observationpoint) == len(expected_ini_points)
+
+        for actual_point, expected_point in zip(
+            ini_file.observationpoint, expected_ini_points
+        ):
+            assert actual_point.x == expected_point.x
+            assert actual_point.y == expected_point.y
+            assert actual_point.name == expected_point.name

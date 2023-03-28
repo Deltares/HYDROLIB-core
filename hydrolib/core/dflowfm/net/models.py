@@ -12,7 +12,12 @@ from meshkernel.py_structures import GeometryList
 from pydantic import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel, file_load_context
+from hydrolib.core.basemodel import (
+    BaseModel,
+    ModelSaveSettings,
+    ParsableFileModel,
+    file_load_context,
+)
 from hydrolib.core.dflowfm.net.reader import UgridReader
 from hydrolib.core.dflowfm.net.writer import UgridWriter
 
@@ -1248,7 +1253,7 @@ class NetworkModel(ParsableFileModel):
     def _filename(cls) -> str:
         return "network"
 
-    def _save(self):
+    def _save(self, save_settings: ModelSaveSettings):
         with file_load_context() as context:
             write_path = context.resolve(self.filepath)  # type: ignore[arg-type]
 

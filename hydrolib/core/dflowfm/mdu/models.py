@@ -22,6 +22,7 @@ from hydrolib.core.dflowfm.obs.models import ObservationPointModel
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.storagenode.models import StorageNodeModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
+from hydrolib.core.dflowfm.xyn.models import XYNModel
 from hydrolib.core.dflowfm.xyz.models import XYZModel
 
 
@@ -727,6 +728,9 @@ class Trachytopes(INIBasedModel):
     dttrt: float = Field(60.0, alias="dtTrt")
 
 
+ObsFile = Union[XYNModel, ObservationPointModel]
+
+
 class Output(INIBasedModel):
     """
     The `[Output]` section in an MDU file.
@@ -1064,7 +1068,7 @@ class Output(INIBasedModel):
     flowgeomfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile"
     )
-    obsfile: Optional[List[ObservationPointModel]] = Field(None, alias="obsFile")
+    obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
     crsfile: Optional[List[DiskOnlyFileModel]] = Field(None, alias="crsFile")
     hisfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"

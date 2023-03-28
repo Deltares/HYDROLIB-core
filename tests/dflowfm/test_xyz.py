@@ -1,6 +1,6 @@
 import pytest
 
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dflowfm.xyz.models import XYZModel, XYZPoint
 from hydrolib.core.dflowfm.xyz.parser import XYZParser
 from hydrolib.core.dflowfm.xyz.serializer import XYZSerializer
@@ -26,7 +26,7 @@ class TestXYZSerializer:
 
         config = SerializerConfig(float_format=".2f")
 
-        XYZSerializer.serialize(output_file, data, config)
+        XYZSerializer.serialize(output_file, data, config, ModelSaveSettings())
 
         assert_files_equal(output_file, reference_file)
 
