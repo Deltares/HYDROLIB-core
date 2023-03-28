@@ -106,7 +106,7 @@ assert model.geometry.netfile.filepath == Path("network/FlowFM_net.nc")
 The `resolve_casing` argument is by default `False`. Using the `resolve_casing` functionality might heavily influence the performance of model loading depending on the model size, the file tree structure and the operating system.
 
 ## Saving and loading models between different operating systems
-In certain cases, it may be necessary to switch effortlessly between operating systems (OS) using the same model. This enables the model to be loaded seamlessly on both Unix and Windows systems. However, it is important to note that the file paths look different for both OSs. Absolute file paths on Unix contain a leading slash, while on Windows systems they begin with a drive letter. Additionally, Unix systems don't allow backward slashes, whereas Windows supports both forward and backward slashes in file paths. These unique difference may cause issues when attempting to interpret files references within the model on the opposite OS
+In certain cases, it may be necessary to switch effortlessly between operating systems (OS) using the same model. This allows the model to be loaded seamlessly on both Unix and Windows systems. However, it is important to note that the file paths look different for both OSs. Absolute file paths on Unix have a leading slash, while on Windows systems they start with a drive letter. Additionally, Unix systems don't allow backward slashes, whereas Windows supports both forward and backward slashes in file paths. These unique differences may cause issues when attempting to interpret files references within the model on another OS.
 
 Fortunately, HYDROLIB-core features a functionality that allows the conversion of file paths from one OS path style to another. This resolves the issue and ensures that the model functions seamlessly on both Unix and Windows systems.
 
@@ -133,7 +133,7 @@ model.save(filepath=Path("p:/model/FlowFM.mdu"), recurse=True, path_style="unix"
 model.save(filepath=Path("/p/model/FlowFM.mdu"), recurse=True, path_style="windows")
 ```
 
-In the two examples mentioned above, the `path_style` option indicates the preferred path style of the saved model files. However, if this option is not specified when initializing or saving the model, it will default to the path style of the current operating system.
+In the two examples mentioned above, the `path_style` option specifies the preferred path style of the saved model files. However, if this option is not specified when initializing or saving the model, it will default to the path style of the current operating system.
 
 The `path_style` option supports these three values:
 * `None` (will default to either `"windows"` or `"unix"` depending on the running OS)
