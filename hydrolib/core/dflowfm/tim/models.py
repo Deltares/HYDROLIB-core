@@ -1,10 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict
 
-from hydrolib.core.basemodel import (
-    ModelSaveSettings,
-    ParsableFileModel,
-)
+from hydrolib.core.basemodel import ModelSaveSettings, ParsableFileModel
 
 from .parser import TimParser
 from .serializer import TimSerializer, TimSerializerConfig
@@ -35,7 +32,9 @@ class TimModel(ParsableFileModel):
         return "sample"
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, TimSerializerConfig, ModelSaveSettings], None]:
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, TimSerializerConfig, ModelSaveSettings], None]:
         return TimSerializer.serialize
 
     @classmethod

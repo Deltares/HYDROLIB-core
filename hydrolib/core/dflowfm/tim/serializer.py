@@ -12,7 +12,12 @@ class TimSerializerConfig(SerializerConfig):
 
 class TimSerializer:
     @staticmethod
-    def serialize(path: Path, data: Dict, config: TimSerializerConfig, save_settings: ModelSaveSettings) -> None:
+    def serialize(
+        path: Path,
+        data: Dict,
+        config: TimSerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> None:
         """
         Serializes the timeseries data to the file at the specified path in .tim format.
 
