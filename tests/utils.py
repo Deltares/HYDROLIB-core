@@ -1,5 +1,7 @@
+from contextlib import contextmanager
 import filecmp
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Generic, Optional, TypeVar
 
 from pydantic.generics import GenericModel
@@ -104,3 +106,11 @@ def error_occurs_only_once(error_message: str, full_error: str) -> bool:
         return False
 
     return full_error.count(error_message) == 1
+
+@contextmanager
+def create_temp_file(content: str, filename: str):
+    with TemporaryDirectory() as temp_dir:
+        file = Path(temp_dir, filename)
+        with open(file, "w") as f:
+            f.write(content)
+        yield file
