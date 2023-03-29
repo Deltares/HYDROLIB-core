@@ -141,7 +141,7 @@ class INIBasedModel(BaseModel, ABC):
             )
             return cls.get_list_field_delimiter(key).join([float_format(x) for x in v])
         elif isinstance(v, Enum):
-            return v.value
+            return v
         elif isinstance(v, float):
             return f"{v:{config.float_format}}"
         elif v is None:
