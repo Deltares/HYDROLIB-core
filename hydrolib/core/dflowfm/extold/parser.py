@@ -41,8 +41,9 @@ class Parser:
                 key, value = line.split("=", 1)
                 current_forcing[key.strip()] = value.strip()
 
-            Parser.validate_order(current_forcing, line_index)
-            forcings.append(current_forcing)
+            if len(current_forcing) != 0:
+                Parser.validate_order(current_forcing, line_index)
+                forcings.append(current_forcing)
 
         return dict(forcing=forcings)
 

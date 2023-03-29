@@ -8,7 +8,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 
-from ..utils import test_input_dir
+from ..utils import create_temp_file
 
 
 class TestExtForcing:
@@ -501,30 +501,53 @@ class TestExtOldModel:
 
 class TestParser:
     def test_parse(self):
-        filepath = test_input_dir / "dflowfm_individual_files" / "FlowFM_extold.ext"
+        file_content = """
+            * This is a comment
+            * This is a comment
+
+            QUANTITY=internaltidesfrictioncoefficient
+            FILENAME=surroundingDomain.pol
+            FILETYPE=11
+            METHOD=4
+            OPERAND=+
+            VALUE=0.0125
+
+            * This is a comment
+
+            QUANTITY=waterlevelbnd
+            FILENAME=OB_001_orgsize.pli
+            FILETYPE=9
+            METHOD=3
+            * This is a comment
+            OPERAND=O
+            * This is a comment
+        """
+
         parser = Parser()
-        data = parser.parse(filepath=filepath)
 
-        assert len(data) == 1
-        forcing_list = data["forcing"]
+        with create_temp_file(file_content, "someoldext.ext") as temp_file:
+            data = parser.parse(filepath=temp_file)
 
-        assert len(forcing_list) == 2
+            assert len(data) == 1
+            forcing_list = data["forcing"]
 
-        forcing_1 = forcing_list[0]
-        assert len(forcing_1) == 6
+            assert len(forcing_list) == 2
 
-        assert forcing_1["QUANTITY"] == "internaltidesfrictioncoefficient"
-        assert forcing_1["FILENAME"] == "surroundingDomain.pol"
-        assert forcing_1["FILETYPE"] == "11"
-        assert forcing_1["METHOD"] == "4"
-        assert forcing_1["OPERAND"] == "+"
-        assert forcing_1["VALUE"] == "0.0125"
+            forcing_1 = forcing_list[0]
+            assert len(forcing_1) == 6
 
-        forcing_2 = forcing_list[1]
-        assert len(forcing_2) == 5
+            assert forcing_1["QUANTITY"] == "internaltidesfrictioncoefficient"
+            assert forcing_1["FILENAME"] == "surroundingDomain.pol"
+            assert forcing_1["FILETYPE"] == "11"
+            assert forcing_1["METHOD"] == "4"
+            assert forcing_1["OPERAND"] == "+"
+            assert forcing_1["VALUE"] == "0.0125"
 
-        assert forcing_2["QUANTITY"] == "waterlevelbnd"
-        assert forcing_2["FILENAME"] == "OB_001_orgsize.pli"
-        assert forcing_2["FILETYPE"] == "9"
-        assert forcing_2["METHOD"] == "3"
-        assert forcing_2["OPERAND"] == "O"
+            forcing_2 = forcing_list[1]
+            assert len(forcing_2) == 5
+
+            assert forcing_2["QUANTITY"] == "waterlevelbnd"
+            assert forcing_2["FILENAME"] == "OB_001_orgsize.pli"
+            assert forcing_2["FILETYPE"] == "9"
+            assert forcing_2["METHOD"] == "3"
+            assert forcing_2["OPERAND"] == "O"
