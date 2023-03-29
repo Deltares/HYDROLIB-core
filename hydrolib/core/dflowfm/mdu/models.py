@@ -23,6 +23,7 @@ from hydrolib.core.dflowfm.obscrosssection.models import ObservationCrossSection
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.storagenode.models import StorageNodeModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
+from hydrolib.core.dflowfm.xyn.models import XYNModel
 from hydrolib.core.dflowfm.xyz.models import XYZModel
 
 
@@ -728,6 +729,9 @@ class Trachytopes(INIBasedModel):
     dttrt: float = Field(60.0, alias="dtTrt")
 
 
+ObsFile = Union[XYNModel, ObservationPointModel]
+
+
 class Output(INIBasedModel):
     """
     The `[Output]` section in an MDU file.
@@ -1065,7 +1069,7 @@ class Output(INIBasedModel):
     flowgeomfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile"
     )
-    obsfile: Optional[List[ObservationPointModel]] = Field(None, alias="obsFile")
+    obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
     crsfile: Optional[List[Union[PolyFile, ObservationCrossSectionModel]]] = Field(
         None, alias="crsFile"
     )
@@ -1283,6 +1287,10 @@ class Geometry(INIBasedModel):
             "<*_part.pol>, polyline(s) x, y.", alias="partitionFile"
         )
         uniformwidth1d: Optional[str] = Field("", alias="uniformWidth1D")
+        dxwuimin2d: Optional[str] = Field(
+            "Smallest fraction dx/wu , set dx > Dxwuimin2D*wu",
+            alias="dxWuiMin2D",
+        )
         waterlevini: Optional[str] = Field("Initial water level.", alias="waterLevIni")
         bedlevuni: Optional[str] = Field(
             "Uniform bed level [m], (only if bedlevtype>=3), used at missing z values in netfile.",
@@ -1349,6 +1357,24 @@ class Geometry(INIBasedModel):
         )
         numtopsig: Optional[str] = Field(
             "Number of sigma-layers on top of z-layers.", alias="numTopSig"
+        )
+        numtopsiguniform: Optional[str] = Field(
+            "Spatially constant number of sigma layers above z-layers in a z-sigma model (1: yes, 0: no, spatially varying)",
+            alias="numTopSigUniform",
+        )
+        dztop: Optional[str] = Field(
+            "Z-layer thickness of layers above level Dztopuniabovez", alias="dzTop"
+        )
+        floorlevtoplay: Optional[str] = Field(
+            "Floor level of top layer", alias="floorLevTopLay"
+        )
+        dztopuniabovez: Optional[str] = Field(
+            "Above this level layers will have uniform dzTop, below we use sigmaGrowthFactor",
+            alias="dzTopUniAboveZ",
+        )
+        keepzlayeringatbed: Optional[str] = Field(
+            "0:possibly very thin layer at bed, 1:bedlayerthickness == zlayerthickness, 2=equal thickness first two layers",
+            alias="keepZLayeringAtBed",
         )
         sigmagrowthfactor: Optional[str] = Field(
             "layer thickness growth factor from bed up.", alias="sigmaGrowthFactor"
@@ -1418,6 +1444,7 @@ class Geometry(INIBasedModel):
     )
     partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
+    dxwuimin2d: float = Field(0.0, alias="dxWuiMin2D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
     bedlevuni: float = Field(-5.0, alias="bedLevUni")
     bedslope: float = Field(0.0, alias="bedSlope")
@@ -1438,7 +1465,12 @@ class Geometry(INIBasedModel):
     kmx: int = Field(0, alias="kmx")
     layertype: int = Field(1, alias="layerType")
     numtopsig: int = Field(0, alias="numTopSig")
+    numtopsiguniform: bool = Field(True, alias="numTopSigUniform")
     sigmagrowthfactor: float = Field(1.0, alias="sigmaGrowthFactor")
+    dztop: Optional[float] = Field(None, alias="dzTop")
+    floorlevtoplay: Optional[float] = Field(None, alias="floorLevTopLay")
+    dztopuniabovez: Optional[float] = Field(None, alias="dzTopUniAboveZ")
+    keepzlayeringatbed: int = Field(2, alias="keepZLayeringAtBed")
     dxdoubleat1dendnodes: bool = Field(True, alias="dxDoubleAt1DEndNodes")
     changevelocityatstructures: bool = Field(False, alias="changeVelocityAtStructures")
     changestructuredimensions: bool = Field(True, alias="changeStructureDimensions")
