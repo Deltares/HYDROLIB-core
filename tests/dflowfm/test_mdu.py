@@ -1,7 +1,4 @@
 from pathlib import Path
-from typing import Callable, Dict, Union
-
-import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.mdu.models import (
@@ -12,8 +9,15 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
+from hydrolib.core.dflowfm.obs.models import ObservationPoint, ObservationPointModel
+from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 
-from ..utils import test_input_dir
+from ..utils import (
+    assert_files_equal,
+    test_input_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 class TestModels:
@@ -83,6 +87,31 @@ class TestModels:
         assert fm_model.veg.rhoveg == 0.0
         assert fm_model.veg.stemheightstd == 0.0
 
+    def test_mdu_with_3d_settings(self):
+        input_mdu = (
+            test_input_dir / "dflowfm_individual_files" / "special_3d_settings.mdu"
+        )
+        output_mdu = (
+            test_output_dir / "test_mdu_with_3d_settings" / "special_3d_settings.mdu"
+        )
+        reference_mdu = test_reference_dir / "fm" / "special_3d_settings.mdu"
+
+        fm_model = FMModel(filepath=input_mdu, recurse=False)
+        assert fm_model.geometry.kmx == 53
+        assert fm_model.geometry.layertype == 1
+        assert fm_model.geometry.numtopsig == 20
+        assert fm_model.geometry.numtopsiguniform == True
+        assert fm_model.geometry.sigmagrowthfactor == 1.19
+        assert fm_model.geometry.dztop == 5.0
+        assert fm_model.geometry.floorlevtoplay == -5.0
+        assert fm_model.geometry.dztopuniabovez == -100.0
+        assert fm_model.geometry.keepzlayeringatbed == 2
+        assert fm_model.geometry.dxwuimin2d == 0.1
+
+        fm_model.save(output_mdu, recurse=False)
+
+        assert_files_equal(output_mdu, reference_mdu)
+
     def test_disk_only_file_model_list_fields_are_initialized_correctly(self):
         data = {"crsfile": [Path("test.crs")]}
 
@@ -91,3 +120,70 @@ class TestModels:
         assert model.crsfile is not None
         assert len(model.crsfile) == 1
         assert isinstance(model.crsfile[0], DiskOnlyFileModel)
+
+    def test_loading_fmmodel_model_with_xyn_obsfile(self):
+        file_path = test_input_dir / "obsfile_cases" / "single_xyn" / "fm.mdu"
+        model = FMModel(file_path)
+
+        expected_points = [
+            XYNPoint(x=1.1, y=2.2, n="ObservationPoint_2D_01"),
+            XYNPoint(x=3.3, y=4.4, n="ObservationPoint_2D_02"),
+        ]
+
+        obsfile = model.output.obsfile[0]
+
+        assert isinstance(obsfile, XYNModel)
+        assert obsfile.points == expected_points
+
+    def test_loading_fmmodel_model_with_ini_obsfile(self):
+        file_path = test_input_dir / "obsfile_cases" / "single_ini" / "fm.mdu"
+        model = FMModel(file_path)
+
+        expected_points = [
+            ObservationPoint(x=1.1, y=2.2, name="ObservationPoint_2D_01"),
+            ObservationPoint(x=3.3, y=4.4, name="ObservationPoint_2D_02"),
+        ]
+
+        obsfile = model.output.obsfile[0]
+
+        assert isinstance(obsfile, ObservationPointModel)
+
+        assert len(obsfile.observationpoint) == len(expected_points)
+        for actual_point, expected_point in zip(
+            obsfile.observationpoint, expected_points
+        ):
+            assert actual_point.x == expected_point.x
+            assert actual_point.y == expected_point.y
+            assert actual_point.name == expected_point.name
+
+    def test_loading_fmmodel_model_with_both_ini_and_xyn_obsfiles(self):
+        file_path = test_input_dir / "obsfile_cases" / "both_ini_and_xyn" / "fm.mdu"
+        model = FMModel(file_path)
+
+        assert len(model.output.obsfile) == 2
+
+        obsfile = model.output.obsfile
+        xyn_file = obsfile[0]
+        assert isinstance(xyn_file, XYNModel)
+
+        expected_xyn_points = [
+            XYNPoint(x=1.1, y=2.2, n="ObservationPoint_2D_01"),
+            XYNPoint(x=3.3, y=4.4, n="ObservationPoint_2D_02"),
+        ]
+        assert xyn_file.points == expected_xyn_points
+
+        ini_file = obsfile[1]
+        assert isinstance(ini_file, ObservationPointModel)
+
+        expected_ini_points = [
+            ObservationPoint(x=1.1, y=2.2, name="ObservationPoint_2D_01"),
+            ObservationPoint(x=3.3, y=4.4, name="ObservationPoint_2D_02"),
+        ]
+        assert len(ini_file.observationpoint) == len(expected_ini_points)
+
+        for actual_point, expected_point in zip(
+            ini_file.observationpoint, expected_ini_points
+        ):
+            assert actual_point.x == expected_point.x
+            assert actual_point.y == expected_point.y
+            assert actual_point.name == expected_point.name
