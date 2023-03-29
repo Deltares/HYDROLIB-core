@@ -122,6 +122,7 @@ def create_temp_file_from_lines(lines: List[str], filename: str):
     with create_temp_file(content, filename) as file:
         yield file
 
+
 @contextmanager
 def get_temp_file(filename: str):
     with TemporaryDirectory() as temp_dir:
