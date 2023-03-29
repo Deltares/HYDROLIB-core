@@ -1,74 +1,19 @@
 from pathlib import Path
 from typing import Iterable, List, Optional, Sequence
-from itertools import count
-
 
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.ini.io_models import Datablock, DatablockRow
-from hydrolib.core.dflowfm.ini.serializer import MaxLengths, SectionSerializer
-from hydrolib.core.dflowfm.tim.parser import TimTimeData
-
 
 class TimSerializerConfig(SerializerConfig):
     datablock_indent: int = 4
     datablock_spacing: int = 2
 
-
-class TimTimeDatasSerializer(SectionSerializer):
+class TimSerializer:
 
     Lines = Iterable[str]
-    MAX_LENGTH = 10
+    max_length_datablock = 10
+    datablock_spacing = 0
 
-    def serialize(self, timeserie: TimTimeData, config: TimSerializerConfig) -> Lines:
-        """Serialize the provided timeserie with the given config
-
-        Args:
-            timeserie (TimTimeData): The timeserie to serialize
-            config (TimSerializerConfig): The config describing the serialization options
-
-        Returns:
-            Lines: The iterable lines of the serialized timeserie
-        """
-        datablock = self._create_tim_datablock(timeserie, config)
-        return self._tim_serialize_datablock(datablock)
-
-    def _create_tim_datablock(self, timeserie: TimTimeData, config) -> Datablock:
-        datablock = []
-        row = self._create_tim_data_row(timeserie, config.float_format)
-        datablock.append(row)
-        return datablock
-
-    def _create_tim_data_row(self, timeserie: TimTimeData, float_format: str):
-        format_float = lambda x: f"{x:{float_format}}"
-        series = [str(format_float(p)) for p in timeserie.series]
-        row = []
-        row.append(str(timeserie.time))
-        row.extend(series)
-        return row
-
-    def _tim_serialize_datablock(self, datablock: Optional[Datablock]) -> Lines:
-        if datablock is None:
-            return []
-
-        indent = " " * self._config.datablock_indent
-        return self._tim_serialize_row(datablock[0], indent)
-
-    def _tim_serialize_row(self, row: DatablockRow, indent: str) -> str:
-        elem_spacing = " " * self.config.datablock_spacing
-        elems = (self._tim_serialize_row_element(elem) for elem in row)
-        return indent + elem_spacing.join(elems).rstrip()
-
-    def _tim_serialize_row_element(self, elem: str) -> str:
-        whitespace = _tim_get_offset_whitespace(elem, self.MAX_LENGTH)
-        return elem + whitespace
-
-
-def _tim_get_offset_whitespace(key: Optional[str], max_length: int) -> str:
-    key_length = len(key) if key is not None else 0
-    return " " * max(max_length - key_length, 0)
-
-
-class TimSerializer:
     @staticmethod
     def serialize(
         path: Path, data: dict, config: TimSerializerConfig
@@ -78,81 +23,49 @@ class TimSerializer:
 
         Attributes:
             path (Path): The path to the destination file.
-            data (List): The data to be serialized.
+            data (dict): The data to be serialized.
             config (TimSerializerConfig): The serialization configuration.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
-        serializer = TimTimeDatasSerializer(config, MaxLengths(key=0, value=0))
 
-        Datablock = Sequence[Sequence[str]]
-        Commentblock = Sequence[Sequence[str]]
-
-        Datalist = []
-        Commentlist = []
+        datarowlist = []
+        commentrowlist = []
 
         for key in data:
             if key == 'comments':
-                Commentlist.append(TimSerializer._get_commentblockrow(key, data))
+                commentrowlist.append(TimSerializer._get_commentblockrow(key, data))
             else:
-                Datalist.append(TimSerializer._get_datablockrow(key, data))
+                datarowlist.append(TimSerializer._get_datablockrow(key, data))
 
-        Commentblock = Commentlist
-        Datablock = Datalist
-
-
-        try:
-            Data = TimSerializer._serialize_datablock(Datablock)
-        except Exception as e:
-            raise ValueError()
-             
-
+        timeseries = TimSerializer._serialize_datablock(datarowlist)
 
         with path.open("w") as file:
-            TimSerializer._write_rows(file, Commentblock)
-            TimSerializer._write_rows(file, Data)
-
+            TimSerializer._write_rows(file, commentrowlist)
+            TimSerializer._write_rows(file, timeseries)
     
     @staticmethod
-    def _write_rows(file, block):
-        for data in block:
-            for line in data:
-                if isinstance(line, str):
-                    file.write(line)
+    def _write_rows(file, rowlist):
+        for rows in rowlist:
+            for row in rows:
+                if isinstance(row, str):
+                    file.write(row)
 
     @staticmethod
     def _get_datablockrow(key, dictionary):
-        DatablockRow = [str]
-        DatablockRow.append(str(key))
+        rowlist = [str]
+        rowlist.append(str(key))
         for value in dictionary[key]:
-            DatablockRow.append(str(value))
-        return DatablockRow
+            rowlist.append(str(value))
+        return rowlist
     
     @staticmethod
     def _get_commentblockrow(key, dictionary):
-        DatablockRow = [str]
+        rowlist = [str]
         for comment in dictionary[key]:
             if isinstance(comment, str):
                 data = f"# {comment}"
-                DatablockRow.append(data)
-        return DatablockRow
-
-    @staticmethod
-    def _write_row(
-        file,
-        serializer: TimTimeDatasSerializer,
-        timeserie: TimTimeData,
-        config: TimSerializerConfig,
-    ):
-        if timeserie.comment:
-            file.write(timeserie.comment)
-        else:
-            row = serializer.serialize(timeserie, config)
-            file.write(f"{row}\n")
-
-    Lines = Iterable[str]
-
-    max_length_datablock = 10
-    datablock_spacing = 0
+                rowlist.append(data)
+        return rowlist
 
     @staticmethod
     def _serialize_datablock(datablock: Optional[Datablock]) -> Lines:
