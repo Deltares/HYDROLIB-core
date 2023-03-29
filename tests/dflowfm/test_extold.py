@@ -1,14 +1,19 @@
+from pathlib import Path
 import pytest
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
 from hydrolib.core.dflowfm.extold.models import (
     ExtForcing,
     ExtOldModel,
+    FileType,
+    Method,
     Operand,
     Quantity,
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
+from hydrolib.core.dflowfm.extold.serializer import Serializer
 
-from ..utils import create_temp_file_from_lines
+from ..utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
 
 
 class TestExtForcing:
@@ -572,3 +577,46 @@ class TestParser:
 
         exp_error = "Line 1: Properties should be in the following order: QUANTITY, FILENAME, FILETYPE, OPERAND, VALUE"
         assert str(error.value) == exp_error
+
+class TestSerializer:
+    def test_serialize(self):
+        expected_file_content = [
+            "QUANTITY=internaltidesfrictioncoefficient",
+            "FILENAME=surroundingDomain.pol",
+            "FILETYPE=11",
+            "METHOD=4",
+            "OPERAND=+",
+            "VALUE=0.012500",
+            "",
+            "QUANTITY=waterlevelbnd",
+            "FILENAME=OB_001_orgsize.pli",
+            "FILETYPE=9",
+            "METHOD=3",
+            "OPERAND=O",
+        ]
+
+        forcing_1 = ExtForcing(quantity=Quantity.InternalTidesFrictionCoefficient, 
+                               filename=Path("surroundingDomain.pol"), 
+                               filetype=FileType.NetCDFGridData, 
+                               method = Method.InterpolateSpace, 
+                               operand = Operand.SuperimposeNewValues,
+                               value=0.0125)
+
+        forcing_2 = ExtForcing(quantity=Quantity.WaterLevelBnd, 
+                               filename=Path("OB_001_orgsize.pli"), 
+                               filetype=FileType.Polyline, 
+                               method = Method.InterpolateTimeAndSpaceSaveWeights, 
+                               operand = Operand.OverwriteExistingValues)
+
+        forcing_data = {
+            "forcing" : [forcing_1, forcing_2]
+        }
+
+        serializer_config = SerializerConfig(float_format="f")
+        save_settings = ModelSaveSettings()
+
+        with get_temp_file("serializer.ext") as file:
+            Serializer.serialize(file, forcing_data, serializer_config, save_settings)
+
+            with create_temp_file_from_lines(expected_file_content, "expected.ext") as expected_file:
+                assert_files_equal(file, expected_file)
