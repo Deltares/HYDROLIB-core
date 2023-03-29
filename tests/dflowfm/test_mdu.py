@@ -25,6 +25,7 @@ from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 
 from ..utils import (
     assert_files_equal,
+    assert_objects_equal,
     test_input_dir,
     test_output_dir,
     test_reference_dir,
