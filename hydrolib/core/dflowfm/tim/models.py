@@ -1,22 +1,23 @@
 from pathlib import Path
-from typing import Callable, Dict, List
+from typing import Callable, Dict
 
-from hydrolib.core.basemodel import ParsableFileModel, SerializerConfig
+from hydrolib.core.basemodel import ParsableFileModel
 
 from .parser import TimParser
-from .serializer import TimSerializer, TimSerializerConfig, TimTimeData
+from .serializer import TimSerializer, TimSerializerConfig
 
 
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
 
     Attributes:
-        timeseries: List[TimTimeData]
+        data: dict
         serializer_config: TimSerializerConfig
     """
 
     serializer_config = TimSerializerConfig()
-    timeseries: List[TimTimeData]
+
+    timeseries : dict
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict

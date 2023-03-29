@@ -22,6 +22,8 @@ def _get_triple_data_for_timeseries():
     data.append(TimTimeData(time=10.0, series=[1.232, 2.343, 3.454]))
     data.append(TimTimeData(time=20.0, series=[4.565, 5.676, 6.787]))
     data.append(TimTimeData(time=30.0, series=[1.5, 2.6, 3.7]))
+
+    data = dict()
     return data
 
 
@@ -55,97 +57,181 @@ def _get_single_data_for_timeseries():
 
 
 class TestTimSerializer:
-    def test_serialize_triple_data_for_timeseries(self):
-        input_data = _get_triple_data_for_timeseries()
-        output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
-        reference_path = Path(test_reference_dir / "tim" / TRIPLE_DATA)
+    @pytest.mark.parametrize(
+        "input_data, reference_path",
+        [
+            pytest.param(
+                {"comments":[str,"this file\n", " contains\n", " stuff\n"],
+                10:[1.232, 2.343, 3.454],
+                20:[4.565, 5.676, 6.787],
+                30:[1.5, 2.6, 3.7]},
+                Path(test_reference_dir / "tim" / "triple_data_for_timeseries_with_comments.tim"),
+                id="triple_data_for_timeseries_with_comments"
+            ),
+            pytest.param(
+                {"comments":[],
+                10:[1.232, 2.343, 3.454],
+                20:[4.565, 5.676, 6.787],
+                30:[1.5, 2.6, 3.7]},
+                Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim"),
+                id="triple_data_for_timeseries"
+            ),
+            pytest.param(
+                {"comments":[],
+                0.000000   :[0.0000000],
+                10.000000   :[0.0100000],
+                20.000000   :[0.0000000],
+                30.000000   :[-0.0100000],
+                40.000000   :[0.0000000],
+                50.000000   :[0.0100000],
+                60.000000   :[0.0000000],
+                70.000000   :[-0.0100000],
+                80.000000   :[0.0000000],
+                90.000000   :[0.0100000],
+                100.000000  :[0.0000000],
+                110.000000  :[-0.0100000],
+                120.000000  :[0.0000000]},
+                Path(test_reference_dir/ "tim"/ "single_data_for_timeseries.tim"),
+                id="single_data_for_timeseries"
+            ),
+        ]
+    )
+    def test_serialize_data(self, input_data, reference_path):
+        output_path = Path(test_output_dir/ "tim"/ "test_serialize.tim")
         config = TimSerializerConfig(float_format=".3f")
         TimSerializer.serialize(output_path, input_data, config)
         assert_files_equal(output_path, reference_path)
 
-    def test_serialize_single_data_for_timeseries(self):
-        input_data = _get_single_data_for_timeseries()
-
-        output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
-        reference_path = Path(test_reference_dir / "tim" / SINGLE_DATA)
-        config = TimSerializerConfig(float_format=".6f")
-
-        TimSerializer.serialize(output_path, input_data, config)
-        assert_files_equal(output_path, reference_path)
-
-
 class TestTimModel:
-    def test_save_triple_data_for_timeseries(self):
-        model = TimModel(timeseries=_get_triple_data_for_timeseries())
+    @pytest.mark.parametrize(
+        "input_data, reference_path",
+        [
+            pytest.param(
+                {"comments":[str,"this file\n", " contains\n", " stuff\n"],
+                10:[1.232, 2.343, 3.454],
+                20:[4.565, 5.676, 6.787],
+                30:[1.5, 2.6, 3.7]},
+                Path(test_reference_dir / "tim" / "triple_data_for_timeseries_with_comments.tim"),
+                id="triple_data_for_timeseries_with_comments"
+            ),
+            pytest.param(
+                {"comments":[],
+                10:[1.232, 2.343, 3.454],
+                20:[4.565, 5.676, 6.787],
+                30:[1.5, 2.6, 3.7]},
+                Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim"),
+                id="triple_data_for_timeseries"
+            ),
+            pytest.param(
+                {"comments":[],
+                0.000000   :[0.0000000],
+                10.000000   :[0.0100000],
+                20.000000   :[0.0000000],
+                30.000000   :[-0.0100000],
+                40.000000   :[0.0000000],
+                50.000000   :[0.0100000],
+                60.000000   :[0.0000000],
+                70.000000   :[-0.0100000],
+                80.000000   :[0.0000000],
+                90.000000   :[0.0100000],
+                100.000000  :[0.0000000],
+                110.000000  :[-0.0100000],
+                120.000000  :[0.0000000]},
+                Path(test_reference_dir/ "tim"/ "single_data_for_timeseries.tim"),
+                id="single_data_for_timeseries"
+            ),
+        ]
+    )
+    def test_save_data_for_timeseries(self, input_data, reference_path):
+        model = TimModel(timeseries=input_data)
         output_path = Path(test_output_dir / "tim" / "test_save.tim")
-        reference_path = Path(test_reference_dir / "tim" / TRIPLE_DATA)
         model.filepath = output_path
         model.serializer_config.float_format = ".3f"
         model.save()
         assert_files_equal(output_path, reference_path)
 
-    def test_save_single_data_for_timeseries(self):
-        model = TimModel(timeseries=_get_single_data_for_timeseries())
-        output_path = Path(test_output_dir / "tim" / "test_save.tim")
-        reference_path = Path(test_reference_dir / "tim" / SINGLE_DATA)
-        model.filepath = output_path
-        model.serializer_config.float_format = ".6f"
-        model.save()
-        assert_files_equal(output_path, reference_path)
-
-
 class TestTimParser:
+    @pytest.mark.parametrize(
+        "expected_output, input_path",
+        [
+            pytest.param(
+                {"comments":[str],
+                10:[1.232, 2.343, 3.454],
+                20:[4.565, 5.676, 6.787],
+                30:[1.5, 2.6, 3.7]},
+                Path(test_input_dir / "tim" / TRIPLE_DATA),
+                id="triple_data_for_timeseries"
+            ),
+            pytest.param(
+                {"comments":[str],
+                10:[1.232, 2.343, 3.454],
+                20:[4.565, 5.676, 6.787],
+                30:[1.5, 2.6, 3.7]},
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "triple_data_for_timeseries_different_whitespaces_between_data.tim"
+                ),
+                id="triple_data_for_timeseries_different_whitespaces_between_data"
+            ),
+            pytest.param(
+                {"comments":[str,"comments\n", " 40 1.5 2.6 3.7\n", " 50 1.5 2.6 3.7"],
+                10:[1.232, 2.343, 3.454],
+                20:[4.565, 5.676, 6.787],
+                30:[1.5, 2.6, 3.7]},
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "triple_data_for_timeseries_with_comments.tim"
+                ),
+                id="triple_data_for_timeseries_with_comments"
+            ),
+            pytest.param(
+                {"comments":[str],
+                0.000000   :[0.0000000],
+                10.000000   :[0.0100000],
+                20.000000   :[0.0000000],
+                30.000000   :[-0.0100000],
+                40.000000   :[0.0000000],
+                50.000000   :[0.0100000],
+                60.000000   :[0.0000000],
+                70.000000   :[-0.0100000],
+                80.000000   :[0.0000000],
+                90.000000   :[0.0100000],
+                100.000000  :[0.0000000],
+                110.000000  :[-0.0100000],
+                120.000000  :[0.0000000]},
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "single_data_for_timeseries.tim"
+                ),
+                id="single_data_for_timeseries"
+            ),
+        ]
+    )
+    def test_parse_data(self, expected_output, input_path):
+        data = TimParser.parse(input_path)
+        assert data == expected_output
+
     @pytest.mark.parametrize(
         "input_path",
         [
-            Path(test_input_dir / "tim" / TRIPLE_DATA),
-            Path(
-                test_input_dir
-                / "tim"
-                / "triple_data_for_timeseries_different_whitespaces_between_data.tim"
+            pytest.param(
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "triple_data_for_timeseries_with_one_line_with_not_enough_information.tim"
+                ),
+                id="triple_data_for_timeseries_with_one_line_with_not_enough_information"
             ),
-            Path(
-                test_input_dir
-                / "tim"
-                / "triple_data_for_timeseries_with_one_line_with_not_enough_information.tim"
-            ),
-            Path(
-                test_input_dir
-                / "tim"
-                / "triple_data_for_timeseries_with_comments_after_data.tim"
-            ),
-        ],
+        ]
     )
-    def test_parse_with_triple_data_for_timeseries(self, input_path):
-        data = TimParser.parse(input_path)
+    def test_parse_data_throws_exception(self, input_path):
+        with pytest.raises(ValueError) as error:
+            TimParser.parse(input_path)
+        found_msg = error.value.args[0]
 
-        expected_output = _get_triple_data_for_timeseries()
+        expected_error_msg = f"Error parsing tim file '{input_path}'."
+        assert found_msg == expected_error_msg
 
-        for i in range(len(expected_output)):
-            assert data[i].time == expected_output[i].time
-            assert data[i].series == expected_output[i].series
-            assert data[i].comment == expected_output[i].comment
-
-    def test_parse_with_single_data_for_timeseries(self):
-        input_path = Path(test_input_dir / "tim" / SINGLE_DATA)
-        data = TimParser.parse(input_path)
-
-        expected_output = _get_single_data_for_timeseries()
-
-        for i in range(len(expected_output)):
-            assert data[i].time == expected_output[i].time
-            assert data[i].series == expected_output[i].series
-            assert data[i].comment == expected_output[i].comment
-
-    def test_parse_with_comments(self):
-        input_path = Path(
-            test_input_dir / "tim" / "triple_data_for_timeseries_with_comments.tim"
-        )
-        data = TimParser.parse(input_path)
-
-        expected_output = _get_triple_data_with_comments_for_timeseries()
-
-        for i in range(len(expected_output)):
-            assert data[i].time == expected_output[i].time
-            assert data[i].series == expected_output[i].series
-            assert data[i].comment == expected_output[i].comment

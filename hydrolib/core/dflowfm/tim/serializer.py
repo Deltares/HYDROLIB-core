@@ -1,5 +1,7 @@
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Sequence
+from itertools import count
+
 
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.ini.io_models import Datablock, DatablockRow
@@ -69,7 +71,7 @@ def _tim_get_offset_whitespace(key: Optional[str], max_length: int) -> str:
 class TimSerializer:
     @staticmethod
     def serialize(
-        path: Path, data: List[TimTimeData], config: TimSerializerConfig
+        path: Path, data: dict, config: TimSerializerConfig
     ) -> None:
         """
         Serializes the timeseries data to the file at the specified path in .tim format.
@@ -82,9 +84,57 @@ class TimSerializer:
         path.parent.mkdir(parents=True, exist_ok=True)
         serializer = TimTimeDatasSerializer(config, MaxLengths(key=0, value=0))
 
+        Datablock = Sequence[Sequence[str]]
+        Commentblock = Sequence[Sequence[str]]
+
+        Datalist = []
+        Commentlist = []
+
+        for key in data:
+            if key == 'comments':
+                Commentlist.append(TimSerializer._get_commentblockrow(key, data))
+            else:
+                Datalist.append(TimSerializer._get_datablockrow(key, data))
+
+        Commentblock = Commentlist
+        Datablock = Datalist
+
+
+        try:
+            Data = TimSerializer._serialize_datablock(Datablock)
+        except Exception as e:
+            raise ValueError()
+             
+
+
         with path.open("w") as file:
-            for timeserie in data:
-                TimSerializer._write_row(file, serializer, timeserie, config)
+            TimSerializer._write_rows(file, Commentblock)
+            TimSerializer._write_rows(file, Data)
+
+    
+    @staticmethod
+    def _write_rows(file, block):
+        for data in block:
+            for line in data:
+                if isinstance(line, str):
+                    file.write(line)
+
+    @staticmethod
+    def _get_datablockrow(key, dictionary):
+        DatablockRow = [str]
+        DatablockRow.append(str(key))
+        for value in dictionary[key]:
+            DatablockRow.append(str(value))
+        return DatablockRow
+    
+    @staticmethod
+    def _get_commentblockrow(key, dictionary):
+        DatablockRow = [str]
+        for comment in dictionary[key]:
+            if isinstance(comment, str):
+                data = f"# {comment}"
+                DatablockRow.append(data)
+        return DatablockRow
 
     @staticmethod
     def _write_row(
@@ -98,3 +148,38 @@ class TimSerializer:
         else:
             row = serializer.serialize(timeserie, config)
             file.write(f"{row}\n")
+
+    Lines = Iterable[str]
+
+    max_length_datablock = 10
+    datablock_spacing = 0
+
+    @staticmethod
+    def _serialize_datablock(datablock: Optional[Datablock]) -> Lines:
+        if datablock is None or TimSerializer.max_length_datablock is None:
+            return []
+
+        linesofdatablock = []
+        for row in datablock:
+            linesofdatablock.append(TimSerializer._serialize_row(row))
+        return linesofdatablock
+
+    @staticmethod
+    def _serialize_row(row: DatablockRow) -> str:
+        elem_spacing = " " * TimSerializer.datablock_spacing
+
+        elems = []
+        for item in row:
+            if isinstance(item, str):
+                elems +=  TimSerializer._serialize_row_element(item)       
+        return elem_spacing.join(elems).rstrip() + '\n'
+
+    @staticmethod
+    def _serialize_row_element(elem: str) -> str:
+        max_length = TimSerializer.max_length_datablock  # type: ignore
+        whitespace = _get_offset_whitespace(elem, max_length)
+        return elem + whitespace
+
+def _get_offset_whitespace(key: Optional[str], max_length: int) -> str:
+    key_length = len(key) if key is not None else 0
+    return " " * max(max_length - key_length, 0)

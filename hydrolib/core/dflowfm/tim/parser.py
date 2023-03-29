@@ -1,9 +1,8 @@
 import re
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 timpattern = re.compile(r"\s+")
-
 
 class TimTimeData:
     """
@@ -25,68 +24,55 @@ class TimTimeData:
         self.time = time
         self.series = series
         self.comment = comment
-
-
+        
 class TimParser:
     """
     A parser for .tim files.
     Full line comments are supported.
-    Partial comments will have the line skipped.
+    Partial comments will raise an error.
     """
 
     @staticmethod
-    def parse(filepath: Path) -> List[TimTimeData]:
-        """Parse an .tim file into a List of TimTimeDatas.
+    def parse(filepath: Path) -> dict():
+        """Parse an .tim file into a dict.
 
         Args:
             filepath (Path): .tim file to be read.
 
         Returns:
-            List: List of "TimTimeData".\n
-            When file is empty returns an empty list.
+            dict: dictionary with keys \"comment\" & time as numeric and value as List of floats".\n
+            When file is empty returns an dictionary with only comment as key.
         """
-        timeseries = []
+        data: Dict = dict()
+        data["comments"] = [str]
         with filepath.open() as file:
             for line in file.readlines():
-                TimParser._read_line(line, timeseries)
-        return timeseries
+                if TimParser._line_is_comment(line):
+                    data["comments"].append(line.removeprefix('#').removeprefix('*'))
+                    continue
+                
+                try: 
+                     TimParser._add_timeseries(line, data)
 
+                except ValueError:
+                        raise ValueError(f"Error parsing tim file '{filepath}'.")
+
+        return data
+    
     @staticmethod
-    def _read_line(line, timeseries: List[TimTimeData]):
-        if TimParser._line_is_comment(line):
-            timeseries.append(TimTimeData(comment=line))
-            return
-
+    def _add_timeseries(line, data):
         time, *series = re.split(timpattern, line.strip())
-
+        
         if TimParser._line_has_not_enough_information(series):
-            return
-
-        TimParser._add_valid_timeserie(time, series, timeseries)
-
-    @staticmethod
-    def _add_valid_timeserie(
-        time: str, series: List[str], timeseries: List[TimTimeData]
-    ):
-        timeserie = TimParser._create_timeserie(time, series)
-
-        if timeserie is None:
-            return
-
-        timeseries.append(timeserie)
-
-    @staticmethod
-    def _create_timeserie(time: str, series: List[str]):
-        if TimParser._not_numeric(time):
-            return
-
+            raise (ValueError("Not enough information in line."))
         listofvalues = []
+        
         for value in series:
             if TimParser._not_numeric(value):
-                return
+                raise (ValueError("No numeric data detected."))
             listofvalues.append(float(value))
 
-        return TimTimeData(time=float(time), series=listofvalues)
+        data[float(time)] = listofvalues
 
     @staticmethod
     def _not_numeric(value: str):
@@ -98,5 +84,5 @@ class TimParser:
         return strippedline.startswith("#") or strippedline.startswith("*")
 
     @staticmethod
-    def _line_has_not_enough_information(line: List[str]):
+    def _line_has_not_enough_information(line):
         return len(line) < 1
