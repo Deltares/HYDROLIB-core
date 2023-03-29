@@ -2,7 +2,7 @@ from contextlib import contextmanager
 import filecmp
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generic, Optional, TypeVar
+from typing import Generic, List, Optional, TypeVar
 
 from pydantic.generics import GenericModel
 
@@ -109,6 +109,16 @@ def error_occurs_only_once(error_message: str, full_error: str) -> bool:
 
 @contextmanager
 def create_temp_file(content: str, filename: str):
+    with TemporaryDirectory() as temp_dir:
+        file = Path(temp_dir, filename)
+        with open(file, "w") as f:
+            f.write(content)
+        yield file
+
+@contextmanager   
+def create_temp_file_from_lines(lines: List[str], filename: str):
+    content = "\n".join(lines)
+    
     with TemporaryDirectory() as temp_dir:
         file = Path(temp_dir, filename)
         with open(file, "w") as f:
