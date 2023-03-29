@@ -7,7 +7,7 @@ from hydrolib.core.basemodel import DiskOnlyFileModel, SerializerConfig
 class Serializer:
     """Serializer class for serializing the forcing data of the `ExtOldModel` to file."""
 
-    def serialize(path: Path, data: Dict, config: SerializerConfig):
+    def serialize(path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings):
         """Serializes the provided data to file at the specified path.
 
         If a file already exists at the target location the file will be overwritten.
