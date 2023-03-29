@@ -22,7 +22,7 @@ class TimParser:
             dict: dictionary with keys \"comment\" & time as numeric and value as List of floats".\n
             When file is empty returns an dictionary with only comment as key.
         """
-        data = dict()
+        data = {}
         data["comments"] = [str]
         with filepath.open() as file:
             for line in file.readlines():
