@@ -1,7 +1,3 @@
-from contextlib import contextmanager
-from pathlib import Path
-from tempfile import TemporaryDirectory
-
 import pytest
 
 from hydrolib.core.basemodel import SerializerConfig
@@ -9,7 +5,7 @@ from hydrolib.core.dflowfm.xyn.models import XYNPoint
 from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
-from tests.utils import create_temp_file
+from tests.utils import create_temp_file, get_temp_file
 
 
 class TestXYNParser:
@@ -45,18 +41,12 @@ class TestXYNSerializer:
 
         config = SerializerConfig(float_format=".2f")
 
-        with TestXYNSerializer._create_temp_xyn_file() as xyn_file:
+        with get_temp_file("test.xyn") as xyn_file:
             XYNSerializer.serialize(xyn_file, data, config)
 
             with open(xyn_file) as file:
                 file_content = file.readlines()
                 assert file_content == expected_file_content
-
-    @classmethod
-    @contextmanager
-    def _create_temp_xyn_file(cls):
-        with TemporaryDirectory() as temp_dir:
-            yield Path(temp_dir, "test.xyn")
 
 
 class TestNameExtractor:
