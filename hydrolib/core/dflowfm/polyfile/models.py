@@ -3,7 +3,7 @@
 
 from typing import Callable, List, Optional, Sequence
 
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 
 
 class Description(BaseModel):
@@ -83,7 +83,7 @@ class PolyFile(ParsableFileModel):
     has_z_values: bool = False
     objects: Sequence[PolyObject] = []
 
-    def _serialize(self, _: dict) -> None:
+    def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
         from .serializer import write_polyfile
 
         # We skip the passed dict for a better one.

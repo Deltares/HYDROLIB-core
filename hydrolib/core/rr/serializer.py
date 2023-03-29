@@ -4,15 +4,17 @@ import inspect
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Union
 
-from hydrolib.core.basemodel import SerializerConfig
-from hydrolib.core.utils import get_str_len
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.utils import FilePathStyleConverter, get_str_len
 
 
 def _calculate_max_value_length(data: Iterable) -> int:
     return max(map(get_str_len, data))
 
 
-def _get_string_value(path_value: Optional[Union[dict, Path, str]]) -> str:
+def _get_string_value(
+    path_value: Optional[Union[dict, Path, str]], save_settings: ModelSaveSettings
+) -> str:
     """Get printable string value of the path value in a typical
     RainfallRunoffModel.
 
@@ -21,31 +23,43 @@ def _get_string_value(path_value: Optional[Union[dict, Path, str]]) -> str:
 
     Args:
         path_value (Union[dict, Path, str]): path-like value to be printed.
+        save_settings (ModelSaveSettings): The model save settings.
     Returns:
         str: The str representation of input path_value.
     """
-    value = ""
+
+    file_path_style_converter = FilePathStyleConverter()
+
+    path = None
     if isinstance(path_value, dict) and (file_path := path_value.get("filepath", None)):
-        value = file_path
+        path = file_path
     elif isinstance(path_value, Path):
-        value = str(path_value)
+        path = path_value
     elif isinstance(path_value, str):
-        value = path_value
+        path = Path(path_value)
+
+    if path is None:
+        value = ""
+    else:
+        value = file_path_style_converter.convert_from_os_style(
+            path, save_settings.path_style
+        )
 
     return f"'{value}'"
 
 
-def serialize(data: Dict) -> str:
+def serialize(data: Dict, save_settings: ModelSaveSettings) -> str:
     """Serialize the specified model.
 
     Args:
         data (Dict): dict values of the RainfallRunoffModel to serialize.
+        save_settings (ModelSaveSettings): The model save settings.
 
     Returns:
         str: The serialized RainfallRunoffModel in .fnm format.
     """
 
-    values = [_get_string_value(v) for v in data.values()]
+    values = [_get_string_value(v, save_settings) for v in data.values()]
     max_len = _calculate_max_value_length(values)
     padded_values = [s.ljust(max_len) if s else " " * max_len for s in values]
 
@@ -194,7 +208,9 @@ def serialize(data: Dict) -> str:
     # fmt: on
 
 
-def write(path: Path, data: Dict, config: SerializerConfig) -> None:
+def write(
+    path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings
+) -> None:
     """Write the specified model to the specified path.
 
     If the parent of the path does not exist, it will be created.
@@ -203,7 +219,8 @@ def write(path: Path, data: Dict, config: SerializerConfig) -> None:
         model (RainfallRunoffModel): The model to write to file
         path (Path): The file path to write to.
         config (SerializerConfig): The serialization configuration.
+        save_settings (ModelSaveSettings): The model save settings.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:
-        f.write(serialize(data))
+        f.write(serialize(data, save_settings))

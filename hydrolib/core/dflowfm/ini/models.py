@@ -9,7 +9,13 @@ from pydantic.class_validators import validator
 from pydantic.fields import ModelField
 
 from hydrolib.core import __version__ as version
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel
+from hydrolib.core.basemodel import (
+    BaseModel,
+    FileModel,
+    FilePathStyleConverter,
+    ModelSaveSettings,
+    ParsableFileModel,
+)
 
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
@@ -39,6 +45,7 @@ class INIBasedModel(BaseModel, ABC):
     """
 
     _header: str
+    _file_path_style_converter = FilePathStyleConverter()
 
     class Config:
         extra = Extra.ignore
@@ -129,27 +136,36 @@ class INIBasedModel(BaseModel, ABC):
     def _exclude_fields(cls) -> Set:
         return {"comments", "datablock", "_header"}
 
-    @classmethod
-    def _convert_value(cls, key: str, v: Any, config: INISerializerConfig) -> str:
+    def _convert_value(
+        self,
+        key: str,
+        v: Any,
+        config: INISerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> str:
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
-            float_format = (
-                lambda x: f"{x:{config.float_format}}"
-                if isinstance(x, float)
-                else str(x)
+            convert_value = lambda x: self._convert_value(key, x, config, save_settings)
+            return self.__class__.get_list_field_delimiter(key).join(
+                [convert_value(x) for x in v]
             )
-            return cls.get_list_field_delimiter(key).join([float_format(x) for x in v])
         elif isinstance(v, Enum):
             return v
         elif isinstance(v, float):
             return f"{v:{config.float_format}}"
+        elif isinstance(v, FileModel) and v.filepath is not None:
+            return self._file_path_style_converter.convert_from_os_style(
+                v.filepath, save_settings.path_style
+            )
         elif v is None:
             return ""
         else:
             return str(v)
 
-    def _to_section(self, config: INISerializerConfig) -> Section:
+    def _to_section(
+        self, config: INISerializerConfig, save_settings: ModelSaveSettings
+    ) -> Section:
         props = []
         for key, value in self:
             if key in self._exclude_fields():
@@ -161,7 +177,7 @@ class INIBasedModel(BaseModel, ABC):
 
             prop = Property(
                 key=key,
-                value=self.__class__._convert_value(field_key, value, config),
+                value=self._convert_value(field_key, value, config, save_settings),
                 comment=getattr(self.comments, key.lower(), None),
             )
             props.append(prop)
@@ -182,8 +198,12 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     _make_lists = make_list_validator("datablock")
 
-    def _to_section(self, config: DataBlockINIBasedSerializerConfig) -> Section:
-        section = super()._to_section(config)
+    def _to_section(
+        self,
+        config: DataBlockINIBasedSerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> Section:
+        section = super()._to_section(config, save_settings)
         section.datablock = self._to_datablock(config)
         return section
 
@@ -269,7 +289,7 @@ class INIModel(ParsableFileModel):
     def _get_parser(cls) -> Callable:
         return Parser.parse_as_dict
 
-    def _to_document(self) -> Document:
+    def _to_document(self, save_settings: ModelSaveSettings) -> Document:
         header = CommentBlock(lines=[f"written by HYDROLIB-core {version}"])
         sections = []
         for key, value in self:
@@ -277,12 +297,18 @@ class INIModel(ParsableFileModel):
                 continue
             if isinstance(value, list):
                 for v in value:
-                    sections.append(v._to_section(self.serializer_config))
+                    sections.append(
+                        v._to_section(self.serializer_config, save_settings)
+                    )
             else:
-                sections.append(value._to_section(self.serializer_config))
+                sections.append(
+                    value._to_section(self.serializer_config, save_settings)
+                )
         return Document(header_comment=[header], sections=sections)
 
-    def _serialize(self, _: dict) -> None:
+    def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
         write_ini(
-            self._resolved_filepath, self._to_document(), config=self.serializer_config
+            self._resolved_filepath,
+            self._to_document(save_settings),
+            config=self.serializer_config,
         )

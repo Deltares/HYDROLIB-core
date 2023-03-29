@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dimr.models import DIMR
 from hydrolib.core.dimr.parser import DIMRParser
 from hydrolib.core.dimr.serializer import DIMRSerializer
@@ -122,7 +122,9 @@ def test_serialize():
         },
     }
 
-    DIMRSerializer.serialize(file, data, config=SerializerConfig())
+    DIMRSerializer.serialize(
+        file, data, config=SerializerConfig(), save_settings=ModelSaveSettings()
+    )
 
     assert file.is_file()
     assert_files_equal(file, reference_file)
@@ -139,7 +141,7 @@ def test_serialize_float_are_formatted():
     )
 
     config = SerializerConfig(float_format=".2f")
-    DIMRSerializer.serialize(file_path, data, config)
+    DIMRSerializer.serialize(file_path, data, config, save_settings=ModelSaveSettings())
 
     assert file_path.is_file()
     assert_files_equal(file_path, reference_file)
