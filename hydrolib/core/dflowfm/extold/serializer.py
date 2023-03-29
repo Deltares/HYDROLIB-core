@@ -1,7 +1,12 @@
 from pathlib import Path
 from typing import Any, Dict
 
-from hydrolib.core.basemodel import DiskOnlyFileModel, FileModel, ModelSaveSettings, SerializerConfig
+from hydrolib.core.basemodel import (
+    DiskOnlyFileModel,
+    FileModel,
+    ModelSaveSettings,
+    SerializerConfig,
+)
 from hydrolib.core.dflowfm.extold.io import FORCING_FILE_ORDERED_FIELDS
 from hydrolib.core.utils import FilePathStyleConverter
 
@@ -11,7 +16,12 @@ class Serializer:
 
     _file_path_style_converter = FilePathStyleConverter()
 
-    def serialize(path: Path, data: Dict, config: SerializerConfig, save_settings: ModelSaveSettings):
+    def serialize(
+        path: Path,
+        data: Dict,
+        config: SerializerConfig,
+        save_settings: ModelSaveSettings,
+    ):
         """Serializes the provided data to file at the specified path.
 
         If a file already exists at the target location the file will be overwritten.
@@ -43,7 +53,9 @@ class Serializer:
                 f.write(("\n"))
 
     @classmethod
-    def _convert_value(cls, value: Any, config: SerializerConfig, save_settings: ModelSaveSettings) -> str:
+    def _convert_value(
+        cls, value: Any, config: SerializerConfig, save_settings: ModelSaveSettings
+    ) -> str:
         if isinstance(value, float):
             return f"{value:{config.float_format}}"
         if isinstance(value, FileModel):
