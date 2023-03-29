@@ -41,7 +41,7 @@ class Serializer:
                 forcing_dict = dict(forcing)
 
                 for key in FORCING_FILE_ORDERED_FIELDS:
-                    value = forcing_dict.get(key.lower(), None)
+                    value = forcing_dict.get(key.lower())
 
                     if Serializer._skip_field_serialization(value):
                         continue
