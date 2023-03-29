@@ -38,7 +38,9 @@ class Serializer:
         serialized_blocks = []
 
         for forcing in data["forcing"]:
-            serialized_block = Serializer._serialize_forcing(dict(forcing), config, save_settings)
+            serialized_block = Serializer._serialize_forcing(
+                dict(forcing), config, save_settings
+            )
             serialized_blocks.append(serialized_block)
 
         file_content = "\n\n".join(serialized_blocks)
@@ -46,13 +48,11 @@ class Serializer:
         with path.open("w") as f:
             f.write(file_content)
 
-    @classmethod 
+    @classmethod
     def _serialize_forcing(
-        cls, 
-        forcing: Dict, 
-        config: SerializerConfig, 
-        save_settings: ModelSaveSettings) -> str:
-        
+        cls, forcing: Dict, config: SerializerConfig, save_settings: ModelSaveSettings
+    ) -> str:
+
         serialized_rows = []
 
         for key in FORCING_FILE_ORDERED_FIELDS:
