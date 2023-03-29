@@ -11,13 +11,13 @@ class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
 
     Attributes:
-        data: dict
+        data: Dict
         serializer_config: TimSerializerConfig
     """
 
     serializer_config = TimSerializerConfig()
 
-    timeseries : dict
+    timeseries : Dict
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict
