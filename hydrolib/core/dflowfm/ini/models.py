@@ -151,7 +151,7 @@ class INIBasedModel(BaseModel, ABC):
                 [convert_value(x) for x in v]
             )
         elif isinstance(v, Enum):
-            return v
+            return v.value
         elif isinstance(v, float):
             return f"{v:{config.float_format}}"
         elif isinstance(v, FileModel) and v.filepath is not None:
