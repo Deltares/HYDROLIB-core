@@ -66,7 +66,7 @@ class TestTimSerializer:
     def test_serialize_data(self, input_data, reference_path):
         output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
         config = TimSerializerConfig(float_format=".3f")
-        TimSerializer.serialize(output_path, input_data, config)
+        TimSerializer.serialize(output_path, input_data, config, None)
         assert_files_equal(output_path, reference_path)
 
 

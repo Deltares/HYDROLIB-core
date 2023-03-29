@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dflowfm.ini.io_models import Datablock, DatablockRow
 
 
@@ -12,7 +12,7 @@ class TimSerializerConfig(SerializerConfig):
 
 class TimSerializer:
     @staticmethod
-    def serialize(path: Path, data: Dict, config: TimSerializerConfig) -> None:
+    def serialize(path: Path, data: Dict, config: TimSerializerConfig, save_settings: ModelSaveSettings) -> None:
         """
         Serializes the timeseries data to the file at the specified path in .tim format.
 
