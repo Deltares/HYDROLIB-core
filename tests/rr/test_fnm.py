@@ -7,6 +7,7 @@ import pytest
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
+    ModelSaveSettings,
     ResolveRelativeMode,
     file_load_context,
 )
@@ -159,7 +160,7 @@ def test_serialize_parse_should_return_same_result():
     model.restart_file_input.filepath = Path("aa_res.res")
     model.meteo_input_file_rainfall.filepath = Path("some_path.ini")
 
-    serialized_model = serialize(model.dict())
+    serialized_model = serialize(model.dict(), ModelSaveSettings())
     deserialized_model = parse(
         RainfallRunoffModel.property_keys(), serialized_model.splitlines()
     )
@@ -316,7 +317,7 @@ def test_parse_serialize_should_return_same_result():
     deserialized_model = parse(
         RainfallRunoffModel.property_keys(), serialized_model.splitlines()
     )
-    reserialized_model = serialize(deserialized_model)
+    reserialized_model = serialize(deserialized_model, ModelSaveSettings())
 
     assert reserialized_model == serialized_model
 
