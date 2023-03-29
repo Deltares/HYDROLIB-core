@@ -1,7 +1,8 @@
 from pathlib import Path
 from typing import Any, Dict
 
-from hydrolib.core.basemodel import DiskOnlyFileModel, SerializerConfig
+from hydrolib.core.basemodel import DiskOnlyFileModel, ModelSaveSettings, SerializerConfig
+from hydrolib.core.dflowfm.extold.io import FORCING_FILE_ORDERED_FIELDS
 
 
 class Serializer:
@@ -16,24 +17,27 @@ class Serializer:
             path (Path): The path to write the data to.
             data (Dict): The data to be serialized.
             config (SerializerConfig): The config describing the serialization options.
+            save_settings (ModelSaveSettings): The model save settings.
         """
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with path.open("wb") as f:
+        with path.open("w") as f:
 
             for forcing in data["forcing"]:
-                for key, value in forcing:
+                forcing_dict = dict(forcing)
+
+                for key in FORCING_FILE_ORDERED_FIELDS:
+                    value = forcing_dict.get(key.lower(), None)
 
                     if Serializer._skip_field_serialization(value):
                         continue
 
-                    key = forcing.__fields__[key].alias
                     value = Serializer._convert_value(value, config)
 
-                    f.write((f"{key}={value}\n").encode("utf8"))
+                    f.write((f"{key}={value}\n"))
 
-                f.write(("\n").encode("utf8"))
+                f.write(("\n"))
 
     @classmethod
     def _convert_value(cls, value: Any, config: SerializerConfig) -> str:
