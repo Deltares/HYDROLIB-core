@@ -1,12 +1,14 @@
 from pathlib import Path
 from typing import Dict, List
 
+from hydrolib.core.dflowfm.extold.io import FORCING_FILE_ORDERED_FIELDS
+
 
 class Parser:
     """Parser class for parsing the forcing data of the old external forcings file to a dictionary to construct the `ExtOldModel` with."""
 
     @staticmethod
-    def parse(filepath: Path, model_fields: List[str]) -> Dict:
+    def parse(filepath: Path) -> Dict:
         """Parses the file at the specified path to the forcing data.
 
         If a line starts with an asterisk (*) it is considered a comment and will not be parsed.
@@ -31,7 +33,7 @@ class Parser:
 
                 if len(line) == 0:
                     if len(current_forcing) != 0:
-                        Parser.validate_order(current_forcing, model_fields, line_index)
+                        Parser.validate_order(current_forcing, line_index)
                         forcings.append(current_forcing)
                     current_forcing = {}
                     continue
@@ -42,9 +44,9 @@ class Parser:
         return dict(forcing=forcings)
 
     @classmethod
-    def validate_order(cls, forcing: dict, model_fields: List[str], line_number: int):
+    def validate_order(cls, forcing: dict, line_number: int):
         parsed_fields_upper = [f.upper() for f in forcing.keys()]
-        model_fields_upper = [f.upper() for f in model_fields]
+        model_fields_upper = [f.upper() for f in FORCING_FILE_ORDERED_FIELDS]
 
         parsed_fields_ordered = [
             f for f in model_fields_upper if f in parsed_fields_upper

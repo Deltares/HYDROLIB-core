@@ -415,8 +415,7 @@ class ExtOldModel(ParsableFileModel):
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
-        model_fields = [field for field in ExtForcing.__fields__]
-        return Parser.parse(path, model_fields)
+        return Parser.parse(path)
 
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
