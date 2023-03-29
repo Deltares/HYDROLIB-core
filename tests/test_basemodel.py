@@ -1,4 +1,5 @@
 import filecmp
+import platform
 import shutil
 from pathlib import Path
 from typing import Sequence, Tuple
@@ -13,7 +14,9 @@ from hydrolib.core.basemodel import (
     FileModelCache,
     FilePathResolver,
     ModelLoadSettings,
+    ModelSaveSettings,
     ParsableFileModel,
+    PathStyleValidator,
     ResolveRelativeMode,
     SerializerConfig,
     context_file_loading,
@@ -21,6 +24,7 @@ from hydrolib.core.basemodel import (
 )
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.models import DIMR
+from hydrolib.core.utils import PathStyle
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
@@ -313,6 +317,37 @@ class TestFileModel:
             "InitialWaterLevel.ini"
         )
 
+    @pytest.mark.parametrize(
+        ("given_path", "expected_path"),
+        [
+            pytest.param(Path("test/path"), Path("test/path")),
+            pytest.param("test/path", Path("test/path")),
+            pytest.param(None, None),
+        ],
+    )
+    def test_setting_filepath(self, given_path, expected_path):
+        model = FMModel()
+        model.filepath = given_path
+        assert model.filepath == expected_path
+
+    @pytest.mark.parametrize(
+        ("given_path", "expected_path"),
+        [
+            pytest.param(
+                f"{test_input_dir}/file_load_test/fm.mdu",
+                Path(f"{test_input_dir}/file_load_test/fm.mdu"),
+            ),
+            pytest.param(
+                Path(f"{test_input_dir}/file_load_test/fm.mdu"),
+                Path(f"{test_input_dir}/file_load_test/fm.mdu"),
+            ),
+            pytest.param(None, None),
+        ],
+    )
+    def test_constuctor_filepath(self, given_path, expected_path):
+        model = FMModel(given_path)
+        assert model.filepath == expected_path
+
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
@@ -571,16 +606,29 @@ class TestFileLoadContext:
             == f"The model load settings have not been initialized yet. Make sure to call `{context.initialize_load_settings.__name__}` first."
         )
 
-    @pytest.mark.parametrize("first", [True, False])
-    @pytest.mark.parametrize("second", [True, False])
-    def test_can_only_set_load_settings_once(self, first: bool, second: bool):
+    @pytest.mark.parametrize("first_bool", [True, False])
+    @pytest.mark.parametrize("second_bool", [True, False])
+    @pytest.mark.parametrize(
+        "first_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE]
+    )
+    @pytest.mark.parametrize(
+        "second_path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE]
+    )
+    def test_can_only_set_load_settings_once(
+        self,
+        first_bool: bool,
+        second_bool: bool,
+        first_path_style: PathStyle,
+        second_path_style: PathStyle,
+    ):
         context = FileLoadContext()
-        context.initialize_load_settings(first, first)
-        context.initialize_load_settings(second, second)
+        context.initialize_load_settings(first_bool, first_bool, first_path_style)
+        context.initialize_load_settings(second_bool, second_bool, second_path_style)
 
         assert context.load_settings is not None
-        assert context.load_settings.recurse == first
-        assert context.load_settings.resolve_casing == first
+        assert context.load_settings.recurse == first_bool
+        assert context.load_settings.resolve_casing == first_bool
+        assert context.load_settings.path_style == first_path_style
 
 
 class TestDiskOnlyFileModel:
@@ -733,15 +781,74 @@ class TestFileCasingResolver:
         assert actual_file_path == expected_file_path
 
 
+class TestModelSaveSettings:
+    def test_initialize_new_instance_sets_os_path_style_by_default(self):
+        settings = ModelSaveSettings()
+
+        exp_path_style = (
+            PathStyle.WINDOWSLIKE
+            if platform.system() == "Windows"
+            else PathStyle.UNIXLIKE
+        )
+
+        assert settings.path_style == exp_path_style
+
+    @pytest.mark.parametrize("path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
+    def test_properties(self, path_style: PathStyle):
+        settings = ModelSaveSettings(path_style=path_style)
+        assert settings.path_style == path_style
+
+
 class TestModelLoadSettings:
     @pytest.mark.parametrize("value", [True, False])
-    def test_recurse_property(self, value: bool):
-        settings = ModelLoadSettings(recurse=value, resolve_casing=value)
+    @pytest.mark.parametrize("path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
+    def test_recurse_property(self, value: bool, path_style: PathStyle):
+        settings = ModelLoadSettings(
+            recurse=value, resolve_casing=value, path_style=path_style
+        )
         assert settings.recurse == value
         assert settings.resolve_casing == value
+        assert settings.path_style == path_style
 
 
 class TestSerializerConfig:
     def test_default(self):
         config = SerializerConfig()
         assert config.float_format == ""
+
+
+class TestPathStyleValidator:
+    def test_validate_none_returns_current_os_path_style(self):
+        validator = PathStyleValidator()
+        path_style = validator.validate(None)
+
+        exp_path_style = (
+            PathStyle.WINDOWSLIKE
+            if platform.system() == "Windows"
+            else PathStyle.UNIXLIKE
+        )
+
+        assert path_style == exp_path_style
+
+    def test_validate_windows_returns_windows_path_style(self):
+        validator = PathStyleValidator()
+        path_style = validator.validate("windows")
+
+        assert path_style == PathStyle.WINDOWSLIKE
+
+    def test_validate_unix_returns_unix_path_style(self):
+        validator = PathStyleValidator()
+        path_style = validator.validate("unix")
+
+        assert path_style == PathStyle.UNIXLIKE
+
+    def test_validate_unknown_raises_error(self):
+        validator = PathStyleValidator()
+
+        with pytest.raises(ValueError) as error:
+            validator.validate("unknown")
+
+        expected_message = (
+            "Path style 'unknown' not supported. Supported path styles: unix, windows"
+        )
+        assert expected_message in str(error.value)
