@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from hydrolib.core.basemodel import ModelSaveSettings
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
@@ -66,7 +67,7 @@ class TestTimSerializer:
     def test_serialize_data(self, input_data, reference_path):
         output_path = Path(test_output_dir / "tim" / "test_serialize.tim")
         config = TimSerializerConfig(float_format=".3f")
-        TimSerializer.serialize(output_path, input_data, config, None)
+        TimSerializer.serialize(output_path, input_data, config, ModelSaveSettings())
         assert_files_equal(output_path, reference_path)
 
 
