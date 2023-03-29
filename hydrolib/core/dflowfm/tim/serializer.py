@@ -1,8 +1,9 @@
 from pathlib import Path
-from typing import Iterable, Optional, Dict
+from typing import Dict, Iterable, Optional
 
 from hydrolib.core.basemodel import SerializerConfig
 from hydrolib.core.dflowfm.ini.io_models import Datablock, DatablockRow
+
 
 class TimSerializerConfig(SerializerConfig):
     max_length_datablock = 10
@@ -11,9 +12,7 @@ class TimSerializerConfig(SerializerConfig):
 
 class TimSerializer:
     @staticmethod
-    def serialize(
-        path: Path, data: Dict, config: TimSerializerConfig
-    ) -> None:
+    def serialize(path: Path, data: Dict, config: TimSerializerConfig) -> None:
         """
         Serializes the timeseries data to the file at the specified path in .tim format.
 
@@ -28,7 +27,7 @@ class TimSerializer:
         commentrowlist = []
 
         for key in data:
-            if key == 'comments':
+            if key == "comments":
                 commentrowlist.append(TimSerializer._get_commentblockrow(key, data))
             else:
                 datarowlist.append(TimSerializer._get_datablockrow(key, data))
@@ -38,7 +37,7 @@ class TimSerializer:
         with path.open("w") as file:
             TimSerializer._write_rows(file, commentrowlist)
             TimSerializer._write_rows(file, timeseries)
-    
+
     @staticmethod
     def _write_rows(file, rowlist):
         for rows in rowlist:
@@ -53,7 +52,7 @@ class TimSerializer:
         for value in dictionary[key]:
             rowlist.append(str(value))
         return rowlist
-    
+
     @staticmethod
     def _get_commentblockrow(key, dictionary):
         rowlist = [str]
@@ -80,14 +79,15 @@ class TimSerializer:
         elems = []
         for item in row:
             if isinstance(item, str):
-                elems +=  TimSerializer._serialize_row_element(item, config)       
-        return elem_spacing.join(elems).rstrip() + '\n'
+                elems += TimSerializer._serialize_row_element(item, config)
+        return elem_spacing.join(elems).rstrip() + "\n"
 
     @staticmethod
     def _serialize_row_element(elem: str, config) -> str:
         max_length = config.max_length_datablock  # type: ignore
         whitespace = _get_offset_whitespace(elem, max_length)
         return elem + whitespace
+
 
 def _get_offset_whitespace(key: Optional[str], max_length: int) -> str:
     key_length = len(key) if key is not None else 0

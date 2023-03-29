@@ -17,7 +17,7 @@ class TimModel(ParsableFileModel):
 
     serializer_config = TimSerializerConfig()
 
-    timeseries : Dict
+    timeseries: Dict
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict

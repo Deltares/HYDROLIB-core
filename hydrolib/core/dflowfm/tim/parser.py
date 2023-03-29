@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Dict
 
 timpattern = re.compile(r"\s+")
-        
+
+
 class TimParser:
     """
     A parser for .tim files.
@@ -27,25 +28,25 @@ class TimParser:
         with filepath.open() as file:
             for line in file.readlines():
                 if TimParser._line_is_comment(line):
-                    data["comments"].append(line.lstrip('#*'))
+                    data["comments"].append(line.lstrip("#*"))
                     continue
-                
-                try: 
-                     TimParser._add_timeseries(line, data)
+
+                try:
+                    TimParser._add_timeseries(line, data)
 
                 except ValueError:
-                        raise ValueError(f"Error parsing tim file '{filepath}'.")
+                    raise ValueError(f"Error parsing tim file '{filepath}'.")
 
         return data
-    
+
     @staticmethod
     def _add_timeseries(line, data):
         time, *series = re.split(timpattern, line.strip())
-        
+
         if TimParser._line_has_not_enough_information(series):
             raise (ValueError("Not enough information in line."))
         listofvalues = []
-        
+
         for value in series:
             if TimParser._not_numeric(value):
                 raise (ValueError("No numeric data detected."))
