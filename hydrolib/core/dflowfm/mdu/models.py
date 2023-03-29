@@ -730,6 +730,7 @@ class Trachytopes(INIBasedModel):
 
 
 ObsFile = Union[XYNModel, ObservationPointModel]
+ObsCrsFile = Union[PolyFile, ObservationCrossSectionModel]
 
 
 class Output(INIBasedModel):
@@ -1070,9 +1071,7 @@ class Output(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile"
     )
     obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
-    crsfile: Optional[List[Union[PolyFile, ObservationCrossSectionModel]]] = Field(
-        None, alias="crsFile"
-    )
+    crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
     hisfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
     )
