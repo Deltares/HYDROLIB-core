@@ -3933,6 +3933,8 @@ If the filepath is provided, it is read from disk.</p>
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filepath</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
+        <span class="n">context</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
         <span class="c1"># Note: the relative mode needs to be obtained from the data directly</span>
         <span class="c1"># because self._relative_mode has not been resolved yet (this is done as</span>
         <span class="c1"># part of the __init__), however during the __init__ we need to already</span>
