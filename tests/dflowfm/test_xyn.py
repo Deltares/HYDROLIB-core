@@ -9,6 +9,7 @@ from hydrolib.core.dflowfm.xyn.models import XYNPoint
 from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
+from tests.utils import create_temp_file
 
 
 class TestXYNParser:
@@ -26,18 +27,9 @@ class TestXYNParser:
             ]
         }
 
-        with TestXYNParser._create_temp_xyn_file(file_content) as xyn_file:
+        with create_temp_file(file_content, "test.xyn") as xyn_file:
             parsed_contents = XYNParser.parse(xyn_file)
             assert expected_result == parsed_contents
-
-    @classmethod
-    @contextmanager
-    def _create_temp_xyn_file(cls, content: str):
-        with TemporaryDirectory() as temp_dir:
-            xyn_file = Path(temp_dir, "test.xyn")
-            with open(xyn_file, "w") as f:
-                f.write(content)
-            yield xyn_file
 
 
 class TestXYNSerializer:
