@@ -520,7 +520,7 @@ class TestParser:
             "METHOD=3",
             "* This is a comment",
             "OPERAND=O",
-            "* This is a comment"
+            "* This is a comment",
         ]
 
         parser = Parser()
@@ -554,17 +554,19 @@ class TestParser:
 
     def test_parse_block_with_incorrect_order_raises_error(self):
         file_lines = [
-            "FILENAME=surroundingDomain.pol", 
+            "FILENAME=surroundingDomain.pol",
             "QUANTITY=internaltidesfrictioncoefficient",
             "FILETYPE=11",
             "OPERAND=+",
             "VALUE=0.0125",
             "QUANTITY=internaltidesfrictioncoefficient",
         ]
-         
+
         parser = Parser()
 
-        with create_temp_file_from_lines(file_lines, "incorrect_order.ext") as temp_file:
+        with create_temp_file_from_lines(
+            file_lines, "incorrect_order.ext"
+        ) as temp_file:
             with pytest.raises(ValueError) as error:
                 parser.parse(filepath=temp_file)
 
