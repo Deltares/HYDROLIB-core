@@ -28,29 +28,46 @@ class Serializer:
 
         Args:
             path (Path): The path to write the data to.
-            data (Dict): The data to be serialized.
+            data (Dict): The data to be serialized. The data is expected to contain a `forcing` key with a list of `ExtForcing`.
             config (SerializerConfig): The config describing the serialization options.
             save_settings (ModelSaveSettings): The model save settings.
         """
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
+        serialized_blocks = []
+
+        for forcing in data["forcing"]:
+            serialized_block = Serializer._serialize_forcing(dict(forcing), config, save_settings)
+            serialized_blocks.append(serialized_block)
+
+        file_content = "\n\n".join(serialized_blocks)
+
         with path.open("w") as f:
+            f.write(file_content)
 
-            for forcing in data["forcing"]:
-                forcing_dict = dict(forcing)
+    @classmethod 
+    def _serialize_forcing(
+        cls, 
+        forcing: Dict, 
+        config: SerializerConfig, 
+        save_settings: ModelSaveSettings) -> str:
+        
+        serialized_rows = []
 
-                for key in FORCING_FILE_ORDERED_FIELDS:
-                    value = forcing_dict.get(key.lower())
+        for key in FORCING_FILE_ORDERED_FIELDS:
+            value = forcing.get(key.lower())
 
-                    if Serializer._skip_field_serialization(value):
-                        continue
+            if Serializer._skip_field_serialization(value):
+                continue
 
-                    value = Serializer._convert_value(value, config, save_settings)
+            value = Serializer._convert_value(value, config, save_settings)
 
-                    f.write((f"{key}={value}\n"))
+            serialized_row = f"{key}={value}"
+            serialized_rows.append(serialized_row)
 
-                f.write(("\n"))
+        serialized_block = "\n".join(serialized_rows)
+        return serialized_block
 
     @classmethod
     def _convert_value(
