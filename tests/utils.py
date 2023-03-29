@@ -120,9 +120,5 @@ def create_temp_file(content: str, filename: str):
 @contextmanager
 def create_temp_file_from_lines(lines: List[str], filename: str):
     content = "\n".join(lines)
-
-    with TemporaryDirectory() as temp_dir:
-        file = Path(temp_dir, filename)
-        with open(file, "w") as f:
-            f.write(content)
+    with create_temp_file(content, filename) as file:
         yield file
