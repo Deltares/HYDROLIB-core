@@ -225,34 +225,6 @@ class ForcingBase(DataBlockINIBasedModel):
     def _set_function(cls, value):
         return get_from_subclass_defaults(ForcingBase, "function", value)
 
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `function` field.
-        This field is compared to each `function` field of the derived models of `ForcingBase`
-        or models derived from derived models.
-        The derived model with an equal function type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known structure type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            function_string = v.get("function", "").lower()
-            function_type = get_type_based_on_subclass_default_value(
-                cls, "function", function_string
-            )
-
-            if function_type is not None:
-                return function_type(**v)
-
-            else:
-                raise ValueError(
-                    f"Function of {cls.__name__} with name={v.get('name', '')} and function={v.get('function', '')} is not recognized."
-                )
-        return v
-
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
@@ -780,6 +752,18 @@ class ForcingGeneral(INIGeneral):
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
+FunctionUnion = Union[
+    TimeSeries,
+    T3D,
+    Harmonic,
+    Astronomic,
+    HarmonicCorrection,
+    AstronomicCorrection,
+    QHTable,
+    Constant,
+]
+
+
 class ForcingModel(INIModel):
     """
     The overall model that contains the contents of one .bc forcings file.
@@ -791,7 +775,7 @@ class ForcingModel(INIModel):
     general: ForcingGeneral = ForcingGeneral()
     """ForcingGeneral: `[General]` block with file metadata."""
 
-    forcing: List[ForcingBase] = []
+    forcing: List[FunctionUnion] = []
     """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
     definitions in a single .bc file. Actual data is stored in
     forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel.datablock]."""
