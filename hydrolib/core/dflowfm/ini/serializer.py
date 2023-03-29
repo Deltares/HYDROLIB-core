@@ -309,11 +309,7 @@ class Serializer:
         return chain.from_iterable(zip(iterable, repeat(val)))
 
 
-def write_ini(
-    path: Path,
-    document: Document,
-    config: Optional[INISerializerConfig] = None,
-) -> None:
+def write_ini(path: Path, document: Document, config: INISerializerConfig) -> None:
     """Write the provided document to the specified path
 
     If the provided path already exists, it will be overwritten. If the parent folder
@@ -322,12 +318,8 @@ def write_ini(
     Args:
         path (Path): The path to which the document should be written.
         document (Document): The document to serialize to the specified path.
-        config (Optional[SerializerConfig], optional):
-            An optional configuration of the serializer. If none provided, it will
-            default to the standard SerializerConfig. Defaults to None.
+        config (INISerializerConfig): The configuration settings for the serializer.
     """
-    if config is None:
-        config = INISerializerConfig()
 
     serializer = Serializer(config)
 

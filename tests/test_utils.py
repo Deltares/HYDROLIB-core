@@ -1,11 +1,22 @@
+import platform
 from pathlib import Path
 
 import pytest
 
 from hydrolib.core.dflowfm.mdu.models import Geometry, Output
-from hydrolib.core.utils import get_substring_between, str_is_empty_or_none
+from hydrolib.core.utils import (
+    FilePathStyleConverter,
+    PathStyle,
+    get_substring_between,
+    str_is_empty_or_none,
+)
 
 from .utils import test_input_dir
+
+
+def runs_on_windows() -> bool:
+    """Check to see if we are running on Windows."""
+    return platform.system() == "Windows"
 
 
 class TestSplitString:
@@ -71,3 +82,263 @@ class TestGetSubstringBetween:
         result = get_substring_between(source, start, end)
 
         assert result == exp_result
+
+
+class TestFilePathStyleConverter:
+    @classmethod
+    def run_and_assert_os_path_style_converter(
+        cls, direction: str, input_path: str, path_style: PathStyle, expected_path: str
+    ):
+        """Create a PathStyleConverter and converts an input path to a
+        given PathStyle convention, checking the expected path.
+
+        Args:
+            direction (str): direction of the conversion, can be either
+                'from_os' or 'to_os'.
+            input_path (str): path to convert.
+            path_style (PathStyle): the style that must be assumed for the
+                input string (when direction='to_os') or the output string
+                (when direction='from_os).
+            expected_path (str): expected result string for the converted path.
+
+        Raises:
+            AssertionError: if the assertion input_path == expected_path fails.
+            ValueError: if a wrong value for direction was given.
+        """
+        converter = FilePathStyleConverter()
+        if direction == "from_os":
+            result_path = converter.convert_from_os_style(Path(input_path), path_style)
+        elif direction == "to_os":
+            result_path = converter.convert_to_os_style(Path(input_path), path_style)
+        else:
+            raise ValueError(
+                "Wrong value for direction. Possible values: from_os, to_os."
+            )
+
+        assert result_path == expected_path
+
+    @pytest.mark.skipif(
+        not runs_on_windows(),
+        reason="Platform dependent test: should only succeed on Windows OS.",
+    )
+    class TestOnWindows:
+        class TestConvertToOSStyle:
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "/c/path/to.file",
+                        "c:/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_from_unixlike_filepath(
+                self, source_path: str, exp_target_path: str
+            ):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "to_os", source_path, PathStyle.UNIXLIKE, exp_target_path
+                )
+
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "c:\\path\\to.file",
+                        "c:/path/to.file",
+                        id="Absolute path, backward slashes",
+                    ),
+                    pytest.param(
+                        "c:/path/to.file",
+                        "c:/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path\\to.file",
+                        "path/to.file",
+                        id="Relative path, backward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_from_windowslike_filepath(
+                self, source_path: str, exp_target_path: str
+            ):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "to_os", source_path, PathStyle.WINDOWSLIKE, exp_target_path
+                )
+
+        class TestConvertFromOSStyle:
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "c:\\path\\to.file",
+                        "/c/path/to.file",
+                        id="Absolute path, backward slashes",
+                    ),
+                    pytest.param(
+                        "c:/path/to.file",
+                        "/c/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path\\to.file",
+                        "path/to.file",
+                        id="Relative path, backward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_to_unixlike_filepath(self, source_path: str, exp_target_path: str):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "from_os", source_path, PathStyle.UNIXLIKE, exp_target_path
+                )
+
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "c:\\path\\to.file",
+                        "c:/path/to.file",
+                        id="Absolute path, backward slashes",
+                    ),
+                    pytest.param(
+                        "c:/path/to.file",
+                        "c:/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path\\to.file",
+                        "path/to.file",
+                        id="Relative path, backward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_to_windowslike_filepath(
+                self, source_path: str, exp_target_path: str
+            ):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "from_os", source_path, PathStyle.WINDOWSLIKE, exp_target_path
+                )
+
+    @pytest.mark.skipif(
+        runs_on_windows(),
+        reason="Platform dependent tests: should only succeed on non-Windows OS.",
+    )
+    class TestNotOnWindows:
+        class TestConvertToOSStyle:
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "c:\\path\\to.file",
+                        "/c/path/to.file",
+                        id="Absolute path, backward slashes",
+                    ),
+                    pytest.param(
+                        "c:/path/to.file",
+                        "/c/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path\\to.file",
+                        "path/to.file",
+                        id="Relative path, backward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_from_windowslike_filepath(
+                self, source_path: str, exp_target_path: str
+            ):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "to_os", source_path, PathStyle.WINDOWSLIKE, exp_target_path
+                )
+
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "/c/path/to.file",
+                        "/c/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_from_unixlike_filepath(
+                self, source_path: str, exp_target_path: str
+            ):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "to_os", source_path, PathStyle.UNIXLIKE, exp_target_path
+                )
+
+        class TestConvertFromOSStyle:
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "/c/path/to.file",
+                        "c:/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_to_windowslike_filepath(
+                self, source_path: str, exp_target_path: str
+            ):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "from_os", source_path, PathStyle.WINDOWSLIKE, exp_target_path
+                )
+
+            @pytest.mark.parametrize(
+                "source_path, exp_target_path",
+                [
+                    pytest.param(
+                        "/c/path/to.file",
+                        "/c/path/to.file",
+                        id="Absolute path, forward slashes",
+                    ),
+                    pytest.param(
+                        "path/to.file",
+                        "path/to.file",
+                        id="Relative path, forward slashes",
+                    ),
+                ],
+            )
+            def test_to_unixlike_filepath(self, source_path: str, exp_target_path: str):
+                TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
+                    "from_os", source_path, PathStyle.UNIXLIKE, exp_target_path
+                )

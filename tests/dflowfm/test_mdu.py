@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest
-
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.mdu.models import (
     FMModel,
@@ -14,7 +12,12 @@ from hydrolib.core.dflowfm.mdu.models import (
 from hydrolib.core.dflowfm.obs.models import ObservationPoint, ObservationPointModel
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 
-from ..utils import test_input_dir
+from ..utils import (
+    assert_files_equal,
+    test_input_dir,
+    test_output_dir,
+    test_reference_dir,
+)
 
 
 class TestModels:
@@ -83,6 +86,31 @@ class TestModels:
         assert fm_model.veg.cbveg == 0.0
         assert fm_model.veg.rhoveg == 0.0
         assert fm_model.veg.stemheightstd == 0.0
+
+    def test_mdu_with_3d_settings(self):
+        input_mdu = (
+            test_input_dir / "dflowfm_individual_files" / "special_3d_settings.mdu"
+        )
+        output_mdu = (
+            test_output_dir / "test_mdu_with_3d_settings" / "special_3d_settings.mdu"
+        )
+        reference_mdu = test_reference_dir / "fm" / "special_3d_settings.mdu"
+
+        fm_model = FMModel(filepath=input_mdu, recurse=False)
+        assert fm_model.geometry.kmx == 53
+        assert fm_model.geometry.layertype == 1
+        assert fm_model.geometry.numtopsig == 20
+        assert fm_model.geometry.numtopsiguniform == True
+        assert fm_model.geometry.sigmagrowthfactor == 1.19
+        assert fm_model.geometry.dztop == 5.0
+        assert fm_model.geometry.floorlevtoplay == -5.0
+        assert fm_model.geometry.dztopuniabovez == -100.0
+        assert fm_model.geometry.keepzlayeringatbed == 2
+        assert fm_model.geometry.dxwuimin2d == 0.1
+
+        fm_model.save(output_mdu, recurse=False)
+
+        assert_files_equal(output_mdu, reference_mdu)
 
     def test_disk_only_file_model_list_fields_are_initialized_correctly(self):
         data = {"crsfile": [Path("test.crs")]}
