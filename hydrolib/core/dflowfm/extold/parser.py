@@ -43,7 +43,7 @@ class Parser:
 
             Parser.validate_order(current_forcing, line_index)
             forcings.append(current_forcing)
-            
+
         return dict(forcing=forcings)
 
     @classmethod

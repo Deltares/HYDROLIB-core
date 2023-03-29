@@ -8,9 +8,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 
-from ..utils import (
-    test_input_dir,
-)
+from ..utils import test_input_dir
 
 
 class TestExtForcing:
@@ -499,6 +497,7 @@ class TestExtOldModel:
         model = ExtOldModel()
 
         assert len(model.forcing) == 0
+
 
 class TestParser:
     def test_parse(self):
