@@ -254,7 +254,7 @@ class Meteo(INIBasedModel):
 
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
-    forcingfile: ForcingModel = Field(alias="forcingFile")
+    forcingfile: Union[ForcingModel, DiskOnlyFileModel] = Field(alias="forcingFile")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
@@ -271,28 +271,6 @@ class Meteo(INIBasedModel):
     interpolationmethod_validator = get_enum_validator(
         "interpolationmethod", enum=MeteoInterpolationMethod
     )
-
-    @property
-    def forcing(self) -> Optional[ForcingBase]:
-        """Retrieves the corresponding forcing data for meteo.
-
-        Returns:
-            ForcingBase: The corresponding forcing data. None when meteo does not have a forcing file or when the data cannot be found. #FIXME check this part
-        """
-
-        if self.forcingfile is None or not isinstance(self.forcingfile, ForcingModel):
-            return None
-
-        for forcing in self.forcingfile.forcing:
-
-            if forcing.name != "global":
-                continue
-
-            for quantity in forcing.quantityunitpair:
-                if quantity.quantity.startswith(self.quantity):
-                    return forcing
-
-        return None
 
 
 class ExtGeneral(INIGeneral):
