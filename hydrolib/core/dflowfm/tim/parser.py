@@ -27,7 +27,7 @@ class TimParser:
         with filepath.open() as file:
             for line in file.readlines():
                 if TimParser._line_is_comment(line):
-                    data["comments"].append(line.removeprefix('#').removeprefix('*'))
+                    data["comments"].append(line.lstrip('#*'))
                     continue
                 
                 try: 
