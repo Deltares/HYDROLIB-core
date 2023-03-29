@@ -6,6 +6,11 @@ from hydrolib.core.dflowfm.extold.models import (
     Operand,
     Quantity,
 )
+from hydrolib.core.dflowfm.extold.parser import Parser
+
+from ..utils import (
+    test_input_dir,
+)
 
 
 class TestExtForcing:
@@ -494,3 +499,33 @@ class TestExtOldModel:
         model = ExtOldModel()
 
         assert len(model.forcing) == 0
+
+class TestParser:
+    def test_parse(self):
+        filepath = test_input_dir / "dflowfm_individual_files" / "FlowFM_extold.ext"
+        parser = Parser()
+        data = parser.parse(filepath=filepath)
+
+        assert len(data) == 1
+        forcing_list = data["forcing"]
+
+        assert len(forcing_list) == 2
+
+        forcing_1 = forcing_list[0]
+        assert len(forcing_1) == 6
+
+        assert forcing_1["QUANTITY"] == "internaltidesfrictioncoefficient"
+        assert forcing_1["FILENAME"] == "surroundingDomain.pol"
+        assert forcing_1["FILETYPE"] == "11"
+        assert forcing_1["METHOD"] == "4"
+        assert forcing_1["OPERAND"] == "+"
+        assert forcing_1["VALUE"] == "0.0125"
+
+        forcing_2 = forcing_list[1]
+        assert len(forcing_2) == 5
+
+        assert forcing_2["QUANTITY"] == "waterlevelbnd"
+        assert forcing_2["FILENAME"] == "OB_001_orgsize.pli"
+        assert forcing_2["FILETYPE"] == "9"
+        assert forcing_2["METHOD"] == "3"
+        assert forcing_2["OPERAND"] == "O"
