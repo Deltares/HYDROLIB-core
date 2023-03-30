@@ -17,7 +17,6 @@ Some quickstarts:
 
 * First users: [Installation](guides/setup.md) and [Tutorials](tutorials/tutorials.md).
 * Developers: [List of supported functionalities](topics/dhydro_support.md),
-  [API reference](reference/api.md), and
-  [How to contribute](guides/contributing.md).
+  [API reference](reference/api.md), [How to contribute](guides/contributing.md) and [Developer guide](guides/developers.md).
 * Releases: [hydrolib-core on PyPI](https://pypi.org/project/hydrolib-core/), [ChangeLog](changelog.md).
 * Known issues and requested features: via [GitHub issues](https://github.com/Deltares/HYDROLIB-core/issues).
