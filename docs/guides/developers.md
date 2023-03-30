@@ -23,7 +23,23 @@ __all__ = [
 from .tim import *
 ```
 
-## Updating documentation
+## Updating the documentation
+In the hydrolib-core repository there are several reference files that are used to automatically generate the [API reference](../reference/api.md). If you add or make changes to the existing API, always make sure you check if the API reference is still up to date.
+
+For example, let's use the example that was used above, where the `TimModel` was introduced in hydrolib-core. Since this is new functionality that affects the API, we have to update the reference files. The API reference files are located at `docs\reference`. Since the `TimModel` was newly introduced, we should create a new file named `tim.md`. The contents of this file include a short description about what the '.tim' file is and what it is used for, followed by the actual API. You do not have to manually write the API, that is done for us by mkdocs. Since the newly introduced `TimParser` and `TimSerializer` are not part of the public API, they should not be added to the reference file:
+
+```md
+# Timeseries .tim files
+Timeseries .tim files are timeseries input files 
+for a [D-Flow FM](glossary.md#d-flow-fm) model.
+The support of .tim files is discontinued and are replaced by the [.bc file](#bc-file).
+
+They are represented by the class below.
+
+## Model
+::: hydrolib.core.dflowfm.tim.models
+
+```
 
 ## Testing models, parsers and 
 
