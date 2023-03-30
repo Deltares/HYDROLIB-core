@@ -812,6 +812,8 @@ class FileModel(BaseModel, ABC):
             data["filepath"] = filepath
             kwargs.update(data)
 
+            context.register_model(filepath, self)
+
             # Note: the relative mode needs to be obtained from the data directly
             # because self._relative_mode has not been resolved yet (this is done as
             # part of the __init__), however during the __init__ we need to already

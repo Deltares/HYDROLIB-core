@@ -9,6 +9,14 @@ from hydrolib.core.dflowfm.obscrosssection.models import (
     ObservationCrossSectionGeneral,
     ObservationCrossSectionModel,
 )
+from hydrolib.core.dflowfm.polyfile.models import (
+    Description,
+    Metadata,
+    Point,
+    PolyFile,
+    PolyObject,
+)
+from tests.utils import assert_files_equal, test_input_dir, test_output_dir
 
 
 class TestObservationCrossSectionGeneral:
@@ -158,3 +166,102 @@ def _create_observation_cross_section_values() -> dict:
     )
 
     return values
+
+
+class TestObservationCrossSectionModelPli:
+    """Test class for the legacy polyline format for observation cross
+    sections (*_crs.pli).
+
+    These legacy observation cross sections have no own model class,
+    they can completely be represented by the generic PolyFile class.
+    """
+
+    def _get_crs_data(self):
+        """Returns test data for constructing the contents of a PolyFile object"""
+
+        crs_data = {
+            "CrossSection_00": (
+                None,
+                [
+                    [3.147458984400000e004, 3.863195937500000e005],
+                    [2.874086718800000e004, 3.783987812500000e005],
+                    [2.374086718800000e004, 3.703987812500000e005],
+                    [2.154086718800000e004, 3.683987812500000e005],
+                    [1.874086718800000e004, 3.682187812500000e005],
+                ],
+            ),
+            "L1": (
+                "\n Comment for L1\n",
+                [
+                    [3.147458984400000e004, 3.863195937500000e005],
+                    [2.874086718800000e004, 3.783987812500000e005],
+                ],
+            ),
+            "L2": (
+                None,
+                [
+                    [4.605445312500000e004, 3.812025937500000e005],
+                    [5.019008593800000e004, 3.720901562500000e005],
+                ],
+            ),
+            "L3": (
+                None,
+                [
+                    [6.701300781200000e004, 3.806418437500000e005],
+                    [6.484004687500000e004, 3.739827187500000e005],
+                ],
+            ),
+            "L4": (
+                None,
+                [
+                    [7.836847656200000e004, 3.666226562500000e005],
+                    [7.970028906200000e004, 3.690059375000000e005],
+                ],
+            ),
+        }
+        return crs_data
+
+    def _construct_crs_objects_from_dict(self, data):
+        """Returns a list of PolyObject items, based on input dict,
+        where each dict item contains a tuple (description, [[x,y]] point list).
+        """
+        crs_objects = [
+            PolyObject(
+                description=Description(content=desc) if desc else None,
+                metadata=Metadata(
+                    name=key, n_rows=len(points), n_columns=len(points[0])
+                ),
+                points=[Point(x=x, y=y, data=[]) for [x, y] in points],
+            )
+            for key, (desc, points) in data.items()
+        ]
+
+        return crs_objects
+
+    def test_load(self):
+        input_file = (
+            test_input_dir / "dflowfm_individual_files" / "crosssections_crs.pli"
+        )
+        model = PolyFile(filepath=input_file)
+
+        crs_data = self._get_crs_data()
+        crs_objects = self._construct_crs_objects_from_dict(crs_data)
+
+        assert len(model.objects) == len(crs_objects)
+        assert model.objects == crs_objects
+
+    def test_construct_and_serialize(self):
+        reference_file = (
+            test_input_dir / "dflowfm_individual_files" / "crosssections_crs.pli"
+        )
+        output_file = test_output_dir / "fm" / "serialize_crosssections_crs.pli"
+
+        crs_data = self._get_crs_data()
+        crs_objects = self._construct_crs_objects_from_dict(crs_data)
+
+        model = PolyFile(objects=crs_objects)
+        model.filepath = output_file
+        model.serializer_config.float_format = "25.15E"
+        model.save()
+
+        assert_files_equal(output_file, reference_file)

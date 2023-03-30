@@ -1,6 +1,6 @@
 import filecmp
 from pathlib import Path
-from typing import Generic, Optional, TypeVar
+from typing import Generic, List, Optional, TypeVar
 
 from pydantic.generics import GenericModel
 
@@ -87,6 +87,48 @@ def assert_file_is_same_binary(
         assert filecmp.cmp(input_path, reference_path)
     else:
         assert not input_path.exists()
+
+
+def assert_objects_equal(
+    obj_cmp: object, obj_ref: object, exclude_fields: List[str] = []
+):
+    """Assert that two objects are equal with possibility to exclude
+    certain object fields.
+
+    If the input values are lists they will be checked element-wise for
+    equality.
+    If the input values are no objects, nor lists, this will fall back
+    to the standard equality operator.
+
+    Args:
+        obj_cmp (object): Object to be compared with reference object.
+        obj_ref (object): Reference object to compare with.
+        exclude_fields (List[str], optional): Optional list of key names
+            that should be excluded from the comparison of object fields.
+    Raises:
+        AssertionError: if objects are of different type, different list
+            lengths, or if objects have different field values.
+    """
+    assert type(obj_cmp) == type(obj_ref)
+
+    if isinstance(obj_cmp, list):
+        # Input is a list
+        assert len(obj_cmp) == len(obj_ref)
+
+        for a, b in zip(obj_cmp, obj_ref):
+            assert_objects_equal(a, b, exclude_fields)
+
+    elif isinstance(obj_cmp, object) and hasattr(obj_cmp, "__dict__"):
+        # Input is an object
+        check_keys = [
+            key for key in obj_cmp.__dict__.keys() if key not in exclude_fields
+        ]
+        assert all(
+            [getattr(obj_cmp, key) == getattr(obj_ref, key) for key in check_keys]
+        )
+    else:
+        # Input is more basic/something else
+        assert obj_cmp == obj_ref
 
 
 def error_occurs_only_once(error_message: str, full_error: str) -> bool:

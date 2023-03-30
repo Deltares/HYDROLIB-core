@@ -19,6 +19,7 @@ from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validat
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.net.models import NetworkModel
 from hydrolib.core.dflowfm.obs.models import ObservationPointModel
+from hydrolib.core.dflowfm.obscrosssection.models import ObservationCrossSectionModel
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.storagenode.models import StorageNodeModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
@@ -729,6 +730,7 @@ class Trachytopes(INIBasedModel):
 
 
 ObsFile = Union[XYNModel, ObservationPointModel]
+ObsCrsFile = Union[PolyFile, ObservationCrossSectionModel]
 
 
 class Output(INIBasedModel):
@@ -1069,7 +1071,7 @@ class Output(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile"
     )
     obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
-    crsfile: Optional[List[DiskOnlyFileModel]] = Field(None, alias="crsFile")
+    crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
     hisfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
     )
