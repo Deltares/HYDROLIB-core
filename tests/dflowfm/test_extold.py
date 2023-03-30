@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.basemodel import DiskOnlyFileModel, ModelSaveSettings, SerializerConfig
 from hydrolib.core.dflowfm.extold.models import (
     ExtForcing,
     ExtOldModel,
@@ -13,11 +13,31 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
-from ..utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
+from ..utils import assert_files_equal, create_temp_file_from_lines, get_temp_file, test_input_dir
 
 
 class TestExtForcing:
+
+    def test_initialize_with_polyfile_initializes_polyfile(self):
+        forcing = ExtForcing(quantity=Quantity.WaterLevelBnd,
+                             filename=test_input_dir / "dflowfm_individual_files" / "test.pli",
+                             filetype=FileType.Polyline,
+                             method = Method.InterpolateTimeAndSpaceSaveWeights,
+                             operand = Operand.OverwriteExistingValues)
+    
+        assert isinstance(forcing.filename, PolyFile)
+
+    def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(self):
+        forcing = ExtForcing(quantity=Quantity.WaterLevelBnd,
+                             filename=Path(test_input_dir / "file_load_test" / "FlowFM_net.nc"),
+                             filetype=FileType.NetCDFGridData,
+                             method = Method.InterpolateTimeAndSpaceSaveWeights,
+                             operand = Operand.OverwriteExistingValues)
+
+        assert isinstance(forcing.filename, DiskOnlyFileModel)
+
     class TestValidateQuantity:
         @pytest.mark.parametrize("quantity", Quantity)
         def test_with_valid_quantity_string_equal_casing(self, quantity):

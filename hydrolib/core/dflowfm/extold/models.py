@@ -13,6 +13,7 @@ from hydrolib.core.basemodel import (
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
 
 class Quantity(str, Enum):
@@ -204,10 +205,8 @@ class ExtForcing(BaseModel):
     quantity: Union[Quantity, str] = Field(alias="QUANTITY")
     """Union[Quantity, str]: The name of the quantity."""
 
-    filename: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="FILENAME"
-    )
-    """DiskOnlyFileModel: The file associated to this forcing."""
+    filename: Union[PolyFile, DiskOnlyFileModel] = Field(None, alias="FILENAME")
+    """Union[PolyFile, DiskOnlyFileModel]: The file associated to this forcing."""
 
     varname: Optional[str] = Field(None, alias="VARNAME")
     """Optional[str]: The variable name used in `filename` associated with this forcing; some input files may contain multiple variables."""
