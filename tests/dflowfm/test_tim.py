@@ -236,7 +236,9 @@ class TestTimParser:
             ),
         ],
     )
-    def test_parse_data_throws_exception_error_parsing_tim_file_comments_between_data_not_supported(self, input_path):
+    def test_parse_data_throws_exception_error_parsing_tim_file_comments_between_data_not_supported(
+        self, input_path
+    ):
         with pytest.raises(ValueError) as error:
             TimParser.parse(input_path)
         found_msg = error.value.args[0]

@@ -32,8 +32,10 @@ class TimParser:
                     if savecomments:
                         data["comments"].append(line.lstrip("#*"))
                         continue
-                    raise ValueError(f"Error parsing tim file '{filepath}', comments in between data not supported.")
-                
+                    raise ValueError(
+                        f"Error parsing tim file '{filepath}', comments in between data not supported."
+                    )
+
                 savecomments = False
 
                 try:
