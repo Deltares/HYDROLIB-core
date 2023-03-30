@@ -163,8 +163,7 @@ class TestTimParser:
                     "comments": [
                         str,
                         "comments\n",
-                        " 40 1.5 2.6 3.7\n",
-                        " 50 1.5 2.6 3.7",
+                        "this is another comment\n",
                     ],
                     10: [1.232, 2.343, 3.454],
                     20: [4.565, 5.676, 6.787],
@@ -216,10 +215,31 @@ class TestTimParser:
             ),
         ],
     )
-    def test_parse_data_throws_exception(self, input_path):
+    def test_parse_data_throws_exception_error_parsing_tim_file(self, input_path):
         with pytest.raises(ValueError) as error:
             TimParser.parse(input_path)
         found_msg = error.value.args[0]
 
         expected_error_msg = f"Error parsing tim file '{input_path}'."
+        assert found_msg == expected_error_msg
+
+    @pytest.mark.parametrize(
+        "input_path",
+        [
+            pytest.param(
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "triple_data_for_timeseries_with_comments_between_data.tim"
+                ),
+                id="triple_data_for_timeseries_with_comments_between_data",
+            ),
+        ],
+    )
+    def test_parse_data_throws_exception_error_parsing_tim_file_comments_between_data_not_supported(self, input_path):
+        with pytest.raises(ValueError) as error:
+            TimParser.parse(input_path)
+        found_msg = error.value.args[0]
+
+        expected_error_msg = f"Error parsing tim file '{input_path}', comments in between data not supported."
         assert found_msg == expected_error_msg

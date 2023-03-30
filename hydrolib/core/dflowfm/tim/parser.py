@@ -8,8 +8,8 @@ timpattern = re.compile(r"\s+")
 class TimParser:
     """
     A parser for .tim files.
-    Full line comments are supported.
-    Partial comments will raise an error.
+    Full line comments at the start of the file are supported by * and #.
+    No other comments are supported.
     """
 
     @staticmethod
@@ -25,11 +25,16 @@ class TimParser:
         """
         data = {}
         data["comments"] = [str]
+        savecomments = True
         with filepath.open() as file:
             for line in file.readlines():
                 if TimParser._line_is_comment(line):
-                    data["comments"].append(line.lstrip("#*"))
-                    continue
+                    if savecomments:
+                        data["comments"].append(line.lstrip("#*"))
+                        continue
+                    raise ValueError(f"Error parsing tim file '{filepath}', comments in between data not supported.")
+                
+                savecomments = False
 
                 try:
                     TimParser._add_timeseries(line, data)

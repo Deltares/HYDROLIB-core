@@ -11,7 +11,7 @@ class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
 
     Attributes:
-        data: Dict
+        data: Dictionary with keys \"comment\" & time as numeric and value as List of floats".\n
         serializer_config: TimSerializerConfig
     """
 
