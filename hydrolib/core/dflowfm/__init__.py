@@ -13,5 +13,5 @@ from .onedfield import *
 from .polyfile import *
 from .storagenode import *
 from .structure import *
-from .xyz import *
 from .tim import *
+from .xyz import *
