@@ -12,6 +12,7 @@ from hydrolib.core.basemodel import (
 )
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
@@ -658,9 +659,7 @@ class ExternalForcing(INIBasedModel):
     )
 
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="extForceFile"
-    )
+    extforcefile: Optional[ExtOldModel] = Field(None, alias="extForceFile")
     extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
