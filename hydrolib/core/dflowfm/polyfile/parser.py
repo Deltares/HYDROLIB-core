@@ -498,11 +498,11 @@ class Parser:
         stripped = line.strip()
         elems = stripped.split()
 
-        if len(elems) != expected_n_points:
+        if len(elems) < expected_n_points:
             return None
 
         try:
-            values = list(float(x) for x in elems)
+            values = list(float(x) for x in elems[:expected_n_points])
 
             if has_z:
                 x, y, z, *data = values
