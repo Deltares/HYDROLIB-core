@@ -560,7 +560,9 @@ class TestExtOldModel:
             "* This is a comment",
         ]
 
-        with create_temp_file_from_lines(file_content, "test_load_model_two_blocks.ext") as temp_file:
+        with create_temp_file_from_lines(
+            file_content, "test_load_model_two_blocks.ext"
+        ) as temp_file:
             model = ExtOldModel(filepath=temp_file)
 
         assert len(model.forcing) == 2
@@ -642,12 +644,12 @@ class TestExtOldModel:
         with get_temp_file("test_save_model.ext") as file:
             model.save(filepath=file)
 
-            with create_temp_file_from_lines(exp_file_content, "test_save_model_expected.ext") as exp_file:
+            with create_temp_file_from_lines(
+                exp_file_content, "test_save_model_expected.ext"
+            ) as exp_file:
                 assert_files_equal(file, exp_file)
 
 
-
-        
 class TestParser:
     def test_parse_two_blocks_parses_to_the_correct_dictionaries(self):
         file_content = [
@@ -741,20 +743,20 @@ class TestSerializer:
         ]
 
         forcing_1 = {
-            "quantity":"internaltidesfrictioncoefficient",
-            "filename":DiskOnlyFileModel(Path("surroundingDomain.pol")),
-            "filetype":11,
-            "method":4,
-            "operand":"+",
-            "value":0.0125,
+            "quantity": "internaltidesfrictioncoefficient",
+            "filename": DiskOnlyFileModel(Path("surroundingDomain.pol")),
+            "filetype": 11,
+            "method": 4,
+            "operand": "+",
+            "value": 0.0125,
         }
 
         forcing_2 = {
-            "quantity":"waterlevelbnd",
-            "filename":DiskOnlyFileModel(Path("OB_001_orgsize.pli")),
-            "filetype":9,
-            "method":3,
-            "operand":"O",
+            "quantity": "waterlevelbnd",
+            "filename": DiskOnlyFileModel(Path("OB_001_orgsize.pli")),
+            "filetype": 9,
+            "method": 3,
+            "operand": "O",
         }
 
         forcing_data = {"forcing": [forcing_1, forcing_2]}
@@ -765,5 +767,7 @@ class TestSerializer:
         with get_temp_file("test_serialize.ext") as file:
             Serializer.serialize(file, forcing_data, serializer_config, save_settings)
 
-            with create_temp_file_from_lines(exp_file_content, "test_serialize_expected.ext") as exp_file:
+            with create_temp_file_from_lines(
+                exp_file_content, "test_serialize_expected.ext"
+            ) as exp_file:
                 assert_files_equal(file, exp_file)

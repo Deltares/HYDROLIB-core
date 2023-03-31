@@ -40,7 +40,9 @@ class Serializer:
         serialized_blocks: List[str] = []
 
         for forcing in data["forcing"]:
-            serialized_block = Serializer._serialize_forcing(forcing, config, save_settings)
+            serialized_block = Serializer._serialize_forcing(
+                forcing, config, save_settings
+            )
             serialized_blocks.append(serialized_block)
 
         file_content: str = "\n\n".join(serialized_blocks)
@@ -50,7 +52,10 @@ class Serializer:
 
     @classmethod
     def _serialize_forcing(
-        cls, forcing: Dict[str, Any], config: SerializerConfig, save_settings: ModelSaveSettings
+        cls,
+        forcing: Dict[str, Any],
+        config: SerializerConfig,
+        save_settings: ModelSaveSettings,
     ) -> str:
 
         serialized_rows = []
