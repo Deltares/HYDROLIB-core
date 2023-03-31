@@ -7,7 +7,7 @@ from hydrolib.core.basemodel import (
     ModelSaveSettings,
     SerializerConfig,
 )
-from hydrolib.core.dflowfm.extold.io import FORCING_FILE_ORDERED_FIELDS
+from hydrolib.core.dflowfm.extold.common_io import ORDERED_FORCING_FIELDS
 from hydrolib.core.utils import FilePathStyleConverter
 
 
@@ -55,7 +55,7 @@ class Serializer:
 
         serialized_rows = []
 
-        for key in FORCING_FILE_ORDERED_FIELDS:
+        for key in ORDERED_FORCING_FIELDS:
             value = forcing.get(key.lower())
 
             if Serializer._skip_field_serialization(value):

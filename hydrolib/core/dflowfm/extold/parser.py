@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, List
 
-from hydrolib.core.dflowfm.extold.io import FORCING_FILE_ORDERED_FIELDS
+from hydrolib.core.dflowfm.extold.common_io import ORDERED_FORCING_FIELDS
 
 
 class Parser:
@@ -50,7 +50,7 @@ class Parser:
     @classmethod
     def validate_order(cls, forcing: dict, line_number: int):
         parsed_fields_upper = [f.upper() for f in forcing.keys()]
-        model_fields_upper = [f.upper() for f in FORCING_FILE_ORDERED_FIELDS]
+        model_fields_upper = [f.upper() for f in ORDERED_FORCING_FIELDS]
 
         parsed_fields_ordered = [
             f for f in model_fields_upper if f in parsed_fields_upper

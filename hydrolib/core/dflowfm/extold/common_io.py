@@ -1,4 +1,7 @@
-FORCING_FILE_ORDERED_FIELDS = [
+from typing import List
+
+
+ORDERED_FORCING_FIELDS: List[str] = [
     "QUANTITY",
     "FILENAME",
     "VARNAME",
@@ -16,3 +19,4 @@ FORCING_FILE_ORDERED_FIELDS = [
     "AREA",
     "NUMMIN",
 ]
+"""List[str]: List of the ordered fields names in a forcing block."""
