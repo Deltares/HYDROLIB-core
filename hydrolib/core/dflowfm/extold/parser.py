@@ -18,11 +18,12 @@ class Parser:
             model_fields (List[str]): List of the  ordered model fields.
 
         Returns:
-            Dict: A dictionary containing the forcing data under the key 'forcing'.
+            Dict[str, List[Dict[str, str]]]: A dictionary containing the forcing data under the key 'forcing'. 
+                                             The value is a list with dictionaries. Each dictionary represents a forcing block from the file.
         """
 
-        forcings = []
-        current_forcing = {}
+        forcings: List[Dict[str, str]] = []
+        current_forcing: Dict[str, str] = {}
 
         with filepath.open() as file:
             for line_index, line in enumerate(file.readlines()):
@@ -33,7 +34,7 @@ class Parser:
 
                 if len(line) == 0:
                     if len(current_forcing) != 0:
-                        Parser.validate_order(current_forcing, line_index)
+                        Parser._validate_order(current_forcing, line_index)
                         forcings.append(current_forcing)
                         current_forcing = {}
                     continue
@@ -42,25 +43,34 @@ class Parser:
                 current_forcing[key.strip()] = value.strip()
 
             if len(current_forcing) != 0:
-                Parser.validate_order(current_forcing, line_index)
+                Parser._validate_order(current_forcing, line_index)
                 forcings.append(current_forcing)
 
         return dict(forcing=forcings)
 
-    @classmethod
-    def validate_order(cls, forcing: dict, line_number: int):
+    @staticmethod
+    def _validate_order(forcing: Dict[str, str], line_number: int):
+        """Validates the order of the forcing fields given in the forcing block.
+
+        - The fields are compared case insensitive.
+        - For each KNOWN field that was parsed the order is checked.
+        """
+        
         parsed_fields_upper = [f.upper() for f in forcing.keys()]
         model_fields_upper = [f.upper() for f in ORDERED_FORCING_FIELDS]
 
+        # Get the ordered KNOWN parsed fields, by filtering out unknown fields
         parsed_fields_ordered = [
             f for f in model_fields_upper if f in parsed_fields_upper
         ]
+
+        # Get the unorderd KNOWN parsed fields, by filtering out unknown fields
         parsed_fields_unordered = [
             f for f in parsed_fields_upper if f in model_fields_upper
         ]
 
         if parsed_fields_unordered != parsed_fields_ordered:
-            line_number_start = line_number - len(parsed_fields_upper) + 1
+            line_number_start = line_number + 1 - len(parsed_fields_upper) 
             parsed_fields_ordered_str = ", ".join(parsed_fields_ordered)
             raise ValueError(
                 f"Line {line_number_start}: Properties should be in the following order: {parsed_fields_ordered_str}"
