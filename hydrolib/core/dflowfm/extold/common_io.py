@@ -1,6 +1,5 @@
 from typing import List
 
-
 ORDERED_FORCING_FIELDS: List[str] = [
     "QUANTITY",
     "FILENAME",
