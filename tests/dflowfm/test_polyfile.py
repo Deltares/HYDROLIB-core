@@ -314,9 +314,15 @@ class TestParser:
     @pytest.mark.parametrize(
         "input,n_total_points,has_z,expected_value",
         [
-            ("1.0  2.0", 2, False, Point(x=1.0, y=2.0, z=None, data=[])),
-            ("1.0  2.0  3.0", 3, True, Point(x=1.0, y=2.0, z=3.0, data=[])),
-            (
+            pytest.param(
+                "1.0  2.0",
+                2,
+                False,
+                Point(x=1.0, y=2.0, z=None, data=[]),
+                id="do not set z-value if has-z is false",
+            ),
+            pytest.param("1.0  2.0  3.0", 3, True, Point(x=1.0, y=2.0, z=3.0, data=[])),
+            pytest.param(
                 "1.0  2.0  3.0",
                 3,
                 False,
@@ -328,8 +334,9 @@ class TestParser:
                         3.0,
                     ],
                 ),
+                id="set 3rd as data value if has-z is false",
             ),
-            (
+            pytest.param(
                 "1.0  2.0  3.0  4.0  5.0",
                 5,
                 True,
@@ -342,8 +349,9 @@ class TestParser:
                         5.0,
                     ],
                 ),
+                id="set one z-value and remaining in data if has-z is true",
             ),
-            (
+            pytest.param(
                 "    1.0    2.0    3.0    4.0    5.0        ",
                 5,
                 True,
@@ -356,8 +364,9 @@ class TestParser:
                         5.0,
                     ],
                 ),
+                id="set one z-value and remaining in data if has-z is true, supporting whitespace",
             ),
-            (
+            pytest.param(
                 "    1    2    3    4    5        ",
                 5,
                 True,
@@ -370,13 +379,64 @@ class TestParser:
                         5.0,
                     ],
                 ),
+                id="support int values read as floats",
             ),
-            ("    a    2    3    4    5        ", 5, True, None),
-            ("    1.0    2.0    3.0    4.0    5.0        ", 3, True, None),
-            ("    1.0    2.0    3.0    4.0    5.0        ", 6, True, None),
-            ("1.0,  2.0,", 2, False, None),
-            ("1.a  2.b", 2, False, None),
-            ("-1.0  -2.0", 2, False, Point(x=-1.0, y=-2.0, z=None, data=[])),
+            pytest.param(
+                "    a    2    3    4    5        ",
+                5,
+                True,
+                None,
+                id="no point when first two columns are not numeric",
+            ),
+            pytest.param(
+                "    1.0    2.0    3.0    4.0    5.0        ",
+                3,
+                True,
+                Point(x=1.0, y=2.0, z=3.0, data=[]),
+                id="set one z-value and skip superfluous columns",
+            ),
+            pytest.param(
+                "    1.0    2.0    3.0    # comment does not exist, but trailing data is ignored",
+                3,
+                True,
+                Point(x=1.0, y=2.0, z=3.0, data=[]),
+                id="set one z-value and comments have no meaning",
+            ),
+            pytest.param(
+                "    1.0    2.0    3.0    4.0 5 As said, trailing data is ignored",
+                5,
+                True,
+                Point(x=1.0, y=2.0, z=3.0, data=[4.0, 5.0]),
+                id="set one z-value, 2 data, and skip extra text values without error ",
+            ),
+            pytest.param(
+                "    1.0    2.0    3.0    4.0    5.0        ",
+                6,
+                True,
+                None,
+                id="no point when some data columns are missing",
+            ),
+            pytest.param(
+                "1.0,  2.0,",
+                2,
+                False,
+                None,
+                id="don't support comma separated values",
+            ),
+            pytest.param(
+                "1.a  2.b",
+                2,
+                False,
+                None,
+                id="no point for invalid float values",
+            ),
+            pytest.param(
+                "-1.0  -2.0",
+                2,
+                False,
+                Point(x=-1.0, y=-2.0, z=None, data=[]),
+                id="support negative values",
+            ),
         ],
     )
     def test_convert_to_point(
@@ -608,16 +668,6 @@ name
                     *description
                     name
                     1  5   
-                    1.0 2.0 3.0 4.0 5.0 6.0"""
-                ),
-                [((0, 4), "Expected a valid next point at line 3.")],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    name
-                    1  5   
                         1.0 2.0 3.0 4.0 5.0
                     another-name
                     1 3
@@ -667,27 +717,7 @@ name
                     *description
                     name
                     1  5   
-                    1.0 2.0 3.0 4.0 5.0 Comment after the values is invalid"""
-                ),
-                [((0, 4), "Expected a valid next point at line 3.")],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    name
-                    1  5   
-                    # 1.0 2.0 3.0 4.0 5.0 Comment after the values is invalid"""
-                ),
-                [((0, 4), "Expected a valid next point at line 3.")],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    name
-                    1  5   
-                    1.0 2.0 3.0 4.0 5.0 # Comment after the values is invalid"""
+                    # 1.0 2.0 3.0 4.0 5.0 Comment after the values is valid"""
                 ),
                 [((0, 4), "Expected a valid next point at line 3.")],
             ),
