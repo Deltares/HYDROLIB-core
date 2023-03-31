@@ -166,7 +166,7 @@ class BuiParser:
             n_events_timestep = line.split()
             return (int(n_events_timestep[0]), int(n_events_timestep[1]))
 
-        bui_lines = [line for line in file.splitlines() if not line.startswith("*")]
+        bui_lines = [line for line in file if not line.startswith("*")]
 
         n_events, timestep = parse_events_and_timestep(bui_lines[3])
 
