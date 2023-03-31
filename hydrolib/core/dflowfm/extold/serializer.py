@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
@@ -18,39 +18,39 @@ class Serializer:
 
     def serialize(
         path: Path,
-        data: Dict,
+        data: Dict[str, List[Dict[str, Any]]],
         config: SerializerConfig,
         save_settings: ModelSaveSettings,
-    ):
-        """Serializes the provided data to file at the specified path.
+    ) -> None:
 
-        If a file already exists at the target location the file will be overwritten.
+        """
+        Serialize the given data and write it to a file at the given path.
+
+        This function may create a new file at the given path, or overwrite an existing file.
 
         Args:
-            path (Path): The path to write the data to.
-            data (Dict): The data to be serialized. The data is expected to contain a `forcing` key with a list of `ExtForcing`.
-            config (SerializerConfig): The config describing the serialization options.
-            save_settings (ModelSaveSettings): The model save settings.
+            path (Path): The path to write the serialized data to.
+            data (Dict[str, List[Dict[str, Any]]]): The data to be serialized. The data should contain a single key, `forcing`, which has a list of the external forcing data.
+            config (SerializerConfig): Configuration settings for the serializer.
+            save_settings (ModelSaveSettings): Settings for how the model should be saved.
         """
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        serialized_blocks = []
+        serialized_blocks: List[str] = []
 
         for forcing in data["forcing"]:
-            serialized_block = Serializer._serialize_forcing(
-                dict(forcing), config, save_settings
-            )
+            serialized_block = Serializer._serialize_forcing(forcing, config, save_settings)
             serialized_blocks.append(serialized_block)
 
-        file_content = "\n\n".join(serialized_blocks)
+        file_content: str = "\n\n".join(serialized_blocks)
 
         with path.open("w") as f:
             f.write(file_content)
 
     @classmethod
     def _serialize_forcing(
-        cls, forcing: Dict, config: SerializerConfig, save_settings: ModelSaveSettings
+        cls, forcing: Dict[str, Any], config: SerializerConfig, save_settings: ModelSaveSettings
     ) -> str:
 
         serialized_rows = []

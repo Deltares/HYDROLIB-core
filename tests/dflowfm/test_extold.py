@@ -21,6 +21,7 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
 from ..utils import (
     assert_files_equal,
+    create_temp_file,
     create_temp_file_from_lines,
     get_temp_file,
     test_input_dir,
@@ -536,7 +537,119 @@ class TestExtOldModel:
 
         assert len(model.forcing) == 0
 
+    def test_load_model(self):
+        file_content = [
+            "* This is a comment",
+            "* This is a comment",
+            "",
+            "QUANTITY=internaltidesfrictioncoefficient",
+            "FILENAME=surroundingDomain.pol",
+            "FILETYPE=11",
+            "METHOD=4",
+            "OPERAND=+",
+            "VALUE=0.0125",
+            "",
+            "* This is a comment",
+            "",
+            "QUANTITY=waterlevelbnd",
+            "FILENAME=OB_001_orgsize.pli",
+            "FILETYPE=9",
+            "METHOD=3",
+            "* This is a comment",
+            "OPERAND=O",
+            "* This is a comment",
+        ]
 
+        with create_temp_file_from_lines(file_content, "test_load_model_two_blocks.ext") as temp_file:
+            model = ExtOldModel(filepath=temp_file)
+
+        assert len(model.forcing) == 2
+
+        forcing_1 = model.forcing[0]
+        assert forcing_1.quantity == Quantity.InternalTidesFrictionCoefficient
+        assert forcing_1.filename.filepath == Path("surroundingDomain.pol")
+        assert forcing_1.varname == None
+        assert forcing_1.sourcemask.filepath == None
+        assert forcing_1.filetype == FileType.NetCDFGridData
+        assert forcing_1.method == Method.InterpolateSpace
+        assert forcing_1.operand == Operand.SuperimposeNewValues
+        assert forcing_1.value == 0.0125
+        assert forcing_1.factor == None
+        assert forcing_1.ifrctyp == None
+        assert forcing_1.averagingtype == None
+        assert forcing_1.relativesearchcellsize == None
+        assert forcing_1.extrapoltol == None
+        assert forcing_1.percentileminmax == None
+        assert forcing_1.area == None
+        assert forcing_1.nummin == None
+
+        forcing_2 = model.forcing[1]
+        assert forcing_2.quantity == Quantity.WaterLevelBnd
+        assert forcing_2.filename.filepath == Path("OB_001_orgsize.pli")
+        assert forcing_2.varname == None
+        assert forcing_2.sourcemask.filepath == None
+        assert forcing_2.filetype == FileType.Polyline
+        assert forcing_2.method == Method.InterpolateTimeAndSpaceSaveWeights
+        assert forcing_2.operand == Operand.OverwriteExistingValues
+        assert forcing_2.value == None
+        assert forcing_2.factor == None
+        assert forcing_2.ifrctyp == None
+        assert forcing_2.averagingtype == None
+        assert forcing_2.relativesearchcellsize == None
+        assert forcing_2.extrapoltol == None
+        assert forcing_2.percentileminmax == None
+        assert forcing_2.area == None
+        assert forcing_2.nummin == None
+
+        model.save(filepath=Path("prssssssss.ext"))
+
+    def test_save_model(self):
+
+        exp_file_content = [
+            "QUANTITY=internaltidesfrictioncoefficient",
+            "FILENAME=surroundingDomain.pol",
+            "FILETYPE=11",
+            "METHOD=4",
+            "OPERAND=+",
+            "VALUE=0.012500",
+            "",
+            "QUANTITY=waterlevelbnd",
+            "FILENAME=OB_001_orgsize.pli",
+            "FILETYPE=9",
+            "METHOD=3",
+            "OPERAND=O",
+        ]
+
+        forcing_1 = ExtForcing(
+            quantity=Quantity.InternalTidesFrictionCoefficient,
+            filename=Path("surroundingDomain.pol"),
+            filetype=FileType.NetCDFGridData,
+            method=Method.InterpolateSpace,
+            operand=Operand.SuperimposeNewValues,
+            value=0.0125,
+        )
+
+        forcing_2 = ExtForcing(
+            quantity=Quantity.WaterLevelBnd,
+            filename=Path("OB_001_orgsize.pli"),
+            filetype=FileType.Polyline,
+            method=Method.InterpolateTimeAndSpaceSaveWeights,
+            operand=Operand.OverwriteExistingValues,
+        )
+
+        model = ExtOldModel(forcing=[forcing_1, forcing_2])
+
+        model.serializer_config.float_format = "f"
+
+        with get_temp_file("test_save_model.ext") as file:
+            model.save(filepath=file)
+
+            with create_temp_file_from_lines(exp_file_content, "test_save_model_expected.ext") as exp_file:
+                assert_files_equal(file, exp_file)
+
+
+
+        
 class TestParser:
     def test_parse_two_blocks_parses_to_the_correct_dictionaries(self):
         file_content = [
@@ -614,7 +727,7 @@ class TestParser:
 
 class TestSerializer:
     def test_serialize(self):
-        expected_file_content = [
+        exp_file_content = [
             "QUANTITY=internaltidesfrictioncoefficient",
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
@@ -629,32 +742,30 @@ class TestSerializer:
             "OPERAND=O",
         ]
 
-        forcing_1 = ExtForcing(
-            quantity=Quantity.InternalTidesFrictionCoefficient,
-            filename=Path("surroundingDomain.pol"),
-            filetype=FileType.NetCDFGridData,
-            method=Method.InterpolateSpace,
-            operand=Operand.SuperimposeNewValues,
-            value=0.0125,
-        )
+        forcing_1 = {
+            "quantity":"internaltidesfrictioncoefficient",
+            "filename":DiskOnlyFileModel(Path("surroundingDomain.pol")),
+            "filetype":11,
+            "method":4,
+            "operand":"+",
+            "value":0.0125,
+        }
 
-        forcing_2 = ExtForcing(
-            quantity=Quantity.WaterLevelBnd,
-            filename=Path("OB_001_orgsize.pli"),
-            filetype=FileType.Polyline,
-            method=Method.InterpolateTimeAndSpaceSaveWeights,
-            operand=Operand.OverwriteExistingValues,
-        )
+        forcing_2 = {
+            "quantity":"waterlevelbnd",
+            "filename":DiskOnlyFileModel(Path("OB_001_orgsize.pli")),
+            "filetype":9,
+            "method":3,
+            "operand":"O",
+        }
 
         forcing_data = {"forcing": [forcing_1, forcing_2]}
 
         serializer_config = SerializerConfig(float_format="f")
         save_settings = ModelSaveSettings()
 
-        with get_temp_file("serializer.ext") as file:
+        with get_temp_file("test_serialize.ext") as file:
             Serializer.serialize(file, forcing_data, serializer_config, save_settings)
 
-            with create_temp_file_from_lines(
-                expected_file_content, "expected.ext"
-            ) as expected_file:
-                assert_files_equal(file, expected_file)
+            with create_temp_file_from_lines(exp_file_content, "test_serialize_expected.ext") as exp_file:
+                assert_files_equal(file, exp_file)

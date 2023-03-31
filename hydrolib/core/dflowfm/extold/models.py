@@ -404,7 +404,7 @@ class ExtOldModel(ParsableFileModel):
         return "externalforcings"
 
     def dict(self, *args, **kwargs):
-        return dict(forcing=self.forcing)
+        return dict(forcing=[dict(f) for f in self.forcing])
 
     @classmethod
     def _get_serializer(
