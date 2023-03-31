@@ -46,9 +46,3 @@ There is an Excel sheet that is used in generating a list of D-HYDRO functionali
 
 
 ## Testing models, parsers and serializers
-
-
-
-## docstrings postfix for attributes (of moet dit in contribute.md?)
-
-## docstring public API
