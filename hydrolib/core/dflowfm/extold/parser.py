@@ -18,7 +18,7 @@ class Parser:
             model_fields (List[str]): List of the  ordered model fields.
 
         Returns:
-            Dict[str, List[Dict[str, str]]]: A dictionary containing the forcing data under the key 'forcing'. 
+            Dict[str, List[Dict[str, str]]]: A dictionary containing the forcing data under the key 'forcing'.
                                              The value is a list with dictionaries. Each dictionary represents a forcing block from the file.
         """
 
@@ -55,7 +55,7 @@ class Parser:
         - The fields are compared case insensitive.
         - For each KNOWN field that was parsed the order is checked.
         """
-        
+
         parsed_fields_upper = [f.upper() for f in forcing.keys()]
         model_fields_upper = [f.upper() for f in ORDERED_FORCING_FIELDS]
 
@@ -70,7 +70,7 @@ class Parser:
         ]
 
         if parsed_fields_unordered != parsed_fields_ordered:
-            line_number_start = line_number + 1 - len(parsed_fields_upper) 
+            line_number_start = line_number + 1 - len(parsed_fields_upper)
             parsed_fields_ordered_str = ", ".join(parsed_fields_ordered)
             raise ValueError(
                 f"Line {line_number_start}: Properties should be in the following order: {parsed_fields_ordered_str}"
