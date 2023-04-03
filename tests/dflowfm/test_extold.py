@@ -294,7 +294,7 @@ class TestExtForcing:
                     factor=factor,
                 )
 
-            exp_msg = f"FACTOR only allowed when QUANTITY starts with initialtracer"
+            exp_msg = "FACTOR only allowed when QUANTITY starts with initialtracer"
             assert exp_msg in str(error.value)
 
     class TestValidateIFrcTyp:
@@ -327,7 +327,7 @@ class TestExtForcing:
                     ifrctyp=ifrctyp,
                 )
 
-            exp_msg = f"IFRCTYP only allowed when QUANTITY is frictioncoefficient"
+            exp_msg = "IFRCTYP only allowed when QUANTITY is frictioncoefficient"
             assert exp_msg in str(error.value)
 
     class TestValidateAveragingType:
@@ -494,7 +494,7 @@ class TestExtForcing:
                     area=area,
                 )
 
-            exp_msg = f"AREA only allowed when QUANTITY is discharge_salinity_temperature_sorsin"
+            exp_msg = "AREA only allowed when QUANTITY is discharge_salinity_temperature_sorsin"
             assert exp_msg in str(error.value)
 
     class TestValidateNumMin:

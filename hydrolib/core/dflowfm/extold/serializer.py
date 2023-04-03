@@ -16,6 +16,7 @@ class Serializer:
 
     _file_path_style_converter = FilePathStyleConverter()
 
+    @staticmethod
     def serialize(
         path: Path,
         data: Dict[str, List[Dict[str, Any]]],
