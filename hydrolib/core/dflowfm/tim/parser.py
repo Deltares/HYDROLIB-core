@@ -1,75 +1,73 @@
-import re
 from pathlib import Path
-from typing import Dict
-
-timpattern = re.compile(r"\s+")
-
+from typing import Any, Dict, List
 
 class TimParser:
-    """
-    A parser for .tim files.
-    Full line comments at the start of the file are supported by * and #.
-    No other comments are supported.
-    """
+    """A parser for .tim files that extracts comments and time series data."""
 
     @staticmethod
-    def parse(filepath: Path) -> Dict:
-        """Parse an .tim file into a dict.
+    def parse(filepath: Path) -> Dict[str, Any]:
+        """Parse a .tim file into a dictionary with comments and time series data.
 
         Args:
-            filepath (Path): .tim file to be read.
+            filepath (Path): Path to the .tim file to be read.
 
         Returns:
-            dict: dictionary with keys \"comment\" & time as numeric and value as List of floats".\n
-            When file is empty returns an dictionary with only comment as key.
+            Dict[str, Any]: A dictionary with keys "comments" and "timeseries", where "comments"
+                  is a list of strings representing comments found at the start of the file, and
+                  "timeseries" is a dictionary where each key is a time and each value
+                  is a list of strings.
+
+        Raises:
+            ValueError: If the file contains a comment that is not at the start of the file or
+             if the time series contains a duplicate time entry.
         """
-        data = {}
-        data["comments"] = [str]
-        savecomments = True
+
+        comments: List[str] = []
+        timeseries: Dict[str, List[str]] = {}
+
         with filepath.open() as file:
-            for line in file.readlines():
-                if TimParser._line_is_comment(line):
-                    if savecomments:
-                        data["comments"].append(line.lstrip("#*"))
-                        continue
-                    raise ValueError(
-                        f"Error parsing tim file '{filepath}', comments in between data not supported."
-                    )
+            lines = file.readlines()
 
-                savecomments = False
+            # Read header comments
+            start_timeseries_index = 0
+            for line_index in range(len(lines)):
 
-                try:
-                    TimParser._add_timeseries(line, data)
+                line = lines[line_index].strip()
 
-                except ValueError:
-                    raise ValueError(f"Error parsing tim file '{filepath}'.")
+                if len(line) == 0:
+                    comments.append(line)
+                    continue
+                
+                if line.startswith("#") or line.startswith("*"):
+                    comments.append(line[1:])
+                    continue
 
-        return data
+                start_timeseries_index = line_index
+                break
 
-    @staticmethod
-    def _add_timeseries(line, data):
-        time, *series = re.split(timpattern, line.strip())
+            # Read time series data
+            for line_index in range(start_timeseries_index, len(lines)):
+                line = lines[line_index].strip()
 
-        if TimParser._line_has_not_enough_information(series):
-            raise (ValueError("Not enough information in line."))
-        listofvalues = []
+                if len(line) == 0:
+                    continue
 
-        for value in series:
-            if TimParser._not_numeric(value):
-                raise (ValueError("No numeric data detected."))
-            listofvalues.append(float(value))
+                TimParser._raise_error_if_contains_comment(line, line_index + 1)
 
-        data[float(time)] = listofvalues
+                time, *values = line.split()
 
-    @staticmethod
-    def _not_numeric(value: str):
-        return not value.replace(",", "").replace(".", "").replace("-", "").isnumeric()
+                TimParser._raise_error_if_duplicate_time(time, timeseries, line_index + 1)
+
+                timeseries[time] = values
+
+        return {"comments" : comments, "timeseries" : timeseries}
 
     @staticmethod
-    def _line_is_comment(line: str):
-        strippedline = line.lstrip()
-        return strippedline.startswith("#") or strippedline.startswith("*")
-
+    def _raise_error_if_contains_comment(line: str, line_index: int):
+        if "#" in line or "*" in line:
+            raise ValueError(f"Line {line_index}: comments are only supported at the start of the file, before the time series data.")
+    
     @staticmethod
-    def _line_has_not_enough_information(line):
-        return len(line) < 1
+    def _raise_error_if_duplicate_time(time: str, timeseries: Dict[str, List[str]], line_index: int):
+        if time in timeseries:
+            raise ValueError(f"Line {line_index}: time series cannot contain duplicate times. Time: {time}")

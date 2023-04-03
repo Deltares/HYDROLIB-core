@@ -131,25 +131,39 @@ class TestTimModel:
 
 
 class TestTimParser:
+    triple_data_for_timeseries = {  '10': ['1.232', '2.343', '3.454'],
+                                    '20': ['4.565', '5.676', '6.787'],
+                                    '30': ['1.5', '2.6', '3.7']}
+    
+    single_data_for_timeseries = {  '0.000000'    : ['0.0000000'],
+                                    '10.000000'   : ['0.0100000'],
+                                    '20.000000'   : ['0.0000000'],
+                                    '30.000000'   : ['-0.0100000'],
+                                    '40.000000'   : ['0.0000000'],
+                                    '50.000000'   : ['0.0100000'],
+                                    '60.000000'   : ['0.0000000'],
+                                    '70.000000'   : ['-0.0100000'],
+                                    '80.000000'   : ['0.0000000'],
+                                    '90.000000'   : ['0.0100000'],
+                                    '100.000000'  : ['0.0000000'],
+                                    '110.000000'  : ['-0.0100000'],
+                                    '120.000000'  : ['0.0000000']}
+    
     @pytest.mark.parametrize(
         "expected_output, input_path",
         [
             pytest.param(
                 {
-                    "comments": [str],
-                    10: [1.232, 2.343, 3.454],
-                    20: [4.565, 5.676, 6.787],
-                    30: [1.5, 2.6, 3.7],
+                    "comments": [],
+                    "timeseries": triple_data_for_timeseries
                 },
                 Path(test_input_dir / "tim" / "triple_data_for_timeseries.tim"),
                 id="triple_data_for_timeseries",
             ),
             pytest.param(
                 {
-                    "comments": [str],
-                    10: [1.232, 2.343, 3.454],
-                    20: [4.565, 5.676, 6.787],
-                    30: [1.5, 2.6, 3.7],
+                    "comments": [],
+                    "timeseries": triple_data_for_timeseries
                 },
                 Path(
                     test_input_dir
@@ -160,14 +174,12 @@ class TestTimParser:
             ),
             pytest.param(
                 {
-                    "comments": [
-                        str,
-                        "comments\n",
-                        "this is another comment\n",
+                    "comments": 
+                    [
+                        "comments",
+                        "this is another comment",
                     ],
-                    10: [1.232, 2.343, 3.454],
-                    20: [4.565, 5.676, 6.787],
-                    30: [1.5, 2.6, 3.7],
+                    "timeseries": triple_data_for_timeseries
                 },
                 Path(
                     test_input_dir
@@ -178,20 +190,9 @@ class TestTimParser:
             ),
             pytest.param(
                 {
-                    "comments": [str],
-                    0.000000: [0.0000000],
-                    10.000000: [0.0100000],
-                    20.000000: [0.0000000],
-                    30.000000: [-0.0100000],
-                    40.000000: [0.0000000],
-                    50.000000: [0.0100000],
-                    60.000000: [0.0000000],
-                    70.000000: [-0.0100000],
-                    80.000000: [0.0000000],
-                    90.000000: [0.0100000],
-                    100.000000: [0.0000000],
-                    110.000000: [-0.0100000],
-                    120.000000: [0.0000000],
+                    "comments": [],
+                    "timeseries": single_data_for_timeseries
+                    
                 },
                 Path(test_input_dir / "tim" / "single_data_for_timeseries.tim"),
                 id="single_data_for_timeseries",
@@ -230,9 +231,17 @@ class TestTimParser:
                 Path(
                     test_input_dir
                     / "tim"
-                    / "triple_data_for_timeseries_with_comments_between_data.tim"
+                    / "triple_data_for_timeseries_with_comments_between_data_hashtag.tim"
                 ),
-                id="triple_data_for_timeseries_with_comments_between_data",
+                id="triple_data_for_timeseries_with_comments_between_data_hashtag",
+            ),
+            pytest.param(
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "triple_data_for_timeseries_with_comments_between_data_star.tim"
+                ),
+                id="triple_data_for_timeseries_with_comments_between_data_star",
             ),
         ],
     )
@@ -243,5 +252,5 @@ class TestTimParser:
             TimParser.parse(input_path)
         found_msg = error.value.args[0]
 
-        expected_error_msg = f"Error parsing tim file '{input_path}', comments in between data not supported."
+        expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the time series data."
         assert found_msg == expected_error_msg
