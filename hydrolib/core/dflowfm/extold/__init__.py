@@ -1,4 +1,4 @@
-from .models import ExtForcing, ExtOldModel, Quantity, FileType, Method, Operand
+from .models import ExtForcing, ExtOldModel, FileType, Method, Operand, Quantity
 
 __all__ = [
     "ExtForcing",
