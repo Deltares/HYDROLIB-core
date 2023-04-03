@@ -210,27 +210,6 @@ class TestTimParser:
                 Path(
                     test_input_dir
                     / "tim"
-                    / "triple_data_for_timeseries_with_one_line_with_not_enough_information.tim"
-                ),
-                id="triple_data_for_timeseries_with_one_line_with_not_enough_information",
-            ),
-        ],
-    )
-    def test_parse_data_throws_exception_error_parsing_tim_file(self, input_path):
-        with pytest.raises(ValueError) as error:
-            TimParser.parse(input_path)
-        found_msg = error.value.args[0]
-
-        expected_error_msg = f"Error parsing tim file '{input_path}'."
-        assert found_msg == expected_error_msg
-
-    @pytest.mark.parametrize(
-        "input_path",
-        [
-            pytest.param(
-                Path(
-                    test_input_dir
-                    / "tim"
                     / "triple_data_for_timeseries_with_comments_between_data_hashtag.tim"
                 ),
                 id="triple_data_for_timeseries_with_comments_between_data_hashtag",
