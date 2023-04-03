@@ -413,9 +413,5 @@ class ExtOldModel(ParsableFileModel):
         return Serializer.serialize
 
     @classmethod
-    def _parse(cls, path: Path) -> Dict:
-        return Parser.parse(path)
-
-    @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
-        pass
+        return Parser.parse
