@@ -15,11 +15,14 @@ class Parser:
 
         Args:
             path (Path): The path to parse the data from.
-            model_fields (List[str]): List of the  ordered model fields.
 
         Returns:
             Dict[str, List[Dict[str, str]]]: A dictionary containing the forcing data under the key 'forcing'.
                                              The value is a list with dictionaries. Each dictionary represents a forcing block from the file.
+        Raises:
+            ValueError: Thrown when the order of a forcing block is not correct. Fields should be in the following order:
+            "QUANTITY", "FILENAME", "VARNAME", "SOURCEMASK", "FILETYPE", "METHOD", "OPERAND", "VALUE", "FACTOR", "IFRCTYP", 
+            "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
 
         forcings: List[Dict[str, str]] = []

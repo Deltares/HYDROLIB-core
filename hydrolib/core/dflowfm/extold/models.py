@@ -242,6 +242,7 @@ class ExtForcing(BaseModel):
     3. Interpolate time and space, save weights
     4. Interpolate space
     5. Interpolate time
+    6. Averaging
     7. Interpolate/Extrapolate time
     """
 
