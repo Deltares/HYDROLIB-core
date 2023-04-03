@@ -21,7 +21,6 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
 from ..utils import (
     assert_files_equal,
-    create_temp_file,
     create_temp_file_from_lines,
     get_temp_file,
     test_input_dir,
