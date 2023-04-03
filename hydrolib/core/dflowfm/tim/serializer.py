@@ -1,100 +1,83 @@
 from pathlib import Path
-from typing import Dict, Iterable, Optional
+from typing import Any, Dict, List
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
-from hydrolib.core.dflowfm.ini.io_models import Datablock, DatablockRow
 
+TimeSeriesRow = List[str]
+TimeSeriesBlock = List[TimeSeriesRow]
 
 class TimSerializerConfig(SerializerConfig):
-    max_length_datablock = 10
-    datablock_spacing = 0
+    """Configuration settings for the TimSerializer."""
 
+    column_spacing: int = 1
+    """(int): The number of spaces to include between columns in the serialized .tim file."""
 
 class TimSerializer:
+
     @staticmethod
     def serialize(
         path: Path,
-        data: Dict,
+        data: Dict[str, Any],
         config: TimSerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> None:
         """
-        Serializes the timeseries data to the file at the specified path in .tim format.
+        Serializes timeseries data to a file in .tim format.
 
-        Attributes:
-            path (Path): The path to the destination file.
-            data (Dict): The data to be serialized.
-            config (TimSerializerConfig): The serialization configuration.
-            save_settings (ModelSaveSettings): The model save settings.
+        Args:
+            path (Path): The path to the destination .tim file.
+            data (Dict[str, Any]): The timeseries data to be serialized. The data should be provided as a dictionary with the following keys:
+                - 'comments' (List[str]): A list of comments to be included at the beginning of the file. Each comment should be a string.
+                - 'timeseries' (Dict[float, List[float]]): A dictionary representing the timeseries data, where the key is the time and the value the values at that time.
+            config (TimSerializerConfig): The serialization configuration settings.
+            save_settings (ModelSaveSettings): The save settings to be used.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        datarowlist = []
-        commentrowlist = []
+        lines = []
 
-        for key in data:
-            if key == "comments":
-                commentrowlist.append(TimSerializer._get_commentblockrow(key, data))
-            else:
-                datarowlist.append(TimSerializer._get_datablockrow(key, data))
+        # Serialize comments
+        for comment in data["comments"]:
+            lines.append(f"#{comment}")
 
-        timeseries = TimSerializer._serialize_datablock(datarowlist, config)
+        # Convert time series float data to time series string data        
+        format_float = lambda v: f"{v:{config.float_format}}"
 
+        timeseries_block: TimeSeriesBlock = []
+        for time, row_elements in data["timeseries"].items():           
+            timeseries_row = [format_float(time)] + [format_float(value) for value in row_elements] 
+            timeseries_block.append(timeseries_row)
+        
+        # Make sure the columns are aligned and have the proper spacing
+        column_space = " " * config.column_spacing
+        column_lengths = TimSerializer._get_column_lengths(timeseries_block)
+        
+        for timeseries_row in timeseries_block:
+
+            row_elements: List[str] = []
+            for index, value in enumerate(timeseries_row):
+                whitespace_offset = " " * column_lengths[index]
+                row_elements.append(value + whitespace_offset)
+
+            line = column_space.join(row_elements)
+            lines.append(line)
+
+        # Write all the line to file
+        file_content = "\n".join(lines)
         with path.open("w") as file:
-            TimSerializer._write_rows(file, commentrowlist)
-            TimSerializer._write_rows(file, timeseries)
+            file.write(file_content)
 
     @staticmethod
-    def _write_rows(file, rowlist):
-        for rows in rowlist:
-            for row in rows:
-                if isinstance(row, str):
-                    file.write(row)
-
-    @staticmethod
-    def _get_datablockrow(key, dictionary):
-        rowlist = [str]
-        rowlist.append(str(key))
-        for value in dictionary[key]:
-            rowlist.append(str(value))
-        return rowlist
-
-    @staticmethod
-    def _get_commentblockrow(key, dictionary):
-        rowlist = [str]
-        for comment in dictionary[key]:
-            if isinstance(comment, str):
-                data = f"# {comment}"
-                rowlist.append(data)
-        return rowlist
-
-    @staticmethod
-    def _serialize_datablock(datablock: Optional[Datablock], config) -> Iterable[str]:
-        if datablock is None or config.max_length_datablock is None:
+    def _get_column_lengths(timeseries_block: TimeSeriesBlock) -> List[int]:
+        if len(timeseries_block) == 0:
             return []
 
-        linesofdatablock = []
-        for row in datablock:
-            linesofdatablock.append(TimSerializer._serialize_row(row, config))
-        return linesofdatablock
+        n_columns = len(timeseries_block[0])
+        column_lengths = [0] * n_columns
 
-    @staticmethod
-    def _serialize_row(row: DatablockRow, config) -> str:
-        elem_spacing = " " * config.datablock_spacing
+        for timeseries_row in timeseries_block:
+            for index, row_element in enumerate(timeseries_row):
+                if len(row_element) > column_lengths[index]:
+                    column_lengths[index] = len(row_element)
 
-        elems = []
-        for item in row:
-            if isinstance(item, str):
-                elems += TimSerializer._serialize_row_element(item, config)
-        return elem_spacing.join(elems).rstrip() + "\n"
-
-    @staticmethod
-    def _serialize_row_element(elem: str, config) -> str:
-        max_length = config.max_length_datablock  # type: ignore
-        whitespace = _get_offset_whitespace(elem, max_length)
-        return elem + whitespace
-
-
-def _get_offset_whitespace(key: Optional[str], max_length: int) -> str:
-    key_length = len(key) if key is not None else 0
-    return " " * max(max_length - key_length, 0)
+        return column_lengths

@@ -15,15 +15,32 @@ from tests.utils import (
 
 
 class TestTimSerializer:
+    triple_data_for_timeseries = {  10: [1.232, 2.343, 3.454],
+                                    20: [4.565, 5.676, 6.787],
+                                    30: [1.5, 2.6, 3.7]}
+    
+    single_data_for_timeseries = {  0.000000: [0.0000000],
+                                    10.000000: [0.0100000],
+                                    20.000000: [0.0000000],
+                                    30.000000: [-0.0100000],
+                                    40.000000: [0.0000000],
+                                    50.000000: [0.0100000],
+                                    60.000000: [0.0000000],
+                                    70.000000: [-0.0100000],
+                                    80.000000: [0.0000000],
+                                    90.000000: [0.0100000],
+                                    100.000000: [0.0000000],
+                                    110.000000: [-0.0100000],
+                                    120.000000: [0.0000000],}
+
+
     @pytest.mark.parametrize(
         "input_data, reference_path",
         [
             pytest.param(
                 {
-                    "comments": [str, "this file\n", " contains\n", " stuff\n"],
-                    10: [1.232, 2.343, 3.454],
-                    20: [4.565, 5.676, 6.787],
-                    30: [1.5, 2.6, 3.7],
+                    "comments": ["this file", "contains", "stuff"],
+                    "timeseries": triple_data_for_timeseries,
                 },
                 Path(
                     test_reference_dir
@@ -35,9 +52,7 @@ class TestTimSerializer:
             pytest.param(
                 {
                     "comments": [],
-                    10: [1.232, 2.343, 3.454],
-                    20: [4.565, 5.676, 6.787],
-                    30: [1.5, 2.6, 3.7],
+                    "timeseries": triple_data_for_timeseries,
                 },
                 Path(test_reference_dir / "tim" / "triple_data_for_timeseries.tim"),
                 id="triple_data_for_timeseries",
@@ -45,19 +60,7 @@ class TestTimSerializer:
             pytest.param(
                 {
                     "comments": [],
-                    0.000000: [0.0000000],
-                    10.000000: [0.0100000],
-                    20.000000: [0.0000000],
-                    30.000000: [-0.0100000],
-                    40.000000: [0.0000000],
-                    50.000000: [0.0100000],
-                    60.000000: [0.0000000],
-                    70.000000: [-0.0100000],
-                    80.000000: [0.0000000],
-                    90.000000: [0.0100000],
-                    100.000000: [0.0000000],
-                    110.000000: [-0.0100000],
-                    120.000000: [0.0000000],
+                    "timeseries": single_data_for_timeseries,
                 },
                 Path(test_reference_dir / "tim" / "single_data_for_timeseries.tim"),
                 id="single_data_for_timeseries",
