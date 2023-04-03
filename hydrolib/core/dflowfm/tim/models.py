@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Dict
+from typing import Callable, Dict, List
 
 from hydrolib.core.basemodel import ModelSaveSettings, ParsableFileModel
 
@@ -17,7 +17,8 @@ class TimModel(ParsableFileModel):
 
     serializer_config = TimSerializerConfig()
 
-    timeseries: Dict
+    comments : List[str]
+    timeseries: Dict[float, List[float]]
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict

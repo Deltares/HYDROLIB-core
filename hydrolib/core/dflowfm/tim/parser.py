@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 class TimParser:
     """A parser for .tim files that extracts comments and time series data."""
@@ -27,40 +27,58 @@ class TimParser:
 
         with filepath.open() as file:
             lines = file.readlines()
-
-            # Read header comments
-            start_timeseries_index = 0
-            for line_index in range(len(lines)):
-
-                line = lines[line_index].strip()
-
-                if len(line) == 0:
-                    comments.append(line)
-                    continue
-                
-                if line.startswith("#") or line.startswith("*"):
-                    comments.append(line[1:])
-                    continue
-
-                start_timeseries_index = line_index
-                break
-
-            # Read time series data
-            for line_index in range(start_timeseries_index, len(lines)):
-                line = lines[line_index].strip()
-
-                if len(line) == 0:
-                    continue
-
-                TimParser._raise_error_if_contains_comment(line, line_index + 1)
-
-                time, *values = line.split()
-
-                TimParser._raise_error_if_duplicate_time(time, timeseries, line_index + 1)
-
-                timeseries[time] = values
+            comments, start_timeseries_index = TimParser._read_header_comments(lines)
+            timeseries = TimParser._read_time_series_data(lines, start_timeseries_index)
 
         return {"comments" : comments, "timeseries" : timeseries}
+    
+
+    @staticmethod
+    def _read_header_comments(lines: List[str])-> Tuple[List[str], int]:
+        """Read the header comments of the lines from the .tim file.
+        The comments are only expected at the start of the .tim file.
+        When a non comment line is encountered, all comments from the header will be retuned together with the start index of the timeseries data.
+
+        Args:
+            lines (List[str]): Lines from the the .tim file which is read.
+
+        Returns:
+            Tuple of List[str] and int, the List[str] contains the commenst from the header, the int is the start index of the timeseries.
+        """
+        comments: List[str] = []
+        start_timeseries_index = 0
+        for line_index in range(len(lines)):
+
+            line = lines[line_index].strip()
+
+            if len(line) == 0:
+                comments.append(line)
+                continue
+            
+            if line.startswith("#") or line.startswith("*"):
+                comments.append(line[1:])
+                continue
+
+            start_timeseries_index = line_index
+            return comments, start_timeseries_index
+
+    @staticmethod
+    def _read_time_series_data(lines: List[str], start_timeseries_index: int):
+        timeseries: Dict[str, List[str]] = {}
+        for line_index in range(start_timeseries_index, len(lines)):
+            line = lines[line_index].strip()
+
+            if len(line) == 0:
+                continue
+
+            TimParser._raise_error_if_contains_comment(line, line_index + 1)
+
+            time, *values = line.split()
+
+            TimParser._raise_error_if_duplicate_time(time, timeseries, line_index + 1)
+
+            timeseries[time] = values
+        return timeseries
 
     @staticmethod
     def _raise_error_if_contains_comment(line: str, line_index: int):
