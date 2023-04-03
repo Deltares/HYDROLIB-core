@@ -1758,16 +1758,15 @@ files = [
 
 [[package]]
 name = "meshkernel"
-version = "1.0.0"
+version = "2.0.2"
 description = "`meshkernel` is a library which can be used to manipulate meshes."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "meshkernel-1.0.0-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:1d7c0638df0a2f908c3a29939fabcf832557af5c3c9cea73c1f496b3ea7aea8c"},
-    {file = "meshkernel-1.0.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:adb87f29a29ab804bcd5417f30e91570a6169f1293e6a30c92abaf58adde5e43"},
-    {file = "meshkernel-1.0.0-py3-none-win_amd64.whl", hash = "sha256:31e686646ef019279dec11a6e2c5b3f8eaba7a55242acb2dbc65d9d3d37afd39"},
-    {file = "meshkernel-1.0.0.tar.gz", hash = "sha256:9f927d1ef1ed6e6325d8ded9ec12af1fb494f4206fac67dd5adfee18a8837605"},
+    {file = "meshkernel-2.0.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:710b5541d0d67eafc3b75bbf9e7fa944430a3d9f57a9779c88431f977d99dc89"},
+    {file = "meshkernel-2.0.2-py3-none-win_amd64.whl", hash = "sha256:04a200ebe2a9302f15128cb8ce29f0267e323d0941e3b2612a7369f25ff85738"},
+    {file = "meshkernel-2.0.2.tar.gz", hash = "sha256:17565ea786d1247b6070f3c63df3a40b008b7a0d9b97e917bcd1674b42cf670f"},
 ]
 
 [package.dependencies]
@@ -1775,7 +1774,7 @@ numpy = "*"
 
 [package.extras]
 docs = ["myst-nb", "sphinx", "sphinx-book-theme"]
-lint = ["black (==21.4b1)", "flake8", "isort"]
+lint = ["black", "flake8", "isort"]
 tests = ["matplotlib", "nbval", "pytest", "pytest-cov"]
 
 [[package]]
@@ -3600,4 +3599,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6774351503f9d3aaa9d8fa63ac2e854d39b33ef159b6614311cf220828f5bad2"
+content-hash = "461738b3cbc1546a8d525423fe278e26e2225c62aa6c3c69cc5b125d5524ab6a"
