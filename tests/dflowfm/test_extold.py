@@ -717,7 +717,7 @@ class TestParser:
             data = parser.parse(filepath=temp_file)
 
         exp_data = {
-            "comment" : [" This is a comment", " This is a comment", ""],
+            "comment": [" This is a comment", " This is a comment", ""],
             "forcing": [
                 {
                     "QUANTITY": "internaltidesfrictioncoefficient",
@@ -734,9 +734,9 @@ class TestParser:
                     "METHOD": "3",
                     "OPERAND": "O",
                 },
-            ]
+            ],
         }
-        
+
         assert data == exp_data
 
     def test_parse_block_with_incorrect_order_raises_error(self):
