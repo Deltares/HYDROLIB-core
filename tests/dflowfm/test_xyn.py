@@ -82,24 +82,11 @@ class TestNameExtractor:
             pytest.param(
                 "'  randomName '", "  randomName ", id="Name with whitespace and quotes"
             ),
-            pytest.param(
-                "randomName #randomComment", "randomName", id="Name followed by comment"
-            ),
             pytest.param("#randomName", "#randomName", id="Name starting with hashtag"),
             pytest.param(
                 "'#randomName'",
                 "#randomName",
                 id="Name with quotes starting with hashtag",
-            ),
-            pytest.param(
-                "randomName bla bla bla",
-                "randomName",
-                id="Valid name followed by additional content",
-            ),
-            pytest.param(
-                "'randomName' bla bla bla",
-                "randomName",
-                id="Valid name with quotes followed by additional content",
             ),
         ],
     )
@@ -117,6 +104,15 @@ class TestNameExtractor:
             pytest.param("''", id="Empty string with quotes"),
             pytest.param("     ", id="Whitespace only"),
             pytest.param("'     '", id="Whitespace only with quotes"),
+            pytest.param("randomName #randomComment", id="Name followed by comment"),
+            pytest.param(
+                "randomName bla bla bla",
+                id="Valid name followed by additional content",
+            ),
+            pytest.param(
+                "'randomName' bla bla bla",
+                id="Valid name with quotes followed by additional content",
+            ),
         ],
     )
     def test_extract_invalid_name_raises_error(self, input: str):
