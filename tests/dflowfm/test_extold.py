@@ -632,6 +632,9 @@ class TestExtOldModel:
     def test_save_model(self):
 
         exp_file_content = [
+            "*This is a comment",
+            "*This is a comment",
+            "*",
             "QUANTITY=internaltidesfrictioncoefficient",
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
@@ -646,6 +649,12 @@ class TestExtOldModel:
             "OPERAND=O",
         ]
 
+        comments = [
+            "This is a comment",
+            "This is a comment",
+            ""
+        ]
+        
         forcing_1 = ExtForcing(
             quantity=Quantity.InternalTidesFrictionCoefficient,
             filename=Path("surroundingDomain.pol"),
@@ -663,7 +672,7 @@ class TestExtOldModel:
             operand=Operand.OverwriteExistingValues,
         )
 
-        model = ExtOldModel(forcing=[forcing_1, forcing_2])
+        model = ExtOldModel(comment=comments, forcing=[forcing_1, forcing_2])
 
         model.serializer_config.float_format = "f"
 
@@ -754,6 +763,9 @@ class TestParser:
 class TestSerializer:
     def test_serialize(self):
         exp_file_content = [
+            "*This is a comment",
+            "*This is a comment",
+            "*",
             "QUANTITY=internaltidesfrictioncoefficient",
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
@@ -766,6 +778,12 @@ class TestSerializer:
             "FILETYPE=9",
             "METHOD=3",
             "OPERAND=O",
+        ]
+        
+        comments = [
+            "This is a comment",
+            "This is a comment",
+            ""
         ]
 
         forcing_1 = {
@@ -785,7 +803,7 @@ class TestSerializer:
             "operand": "O",
         }
 
-        forcing_data = {"forcing": [forcing_1, forcing_2]}
+        forcing_data = {"comment": comments, "forcing": [forcing_1, forcing_2]}
 
         serializer_config = SerializerConfig(float_format="f")
         save_settings = ModelSaveSettings()
