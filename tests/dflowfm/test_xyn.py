@@ -107,11 +107,19 @@ class TestNameExtractor:
             pytest.param("randomName #randomComment", id="Name followed by comment"),
             pytest.param(
                 "randomName bla bla bla",
-                id="Valid name followed by additional content",
+                id="Name followed by additional content",
             ),
             pytest.param(
                 "'randomName' bla bla bla",
-                id="Valid name with quotes followed by additional content",
+                id="Name with quotes followed by additional content",
+            ),
+            pytest.param(
+                "randomNameWithQuote'InIt",
+                id="Name that contains a quote",
+            ),
+            pytest.param(
+                "'randomNameWithQuote'InIt'",
+                id="Name with quotes that contains a quote",
             ),
         ],
     )
