@@ -163,6 +163,71 @@ def _proftype_to_conveyancetype(proftype: int) -> str:
     return convtype
 
 
+def _frctp_to_frictiontype(frctp: int) -> str:
+    """Convert legacy profdef friction type numbers to crsdef.ini frictionType string.
+
+    Args:
+        frctp (int): integer type as listed in FRCTP=<I> field.
+    Returns:
+        str: Equivalent frictionType string value for use in a crsdef.ini.
+    """
+
+    if frctp == 0:
+        friction_type = "Chezy"
+    elif frctp == 1:
+        friction_type = "Manning"
+    elif frctp == 2:
+        friction_type = "WallLawNikuradse"
+    elif frctp == 3:
+        friction_type = "WhiteColebrook"
+    else:
+        raise ValueError(f"Invalid legacy profile friction type given: FRCTP={frctp}")
+
+    return friction_type
+
+
+def _crs_append_friction_definition(
+    profdef: dict, crsvalues: dict, plural: bool = False
+):
+    """Append key-value pairs to a dict for a crsdef.ini-compatible friction
+    definition.
+
+    Caller must specify whether the specific CrossSectionDefinition subtype,
+    for which this dict is intended, is expecting plural (list) friction input.
+
+
+    Args:
+        profdef (dict): the key-value pairs read from profdef.txt. Optional
+            friction keywords are: FRCCF and FRCTP.
+        crsvalues (dict): dict of CrossSectionDefinition fields, to which the
+            friction fields will be appended (in place, function has no return
+            value).
+        plural (bool, optional): whether intended CrossSectionDefinition
+            subtype is expecting plural/list-friction parameters or not.
+            Defaults to: False.
+    """
+    prof_frccf = profdef.get("FRCCF")
+    prof_frctp = profdef.get("FRCTP")
+
+    if prof_frccf is None and prof_frctp is None:
+        return
+
+    if (prof_frccf is None) ^ (prof_frctp is None):
+        raise ValueError(
+            f"Missing friction input, FRCCF={prof_frccf}, FRCTP={prof_frctp} (both must be given)."
+        )
+
+    val_frctype = _frctp_to_frictiontype(prof_frctp)
+
+    # Append input profile friction parameters to output crs values dict
+    if plural:
+        crsvalues.update(
+            {"frictionValues": [prof_frccf], "frictionTypes": [val_frctype]}
+        )
+    else:
+        crsvalues.update({"frictionValue": prof_frccf, "frictionType": val_frctype})
+
+
 def _convert_pipe_definition(profdef: dict) -> dict:
     crsvalues = {"type": "circle", "diameter": profdef["WIDTH"]}
     return crsvalues
@@ -281,6 +346,10 @@ def convert_profdef(
         )
 
         crsdata = _convert_xyz_definition(profdef, polyobj)
+
+    _crs_append_friction_definition(
+        profdef, crsdata, plural=(crstype == "yz" or crstype == "xyz")
+    )
 
     crsdata["id"] = f"PROFNR{profdef['PROFNR']}"
     crsdata["type"] = crstype

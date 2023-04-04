@@ -16,16 +16,16 @@ PROFNR=5      TYPE=7             WIDTH=400      HEIGHT=4      BASE=130
 PROFNR=6      TYPE=7             WIDTH=300      HEIGHT=4      BASE=100
 PROFNR=7      TYPE=7             WIDTH=200      HEIGHT=4      BASE=70
 PROFNR=8      TYPE=7             WIDTH=100      HEIGHT=4      BASE=30
-PROFNR=9      TYPE=7             WIDTH=250      HEIGHT=4      BASE=80
+PROFNR=9      TYPE=7             WIDTH=250      HEIGHT=4      BASE=80 FRCTP=3 FRCCF=0.10
 PROFNR=10     TYPE=7             WIDTH=100      HEIGHT=4      BASE=3
 PROFNR=11     TYPE=7             WIDTH=250      HEIGHT=4      BASE=80
 PROFNR=12     TYPE=7             WIDTH=40       HEIGHT=4      BASE=10
 PROFNR=13     TYPE=7             WIDTH=24       HEIGHT=4      BASE=8
 PROFNR=14     TYPE=7             WIDTH=24       HEIGHT=4      BASE=8
 PROFNR=15     TYPE=5             WIDTH=24       HEIGHT=4
-PROFNR=16     TYPE=3             WIDTH=60
+PROFNR=16     TYPE=3             WIDTH=60       FRCTP=0 FRCCF=55
 PROFNR=17     TYPE=3             WIDTH=10
 PROFNR=18     TYPE=3             WIDTH=30
-PROFNR=20     TYPE=201 FRCTP=1 FRCCF=.035
-PROFNR=21     TYPE=201 FRCTP=1 FRCCF=.035
+PROFNR=20     TYPE=201           FRCTP=1        FRCCF=.035
+PROFNR=21     TYPE=201           FRCTP=1        FRCCF=.035
 PROFNR=22     TYPE=7             WIDTH=1500     HEIGHT=4      BASE=300
