@@ -5,22 +5,26 @@ prof_to_cross
 Directly jump to [Usage](#Usage).
 
 # Background
-1D cross section specification in a D-Flow FM model used to go via two or three prof* files, the ones specified in the MDU file via `ProflocFile`, `ProfdefFile`
+1D cross section specification in a D-Flow FM model used to go via two or three prof* files,
+the ones specified in the MDU file under `[geometry]` via `ProflocFile`, `ProfdefFile`
 and optionally `ProfdefxyzFile`. They contain the location/placement and the type/geometry description, respectively.
 
-Similar input is still needed, but now has the officially supported via .ini files.
-These are the ones now specified in the MDU file via `CrsLocFile` and `CrsDefFile`.
+Similar input is still needed, but now is officially supported via .ini files.
+These are the ones now specified in the MDU file under `[geometry]` via `CrsLocFile` and `CrsDefFile`.
+
 ## Automatic conversion choices
+prof_to_cross makes the following automatic conversion choices.
 ### Location
 Location continues to be specified via original *x,y* coordinate, no branchId is available.
 
-Vertical absolute placement (`ZMIN` vs. `shift`) still needs refinement.
+Vertical absolute placement (`ZMIN` vs. `shift`) still needs refinement, is currently not converted.
 
 ### Type + conveyance
 The following table lists the mapping from old to new cross section types:
-|PROFTYPE|meaning|type in crsdef.ini|conveyanceType in crsdef.ini|
+
+|Profdef TYPE|meaning|type in crsdef.ini|conveyanceType in crsdef.ini|
 | :--- | :--- | :--- | :--- |
-|1|`PIPE`|`circle`||N/A|
+|1|`PIPE`|`circle`|N/A|
 |2|`RECTAN , HYDRAD = AREA / PERIMETER`|`rectangle`|N/A|
 |3|`RECTAN , HYDRAD = 1D ANALYTIC CONVEYANCE`|`rectangle`|N/A|
 |4|`V-SHAPE , HYDRAD = AREA / PERIMETER`|`yz`|`lumped`|
@@ -38,7 +42,8 @@ Not yet available in converter.
 # Usage:
 
 ```bash
-usage: prof_to_cross [-h] [--version] [--verbose] [--mdufile MDUFILE] [--proffiles [PROFFILE [PROFFILE ...]]]
+usage: python tools/prof_to_cross.py [-h] [--version] [--verbose] \
+              [--mdufile MDUFILE] [--proffiles [PROFFILE [PROFFILE ...]]]
 
 ```
 
