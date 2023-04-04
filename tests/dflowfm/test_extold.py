@@ -75,15 +75,9 @@ class TestExtForcing:
             )
             assert forcing.quantity == quantity
 
-        def test_with_valid_tracerbnd_quantity_string(self):
-            quantity_str = TracerQuantity.TracerBnd.value + "Some_Tracer_Name"
-            forcing = ExtForcing(
-                quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
-            )
-            assert forcing.quantity == quantity_str
-
-        def test_with_valid_initialtracer_quantity_string(self):
-            quantity_str = TracerQuantity.InitialTracer.value + "Some_Tracer_Name"
+        @pytest.mark.parametrize("quantity", TracerQuantity)
+        def test_with_tracerquantity_appended_with_tracer_name(self, quantity):
+            quantity_str = quantity + "Some_Tracer_Name"
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
