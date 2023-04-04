@@ -58,11 +58,23 @@ def read_profdef_data(profdeffile: PathOrStr) -> List[Dict]:
     with open(profdeffile) as file:
         for line in file:
             linenr = linenr + 1
-            if line.startswith("*"):
+            if line.startswith("*") or len(line.strip()) == 0:
                 continue
-            tokens = re.split("[=\s]+", line.strip())
+            tokens = re.split(r"[=\s]+", line.strip())
+
             defs.append(dict(zip(tokens[::2], map(float, tokens[1::2]))))
+
+            if "PROFNR" not in defs[-1]:
+                raise ValueError(
+                    f"Invalid profile definition in {profdeffile}, line {linenr}: missing PROFNR="
+                )
+            if "TYPE" not in defs[-1]:
+                raise ValueError(
+                    f"Invalid profile definition in {profdeffile}, line {linenr}: missing TYPE="
+                )
+
             defs[-1]["PROFNR"] = int(defs[-1]["PROFNR"])
+            defs[-1]["TYPE"] = int(defs[-1]["TYPE"])
 
     if _verbose:
         print(f"Read {len(defs)} profile definitions from {profdeffile}.")
@@ -171,8 +183,8 @@ def _convert_v_shape_definition(profdef: dict) -> dict:
 
     crsvalues = {
         "type": "yz",
-        "y": [0, dy_talud, profdef["WIDTH"]],
-        "z": [profdef["HEIGHT"], 0, profdef["HEIGHT"]],
+        "yCoordinates": [0, dy_talud, profdef["WIDTH"]],
+        "zCoordinates": [profdef["HEIGHT"], 0, profdef["HEIGHT"]],
         "yzCount": 3,
         "conveyance": _proftype_to_conveyancetype(profdef["TYPE"]),
     }
@@ -203,7 +215,7 @@ def _convert_xyz_definition(profdef: dict, profdefxyz: PolyObject) -> dict:
         "type": "xyz",
         "xCoordinates": [p.x for p in profdefxyz.points],
         "yCoordinates": [p.y for p in profdefxyz.points],
-        "zCoordinates": [p.y for p in profdefxyz.points],
+        "zCoordinates": [p.z for p in profdefxyz.points],
         "xyzCount": len(profdefxyz.points),
         "conveyance": _proftype_to_conveyancetype(profdef["TYPE"]),
     }
