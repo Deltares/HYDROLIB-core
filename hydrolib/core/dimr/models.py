@@ -240,9 +240,6 @@ class ControlModel(BaseModel):
     @classmethod
     def validate(cls, v):
         """Remove control element prefixes from parsed data."""
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict) and len(v.keys()) == 1:
             key = list(v.keys())[0]
             v = v[key]
@@ -276,6 +273,10 @@ class Start(ControlModel):
     name: str
 
 
+DIMRControlUnion = Union[Start, Parallel]
+DIMRComponentUnion = Union[RRComponent, FMComponent, Component]
+
+
 class DIMR(ParsableFileModel):
     """DIMR model representation.
 
@@ -299,8 +300,8 @@ class DIMR(ParsableFileModel):
     """
 
     documentation: Documentation = Documentation()
-    control: List[Union[Start, Parallel]] = Field([])
-    component: List[Union[RRComponent, FMComponent, Component]] = []
+    control: List[DIMRControlUnion] = []
+    component: List[DIMRComponentUnion] = []
     coupler: Optional[List[Coupler]] = []
     waitFile: Optional[str]
     global_settings: Optional[GlobalSettings]
