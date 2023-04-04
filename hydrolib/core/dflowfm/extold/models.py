@@ -311,11 +311,10 @@ class ExtForcing(BaseModel):
                     raise_error_tracer_name(tracer_quantity)
                 return tracer_quantity + value_str[n:]
 
-        supported_values = list(Quantity)
-        if lower_value in supported_values:
+        if lower_value in list(Quantity):
             return Quantity(lower_value)
 
-        supported_value_str = ", ".join(([x.value for x in supported_values]))
+        supported_value_str = ", ".join(([x.value for x in Quantity]))
         raise ValueError(
             f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
         )
