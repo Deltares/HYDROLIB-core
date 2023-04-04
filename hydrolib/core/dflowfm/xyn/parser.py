@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import Dict
 
-from .name_extractor import NameExtractor
+from .name_validator import NameValidator
 
 xynpattern = re.compile(r"\s+")
 
@@ -41,8 +41,7 @@ class XYNParser:
                     continue
 
                 try:
-                    x, y, remainder = re.split(xynpattern, line, maxsplit=2)
-                    n = NameExtractor.extract_name(remainder)
+                    x, y, n = re.split(xynpattern, line, maxsplit=2)
                 except ValueError:
                     raise ValueError(
                         f"Error parsing XYN file '{filepath}', line {linenr+1}."

@@ -6,7 +6,7 @@ import pytest
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
-from hydrolib.core.dflowfm.xyn.name_extractor import NameExtractor
+from hydrolib.core.dflowfm.xyn.name_validator import NameValidator
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
 
@@ -70,7 +70,7 @@ class TestXYNSerializer:
             yield Path(temp_dir, "test.xyn")
 
 
-class TestNameExtractor:
+class TestNameValidator:
     @pytest.mark.parametrize(
         ("input", "expected_output"),
         [
@@ -90,8 +90,8 @@ class TestNameExtractor:
             ),
         ],
     )
-    def test_extract_name(self, input: str, expected_output: str):
-        output = NameExtractor.extract_name(input)
+    def test_validate_name(self, input: str, expected_output: str):
+        output = NameValidator.validate(input)
         assert output == expected_output
 
     @pytest.mark.parametrize(
@@ -123,9 +123,9 @@ class TestNameExtractor:
             ),
         ],
     )
-    def test_extract_invalid_name_raises_error(self, input: str):
+    def test_validate_invalid_name_raises_error(self, input: str):
         with pytest.raises(ValueError):
-            _ = NameExtractor.extract_name(input)
+            _ = NameValidator.validate(input)
 
 
 class TestXYNModel:

@@ -9,7 +9,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
     SerializerConfig,
 )
-from hydrolib.core.dflowfm.xyn.name_extractor import NameExtractor
+from hydrolib.core.dflowfm.xyn.name_validator import NameValidator
 
 from .parser import XYNParser
 from .serializer import XYNSerializer
@@ -36,7 +36,7 @@ class XYNPoint(BaseModel):
 
     @validator("n", pre=True)
     def _validate_name(cls, value):
-        return NameExtractor.extract_name(value)
+        return NameValidator.validate(value)
 
 
 class XYNModel(ParsableFileModel):
