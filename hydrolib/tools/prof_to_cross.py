@@ -443,12 +443,14 @@ def prof_to_cross(
             x=profloc.x,
             y=profloc.y,
             definitionid=f"PROFNR{int(profloc.z)}",
+            shift=next(
+                profdef.get("ZMIN")
+                for profdef in profdef_data
+                if profdef.get("PROFNR") == profloc.z
+            ),
         )
         for nr, profloc in enumerate(profloc_data.points)
     ]
-
-    # TODO: profdef.ZMIN to shift in crsloc
-    # TODO: snap profloc.x/y to branchid if x/y does not work well.
 
     crsloc_model = CrossLocModel(crosssection=crsloc_data)
     crsloc_model.filepath = crslocfile

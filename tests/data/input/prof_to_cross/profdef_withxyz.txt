@@ -28,4 +28,4 @@ PROFNR=17     TYPE=3             WIDTH=10
 PROFNR=18     TYPE=3             WIDTH=30
 PROFNR=20     TYPE=201           FRCTP=1        FRCCF=.035
 PROFNR=21     TYPE=201           FRCTP=1        FRCCF=.035
-PROFNR=22     TYPE=7             WIDTH=1500     HEIGHT=4      BASE=300
+PROFNR=22     TYPE=7             WIDTH=1500     HEIGHT=4      BASE=300 ZMIN=-123
