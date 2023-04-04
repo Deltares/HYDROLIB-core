@@ -593,13 +593,9 @@ class TestExtOldModel:
 
         # Assert correct comments
         assert len(model.comment) == 3
-        exp_comments = [
-            " This is a comment",
-            " This is a comment",
-            ""
-        ]
+        exp_comments = [" This is a comment", " This is a comment", ""]
         assert model.comment == exp_comments
-        
+
         # Assert correct forcings
         assert len(model.forcing) == 2
 
@@ -721,21 +717,14 @@ class TestParser:
             data = parser.parse(filepath=temp_file)
 
         assert len(data) == 2
-        
-
-
 
         # Assert correct comments
         comments = data["comment"]
         assert len(comments) == 3
-        
-        exp_comments = [
-            " This is a comment",
-            " This is a comment",
-            ""
-        ]
+
+        exp_comments = [" This is a comment", " This is a comment", ""]
         assert comments == exp_comments
-        
+
         # Assert correct forcings
         forcings = data["forcing"]
         assert len(forcings) == 2

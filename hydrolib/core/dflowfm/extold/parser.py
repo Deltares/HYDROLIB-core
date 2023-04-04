@@ -28,11 +28,9 @@ class Parser:
             "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
 
-
-
         with filepath.open() as file:
             lines = file.readlines()
-        
+
         comments, start_data_index = Parser._parse_header(lines)
         forcings = Parser._parse_data(lines, start_data_index)
 
@@ -41,7 +39,7 @@ class Parser:
     @staticmethod
     def _parse_header(lines: List[str]):
         comments: List[str] = []
-        
+
         start_data_index = 0
         for line_index in range(len(lines)):
 
@@ -50,25 +48,25 @@ class Parser:
             if len(line) == 0:
                 comments.append(line)
                 continue
-                
+
             if line.startswith("*"):
                 comments.append(line[1:])
                 continue
 
             start_data_index = line_index
             break
-        
+
         return comments, start_data_index
-    
+
     @staticmethod
     def _parse_data(lines: List[str], start_index: int):
         forcings: List[Dict[str, str]] = []
         current_forcing: Dict[str, str] = {}
-        
+
         for line_index in range(start_index, len(lines)):
 
             line = lines[line_index].strip()
-            
+
             if line.startswith("*"):
                 continue
 
@@ -85,9 +83,9 @@ class Parser:
         if len(current_forcing) != 0:
             Parser._validate_order(current_forcing, line_index)
             forcings.append(current_forcing)
-            
+
         return forcings
-    
+
     @staticmethod
     def _validate_order(forcing: Dict[str, str], line_number: int):
         """Validates the order of the forcing fields given in the forcing block.
