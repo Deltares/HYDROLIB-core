@@ -1,12 +1,15 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
+from pydantic import validator
+
 from hydrolib.core.basemodel import (
     BaseModel,
     ModelSaveSettings,
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.dflowfm.xyn.name_extractor import NameExtractor
 
 from .parser import XYNParser
 from .serializer import XYNSerializer
@@ -30,6 +33,10 @@ class XYNPoint(BaseModel):
         y = data.get("y")
         n = data.get("n")
         return f"x:{x} y:{y} n:{n}"
+
+    @validator("n", pre=True)
+    def _validate_name(cls, value):
+        return NameExtractor.extract_name(value)
 
 
 class XYNModel(ParsableFileModel):
