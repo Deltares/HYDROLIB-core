@@ -17,14 +17,14 @@ class TestXYNParser:
     def test_parse_xyn_file(self):
         file_content = """
             *This is a comment and should not be parsed.
-            1.1 2.2 'ObservationPoint_2D_01' #This comment should be ignored as well!
+            1.1 2.2 'ObservationPoint_2D_01'
             3.3 4.4 'ObservationPoint_2D_02'
         """
 
         expected_result = {
             "points": [
-                {"x": "1.1", "y": "2.2", "n": "ObservationPoint_2D_01"},
-                {"x": "3.3", "y": "4.4", "n": "ObservationPoint_2D_02"},
+                {"x": "1.1", "y": "2.2", "n": "'ObservationPoint_2D_01'"},
+                {"x": "3.3", "y": "4.4", "n": "'ObservationPoint_2D_02'"},
             ]
         }
 
@@ -49,7 +49,7 @@ class TestXYNSerializer:
         data = {
             "points": [
                 XYNPoint(x=1.1, y=2.2, n="randomName"),
-                XYNPoint(x=3.3, y=4.4, n="randomName 2"),
+                XYNPoint(x=3.3, y=4.4, n="'randomName 2'"),
             ]
         }
 
@@ -172,3 +172,30 @@ class TestXYNModel:
                 expected_file_content, "expected.xyn"
             ) as expected_file:
                 assert_files_equal(actual_file, expected_file)
+
+
+class TestXYNPoint:
+    def test_new_xyn_point_with_invalid_name_should_raise_error(self):
+        invalid_name = "Invalid name"
+
+        with pytest.raises(ValueError) as error:
+            _ = XYNPoint(x=1.1, y=2.2, n=invalid_name)
+            expected_message = "Name cannot contain spaces."
+            assert expected_message in str(error.value)
+
+    def test_new_xyn_point_with_valid_name(self):
+        valid_name = "'Valid name'"
+        point = XYNPoint(x=1.1, y=2.2, n=valid_name)
+
+        assert point.n == "Valid name"
+
+    def test_update_xyn_point_to_invalid_name_should_raise_error(self):
+        invalid_name = "Invalid name"
+
+        point = XYNPoint(x=1.1, y=2.2, n="'valid name'")
+
+        with pytest.raises(ValueError) as error:
+            point.n = invalid_name
+
+            expected_message = "Name cannot contain spaces."
+            assert expected_message in str(error.value)
