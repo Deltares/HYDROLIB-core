@@ -291,15 +291,25 @@ class ExtForcing(BaseModel):
         if isinstance(value, Quantity):
             return value
 
+        def raise_error_tracer_name(quantity: TracerQuantity):
+            raise ValueError(f"QUANTITY '{quantity.value}' should be appended with a tracer name.")
+        
+        if isinstance(value, TracerQuantity):
+            raise_error_tracer_name(value)
+        
         value_str = str(value)
         lower_value = value_str.lower()
 
         if lower_value.startswith(TracerQuantity.TracerBnd):
             n = len(TracerQuantity.TracerBnd.value)
+            if n == len(value_str):
+                raise_error_tracer_name(TracerQuantity.TracerBnd)
             return TracerQuantity.TracerBnd.value + value_str[n:]
 
         if lower_value.startswith(TracerQuantity.InitialTracer):
             n = len(TracerQuantity.InitialTracer.value)
+            if n == len(value_str):
+                raise_error_tracer_name(TracerQuantity.InitialTracer)
             return TracerQuantity.InitialTracer.value + value_str[n:]
 
         supported_values = list(Quantity)
