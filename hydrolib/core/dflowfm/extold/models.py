@@ -406,15 +406,12 @@ class ExtOldModel(ParsableFileModel):
     The overall external forcings model that contains the contents of one external forcings file (old format).
 
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefile`.
-
-    Attributes:
-        forcing (List[ExtForcing]): List of `[ExtForcing]` blocks for all external forcings.
     """
 
     comment: List[str] = []
     """List[str]: The comments in the header of the external forcing file."""
     forcing: List[ExtForcing] = []
-    """List[ExtForcing]: The external focring blocks in the external forcing file."""
+    """List[ExtForcing]: The external forcing blocks in the external forcing file."""
 
     @classmethod
     def _ext(cls) -> str:
