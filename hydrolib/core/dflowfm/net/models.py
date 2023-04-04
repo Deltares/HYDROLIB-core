@@ -169,7 +169,7 @@ class Mesh2d(BaseModel):
         xmin, ymin, xmax, ymax = extent
 
         # Generate mesh
-        mesh2d_input = mk.Mesh2dFactory.create_rectilinear_mesh(
+        mesh2d_input = mk.Mesh2dFactory.create(
             rows=int((ymax - ymin) / dy),
             columns=int((xmax - xmin) / dx),
             origin_x=xmin,
