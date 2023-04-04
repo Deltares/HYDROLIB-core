@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import Dict
 
-from .name_extrator import NameExtractor
+from .name_extractor import NameExtractor
 
 xynpattern = re.compile(r"\s+")
 
