@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
@@ -74,12 +74,17 @@ class TimSerializer:
         for timeseries_row in timeseries_block:
             row_elements: List[str] = []
             for index, value in enumerate(timeseries_row):
-                whitespace_offset = " " * column_lengths[index]
+                whitespace_offset = TimSerializer._get_offset_whitespace(value, column_lengths[index])
                 row_elements.append(value + whitespace_offset)
 
             line = column_space.join(row_elements)
             timeserieslines.append(line)
         return timeserieslines
+    
+    @staticmethod
+    def _get_offset_whitespace(value: Optional[str], max_length: int) -> str:
+        value_length = len(value) if value is not None else 0
+        return " " * max(max_length - value_length, 0)
 
     @staticmethod
     def _serialize_file_content(timeserieslines, commentlines):
