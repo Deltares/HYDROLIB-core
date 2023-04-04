@@ -1,5 +1,5 @@
-from contextlib import contextmanager
 import filecmp
+from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generic, List, Optional, TypeVar
