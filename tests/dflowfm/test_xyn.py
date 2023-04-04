@@ -158,9 +158,9 @@ class TestXYNModel:
             model.save(filepath=actual_file)
 
             expected_file_content = [
-                "* This is a comment.",
-                "1.1 2.2 'randomName1'",
-                "3.3 4.4 'randomName2'",
+                "1.1 2.2 randomName1",
+                "3.3 4.4 randomName2",
+                "",
             ]
 
             with create_temp_file_from_lines(
