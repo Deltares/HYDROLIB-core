@@ -2,7 +2,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 class TimParser:
-    """A parser for .tim files that extracts comments and time series data."""
+    """
+    A parser for .tim files.
+    Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.
+    No other comments are supported.
+    """
 
     @staticmethod
     def parse(filepath: Path) -> Dict[str, Any]:
