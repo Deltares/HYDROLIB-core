@@ -34,7 +34,7 @@ class XYNModel(ParsableFileModel):
         points: List of [`XYNPoint`][hydrolib.core.dflowfm.xyn.models.XYNPoint]
     """
 
-    points: List[XYNPoint]
+    points: List[XYNPoint] = []
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict
