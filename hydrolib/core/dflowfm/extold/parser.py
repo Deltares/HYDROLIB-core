@@ -11,45 +11,69 @@ class Parser:
     def parse(filepath: Path) -> Dict:
         """Parses the file at the specified path to the forcing data.
 
-        If a line starts with an asterisk (*) it is considered a comment and will not be parsed.
+        If a line starts with an asterisk (*) it is considered a comment.
+        Comments are only allowed at the header of the file. Elsewhere, they will be skipped.
 
         Args:
             path (Path): The path to parse the data from.
 
         Returns:
-            Dict[str, List[Dict[str, str]]]: A dictionary containing the forcing data under the key 'forcing'.
-                                             The value is a list with dictionaries. Each dictionary represents a forcing block from the file.
+            Dict[str, List[Any]]: A dictionary with the parsed data, with two keys:
+                - 'comment' (List[str]): A list of the parsed comments.
+                - 'forcing' (List[Dict[str, str]]): A list of the parsed forcing data as dictionaries. Each dictionary represents a forcing block from the file, with the parsed key value pairs.
+
         Raises:
             ValueError: Thrown when the order of a forcing block is not correct. Fields should be in the following order:
             "QUANTITY", "FILENAME", "VARNAME", "SOURCEMASK", "FILETYPE", "METHOD", "OPERAND", "VALUE", "FACTOR", "IFRCTYP",
             "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
 
+        comments: List[str] = []
         forcings: List[Dict[str, str]] = []
         current_forcing: Dict[str, str] = {}
 
         with filepath.open() as file:
-            for line_index, line in enumerate(file.readlines()):
+            lines = file.readlines()
+        
+        
+        start_data_index = 0
+        for line_index in range(len(lines)):
 
-                line = line.strip()
-                if line.startswith("*"):
-                    continue
+            line = lines[line_index].strip()
 
-                if len(line) == 0:
-                    if len(current_forcing) != 0:
-                        Parser._validate_order(current_forcing, line_index)
-                        forcings.append(current_forcing)
-                        current_forcing = {}
-                    continue
+            if len(line) == 0:
+                comments.append(line)
+                continue
+                
+            if line.startswith("*"):
+                comments.append(line[1:])
+                continue
 
-                key, value = line.split("=", 1)
-                current_forcing[key.strip()] = value.strip()
+            start_data_index = line_index
+            break
+            
+        for line_index in range(start_data_index, len(lines)):
 
-            if len(current_forcing) != 0:
-                Parser._validate_order(current_forcing, line_index)
-                forcings.append(current_forcing)
+            line = lines[line_index].strip()
+            
+            if line.startswith("*"):
+                continue
 
-        return dict(forcing=forcings)
+            if len(line) == 0:
+                if len(current_forcing) != 0:
+                    Parser._validate_order(current_forcing, line_index)
+                    forcings.append(current_forcing)
+                    current_forcing = {}
+                continue
+
+            key, value = line.split("=", 1)
+            current_forcing[key.strip()] = value.strip()
+
+        if len(current_forcing) != 0:
+            Parser._validate_order(current_forcing, line_index)
+            forcings.append(current_forcing)
+
+        return dict(comment=comments, forcing=forcings)
 
     @staticmethod
     def _validate_order(forcing: Dict[str, str], line_number: int):

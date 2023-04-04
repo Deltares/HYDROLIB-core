@@ -591,6 +591,16 @@ class TestExtOldModel:
         ) as temp_file:
             model = ExtOldModel(filepath=temp_file)
 
+        # Assert correct comments
+        assert len(model.comment) == 3
+        exp_comments = [
+            " This is a comment",
+            " This is a comment",
+            ""
+        ]
+        assert model.comment == exp_comments
+        
+        # Assert correct forcings
         assert len(model.forcing) == 2
 
         forcing_1 = model.forcing[0]
@@ -710,12 +720,27 @@ class TestParser:
         with create_temp_file_from_lines(file_content, "two_blocks.ext") as temp_file:
             data = parser.parse(filepath=temp_file)
 
-        assert len(data) == 1
-        forcing_list = data["forcing"]
+        assert len(data) == 2
+        
 
-        assert len(forcing_list) == 2
 
-        forcing_1 = forcing_list[0]
+
+        # Assert correct comments
+        comments = data["comment"]
+        assert len(comments) == 3
+        
+        exp_comments = [
+            " This is a comment",
+            " This is a comment",
+            ""
+        ]
+        assert comments == exp_comments
+        
+        # Assert correct forcings
+        forcings = data["forcing"]
+        assert len(forcings) == 2
+
+        forcing_1 = forcings[0]
         assert len(forcing_1) == 6
 
         assert forcing_1["QUANTITY"] == "internaltidesfrictioncoefficient"
@@ -725,7 +750,7 @@ class TestParser:
         assert forcing_1["OPERAND"] == "+"
         assert forcing_1["VALUE"] == "0.0125"
 
-        forcing_2 = forcing_list[1]
+        forcing_2 = forcings[1]
         assert len(forcing_2) == 5
 
         assert forcing_2["QUANTITY"] == "waterlevelbnd"
