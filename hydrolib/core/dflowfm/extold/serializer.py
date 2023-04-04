@@ -32,28 +32,30 @@ class Serializer:
         Args:
             path (Path): The path to write the serialized data to.
             data (Dict[str, List[Dict[str, Any]]]): The data to be serialized. The data should contain two keys:
-                - 'comment' (List[str]): a list of the comments 
+                - 'comment' (List[str]): a list of the comments
                 - 'forcing' (List[Dict[str, Any]]): a list of the external forcing data
             config (SerializerConfig): Configuration settings for the serializer.
             save_settings (ModelSaveSettings): Settings for how the model should be saved.
         """
 
         path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         serialized_comments: List[str] = []
         serialized_blocks: List[str] = []
-        
+
         for comment in data["comment"]:
             serialized_comment = Serializer._serialize_comment(comment)
             serialized_comments.append(serialized_comment)
-        
+
         for forcing in data["forcing"]:
             serialized_block = Serializer._serialize_forcing(
                 forcing, config, save_settings
             )
             serialized_blocks.append(serialized_block)
 
-        file_content: str =  "\n".join(serialized_comments) + "\n" + "\n\n".join(serialized_blocks)
+        file_content: str = (
+            "\n".join(serialized_comments) + "\n" + "\n\n".join(serialized_blocks)
+        )
 
         with path.open("w") as f:
             f.write(file_content)
@@ -61,7 +63,7 @@ class Serializer:
     @staticmethod
     def _serialize_comment(comment: str):
         return f"*{comment}"
-        
+
     @staticmethod
     def _serialize_forcing(
         forcing: Dict[str, Any],

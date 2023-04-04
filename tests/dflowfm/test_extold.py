@@ -649,12 +649,8 @@ class TestExtOldModel:
             "OPERAND=O",
         ]
 
-        comments = [
-            "This is a comment",
-            "This is a comment",
-            ""
-        ]
-        
+        comments = ["This is a comment", "This is a comment", ""]
+
         forcing_1 = ExtForcing(
             quantity=Quantity.InternalTidesFrictionCoefficient,
             filename=Path("surroundingDomain.pol"),
@@ -779,12 +775,8 @@ class TestSerializer:
             "METHOD=3",
             "OPERAND=O",
         ]
-        
-        comments = [
-            "This is a comment",
-            "This is a comment",
-            ""
-        ]
+
+        comments = ["This is a comment", "This is a comment", ""]
 
         forcing_1 = {
             "quantity": "internaltidesfrictioncoefficient",
