@@ -322,7 +322,7 @@ class ExtForcing(BaseModel):
     @validator("operand", pre=True)
     def validate_operand(cls, value):
         if isinstance(value, Operand):
-            value
+            return value
 
         if isinstance(value, str):
 

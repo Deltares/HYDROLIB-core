@@ -2,7 +2,7 @@ import filecmp
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import ContextManager, Generator, Generic, List, Optional, TypeVar
+from typing import Generator, Generic, List, Optional, TypeVar
 
 from pydantic.generics import GenericModel
 
