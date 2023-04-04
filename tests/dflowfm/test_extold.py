@@ -560,6 +560,7 @@ class TestExtOldModel:
     def test_initialization(self):
         model = ExtOldModel()
 
+        assert len(model.comment) == 0
         assert len(model.forcing) == 0
 
     def test_load_model(self):

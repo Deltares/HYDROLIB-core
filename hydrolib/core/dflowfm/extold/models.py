@@ -411,7 +411,10 @@ class ExtOldModel(ParsableFileModel):
         forcing (List[ExtForcing]): List of `[ExtForcing]` blocks for all external forcings.
     """
 
+    comment: List[str] = []
+    """List[str]: The comments in the header of the external forcing file."""
     forcing: List[ExtForcing] = []
+    """List[ExtForcing]: The external focring blocks in the external forcing file."""
 
     @classmethod
     def _ext(cls) -> str:
@@ -422,7 +425,7 @@ class ExtOldModel(ParsableFileModel):
         return "externalforcings"
 
     def dict(self, *args, **kwargs):
-        return dict(forcing=[dict(f) for f in self.forcing])
+        return dict(comment=self.comment, forcing=[dict(f) for f in self.forcing])
 
     @classmethod
     def _get_serializer(
