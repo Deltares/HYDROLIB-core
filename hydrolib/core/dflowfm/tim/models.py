@@ -6,13 +6,17 @@ from hydrolib.core.basemodel import ModelSaveSettings, ParsableFileModel
 from .parser import TimParser
 from .serializer import TimSerializer, TimSerializerConfig
 
+from pydantic.class_validators import validator
 
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
 
     Attributes:
-        data: Dictionary with keys \"comment\" & time as numeric and value as List of floats".\n
+        data: Dictionary with keys \"comment\" & time as float and value as List of floats".\n
         serializer_config: TimSerializerConfig
+
+    Raises:
+        ValueError: If the time and values are not parsable to float, or when the amount of columns differs per timeseries.
     """
 
     serializer_config = TimSerializerConfig()
@@ -37,3 +41,19 @@ class TimModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         return TimParser.parse
+    
+    @validator('timeseries')
+    @classmethod
+    def _timeseries_values(cls, v):
+        firstlengthset = False
+        for time in v:
+            if not firstlengthset:
+                length = len(v[time])
+                firstlengthset = True
+                continue
+
+            if length != len(v[time]):
+                raise ValueError(f"Problem with values in timeseries, for time {time}")
+            length = len(v[time])
+            
+        return v

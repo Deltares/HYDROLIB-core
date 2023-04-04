@@ -114,6 +114,49 @@ class TestTimModel:
         model.save()
         assert_files_equal(output_path, reference_path)
 
+    @pytest.mark.parametrize(
+        "input_data, expected_error_msg",
+        [
+            pytest.param(
+                {
+                    "comments": [],
+                    "timeseries": {     10: [1.232, "text shouldn't be here", 3.454],
+                                        20: [4.565, 5.676, 6.787],
+                                        30: [1.5, 2.6, 3.7]},
+                },
+                "value is not a valid float",
+                id="value is not a valid float",
+            ),
+            pytest.param(
+                {
+                    "comments": [],
+                    "timeseries": {     10: [1.232, 2.343, 3.454],
+                                        20: [4.565],
+                                        30: [1.5, 2.6, 3.7]},
+                },
+                f"Problem with values in timeseries, for time {20}",
+                id="Problem with values in timeseries, for time, values missing",
+            ),
+            pytest.param(
+                {
+                    "comments": [],
+                    "timeseries": {     10: [1.232, 2.343, 3.454],
+                                        20: [4.565, 5.676, 6.787, 3.454],
+                                        30: [1.5, 2.6, 3.7]},
+                },
+                f"Problem with values in timeseries, for time {20}",
+                id="Problem with values in timeseries, for time, too many values",
+            ),
+        ],
+    )
+    def test_validate_data_for_timeseries_throws_exception_for_incorrect_data(
+        self, input_data, expected_error_msg
+    ):        
+        with pytest.raises(ValueError) as error:
+            TimModel(timeseries=input_data["timeseries"], comments=input_data["comments"])
+
+        assert expected_error_msg in str(error.value)
+
 class TestTimParser:
     triple_data_for_timeseries = {  '10': ['1.232', '2.343', '3.454'],
                                     '20': ['4.565', '5.676', '6.787'],
@@ -213,7 +256,6 @@ class TestTimParser:
     ):
         with pytest.raises(ValueError) as error:
             TimParser.parse(input_path)
-        found_msg = error.value.args[0]
 
         expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the time series data."
-        assert found_msg == expected_error_msg
+        assert expected_error_msg in str(error.value)

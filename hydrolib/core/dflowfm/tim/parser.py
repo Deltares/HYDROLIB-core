@@ -67,7 +67,7 @@ class TimParser:
             return comments, start_timeseries_index
 
     @staticmethod
-    def _read_time_series_data(lines: List[str], start_timeseries_index: int):
+    def _read_time_series_data(lines: List[str], start_timeseries_index: int) -> dict[str, List[str]]:
         timeseries: Dict[str, List[str]] = {}
         for line_index in range(start_timeseries_index, len(lines)):
             line = lines[line_index].strip()
@@ -85,11 +85,11 @@ class TimParser:
         return timeseries
 
     @staticmethod
-    def _raise_error_if_contains_comment(line: str, line_index: int):
+    def _raise_error_if_contains_comment(line: str, line_index: int) -> None:
         if "#" in line or "*" in line:
             raise ValueError(f"Line {line_index}: comments are only supported at the start of the file, before the time series data.")
     
     @staticmethod
-    def _raise_error_if_duplicate_time(time: str, timeseries: Dict[str, List[str]], line_index: int):
+    def _raise_error_if_duplicate_time(time: str, timeseries: Dict[str, List[str]], line_index: int) -> None:
         if time in timeseries:
             raise ValueError(f"Line {line_index}: time series cannot contain duplicate times. Time: {time}")

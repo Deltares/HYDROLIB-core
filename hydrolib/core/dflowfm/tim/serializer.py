@@ -43,21 +43,21 @@ class TimSerializer:
 
     
     @staticmethod
-    def _serialize_comment_lines(data):
+    def _serialize_comment_lines(data) -> List[str]:
         commentlines = []
         for comment in data["comments"]:
             commentlines.append(f"#{comment}")
         return commentlines
 
     @staticmethod
-    def _serialize_timeseries_lines(data, config):
+    def _serialize_timeseries_lines(data, config) -> List[str]:
         format_float = lambda v: f"{v:{config.float_format}}"
         timeseriesblock = TimSerializer._serialize_to_timeseries_block(data, format_float)
         timeserieslines = TimSerializer._serialize_timeseries_to_lines(timeseriesblock, config)
         return timeserieslines
 
     @staticmethod
-    def _serialize_to_timeseries_block(data, format_float):
+    def _serialize_to_timeseries_block(data, format_float) -> TimeSeriesBlock:
         timeseries_block: TimeSeriesBlock = []
         for time, row_elements in data["timeseries"].items():           
             timeseries_row = [format_float(time)] + [format_float(value) for value in row_elements] 
@@ -65,7 +65,7 @@ class TimSerializer:
         return timeseries_block
 
     @staticmethod
-    def _serialize_timeseries_to_lines(timeseries_block, config):
+    def _serialize_timeseries_to_lines(timeseries_block, config) -> List[str]:
         # Make sure the columns are aligned and have the proper spacing
         column_space = " " * config.column_spacing
         column_lengths = TimSerializer._get_column_lengths(timeseries_block)
