@@ -20,10 +20,6 @@ class TimModel(ParsableFileModel):
     comments : List[str]
     timeseries: Dict[float, List[float]]
 
-    def dict(self, *args, **kwargs):
-        # speed up serializing by not converting these lowest models to dict
-        return self.timeseries
-
     @classmethod
     def _ext(cls) -> str:
         return ".tim"

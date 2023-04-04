@@ -34,38 +34,60 @@ class TimSerializer:
         """
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        lines = []
+        commentlines = TimSerializer._serialize_comment_lines(data)
+        timeserieslines = TimSerializer._serialize_timeseries_lines(data, config)
+        
+        file_content = TimSerializer._serialize_file_content(timeserieslines, commentlines)
+        with path.open("w") as file:
+            file.write(file_content)
 
-        # Serialize comments
+    
+    @staticmethod
+    def _serialize_comment_lines(data):
+        commentlines = []
         for comment in data["comments"]:
-            lines.append(f"#{comment}")
+            commentlines.append(f"#{comment}")
+        return commentlines
 
-        # Convert time series float data to time series string data        
+    @staticmethod
+    def _serialize_timeseries_lines(data, config):
         format_float = lambda v: f"{v:{config.float_format}}"
+        timeseriesblock = TimSerializer._serialize_to_timeseries_block(data, format_float)
+        timeserieslines = TimSerializer._serialize_timeseries_to_lines(timeseriesblock, config)
+        return timeserieslines
 
+    @staticmethod
+    def _serialize_to_timeseries_block(data, format_float):
         timeseries_block: TimeSeriesBlock = []
         for time, row_elements in data["timeseries"].items():           
             timeseries_row = [format_float(time)] + [format_float(value) for value in row_elements] 
             timeseries_block.append(timeseries_row)
-        
+        return timeseries_block
+
+    @staticmethod
+    def _serialize_timeseries_to_lines(timeseries_block, config):
         # Make sure the columns are aligned and have the proper spacing
         column_space = " " * config.column_spacing
         column_lengths = TimSerializer._get_column_lengths(timeseries_block)
-        
-        for timeseries_row in timeseries_block:
 
+        timeserieslines = []
+        for timeseries_row in timeseries_block:
             row_elements: List[str] = []
             for index, value in enumerate(timeseries_row):
                 whitespace_offset = " " * column_lengths[index]
                 row_elements.append(value + whitespace_offset)
 
             line = column_space.join(row_elements)
-            lines.append(line)
+            timeserieslines.append(line)
+        return timeserieslines
 
-        # Write all the line to file
+    @staticmethod
+    def _serialize_file_content(timeserieslines, commentlines):
+        lines = []
+        lines.extend(commentlines)
+        lines.extend(timeserieslines)
         file_content = "\n".join(lines)
-        with path.open("w") as file:
-            file.write(file_content)
+        return file_content
 
     @staticmethod
     def _get_column_lengths(timeseries_block: TimeSeriesBlock) -> List[int]:
