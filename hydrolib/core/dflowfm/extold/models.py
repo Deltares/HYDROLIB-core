@@ -283,30 +283,34 @@ class ExtForcing(BaseModel):
 
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
-        if isinstance(value, str):
-            lower_value = value.lower()
+        if isinstance(value, Quantity):
+            return value
+        
+        value_str = str(value)
+        lower_value = value_str.lower()
 
-            if lower_value.startswith(Quantity.TracerBnd):
-                n = len(Quantity.TracerBnd.value)
-                return Quantity.TracerBnd.value + value[n:]
+        if lower_value.startswith(Quantity.TracerBnd):
+            n = len(Quantity.TracerBnd.value)
+            return Quantity.TracerBnd.value + value_str[n:]
 
-            if lower_value.startswith(Quantity.InitialTracer):
-                n = len(Quantity.InitialTracer.value)
-                return Quantity.InitialTracer.value + value[n:]
+        if lower_value.startswith(Quantity.InitialTracer):
+            n = len(Quantity.InitialTracer.value)
+            return Quantity.InitialTracer.value + value_str[n:]
 
-            supported_values = list(Quantity)
-            if lower_value in supported_values:
-                return Quantity(lower_value)
+        supported_values = list(Quantity)
+        if lower_value in supported_values:
+            return Quantity(lower_value)
 
-            supported_value_str = ", ".join(([x.value for x in supported_values]))
-            raise ValueError(
-                f"QUANTITY '{value}' not supported. Supported values: {supported_value_str}"
-            )
-
-        return value
+        supported_value_str = ", ".join(([x.value for x in supported_values]))
+        raise ValueError(
+            f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
+        )
 
     @validator("operand", pre=True)
     def validate_operand(cls, value):
+        if isinstance(value, Operand):
+            value
+        
         if isinstance(value, str):
 
             for operand in Operand:
