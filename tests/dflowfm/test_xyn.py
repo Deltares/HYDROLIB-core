@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from hydrolib.core.basemodel import SerializerConfig
-from hydrolib.core.dflowfm.xyn.models import XYNPoint, XYNModel
+from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
