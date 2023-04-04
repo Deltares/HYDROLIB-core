@@ -17,7 +17,8 @@ prof_to_cross makes the following automatic conversion choices.
 ### Location
 Location continues to be specified via original *x,y* coordinate, no branchId is available.
 
-Vertical absolute placement (`ZMIN` vs. `shift`) still needs refinement, is currently not converted.
+Vertical absolute placement (`ZMIN` in profile *definition* file) only has a basic conversion
+(as direct `shift` in crosssection *location* file).
 
 ### Type + conveyance
 The following table lists the mapping from old to new cross section types:
@@ -37,7 +38,15 @@ The following table lists the mapping from old to new cross section types:
 |201|`XYZPROF , HYDRAD = 1D ANALYTIC CONVEYANCE METHOD`|`xyz`|`segmented`|
 
 ### Friction
-Not yet available in converter.
+The following table lists the mapping from old to new friction types:
+
+|Profdef FRCTP|frictionType in crsdef.ini
+| :--- | :--- |
+|`0`|`Chezy`|
+|`1`|`Manning`|
+|`2`|`WallLawNikuradse` (a.k.a. White-Colebrook Delft3D-style)|
+|`3`|`WhiteColebrook`|
+
 
 # Commandline usage:
 ```bash
