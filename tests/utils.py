@@ -161,7 +161,7 @@ def create_temp_file(content: str, filename: str) -> Generator[Path, None, None]
     Example:
         >>>     with create_temp_file("some_file_content", "some_file_name") as temp_file:
         >>>         print(f"Do something with {temp_file}")
-                
+
     Returns:
         Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
@@ -184,7 +184,7 @@ def create_temp_file_from_lines(
     Example:
         >>>     with create_temp_file_from_lines(["some_file_content"], "some_file_name") as temp_file:
         >>>         print(f"Do something with {temp_file}")
-                
+
     Returns:
         Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
@@ -203,7 +203,7 @@ def get_temp_file(filename: str) -> Generator[Path, None, None]:
     Example:
         >>>     with get_temp_file("some_file_name") as temp_file:
         >>>         print(f"Do something with {temp_file}")
-                
+
     Returns:
         Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
