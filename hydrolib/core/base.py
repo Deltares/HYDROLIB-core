@@ -10,7 +10,7 @@ class DummmyParser:
 
 class DummySerializer:
     @staticmethod
-    def serialize(path: Path, data: Dict, config) -> None:
+    def serialize(path: Path, data: Dict, config, save_settings) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w") as f:
             f.write(str(data))
