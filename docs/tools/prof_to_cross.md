@@ -42,8 +42,9 @@ Not yet available in converter.
 # Commandline usage:
 ```bash
 usage: python hydrolib/tools/prof_to_cross.py [-h] [--version] [--verbose] \
-              [--mdufile MDUFILE] [--proffiles [PROFFILE [PROFFILE ...]]]
-
+              [--mdufile MDUFILE] \
+              [--proffiles [PROFFILE [PROFFILE ...]]]  \
+              [--outfiles CRSLOCFILE CRSDEFFILE]
 ```
 
 ## Arguments
@@ -55,6 +56,7 @@ usage: python hydrolib/tools/prof_to_cross.py [-h] [--version] [--verbose] \
 ||`--verbose`||also print diagnostic information|
 |`-m`|`--mdufile`|`None`|automatically take profile filenames from MDUFILE|
 |`-p`|`--proffiles`|`None`|2 or 3 profile files: PROFLOCFILE PROFDEFFILE [PROFDEFXYZFILE]|
+|`-o`|`--outfiles` |`crsloc.ini crsdef.ini`|save cross section locations and definitions to specified filenames|
 
 # Python usage:
 ```python

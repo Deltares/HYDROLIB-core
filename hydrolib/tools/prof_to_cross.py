@@ -288,7 +288,24 @@ def convert_profdef(
     return crsdef
 
 
-def prof_to_cross_from_mdu(mdufile: PathOrStr):
+def prof_to_cross_from_mdu(
+    mdufile: PathOrStr,
+    crslocfile: PathOrStr = None,
+    crsdeffile: PathOrStr = None,
+):
+    """Wrapper converter function for converting legacy profile files
+    into cross section .ini files, for files listed in an MDU file.
+
+    Args:
+        mdufile (PathOrStr): path to the D-Flow FM main input file (.mdu).
+            Must be parsable into a standard FMModel.
+            When this contains valid filenames for proflocfile, profdeffile
+            and optionally profdefxyzfile, conversion will be performed.
+        crslocfile (PathOrStr, optional): path to the output location file.
+            Defaults to crsloc.ini in current working dir.
+        crsdeffile (PathOrStr, optional): path to the output definition file.
+            Defaults to crsdef.ini in current working dir.
+    """
     global _verbose
 
     fmmodel = FMModel(mdufile, recurse=False)
@@ -302,7 +319,7 @@ def prof_to_cross_from_mdu(mdufile: PathOrStr):
         if profdefxyzfile:
             print(f"* {profdefxyzfile}")
 
-    prof_to_cross(proflocfile, profdeffile, profdefxyzfile)
+    prof_to_cross(proflocfile, profdeffile, profdefxyzfile, crslocfile, crsdeffile)
 
 
 def prof_to_cross(
@@ -384,10 +401,18 @@ def _get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--proffiles",
         "-p",
-        action="extend",
+        action="store",
         nargs="*",
         metavar="PROFFILE",
         help="2 or 3 profile files: PROFLOCFILE PROFDEFFILE [PROFDEFXYZFILE]",
+    )
+    parser.add_argument(
+        "--outfiles",
+        "-o",
+        action="store",
+        nargs=2,
+        metavar=("CRSLOCFILE", "CRSDEFFILE"),
+        help="save cross section locations and definitions to specified filenames",
     )
     return parser
 
@@ -416,10 +441,15 @@ def main(args=None):
 
         sys.exit(1)
 
+    outfiles = {"crslocfile": None, "crsdeffile": None}
+    if args.outfiles is not None:
+        outfiles["crslocfile"] = args.outfiles[0]
+        outfiles["crsdeffile"] = args.outfiles[1]
+
     if args.mdufile is not None:
-        prof_to_cross_from_mdu(args.mdufile)
+        prof_to_cross_from_mdu(args.mdufile, **outfiles)
     elif args.proffiles is not None:
-        prof_to_cross(*args.proffiles)
+        prof_to_cross(*args.proffiles, **outfiles)
     else:
         print("Error: Missing input file(s), use either -m or -p.")
 
