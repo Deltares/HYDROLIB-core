@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
@@ -54,9 +54,10 @@ class TestXYNSerializer:
         }
 
         config = SerializerConfig(float_format=".2f")
+        save_settings = ModelSaveSettings()
 
         with TestXYNSerializer._create_temp_xyn_file() as xyn_file:
-            XYNSerializer.serialize(xyn_file, data, config)
+            XYNSerializer.serialize(xyn_file, data, config, save_settings)
 
             with open(xyn_file) as file:
                 file_content = file.readlines()
