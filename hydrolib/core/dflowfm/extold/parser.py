@@ -28,35 +28,13 @@ class Parser:
             "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
 
-        comments: List[str] = []
-        forcings: List[Dict[str, str]] = []
-        current_forcing: Dict[str, str] = {}
+
 
         with filepath.open() as file:
             lines = file.readlines()
         
         comments, start_data_index = Parser._parse_header(lines)
-            
-        for line_index in range(start_data_index, len(lines)):
-
-            line = lines[line_index].strip()
-            
-            if line.startswith("*"):
-                continue
-
-            if len(line) == 0:
-                if len(current_forcing) != 0:
-                    Parser._validate_order(current_forcing, line_index)
-                    forcings.append(current_forcing)
-                    current_forcing = {}
-                continue
-
-            key, value = line.split("=", 1)
-            current_forcing[key.strip()] = value.strip()
-
-        if len(current_forcing) != 0:
-            Parser._validate_order(current_forcing, line_index)
-            forcings.append(current_forcing)
+        forcings = Parser._parse_data(lines, start_data_index)
 
         return dict(comment=comments, forcing=forcings)
 
@@ -81,6 +59,34 @@ class Parser:
             break
         
         return comments, start_data_index
+    
+    @staticmethod
+    def _parse_data(lines: List[str], start_index: int):
+        forcings: List[Dict[str, str]] = []
+        current_forcing: Dict[str, str] = {}
+        
+        for line_index in range(start_index, len(lines)):
+
+            line = lines[line_index].strip()
+            
+            if line.startswith("*"):
+                continue
+
+            if len(line) == 0:
+                if len(current_forcing) != 0:
+                    Parser._validate_order(current_forcing, line_index)
+                    forcings.append(current_forcing)
+                    current_forcing = {}
+                continue
+
+            key, value = line.split("=", 1)
+            current_forcing[key.strip()] = value.strip()
+
+        if len(current_forcing) != 0:
+            Parser._validate_order(current_forcing, line_index)
+            forcings.append(current_forcing)
+            
+        return forcings
     
     @staticmethod
     def _validate_order(forcing: Dict[str, str], line_number: int):
