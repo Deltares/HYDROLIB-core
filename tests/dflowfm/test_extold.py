@@ -82,22 +82,37 @@ class TestExtForcing:
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity_str
-            
+
         @pytest.mark.parametrize("quantity", TracerQuantity)
         def test_with_just_a_tracerquantity_raises_error(self, quantity):
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(quantity=quantity, filename="", filetype=9, method=1, operand="O")
-            
-            exp_error = f"QUANTITY '{quantity.value}' should be appended with a tracer name."
+                _ = ExtForcing(
+                    quantity=quantity, filename="", filetype=9, method=1, operand="O"
+                )
+
+            exp_error = (
+                f"QUANTITY '{quantity.value}' should be appended with a tracer name."
+            )
             assert exp_error in str(error.value)
-            
+
         @pytest.mark.parametrize("quantity", TracerQuantity)
-        def test_with_tracerquantity_string_without_tracer_name_raises_error(self, quantity):
+        def test_with_tracerquantity_string_without_tracer_name_raises_error(
+            self, quantity
+        ):
             quantity_str = quantity.value
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(quantity=quantity_str, filename="", filetype=9, method=1, operand="O")
-            
-            assert f"QUANTITY '{quantity_str}' should be appended with a tracer name." in str(error.value)
+                _ = ExtForcing(
+                    quantity=quantity_str,
+                    filename="",
+                    filetype=9,
+                    method=1,
+                    operand="O",
+                )
+
+            assert (
+                f"QUANTITY '{quantity_str}' should be appended with a tracer name."
+                in str(error.value)
+            )
 
         def test_with_invalid_quantity_string_raises_value_error(
             self,

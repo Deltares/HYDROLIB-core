@@ -15,16 +15,18 @@ from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
+
 class TracerQuantity(str, Enum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings that are specific to tracers.
     """
-    
+
     TracerBnd = "tracerbnd"
     """User-defined tracer"""
     InitialTracer = "initialtracer"
     """Initial tracer"""
-    
+
+
 class Quantity(str, Enum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
@@ -292,11 +294,13 @@ class ExtForcing(BaseModel):
             return value
 
         def raise_error_tracer_name(quantity: TracerQuantity):
-            raise ValueError(f"QUANTITY '{quantity.value}' should be appended with a tracer name.")
-        
+            raise ValueError(
+                f"QUANTITY '{quantity.value}' should be appended with a tracer name."
+            )
+
         if isinstance(value, TracerQuantity):
             raise_error_tracer_name(value)
-        
+
         value_str = str(value)
         lower_value = value_str.lower()
 
