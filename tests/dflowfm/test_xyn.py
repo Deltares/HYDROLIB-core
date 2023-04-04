@@ -10,6 +10,8 @@ from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
 
+from ..utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
+
 
 class TestXYNParser:
     def test_parse_xyn_file(self):
@@ -126,3 +128,42 @@ class TestXYNModel:
         model = XYNModel()
 
         assert len(model.points) == 0
+
+    def test_load_model(self):
+        file_content = [
+            "* This is a comment.",
+            "1.1 2.2 'randomName1'",
+            "3.3 4.4 'randomName2'",
+        ]
+
+        with create_temp_file_from_lines(file_content, "test.xyn") as temp_file:
+            model = XYNModel(filepath=temp_file)
+
+        expected_points = [
+            XYNPoint(x=1.1, y=2.2, n="randomName1"),
+            XYNPoint(x=3.3, y=4.4, n="randomName2"),
+        ]
+
+        assert model.points == expected_points
+
+    def test_save_model(self):
+        points = [
+            XYNPoint(x=1.1, y=2.2, n="randomName1"),
+            XYNPoint(x=3.3, y=4.4, n="randomName2"),
+        ]
+
+        model = XYNModel(points=points)
+
+        with get_temp_file("test.xyn") as actual_file:
+            model.save(filepath=actual_file)
+
+            expected_file_content = [
+                "* This is a comment.",
+                "1.1 2.2 'randomName1'",
+                "3.3 4.4 'randomName2'",
+            ]
+
+            with create_temp_file_from_lines(
+                expected_file_content, "expected.xyn"
+            ) as expected_file:
+                assert_files_equal(actual_file, expected_file)
