@@ -8,7 +8,7 @@ timpattern = re.compile(r"\s+")
 class TimParser:
     """
     A parser for .tim files.
-    Full line comments at the start of the file are supported by * and #.
+    Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.
     No other comments are supported.
     """
 
