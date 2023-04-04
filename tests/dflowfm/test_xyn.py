@@ -1,7 +1,3 @@
-from contextlib import contextmanager
-from pathlib import Path
-from tempfile import TemporaryDirectory
-
 import pytest
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
@@ -10,7 +6,12 @@ from hydrolib.core.dflowfm.xyn.name_validator import NameValidator
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
 
-from ..utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
+from ..utils import (
+    assert_files_equal,
+    create_temp_file,
+    create_temp_file_from_lines,
+    get_temp_file,
+)
 
 
 class TestXYNParser:
@@ -28,18 +29,9 @@ class TestXYNParser:
             ]
         }
 
-        with TestXYNParser._create_temp_xyn_file(file_content) as xyn_file:
+        with create_temp_file(file_content, "test.xyn") as xyn_file:
             parsed_contents = XYNParser.parse(xyn_file)
             assert expected_result == parsed_contents
-
-    @classmethod
-    @contextmanager
-    def _create_temp_xyn_file(cls, content: str):
-        with TemporaryDirectory() as temp_dir:
-            xyn_file = Path(temp_dir, "test.xyn")
-            with open(xyn_file, "w") as f:
-                f.write(content)
-            yield xyn_file
 
 
 class TestXYNSerializer:
@@ -56,18 +48,12 @@ class TestXYNSerializer:
         config = SerializerConfig(float_format=".2f")
         save_settings = ModelSaveSettings()
 
-        with TestXYNSerializer._create_temp_xyn_file() as xyn_file:
+        with get_temp_file("test.xyn") as xyn_file:
             XYNSerializer.serialize(xyn_file, data, config, save_settings)
 
             with open(xyn_file) as file:
                 file_content = file.readlines()
                 assert file_content == expected_file_content
-
-    @classmethod
-    @contextmanager
-    def _create_temp_xyn_file(cls):
-        with TemporaryDirectory() as temp_dir:
-            yield Path(temp_dir, "test.xyn")
 
 
 class TestNameValidator:
