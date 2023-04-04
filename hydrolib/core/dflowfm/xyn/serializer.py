@@ -1,12 +1,17 @@
 from pathlib import Path
 from typing import Dict
 
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
 
 class XYNSerializer:
     @staticmethod
-    def serialize(path: Path, data: Dict, config: SerializerConfig) -> None:
+    def serialize(
+        path: Path,
+        data: Dict,
+        config: SerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> None:
         """
         Serializes the observation point data to an .xyn file at the specified path.
 
@@ -16,6 +21,7 @@ class XYNSerializer:
             path (Path): The path to the destination file.
             data (Dict): The data to be serialized.
             config (SerializerConfig): The serialization configuration.
+            save_settings (ModelSaveSettings): The model save settings.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
 

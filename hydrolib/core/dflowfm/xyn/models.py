@@ -1,7 +1,12 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from hydrolib.core.basemodel import BaseModel, ParsableFileModel, SerializerConfig
+from hydrolib.core.basemodel import (
+    BaseModel,
+    ModelSaveSettings,
+    ParsableFileModel,
+    SerializerConfig,
+)
 
 from .parser import XYNParser
 from .serializer import XYNSerializer
@@ -53,9 +58,11 @@ class XYNModel(ParsableFileModel):
         return ".xyn"
 
     @classmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict, SerializerConfig], None]:
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return XYNSerializer.serialize
 
     @classmethod
-    def _get_parser(cls) -> Callable:
+    def _get_parser(cls) -> Callable[[Path], Dict]:
         return XYNParser.parse
