@@ -2,7 +2,7 @@ import filecmp
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import ContextManager, Generic, List, Optional, TypeVar
+from typing import ContextManager, Generator, Generic, List, Optional, TypeVar
 
 from pydantic.generics import GenericModel
 
@@ -151,49 +151,61 @@ def error_occurs_only_once(error_message: str, full_error: str) -> bool:
 
 
 @contextmanager
-def create_temp_file(content: str, filename: str) -> ContextManager[Path]:
+def create_temp_file(content: str, filename: str) -> Generator[Path, None, None]:
     """Create a file in a temporary directory with the specified file name and the provided content.
 
     Args:
         content (str): The content of the file as string.
         filename (str): The file name.
 
+    Example:
+        >>>     with create_temp_file("some_file_content", "some_file_name") as temp_file:
+        >>>         print(f"Do something with {temp_file}")
+                
     Returns:
-        ContextManager[Path]: Context manager with the path to the file in the temporary directory.
+        Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
     with get_temp_file(filename) as file:
         with open(file, "w") as f:
             f.write(content)
-        yield file
+        return file
 
 
 @contextmanager
 def create_temp_file_from_lines(
     lines: List[str], filename: str
-) -> ContextManager[Path]:
+) -> Generator[Path, None, None]:
     """Create a file in a temporary directory with the specified file name and the provided content.
 
     Args:
         content (str): The content of the file as list of string (lines of the file).
         filename (str): The file name.
 
+    Example:
+        >>>     with create_temp_file_from_lines(["some_file_content"], "some_file_name") as temp_file:
+        >>>         print(f"Do something with {temp_file}")
+                
     Returns:
-        ContextManager[Path]: Context manager with the path to the file in the temporary directory.
+        Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
     content = "\n".join(lines)
     with create_temp_file(content, filename) as file:
-        yield file
+        return file
 
 
 @contextmanager
-def get_temp_file(filename: str) -> ContextManager[Path]:
+def get_temp_file(filename: str) -> Generator[Path, None, None]:
     """Gets a path to a file in a temporary directory with the specified file name.
 
     Args:
         filename (str): The file name.
 
+    Example:
+        >>>     with get_temp_file("some_file_name") as temp_file:
+        >>>         print(f"Do something with {temp_file}")
+                
     Returns:
-        ContextManager[Path]: Context manager with the path to the file in the temporary directory.
+        Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
     with TemporaryDirectory() as temp_dir:
-        yield Path(temp_dir, filename)
+        return Path(temp_dir, filename)
