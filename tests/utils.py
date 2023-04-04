@@ -152,6 +152,15 @@ def error_occurs_only_once(error_message: str, full_error: str) -> bool:
 
 @contextmanager
 def create_temp_file(content: str, filename: str):
+    """Create a file in a temporary directory with the specified file name and the provided content.
+
+    Args:
+        content (str): The content of the file as string.
+        filename (str): The file name.
+
+    Yields:
+        Path: The path to the file in the temporary directory.
+    """
     with get_temp_file(filename) as file:
         with open(file, "w") as f:
             f.write(content)
@@ -160,6 +169,15 @@ def create_temp_file(content: str, filename: str):
 
 @contextmanager
 def create_temp_file_from_lines(lines: List[str], filename: str):
+    """Create a file in a temporary directory with the specified file name and the provided content.
+
+    Args:
+        content (str): The content of the file as list of string (lines of the file).
+        filename (str): The file name.
+
+    Yields:
+        Path: The path to the file in the temporary directory.
+    """
     content = "\n".join(lines)
     with create_temp_file(content, filename) as file:
         yield file
@@ -167,5 +185,13 @@ def create_temp_file_from_lines(lines: List[str], filename: str):
 
 @contextmanager
 def get_temp_file(filename: str):
+    """Gets a path to a file in a temporary directory with the specified file name.
+
+    Args:
+        filename (str): The file name.
+
+    Yields:
+        Path: The path to the file in the temporary directory.
+    """
     with TemporaryDirectory() as temp_dir:
         yield Path(temp_dir, filename)
