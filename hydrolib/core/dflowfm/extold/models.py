@@ -285,7 +285,7 @@ class ExtForcing(BaseModel):
     def validate_quantity(cls, value):
         if isinstance(value, Quantity):
             return value
-        
+
         value_str = str(value)
         lower_value = value_str.lower()
 
@@ -310,7 +310,7 @@ class ExtForcing(BaseModel):
     def validate_operand(cls, value):
         if isinstance(value, Operand):
             value
-        
+
         if isinstance(value, str):
 
             for operand in Operand:
