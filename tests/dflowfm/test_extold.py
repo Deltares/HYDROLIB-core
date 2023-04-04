@@ -14,6 +14,7 @@ from hydrolib.core.dflowfm.extold.models import (
     Method,
     Operand,
     Quantity,
+    TracerQuantity,
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
@@ -75,14 +76,14 @@ class TestExtForcing:
             assert forcing.quantity == quantity
 
         def test_with_valid_tracerbnd_quantity_string(self):
-            quantity_str = Quantity.TracerBnd.value + "Some_Tracer_Name"
+            quantity_str = TracerQuantity.TracerBnd.value + "Some_Tracer_Name"
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity_str
 
         def test_with_valid_initialtracer_quantity_string(self):
-            quantity_str = Quantity.InitialTracer.value + "Some_Tracer_Name"
+            quantity_str = TracerQuantity.InitialTracer.value + "Some_Tracer_Name"
             forcing = ExtForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
@@ -265,7 +266,7 @@ class TestExtForcing:
 
     class TestValidateFactor:
         def test_validate_factor_with_valid_quantity_initialtracer(self):
-            quantity = Quantity.InitialTracer + "Some_Tracer_Name"
+            quantity = TracerQuantity.InitialTracer + "Some_Tracer_Name"
             factor = 1.23
 
             forcing = ExtForcing(

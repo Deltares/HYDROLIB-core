@@ -15,7 +15,16 @@ from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
-
+class TracerQuantity(str, Enum):
+    """Enum class containing the valid values for the boundary conditions category
+    of the external forcings that are specific to tracers.
+    """
+    
+    TracerBnd = "tracerbnd"
+    """User-defined tracer"""
+    InitialTracer = "initialtracer"
+    """Initial tracer"""
+    
 class Quantity(str, Enum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
@@ -50,8 +59,6 @@ class Quantity(str, Enum):
     """Tangentional velocity"""
     QhBnd = "qhbnd"
     """Discharge-water level dependency"""
-    TracerBnd = "tracerbnd"
-    """User-defined tracer"""
 
     # Meteorological fields
     WindX = "windx"
@@ -108,8 +115,6 @@ class Quantity(str, Enum):
     """Initial vertical temperature profile"""
     InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
     """Initial vertical salinity profile"""
-    InitialTracer = "initialtracer"
-    """Initial tracer"""
     BedLevel = "bedlevel"
     """Bed level"""
 
@@ -289,13 +294,13 @@ class ExtForcing(BaseModel):
         value_str = str(value)
         lower_value = value_str.lower()
 
-        if lower_value.startswith(Quantity.TracerBnd):
-            n = len(Quantity.TracerBnd.value)
-            return Quantity.TracerBnd.value + value_str[n:]
+        if lower_value.startswith(TracerQuantity.TracerBnd):
+            n = len(TracerQuantity.TracerBnd.value)
+            return TracerQuantity.TracerBnd.value + value_str[n:]
 
-        if lower_value.startswith(Quantity.InitialTracer):
-            n = len(Quantity.InitialTracer.value)
-            return Quantity.InitialTracer.value + value_str[n:]
+        if lower_value.startswith(TracerQuantity.InitialTracer):
+            n = len(TracerQuantity.InitialTracer.value)
+            return TracerQuantity.InitialTracer.value + value_str[n:]
 
         supported_values = list(Quantity)
         if lower_value in supported_values:
@@ -379,10 +384,10 @@ class ExtForcing(BaseModel):
         factor = values["factor"]
         quantity = values[quantity_key]
         quantity_alias = alias(quantity_key)
-        if factor is not None and not quantity.startswith(Quantity.InitialTracer):
+        if factor is not None and not quantity.startswith(TracerQuantity.InitialTracer):
             key = alias("factor")
             raise ValueError(
-                f"{key} only allowed when {quantity_alias} starts with {Quantity.InitialTracer}"
+                f"{key} only allowed when {quantity_alias} starts with {TracerQuantity.InitialTracer}"
             )
 
         return values
