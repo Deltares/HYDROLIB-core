@@ -295,7 +295,7 @@ class ExtForcing(BaseModel):
 
         def raise_error_tracer_name(quantity: TracerQuantity):
             raise ValueError(
-                f"QUANTITY '{quantity.value}' should be appended with a tracer name."
+                f"QUANTITY '{quantity}' should be appended with a tracer name."
             )
 
         if isinstance(value, TracerQuantity):
