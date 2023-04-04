@@ -300,17 +300,12 @@ class ExtForcing(BaseModel):
         value_str = str(value)
         lower_value = value_str.lower()
 
-        if lower_value.startswith(TracerQuantity.TracerBnd):
-            n = len(TracerQuantity.TracerBnd.value)
-            if n == len(value_str):
-                raise_error_tracer_name(TracerQuantity.TracerBnd)
-            return TracerQuantity.TracerBnd.value + value_str[n:]
-
-        if lower_value.startswith(TracerQuantity.InitialTracer):
-            n = len(TracerQuantity.InitialTracer.value)
-            if n == len(value_str):
-                raise_error_tracer_name(TracerQuantity.InitialTracer)
-            return TracerQuantity.InitialTracer.value + value_str[n:]
+        for tracer_quantity in TracerQuantity:
+            if lower_value.startswith(tracer_quantity):
+                n = len(tracer_quantity)
+                if n == len(value_str):
+                    raise_error_tracer_name(tracer_quantity)
+                return tracer_quantity + value_str[n:]
 
         supported_values = list(Quantity)
         if lower_value in supported_values:
