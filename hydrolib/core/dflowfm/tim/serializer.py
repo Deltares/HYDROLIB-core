@@ -6,14 +6,15 @@ from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 TimeSeriesRow = List[str]
 TimeSeriesBlock = List[TimeSeriesRow]
 
+
 class TimSerializerConfig(SerializerConfig):
     """Configuration settings for the TimSerializer."""
 
     column_spacing: int = 1
     """(int): The number of spaces to include between columns in the serialized .tim file."""
 
-class TimSerializer:
 
+class TimSerializer:
     @staticmethod
     def serialize(
         path: Path,
@@ -36,12 +37,13 @@ class TimSerializer:
 
         commentlines = TimSerializer._serialize_comment_lines(data)
         timeserieslines = TimSerializer._serialize_timeseries_lines(data, config)
-        
-        file_content = TimSerializer._serialize_file_content(timeserieslines, commentlines)
+
+        file_content = TimSerializer._serialize_file_content(
+            timeserieslines, commentlines
+        )
         with path.open("w") as file:
             file.write(file_content)
 
-    
     @staticmethod
     def _serialize_comment_lines(data) -> List[str]:
         commentlines = []
@@ -52,15 +54,21 @@ class TimSerializer:
     @staticmethod
     def _serialize_timeseries_lines(data, config) -> List[str]:
         format_float = lambda v: f"{v:{config.float_format}}"
-        timeseriesblock = TimSerializer._serialize_to_timeseries_block(data, format_float)
-        timeserieslines = TimSerializer._serialize_timeseries_to_lines(timeseriesblock, config)
+        timeseriesblock = TimSerializer._serialize_to_timeseries_block(
+            data, format_float
+        )
+        timeserieslines = TimSerializer._serialize_timeseries_to_lines(
+            timeseriesblock, config
+        )
         return timeserieslines
 
     @staticmethod
     def _serialize_to_timeseries_block(data, format_float) -> TimeSeriesBlock:
         timeseries_block: TimeSeriesBlock = []
-        for time, row_elements in data["timeseries"].items():           
-            timeseries_row = [format_float(time)] + [format_float(value) for value in row_elements] 
+        for time, row_elements in data["timeseries"].items():
+            timeseries_row = [format_float(time)] + [
+                format_float(value) for value in row_elements
+            ]
             timeseries_block.append(timeseries_row)
         return timeseries_block
 

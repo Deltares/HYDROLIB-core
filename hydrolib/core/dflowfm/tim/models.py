@@ -1,12 +1,13 @@
 from pathlib import Path
 from typing import Callable, Dict, List
 
+from pydantic.class_validators import validator
+
 from hydrolib.core.basemodel import ModelSaveSettings, ParsableFileModel
 
 from .parser import TimParser
 from .serializer import TimSerializer, TimSerializerConfig
 
-from pydantic.class_validators import validator
 
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
@@ -21,7 +22,7 @@ class TimModel(ParsableFileModel):
 
     serializer_config = TimSerializerConfig()
 
-    comments : List[str]
+    comments: List[str]
     timeseries: Dict[float, List[float]]
 
     @classmethod
@@ -41,10 +42,12 @@ class TimModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         return TimParser.parse
-    
-    @validator('timeseries')
+
+    @validator("timeseries")
     @classmethod
-    def _timeseries_values(cls, v: Dict[float, List[float]]) -> Dict[float, List[float]]:
+    def _timeseries_values(
+        cls, v: Dict[float, List[float]]
+    ) -> Dict[float, List[float]]:
         """Validates if the amount of columns per timeseries match.
 
         Args:
@@ -66,5 +69,5 @@ class TimModel(ParsableFileModel):
             if length != len(v[time]):
                 raise ValueError(f"Problem with values in timeseries, for time {time}")
             length = len(v[time])
-            
+
         return v
