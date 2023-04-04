@@ -2,7 +2,7 @@ prof_to_cross
 =============
 *Convert D-Flow FM legacy profile files to cross section files.*
 
-Directly jump to [Usage](#Usage).
+Directly jump to [Commandline usage](#Commandline-usage).
 
 # Background
 1D cross section specification in a D-Flow FM model used to go via two or three prof* files,
@@ -39,15 +39,14 @@ The following table lists the mapping from old to new cross section types:
 ### Friction
 Not yet available in converter.
 
-# Usage:
-
+# Commandline usage:
 ```bash
-usage: python tools/prof_to_cross.py [-h] [--version] [--verbose] \
+usage: python hydrolib/tools/prof_to_cross.py [-h] [--version] [--verbose] \
               [--mdufile MDUFILE] [--proffiles [PROFFILE [PROFFILE ...]]]
 
 ```
 
-# Arguments
+## Arguments
 
 |short|long|default|help|
 | :--- | :--- | :--- | :--- |
@@ -56,3 +55,14 @@ usage: python tools/prof_to_cross.py [-h] [--version] [--verbose] \
 ||`--verbose`||also print diagnostic information|
 |`-m`|`--mdufile`|`None`|automatically take profile filenames from MDUFILE|
 |`-p`|`--proffiles`|`None`|2 or 3 profile files: PROFLOCFILE PROFDEFFILE [PROFDEFXYZFILE]|
+
+# Python usage:
+```python
+from hydrolib.tools import prof_to_cross
+
+# Option 1: via MDU file:
+prof_to_cross.prof_to_cross_from_mdu('FlowFM.mdu')
+
+# Option 2: directly via profile files:
+prof_to_cross.prof_to_cross('profloc.xyz', 'profdef.txt', 'profdefxyz.pliz')
+```

@@ -96,7 +96,7 @@ nav:
       - topics/loadsave.md
   - Tools:
       - tools/tools.md
-      - tools/prof_to_cross.md
+      - "prof_to_cross": tools/prof_to_cross.md
   - API Reference:
       - Introduction:
           - reference/glossary.md
