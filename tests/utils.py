@@ -168,7 +168,9 @@ def create_temp_file(content: str, filename: str) -> ContextManager[Path]:
 
 
 @contextmanager
-def create_temp_file_from_lines(lines: List[str], filename: str) -> ContextManager[Path]:
+def create_temp_file_from_lines(
+    lines: List[str], filename: str
+) -> ContextManager[Path]:
     """Create a file in a temporary directory with the specified file name and the provided content.
 
     Args:
