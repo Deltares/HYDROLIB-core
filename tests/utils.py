@@ -168,7 +168,7 @@ def create_temp_file(content: str, filename: str) -> Generator[Path, None, None]
     with get_temp_file(filename) as file:
         with open(file, "w") as f:
             f.write(content)
-        return file
+        yield file
 
 
 @contextmanager
@@ -190,7 +190,7 @@ def create_temp_file_from_lines(
     """
     content = "\n".join(lines)
     with create_temp_file(content, filename) as file:
-        return file
+        yield file
 
 
 @contextmanager
@@ -208,4 +208,4 @@ def get_temp_file(filename: str) -> Generator[Path, None, None]:
         Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
     with TemporaryDirectory() as temp_dir:
-        return Path(temp_dir, filename)
+        yield Path(temp_dir, filename)
