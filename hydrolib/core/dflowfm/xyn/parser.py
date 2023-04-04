@@ -2,8 +2,6 @@ import re
 from pathlib import Path
 from typing import Dict
 
-from .name_validator import NameValidator
-
 xynpattern = re.compile(r"\s+")
 
 
@@ -28,8 +26,7 @@ class XYNParser:
                 each of which is a dict itself, with keys 'x', 'y', and 'n'.
 
         Raises:
-            ValueError: if a line in the file contains no values that
-                could be parsed.
+            ValueError: if a line in the file cannot be parsed.
         """
         data: Dict = dict(points=[])
 
