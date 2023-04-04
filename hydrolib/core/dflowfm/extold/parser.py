@@ -35,22 +35,7 @@ class Parser:
         with filepath.open() as file:
             lines = file.readlines()
         
-        
-        start_data_index = 0
-        for line_index in range(len(lines)):
-
-            line = lines[line_index].strip()
-
-            if len(line) == 0:
-                comments.append(line)
-                continue
-                
-            if line.startswith("*"):
-                comments.append(line[1:])
-                continue
-
-            start_data_index = line_index
-            break
+        comments, start_data_index = Parser._parse_header(lines)
             
         for line_index in range(start_data_index, len(lines)):
 
@@ -75,6 +60,28 @@ class Parser:
 
         return dict(comment=comments, forcing=forcings)
 
+    @staticmethod
+    def _parse_header(lines: List[str]):
+        comments: List[str] = []
+        
+        start_data_index = 0
+        for line_index in range(len(lines)):
+
+            line = lines[line_index].strip()
+
+            if len(line) == 0:
+                comments.append(line)
+                continue
+                
+            if line.startswith("*"):
+                comments.append(line[1:])
+                continue
+
+            start_data_index = line_index
+            break
+        
+        return comments, start_data_index
+    
     @staticmethod
     def _validate_order(forcing: Dict[str, str], line_number: int):
         """Validates the order of the forcing fields given in the forcing block.
