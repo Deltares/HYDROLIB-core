@@ -13,23 +13,28 @@ from tests.utils import (
     test_reference_dir,
 )
 
-triple_data_for_timeseries_floats = {   10: [1.232, 2.343, 3.454],
-                                        20: [4.565, 5.676, 6.787],
-                                        30: [1.5, 2.6, 3.7]}
-    
-single_data_for_timeseries_floats = {   0.000000: [0.0000000],
-                                        10.000000: [0.0100000],
-                                        20.000000: [0.0000000],
-                                        30.000000: [-0.0100000],
-                                        40.000000: [0.0000000],
-                                        50.000000: [0.0100000],
-                                        60.000000: [0.0000000],
-                                        70.000000: [-0.0100000],
-                                        80.000000: [0.0000000],
-                                        90.000000: [0.0100000],
-                                        100.000000: [0.0000000],
-                                        110.000000: [-0.0100000],
-                                        120.000000: [0.0000000],}
+triple_data_for_timeseries_floats = {
+    10: [1.232, 2.343, 3.454],
+    20: [4.565, 5.676, 6.787],
+    30: [1.5, 2.6, 3.7],
+}
+
+single_data_for_timeseries_floats = {
+    0.000000: [0.0000000],
+    10.000000: [0.0100000],
+    20.000000: [0.0000000],
+    30.000000: [-0.0100000],
+    40.000000: [0.0000000],
+    50.000000: [0.0100000],
+    60.000000: [0.0000000],
+    70.000000: [-0.0100000],
+    80.000000: [0.0000000],
+    90.000000: [0.0100000],
+    100.000000: [0.0000000],
+    110.000000: [-0.0100000],
+    120.000000: [0.0000000],
+}
+
 
 class TestTimSerializer:
     @pytest.mark.parametrize(
@@ -107,7 +112,9 @@ class TestTimModel:
         ],
     )
     def test_save_data_for_timeseries(self, input_data, reference_path):
-        model = TimModel(timeseries=input_data["timeseries"], comments=input_data["comments"])
+        model = TimModel(
+            timeseries=input_data["timeseries"], comments=input_data["comments"]
+        )
         output_path = Path(test_output_dir / "tim" / "test_save.tim")
         model.filepath = output_path
         model.serializer_config.float_format = ".3f"
@@ -120,9 +127,11 @@ class TestTimModel:
             pytest.param(
                 {
                     "comments": [],
-                    "timeseries": {     10: [1.232, "text shouldn't be here", 3.454],
-                                        20: [4.565, 5.676, 6.787],
-                                        30: [1.5, 2.6, 3.7]},
+                    "timeseries": {
+                        10: [1.232, "text shouldn't be here", 3.454],
+                        20: [4.565, 5.676, 6.787],
+                        30: [1.5, 2.6, 3.7],
+                    },
                 },
                 "value is not a valid float",
                 id="value is not a valid float",
@@ -130,9 +139,11 @@ class TestTimModel:
             pytest.param(
                 {
                     "comments": [],
-                    "timeseries": {     10: [1.232, 2.343, 3.454],
-                                        20: [4.565],
-                                        30: [1.5, 2.6, 3.7]},
+                    "timeseries": {
+                        10: [1.232, 2.343, 3.454],
+                        20: [4.565],
+                        30: [1.5, 2.6, 3.7],
+                    },
                 },
                 f"Problem with values in timeseries, for time {20}",
                 id="Problem with values in timeseries, for time, values missing",
@@ -140,9 +151,11 @@ class TestTimModel:
             pytest.param(
                 {
                     "comments": [],
-                    "timeseries": {     10: [1.232, 2.343, 3.454],
-                                        20: [4.565, 5.676, 6.787, 3.454],
-                                        30: [1.5, 2.6, 3.7]},
+                    "timeseries": {
+                        10: [1.232, 2.343, 3.454],
+                        20: [4.565, 5.676, 6.787, 3.454],
+                        30: [1.5, 2.6, 3.7],
+                    },
                 },
                 f"Problem with values in timeseries, for time {20}",
                 id="Problem with values in timeseries, for time, too many values",
@@ -151,47 +164,48 @@ class TestTimModel:
     )
     def test_validate_data_for_timeseries_throws_exception_for_incorrect_data(
         self, input_data, expected_error_msg
-    ):        
+    ):
         with pytest.raises(ValueError) as error:
-            TimModel(timeseries=input_data["timeseries"], comments=input_data["comments"])
+            TimModel(
+                timeseries=input_data["timeseries"], comments=input_data["comments"]
+            )
 
         assert expected_error_msg in str(error.value)
 
+
 class TestTimParser:
-    triple_data_for_timeseries = {  '10': ['1.232', '2.343', '3.454'],
-                                    '20': ['4.565', '5.676', '6.787'],
-                                    '30': ['1.5', '2.6', '3.7']}
-    
-    single_data_for_timeseries = {  '0.000000'    : ['0.0000000'],
-                                    '10.000000'   : ['0.0100000'],
-                                    '20.000000'   : ['0.0000000'],
-                                    '30.000000'   : ['-0.0100000'],
-                                    '40.000000'   : ['0.0000000'],
-                                    '50.000000'   : ['0.0100000'],
-                                    '60.000000'   : ['0.0000000'],
-                                    '70.000000'   : ['-0.0100000'],
-                                    '80.000000'   : ['0.0000000'],
-                                    '90.000000'   : ['0.0100000'],
-                                    '100.000000'  : ['0.0000000'],
-                                    '110.000000'  : ['-0.0100000'],
-                                    '120.000000'  : ['0.0000000']}
-    
+    triple_data_for_timeseries = {
+        "10": ["1.232", "2.343", "3.454"],
+        "20": ["4.565", "5.676", "6.787"],
+        "30": ["1.5", "2.6", "3.7"],
+    }
+
+    single_data_for_timeseries = {
+        "0.000000": ["0.0000000"],
+        "10.000000": ["0.0100000"],
+        "20.000000": ["0.0000000"],
+        "30.000000": ["-0.0100000"],
+        "40.000000": ["0.0000000"],
+        "50.000000": ["0.0100000"],
+        "60.000000": ["0.0000000"],
+        "70.000000": ["-0.0100000"],
+        "80.000000": ["0.0000000"],
+        "90.000000": ["0.0100000"],
+        "100.000000": ["0.0000000"],
+        "110.000000": ["-0.0100000"],
+        "120.000000": ["0.0000000"],
+    }
+
     @pytest.mark.parametrize(
         "expected_output, input_path",
         [
             pytest.param(
-                {
-                    "comments": [],
-                    "timeseries": triple_data_for_timeseries
-                },
+                {"comments": [], "timeseries": triple_data_for_timeseries},
                 Path(test_input_dir / "tim" / "triple_data_for_timeseries.tim"),
                 id="triple_data_for_timeseries",
             ),
             pytest.param(
-                {
-                    "comments": [],
-                    "timeseries": triple_data_for_timeseries
-                },
+                {"comments": [], "timeseries": triple_data_for_timeseries},
                 Path(
                     test_input_dir
                     / "tim"
@@ -201,12 +215,11 @@ class TestTimParser:
             ),
             pytest.param(
                 {
-                    "comments": 
-                    [
+                    "comments": [
                         "comments",
                         "this is another comment",
                     ],
-                    "timeseries": triple_data_for_timeseries
+                    "timeseries": triple_data_for_timeseries,
                 },
                 Path(
                     test_input_dir
@@ -216,11 +229,7 @@ class TestTimParser:
                 id="triple_data_for_timeseries_with_comments",
             ),
             pytest.param(
-                {
-                    "comments": [],
-                    "timeseries": single_data_for_timeseries
-                    
-                },
+                {"comments": [], "timeseries": single_data_for_timeseries},
                 Path(test_input_dir / "tim" / "single_data_for_timeseries.tim"),
                 id="single_data_for_timeseries",
             ),

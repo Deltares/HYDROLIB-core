@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+
 class TimParser:
     """
     A parser for .tim files.
@@ -34,11 +35,10 @@ class TimParser:
             comments, start_timeseries_index = TimParser._read_header_comments(lines)
             timeseries = TimParser._read_time_series_data(lines, start_timeseries_index)
 
-        return {"comments" : comments, "timeseries" : timeseries}
-    
+        return {"comments": comments, "timeseries": timeseries}
 
     @staticmethod
-    def _read_header_comments(lines: List[str])-> Tuple[List[str], int]:
+    def _read_header_comments(lines: List[str]) -> Tuple[List[str], int]:
         """Read the header comments of the lines from the .tim file.
         The comments are only expected at the start of the .tim file.
         When a non comment line is encountered, all comments from the header will be retuned together with the start index of the timeseries data.
@@ -58,7 +58,7 @@ class TimParser:
             if len(line) == 0:
                 comments.append(line)
                 continue
-            
+
             if line.startswith("#") or line.startswith("*"):
                 comments.append(line[1:])
                 continue
@@ -67,7 +67,9 @@ class TimParser:
             return comments, start_timeseries_index
 
     @staticmethod
-    def _read_time_series_data(lines: List[str], start_timeseries_index: int) -> Dict[str, List[str]]:
+    def _read_time_series_data(
+        lines: List[str], start_timeseries_index: int
+    ) -> Dict[str, List[str]]:
         timeseries: Dict[str, List[str]] = {}
         for line_index in range(start_timeseries_index, len(lines)):
             line = lines[line_index].strip()
@@ -87,9 +89,15 @@ class TimParser:
     @staticmethod
     def _raise_error_if_contains_comment(line: str, line_index: int) -> None:
         if "#" in line or "*" in line:
-            raise ValueError(f"Line {line_index}: comments are only supported at the start of the file, before the time series data.")
-    
+            raise ValueError(
+                f"Line {line_index}: comments are only supported at the start of the file, before the time series data."
+            )
+
     @staticmethod
-    def _raise_error_if_duplicate_time(time: str, timeseries: Dict[str, List[str]], line_index: int) -> None:
+    def _raise_error_if_duplicate_time(
+        time: str, timeseries: Dict[str, List[str]], line_index: int
+    ) -> None:
         if time in timeseries:
-            raise ValueError(f"Line {line_index}: time series cannot contain duplicate times. Time: {time}")
+            raise ValueError(
+                f"Line {line_index}: time series cannot contain duplicate times. Time: {time}"
+            )
