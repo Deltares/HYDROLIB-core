@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.0">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.3.0">
     
     
       
@@ -1954,7 +1954,7 @@ BuiModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/rr/meteo/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_station_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns all the events (start time and precipitations) related to a given station.</span>
 
 <span class="sd">    Args:</span>
@@ -2110,7 +2110,7 @@ BuiPrecipitationEvent            (<a title="hydrolib.core.basemodel.BaseModel" h
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_station_precipitations</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">station_idx</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns all the precipitations related to the given station index (column).</span>
 
 <span class="sd">    Args:</span>
@@ -2291,7 +2291,7 @@ Example given:
           <summary>Source code in <code>hydrolib/core/rr/meteo/parser.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_events</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">timestep</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a given raw text containing 0 to many text blocks representing a precipitation event.</span>
 
 <span class="sd">    Args:</span>
@@ -2433,7 +2433,7 @@ Each column of the last three lines represents a station.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/parser.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given text representing a single BuiPrecipitationEvent parses it into a dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -2521,7 +2521,7 @@ and the timeseries length into a dictionary.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/parser.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">parse_event_time_reference</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a single event time reference line containing both the start time</span>
 <span class="sd">    and the timeseries length into a dictionary.</span>
 
@@ -2660,7 +2660,7 @@ to the BuiModel.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/parser.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a given file, in case valid, into a dictionary which can later be mapped</span>
 <span class="sd">    to the BuiModel.</span>
 
@@ -2822,7 +2822,7 @@ hours and minutes.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_timedelta_fields</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets a dictionary containing the time delta in days, hours, minutes and seconds.</span>
 <span class="sd">    This means that the seconds field does not contain the accumulative value of days</span>
 <span class="sd">    hours and minutes.</span>
@@ -2915,7 +2915,7 @@ hours and minutes.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a dictionary representing an event into a text block.</span>
 
 <span class="sd">    Args:</span>
@@ -3020,7 +3020,7 @@ into a single string ready to be mapped.</p>
 <span class="k">def</span> <span class="nf">serialize_precipitation_per_timestep</span><span class="p">(</span>
     <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serialized the data containing all the precipitations per timestep (and station)</span>
 <span class="sd">    into a single string ready to be mapped.</span>
 
@@ -3105,7 +3105,7 @@ into a single string ready to be mapped.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">serialize_start_time</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a datetime into the expected .bui format.</span>
 
 <span class="sd">    Args:</span>
@@ -3184,7 +3184,7 @@ into a single string ready to be mapped.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">serialize_timeseries_length</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a given timedelta into the .bui format.</span>
 
 <span class="sd">    Args:</span>
@@ -3308,7 +3308,7 @@ Otherwise it will crash.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">bui_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats the bui_template with the content of the given data.</span>
 <span class="sd">    NOTE: It requires that caller injects file_path into bui_data prior to this call.</span>
 <span class="sd">    Otherwise it will crash.</span>
@@ -3401,7 +3401,7 @@ Otherwise it will crash.</p>
 <span class="k">def</span> <span class="nf">serialize_event_list</span><span class="p">(</span>
     <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a event list dictionary into a single text block.</span>
 
 <span class="sd">    Args:</span>
@@ -3481,7 +3481,7 @@ Otherwise it will crash.</p>
           <summary>Source code in <code>hydrolib/core/rr/meteo/serializer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">serialize_stations_ids</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes the stations ids into a single string as expected in a .bui file.</span>
 
 <span class="sd">    Args:</span>
@@ -3567,7 +3567,7 @@ Otherwise it will crash.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_bui_file</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes a .bui file in the given path based on the data given in a dictionary.</span>
 
 <span class="sd">    Args:</span>

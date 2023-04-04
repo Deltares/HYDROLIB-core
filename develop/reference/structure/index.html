@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.0">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.3.0">
     
     
       
@@ -2080,7 +2080,7 @@ Typically inside the structure list of a <a href="../mdu/#hydrolib.core.dflowfm.
           <summary>Source code in <code>hydrolib/core/dflowfm/structure/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">check_list_lengths</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Validates that the length of the relopening and losscoeff fields are as expected.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the length of the relopening and losscoeff fields are as expected.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">validate_correct_length</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="s2">&quot;relopening&quot;</span><span class="p">,</span>
@@ -2151,7 +2151,7 @@ Typically inside the structure list of a <a href="../mdu/#hydrolib.core.dflowfm.
 <span class="k">def</span> <span class="nf">validate_that_bendlosscoeff_field_is_present_for_invertedsyphons</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Validates that the bendlosscoeff value is present when dealing with inverted syphons.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the bendlosscoeff value is present when dealing with inverted syphons.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">validate_required_fields</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="s2">&quot;bendlosscoeff&quot;</span><span class="p">,</span>
@@ -2191,7 +2191,7 @@ Typically inside the structure list of a <a href="../mdu/#hydrolib.core.dflowfm.
 <span class="k">def</span> <span class="nf">validate_that_bendlosscoeff_is_not_provided_for_culverts</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Validates that the bendlosscoeff field is not provided when the subtype is a culvert.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the bendlosscoeff field is not provided when the subtype is a culvert.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">validate_forbidden_fields</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="s2">&quot;bendlosscoeff&quot;</span><span class="p">,</span>
@@ -2231,7 +2231,7 @@ Typically inside the structure list of a <a href="../mdu/#hydrolib.core.dflowfm.
 <span class="k">def</span> <span class="nf">validate_that_valve_related_fields_are_present_for_culverts_with_valves</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Validates that valve-related fields are present when there is a valve present.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that valve-related fields are present when there is a valve present.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">validate_required_fields</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="s2">&quot;valveopeningheight&quot;</span><span class="p">,</span>
@@ -2430,7 +2430,7 @@ Verifies whether de water level location specifications are valid.</p>
           <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">check_location_dambreak</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies whether the location for this structure contains valid values for</span>
 <span class="sd">    numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.</span>
 <span class="sd">    Verifies whether de water level location specifications are valid.</span>
@@ -2586,7 +2586,7 @@ Verifies whether de water level location specifications are valid.</p>
           <div class="highlight"><pre><span></span><code><span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;algorithm&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">validate_algorithm</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DambreakAlgorithm</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validates the algorithm parameter for the dambreak structure.</span>
 
 <span class="sd">    Args:</span>
@@ -2697,7 +2697,7 @@ property. This property should be given when the algorithm value is 3.</p>
 <span class="k">def</span> <span class="nf">validate_dambreak_levels_and_widths</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">field_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validates whether a dambreak can be created with the given dambreakLevelsAndWidths</span>
 <span class="sd">    property. This property should be given when the algorithm value is 3.</span>
 
@@ -3225,7 +3225,7 @@ Typically inside the structure list of a <a href="../mdu/#hydrolib.core.dflowfm.
           <summary>Source code in <code>hydrolib/core/dflowfm/structure/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">check_list_lengths_head_and_reductionfactor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Validates that the lengths of the head and reductionfactor fields are as expected.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the lengths of the head and reductionfactor fields are as expected.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">validate_correct_length</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="s2">&quot;head&quot;</span><span class="p">,</span>
@@ -3265,7 +3265,7 @@ present in the values and the controlside is not equal to the suctionSide.</p>
           <summary>Source code in <code>hydrolib/core/dflowfm/structure/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">conditionally_check_list_lengths_deliveryside</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validates the length of the delivery side fields, but only if there is a controlside value</span>
 <span class="sd">    present in the values and the controlside is not equal to the suctionSide.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3309,7 +3309,7 @@ present in the values and the controlside is not equal to the deliverySide.</p>
           <summary>Source code in <code>hydrolib/core/dflowfm/structure/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">conditionally_check_list_lengths_suctionside</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validates the length of the suction side fields, but only if there is a controlside value</span>
 <span class="sd">    present in the values and the controlside is not equal to the deliverySide.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3496,7 +3496,7 @@ otherwise numcoordinates xcoordinates and ycoordinates shall be expected.</p>
           <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">check_location</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validates the location of the structure based on the given parameters.</span>
 <span class="sd">    For instance, if a branchid is given, then it is expected also the chainage,</span>
 <span class="sd">    otherwise numcoordinates xcoordinates and ycoordinates shall be expected.</span>
@@ -3667,7 +3667,7 @@ match the expectation of a new structure.</p>
           <summary>Source code in <code>hydrolib/core/dflowfm/structure/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">validate_branch_and_chainage_in_model</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Static method to validate whether the given branchid and chainage values</span>
 <span class="sd">    match the expectation of a new structure.</span>
 
@@ -3775,7 +3775,7 @@ of a structure to define its coordinates.</p>
           <summary>Source code in <code>hydrolib/core/dflowfm/structure/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">validate_coordinates_in_model</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Static method to validate whether the given values match the expectations</span>
 <span class="sd">    of a structure to define its coordinates.</span>
 

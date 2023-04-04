@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.0">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.3.0">
     
     
       
@@ -1886,7 +1886,7 @@ Branch        </code>
     <span class="n">structure_chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_dist_to_struc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate the branch offsets and the nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the branch offsets and the nodes.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        mesh1d_edge_length (float): The edge length of the 1d mesh.</span>
@@ -1951,7 +1951,7 @@ Branch        </code>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Interpolate coordinates along branch by length</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate coordinates along branch by length</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        distance (npt.ArrayLike): Length</span>
@@ -2073,7 +2073,7 @@ Link1d2d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Remove all saved links from the links administration&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all saved links from the links administration&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
@@ -2124,7 +2124,7 @@ Link1d2d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Whether this Link1d2d is currently empty.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether this Link1d2d is currently empty.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: True if the Link1d2d is currently empty; False otherwise.</span>
@@ -2191,7 +2191,7 @@ Link1d2d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read the Link1d2d data from the specified netCDF file at file_path into this</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the Link1d2d data from the specified netCDF file at file_path into this</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path): Path to the netCDF file.</span>
@@ -2272,7 +2272,7 @@ Mesh1d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hy
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_node_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get node mask, give a mask with True for each node that is in the given branchid list&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get node mask, give a mask with True for each node that is in the given branchid list&quot;&quot;&quot;</span>
 
     <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_id</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">branchids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2537,7 +2537,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
     <span class="n">deletemeshoption</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">inside</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        geometrylist (GeometryList): Polygon stored as GeometryList</span>
@@ -2678,7 +2678,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dy</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        extent (tuple): Bounding box of mesh (left, bottom, right, top)</span>
@@ -2692,7 +2692,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
     <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">extent</span>
 
     <span class="c1"># Generate mesh</span>
-    <span class="n">mesh2d_input</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh2dFactory</span><span class="o">.</span><span class="n">create_rectilinear_mesh</span><span class="p">(</span>
+    <span class="n">mesh2d_input</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh2dFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">rows</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">/</span> <span class="n">dy</span><span class="p">),</span>
         <span class="n">columns</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span> <span class="o">/</span> <span class="n">dx</span><span class="p">),</span>
         <span class="n">origin_x</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
@@ -2749,7 +2749,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_triangular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry_list</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.</span>
@@ -2801,7 +2801,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_mesh2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh2d</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get the mesh2d as represented in the MeshKernel</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the mesh2d as represented in the MeshKernel</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (mk.Mesh2d): The mesh2d as represented in the MeshKernel</span>
@@ -2849,7 +2849,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Determine whether this Mesh2d is empty.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine whether this Mesh2d is empty.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (bool): Whether this Mesh2d is empty.</span>
@@ -2937,7 +2937,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read the Mesh2d from the file at file_path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the Mesh2d from the file at file_path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path): Path to the file to be read.</span>
@@ -2996,7 +2996,7 @@ np.empty((0, 0), dtype=np.int32)</p></td>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">refine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Refine the mesh within a polygon, by a number of steps (level)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the mesh within a polygon, by a number of steps (level)</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        polygon (GeometryList): Polygon in which to refine</span>
@@ -3132,7 +3132,7 @@ present, and loads them one by one.</p>
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Network</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read network from file. This classmethod checks what mesh components (mesh1d &amp; network1d, mesh2d, link1d2d) are</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read network from file. This classmethod checks what mesh components (mesh1d &amp; network1d, mesh2d, link1d2d) are</span>
 <span class="sd">    present, and loads them one by one.</span>
 
 <span class="sd">    Args:</span>
@@ -3213,7 +3213,7 @@ directly, but is easier accessible for users.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular</span>
 <span class="sd">    directly, but is easier accessible for users.</span>
 
 <span class="sd">    Args:</span>
@@ -3269,7 +3269,7 @@ directly, but is easier accessible for users.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Write network to file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write network to file</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file (Path): File where _net.nc is written to.</span>
@@ -3407,7 +3407,7 @@ NetworkModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" hr
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">split_by</span><span class="p">(</span><span class="n">gl</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Function to split mk.GeometryList by seperator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to split mk.GeometryList by seperator.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        gl (mk.GeometryList): The geometry list to split.</span>

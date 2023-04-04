@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.0">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.3.0">
     
     
       
@@ -2518,7 +2518,7 @@ is intended to be used as a BaseModel class member variable name.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_key</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a key name from a given field name.</span>
 <span class="sd">    The given field name may be a Pydantic Field alias, and the key name</span>
 <span class="sd">    is intended to be used as a BaseModel class member variable name.</span>
@@ -2623,7 +2623,7 @@ is intended to be used as a BaseModel class member variable name.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Initialize a BaseModel with the provided data.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize a BaseModel with the provided data.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValidationError: A validation error when the data is invalid.</span>
@@ -2680,7 +2680,7 @@ is intended to be used as a BaseModel class member variable name.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_file_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Generic attribute for models backed by a file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic attribute for models backed by a file.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="kc">False</span>
 </code></pre></div>
         </details>
@@ -2709,7 +2709,7 @@ is intended to be used as a BaseModel class member variable name.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Generic attribute for models that have children fields that could contain files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic attribute for models that have children fields that could contain files.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_file_link</span><span class="p">()</span>
 </code></pre></div>
         </details>
@@ -2738,7 +2738,7 @@ is intended to be used as a BaseModel class member variable name.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">show_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Recursive print function for showing a tree of a model.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursive print function for showing a tree of a model.&quot;&quot;&quot;</span>
     <span class="n">angle</span> <span class="o">=</span> <span class="s2">&quot;∟&quot;</span> <span class="k">if</span> <span class="n">indent</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># Only print if we&#39;re backed by a file</span>
@@ -2951,7 +2951,7 @@ FileCasingResolver        </code>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Resolve the casing of a file path when the file does exist but not with the exact casing.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve the casing of a file path when the file does exist but not with the exact casing.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (Path): The path of the file or directory for which the casing needs to be resolved.</span>
@@ -3040,7 +3040,7 @@ are only read once.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a new empty FileLoadContext.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new empty FileLoadContext.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_path_resolver</span> <span class="o">=</span> <span class="n">FilePathResolver</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">FileModelCache</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_file_casing_resolver</span> <span class="o">=</span> <span class="n">FileCasingResolver</span><span class="p">()</span>
@@ -3088,7 +3088,7 @@ are only read once.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">cache_is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Whether or not the file model cache is empty.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether or not the file model cache is empty.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: Whether or not the file model cache is empty.</span>
@@ -3155,7 +3155,7 @@ are only read once.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">convert_path_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Resolve the file path by converting it from its own file path style to the path style for the current operating system.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve the file path by converting it from its own file path style to the path style for the current operating system.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path): The file path to convert to the OS path style.</span>
@@ -3216,7 +3216,7 @@ path, the latest added anchor path is returned.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_current_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get the current absolute path with which files are resolved.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the current absolute path with which files are resolved.</span>
 
 <span class="sd">    If the current mode is relative to the parent, the latest added</span>
 <span class="sd">    parent is added. If the current mode is relative to an anchor</span>
@@ -3286,7 +3286,7 @@ path, the latest added anchor path is returned.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">initialize_load_settings</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">recurse</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">path_style</span><span class="p">:</span> <span class="n">PathStyle</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Initialize the global model load setting. Can only be set once.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the global model load setting. Can only be set once.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        recurse (bool): Whether or not to recursively load the whole model.</span>
@@ -3377,7 +3377,7 @@ path, the latest added anchor path is returned.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">pop_last_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Pop the last added parent off this FileLoadContext.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pop the last added parent off this FileLoadContext.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_path_resolver</span><span class="o">.</span><span class="n">pop_last_parent</span><span class="p">()</span>
 </code></pre></div>
         </details>
@@ -3434,7 +3434,7 @@ FileLoadContext.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">push_new_parent</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">parent_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">relative_mode</span><span class="p">:</span> <span class="n">ResolveRelativeMode</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Push a new parent_path with the given relative_mode on this</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Push a new parent_path with the given relative_mode on this</span>
 <span class="sd">    FileLoadContext.</span>
 
 <span class="sd">    Args:</span>
@@ -3496,7 +3496,7 @@ FileLoadContext.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">register_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Associate the provided model with the provided path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Associate the provided model with the provided path.</span>
 
 <span class="sd">    Relative paths will be resolved based on the current state of the</span>
 <span class="sd">    FileLoadContext.</span>
@@ -3570,7 +3570,7 @@ it will be resolved based on the current state of this FileLoadContext.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Resolve the provided path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve the provided path.</span>
 
 <span class="sd">    If path is already absolute, it will be returned as is. Otherwise</span>
 <span class="sd">    it will be resolved based on the current state of this FileLoadContext.</span>
@@ -3643,7 +3643,7 @@ it will be resolved based on the current state of this FileLoadContext.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_casing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Resolve the file casing for the provided file path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve the file casing for the provided file path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path): The file path to resolve the casing for.</span>
@@ -3700,7 +3700,7 @@ current state of the FileLoadContext.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">retrieve_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;FileModel&quot;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Retrieve the model associated with the path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve the model associated with the path.</span>
 
 <span class="sd">    If no model has been associated with the provided path, or the path is None,</span>
 <span class="sd">    then None will be returned. Relative paths will be resolved based on the</span>
@@ -3889,7 +3889,7 @@ If the filepath is provided, it is read from disk.</p>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a new FileModel from the given filepath.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new FileModel from the given filepath.</span>
 
 <span class="sd">    If no filepath is provided, the model is initialized as an empty</span>
 <span class="sd">    model with default values.</span>
@@ -4015,7 +4015,7 @@ If the file at the provided file path was already parsed, this instance is retur
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathOrStr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a new model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new model.</span>
 <span class="sd">    If the file at the provided file path was already parsed, this instance is returned.</span>
 
 <span class="sd">    Args:</span>
@@ -4192,7 +4192,7 @@ used by the current operating system. Options: 'unix', 'windows'.</p></td>
     <span class="n">recurse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">path_style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Save the model to disk.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the model to disk.</span>
 
 <span class="sd">    If recurse is set to True, all of the child FileModels will be saved as well.</span>
 <span class="sd">    Relative child models are stored relative to this Model, according to the</span>
@@ -4311,7 +4311,7 @@ this FileModel's save_location.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">synchronize_filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Synchronize the save_location properties of all child models respective to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Synchronize the save_location properties of all child models respective to</span>
 <span class="sd">    this FileModel&#39;s save_location.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -4404,7 +4404,7 @@ objects.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a new empty FileModelCache.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new empty FileModelCache.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 </code></pre></div>
         </details>
@@ -4448,7 +4448,7 @@ objects.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Whether or not this file model cache is empty.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether or not this file model cache is empty.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: Whether or not the cache is empty.</span>
@@ -4506,7 +4506,7 @@ objects.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">register_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Register the model with the specified path in this FileModelCache.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register the model with the specified path in this FileModelCache.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (Path): The path to associate the model with.</span>
@@ -4557,7 +4557,7 @@ it has been registered before, otherwise return None.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">retrieve_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;FileModel&quot;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Retrieve the model associated with the (absolute) path if</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve the model associated with the (absolute) path if</span>
 <span class="sd">    it has been registered before, otherwise return None.</span>
 
 <span class="sd">    Returns:</span>
@@ -4633,7 +4633,7 @@ latest added parent path from the FilePathResolver</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a new empty FilePathResolver.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new empty FilePathResolver.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">ResolveRelativeMode</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 </code></pre></div>
@@ -4681,7 +4681,7 @@ path, the latest added anchor path is returned.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_current_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get the current absolute path with which files are resolved.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the current absolute path with which files are resolved.</span>
 
 <span class="sd">    If the current mode is relative to the parent, the latest added</span>
 <span class="sd">    parent is added. If the current mode is relative to an anchor</span>
@@ -4721,7 +4721,7 @@ path, the latest added anchor path is returned.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">pop_last_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Pop the last added parent from this FilePathResolver</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pop the last added parent from this FilePathResolver</span>
 
 <span class="sd">    If there are currently no parents defined, nothing will happen.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4788,7 +4788,7 @@ to the current state, i.e. similar to FilePathResolver.resolve.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">push_new_parent</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">parent_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">relative_mode</span><span class="p">:</span> <span class="n">ResolveRelativeMode</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Push a new parent_path with the given relative_mode to this FilePathResolver.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Push a new parent_path with the given relative_mode to this FilePathResolver.</span>
 
 <span class="sd">    Relative paths added to this FilePathResolver will be resolved with respect</span>
 <span class="sd">    to the current state, i.e. similar to FilePathResolver.resolve.</span>
@@ -4864,7 +4864,7 @@ to the current state, i.e. similar to FilePathResolver.resolve.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Resolve the provided path to an absolute path given the current state.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve the provided path to an absolute path given the current state.</span>
 
 <span class="sd">    If the provided path is already absolute, it will be returned as is.</span>
 
@@ -4976,7 +4976,7 @@ ModelLoadSettings        </code>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">recurse</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">path_style</span><span class="p">:</span> <span class="n">PathStyle</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Initializes a new instance of the ModelLoadSettings class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes a new instance of the ModelLoadSettings class.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        recurse (bool): Whether or not to recursively load the whole model.</span>
@@ -5189,7 +5189,7 @@ ModelSaveSettings        </code>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathStyle</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Initializes a new instance of the ModelSaveSettings class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes a new instance of the ModelSaveSettings class.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.</span>
@@ -5359,7 +5359,7 @@ i.e. bottom-up traversal. Defaults to None.</p></td>
     <span class="n">pre_traverse_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="n">TAcc</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">post_traverse_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="n">TAcc</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a new ModelTreeTraverser with the given functions.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new ModelTreeTraverser with the given functions.</span>
 
 <span class="sd">    If a predicate it is not defined, it is assumed to always be true, i.e. we will</span>
 <span class="sd">    always traverse to the next node, or always execute the traverse functions.</span>
@@ -5460,7 +5460,7 @@ ModelTreeTraverser.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="n">TAcc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TAcc</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Traverse the model tree of BaseModels including the model as the root, with</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Traverse the model tree of BaseModels including the model as the root, with</span>
 <span class="sd">    the provided state of the acc and return the final accumulator.</span>
 
 <span class="sd">    The actual executed functions as well as the predicates defining whether these</span>
@@ -5698,7 +5698,7 @@ If it is a valid path style the path style enum value will be return as a result
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">PathStyle</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Validates the path style as string on whether it is a supported path style.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates the path style as string on whether it is a supported path style.</span>
 <span class="sd">    If it is a valid path style the path style enum value will be return as a result.</span>
 
 <span class="sd">    Args:</span>
@@ -5880,7 +5880,7 @@ until it goes out of scope.</p>
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">file_load_context</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Provide a FileLoadingContext. If none has been created in the context of</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Provide a FileLoadingContext. If none has been created in the context of</span>
 <span class="sd">    this call stack yet, a new one will be created, which will be maintained</span>
 <span class="sd">    until it goes out of scope.</span>
 
@@ -5948,7 +5948,7 @@ when the corresponding field is initialized with None.</p>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validator_set_default_disk_only_file_model_when_none</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">classmethod</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Validator to ensure a default empty DiskOnlyFileModel is created</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validator to ensure a default empty DiskOnlyFileModel is created</span>
 <span class="sd">    when the corresponding field is initialized with None.</span>
 
 <span class="sd">    Returns:</span>
