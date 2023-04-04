@@ -67,7 +67,7 @@ class TimParser:
             return comments, start_timeseries_index
 
     @staticmethod
-    def _read_time_series_data(lines: List[str], start_timeseries_index: int) -> dict[str, List[str]]:
+    def _read_time_series_data(lines: List[str], start_timeseries_index: int) -> Dict[str, List[str]]:
         timeseries: Dict[str, List[str]] = {}
         for line_index in range(start_timeseries_index, len(lines)):
             line = lines[line_index].strip()

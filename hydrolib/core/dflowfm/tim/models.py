@@ -44,7 +44,18 @@ class TimModel(ParsableFileModel):
     
     @validator('timeseries')
     @classmethod
-    def _timeseries_values(cls, v):
+    def _timeseries_values(cls, v: Dict[float, List[float]]) -> Dict[float, List[float]]:
+        """Validates if the amount of columns per timeseries match.
+
+        Args:
+            v (Dict[float, List[float]]): Value to validate, the timeseries in this case.
+
+        Raises:
+            ValueError: If the time and values are not parsable to float, or when the amount of columns differs per timeseries.
+
+        Returns:
+            Dict[float, List[float]: Validated timeseries.
+        """
         firstlengthset = False
         for time in v:
             if not firstlengthset:
