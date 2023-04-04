@@ -716,37 +716,28 @@ class TestParser:
         with create_temp_file_from_lines(file_content, "two_blocks.ext") as temp_file:
             data = parser.parse(filepath=temp_file)
 
-        assert len(data) == 2
-
-        # Assert correct comments
-        comments = data["comment"]
-        assert len(comments) == 3
-
-        exp_comments = [" This is a comment", " This is a comment", ""]
-        assert comments == exp_comments
-
-        # Assert correct forcings
-        forcings = data["forcing"]
-        assert len(forcings) == 2
-
-        forcing_1 = forcings[0]
-        assert len(forcing_1) == 6
-
-        assert forcing_1["QUANTITY"] == "internaltidesfrictioncoefficient"
-        assert forcing_1["FILENAME"] == "surroundingDomain.pol"
-        assert forcing_1["FILETYPE"] == "11"
-        assert forcing_1["METHOD"] == "4"
-        assert forcing_1["OPERAND"] == "+"
-        assert forcing_1["VALUE"] == "0.0125"
-
-        forcing_2 = forcings[1]
-        assert len(forcing_2) == 5
-
-        assert forcing_2["QUANTITY"] == "waterlevelbnd"
-        assert forcing_2["FILENAME"] == "OB_001_orgsize.pli"
-        assert forcing_2["FILETYPE"] == "9"
-        assert forcing_2["METHOD"] == "3"
-        assert forcing_2["OPERAND"] == "O"
+        exp_data = {
+            "comment" : [" This is a comment", " This is a comment", ""],
+            "forcing": [
+                {
+                    "QUANTITY": "internaltidesfrictioncoefficient",
+                    "FILENAME": "surroundingDomain.pol",
+                    "FILETYPE": "11",
+                    "METHOD": "4",
+                    "OPERAND": "+",
+                    "VALUE": "0.0125",
+                },
+                {
+                    "QUANTITY": "waterlevelbnd",
+                    "FILENAME": "OB_001_orgsize.pli",
+                    "FILETYPE": "9",
+                    "METHOD": "3",
+                    "OPERAND": "O",
+                },
+            ]
+        }
+        
+        assert data == exp_data
 
     def test_parse_block_with_incorrect_order_raises_error(self):
         file_lines = [
