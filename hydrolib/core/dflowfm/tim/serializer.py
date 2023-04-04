@@ -82,13 +82,15 @@ class TimSerializer:
         for timeseries_row in timeseries_block:
             row_elements: List[str] = []
             for index, value in enumerate(timeseries_row):
-                whitespace_offset = TimSerializer._get_offset_whitespace(value, column_lengths[index])
+                whitespace_offset = TimSerializer._get_offset_whitespace(
+                    value, column_lengths[index]
+                )
                 row_elements.append(value + whitespace_offset)
 
             line = column_space.join(row_elements)
             timeserieslines.append(line)
         return timeserieslines
-    
+
     @staticmethod
     def _get_offset_whitespace(value: Optional[str], max_length: int) -> str:
         value_length = len(value) if value is not None else 0
