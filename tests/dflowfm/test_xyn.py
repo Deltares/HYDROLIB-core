@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from hydrolib.core.basemodel import SerializerConfig
-from hydrolib.core.dflowfm.xyn.models import XYNPoint
+from hydrolib.core.dflowfm.xyn.models import XYNPoint, XYNModel
 from hydrolib.core.dflowfm.xyn.name_extrator import NameExtractor
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
@@ -119,3 +119,10 @@ class TestNameExtractor:
     def test_extract_invalid_name_raises_error(self, input: str):
         with pytest.raises(ValueError):
             _ = NameExtractor.extract_name(input)
+
+
+class TestXYNModel:
+    def test_initialization(self):
+        model = XYNModel()
+
+        assert len(model.points) == 0
