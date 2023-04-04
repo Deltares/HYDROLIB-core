@@ -422,7 +422,7 @@ class TestExtForcing:
             assert exp_msg in str(error.value)
 
     class TestValidateExtrapolTol:
-        def test_validate_extrapoltol_with_valid_method_6(self):
+        def test_validate_extrapoltol_with_valid_method_5(self):
             method = 5
             extrapoltol = 1.23
 
