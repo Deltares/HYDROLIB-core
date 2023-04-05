@@ -17,7 +17,7 @@ class TimModel(ParsableFileModel):
 
     comments: List[str]
     """List[str]: A list with the header comment of the tim file."""
-    
+
     timeseries: Dict[float, List[float]]
     """Dict[float, List[float]]: A dictionary containing the time series. The keys are the times and the values are the values corresponding to that time."""
 
