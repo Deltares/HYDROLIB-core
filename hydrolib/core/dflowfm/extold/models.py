@@ -14,6 +14,7 @@ from hydrolib.core.basemodel import (
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.tim.models import TimModel
 
 
 class TracerQuantity(str, Enum):
@@ -212,8 +213,8 @@ class ExtForcing(BaseModel):
     quantity: Union[Quantity, str] = Field(alias="QUANTITY")
     """Union[Quantity, str]: The name of the quantity."""
 
-    filename: Union[PolyFile, DiskOnlyFileModel] = Field(None, alias="FILENAME")
-    """Union[PolyFile, DiskOnlyFileModel]: The file associated to this forcing."""
+    filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(None, alias="FILENAME")
+    """Union[PolyFile, TimModel, DiskOnlyFileModel]: The file associated to this forcing."""
 
     varname: Optional[str] = Field(None, alias="VARNAME")
     """Optional[str]: The variable name used in `filename` associated with this forcing; some input files may contain multiple variables."""

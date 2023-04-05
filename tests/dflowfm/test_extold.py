@@ -19,6 +19,7 @@ from hydrolib.core.dflowfm.extold.models import (
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.tim.models import TimModel
 
 from ..utils import (
     assert_files_equal,
@@ -29,6 +30,18 @@ from ..utils import (
 
 
 class TestExtForcing:
+    
+    def test_initialize_with_timfile_initializes_timmodel(self):
+        forcing = ExtForcing(
+            quantity=Quantity.WaterLevelBnd,
+            filename=test_input_dir / "tim" / "triple_data_for_timeseries.tim",
+            filetype=FileType.TimeSeries,
+            method=Method.InterpolateTimeAndSpaceSaveWeights,
+            operand=Operand.OverwriteExistingValues,
+        )
+
+        assert isinstance(forcing.filename, TimModel)
+        
     def test_initialize_with_polyfile_initializes_polyfile(self):
         forcing = ExtForcing(
             quantity=Quantity.WaterLevelBnd,
