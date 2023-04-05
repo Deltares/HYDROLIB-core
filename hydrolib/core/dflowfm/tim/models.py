@@ -10,15 +10,7 @@ from .serializer import TimSerializer, TimSerializerConfig
 
 
 class TimModel(ParsableFileModel):
-    """Class representing a tim (*.tim) file.
-
-    Attributes:
-        data: Dictionary with keys \"comment\" & time as float and value as List of floats".\n
-        serializer_config: TimSerializerConfig
-
-    Raises:
-        ValueError: If the time and values are not parsable to float, or when the amount of columns differs per timeseries.
-    """
+    """Class representing a tim (*.tim) file."""
 
     serializer_config = TimSerializerConfig()
 
@@ -31,7 +23,7 @@ class TimModel(ParsableFileModel):
 
     @classmethod
     def _filename(cls) -> str:
-        return "sample"
+        return "timeseries"
 
     @classmethod
     def _get_serializer(
@@ -54,7 +46,7 @@ class TimModel(ParsableFileModel):
             v (Dict[float, List[float]]): Value to validate, the timeseries in this case.
 
         Raises:
-            ValueError: If the time and values are not parsable to float, or when the amount of columns differs per timeseries.
+            ValueError: When the amount of columns differs per timeseries.
 
         Returns:
             Dict[float, List[float]: Validated timeseries.
