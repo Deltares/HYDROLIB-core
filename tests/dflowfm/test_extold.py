@@ -30,7 +30,6 @@ from ..utils import (
 
 
 class TestExtForcing:
-    
     def test_initialize_with_timfile_initializes_timmodel(self):
         forcing = ExtForcing(
             quantity=Quantity.WaterLevelBnd,
@@ -41,7 +40,7 @@ class TestExtForcing:
         )
 
         assert isinstance(forcing.filename, TimModel)
-        
+
     def test_initialize_with_polyfile_initializes_polyfile(self):
         forcing = ExtForcing(
             quantity=Quantity.WaterLevelBnd,

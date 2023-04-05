@@ -213,7 +213,9 @@ class ExtForcing(BaseModel):
     quantity: Union[Quantity, str] = Field(alias="QUANTITY")
     """Union[Quantity, str]: The name of the quantity."""
 
-    filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(None, alias="FILENAME")
+    filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
+        None, alias="FILENAME"
+    )
     """Union[PolyFile, TimModel, DiskOnlyFileModel]: The file associated to this forcing."""
 
     varname: Optional[str] = Field(None, alias="VARNAME")
