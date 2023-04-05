@@ -24,6 +24,7 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_location_specification,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
 
 
@@ -254,7 +255,7 @@ class Meteo(INIBasedModel):
 
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
-    forcingfile: Union[ForcingModel, DiskOnlyFileModel] = Field(alias="forcingFile")
+    forcingfile: Union[ForcingModel, TimModel, DiskOnlyFileModel] = Field(alias="forcingFile")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
