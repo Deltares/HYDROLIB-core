@@ -13,9 +13,13 @@ class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file."""
 
     serializer_config = TimSerializerConfig()
+    """TimSerializerConfig: The serialization configuration for the tim file."""
 
     comments: List[str]
+    """List[str]: A list with the header comment of the tim file."""
+    
     timeseries: Dict[float, List[float]]
+    """Dict[float, List[float]]: A dictionary containing the time series. The keys are the times and the values are the values corresponding to that time."""
 
     @classmethod
     def _ext(cls) -> str:
