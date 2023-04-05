@@ -53,16 +53,18 @@ class TimModel(ParsableFileModel):
         """
         if len(v) == 0:
             return v
-    
+
         timeseries_iterator = iter(v.items())
         _, columns = next(timeseries_iterator)
         n_columns = len(columns)
-        
+
         if n_columns == 0:
-            raise ValueError('Time series cannot be empty.')
-        
+            raise ValueError("Time series cannot be empty.")
+
         for time, values in timeseries_iterator:
             if len(values) != n_columns:
-                raise ValueError(f'Time {time}: Expected {n_columns} columns, but was {len(values)}')
-        
+                raise ValueError(
+                    f"Time {time}: Expected {n_columns} columns, but was {len(values)}"
+                )
+
         return v

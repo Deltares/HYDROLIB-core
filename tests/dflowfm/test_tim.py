@@ -145,7 +145,7 @@ class TestTimModel:
                         30: [1.5, 2.6, 3.7],
                     },
                 },
-                f'Time {20.0}: Expected {3} columns, but was {1}',
+                f"Time {20.0}: Expected {3} columns, but was {1}",
                 id="Problem with values in timeseries, for time, values missing",
             ),
             pytest.param(
@@ -157,7 +157,7 @@ class TestTimModel:
                         30: [1.5, 2.6, 3.7],
                     },
                 },
-                f'Time {20.0}: Expected {3} columns, but was {4}',
+                f"Time {20.0}: Expected {3} columns, but was {4}",
                 id="Problem with values in timeseries, for time, too many values",
             ),
             pytest.param(
@@ -169,7 +169,7 @@ class TestTimModel:
                         30: [],
                     },
                 },
-                'Time series cannot be empty.',
+                "Time series cannot be empty.",
                 id="Problem with values in timeseries, no timeseries",
             ),
         ],
