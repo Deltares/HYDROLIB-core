@@ -17,7 +17,7 @@ class XYNSerializer:
 
         If the name contains spaces, it will be surrounded with single quotes.
 
-        Attributes:
+        Args:
             path (Path): The path to the destination file.
             data (Dict[str, List[XYNPoint]]): The data to be serialized.
                 The dictionary should contain a single key 'points' that holds a list of XYNPoints.
