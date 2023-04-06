@@ -16,17 +16,16 @@ from .serializer import XYNSerializer
 
 
 class XYNPoint(BaseModel):
-    """Single XYN point, representing a named station location.
-
-    Attributes:
-        x: x or λ coordinate
-        y: y or φ coordinate
-        n: name
-    """
+    """Single XYN point, representing a named station location."""
 
     x: float
+    """float: The x or λ coordinate."""
+
     y: float
+    """float: The y or φ coordinate."""
+
     n: str
+    """float: The name of the point."""
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         x = data.get("x")
