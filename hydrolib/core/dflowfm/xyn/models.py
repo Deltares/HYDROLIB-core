@@ -49,10 +49,6 @@ class XYNModel(ParsableFileModel):
         return dict(points=self.points)
 
     @classmethod
-    def _ext(cls) -> str:
-        return ".xyn"
-
-    @classmethod
     def _filename(cls) -> str:
         return "stations_obs"
 
