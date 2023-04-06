@@ -25,7 +25,7 @@ class XYNParser:
         Raises:
             ValueError: if a line in the file cannot be parsed.
         """
-        data: Dict = dict(points=[])
+        points = []
 
         with filepath.open() as f:
             for linenr, line in enumerate(f.readlines()):
@@ -41,6 +41,6 @@ class XYNParser:
                         f"Error parsing XYN file '{filepath}', line {linenr+1}."
                     )
 
-                data["points"].append(dict(x=x, y=y, n=n))
+                points.append(dict(x=x, y=y, n=n))
 
-        return data
+        return dict(points=points)
