@@ -19,7 +19,8 @@ class XYNSerializer:
 
         Attributes:
             path (Path): The path to the destination file.
-            data (Dict): The data to be serialized.
+            data (Dict[str, List[XYNPoint]]): The data to be serialized.
+                The dictionary should contain a single key 'points' that holds a list of XYNPoints.
             config (SerializerConfig): The serialization configuration.
             save_settings (ModelSaveSettings): The model save settings.
         """
