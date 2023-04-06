@@ -1,8 +1,5 @@
-import re
 from pathlib import Path
 from typing import Dict
-
-xynpattern = re.compile(r"\s+")
 
 
 class XYNParser:
@@ -38,7 +35,7 @@ class XYNParser:
                     continue
 
                 try:
-                    x, y, n = re.split(xynpattern, line, maxsplit=2)
+                    x, y, n = line.split(maxsplit=2)
                 except ValueError:
                     raise ValueError(
                         f"Error parsing XYN file '{filepath}', line {linenr+1}."
