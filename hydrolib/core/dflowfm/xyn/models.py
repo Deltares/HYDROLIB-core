@@ -39,13 +39,10 @@ class XYNPoint(BaseModel):
 
 
 class XYNModel(ParsableFileModel):
-    """Observation station (.xyn) file.
-
-    Attributes:
-        points: List of [`XYNPoint`][hydrolib.core.dflowfm.xyn.models.XYNPoint]
-    """
+    """Observation station (.xyn) file."""
 
     points: List[XYNPoint] = []
+    """List[`XYNPoint`]: List of XYN points."""
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict
