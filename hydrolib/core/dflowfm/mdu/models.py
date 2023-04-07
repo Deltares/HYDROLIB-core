@@ -79,6 +79,13 @@ class Numerics(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         cflmax: Optional[str] = Field("Maximum Courant nr.", alias="CFLMax")
+        epsmaxlev: Optional[str] = Field(
+            "Stop criterium for non linear iteration", alias="EpsMaxlev"
+        )
+        epsmaxlevm: Optional[str] = Field(
+            "Stop criterium for Nested Newton loop in non linear iteration",
+            alias="EpsMaxlevM",
+        )
         advectype: Optional[str] = Field(
             "Adv type, 0=no, 33=Perot q(uio-u) fast, 3=Perot q(uio-u).",
             alias="advecType",
@@ -176,6 +183,8 @@ class Numerics(INIBasedModel):
 
     _header: Literal["Numerics"] = "Numerics"
     cflmax: float = Field(0.7, alias="CFLMax")
+    epsmaxlev: float = Field(1e-8, alias="EpsMaxlev")
+    epsmaxlevm: float = Field(1e-8, alias="EpsMaxlevM")
     advectype: int = Field(33, alias="advecType")
     timesteptype: int = Field(2, alias="timeStepType")
     limtyphu: int = Field(0, alias="limTypHu")
@@ -562,6 +571,14 @@ class Time(INIBasedModel):
         dtinit: Optional[str] = Field(
             "Initial timestep in seconds [s].", alias="dtInit"
         )
+        autotimestepnostruct: Optional[str] = Field(
+            "Exclude structure links (and neighbours) from time step limitation (0 = no, 1 = yes).",
+            alias="AutoTimestepNoStruct",
+        )
+        autotimestepnoqout: Optional[str] = Field(
+            "Exclude negative qin terms from time step limitation (0 = no, 1 = yes).",
+            alias="AutoTimestepNoQout",
+        )
         tstart: Optional[str] = Field(
             "Start time w.r.t. RefDate [TUnit].", alias="tStart"
         )
@@ -581,6 +598,8 @@ class Time(INIBasedModel):
     dtnodal: float = Field(21600.0, alias="dtNodal")
     dtmax: float = Field(30.0, alias="dtMax")
     dtinit: float = Field(1.0, alias="dtInit")
+    autotimestepnostruct: bool = Field(False, alias="AutoTimestepNoStruct")
+    autotimestepnoqout: bool = Field(True, alias="AutoTimestepNoQout")
     tstart: float = Field(0.0, alias="tStart")
     tstop: float = Field(86400.0, alias="tStop")
     updateroughnessinterval: float = Field(86400.0, alias="updateRoughnessInterval")
