@@ -2,7 +2,6 @@ import pytest
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
-from hydrolib.core.dflowfm.xyn.name_validator import NameValidator
 from hydrolib.core.dflowfm.xyn.parser import XYNParser
 from hydrolib.core.dflowfm.xyn.serializer import XYNSerializer
 
@@ -24,14 +23,40 @@ class TestXYNParser:
 
         expected_result = {
             "points": [
-                {"x": "1.1", "y": "2.2", "n": "'ObservationPoint_2D_01'"},
-                {"x": "3.3", "y": "4.4", "n": "'ObservationPoint_2D_02'"},
+                {"x": "1.1", "y": "2.2", "n": "ObservationPoint_2D_01"},
+                {"x": "3.3", "y": "4.4", "n": "ObservationPoint_2D_02"},
             ]
         }
 
         with create_temp_file(file_content, "test.xyn") as xyn_file:
             parsed_contents = XYNParser.parse(xyn_file)
             assert expected_result == parsed_contents
+
+    def test_parse_xyn_file_with_quoted_name_removes_quotes(self):
+        file_content = """
+            1.1 2.2 'ObservationPoint_2D_01'
+        """
+
+        expected_result = {
+            "points": [
+                {"x": "1.1", "y": "2.2", "n": "ObservationPoint_2D_01"},
+            ]
+        }
+
+        with create_temp_file(file_content, "test.xyn") as xyn_file:
+            parsed_contents = XYNParser.parse(xyn_file)
+            assert expected_result == parsed_contents
+
+    def test_parse_xyn_file_with_too_many_columns_raises_error(self):
+        file_content = """
+            1.1 2.2 'ObservationPoint_2D_01' This is too much content
+        """
+
+        with pytest.raises(ValueError) as error:
+            with create_temp_file(file_content, "test.xyn") as xyn_file:
+                _ = XYNParser.parse(xyn_file)
+                expected_message = "Error parsing XYN file '{xyn_file}', line 1. Invalid name `'ObservationPoint_2D_01' This is too much content`"
+                assert expected_message in str(error)
 
 
 class TestXYNSerializer:
@@ -41,7 +66,7 @@ class TestXYNSerializer:
         data = {
             "points": [
                 XYNPoint(x=1.1, y=2.2, n="randomName"),
-                XYNPoint(x=3.3, y=4.4, n="'randomName 2'"),
+                XYNPoint(x=3.3, y=4.4, n="randomName 2"),
             ]
         }
 
@@ -54,64 +79,6 @@ class TestXYNSerializer:
             with open(xyn_file) as file:
                 file_content = file.readlines()
                 assert file_content == expected_file_content
-
-
-class TestNameValidator:
-    @pytest.mark.parametrize(
-        ("input", "expected_output"),
-        [
-            pytest.param("randomName", "randomName", id="Name without spaces"),
-            pytest.param(
-                "'random name'", "random name", id="Name with spaces and quotes"
-            ),
-            pytest.param("    randomName   ", "randomName", id="Name with whitespace"),
-            pytest.param(
-                "'  randomName '", "  randomName ", id="Name with whitespace and quotes"
-            ),
-            pytest.param("#randomName", "#randomName", id="Name starting with hashtag"),
-            pytest.param(
-                "'#randomName'",
-                "#randomName",
-                id="Name with quotes starting with hashtag",
-            ),
-        ],
-    )
-    def test_validate_name(self, input: str, expected_output: str):
-        output = NameValidator.validate(input)
-        assert output == expected_output
-
-    @pytest.mark.parametrize(
-        ("input"),
-        [
-            pytest.param("'random name", id="Name with only starting quote"),
-            pytest.param("random name'", id="Name with only ending quote"),
-            pytest.param(None, id="None value"),
-            pytest.param("", id="Empty string"),
-            pytest.param("''", id="Empty string with quotes"),
-            pytest.param("     ", id="Whitespace only"),
-            pytest.param("'     '", id="Whitespace only with quotes"),
-            pytest.param("randomName #randomComment", id="Name followed by comment"),
-            pytest.param(
-                "randomName bla bla bla",
-                id="Name followed by additional content",
-            ),
-            pytest.param(
-                "'randomName' bla bla bla",
-                id="Name with quotes followed by additional content",
-            ),
-            pytest.param(
-                "randomNameWithQuote'InIt",
-                id="Name that contains a quote",
-            ),
-            pytest.param(
-                "'randomNameWithQuote'InIt'",
-                id="Name with quotes that contains a quote",
-            ),
-        ],
-    )
-    def test_validate_invalid_name_raises_error(self, input: str):
-        with pytest.raises(ValueError):
-            _ = NameValidator.validate(input)
 
 
 class TestXYNModel:
@@ -161,27 +128,15 @@ class TestXYNModel:
 
 
 class TestXYNPoint:
-    def test_new_xyn_point_with_invalid_name_should_raise_error(self):
-        invalid_name = "Invalid name"
-
-        with pytest.raises(ValueError) as error:
-            _ = XYNPoint(x=1.1, y=2.2, n=invalid_name)
-            expected_message = "Name cannot contain spaces."
-            assert expected_message in str(error.value)
-
-    def test_new_xyn_point_with_valid_name(self):
-        valid_name = "'Valid name'"
-        point = XYNPoint(x=1.1, y=2.2, n=valid_name)
-
-        assert point.n == "Valid name"
-
-    def test_update_xyn_point_to_invalid_name_should_raise_error(self):
-        invalid_name = "Invalid name"
-
-        point = XYNPoint(x=1.1, y=2.2, n="'valid name'")
-
-        with pytest.raises(ValueError) as error:
-            point.n = invalid_name
-
-            expected_message = "Name cannot contain spaces."
-            assert expected_message in str(error.value)
+    @pytest.mark.parametrize(
+        ("name"),
+        [
+            pytest.param("'nameWithQuote", id="Name with quote"),
+            pytest.param(None, id="None value"),
+            pytest.param("", id="Empty string"),
+            pytest.param("     ", id="Whitespace only"),
+        ],
+    )
+    def test_validate_name_raises_error_on_invalid_name(self, name: str):
+        with pytest.raises(ValueError):
+            _ = XYNPoint(x=1.1, y=2.2, n=name)

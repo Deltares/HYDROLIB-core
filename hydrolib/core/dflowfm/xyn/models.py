@@ -9,7 +9,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
     SerializerConfig,
 )
-from hydrolib.core.dflowfm.xyn.name_validator import NameValidator
+from hydrolib.core.utils import str_is_empty_or_none
 
 from .parser import XYNParser
 from .serializer import XYNSerializer
@@ -35,7 +35,15 @@ class XYNPoint(BaseModel):
 
     @validator("n", pre=True)
     def _validate_name(cls, value):
-        return NameValidator.validate(value)
+        if str_is_empty_or_none(value):
+            raise ValueError("Name cannot be empty.")
+
+        if "'" in value:
+            raise ValueError(
+                "Name cannot contain single quotes except at the start and end."
+            )
+
+        return value
 
 
 class XYNModel(ParsableFileModel):

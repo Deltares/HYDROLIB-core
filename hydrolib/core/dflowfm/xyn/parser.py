@@ -23,8 +23,23 @@ class XYNParser:
                 each of which is a dict itself, with keys 'x', 'y', and 'n'.
 
         Raises:
-            ValueError: if a line in the file cannot be parsed.
+            ValueError: if a line in the file cannot be parsed
+                or if the name contains whitespace while not surrounded with
+                single quotes.
         """
+
+        def is_surrounded_by_quotes(name: str) -> bool:
+            return name.startswith("'") and name.endswith("'")
+
+        def may_contain_whitespace(name: str) -> bool:
+            return is_surrounded_by_quotes(name)
+
+        def contains_whitespace(name: str) -> bool:
+            return " " in name
+
+        def contains_whitespace_while_not_allowed(name: str) -> bool:
+            return not may_contain_whitespace(n) and contains_whitespace(n)
+
         points = []
 
         with filepath.open() as f:
@@ -40,6 +55,14 @@ class XYNParser:
                     raise ValueError(
                         f"Error parsing XYN file '{filepath}', line {linenr+1}."
                     )
+
+                if contains_whitespace_while_not_allowed(n):
+                    raise ValueError(
+                        f"Error parsing XYN file '{filepath}', line {linenr+1}. Invalid name `{n}`"
+                    )
+
+                if is_surrounded_by_quotes(n):
+                    n = n[1:-1]
 
                 points.append(dict(x=x, y=y, n=n))
 
