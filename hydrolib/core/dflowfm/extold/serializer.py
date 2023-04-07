@@ -31,7 +31,7 @@ class Serializer:
 
         Args:
             path (Path): The path to write the serialized data to.
-            data (Dict[str, List[Dict[str, Any]]]): The data to be serialized. The data should contain two keys:
+            data (Dict[str, List[Any]]): The data to be serialized. The data should contain two keys:
                 - 'comment' (List[str]): a list of the comments
                 - 'forcing' (List[Dict[str, Any]]): a list of the external forcing data
             config (SerializerConfig): Configuration settings for the serializer.
