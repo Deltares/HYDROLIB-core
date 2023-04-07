@@ -43,6 +43,3 @@ They are represented by the class below.
 
 ### Updating the functionalities sheet
 There is an Excel sheet that is used in generating a list of D-HYDRO functionalities, grouped by kernel, and the current status of support inside hydrolib-core. This Excel sheet can be found at `docs\topics\dhydro_support_hydrolib-core.xlsx`. Each time you add support for new D-HYDRO functionalities, this Excel file has to be updated. Detailed information on how to update the Excel file correctly can be found inside the Excel file itself.
-
-
-## Testing models, parsers and serializers
