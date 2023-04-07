@@ -17,7 +17,7 @@ on:
         type: string
 
 jobs:
-  prepare-release:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the code
