@@ -1047,13 +1047,13 @@ class TestDambreak:
             waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
             """
         )
-                
+
         with create_temp_file("", "dambreak.tim") as tim_file:
             structure_text = structure_text.format(tim_file)
-            
+
             # 2. Parse data.
             dambreak_obj = self.parse_dambreak_from_text(structure_text)
-            
+
         assert dambreak_obj
         assert isinstance(dambreak_obj, Structure)
         assert dambreak_obj.type == "dambreak"

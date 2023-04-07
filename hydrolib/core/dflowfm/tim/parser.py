@@ -65,7 +65,7 @@ class TimParser:
 
             start_timeseries_index = line_index
             break
-            
+
         return comments, start_timeseries_index
 
     @staticmethod
