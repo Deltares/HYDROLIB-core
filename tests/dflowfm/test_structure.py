@@ -27,7 +27,7 @@ from hydrolib.core.dflowfm.structure.models import (
     Weir,
 )
 
-from ..utils import WrapperTest, invalid_test_data_dir, test_data_dir
+from ..utils import WrapperTest, create_temp_file, invalid_test_data_dir, test_data_dir
 
 uniqueid_str = "Unique structure id (max. 256 characters)."
 
@@ -1040,16 +1040,20 @@ class TestDambreak:
             f2                         = 1
             ucrit                      = 0.001
             t0                         = 0.0001        # make it a boolean
-            dambreakLevelsAndWidths    = dambreak.tim  #used only in algorithm 3            
+            dambreakLevelsAndWidths    = {}  #used only in algorithm 3            
             waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
             waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
             waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
             waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
             """
         )
-
-        # 2. Parse data.
-        dambreak_obj = self.parse_dambreak_from_text(structure_text)
+                
+        with create_temp_file("", "dambreak.tim") as tim_file:
+            structure_text = structure_text_template.format(tim_file)
+            
+            # 2. Parse data.
+            dambreak_obj = self.parse_dambreak_from_text(structure_text)
+            
         assert dambreak_obj
         assert isinstance(dambreak_obj, Structure)
         assert dambreak_obj.type == "dambreak"
@@ -1066,7 +1070,7 @@ class TestDambreak:
         assert dambreak_obj.f2 == 1
         assert dambreak_obj.ucrit == 0.001
         assert dambreak_obj.t0 == 0.0001
-        assert dambreak_obj.dambreaklevelsandwidths == Path("dambreak.tim")
+        assert dambreak_obj.dambreaklevelsandwidths.filepath.name == "dambreak.tim"
         assert dambreak_obj.waterlevelupstreamlocationx == 1.2
         assert dambreak_obj.waterlevelupstreamlocationy == 2.3
         assert dambreak_obj.waterleveldownstreamlocationx == 3.4
