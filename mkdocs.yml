@@ -79,7 +79,6 @@ nav:
           - "Local clone + Poetry": "guides/poetry.md"
       - Contributing:
           - "guides/contributing.md"
-          - "guides/developers.md"
       - Documentation:
           - "guides/documentation.md"
       - Support:
