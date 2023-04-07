@@ -209,3 +209,35 @@ def get_temp_file(filename: str) -> Generator[Path, None, None]:
     """
     with TemporaryDirectory() as temp_dir:
         yield Path(temp_dir, filename)
+
+@contextmanager
+def get_temp_dir() -> Generator[Path, None, None]:
+    """Gets a path to a temporary directory.
+
+    Example:
+        >>>     with get_temp_dir() as temp_dir:
+        >>>         print(f"Do something with {temp_dir}")
+
+    Returns:
+        Generator[Path, None, None]: Generator with the path to the temporary directory as yield type.
+    """
+    with TemporaryDirectory() as temp_dir:
+        yield Path(temp_dir)
+        
+def create_file_in_dir(dir: Path, file_name: str, content: str) -> Path:
+    """Creates a file in the specified directory.
+
+    Args:
+        dir (Path): The directory of where the file should be created.
+        file_name (str): The file name.
+        content (str): The content of the file.
+
+    Returns:
+        Path: The path to the newly created file.
+    """
+    file = Path(dir, file_name)
+    
+    with open(file, "w") as f:
+        f.write(content)
+        
+    return file
