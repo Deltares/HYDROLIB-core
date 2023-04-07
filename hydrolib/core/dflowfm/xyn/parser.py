@@ -38,7 +38,7 @@ class XYNParser:
             return " " in name
 
         def contains_whitespace_while_not_allowed(name: str) -> bool:
-            return not may_contain_whitespace(n) and contains_whitespace(n)
+            return not may_contain_whitespace(name) and contains_whitespace(name)
 
         points = []
 
