@@ -30,13 +30,19 @@ class XYNSerializer:
         format_float = lambda x: f"{x:{config.float_format}}"
         format_name = lambda n: f"'{n}'" if " " in n else n
 
+        serialized_points = []
+
+        for point in data["points"]:
+            serialized_point: str = space.join(
+                [
+                    format_float(point.x),
+                    format_float(point.y),
+                    format_name(point.n),
+                ]
+            )
+            serialized_points.append(serialized_point)
+
+        file_content: str = "\n".join(serialized_points)
+
         with path.open("w") as f:
-            for point in data["points"]:
-                line: str = space.join(
-                    [
-                        format_float(point.x),
-                        format_float(point.y),
-                        format_name(point.n),
-                    ]
-                )
-                f.write(f"{line}\n")
+            f.write(file_content)

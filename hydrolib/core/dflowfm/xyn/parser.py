@@ -19,7 +19,7 @@ class XYNParser:
             filepath (Path): .xyn file to be read.
 
         Returns:
-            Dict: dictionary with "points" value set to a list of points
+            Dict[str, List[XYNPoint]]: dictionary with "points" value set to a list of points
                 each of which is a dict itself, with keys 'x', 'y', and 'n'.
 
         Raises:

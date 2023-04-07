@@ -61,7 +61,7 @@ class TestXYNParser:
 
 class TestXYNSerializer:
     def test_serialize_xyn_point(self):
-        expected_file_content = ["1.10 2.20 randomName\n", "3.30 4.40 'randomName 2'\n"]
+        expected_file_content = ["1.10 2.20 randomName\n", "3.30 4.40 'randomName 2'"]
 
         data = {
             "points": [
@@ -118,7 +118,6 @@ class TestXYNModel:
             expected_file_content = [
                 "1.1 2.2 randomName1",
                 "3.3 4.4 randomName2",
-                "",
             ]
 
             with create_temp_file_from_lines(
