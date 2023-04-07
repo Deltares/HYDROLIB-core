@@ -70,6 +70,8 @@ useVolumeTableFile = 0   # Read and write the volume table from/to file (1: yes,
 
 [Numerics]
 CFLMax                   = 0.7     # Maximum Courant number
+EpsMaxlev                = 1e-08   # Stop criterium for non linear iteration
+EpsMaxlevM               = 1e-08   # Stop criterium for Nested Newton loop in non linear iteration
 advecType                = 33      # Advection type (0: none, 1: Wenneker, 2: Wenneker q(uio-u), 3: Perot q(uio-u), 4: Perot q(ui-u), 5: Perot q(ui-u) without itself)
 timeStepType             = 2       # 0=only transport, 1=transport + velocity update, 2=full implicit step_reduce, 3=step_jacobi, 4=explicit.
 limTypHu                 = 0       # Limiter type for waterdepth in continuity eqn. (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
@@ -157,6 +159,8 @@ dtUser                  = 600.0    # Time interval (s) for external forcing upda
 dtNodal                 = 21600.0  # Time interval (s) for updating nodal factors in astronomical boundary conditions
 dtMax                   = 120.0    # Maximal computation timestep (s)
 dtInit                  = 60.0     # Initial computation timestep (s)
+AutoTimestepNoStruct    = 0        # Exclude structure links (and neighbours) from time step limitation (0 = no, 1 = yes).
+AutoTimestepNoQout      = 1        # Exclude negative qin terms from time step limitation (0 = no, 1 = yes).
 tStart                  = 0.0      # Start time w.r.t. RefDate [TUnit].
 tStop                   = 86400.0  # Stop time w.r.t. RefDate [TUnit].
 updateRoughnessInterval = 86400.0  # Update interval for time dependent roughness parameters [s].
