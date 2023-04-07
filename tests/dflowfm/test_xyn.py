@@ -54,9 +54,10 @@ class TestXYNParser:
 
         with pytest.raises(ValueError) as error:
             with create_temp_file(file_content, "test.xyn") as xyn_file:
-                _ = XYNParser.parse(xyn_file)
                 expected_message = "Error parsing XYN file '{xyn_file}', line 1. Invalid name `'ObservationPoint_2D_01' This is too much content`"
-                assert expected_message in str(error)
+                _ = XYNParser.parse(xyn_file)
+
+        assert expected_message in str(error)
 
 
 class TestXYNSerializer:
