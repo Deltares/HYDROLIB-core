@@ -7,4 +7,5 @@ __all__ = [
     "FileType",
     "Method",
     "Operand",
+    "TracerQuantity",
 ]
