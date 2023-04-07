@@ -14,6 +14,7 @@ from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
 )
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
+from hydrolib.core.dflowfm.tim.models import TimModel
 
 from ..utils import test_data_dir, test_input_dir
 
@@ -623,6 +624,22 @@ class TestModels:
 
             expected_message = f"{alias_field}\n  field required "
             assert expected_message in str(error.value)
+
+        def test_construct_from_file_with_tim(self):
+            input_ext = (
+                test_input_dir
+                / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+            )
+
+            ext_model = ExtModel(input_ext)
+
+            assert isinstance(ext_model, ExtModel)
+            assert len(ext_model.meteo) == 1
+            assert ext_model.meteo[0].quantity == "rainfall_rate"
+            assert isinstance(ext_model.meteo[0].forcingfile, TimModel)
+            assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.uniform
+
+            assert len(ext_model.meteo[0].forcingfile.timeseries) == 15
 
         def test_construct_from_file_with_bc(self):
             input_ext = (
