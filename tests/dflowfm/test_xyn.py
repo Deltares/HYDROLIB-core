@@ -48,16 +48,15 @@ class TestXYNParser:
             assert expected_result == parsed_contents
 
     def test_parse_xyn_file_with_too_many_columns_raises_error(self):
-        file_content = """
-            1.1 2.2 'ObservationPoint_2D_01' This is too much content
-        """
+        name = "'ObservationPoint_2D_01' This is too much content"
+        file_content = f"1.1 2.2 {name}"
 
         with pytest.raises(ValueError) as error:
             with create_temp_file(file_content, "test.xyn") as xyn_file:
-                expected_message = "Error parsing XYN file '{xyn_file}', line 1. Invalid name `'ObservationPoint_2D_01' This is too much content`"
+                expected_message = f"Error parsing XYN file '{xyn_file}', line 1. Name `{name}` contains whitespace, so should be enclosed in single quotes."
                 _ = XYNParser.parse(xyn_file)
 
-        assert expected_message in str(error)
+        assert expected_message in str(error.value)
 
 
 class TestXYNSerializer:
