@@ -1049,7 +1049,7 @@ class TestDambreak:
         )
                 
         with create_temp_file("", "dambreak.tim") as tim_file:
-            structure_text = structure_text_template.format(tim_file)
+            structure_text = structure_text.format(tim_file)
             
             # 2. Parse data.
             dambreak_obj = self.parse_dambreak_from_text(structure_text)
