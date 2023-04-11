@@ -603,7 +603,9 @@ class Orifice(Structure):
 
     crestlevel: Union[float, TimModel, ForcingModel] = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
-    gateloweredgelevel: Union[float, TimModel, ForcingModel] = Field(alias="gateLowerEdgeLevel")
+    gateloweredgelevel: Union[float, TimModel, ForcingModel] = Field(
+        alias="gateLowerEdgeLevel"
+    )
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
@@ -748,7 +750,9 @@ class GeneralStructure(Structure):
     upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
 
     crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
-    crestlevel: Optional[Union[float, TimModel, ForcingModel]] = Field(0.0, alias="crestLevel")
+    crestlevel: Optional[Union[float, TimModel, ForcingModel]] = Field(
+        0.0, alias="crestLevel"
+    )
     crestlength: Optional[float] = Field(0.0, alias="crestLength")
 
     downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
@@ -901,7 +905,9 @@ class Dambreak(Structure):
     waterleveldownstreamnodeid: Optional[str] = Field(
         alias="waterLevelDownstreamNodeId"
     )
-    dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(alias="dambreakLevelsAndWidths")
+    dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(
+        alias="dambreakLevelsAndWidths"
+    )
 
     @validator("algorithm", pre=True)
     @classmethod
