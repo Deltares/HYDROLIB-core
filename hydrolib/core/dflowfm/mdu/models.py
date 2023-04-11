@@ -227,8 +227,8 @@ class Numerics(INIBasedModel):
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
-    baroczlaybed: Optional[bool] = Field(None, alias="barocZLayBed")
-    barocponbnd: Optional[bool] = Field(None, alias="barocPOnBnd")
+    baroczlaybed: bool = Field(False, alias="barocZLayBed")
+    barocponbnd: bool = Field(False, alias="barocPOnBnd")
     maxwaterleveldiff: float = Field(0.0, alias="maxWaterLevelDiff")
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")
     mintimestepbreak: float = Field(0.0, alias="minTimestepBreak")
@@ -411,7 +411,7 @@ class Physics(INIBasedModel):
             "Uniform nudge relaxation time", alias="nudgeTimeUni"
         )
         iniwithnudge: Optional[str] = Field(
-            "Initialize salinity and temperature with nudge variables",
+            "Initialize salinity and temperature with nudge variables (0: no, 1: yes, 2: only initialize, no nudging)",
             alias="iniWithNudge",
         )
         secondaryflow: Optional[str] = Field(
@@ -460,14 +460,14 @@ class Physics(INIBasedModel):
     secchidepth: float = Field(2.0, alias="secchiDepth")
     stanton: float = Field(0.0013, alias="stanton")
     dalton: float = Field(0.0013, alias="dalton")
-    tempmax: Optional[float] = Field(None, alias="tempMax")
-    tempmin: Optional[float] = Field(None, alias="tempMin")
-    salimax: Optional[float] = Field(None, alias="saliMax")
-    salimin: Optional[float] = Field(None, alias="saliMin")
-    heat_eachstep: Optional[bool] = Field(None, alias="heat_eachStep")
-    rhoairrhowater: Optional[int] = Field(None, alias="rhoAirRhoWater")
-    nudgetimeuni: Optional[float] = Field(None, alias="nudgeTimeUni")
-    iniwithnudge: Optional[bool] = Field(None, alias="iniWithNudge")
+    tempmax: float = Field(-999.0, alias="tempMax")
+    tempmin: float = Field(0.0, alias="tempMin")
+    salimax: float = Field(-999.0, alias="saliMax")
+    salimin: float = Field(0.0, alias="saliMin")
+    heat_eachstep: bool = Field(False, alias="heat_eachStep")
+    rhoairrhowater: int = Field(0, alias="rhoAirRhoWater")
+    nudgetimeuni: float = Field(3600.0, alias="nudgeTimeUni")
+    iniwithnudge: int = Field(0, alias="iniWithNudge")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
     betaspiral: float = Field(0.0, alias="betaSpiral")
 
@@ -1256,7 +1256,7 @@ class Output(INIBasedModel):
     foufile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="fouFile"
     )
-    fouupdatestep: Optional[int] = Field(None, alias="fouUpdateStep")
+    fouupdatestep: int = Field(0, alias="fouUpdateStep")
     hisfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
     )
