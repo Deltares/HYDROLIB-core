@@ -165,21 +165,21 @@
     pavIni               = 0.0       # Initial air pressure [N/m2], only applied if value > 0.
 
 [Time]
-    refDate                 = 19971222 # Reference date (yyyymmdd)
-    tZone                   = 0.0      # Time zone assigned to input time series
-    tUnit                   = M        # Time unit for start/stop times (D, H, M or S)
-    dtUser                  = 600.0    # Time interval (s) for external forcing update
-    dtNodal                 = 21600.0  # Time interval (s) for updating nodal factors in astronomical boundary conditions
-    dtMax                   = 120.0    # Maximal computation timestep (s)
-    dtInit                  = 60.0     # Initial computation timestep (s)
+    refDate                 = 19971222       # Reference date (yyyymmdd)
+    tZone                   = 0.0            # Time zone assigned to input time series
+    tUnit                   = M              # Time unit for start/stop times (D, H, M or S)
+    dtUser                  = 600.0          # Time interval (s) for external forcing update
+    dtNodal                 = 21600.0        # Time interval (s) for updating nodal factors in astronomical boundary conditions
+    dtMax                   = 120.0          # Maximal computation timestep (s)
+    dtInit                  = 60.0           # Initial computation timestep (s)
     autoTimestep            = 3              # 0 = no, 1 = 2D (hor. out), 3=3D (hor. out), 5 = 3D (hor. inout + ver. inout), smallest dt
-    AutoTimestepNoStruct    = 0        # Exclude structure links (and neighbours) from time step limitation (0 = no, 1 = yes).
-    AutoTimestepNoQout      = 1        # Exclude negative qin terms from time step limitation (0 = no, 1 = yes).
-    tStart                  = 0.0      # Start time w.r.t. RefDate [TUnit].
-    tStop                   = 86400.0  # Stop time w.r.t. RefDate [TUnit].
+    autoTimestepNoStruct    = 0              # Exclude structure links (and neighbours) from time step limitation (0 = no, 1 = yes).
+    autoTimestepNoQout      = 1              # Exclude negative qin terms from time step limitation (0 = no, 1 = yes).
+    tStart                  = 0.0            # Start time w.r.t. RefDate [TUnit].
+    tStop                   = 86400.0        # Stop time w.r.t. RefDate [TUnit].
     startDateTime           = 19980101000000 # Start date time (yyyymmddHHMMSS)
     stopDateTime            = 19980110000000 # Stop date time (yyyymmddHHMMSS)
-    updateRoughnessInterval = 86400.0  # Update interval for time dependent roughness parameters [s].
+    updateRoughnessInterval = 86400.0        # Update interval for time dependent roughness parameters [s].
 
 [Restart]
     restartFile     =  # Restart netcdf-file, either *_rst.nc or *_map.nc
@@ -268,8 +268,6 @@
     wrihis_zcor                       = 1                                                                               # vertical coordinates
     wrihis_lateral                    = 1                                                                               # lateral data
     wrihis_taucurrent                 = 1                                                                               # mean bed shear stress
-    wrimap_tidal_potential            = 1                                                                               # Write tidal potential to map file (1: yes, 0: no)
-    richardsonOnOutput                = 1                                                                               # Write Richardson number, (1: yes, 0: no).
     wrimap_waterLevel_s0              = 1                                                                               # Write water levels for previous time step to map file (1: yes, 0: no)
     wrimap_waterLevel_s1              = 1                                                                               # Write water levels to map file (1: yes, 0: no)
     wrimap_evaporation                = 1                                                                               # Write evaporation to map file (1: yes, 0: no)
@@ -297,6 +295,7 @@
     wrimap_total_net_inflow_1d2d      = 1                                                                               # Write current total 1d2d net inflow (discharge) and cumulative total 1d2d net inflow (volume) to map file, only for 1D nodes (1: yes, 0: no)
     wrimap_total_net_inflow_lateral   = 1                                                                               # Write current total lateral net inflow (discharge) and cumulative total net lateral inflow (volume) to map file, only for 1D nodes (1: yes, 0: no)
     wrimap_water_level_gradient       = 1                                                                               # Write water level gradient to map file, only on 1D links (1: yes, 0: no)
+    wrimap_tidal_potential            = 1                                                                               # Write tidal potential to map file (1: yes, 0: no)
     wrimap_SAL_potential              = 1                                                                               # Write self attraction and loading potential to map file (1: yes, 0: no)
     wrimap_internal_tides_dissipation = 1                                                                               # Write internal tides dissipation to map file (1: yes, 0: no)
     wrimap_flow_analysis              = 1                                                                               # Write flow analysis data to map file (1: yes, 0: no)

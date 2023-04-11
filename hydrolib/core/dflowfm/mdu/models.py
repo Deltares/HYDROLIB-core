@@ -1314,9 +1314,6 @@ class Output(INIBasedModel):
     wrihis_lateral: bool = Field(True, alias="wrihis_lateral")
     wrihis_taucurrent: bool = Field(True, alias="wrihis_taucurrent")
 
-    wrimap_tidal_potential: bool = Field(True, alias="wrimap_tidal_potential")
-    richardsononoutput: bool = Field(False, alias="RichardsonOnOutput")
-
     # Map file
     wrimap_waterlevel_s0: bool = Field(True, alias="wrimap_waterLevel_s0")
     wrimap_waterlevel_s1: bool = Field(True, alias="wrimap_waterLevel_s1")
