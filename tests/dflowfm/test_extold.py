@@ -122,6 +122,7 @@ EXP_HEADER = """
 *************************************************************************************************************
 """
 
+
 class TestExtForcing:
     def test_initialize_with_timfile_initializes_timmodel(self):
         forcing = ExtOldForcing(
@@ -664,7 +665,7 @@ class TestExtForcing:
 class TestExtOldModel:
     def test_header(self):
         assert HEADER == EXP_HEADER
-        
+
     def test_initialization(self):
         model = ExtOldModel()
 
