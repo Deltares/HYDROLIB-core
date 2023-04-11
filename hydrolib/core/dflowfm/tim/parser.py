@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 TimRecord = Dict[str, List[str]]
 
+
 class TimParser:
     """
     A parser for .tim files.
@@ -80,8 +81,8 @@ class TimParser:
             TimParser._raise_error_if_contains_comment(line, line_index + 1)
 
             time, *values = line.split()
-            
-            timrecord = {"time":time, "data":values}
+
+            timrecord = {"time": time, "data": values}
             timeseries.append(timrecord)
         return timeseries
 
