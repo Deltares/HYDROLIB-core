@@ -3,7 +3,6 @@ from .models import (
     ExtOldModel,
     ExtOldFileType,
     ExtOldMethod,
-    ExtOldOperand,
     ExtOldQuantity,
     ExtOldTracerQuantity,
 )
@@ -14,6 +13,5 @@ __all__ = [
     "ExtOldQuantity",
     "ExtOldFileType",
     "ExtOldMethod",
-    "ExtOldOperand",
     "ExtOldTracerQuantity",
 ]

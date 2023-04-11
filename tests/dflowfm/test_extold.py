@@ -7,12 +7,12 @@ from hydrolib.core.basemodel import (
     ModelSaveSettings,
     SerializerConfig,
 )
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
     ExtOldModel,
     ExtOldFileType,
     ExtOldMethod,
-    ExtOldOperand,
     ExtOldQuantity,
     ExtOldTracerQuantity,
 )
@@ -36,7 +36,7 @@ class TestExtForcing:
             filename=test_input_dir / "tim" / "triple_data_for_timeseries.tim",
             filetype=ExtOldFileType.TimeSeries,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
-            operand=ExtOldOperand.OverwriteExistingValues,
+            operand=Operand.override,
         )
 
         assert isinstance(forcing.filename, TimModel)
@@ -47,7 +47,7 @@ class TestExtForcing:
             filename=test_input_dir / "dflowfm_individual_files" / "test.pli",
             filetype=ExtOldFileType.Polyline,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
-            operand=ExtOldOperand.OverwriteExistingValues,
+            operand=Operand.override,
         )
 
         assert isinstance(forcing.filename, PolyFile)
@@ -58,7 +58,7 @@ class TestExtForcing:
             filename=Path(test_input_dir / "file_load_test" / "FlowFM_net.nc"),
             filetype=ExtOldFileType.NetCDFGridData,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
-            operand=ExtOldOperand.OverwriteExistingValues,
+            operand=Operand.override,
         )
 
         assert isinstance(forcing.filename, DiskOnlyFileModel)
@@ -147,7 +147,7 @@ class TestExtForcing:
             )
 
     class TestValidateOperand:
-        @pytest.mark.parametrize("operand", ExtOldOperand)
+        @pytest.mark.parametrize("operand", Operand)
         def test_with_valid_operand_string_equal_casing(self, operand):
             operand_str = operand.value
             forcing = ExtOldForcing(
@@ -159,7 +159,7 @@ class TestExtForcing:
             )
             assert forcing.operand == operand
 
-        @pytest.mark.parametrize("operand", ExtOldOperand)
+        @pytest.mark.parametrize("operand", Operand)
         def test_with_valid_operand_string_different_casing(self, operand):
             operand_str = operand.value.lower()
             forcing = ExtOldForcing(
@@ -171,7 +171,7 @@ class TestExtForcing:
             )
             assert forcing.operand == operand
 
-        @pytest.mark.parametrize("operand", ExtOldOperand)
+        @pytest.mark.parametrize("operand", Operand)
         def test_with_valid_operand_enum(self, operand):
             forcing = ExtOldForcing(
                 quantity=ExtOldQuantity.WaterLevelBnd,
@@ -196,7 +196,7 @@ class TestExtForcing:
                     operand=operand_str,
                 )
 
-            supported_values_str = ", ".join(([x.value for x in ExtOldOperand]))
+            supported_values_str = ", ".join(([x.value for x in Operand]))
             assert (
                 f"OPERAND 'invalid' not supported. Supported values: {supported_values_str}"
                 in str(error.value)
@@ -618,7 +618,7 @@ class TestExtOldModel:
         assert forcing_1.sourcemask.filepath == None
         assert forcing_1.filetype == ExtOldFileType.NetCDFGridData
         assert forcing_1.method == ExtOldMethod.InterpolateSpace
-        assert forcing_1.operand == ExtOldOperand.SuperimposeNewValues
+        assert forcing_1.operand == Operand.add
         assert forcing_1.value == 0.0125
         assert forcing_1.factor == None
         assert forcing_1.ifrctyp == None
@@ -636,7 +636,7 @@ class TestExtOldModel:
         assert forcing_2.sourcemask.filepath == None
         assert forcing_2.filetype == ExtOldFileType.Polyline
         assert forcing_2.method == ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
-        assert forcing_2.operand == ExtOldOperand.OverwriteExistingValues
+        assert forcing_2.operand == Operand.override
         assert forcing_2.value == None
         assert forcing_2.factor == None
         assert forcing_2.ifrctyp == None
@@ -674,7 +674,7 @@ class TestExtOldModel:
             filename=Path("surroundingDomain.pol"),
             filetype=ExtOldFileType.NetCDFGridData,
             method=ExtOldMethod.InterpolateSpace,
-            operand=ExtOldOperand.SuperimposeNewValues,
+            operand=Operand.add,
             value=0.0125,
         )
 
@@ -683,7 +683,7 @@ class TestExtOldModel:
             filename=Path("OB_001_orgsize.pli"),
             filetype=ExtOldFileType.Polyline,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
-            operand=ExtOldOperand.OverwriteExistingValues,
+            operand=Operand.override,
         )
 
         model = ExtOldModel(comment=comments, forcing=[forcing_1, forcing_2])

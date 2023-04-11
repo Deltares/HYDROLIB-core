@@ -11,6 +11,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
@@ -196,17 +197,6 @@ class ExtOldMethod(IntEnum):
     """7. Interpolate/Extrapolate time"""
 
 
-class ExtOldOperand(str, Enum):
-    """Enum class containing the valid values for the `operand` attribute
-    in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
-    """
-
-    OverwriteExistingValues = "O"
-    """Existing values are overwritten."""
-    SuperimposeNewValues = "+"
-    """New values are superimposed."""
-
-
 class ExtOldForcing(BaseModel):
     """Class holding the external forcing values."""
 
@@ -256,7 +246,7 @@ class ExtOldForcing(BaseModel):
     7. Interpolate/Extrapolate time
     """
 
-    operand: ExtOldOperand = Field(alias="OPERAND")
+    operand: Operand = Field(alias="OPERAND")
     """Operand: Overwriting or superimposing values already set for this quantity:
     'O' Values are overwritten.
     '+' New value is superimposed.
@@ -324,16 +314,16 @@ class ExtOldForcing(BaseModel):
 
     @validator("operand", pre=True)
     def validate_operand(cls, value):
-        if isinstance(value, ExtOldOperand):
+        if isinstance(value, Operand):
             return value
 
         if isinstance(value, str):
 
-            for operand in ExtOldOperand:
+            for operand in Operand:
                 if value.lower() == operand.value.lower():
                     return operand
 
-            supported_value_str = ", ".join(([x.value for x in ExtOldOperand]))
+            supported_value_str = ", ".join(([x.value for x in Operand]))
             raise ValueError(
                 f"OPERAND '{value}' not supported. Supported values: {supported_value_str}"
             )
