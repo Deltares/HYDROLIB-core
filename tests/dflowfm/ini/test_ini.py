@@ -807,7 +807,7 @@ class TestINISerializerConfig:
     def test_default_serializer_config(self):
         config = INISerializerConfig()
         assert config.section_indent == 0
-        assert config.property_indent == 4
+        assert config.property_indent == 0
         assert config.datablock_indent == 8
         assert config.datablock_spacing == 2
         assert config.comment_delimiter == "#"
@@ -819,7 +819,7 @@ class TestDataBlockINIBasedSerializerConfig:
     def test_default_serializer_config(self):
         config = DataBlockINIBasedSerializerConfig()
         assert config.section_indent == 0
-        assert config.property_indent == 4
+        assert config.property_indent == 0
         assert config.datablock_indent == 8
         assert config.datablock_spacing == 2
         assert config.comment_delimiter == "#"
@@ -1676,16 +1676,16 @@ class TestSerializer:
             # with two lines
 
             [header1]
-                key1       = value1       # some comment
-                longer_key = longer_value # longer comment
-                k          =              # c
-                key2       = value2       # some comment
+            key1       = value1       # some comment
+            longer_key = longer_value # longer comment
+            k          =              # c
+            key2       = value2       # some comment
 
             [header2]
-                key3          = value3          # some comment
-                very_long_key = very_long_value # longer comment
-                k             =                 # c
-                key4          = value4          # some comment
+            key3          = value3          # some comment
+            very_long_key = very_long_value # longer comment
+            k             =                 # c
+            key4          = value4          # some comment
             """
             )
             + "\n"
