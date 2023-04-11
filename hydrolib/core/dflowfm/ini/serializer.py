@@ -40,7 +40,7 @@ class INISerializerConfig(SerializerConfig):
     """
 
     section_indent: int = 0
-    property_indent: int = 4
+    property_indent: int = 0
     datablock_indent: int = 8
     datablock_spacing: int = 2
     comment_delimiter: str = "#"
