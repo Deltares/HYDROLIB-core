@@ -1,19 +1,19 @@
 from .models import (
-    ExtForcing,
+    ExtOldForcing,
     ExtOldModel,
-    FileType,
-    Method,
-    Operand,
-    Quantity,
-    TracerQuantity,
+    ExtOldFileType,
+    ExtOldMethod,
+    ExtOldOperand,
+    ExtOldQuantity,
+    ExtOldTracerQuantity,
 )
 
 __all__ = [
-    "ExtForcing",
+    "ExtOldForcing",
     "ExtOldModel",
-    "Quantity",
-    "FileType",
-    "Method",
-    "Operand",
-    "TracerQuantity",
+    "ExtOldQuantity",
+    "ExtOldFileType",
+    "ExtOldMethod",
+    "ExtOldOperand",
+    "ExtOldTracerQuantity",
 ]

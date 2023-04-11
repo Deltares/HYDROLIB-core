@@ -8,13 +8,13 @@ from hydrolib.core.basemodel import (
     SerializerConfig,
 )
 from hydrolib.core.dflowfm.extold.models import (
-    ExtForcing,
+    ExtOldForcing,
     ExtOldModel,
-    FileType,
-    Method,
-    Operand,
-    Quantity,
-    TracerQuantity,
+    ExtOldFileType,
+    ExtOldMethod,
+    ExtOldOperand,
+    ExtOldQuantity,
+    ExtOldTracerQuantity,
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
@@ -31,74 +31,74 @@ from ..utils import (
 
 class TestExtForcing:
     def test_initialize_with_timfile_initializes_timmodel(self):
-        forcing = ExtForcing(
-            quantity=Quantity.WaterLevelBnd,
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
             filename=test_input_dir / "tim" / "triple_data_for_timeseries.tim",
-            filetype=FileType.TimeSeries,
-            method=Method.InterpolateTimeAndSpaceSaveWeights,
-            operand=Operand.OverwriteExistingValues,
+            filetype=ExtOldFileType.TimeSeries,
+            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            operand=ExtOldOperand.OverwriteExistingValues,
         )
 
         assert isinstance(forcing.filename, TimModel)
 
     def test_initialize_with_polyfile_initializes_polyfile(self):
-        forcing = ExtForcing(
-            quantity=Quantity.WaterLevelBnd,
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
             filename=test_input_dir / "dflowfm_individual_files" / "test.pli",
-            filetype=FileType.Polyline,
-            method=Method.InterpolateTimeAndSpaceSaveWeights,
-            operand=Operand.OverwriteExistingValues,
+            filetype=ExtOldFileType.Polyline,
+            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            operand=ExtOldOperand.OverwriteExistingValues,
         )
 
         assert isinstance(forcing.filename, PolyFile)
 
     def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(self):
-        forcing = ExtForcing(
-            quantity=Quantity.WaterLevelBnd,
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
             filename=Path(test_input_dir / "file_load_test" / "FlowFM_net.nc"),
-            filetype=FileType.NetCDFGridData,
-            method=Method.InterpolateTimeAndSpaceSaveWeights,
-            operand=Operand.OverwriteExistingValues,
+            filetype=ExtOldFileType.NetCDFGridData,
+            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            operand=ExtOldOperand.OverwriteExistingValues,
         )
 
         assert isinstance(forcing.filename, DiskOnlyFileModel)
 
     class TestValidateQuantity:
-        @pytest.mark.parametrize("quantity", Quantity)
+        @pytest.mark.parametrize("quantity", ExtOldQuantity)
         def test_with_valid_quantity_string_equal_casing(self, quantity):
             quantity_str = quantity.value
-            forcing = ExtForcing(
+            forcing = ExtOldForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity
 
-        @pytest.mark.parametrize("quantity", Quantity)
+        @pytest.mark.parametrize("quantity", ExtOldQuantity)
         def test_with_valid_quantity_string_different_casing(self, quantity):
             quantity_str = quantity.value.upper()
-            forcing = ExtForcing(
+            forcing = ExtOldForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity
 
-        @pytest.mark.parametrize("quantity", Quantity)
+        @pytest.mark.parametrize("quantity", ExtOldQuantity)
         def test_with_valid_quantity_enum(self, quantity):
-            forcing = ExtForcing(
+            forcing = ExtOldForcing(
                 quantity=quantity, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity
 
-        @pytest.mark.parametrize("quantity", TracerQuantity)
+        @pytest.mark.parametrize("quantity", ExtOldTracerQuantity)
         def test_with_tracerquantity_appended_with_tracer_name(self, quantity):
             quantity_str = quantity + "Some_Tracer_Name"
-            forcing = ExtForcing(
+            forcing = ExtOldForcing(
                 quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
             )
             assert forcing.quantity == quantity_str
 
-        @pytest.mark.parametrize("quantity", TracerQuantity)
+        @pytest.mark.parametrize("quantity", ExtOldTracerQuantity)
         def test_with_just_a_tracerquantity_raises_error(self, quantity):
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
+                _ = ExtOldForcing(
                     quantity=quantity, filename="", filetype=9, method=1, operand="O"
                 )
 
@@ -107,13 +107,13 @@ class TestExtForcing:
             )
             assert exp_error in str(error.value)
 
-        @pytest.mark.parametrize("quantity", TracerQuantity)
+        @pytest.mark.parametrize("quantity", ExtOldTracerQuantity)
         def test_with_tracerquantity_string_without_tracer_name_raises_error(
             self, quantity
         ):
             quantity_str = quantity.value
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
+                _ = ExtOldForcing(
                     quantity=quantity_str,
                     filename="",
                     filetype=9,
@@ -132,7 +132,7 @@ class TestExtForcing:
             quantity_str = "invalid"
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
+                _ = ExtOldForcing(
                     quantity=quantity_str,
                     filename="",
                     filetype=9,
@@ -140,18 +140,18 @@ class TestExtForcing:
                     operand="O",
                 )
 
-            supported_values_str = ", ".join(([x.value for x in Quantity]))
+            supported_values_str = ", ".join(([x.value for x in ExtOldQuantity]))
             assert (
                 f"QUANTITY 'invalid' not supported. Supported values: {supported_values_str}"
                 in str(error.value)
             )
 
     class TestValidateOperand:
-        @pytest.mark.parametrize("operand", Operand)
+        @pytest.mark.parametrize("operand", ExtOldOperand)
         def test_with_valid_operand_string_equal_casing(self, operand):
             operand_str = operand.value
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=1,
@@ -159,11 +159,11 @@ class TestExtForcing:
             )
             assert forcing.operand == operand
 
-        @pytest.mark.parametrize("operand", Operand)
+        @pytest.mark.parametrize("operand", ExtOldOperand)
         def test_with_valid_operand_string_different_casing(self, operand):
             operand_str = operand.value.lower()
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=1,
@@ -171,10 +171,10 @@ class TestExtForcing:
             )
             assert forcing.operand == operand
 
-        @pytest.mark.parametrize("operand", Operand)
+        @pytest.mark.parametrize("operand", ExtOldOperand)
         def test_with_valid_operand_enum(self, operand):
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=1,
@@ -188,15 +188,15 @@ class TestExtForcing:
             operand_str = "invalid"
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
                     method=1,
                     operand=operand_str,
                 )
 
-            supported_values_str = ", ".join(([x.value for x in Operand]))
+            supported_values_str = ", ".join(([x.value for x in ExtOldOperand]))
             assert (
                 f"OPERAND 'invalid' not supported. Supported values: {supported_values_str}"
                 in str(error.value)
@@ -207,8 +207,8 @@ class TestExtForcing:
             filetype = 11
             varname = "some_varname"
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 varname=varname,
                 filetype=filetype,
@@ -223,8 +223,8 @@ class TestExtForcing:
             varname = "some_varname"
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     varname=varname,
                     filetype=filetype,
@@ -240,8 +240,8 @@ class TestExtForcing:
         def test_validate_sourcemask_with_valid_filetype_4_or_6(self, filetype):
             sourcemask = "sourcemask.file"
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 sourcemask=sourcemask,
                 filetype=filetype,
@@ -256,8 +256,8 @@ class TestExtForcing:
             sourcemask = "sourcemask.file"
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     sourcemask=sourcemask,
                     filetype=filetype,
@@ -273,8 +273,8 @@ class TestExtForcing:
             method = 4
             value = 1.23
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=method,
@@ -289,8 +289,8 @@ class TestExtForcing:
             value = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
                     method=method,
@@ -303,10 +303,10 @@ class TestExtForcing:
 
     class TestValidateFactor:
         def test_validate_factor_with_valid_quantity_initialtracer(self):
-            quantity = TracerQuantity.InitialTracer + "Some_Tracer_Name"
+            quantity = ExtOldTracerQuantity.InitialTracer + "Some_Tracer_Name"
             factor = 1.23
 
-            forcing = ExtForcing(
+            forcing = ExtOldForcing(
                 quantity=quantity,
                 filename="",
                 filetype=9,
@@ -318,11 +318,11 @@ class TestExtForcing:
             assert forcing.factor == factor
 
         def test_validate_factor_with_invalid_quantity(self):
-            quantity = Quantity.WaterLevelBnd
+            quantity = ExtOldQuantity.WaterLevelBnd
             factor = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
+                _ = ExtOldForcing(
                     quantity=quantity,
                     filename="",
                     filetype=9,
@@ -336,10 +336,10 @@ class TestExtForcing:
 
     class TestValidateIFrcTyp:
         def test_validate_ifrctyp_with_valid_quantity_frictioncoefficient(self):
-            quantity = Quantity.FrictionCoefficient
+            quantity = ExtOldQuantity.FrictionCoefficient
             ifrctyp = 1.23
 
-            forcing = ExtForcing(
+            forcing = ExtOldForcing(
                 quantity=quantity,
                 filename="",
                 filetype=9,
@@ -351,11 +351,11 @@ class TestExtForcing:
             assert forcing.ifrctyp == ifrctyp
 
         def test_validate_ifrctyp_with_invalid_quantity(self):
-            quantity = Quantity.WaterLevelBnd
+            quantity = ExtOldQuantity.WaterLevelBnd
             ifrctyp = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
+                _ = ExtOldForcing(
                     quantity=quantity,
                     filename="",
                     filetype=9,
@@ -372,8 +372,8 @@ class TestExtForcing:
             method = 6
             averagingtype = 1.23
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=method,
@@ -388,8 +388,8 @@ class TestExtForcing:
             averagingtype = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
                     method=method,
@@ -405,8 +405,8 @@ class TestExtForcing:
             method = 6
             relativesearchcellsize = 1.23
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=method,
@@ -421,8 +421,8 @@ class TestExtForcing:
             relativesearchcellsize = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
                     method=method,
@@ -438,8 +438,8 @@ class TestExtForcing:
             method = 5
             extrapoltol = 1.23
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=method,
@@ -454,8 +454,8 @@ class TestExtForcing:
             extrapoltol = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
                     method=method,
@@ -471,8 +471,8 @@ class TestExtForcing:
             method = 6
             percentileminmax = 1.23
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=method,
@@ -487,8 +487,8 @@ class TestExtForcing:
             percentileminmax = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
                     method=method,
@@ -503,10 +503,10 @@ class TestExtForcing:
         def test_validate_area_with_valid_quantity_discharge_salinity_temperature_sorsin(
             self,
         ):
-            quantity = Quantity.DischargeSalinityTemperatureSorSin
+            quantity = ExtOldQuantity.DischargeSalinityTemperatureSorSin
             area = 1.23
 
-            forcing = ExtForcing(
+            forcing = ExtOldForcing(
                 quantity=quantity,
                 filename="",
                 filetype=9,
@@ -518,11 +518,11 @@ class TestExtForcing:
             assert forcing.area == area
 
         def test_validate_area_with_invalid_quantity(self):
-            quantity = Quantity.WaterLevelBnd
+            quantity = ExtOldQuantity.WaterLevelBnd
             area = 1.23
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
+                _ = ExtOldForcing(
                     quantity=quantity,
                     filename="",
                     filetype=9,
@@ -539,8 +539,8 @@ class TestExtForcing:
             method = 6
             nummin = 123
 
-            forcing = ExtForcing(
-                quantity=Quantity.WaterLevelBnd,
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
                 method=method,
@@ -555,8 +555,8 @@ class TestExtForcing:
             nummin = 123
 
             with pytest.raises(ValueError) as error:
-                _ = ExtForcing(
-                    quantity=Quantity.WaterLevelBnd,
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
                     method=method,
@@ -612,13 +612,13 @@ class TestExtOldModel:
         assert len(model.forcing) == 2
 
         forcing_1 = model.forcing[0]
-        assert forcing_1.quantity == Quantity.InternalTidesFrictionCoefficient
+        assert forcing_1.quantity == ExtOldQuantity.InternalTidesFrictionCoefficient
         assert forcing_1.filename.filepath == Path("surroundingDomain.pol")
         assert forcing_1.varname == None
         assert forcing_1.sourcemask.filepath == None
-        assert forcing_1.filetype == FileType.NetCDFGridData
-        assert forcing_1.method == Method.InterpolateSpace
-        assert forcing_1.operand == Operand.SuperimposeNewValues
+        assert forcing_1.filetype == ExtOldFileType.NetCDFGridData
+        assert forcing_1.method == ExtOldMethod.InterpolateSpace
+        assert forcing_1.operand == ExtOldOperand.SuperimposeNewValues
         assert forcing_1.value == 0.0125
         assert forcing_1.factor == None
         assert forcing_1.ifrctyp == None
@@ -630,13 +630,13 @@ class TestExtOldModel:
         assert forcing_1.nummin == None
 
         forcing_2 = model.forcing[1]
-        assert forcing_2.quantity == Quantity.WaterLevelBnd
+        assert forcing_2.quantity == ExtOldQuantity.WaterLevelBnd
         assert forcing_2.filename.filepath == Path("OB_001_orgsize.pli")
         assert forcing_2.varname == None
         assert forcing_2.sourcemask.filepath == None
-        assert forcing_2.filetype == FileType.Polyline
-        assert forcing_2.method == Method.InterpolateTimeAndSpaceSaveWeights
-        assert forcing_2.operand == Operand.OverwriteExistingValues
+        assert forcing_2.filetype == ExtOldFileType.Polyline
+        assert forcing_2.method == ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
+        assert forcing_2.operand == ExtOldOperand.OverwriteExistingValues
         assert forcing_2.value == None
         assert forcing_2.factor == None
         assert forcing_2.ifrctyp == None
@@ -669,21 +669,21 @@ class TestExtOldModel:
 
         comments = ["This is a comment", "This is a comment", ""]
 
-        forcing_1 = ExtForcing(
-            quantity=Quantity.InternalTidesFrictionCoefficient,
+        forcing_1 = ExtOldForcing(
+            quantity=ExtOldQuantity.InternalTidesFrictionCoefficient,
             filename=Path("surroundingDomain.pol"),
-            filetype=FileType.NetCDFGridData,
-            method=Method.InterpolateSpace,
-            operand=Operand.SuperimposeNewValues,
+            filetype=ExtOldFileType.NetCDFGridData,
+            method=ExtOldMethod.InterpolateSpace,
+            operand=ExtOldOperand.SuperimposeNewValues,
             value=0.0125,
         )
 
-        forcing_2 = ExtForcing(
-            quantity=Quantity.WaterLevelBnd,
+        forcing_2 = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
             filename=Path("OB_001_orgsize.pli"),
-            filetype=FileType.Polyline,
-            method=Method.InterpolateTimeAndSpaceSaveWeights,
-            operand=Operand.OverwriteExistingValues,
+            filetype=ExtOldFileType.Polyline,
+            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            operand=ExtOldOperand.OverwriteExistingValues,
         )
 
         model = ExtOldModel(comment=comments, forcing=[forcing_1, forcing_2])

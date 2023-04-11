@@ -17,7 +17,7 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
 
-class TracerQuantity(str, Enum):
+class ExtOldTracerQuantity(str, Enum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings that are specific to tracers.
     """
@@ -28,7 +28,7 @@ class TracerQuantity(str, Enum):
     """Initial tracer"""
 
 
-class Quantity(str, Enum):
+class ExtOldQuantity(str, Enum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
     """
@@ -146,7 +146,7 @@ class Quantity(str, Enum):
     """Wave period"""
 
 
-class FileType(IntEnum):
+class ExtOldFileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
     """
@@ -175,7 +175,7 @@ class FileType(IntEnum):
     """14. NetCDF wave data"""
 
 
-class Method(IntEnum):
+class ExtOldMethod(IntEnum):
     """Enum class containing the valid values for the `method` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
     """
@@ -196,7 +196,7 @@ class Method(IntEnum):
     """7. Interpolate/Extrapolate time"""
 
 
-class Operand(str, Enum):
+class ExtOldOperand(str, Enum):
     """Enum class containing the valid values for the `operand` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
     """
@@ -207,10 +207,10 @@ class Operand(str, Enum):
     """New values are superimposed."""
 
 
-class ExtForcing(BaseModel):
+class ExtOldForcing(BaseModel):
     """Class holding the external forcing values."""
 
-    quantity: Union[Quantity, str] = Field(alias="QUANTITY")
+    quantity: Union[ExtOldQuantity, str] = Field(alias="QUANTITY")
     """Union[Quantity, str]: The name of the quantity."""
 
     filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
@@ -226,7 +226,7 @@ class ExtForcing(BaseModel):
     )
     """DiskOnlyFileModel: The file containing a mask."""
 
-    filetype: FileType = Field(alias="FILETYPE")
+    filetype: ExtOldFileType = Field(alias="FILETYPE")
     """FileType: Indication of the file type.
     
     Options:
@@ -243,7 +243,7 @@ class ExtForcing(BaseModel):
     14. NetCDF wave data
     """
 
-    method: Method = Field(alias="METHOD")
+    method: ExtOldMethod = Field(alias="METHOD")
     """Method: The method of interpolation.
     
     Options:
@@ -256,7 +256,7 @@ class ExtForcing(BaseModel):
     7. Interpolate/Extrapolate time
     """
 
-    operand: Operand = Field(alias="OPERAND")
+    operand: ExtOldOperand = Field(alias="OPERAND")
     """Operand: Overwriting or superimposing values already set for this quantity:
     'O' Values are overwritten.
     '+' New value is superimposed.
@@ -293,47 +293,47 @@ class ExtForcing(BaseModel):
 
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
-        if isinstance(value, Quantity):
+        if isinstance(value, ExtOldQuantity):
             return value
 
-        def raise_error_tracer_name(quantity: TracerQuantity):
+        def raise_error_tracer_name(quantity: ExtOldTracerQuantity):
             raise ValueError(
                 f"QUANTITY '{quantity}' should be appended with a tracer name."
             )
 
-        if isinstance(value, TracerQuantity):
+        if isinstance(value, ExtOldTracerQuantity):
             raise_error_tracer_name(value)
 
         value_str = str(value)
         lower_value = value_str.lower()
 
-        for tracer_quantity in TracerQuantity:
+        for tracer_quantity in ExtOldTracerQuantity:
             if lower_value.startswith(tracer_quantity):
                 n = len(tracer_quantity)
                 if n == len(value_str):
                     raise_error_tracer_name(tracer_quantity)
                 return tracer_quantity + value_str[n:]
 
-        if lower_value in list(Quantity):
-            return Quantity(lower_value)
+        if lower_value in list(ExtOldQuantity):
+            return ExtOldQuantity(lower_value)
 
-        supported_value_str = ", ".join(([x.value for x in Quantity]))
+        supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
         raise ValueError(
             f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
         )
 
     @validator("operand", pre=True)
     def validate_operand(cls, value):
-        if isinstance(value, Operand):
+        if isinstance(value, ExtOldOperand):
             return value
 
         if isinstance(value, str):
 
-            for operand in Operand:
+            for operand in ExtOldOperand:
                 if value.lower() == operand.value.lower():
                     return operand
 
-            supported_value_str = ", ".join(([x.value for x in Operand]))
+            supported_value_str = ", ".join(([x.value for x in ExtOldOperand]))
             raise ValueError(
                 f"OPERAND '{value}' not supported. Supported values: {supported_value_str}"
             )
@@ -375,13 +375,13 @@ class ExtForcing(BaseModel):
 
         only_allowed_when("varname", filetype_key, 11)
         only_allowed_when("value", method_key, 4)
-        only_allowed_when("ifrctyp", quantity_key, Quantity.FrictionCoefficient)
+        only_allowed_when("ifrctyp", quantity_key, ExtOldQuantity.FrictionCoefficient)
         only_allowed_when("averagingtype", method_key, 6)
         only_allowed_when("relativesearchcellsize", method_key, 6)
         only_allowed_when("extrapoltol", method_key, 5)
         only_allowed_when("percentileminmax", method_key, 6)
         only_allowed_when(
-            "area", quantity_key, Quantity.DischargeSalinityTemperatureSorSin
+            "area", quantity_key, ExtOldQuantity.DischargeSalinityTemperatureSorSin
         )
         only_allowed_when("nummin", method_key, 6)
 
@@ -395,10 +395,10 @@ class ExtForcing(BaseModel):
         factor = values["factor"]
         quantity = values[quantity_key]
         quantity_alias = alias(quantity_key)
-        if factor is not None and not quantity.startswith(TracerQuantity.InitialTracer):
+        if factor is not None and not quantity.startswith(ExtOldTracerQuantity.InitialTracer):
             key = alias("factor")
             raise ValueError(
-                f"{key} only allowed when {quantity_alias} starts with {TracerQuantity.InitialTracer}"
+                f"{key} only allowed when {quantity_alias} starts with {ExtOldTracerQuantity.InitialTracer}"
             )
 
         return values
@@ -413,7 +413,7 @@ class ExtOldModel(ParsableFileModel):
 
     comment: List[str] = []
     """List[str]: The comments in the header of the external forcing file."""
-    forcing: List[ExtForcing] = []
+    forcing: List[ExtOldForcing] = []
     """List[ExtForcing]: The external forcing blocks in the external forcing file."""
 
     @classmethod
