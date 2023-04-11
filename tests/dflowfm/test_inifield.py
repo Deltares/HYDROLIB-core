@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 from pydantic.error_wrappers import ValidationError
-from hydrolib.core.dflowfm.common.models import Operand
 
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,

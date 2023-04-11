@@ -385,7 +385,9 @@ class ExtOldForcing(BaseModel):
         factor = values["factor"]
         quantity = values[quantity_key]
         quantity_alias = alias(quantity_key)
-        if factor is not None and not quantity.startswith(ExtOldTracerQuantity.InitialTracer):
+        if factor is not None and not quantity.startswith(
+            ExtOldTracerQuantity.InitialTracer
+        ):
             key = alias("factor")
             raise ValueError(
                 f"{key} only allowed when {quantity_alias} starts with {ExtOldTracerQuantity.InitialTracer}"

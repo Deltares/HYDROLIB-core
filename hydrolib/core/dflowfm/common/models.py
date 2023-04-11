@@ -16,6 +16,7 @@ class LocationType(str, Enum):
     all = "all"
     """str: Denotes that both 1D and 2D locations may be selected."""
 
+
 class Operand(str, Enum):
     """
     Enum class containing the valid values for the operand
