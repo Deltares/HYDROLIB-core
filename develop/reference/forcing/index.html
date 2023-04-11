@@ -1132,6 +1132,13 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="md-nav__link">
+    validate()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1710,6 +1717,13 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="md-nav__link">
+    validate()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2275,6 +2289,80 @@ This model is for example referenced under a
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Try to initialize subclass based on the <code>function</code> field.
+This field is compared to each <code>function</code> field of the derived models of <code>ForcingBase</code>
+or models derived from derived models.
+The derived model with an equal function type will be initialized.</p>
+
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>When the given type is not a known structure type.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to initialize subclass based on the `function` field.</span>
+<span class="sd">    This field is compared to each `function` field of the derived models of `ForcingBase`</span>
+<span class="sd">    or models derived from derived models.</span>
+<span class="sd">    The derived model with an equal function type will be initialized.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: When the given type is not a known structure type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># should be replaced by discriminated unions once merged</span>
+    <span class="c1"># https://github.com/samuelcolvin/pydantic/pull/2336</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">function_string</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">function_type</span> <span class="o">=</span> <span class="n">get_type_based_on_subclass_default_value</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">function_string</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">function_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">function_type</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Function of </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with name=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> and function=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not recognized.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
   </div>
 
     </div>
@@ -2406,9 +2494,6 @@ ForcingModel            (<a title="hydrolib.core.dflowfm.ini.models.INIModel" hr
     </div>
 
   </div>
-
-
-
 
 
 

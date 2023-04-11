@@ -1298,6 +1298,13 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.structure.models.Structure.validate" class="md-nav__link">
+    validate()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.dflowfm.structure.models.Structure.validate_branch_and_chainage_in_model" class="md-nav__link">
     validate_branch_and_chainage_in_model()
   </a>
@@ -1778,6 +1785,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.dflowfm.structure.models.Structure.check_location" class="md-nav__link">
     check_location()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.structure.models.Structure.validate" class="md-nav__link">
+    validate()
   </a>
   
 </li>
@@ -3600,6 +3614,77 @@ otherwise numcoordinates xcoordinates and ycoordinates shall be expected.</p>
 
 
 
+<h4 id="hydrolib.core.dflowfm.structure.models.Structure.validate" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.structure.models.Structure.validate" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Try to initialize subclass based on the <code>type</code> field.
+This field is compared to each <code>type</code> field of the derived models of <code>Structure</code>.
+The derived model with an equal structure type will be initialized.</p>
+
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>When the given type is not a known structure type.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/dflowfm/structure/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to initialize subclass based on the `type` field.</span>
+<span class="sd">    This field is compared to each `type` field of the derived models of `Structure`.</span>
+<span class="sd">    The derived model with an equal structure type will be initialized.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: When the given type is not a known structure type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># should be replaced by discriminated unions once merged</span>
+    <span class="c1"># https://github.com/samuelcolvin/pydantic/pull/2336</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">c</span><span class="o">.</span><span class="n">__fields__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="o">==</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Type of </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with id=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> and type=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not recognized.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h4 id="hydrolib.core.dflowfm.structure.models.Structure.validate_branch_and_chainage_in_model" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">validate_branch_and_chainage_in_model</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
 
@@ -3952,9 +4037,6 @@ StructureModel            (<a title="hydrolib.core.dflowfm.ini.models.INIModel" 
     </div>
 
   </div>
-
-
-
 
 
 
