@@ -5,6 +5,7 @@ from typing import Any, List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
+from hydrolib.core.dflowfm.bc.models import ForcingModel
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
@@ -26,8 +27,9 @@ from hydrolib.core.dflowfm.structure.models import (
     UniversalWeir,
     Weir,
 )
+from hydrolib.core.dflowfm.tim.models import TimModel
 
-from ..utils import WrapperTest, create_temp_file, invalid_test_data_dir, test_data_dir
+from ..utils import WrapperTest, create_temp_file, invalid_test_data_dir, test_data_dir, test_input_dir
 
 uniqueid_str = "Unique structure id (max. 256 characters)."
 
@@ -856,7 +858,6 @@ class TestStructure:
                 str(exc_err.value)
                 == f"Expected at least 2 coordinates, but only {n_coords} declared."
             )
-
 
 class TestDambreakAlgorithm:
     """
@@ -1912,6 +1913,31 @@ class TestPump:
 
 
 class TestGeneralStructure:
+    
+    def test_initialize_gateopeningwidth_with_timfile_initializes_timmodel(self):
+        gateloweredgelevel = test_input_dir / "tim" / "triple_data_for_timeseries.tim"
+        values = self._create_general_structure_values()
+        values["gateloweredgelevel"] = gateloweredgelevel
+        structure = GeneralStructure(**values)
+
+        assert isinstance(structure.gateloweredgelevel, TimModel)
+
+    def test_initialize_gateopeningwidth_with_bcfile_initializes_forcingmodel(self):
+        gateloweredgelevel = test_input_dir / "dflowfm_individual_files" / "FlowFM_boundaryconditions2d_and_vectors.bc"
+        values = self._create_general_structure_values()
+        values["gateloweredgelevel"] = gateloweredgelevel
+        structure = GeneralStructure(**values)
+        
+        assert isinstance(structure.gateloweredgelevel, ForcingModel)
+
+    def test_initialize_gateopeningwidth_with_float_value_initializes_float(self):
+        gateloweredgelevel = 123.456
+        values = self._create_general_structure_values()
+        values["gateloweredgelevel"] = gateloweredgelevel
+        structure = GeneralStructure(**values)
+        
+        assert isinstance(structure.gateloweredgelevel, float)
+        
     def test_create_a_general_structure_from_scratch(self):
         name_comment = "Generic name comment"
         struct = GeneralStructure(
