@@ -5,14 +5,12 @@ from .models import (
     IniFieldModel,
     InitialField,
     InterpolationMethod,
-    Operand,
     ParameterField,
 )
 
 __all__ = [
     "DataFileType",
     "InterpolationMethod",
-    "Operand",
     "AveragingType",
     "IniFieldGeneral",
     "InitialField",

@@ -1,29 +1,23 @@
 import inspect
-from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import Any, List, Union
 
 import pytest
 from pydantic.error_wrappers import ValidationError
-from pydantic.types import FilePath
+from hydrolib.core.dflowfm.common.models import Operand
 
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.inifield.models import (
-    AveragingType,
     DataFileType,
-    IniFieldGeneral,
     IniFieldModel,
     InitialField,
     InterpolationMethod,
     LocationType,
-    Operand,
     ParameterField,
 )
 
 from ..utils import (
     WrapperTest,
     assert_files_equal,
-    invalid_test_data_dir,
     test_data_dir,
     test_output_dir,
     test_reference_dir,
