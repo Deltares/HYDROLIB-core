@@ -83,6 +83,7 @@
     fixedWeirContraction     = 1.0     # flow width = flow width*fixedWeirContraction.
     izBndPos                 = 1       # Position of z boundary (0: D3Dflow, 1: on net boundary, 2: on specified polyline)
     tlfSmo                   = 86400.0 # Fourier smoothing time (s) on water level boundaries
+    keepSTBndOnOutflow       =         # Keep sal and tem signals on bnd also at outflow, 1=yes, 0=no=default=copy inside value on outflow.
     slopeDrop2D              = 0.0     # Apply droplosses only if local bottom slope > Slopedrop2D, <=0 =no droplosses.
     drop1D                   = 0       # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
     chkAdvd                  = 0.1     # Check advection terms if depth < chkadvdp.
