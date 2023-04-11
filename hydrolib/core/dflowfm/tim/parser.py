@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+TimRecord = Dict[str, List[str]]
 
 class TimParser:
     """
@@ -10,25 +11,24 @@ class TimParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> Dict[str, Any]:
+    def parse(filepath: Path) -> Dict[List[str], Dict[str, List[str]]]:
         """Parse a .tim file into a dictionary with comments and time series data.
 
         Args:
             filepath (Path): Path to the .tim file to be read.
 
         Returns:
-            Dict[str, Any]: A dictionary with keys "comments" and "timeseries", where "comments"
+            Dict[List[str], Dict[str, List[str]]: A dictionary with keys "comments" and "timeseries", where "comments"
                   is a list of strings representing comments found at the start of the file, and
                   "timeseries" is a dictionary where each key is a time and each value
                   is a list of strings.
 
         Raises:
-            ValueError: If the file contains a comment that is not at the start of the file or
-             if the time series contains a duplicate time entry.
+            ValueError: If the file contains a comment that is not at the start of the file.
         """
 
         comments: List[str] = []
-        timeseries: Dict[str, List[str]] = {}
+        timeseries: List[TimRecord] = []
 
         with filepath.open() as file:
             lines = file.readlines()
@@ -69,8 +69,8 @@ class TimParser:
     @staticmethod
     def _read_time_series_data(
         lines: List[str], start_timeseries_index: int
-    ) -> Dict[str, List[str]]:
-        timeseries: Dict[str, List[str]] = {}
+    ) -> List[TimRecord]:
+        timeseries: List[TimRecord] = []
         for line_index in range(start_timeseries_index, len(lines)):
             line = lines[line_index].strip()
 
@@ -80,10 +80,9 @@ class TimParser:
             TimParser._raise_error_if_contains_comment(line, line_index + 1)
 
             time, *values = line.split()
-
-            TimParser._raise_error_if_duplicate_time(time, timeseries, line_index + 1)
-
-            timeseries[time] = values
+            
+            timrecord = {"time":time, "data":values}
+            timeseries.append(timrecord)
         return timeseries
 
     @staticmethod
@@ -91,13 +90,4 @@ class TimParser:
         if "#" in line or "*" in line:
             raise ValueError(
                 f"Line {line_index}: comments are only supported at the start of the file, before the time series data."
-            )
-
-    @staticmethod
-    def _raise_error_if_duplicate_time(
-        time: str, timeseries: Dict[str, List[str]], line_index: int
-    ) -> None:
-        if time in timeseries:
-            raise ValueError(
-                f"Line {line_index}: time series cannot contain duplicate times. Time: {time}"
             )
