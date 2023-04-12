@@ -8,6 +8,17 @@ from hydrolib.core.basemodel import ModelSaveSettings, ParsableFileModel
 from .parser import TimParser
 from .serializer import TimSerializer, TimSerializerConfig
 
+from hydrolib.core.basemodel import BaseModel
+
+class TimRecord(BaseModel):
+    """Single time record, representing a time and a list of data.
+
+    Attributes:
+        time: time for which the data is used.
+        data: values for the time.
+    """
+    time: float
+    data: List[float]
 
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file."""
@@ -18,8 +29,8 @@ class TimModel(ParsableFileModel):
     comments: List[str]
     """List[str]: A list with the header comment of the tim file."""
 
-    timeseries: Dict[float, List[float]]
-    """Dict[float, List[float]]: A dictionary containing the time series. The keys are the times and the values are the values corresponding to that time."""
+    timeseries: List[TimRecord]
+    """List[TimRecord]: A list containing the time series as a TimRecord."""
 
     @classmethod
     def _ext(cls) -> str:

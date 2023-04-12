@@ -18,7 +18,7 @@ class TimSerializer:
     @staticmethod
     def serialize(
         path: Path,
-        data: Dict[str, Any],
+        data: Dict[List[str], Any],
         config: TimSerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> None:
@@ -65,7 +65,9 @@ class TimSerializer:
     @staticmethod
     def _serialize_to_timeseries_block(data, format_float) -> TimeSeriesBlock:
         timeseries_block: TimeSeriesBlock = []
-        for time, row_elements in data["timeseries"].items():
+        for nested_data in data["timeseries"]:
+            time = nested_data["time"]
+            row_elements = nested_data["data"]
             timeseries_row = [format_float(time)] + [
                 format_float(value) for value in row_elements
             ]
