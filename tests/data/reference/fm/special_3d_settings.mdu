@@ -144,7 +144,7 @@ saliMax                    = -999.0  # Limit the salinity
 saliMin                    = 0.0     # Limit the salinity
 heat_eachStep              = 1       # 1=heat each timestep, 0=heat each usertimestep
 rhoAirRhoWater             = 1       # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
-nudgeTimeUni               = 3600.0  # Uniform nudge relaxation time
+nudgeTimeUni               = 3600.0  # Uniform nudge relaxation time [s]
 iniWithNudge               = 2       # Initialize salinity and temperature with nudge variables
 secondaryFlow              = 0       # Secondary flow (0: no, 1: yes)
 betaSpiral                 = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).
@@ -271,9 +271,11 @@ wrihis_taucurrent                 = 1                                           
 wrimap_waterLevel_s0              = 1                                                                               # Write water levels for previous time step to map file (1: yes, 0: no)
 wrimap_waterLevel_s1              = 1                                                                               # Write water levels to map file (1: yes, 0: no)
 wrimap_evaporation                = 1                                                                               # Write evaporation to map file (1: yes, 0: no)
+wrimap_waterdepth                 = 1                                                                               # Write water depths to map file (1: yes, 0: no)
 wrimap_velocity_component_u0      = 1                                                                               # Write velocity component for previous time step to map file (1: yes, 0: no)
 wrimap_velocity_component_u1      = 1                                                                               # Write velocity component to map file (1: yes, 0: no)
 wrimap_velocity_vector            = 1                                                                               # Write cell-center velocity vectors to map file (1: yes, 0: no)
+wrimap_velocity_magnitude         = 1                                                                               # Write cell-center velocity vector magnitude to map file (1: yes, 0: no)
 wrimap_upward_velocity_component  = 1                                                                               # Write upward velocity component on cell interfaces (1: yes, 0: no)
 wrimap_density_rho                = 1                                                                               # Write flow density to map file (1: yes, 0: no)
 wrimap_horizontal_viscosity_viu   = 1                                                                               # Write horizontal viscosity to map file (1: yes, 0: no)
@@ -286,6 +288,7 @@ wrimap_chezy                      = 1                                           
 wrimap_turbulence                 = 1                                                                               # Write vicww, k and eps to map file (1: yes, 0: no)
 wrimap_rain                       = 1                                                                               # Write rainfall rates to map file (1: yes, 0: no)
 wrimap_wind                       = 1                                                                               # Write wind velocities to map file (1: yes, 0: no)
+writek_CdWind                     = 0                                                                               # Write wind friction coeffs to tek file (1: yes, 0: no)
 wrimap_heat_fluxes                = 1                                                                               # Write heat fluxes to map file (1: yes, 0: no)
 wrimap_wet_waterDepth_threshold   = 2e-05                                                                           # Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.
 wrimap_time_water_on_ground       = 1                                                                               # Write cumulative time when water is above ground level to map file, only for 1D nodes (1: yes, 0: no)
@@ -309,7 +312,7 @@ classMapInterval                  = 0.0                                         
 waqInterval                       = 0.0                                                                             # DELWAQ output times, given as "interval" "start period" "end period" (s)
 statsInterval                     = 3600.0                                                                          # Screen step output interval in seconds simulation time, if negative in seconds wall clock time
 timingsInterval                   = 0.0                                                                             # Timings statistics output interval
-richardsonOnOutput                = 1                                                                               # Write Richardson number, (1: yes, 0: no).
+richardsonOnOutput                = 0                                                                               # Write Richardson number, (1: yes, 0: no).
 
 [Calibration]
 UseCalibration = 0 # Activate calibration factor friction multiplier (1 = yes, 0 = no)

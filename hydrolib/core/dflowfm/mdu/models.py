@@ -132,7 +132,7 @@ class Numerics(INIBasedModel):
             "Fourier smoothing time on water level boundaries [s].", alias="tlfSmo"
         )
         keepstbndonoutflow: Optional[str] = Field(
-            "Keep salinity and temperature signals on boundary also at outflow, 1=yes, 0=no=default=copy inside value on outflow",
+            "Keep salinity and temperature signals on boundary also at outflow, 1=yes, 0=no. Default=0: copy inside value on outflow.",
             alias="keepSTBndOnOutflow",
         )
         slopedrop2d: Optional[str] = Field(
@@ -215,7 +215,7 @@ class Numerics(INIBasedModel):
     fixedweircontraction: float = Field(1.0, alias="fixedWeirContraction")
     izbndpos: int = Field(0, alias="izBndPos")
     tlfsmo: float = Field(0.0, alias="tlfSmo")
-    keepstbndonoutflow: Optional[bool] = Field(None, alias="keepSTBndOnOutflow")
+    keepstbndonoutflow: bool = Field(False, alias="keepSTBndOnOutflow")
     slopedrop2d: float = Field(0.0, alias="slopeDrop2D")
     drop1d: bool = Field(False, alias="drop1D")
     chkadvd: float = Field(0.1, alias="chkAdvd")
@@ -396,10 +396,18 @@ class Physics(INIBasedModel):
             "Coefficient for evaporative heat flux ( ), if negative, then Cd wind is used.",
             alias="dalton",
         )
-        tempmax: Optional[str] = Field("Limit the temperature", alias="tempMax")
-        tempmin: Optional[str] = Field("Limit the temperature", alias="tempMin")
-        salimax: Optional[str] = Field("Limit the salinity", alias="saliMax")
-        salimin: Optional[str] = Field("Limit the salinity", alias="saliMin")
+        tempmax: Optional[str] = Field(
+            "Limit the temperature to max value [°C]", alias="tempMax"
+        )
+        tempmin: Optional[str] = Field(
+            "Limit the temperature to min value [°C]", alias="tempMin"
+        )
+        salimax: Optional[str] = Field(
+            "Limit for salinity to max value [ppt]", alias="saliMax"
+        )
+        salimin: Optional[str] = Field(
+            "Limit for salinity to min value [ppt]", alias="saliMin"
+        )
         heat_eachstep: Optional[str] = Field(
             "'1=heat each timestep, 0=heat each usertimestep", alias="heat_eachStep"
         )
@@ -408,7 +416,7 @@ class Physics(INIBasedModel):
             alias="rhoAirRhoWater",
         )
         nudgetimeuni: Optional[str] = Field(
-            "Uniform nudge relaxation time", alias="nudgeTimeUni"
+            "Uniform nudge relaxation time [s]", alias="nudgeTimeUni"
         )
         iniwithnudge: Optional[str] = Field(
             "Initialize salinity and temperature with nudge variables (0: no, 1: yes, 2: only initialize, no nudging)",
@@ -1085,6 +1093,10 @@ class Output(INIBasedModel):
             "Write evaporation to map file, (1: yes, 0: no).",
             alias="wrimap_evaporation",
         )
+        wrimap_waterdepth: Optional[str] = Field(
+            "Write water depths to map file (1: yes, 0: no).",
+            alias="wrimap_waterdepth",
+        )
         wrimap_velocity_component_u0: Optional[str] = Field(
             "Write velocities at old time level to map file, (1: yes, 0: no).",
             alias="wrimap_velocity_component_u0",
@@ -1096,6 +1108,10 @@ class Output(INIBasedModel):
         wrimap_velocity_vector: Optional[str] = Field(
             "Write cell-center velocity vectors to map file, (1: yes, 0: no).",
             alias="wrimap_velocity_vector",
+        )
+        wrimap_velocity_magnitude: Optional[str] = Field(
+            "Write cell-center velocity vector magnitude to map file (1: yes, 0: no).",
+            alias="wrimap_velocity_magnitude",
         )
         wrimap_upward_velocity_component: Optional[str] = Field(
             "Write upward velocity component to map file, (1: yes, 0: no).",
@@ -1137,6 +1153,10 @@ class Output(INIBasedModel):
         )
         wrimap_wind: Optional[str] = Field(
             "Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind"
+        )
+        writek_cdwind: Optional[str] = Field(
+            "Write wind friction coefficients to tek file (1: yes, 0: no).",
+            alias="writek_CdWind",
         )
         wrimap_heat_fluxes: Optional[str] = Field(
             "Write heat fluxes to map file, (1: yes, 0: no).",
@@ -1219,7 +1239,8 @@ class Output(INIBasedModel):
             "Interval [s] between DELWAQ file outputs.", alias="waqInterval"
         )
         statsinterval: Optional[str] = Field(
-            "Interval [s] between simulation statistics output.", alias="statsInterval"
+            "Interval [s] between screen step outputs in seconds simulation time, if negative in seconds wall clock time.",
+            alias="statsInterval",
         )
         timingsinterval: Optional[str] = Field(
             "Timings output interval TimingsInterval.", alias="timingsInterval"
@@ -1317,7 +1338,8 @@ class Output(INIBasedModel):
     # Map file
     wrimap_waterlevel_s0: bool = Field(True, alias="wrimap_waterLevel_s0")
     wrimap_waterlevel_s1: bool = Field(True, alias="wrimap_waterLevel_s1")
-    wrimap_evaporation: bool = Field(True, alias="wrimap_evaporation")
+    wrimap_evaporation: bool = Field(False, alias="wrimap_evaporation")
+    wrimap_waterdepth: bool = Field(True, alias="wrimap_waterdepth")
     wrimap_velocity_component_u0: bool = Field(
         True, alias="wrimap_velocity_component_u0"
     )
@@ -1325,6 +1347,7 @@ class Output(INIBasedModel):
         True, alias="wrimap_velocity_component_u1"
     )
     wrimap_velocity_vector: bool = Field(True, alias="wrimap_velocity_vector")
+    wrimap_velocity_magnitude: bool = Field(True, alias="wrimap_velocity_magnitude")
     wrimap_upward_velocity_component: bool = Field(
         False, alias="wrimap_upward_velocity_component"
     )
@@ -1343,6 +1366,7 @@ class Output(INIBasedModel):
     wrimap_turbulence: bool = Field(True, alias="wrimap_turbulence")
     wrimap_rain: bool = Field(False, alias="wrimap_rain")
     wrimap_wind: bool = Field(True, alias="wrimap_wind")
+    writek_cdwind: bool = Field(False, alias="writek_CdWind")
     wrimap_heat_fluxes: bool = Field(False, alias="wrimap_heat_fluxes")
     wrimap_wet_waterdepth_threshold: float = Field(
         2e-5, alias="wrimap_wet_waterDepth_threshold"
@@ -1382,9 +1406,9 @@ class Output(INIBasedModel):
     waterdepthclasses: List[float] = Field([0.0], alias="waterDepthClasses")
     classmapinterval: List[float] = Field([0.0], alias="classMapInterval")
     waqinterval: List[float] = Field([0.0], alias="waqInterval")
-    statsinterval: List[float] = Field([0.0], alias="statsInterval")
+    statsinterval: List[float] = Field([-60.0], alias="statsInterval")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
-    richardsononoutput: bool = Field(True, alias="richardsonOnOutput")
+    richardsononoutput: bool = Field(False, alias="richardsonOnOutput")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
