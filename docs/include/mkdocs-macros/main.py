@@ -8,6 +8,7 @@ def define_env(env):
     { dflowfm_um(anchor, linktext) }: (deep)link to D-Flow FM User Manual PDF.
     { gh_issue(number, linktext) }: link to GitHub issue page.
     { gh_pr(number, linktext) }: link to GitHub pull request page.
+    { gh_repo(path, linktext) }: link to a file's page in the GitHub repo.
 
     """
 
@@ -57,5 +58,19 @@ def define_env(env):
             + hydrolib_core_url
             + "/pull/"
             + str(number)
+            + ")"
+        )
+
+    @env.macro
+    def gh_repo(path: str, linktext: str = None):
+        """Create Markdown link to a file's page in the GitHub repo."""
+
+        return (
+            "["
+            + (linktext or "#" + path)
+            + "]("
+            + hydrolib_core_url
+            + "/blob/main/"
+            + path
             + ")"
         )
