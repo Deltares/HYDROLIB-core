@@ -12,17 +12,18 @@ class TimParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> Dict[List[str], Dict[str, List[str]]]:
+    def parse(filepath: Path) -> Dict[List[str], TimRecord]:
         """Parse a .tim file into a dictionary with comments and time series data.
 
         Args:
             filepath (Path): Path to the .tim file to be read.
 
         Returns:
-            Dict[List[str], Dict[str, List[str]]: A dictionary with keys "comments" and "timeseries", where "comments"
-                  is a list of strings representing comments found at the start of the file, and
-                  "timeseries" is a dictionary where each key is a time and each value
-                  is a list of strings.
+            Dict[List[str], Dict[str, List[str]]: A dictionary with keys "comments" and "timeseries".\n
+            - "comments" is a list of strings representing comments found at the start of the file.\n
+            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".\n
+                - "time" is a time as a string.
+                - "data" is data as a list of strings.
 
         Raises:
             ValueError: If the file contains a comment that is not at the start of the file.

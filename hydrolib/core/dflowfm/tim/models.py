@@ -13,8 +13,8 @@ class TimRecord(BaseModel):
     """Single time record, representing a time and a list of data.
 
     Attributes:
-        time: time for which the data is used.
-        data: values for the time.
+        time: time of the time record.
+        data: record of the time recored.
     """
 
     time: float
@@ -31,7 +31,7 @@ class TimModel(ParsableFileModel):
     """List[str]: A list with the header comment of the tim file."""
 
     timeseries: List[TimRecord]
-    """List[TimRecord]: A list containing the time series as a TimRecord."""
+    """List[TimRecord]: A list containing the timeseries as a TimRecord."""
 
     @classmethod
     def _ext(cls) -> str:
@@ -54,16 +54,18 @@ class TimModel(ParsableFileModel):
     @validator("timeseries")
     @classmethod
     def _timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
-        """Validates if the amount of columns per timeseries match.
+        """Validates if the amount of columns per timeseries match and if the timeseries have no duplicate times.
 
         Args:
-            v (Dict[float, List[float]]): Value to validate, the timeseries in this case.
+            v List[TimRecord]: Value to validate, the timeseries in this case.
 
         Raises:
+            ValueError: When the amount of columns for timeseries is zero.
             ValueError: When the amount of columns differs per timeseries.
+            ValueError: When the timeseries has a duplicate time.
 
         Returns:
-            Dict[float, List[float]: Validated timeseries.
+            List[TimRecord]: Validated timeseries.
         """
         if len(v) == 0:
             return v

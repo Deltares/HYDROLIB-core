@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
@@ -18,7 +18,7 @@ class TimSerializer:
     @staticmethod
     def serialize(
         path: Path,
-        data: Dict[List[str], Any],
+        data: Dict[List[str], Dict[str, List[str]]],
         config: TimSerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> None:
@@ -27,9 +27,12 @@ class TimSerializer:
 
         Args:
             path (Path): The path to the destination .tim file.
-            data (Dict[str, Any]): The timeseries data to be serialized. The data should be provided as a dictionary with the following keys:
-                - 'comments' (List[str]): A list of comments to be included at the beginning of the file. Each comment should be a string.
-                - 'timeseries' (Dict[float, List[float]]): A dictionary representing the timeseries data, where the key is the time and the value the values at that time.
+            data Dict[List[str], Dict[str, List[str]]]: A dictionary with keys "comments" and "timeseries".\n
+            - "comments" is a list of strings representing comments found at the start of the file.\n
+            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".\n
+                - "time" is a time as a string.
+                - "data" is data as a list of strings.
+            
             config (TimSerializerConfig): The serialization configuration settings.
             save_settings (ModelSaveSettings): The save settings to be used.
         """
