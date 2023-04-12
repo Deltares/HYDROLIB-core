@@ -484,7 +484,6 @@ class ExtOldForcing(BaseModel):
         method_key = "method"
 
         only_allowed_when("varname", filetype_key, 11)
-        only_allowed_when("extrapolation_method", method_key, 3)
         only_allowed_when("value", method_key, 4)
         only_allowed_when("ifrctyp", quantity_key, ExtOldQuantity.FrictionCoefficient)
         only_allowed_when("averagingtype", method_key, 6)
@@ -503,13 +502,20 @@ class ExtOldForcing(BaseModel):
                 "sourcemask", filetype_key, valid_dependency_value="4 or 6"
             )
 
+        extrapolation_method = values["extrapolation_method"]
+        method = values[method_key]
+        if extrapolation_method == 1 and method != 3:
+            key = alias("extrapolation_method")
+            method_alias = alias("method")
+            raise ValueError(f"{key} only allowed to be 1 when {method_alias} is 3")
+            
         factor = values["factor"]
         quantity = values[quantity_key]
-        quantity_alias = alias(quantity_key)
         if factor is not None and not quantity.startswith(
             ExtOldTracerQuantity.InitialTracer
         ):
             key = alias("factor")
+            quantity_alias = alias(quantity_key)
             raise ValueError(
                 f"{key} only allowed when {quantity_alias} starts with {ExtOldTracerQuantity.InitialTracer}"
             )

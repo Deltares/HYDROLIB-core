@@ -364,9 +364,9 @@ class TestExtForcing:
             assert exp_msg in str(error.value)
 
     class TestValidateExtrapolationMethod:
-        def test_validate_value_with_valid_method_3(self):
+        def test_validate_extrapolation_method_with_valid_method_3(self):
             method = 3
-            extrapolation_method = ExtOldExtrapolationMethod.NoSpatialExtrapolation
+            extrapolation_method = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
 
             forcing = ExtOldForcing(
                 quantity=ExtOldQuantity.WaterLevelBnd,
@@ -379,9 +379,9 @@ class TestExtForcing:
 
             assert forcing.extrapolation_method == extrapolation_method
 
-        def test_validate_sourcemask_with_invalid_method(self):
+        def test_validate_extrapolation_method_with_invalid_method(self):
             method = 1
-            extrapolation_method = ExtOldExtrapolationMethod.NoSpatialExtrapolation
+            extrapolation_method = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
 
             with pytest.raises(ValueError) as error:
                 _ = ExtOldForcing(
@@ -393,7 +393,7 @@ class TestExtForcing:
                     operand="O",
                 )
 
-            exp_msg = "EXTRAPOLATION_METHOD only allowed when METHOD is 3"
+            exp_msg = "EXTRAPOLATION_METHOD only allowed to be 1 when METHOD is 3"
             assert exp_msg in str(error.value)
 
     class TestValidateValue:
