@@ -415,9 +415,7 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[ForcingData] = Field(
-        alias="valveOpeningHeight"
-    )
+    valveopeningheight: Optional[ForcingData] = Field(alias="valveOpeningHeight")
     numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
     relopening: Optional[List[float]] = Field(alias="relOpening")
     losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
@@ -631,9 +629,7 @@ class Orifice(Structure):
 
     crestlevel: ForcingData = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
-    gateloweredgelevel: ForcingData = Field(
-        alias="gateLowerEdgeLevel"
-    )
+    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
@@ -778,9 +774,7 @@ class GeneralStructure(Structure):
     upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
 
     crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
-    crestlevel: Optional[ForcingData] = Field(
-        0.0, alias="crestLevel"
-    )
+    crestlevel: Optional[ForcingData] = Field(0.0, alias="crestLevel")
     crestlength: Optional[float] = Field(0.0, alias="crestLength")
 
     downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
@@ -788,9 +782,7 @@ class GeneralStructure(Structure):
     downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
     downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: Optional[ForcingData] = Field(
-        11.0, alias="gateLowerEdgeLevel"
-    )
+    gateloweredgelevel: Optional[ForcingData] = Field(11.0, alias="gateLowerEdgeLevel")
     posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
     posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
     posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
@@ -803,9 +795,7 @@ class GeneralStructure(Structure):
     negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
     extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
     gateheight: Optional[float] = Field(1e10, alias="gateHeight")
-    gateopeningwidth: Optional[ForcingData] = Field(
-        0.0, alias="gateOpeningWidth"
-    )
+    gateopeningwidth: Optional[ForcingData] = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
         GateOpeningHorizontalDirection.symmetric.value,
         alias="gateOpeningHorizontalDirection",
