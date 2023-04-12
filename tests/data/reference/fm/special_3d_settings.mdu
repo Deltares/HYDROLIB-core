@@ -25,7 +25,7 @@ frictFile                  =                   # Location of the files with roug
 crossDefFile               =                   # Cross section definitions for all cross section shapes.
 crossLocFile               =                   # Location definitions of the cross sections on a 1D network.
 storageNodeFile            =                   # File containing the specification of storage nodes and/or manholes to add extra storage to 1D models.
-1d2dLinkFile               =
+1d2dLinkFile               =                   # File containing the custom parameterization of 1D-2D links.
 profLocFile                =                   # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
 profDefFile                =                   # <*_profdefinition.def>) definition for all profile nrs.
 profDefXyzFile             =                   # <*_profdefinition.def>) definition for all profile nrs.
