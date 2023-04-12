@@ -455,7 +455,6 @@ class ExtOldForcing(BaseModel):
 
     @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
-        
         class Field:
             def __init__(self, key: str) -> None:
                 self.alias = cls.__fields__[key].alias
@@ -484,7 +483,9 @@ class ExtOldForcing(BaseModel):
 
         only_allowed_when(Field("varname"), filetype, 11)
         only_allowed_when(Field("value"), method, 4)
-        only_allowed_when(Field("ifrctyp"), quantity, ExtOldQuantity.FrictionCoefficient)
+        only_allowed_when(
+            Field("ifrctyp"), quantity, ExtOldQuantity.FrictionCoefficient
+        )
         only_allowed_when(Field("averagingtype"), method, 6)
         only_allowed_when(Field("relativesearchcellsize"), method, 6)
         only_allowed_when(Field("extrapoltol"), method, 5)
@@ -496,17 +497,25 @@ class ExtOldForcing(BaseModel):
 
         sourcemask = Field("sourcemask")
         if sourcemask.value.filepath is not None and filetype.value not in [4, 6]:
-            raise_error_only_allowed_when(sourcemask, filetype, valid_dependency_value="4 or 6")
+            raise_error_only_allowed_when(
+                sourcemask, filetype, valid_dependency_value="4 or 6"
+            )
 
         extrapolation_method = Field("extrapolation_method")
         if extrapolation_method.value == 1 and method.value != 3:
-            raise ValueError(f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3")
+            raise ValueError(
+                f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
+            )
 
         only_allowed_when(Field("maxsearchradius"), extrapolation_method, 1)
 
         factor = Field("factor")
-        if factor.value is not None and not quantity.value.startswith(ExtOldTracerQuantity.InitialTracer):
-            raise ValueError(f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}")
+        if factor.value is not None and not quantity.value.startswith(
+            ExtOldTracerQuantity.InitialTracer
+        ):
+            raise ValueError(
+                f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
+            )
 
         return values
 
