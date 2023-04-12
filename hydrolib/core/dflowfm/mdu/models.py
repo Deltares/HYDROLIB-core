@@ -132,7 +132,7 @@ class Numerics(INIBasedModel):
             "Fourier smoothing time on water level boundaries [s].", alias="tlfSmo"
         )
         keepstbndonoutflow: Optional[str] = Field(
-            "Keep sal and tem signals on bnd also at outflow, 1=yes, 0=no=default=copy inside value on outflow",
+            "Keep salinity and temperature signals on boundary also at outflow, 1=yes, 0=no=default=copy inside value on outflow",
             alias="keepSTBndOnOutflow",
         )
         slopedrop2d: Optional[str] = Field(
