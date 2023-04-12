@@ -255,7 +255,7 @@ class Meteo(INIBasedModel):
 
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
-    forcingfile: Union[ForcingModel, TimModel, DiskOnlyFileModel] = Field(
+    forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
