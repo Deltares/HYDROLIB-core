@@ -8,6 +8,7 @@ ORDERED_FORCING_FIELDS: List[str] = [
     "FILETYPE",
     "METHOD",
     "EXTRAPOLATION_METHOD",
+    "MAXSEARCHRADIUS",
     "OPERAND",
     "VALUE",
     "FACTOR",

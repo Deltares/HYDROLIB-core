@@ -359,6 +359,9 @@ class ExtOldForcing(BaseModel):
     0. No spatial extrapolation.
     1. Do spatial extrapolation outside of source data bounding box.
     """
+    
+    maxsearchradius: Optional[float] = Field(None, alias="MAXSEARCHRADIUS")
+    """Optional[float]: Search radius (in m) for model grid points that lie outside of the source data bounding box."""
 
     operand: Operand = Field(alias="OPERAND")
     """Operand: The operand to use for adding the provided values.
@@ -508,6 +511,8 @@ class ExtOldForcing(BaseModel):
             key = alias("extrapolation_method")
             method_alias = alias("method")
             raise ValueError(f"{key} only allowed to be 1 when {method_alias} is 3")
+            
+        only_allowed_when("maxsearchradius", "extrapolation_method", 1)
             
         factor = values["factor"]
         quantity = values[quantity_key]

@@ -396,6 +396,43 @@ class TestExtForcing:
             exp_msg = "EXTRAPOLATION_METHOD only allowed to be 1 when METHOD is 3"
             assert exp_msg in str(error.value)
 
+    class TestValidateMaxSearchRadius:
+        def test_validate_maxsearchradius_method_with_valid_method_3_and_extrapolation_method_1(self):
+            method = 3
+            extrapolation_method = 1
+            maxsearchradius = 1.23
+            
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                extrapolation_method=extrapolation_method,
+                maxsearchradius=maxsearchradius,
+                operand="O",
+            )
+
+            assert forcing.extrapolation_method == extrapolation_method
+            
+        def test_validate_maxsearchradius_method_with_invalid_extrapolation_method(self):
+            method = 3
+            extrapolation_method = 0
+            maxsearchradius = 1.23
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                extrapolation_method=extrapolation_method,
+                maxsearchradius=maxsearchradius,
+                operand="O",
+            )
+
+            exp_msg = "MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is 1"
+            assert exp_msg in str(error.value)
+              
     class TestValidateValue:
         def test_validate_value_with_valid_method_4(self):
             method = 4
