@@ -7,6 +7,7 @@ ORDERED_FORCING_FIELDS: List[str] = [
     "SOURCEMASK",
     "FILETYPE",
     "METHOD",
+    "EXTRAPOLATION_METHOD",
     "OPERAND",
     "VALUE",
     "FACTOR",

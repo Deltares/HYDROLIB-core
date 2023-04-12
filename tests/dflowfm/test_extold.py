@@ -10,6 +10,7 @@ from hydrolib.core.basemodel import (
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
+    ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
     ExtOldMethod,
@@ -362,6 +363,39 @@ class TestExtForcing:
             exp_msg = "SOURCEMASK only allowed when FILETYPE is 4 or 6"
             assert exp_msg in str(error.value)
 
+    class TestValidateExtrapolationMethod():
+        def test_validate_value_with_valid_method_3(self):
+            method = 3
+            extrapolation_method = ExtOldExtrapolationMethod.NoSpatialExtrapolation
+
+            forcing = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=9,
+                method=method,
+                extrapolation_method=extrapolation_method,
+                operand="O",
+            )
+
+            assert forcing.extrapolation_method == extrapolation_method
+
+        def test_validate_sourcemask_with_invalid_method(self):
+            method = 1
+            extrapolation_method = ExtOldExtrapolationMethod.NoSpatialExtrapolation
+
+            with pytest.raises(ValueError) as error:
+                _ = ExtOldForcing(
+                    quantity=ExtOldQuantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    extrapolation_method=extrapolation_method,
+                    operand="O",
+                )
+
+            exp_msg = "EXTRAPOLATION_METHOD only allowed when METHOD is 3"
+            assert exp_msg in str(error.value)
+        
     class TestValidateValue:
         def test_validate_value_with_valid_method_4(self):
             method = 4
