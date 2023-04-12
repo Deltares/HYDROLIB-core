@@ -53,8 +53,8 @@ class TimModel(ParsableFileModel):
     @validator("timeseries")
     @classmethod
     def _timeseries_values(
-        cls, v: Dict[float, List[float]]
-    ) -> Dict[float, List[float]]:
+        cls, v: List[TimRecord]
+    ) -> List[TimRecord]:
         """Validates if the amount of columns per timeseries match.
 
         Args:
@@ -68,18 +68,31 @@ class TimModel(ParsableFileModel):
         """
         if len(v) == 0:
             return v
+        
+        cls._raise_error_if_amount_of_columns_differ(v)
+        cls._raise_error_if_duplicate_time(v)
 
-        timeseries_iterator = iter(v.items())
-        _, columns = next(timeseries_iterator)
-        n_columns = len(columns)
+        return v
+    
+    def _raise_error_if_amount_of_columns_differ(timeseries: List[TimRecord]):
+        n_columns = len(timeseries[0].data)
 
         if n_columns == 0:
             raise ValueError("Time series cannot be empty.")
 
-        for time, values in timeseries_iterator:
-            if len(values) != n_columns:
+        for timrecord in timeseries:
+            if len(timrecord.data) != n_columns:
                 raise ValueError(
-                    f"Time {time}: Expected {n_columns} columns, but was {len(values)}"
+                    f"Time {timrecord.time}: Expected {n_columns} columns, but was {len(timrecord.data)}"
                 )
-
-        return v
+    
+    def _raise_error_if_duplicate_time(
+        timeseries: List[TimRecord]
+    ) -> None:
+        seen_times = set()
+        for timrecord in timeseries:
+            if timrecord.time in seen_times:
+                raise ValueError(
+                f"Timeseries cannot contain duplicate times. Time: {timrecord.time} is duplicate."
+            )
+            seen_times.add(timrecord.time)
