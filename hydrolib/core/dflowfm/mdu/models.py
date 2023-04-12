@@ -191,7 +191,7 @@ class Numerics(INIBasedModel):
             alias="maxVelocityDiff",
         )
         mintimestepbreak: Optional[str] = Field(
-            "smallest allowed timestep (in s), checked on a sliding average of several timesteps. Run will abort when violated.",
+            "Smallest allowed timestep (in s), checked on a sliding average of several timesteps. Run will abort when violated.",
             alias="minTimestepBreak",
         )
         epshu: Optional[str] = Field(
