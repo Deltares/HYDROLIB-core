@@ -401,10 +401,9 @@ class TestExtForcing:
             assert exp_msg in str(error.value)
 
     class TestValidateMaxSearchRadius:
-        def test_validate_maxsearchradius_method_with_valid_method_3_and_extrapolation_method_1(
+        def test_validate_maxsearchradius_method_with_valid_extrapolation_method_1(
             self,
         ):
-            method = 3
             extrapolation_method = 1
             maxsearchradius = 1.23
 
@@ -412,7 +411,7 @@ class TestExtForcing:
                 quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
                 filetype=9,
-                method=method,
+                method=3,
                 extrapolation_method=extrapolation_method,
                 maxsearchradius=maxsearchradius,
                 operand="O",
@@ -423,7 +422,6 @@ class TestExtForcing:
         def test_validate_maxsearchradius_method_with_invalid_extrapolation_method(
             self,
         ):
-            method = 3
             extrapolation_method = 0
             maxsearchradius = 1.23
 
@@ -432,7 +430,7 @@ class TestExtForcing:
                     quantity=ExtOldQuantity.WaterLevelBnd,
                     filename="",
                     filetype=9,
-                    method=method,
+                    method=3,
                     extrapolation_method=extrapolation_method,
                     maxsearchradius=maxsearchradius,
                     operand="O",

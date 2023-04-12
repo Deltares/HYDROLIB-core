@@ -455,6 +455,7 @@ class ExtOldForcing(BaseModel):
 
     @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
+        
         class Field:
             def __init__(self, key: str) -> None:
                 self.alias = cls.__fields__[key].alias
@@ -463,9 +464,8 @@ class ExtOldForcing(BaseModel):
         def raise_error_only_allowed_when(
             field: Field, dependency: Field, valid_dependency_value: str
         ):
-            raise ValueError(
-                f"{field.alias} only allowed when {dependency.alias} is {valid_dependency_value}"
-            )
+            error = f"{field.alias} only allowed when {dependency.alias} is {valid_dependency_value}"
+            raise ValueError(error)
 
         def only_allowed_when(
             field: Field, dependency: Field, valid_dependency_value: Any
@@ -478,44 +478,55 @@ class ExtOldForcing(BaseModel):
             raise_error_only_allowed_when(field, dependency, valid_dependency_value)
 
         quantity = Field("quantity")
+        varname = Field("varname")
+        sourcemask = Field("sourcemask")
         filetype = Field("filetype")
         method = Field("method")
-
-        only_allowed_when(Field("varname"), filetype, 11)
-        only_allowed_when(Field("value"), method, 4)
-        only_allowed_when(
-            Field("ifrctyp"), quantity, ExtOldQuantity.FrictionCoefficient
-        )
-        only_allowed_when(Field("averagingtype"), method, 6)
-        only_allowed_when(Field("relativesearchcellsize"), method, 6)
-        only_allowed_when(Field("extrapoltol"), method, 5)
-        only_allowed_when(Field("percentileminmax"), method, 6)
-        only_allowed_when(
-            Field("area"), quantity, ExtOldQuantity.DischargeSalinityTemperatureSorSin
-        )
-        only_allowed_when(Field("nummin"), method, 6)
-
-        sourcemask = Field("sourcemask")
-        if sourcemask.value.filepath is not None and filetype.value not in [4, 6]:
-            raise_error_only_allowed_when(
-                sourcemask, filetype, valid_dependency_value="4 or 6"
-            )
-
         extrapolation_method = Field("extrapolation_method")
-        if extrapolation_method.value == 1 and method.value != 3:
-            raise ValueError(
-                f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
-            )
-
-        only_allowed_when(Field("maxsearchradius"), extrapolation_method, 1)
-
+        maxsearchradius = Field("maxsearchradius")
+        value = Field("value")
         factor = Field("factor")
-        if factor.value is not None and not quantity.value.startswith(
-            ExtOldTracerQuantity.InitialTracer
-        ):
-            raise ValueError(
-                f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
-            )
+        ifrctype = Field("ifrctyp")
+        averagingtype = Field("averagingtype")
+        relativesearchcellsize = Field("relativesearchcellsize")
+        extrapoltol = Field("extrapoltol")
+        percentileminmax = Field("percentileminmax")
+        area = Field("area")
+        nummin = Field("nummin")
+
+        only_allowed_when(varname, filetype, 11)
+        
+        if sourcemask.value.filepath is not None and filetype.value not in [4, 6]:
+            raise_error_only_allowed_when(sourcemask, filetype, valid_dependency_value="4 or 6")
+
+        if extrapolation_method.value == 1 and method.value != 3:
+            error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
+            raise ValueError(error)
+        
+        only_allowed_when(maxsearchradius, extrapolation_method, 1)
+        only_allowed_when(value, method, 4)
+        
+        if factor.value is not None and not quantity.value.startswith(ExtOldTracerQuantity.InitialTracer):
+            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
+            raise ValueError(error)
+        
+        only_allowed_when(ifrctype, quantity, 
+                          ExtOldQuantity.FrictionCoefficient)
+        only_allowed_when(averagingtype, method, 6)
+        only_allowed_when(relativesearchcellsize, method, 6)
+        only_allowed_when(extrapoltol, method, 5)
+        only_allowed_when(percentileminmax, method, 6)
+        only_allowed_when(area, quantity, 
+                          ExtOldQuantity.DischargeSalinityTemperatureSorSin)
+        only_allowed_when(nummin, method, 6)
+
+
+
+
+
+
+
+
 
         return values
 
