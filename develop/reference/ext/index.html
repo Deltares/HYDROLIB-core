@@ -1164,6 +1164,80 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.Meteo" class="md-nav__link">
+    Meteo
+  </a>
+  
+    <nav class="md-nav" aria-label="Meteo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.Meteo.is_intermediate_link" class="md-nav__link">
+    is_intermediate_link()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType" class="md-nav__link">
+    MeteoForcingFileType
+  </a>
+  
+    <nav class="md-nav" aria-label="MeteoForcingFileType">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.bcascii" class="md-nav__link">
+    bcascii
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.netcdf" class="md-nav__link">
+    netcdf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.uniform" class="md-nav__link">
+    uniform
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod" class="md-nav__link">
+    MeteoInterpolationMethod
+  </a>
+  
+    <nav class="md-nav" aria-label="MeteoInterpolationMethod">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod.nearestnb" class="md-nav__link">
+    nearestnb
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1516,6 +1590,80 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.dflowfm.ext.models.Lateral.validate_that_location_specification_is_correct" class="md-nav__link">
     validate_that_location_specification_is_correct()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.Meteo" class="md-nav__link">
+    Meteo
+  </a>
+  
+    <nav class="md-nav" aria-label="Meteo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.Meteo.is_intermediate_link" class="md-nav__link">
+    is_intermediate_link()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType" class="md-nav__link">
+    MeteoForcingFileType
+  </a>
+  
+    <nav class="md-nav" aria-label="MeteoForcingFileType">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.bcascii" class="md-nav__link">
+    bcascii
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.netcdf" class="md-nav__link">
+    netcdf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.uniform" class="md-nav__link">
+    uniform
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod" class="md-nav__link">
+    MeteoInterpolationMethod
+  </a>
+  
+    <nav class="md-nav" aria-label="MeteoInterpolationMethod">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod.nearestnb" class="md-nav__link">
+    nearestnb
   </a>
   
 </li>
@@ -1899,12 +2047,20 @@ ExtModel            (<a title="hydrolib.core.dflowfm.ini.models.INIModel" href="
         <td><code>List[Lateral]</code></td>
         <td><p>List of <code>[Lateral]</code> blocks for all lateral discharges.</p></td>
       </tr>
+      <tr>
+        <td><code>meteo</code></td>
+        <td><code>List[Meteo]</code></td>
+        <td><p>List of <code>[Meteo]</code> blocks for all meteorological forcings.</p></td>
+      </tr>
   </tbody>
 </table>
 
 
 
   <div class="doc doc-children">
+
+
+
 
 
 
@@ -2163,6 +2319,273 @@ i.e., a <a href="#hydrolib.core.dflowfm.ext.models.ExtModel">ExtModel</a>.</p>
 
 
 
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.ext.models.Meteo" class="doc doc-heading">
+        <code>
+Meteo            (<a title="hydrolib.core.dflowfm.ini.models.INIBasedModel" href="../ini/#hydrolib.core.dflowfm.ini.models.INIBasedModel">INIBasedModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.ext.models.Meteo" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>A <code>[Meteo]</code> block for use inside an external forcings file,
+i.e., a <a href="#hydrolib.core.dflowfm.ext.models.ExtModel">ExtModel</a>.</p>
+<p>All lowercased attributes match with the meteo input as described in
+<a href="https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3">UM Sec.C.5.2.3</a>.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.dflowfm.ext.models.Meteo.is_intermediate_link" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
+
+
+<a href="#hydrolib.core.dflowfm.ext.models.Meteo.is_intermediate_link" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Generic attribute for models that have children fields that could contain files.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.ext.models.MeteoForcingFileType" class="doc doc-heading">
+        <code>
+MeteoForcingFileType            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+<a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Enum class containing the valid values for the forcingFileType
+attribute in Meteo class.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.bcascii" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bcascii</span></code>
+
+
+<a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.bcascii" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Space-uniform time series in &lt;*.bc&gt; file.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.netcdf" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">netcdf</span></code>
+
+
+<a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.netcdf" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: NetCDF, either with gridded data, or multiple station time series.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.uniform" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">uniform</span></code>
+
+
+<a href="#hydrolib.core.dflowfm.ext.models.MeteoForcingFileType.uniform" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Space-uniform time series in &lt;*.tim&gt; file.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod" class="doc doc-heading">
+        <code>
+MeteoInterpolationMethod            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+<a href="#hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Enum class containing the valid values for the interpolationMethod
+attribute in Meteo class.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod.nearestnb" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">nearestnb</span></code>
+
+
+<a href="#hydrolib.core.dflowfm.ext.models.MeteoInterpolationMethod.nearestnb" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf</p>
+    </div>
+
+  </div>
 
 
 
