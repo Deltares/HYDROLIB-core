@@ -114,7 +114,8 @@ nav:
           - reference/onedfield.md
           - reference/polyfile.md
           - reference/xyz.md
-          - reference/obs.md
+          - reference/observationpoint.md
+          - reference/observationcrosssection.md
       - RainfallRunoff:
           - reference/rr/rr.md
           - reference/rr/meteo.md
