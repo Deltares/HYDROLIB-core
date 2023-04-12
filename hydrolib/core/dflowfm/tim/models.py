@@ -3,12 +3,11 @@ from typing import Callable, Dict, List
 
 from pydantic.class_validators import validator
 
-from hydrolib.core.basemodel import ModelSaveSettings, ParsableFileModel
+from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 
 from .parser import TimParser
 from .serializer import TimSerializer, TimSerializerConfig
 
-from hydrolib.core.basemodel import BaseModel
 
 class TimRecord(BaseModel):
     """Single time record, representing a time and a list of data.
@@ -17,8 +16,10 @@ class TimRecord(BaseModel):
         time: time for which the data is used.
         data: values for the time.
     """
+
     time: float
     data: List[float]
+
 
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file."""
@@ -52,9 +53,7 @@ class TimModel(ParsableFileModel):
 
     @validator("timeseries")
     @classmethod
-    def _timeseries_values(
-        cls, v: List[TimRecord]
-    ) -> List[TimRecord]:
+    def _timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
         """Validates if the amount of columns per timeseries match.
 
         Args:
@@ -68,12 +67,12 @@ class TimModel(ParsableFileModel):
         """
         if len(v) == 0:
             return v
-        
+
         cls._raise_error_if_amount_of_columns_differ(v)
         cls._raise_error_if_duplicate_time(v)
 
         return v
-    
+
     def _raise_error_if_amount_of_columns_differ(timeseries: List[TimRecord]):
         n_columns = len(timeseries[0].data)
 
@@ -85,14 +84,12 @@ class TimModel(ParsableFileModel):
                 raise ValueError(
                     f"Time {timrecord.time}: Expected {n_columns} columns, but was {len(timrecord.data)}"
                 )
-    
-    def _raise_error_if_duplicate_time(
-        timeseries: List[TimRecord]
-    ) -> None:
+
+    def _raise_error_if_duplicate_time(timeseries: List[TimRecord]) -> None:
         seen_times = set()
         for timrecord in timeseries:
             if timrecord.time in seen_times:
                 raise ValueError(
-                f"Timeseries cannot contain duplicate times. Time: {timrecord.time} is duplicate."
-            )
+                    f"Timeseries cannot contain duplicate times. Time: {timrecord.time} is duplicate."
+                )
             seen_times.add(timrecord.time)

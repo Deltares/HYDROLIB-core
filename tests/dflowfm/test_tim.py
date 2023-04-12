@@ -13,29 +13,30 @@ from tests.utils import (
     test_reference_dir,
 )
 
+
 class TestTimSerializer:
     triple_data_for_timeseries_floats = [
-        {"time":10, "data": [1.232, 2.343, 3.454]},
-        {"time":20, "data": [4.565, 5.676, 6.787]},
-        {"time":30, "data": [1.5, 2.6, 3.7]},
+        {"time": 10, "data": [1.232, 2.343, 3.454]},
+        {"time": 20, "data": [4.565, 5.676, 6.787]},
+        {"time": 30, "data": [1.5, 2.6, 3.7]},
     ]
 
     single_data_for_timeseries_floats = [
-        {"time":0.000000, "data":  [0.0000000]},
-        {"time":10.000000, "data":  [0.0100000]},
-        {"time":20.000000, "data":  [0.0000000]},
-        {"time":30.000000, "data":  [-0.0100000]},
-        {"time":40.000000, "data":  [0.0000000]},
-        {"time":50.000000, "data":  [0.0100000]},
-        {"time":60.000000, "data":  [0.0000000]},
-        {"time":70.000000, "data":  [-0.0100000]},
-        {"time":80.000000, "data":  [0.0000000]},
-        {"time":90.000000, "data":  [0.0100000]},
-        {"time":100.000000, "data":  [0.0000000]},
-        {"time":110.000000, "data":  [-0.0100000]},
-        {"time":120.000000, "data":  [0.0000000]},
+        {"time": 0.000000, "data": [0.0000000]},
+        {"time": 10.000000, "data": [0.0100000]},
+        {"time": 20.000000, "data": [0.0000000]},
+        {"time": 30.000000, "data": [-0.0100000]},
+        {"time": 40.000000, "data": [0.0000000]},
+        {"time": 50.000000, "data": [0.0100000]},
+        {"time": 60.000000, "data": [0.0000000]},
+        {"time": 70.000000, "data": [-0.0100000]},
+        {"time": 80.000000, "data": [0.0000000]},
+        {"time": 90.000000, "data": [0.0100000]},
+        {"time": 100.000000, "data": [0.0000000]},
+        {"time": 110.000000, "data": [-0.0100000]},
+        {"time": 120.000000, "data": [0.0000000]},
     ]
-    
+
     @pytest.mark.parametrize(
         "input_data, reference_path",
         [
@@ -96,7 +97,7 @@ class TestTimModel:
         TimRecord(time=90.000000, data=[0.0100000]),
         TimRecord(time=100.00000, data=[0.0000000]),
         TimRecord(time=110.00000, data=[-0.0100000]),
-        TimRecord(time=120.00000, data=[0.0000000])
+        TimRecord(time=120.00000, data=[0.0000000]),
     ]
 
     @pytest.mark.parametrize(
@@ -149,9 +150,9 @@ class TestTimModel:
                 {
                     "comments": [],
                     "timeseries": [
-                        {"time":10, "data": [1.232, "text shouldn't be here", 3.454]},
-                        {"time":20, "data": [4.565, 5.676, 6.787]},
-                        {"time":30, "data": [1.5, 2.6, 3.7]},
+                        {"time": 10, "data": [1.232, "text shouldn't be here", 3.454]},
+                        {"time": 20, "data": [4.565, 5.676, 6.787]},
+                        {"time": 30, "data": [1.5, 2.6, 3.7]},
                     ],
                 },
                 "value is not a valid float",
@@ -161,9 +162,9 @@ class TestTimModel:
                 {
                     "comments": [],
                     "timeseries": [
-                        TimRecord(time=10,data=[1.232, 2.343, 3.454]),
-                        TimRecord(time=20,data=[4.565]),
-                        TimRecord(time=30,data=[1.5, 2.6, 3.7])
+                        TimRecord(time=10, data=[1.232, 2.343, 3.454]),
+                        TimRecord(time=20, data=[4.565]),
+                        TimRecord(time=30, data=[1.5, 2.6, 3.7]),
                     ],
                 },
                 f"Time {20.0}: Expected {3} columns, but was {1}",
@@ -173,9 +174,9 @@ class TestTimModel:
                 {
                     "comments": [],
                     "timeseries": [
-                        TimRecord(time=10,data=[1.232, 2.343, 3.454]),
-                        TimRecord(time=20,data=[4.565, 5.676, 6.787, 3.454]),
-                        TimRecord(time=30,data=[1.5, 2.6, 3.7])
+                        TimRecord(time=10, data=[1.232, 2.343, 3.454]),
+                        TimRecord(time=20, data=[4.565, 5.676, 6.787, 3.454]),
+                        TimRecord(time=30, data=[1.5, 2.6, 3.7]),
                     ],
                 },
                 f"Time {20.0}: Expected {3} columns, but was {4}",
@@ -185,9 +186,9 @@ class TestTimModel:
                 {
                     "comments": [],
                     "timeseries": [
-                        TimRecord(time=10,data=[]),
-                        TimRecord(time=20,data=[]),
-                        TimRecord(time=30,data=[])
+                        TimRecord(time=10, data=[]),
+                        TimRecord(time=20, data=[]),
+                        TimRecord(time=30, data=[]),
                     ],
                 },
                 "Time series cannot be empty.",
@@ -197,9 +198,9 @@ class TestTimModel:
                 {
                     "comments": [],
                     "timeseries": [
-                        TimRecord(time=10,data=[1.232, 2.343, 3.454]),
-                        TimRecord(time=20,data=[1.232, 2.343, 3.454]),
-                        TimRecord(time=10,data=[4.565, 5.676, 6.787]),
+                        TimRecord(time=10, data=[1.232, 2.343, 3.454]),
+                        TimRecord(time=20, data=[1.232, 2.343, 3.454]),
+                        TimRecord(time=10, data=[4.565, 5.676, 6.787]),
                     ],
                 },
                 f"Timeseries cannot contain duplicate times. Time: {10.0} is duplicate.",
