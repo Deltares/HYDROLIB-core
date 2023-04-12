@@ -1,10 +1,5 @@
-import re
 from pathlib import Path
 from typing import Dict
-
-from .name_extrator import NameExtractor
-
-xynpattern = re.compile(r"\s+")
 
 
 class XYNParser:
@@ -24,14 +19,28 @@ class XYNParser:
             filepath (Path): .xyn file to be read.
 
         Returns:
-            Dict: dictionary with "points" value set to a list of points
+            Dict[str, List[XYNPoint]]: dictionary with "points" value set to a list of points
                 each of which is a dict itself, with keys 'x', 'y', and 'n'.
 
         Raises:
-            ValueError: if a line in the file contains no values that
-                could be parsed.
+            ValueError: if a line in the file cannot be parsed
+                or if the name contains whitespace while not surrounded with
+                single quotes.
         """
-        data: Dict = dict(points=[])
+
+        def is_surrounded_by_quotes(name: str) -> bool:
+            return name.startswith("'") and name.endswith("'")
+
+        def may_contain_whitespace(name: str) -> bool:
+            return is_surrounded_by_quotes(name)
+
+        def contains_whitespace(name: str) -> bool:
+            return " " in name
+
+        def contains_whitespace_while_not_allowed(name: str) -> bool:
+            return not may_contain_whitespace(name) and contains_whitespace(name)
+
+        points = []
 
         with filepath.open() as f:
             for linenr, line in enumerate(f.readlines()):
@@ -41,13 +50,20 @@ class XYNParser:
                     continue
 
                 try:
-                    x, y, remainder = re.split(xynpattern, line, maxsplit=2)
-                    n = NameExtractor.extract_name(remainder)
+                    x, y, n = line.split(maxsplit=2)
                 except ValueError:
                     raise ValueError(
                         f"Error parsing XYN file '{filepath}', line {linenr+1}."
                     )
 
-                data["points"].append(dict(x=x, y=y, n=n))
+                if contains_whitespace_while_not_allowed(n):
+                    raise ValueError(
+                        f"Error parsing XYN file '{filepath}', line {linenr+1}. Name `{n}` contains whitespace, so should be enclosed in single quotes."
+                    )
 
-        return data
+                if is_surrounded_by_quotes(n):
+                    n = n[1:-1]
+
+                points.append(dict(x=x, y=y, n=n))
+
+        return dict(points=points)
