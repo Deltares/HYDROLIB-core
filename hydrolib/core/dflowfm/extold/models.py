@@ -455,75 +455,58 @@ class ExtOldForcing(BaseModel):
 
     @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
-        def alias(field_key: str):
-            return cls.__fields__[field_key].alias
+        
+        class Field:
+            def __init__(self, key: str) -> None:
+                self.alias = cls.__fields__[key].alias
+                self.value = values[key]
 
         def raise_error_only_allowed_when(
-            field_key: str, dependency_key: str, valid_dependency_value: str
+            field: Field, dependency: Field, valid_dependency_value: str
         ):
-            field_alias = alias(field_key)
-            dependency_alias = alias(dependency_key)
-
             raise ValueError(
-                f"{field_alias} only allowed when {dependency_alias} is {valid_dependency_value}"
+                f"{field.alias} only allowed when {dependency.alias} is {valid_dependency_value}"
             )
 
         def only_allowed_when(
-            field_key: str, dependency_key: str, valid_dependency_value: Any
+            field: Field, dependency: Field, valid_dependency_value: Any
         ):
             """This function checks if a particular field is allowed to have a value only when a dependency field has a specific value."""
-            field_value = values[field_key]
-            dependency_value = values[dependency_key]
 
-            if field_value is None or dependency_value == valid_dependency_value:
+            if field.value is None or dependency.value == valid_dependency_value:
                 return
 
-            raise_error_only_allowed_when(
-                field_key, dependency_key, valid_dependency_value
-            )
+            raise_error_only_allowed_when(field, dependency, valid_dependency_value)
 
-        quantity_key = "quantity"
-        filetype_key = "filetype"
-        method_key = "method"
+        quantity = Field("quantity")
+        filetype = Field("filetype")
+        method = Field("method")
 
-        only_allowed_when("varname", filetype_key, 11)
-        only_allowed_when("value", method_key, 4)
-        only_allowed_when("ifrctyp", quantity_key, ExtOldQuantity.FrictionCoefficient)
-        only_allowed_when("averagingtype", method_key, 6)
-        only_allowed_when("relativesearchcellsize", method_key, 6)
-        only_allowed_when("extrapoltol", method_key, 5)
-        only_allowed_when("percentileminmax", method_key, 6)
+        only_allowed_when(Field("varname"), filetype, 11)
+        only_allowed_when(Field("value"), method, 4)
+        only_allowed_when(Field("ifrctyp"), quantity, ExtOldQuantity.FrictionCoefficient)
+        only_allowed_when(Field("averagingtype"), method, 6)
+        only_allowed_when(Field("relativesearchcellsize"), method, 6)
+        only_allowed_when(Field("extrapoltol"), method, 5)
+        only_allowed_when(Field("percentileminmax"), method, 6)
         only_allowed_when(
-            "area", quantity_key, ExtOldQuantity.DischargeSalinityTemperatureSorSin
+            Field("area"), quantity, ExtOldQuantity.DischargeSalinityTemperatureSorSin
         )
-        only_allowed_when("nummin", method_key, 6)
+        only_allowed_when(Field("nummin"), method, 6)
 
-        sourcemask = values["sourcemask"]
-        filetype = values[filetype_key]
-        if sourcemask.filepath is not None and filetype not in [4, 6]:
-            raise_error_only_allowed_when(
-                "sourcemask", filetype_key, valid_dependency_value="4 or 6"
-            )
+        sourcemask = Field("sourcemask")
+        if sourcemask.value.filepath is not None and filetype.value not in [4, 6]:
+            raise_error_only_allowed_when(sourcemask, filetype, valid_dependency_value="4 or 6")
 
-        extrapolation_method = values["extrapolation_method"]
-        method = values[method_key]
-        if extrapolation_method == 1 and method != 3:
-            key = alias("extrapolation_method")
-            method_alias = alias("method")
-            raise ValueError(f"{key} only allowed to be 1 when {method_alias} is 3")
+        extrapolation_method = Field("extrapolation_method")
+        if extrapolation_method.value == 1 and method.value != 3:
+            raise ValueError(f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3")
 
-        only_allowed_when("maxsearchradius", "extrapolation_method", 1)
+        only_allowed_when(Field("maxsearchradius"), extrapolation_method, 1)
 
-        factor = values["factor"]
-        quantity = values[quantity_key]
-        if factor is not None and not quantity.startswith(
-            ExtOldTracerQuantity.InitialTracer
-        ):
-            key = alias("factor")
-            quantity_alias = alias(quantity_key)
-            raise ValueError(
-                f"{key} only allowed when {quantity_alias} starts with {ExtOldTracerQuantity.InitialTracer}"
-            )
+        factor = Field("factor")
+        if factor.value is not None and not quantity.value.startswith(ExtOldTracerQuantity.InitialTracer):
+            raise ValueError(f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}")
 
         return values
 
