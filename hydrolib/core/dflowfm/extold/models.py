@@ -340,9 +340,15 @@ class ExtOldForcing(BaseModel):
     """
 
     operand: Operand = Field(alias="OPERAND")
-    """Operand: Overwriting or superimposing values already set for this quantity:
-    'O' Values are overwritten.
-    '+' New value is superimposed.
+    """Operand: The operand to use for adding the provided values.
+    
+    Options:    
+    'O' Existing values are overwritten with the provided values.
+    'A' Provided values are used where existing values are missing.
+    '+' Existing values are summed with the provided values.
+    '*' Existing values are multiplied with the provided values.
+    'X' The maximum values of the existing values and provided values are used.
+    'N' The minimum values of the existing values and provided values are used.
     """
 
     value: Optional[float] = Field(None, alias="VALUE")
