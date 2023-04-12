@@ -1,5 +1,6 @@
 """util.py provides additional utility methods related to handling ini files.
 """
+from datetime import datetime
 from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Type
@@ -264,6 +265,37 @@ def validate_conditionally(
         root_vldt.__func__(cls, values)
 
     return values
+
+
+def validate_datetime_string(
+    field_value: Optional[str], field: ModelField
+) -> Optional[str]:
+    """Validate that a field value matches the YYYYmmddHHMMSS datetime format.
+
+    Args:
+        field_value (Optional[str]): value of a Pydantic field, may be optional.
+        field (ModelField): the underlying Pydantic ModelField, used in error
+            message.
+
+    Returns:
+        Optional[str]: the original input value, if valid.
+
+    Raises:
+        ValueError: if a non-empty input string does not have valid format.
+    """
+    if (
+        field_value is not None
+        and len(field_value.strip()) > 0
+        and field_value != "yyyymmddhhmmss"
+    ):
+        try:
+            _ = datetime.strptime(field_value, r"%Y%m%d%H%M%S")
+        except ValueError:
+            raise ValueError(
+                f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS'."
+            )
+
+    return field_value  # this is the value written to the class field
 
 
 def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str) -> str:
