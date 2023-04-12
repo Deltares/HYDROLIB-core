@@ -289,15 +289,17 @@ class ExtOldMethod(IntEnum):
     InterpolateExtrapolateTime = 7
     """7. Interpolate/Extrapolate time"""
 
+
 class ExtOldExtrapolationMethod(IntEnum):
     """Enum class containing the valid values for the `extrapolation_method` attribute
     in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
     """
-    
+
     NoSpatialExtrapolation = 0
     """0. No spatial extrapolation."""
     SpatialExtrapolationOutsideOfSourceDataBoundingBox = 1
     """1. Do spatial extrapolation outside of source data bounding box."""
+
 
 class ExtOldForcing(BaseModel):
     """Class holding the external forcing values."""
@@ -347,8 +349,10 @@ class ExtOldForcing(BaseModel):
     6. Averaging
     7. Interpolate/Extrapolate time
     """
-    
-    extrapolation_method: Optional[ExtOldExtrapolationMethod] = Field(None, alias="EXTRAPOLATION_METHOD")
+
+    extrapolation_method: Optional[ExtOldExtrapolationMethod] = Field(
+        None, alias="EXTRAPOLATION_METHOD"
+    )
     """Optional[ExtOldExtrapolationMethod]: The extrapolation method.
 
     Options:

@@ -363,7 +363,7 @@ class TestExtForcing:
             exp_msg = "SOURCEMASK only allowed when FILETYPE is 4 or 6"
             assert exp_msg in str(error.value)
 
-    class TestValidateExtrapolationMethod():
+    class TestValidateExtrapolationMethod:
         def test_validate_value_with_valid_method_3(self):
             method = 3
             extrapolation_method = ExtOldExtrapolationMethod.NoSpatialExtrapolation
@@ -395,7 +395,7 @@ class TestExtForcing:
 
             exp_msg = "EXTRAPOLATION_METHOD only allowed when METHOD is 3"
             assert exp_msg in str(error.value)
-        
+
     class TestValidateValue:
         def test_validate_value_with_valid_method_4(self):
             method = 4
