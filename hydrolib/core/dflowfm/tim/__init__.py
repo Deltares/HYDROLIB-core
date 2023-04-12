@@ -1,5 +1,6 @@
-from .models import TimModel
+from .models import TimModel, TimRecord
 
 __all__ = [
     "TimModel",
+    "TimRecord",
 ]
