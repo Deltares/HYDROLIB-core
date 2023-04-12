@@ -1,8 +1,7 @@
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 TimRecord = Dict[str, List[str]]
-
 
 class TimParser:
     """
