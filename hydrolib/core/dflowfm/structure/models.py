@@ -31,6 +31,8 @@ from hydrolib.core.utils import str_is_empty_or_none
 
 logger = logging.getLogger(__name__)
 
+ForcingData = Union[float, TimModel, ForcingModel]
+
 # TODO: handle comment blocks
 # TODO: handle duplicate keys
 class Structure(INIBasedModel):
@@ -331,7 +333,7 @@ class Weir(Structure):
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    crestlevel: Union[float, TimModel, ForcingModel] = Field(alias="crestLevel")
+    crestlevel: ForcingData = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
@@ -413,7 +415,7 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[Union[float, TimModel, ForcingModel]] = Field(
+    valveopeningheight: Optional[ForcingData] = Field(
         alias="valveOpeningHeight"
     )
     numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
@@ -496,7 +498,7 @@ class Pump(Structure):
     orientation: Optional[Orientation] = Field(alias="orientation")
     controlside: Optional[str] = Field(alias="controlSide")  # TODO Enum
     numstages: Optional[int] = Field(alias="numStages")
-    capacity: Union[float, TimModel, ForcingModel] = Field(alias="capacity")
+    capacity: ForcingData = Field(alias="capacity")
 
     startlevelsuctionside: Optional[List[float]] = Field(alias="startLevelSuctionSide")
     stoplevelsuctionside: Optional[List[float]] = Field(alias="stopLevelSuctionSide")
@@ -627,9 +629,9 @@ class Orifice(Structure):
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    crestlevel: Union[float, TimModel, ForcingModel] = Field(alias="crestLevel")
+    crestlevel: ForcingData = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
-    gateloweredgelevel: Union[float, TimModel, ForcingModel] = Field(
+    gateloweredgelevel: ForcingData = Field(
         alias="gateLowerEdgeLevel"
     )
     corrcoeff: float = Field(1.0, alias="corrCoeff")
@@ -776,7 +778,7 @@ class GeneralStructure(Structure):
     upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
 
     crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
-    crestlevel: Optional[Union[float, TimModel, ForcingModel]] = Field(
+    crestlevel: Optional[ForcingData] = Field(
         0.0, alias="crestLevel"
     )
     crestlength: Optional[float] = Field(0.0, alias="crestLength")
@@ -786,7 +788,7 @@ class GeneralStructure(Structure):
     downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
     downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: Optional[Union[float, TimModel, ForcingModel]] = Field(
+    gateloweredgelevel: Optional[ForcingData] = Field(
         11.0, alias="gateLowerEdgeLevel"
     )
     posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
@@ -801,7 +803,7 @@ class GeneralStructure(Structure):
     negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
     extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
     gateheight: Optional[float] = Field(1e10, alias="gateHeight")
-    gateopeningwidth: Optional[Union[float, TimModel, ForcingModel]] = Field(
+    gateopeningwidth: Optional[ForcingData] = Field(
         0.0, alias="gateOpeningWidth"
     )
     gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
