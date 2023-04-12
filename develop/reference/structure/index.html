@@ -2636,7 +2636,7 @@ Verifies whether de water level location specifications are valid.</p>
 
 
 <h4 id="hydrolib.core.dflowfm.structure.models.Dambreak.validate_dambreak_levels_and_widths" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">validate_dambreak_levels_and_widths</span><span class="p">(</span><span class="n">field_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">validate_dambreak_levels_and_widths</span><span class="p">(</span><span class="n">field_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">tim</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">TimModel</span><span class="p">,</span> <span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">ForcingModel</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">tim</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">TimModel</span><span class="p">,</span> <span class="n">hydrolib</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">bc</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">ForcingModel</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
@@ -2662,7 +2662,7 @@ property. This property should be given when the algorithm value is 3.</p>
   <tbody>
       <tr>
         <td><code>field_value</code></td>
-        <td><code>Optional[Path]</code></td>
+        <td><code>Optional[Union[TimModel, ForcingModel]]</code></td>
         <td><p>Value given for dambreakLevelsAndWidths.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -2699,7 +2699,7 @@ property. This property should be given when the algorithm value is 3.</p>
   </thead>
   <tbody>
     <tr>
-      <td><code>Optional[Path]</code></td>
+      <td><code>Optional[Union[TimModel, ForcingModel]]</code></td>
       <td><p>The value given for dambreakLevelsAndwidths.</p></td>
     </tr>
   </tbody>
@@ -2709,21 +2709,21 @@ property. This property should be given when the algorithm value is 3.</p>
           <div class="highlight"><pre><span></span><code><span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;dambreaklevelsandwidths&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">validate_dambreak_levels_and_widths</span><span class="p">(</span>
-    <span class="bp">cls</span><span class="p">,</span> <span class="n">field_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+    <span class="bp">cls</span><span class="p">,</span> <span class="n">field_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">TimModel</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">]],</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">TimModel</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validates whether a dambreak can be created with the given dambreakLevelsAndWidths</span>
 <span class="sd">    property. This property should be given when the algorithm value is 3.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        field_value (Optional[Path]): Value given for dambreakLevelsAndWidths.</span>
+<span class="sd">        field_value (Optional[Union[TimModel, ForcingModel]]): Value given for dambreakLevelsAndWidths.</span>
 <span class="sd">        values (dict): Dictionary of values already validated (assuming algorithm is in it).</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: When algorithm value is not 3 and field_value has a value.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Optional[Path]: The value given for dambreakLevelsAndwidths.</span>
+<span class="sd">        Optional[Union[TimModel, ForcingModel]]: The value given for dambreakLevelsAndwidths.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Retrieve the algorithm value (if not found use 0).</span>
     <span class="n">algorithm_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algorithm&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -2861,6 +2861,9 @@ attribute in several subclasses of Structure.</p>
     </div>
 
   </div>
+
+
+
 
 
 
