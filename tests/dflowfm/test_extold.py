@@ -366,7 +366,9 @@ class TestExtForcing:
     class TestValidateExtrapolationMethod:
         def test_validate_extrapolation_method_with_valid_method_3(self):
             method = 3
-            extrapolation_method = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+            extrapolation_method = (
+                ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+            )
 
             forcing = ExtOldForcing(
                 quantity=ExtOldQuantity.WaterLevelBnd,
@@ -381,7 +383,9 @@ class TestExtForcing:
 
         def test_validate_extrapolation_method_with_invalid_method(self):
             method = 1
-            extrapolation_method = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+            extrapolation_method = (
+                ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+            )
 
             with pytest.raises(ValueError) as error:
                 _ = ExtOldForcing(
@@ -397,11 +401,13 @@ class TestExtForcing:
             assert exp_msg in str(error.value)
 
     class TestValidateMaxSearchRadius:
-        def test_validate_maxsearchradius_method_with_valid_method_3_and_extrapolation_method_1(self):
+        def test_validate_maxsearchradius_method_with_valid_method_3_and_extrapolation_method_1(
+            self,
+        ):
             method = 3
             extrapolation_method = 1
             maxsearchradius = 1.23
-            
+
             forcing = ExtOldForcing(
                 quantity=ExtOldQuantity.WaterLevelBnd,
                 filename="",
@@ -413,26 +419,28 @@ class TestExtForcing:
             )
 
             assert forcing.extrapolation_method == extrapolation_method
-            
-        def test_validate_maxsearchradius_method_with_invalid_extrapolation_method(self):
+
+        def test_validate_maxsearchradius_method_with_invalid_extrapolation_method(
+            self,
+        ):
             method = 3
             extrapolation_method = 0
             maxsearchradius = 1.23
 
             with pytest.raises(ValueError) as error:
                 _ = ExtOldForcing(
-                quantity=ExtOldQuantity.WaterLevelBnd,
-                filename="",
-                filetype=9,
-                method=method,
-                extrapolation_method=extrapolation_method,
-                maxsearchradius=maxsearchradius,
-                operand="O",
-            )
+                    quantity=ExtOldQuantity.WaterLevelBnd,
+                    filename="",
+                    filetype=9,
+                    method=method,
+                    extrapolation_method=extrapolation_method,
+                    maxsearchradius=maxsearchradius,
+                    operand="O",
+                )
 
             exp_msg = "MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is 1"
             assert exp_msg in str(error.value)
-              
+
     class TestValidateValue:
         def test_validate_value_with_valid_method_4(self):
             method = 4
