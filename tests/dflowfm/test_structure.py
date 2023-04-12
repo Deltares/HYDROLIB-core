@@ -1921,7 +1921,7 @@ class TestPump:
 
 class TestGeneralStructure:
     def test_initialize_gateopeningwidth_with_timfile_initializes_timmodel(self):
-        gateloweredgelevel = test_input_dir / "tim" / "triple_data_for_timeseries.tim"
+        gateloweredgelevel = test_input_dir / "tim" / "single_data_for_timeseries.tim"
         values = self._create_general_structure_values()
         values["gateloweredgelevel"] = gateloweredgelevel
         structure = GeneralStructure(**values)
