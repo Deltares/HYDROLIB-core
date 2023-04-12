@@ -290,7 +290,7 @@ def validate_datetime_string(
     ):
         try:
             _ = datetime.strptime(field_value, r"%Y%m%d%H%M%S")
-        except ValueError as e:
+        except ValueError:
             raise ValueError(
                 f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS'."
             )
