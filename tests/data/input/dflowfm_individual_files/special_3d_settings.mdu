@@ -294,7 +294,7 @@ Wrimap_rain                               = 1                   # Write rainfall
 Wrimap_interception                       = 1                   # Write interception to map file (1: yes, 0: no)
 Wrimap_wind                               = 1                   # Write wind velocities to map file (1: yes, 0: no)
 Wrimap_windstress                         = 1                   # Write wind stress to map file (1: yes, 0: no)
-Writek_CdWind                             = 1                   # Write wind friction coeffs to tek file (1: yes, 0: no)
+Writek_CdWind                             = 0                   # Write wind friction coeffs to tek file (1: yes, 0: no)
 Wrimap_heat_fluxes                        = 1                   # Write heat fluxes to map file (1: yes, 0: no)
 Wrimap_DTcell                             = 1                   # Write time step per cell based on CFL (1: yes, 0: no)
 Wrimap_time_water_on_ground               = 1                   # Write cumulative time when water is above ground level to map file, only for 1D nodes (1: yes, 0: no)
@@ -321,7 +321,6 @@ wrishp_genstruc                     = 0                                         
 #------------------------------------------------------------------------------------------------------
 # Miscellaneous
 #------------------------------------------------------------------------------------------------------
-Writek_CdWind                       = 0                                                                   # Write wind friction coeffs to tek file (1: yes, 0: no)
 Writepart_domain                    = 1                                                                   # Write partition domain info. for postprocessing
 WriteDFMinterpretedvalues           = 0                                                                   # Write DFMinterpretedvalues (1: yes, 0: no)
 MapOutputTimeVector                 =                                                                     # File (*.mpt) containing fixed map output times (s) w.r.t. RefDate

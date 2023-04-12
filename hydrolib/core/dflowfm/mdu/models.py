@@ -2,7 +2,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import Field
+from pydantic import Field, validator
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
@@ -16,7 +16,10 @@ from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
-from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.dflowfm.ini.util import (
+    get_split_string_on_delimiter_validator,
+    validate_datetime_string,
+)
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.net.models import NetworkModel
 from hydrolib.core.dflowfm.obs.models import ObservationPointModel
@@ -129,6 +132,10 @@ class Numerics(INIBasedModel):
         tlfsmo: Optional[str] = Field(
             "Fourier smoothing time on water level boundaries [s].", alias="tlfSmo"
         )
+        keepstbndonoutflow: Optional[str] = Field(
+            "Keep salinity and temperature signals on boundary also at outflow, 1=yes, 0=no. Default=0: copy inside value on outflow.",
+            alias="keepSTBndOnOutflow",
+        )
         slopedrop2d: Optional[str] = Field(
             "Apply droplosses only if local bottom slope > Slopedrop2D, <=0 =no droplosses.",
             alias="slopeDrop2D",
@@ -168,6 +175,14 @@ class Numerics(INIBasedModel):
         anticreep: Optional[str] = Field(
             "Include anti-creep calculation (0: no, 1: yes).", alias="antiCreep"
         )
+        baroczlaybed: Optional[str] = Field(
+            "Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)",
+            alias="barocZLayBed",
+        )
+        barocponbnd: Optional[str] = Field(
+            "Use baroclinic pressure correction on open boundaries (1: yes, 0: no)",
+            alias="barocPOnBnd",
+        )
         maxwaterleveldiff: Optional[str] = Field(
             "Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.",
             alias="maxWaterLevelDiff",
@@ -175,6 +190,10 @@ class Numerics(INIBasedModel):
         maxvelocitydiff: Optional[str] = Field(
             "Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.",
             alias="maxVelocityDiff",
+        )
+        mintimestepbreak: Optional[str] = Field(
+            "Smallest allowed timestep (in s), checked on a sliding average of several timesteps. Run will abort when violated.",
+            alias="minTimestepBreak",
         )
         epshu: Optional[str] = Field(
             "Threshold water depth for wetting and drying [m].", alias="epsHu"
@@ -197,6 +216,7 @@ class Numerics(INIBasedModel):
     fixedweircontraction: float = Field(1.0, alias="fixedWeirContraction")
     izbndpos: int = Field(0, alias="izBndPos")
     tlfsmo: float = Field(0.0, alias="tlfSmo")
+    keepstbndonoutflow: bool = Field(False, alias="keepSTBndOnOutflow")
     slopedrop2d: float = Field(0.0, alias="slopeDrop2D")
     drop1d: bool = Field(False, alias="drop1D")
     chkadvd: float = Field(0.1, alias="chkAdvd")
@@ -208,8 +228,11 @@ class Numerics(INIBasedModel):
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
+    baroczlaybed: bool = Field(False, alias="barocZLayBed")
+    barocponbnd: bool = Field(False, alias="barocPOnBnd")
     maxwaterleveldiff: float = Field(0.0, alias="maxWaterLevelDiff")
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")
+    mintimestepbreak: float = Field(0.0, alias="minTimestepBreak")
     epshu: float = Field(0.0001, alias="epsHu")
 
 
@@ -316,6 +339,9 @@ class Physics(INIBasedModel):
         tidalforcing: Optional[str] = Field(
             "Tidal forcing, if jsferic=1 (0: no, 1: yes).", alias="tidalForcing"
         )
+        itcap: Optional[str] = Field(
+            "Upper limit on internal tides dissipation (W/m^2)", alias="ITcap"
+        )
         doodsonstart: Optional[str] = Field(
             "Doodson start time for tidal forcing [s].", alias="doodsonStart"
         )
@@ -371,6 +397,32 @@ class Physics(INIBasedModel):
             "Coefficient for evaporative heat flux ( ), if negative, then Cd wind is used.",
             alias="dalton",
         )
+        tempmax: Optional[str] = Field(
+            "Limit the temperature to max value [°C]", alias="tempMax"
+        )
+        tempmin: Optional[str] = Field(
+            "Limit the temperature to min value [°C]", alias="tempMin"
+        )
+        salimax: Optional[str] = Field(
+            "Limit for salinity to max value [ppt]", alias="saliMax"
+        )
+        salimin: Optional[str] = Field(
+            "Limit for salinity to min value [ppt]", alias="saliMin"
+        )
+        heat_eachstep: Optional[str] = Field(
+            "'1=heat each timestep, 0=heat each usertimestep", alias="heat_eachStep"
+        )
+        rhoairrhowater: Optional[str] = Field(
+            "'windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()",
+            alias="rhoAirRhoWater",
+        )
+        nudgetimeuni: Optional[str] = Field(
+            "Uniform nudge relaxation time [s]", alias="nudgeTimeUni"
+        )
+        iniwithnudge: Optional[str] = Field(
+            "Initialize salinity and temperature with nudge variables (0: no, 1: yes, 2: only initialize, no nudging)",
+            alias="iniWithNudge",
+        )
         secondaryflow: Optional[str] = Field(
             "Secondary flow (0: no, 1: yes).", alias="secondaryFlow"
         )
@@ -400,6 +452,7 @@ class Physics(INIBasedModel):
     idensform: int = Field(2, alias="idensform")
     ag: float = Field(9.81, alias="ag")
     tidalforcing: bool = Field(False, alias="tidalForcing")
+    itcap: Optional[float] = Field(None, alias="ITcap")
     doodsonstart: float = Field(55.565, alias="doodsonStart")
     doodsonstop: float = Field(375.575, alias="doodsonStop")
     doodsoneps: float = Field(0.0, alias="doodsonEps")
@@ -416,6 +469,14 @@ class Physics(INIBasedModel):
     secchidepth: float = Field(2.0, alias="secchiDepth")
     stanton: float = Field(0.0013, alias="stanton")
     dalton: float = Field(0.0013, alias="dalton")
+    tempmax: float = Field(-999.0, alias="tempMax")
+    tempmin: float = Field(0.0, alias="tempMin")
+    salimax: float = Field(-999.0, alias="saliMax")
+    salimin: float = Field(0.0, alias="saliMin")
+    heat_eachstep: bool = Field(False, alias="heat_eachStep")
+    rhoairrhowater: int = Field(0, alias="rhoAirRhoWater")
+    nudgetimeuni: float = Field(3600.0, alias="nudgeTimeUni")
+    iniwithnudge: int = Field(0, alias="iniWithNudge")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
     betaspiral: float = Field(0.0, alias="betaSpiral")
 
@@ -572,18 +633,30 @@ class Time(INIBasedModel):
         dtinit: Optional[str] = Field(
             "Initial timestep in seconds [s].", alias="dtInit"
         )
+        autotimestep: Optional[str] = Field(
+            "0 = no, 1 = 2D (hor. out), 3=3D (hor. out), 5 = 3D (hor. inout + ver. inout), smallest dt",
+            alias="autoTimestep",
+        )
         autotimestepnostruct: Optional[str] = Field(
             "Exclude structure links (and neighbours) from time step limitation (0 = no, 1 = yes).",
-            alias="AutoTimestepNoStruct",
+            alias="autoTimestepNoStruct",
         )
         autotimestepnoqout: Optional[str] = Field(
             "Exclude negative qin terms from time step limitation (0 = no, 1 = yes).",
-            alias="AutoTimestepNoQout",
+            alias="autoTimestepNoQout",
         )
         tstart: Optional[str] = Field(
             "Start time w.r.t. RefDate [TUnit].", alias="tStart"
         )
         tstop: Optional[str] = Field("Stop time w.r.t. RefDate [TUnit].", alias="tStop")
+        startdatetime: Optional[str] = Field(
+            "Computation Startdatetime (yyyymmddhhmmss), when specified, overrides tStart",
+            alias="startDateTime",
+        )
+        stopdatetime: Optional[str] = Field(
+            "Computation Stopdatetime  (yyyymmddhhmmss), when specified, overrides tStop",
+            alias="stopDateTime",
+        )
         updateroughnessinterval: Optional[str] = Field(
             "Update interval for time dependent roughness parameters [s].",
             alias="updateRoughnessInterval",
@@ -599,11 +672,18 @@ class Time(INIBasedModel):
     dtnodal: float = Field(21600.0, alias="dtNodal")
     dtmax: float = Field(30.0, alias="dtMax")
     dtinit: float = Field(1.0, alias="dtInit")
-    autotimestepnostruct: bool = Field(False, alias="AutoTimestepNoStruct")
-    autotimestepnoqout: bool = Field(True, alias="AutoTimestepNoQout")
+    autotimestep: Optional[int] = Field(None, alias="autoTimestep")
+    autotimestepnostruct: bool = Field(False, alias="autoTimestepNoStruct")
+    autotimestepnoqout: bool = Field(True, alias="autoTimestepNoQout")
     tstart: float = Field(0.0, alias="tStart")
     tstop: float = Field(86400.0, alias="tStop")
+    startdatetime: Optional[str] = Field(None, alias="startDateTime")
+    stopdatetime: Optional[str] = Field(None, alias="stopDateTime")
     updateroughnessinterval: float = Field(86400.0, alias="updateRoughnessInterval")
+
+    @validator("startdatetime", "stopdatetime")
+    def _validate_datetime(cls, value, field):
+        return validate_datetime_string(value, field)
 
 
 class Restart(INIBasedModel):
@@ -637,6 +717,10 @@ class Restart(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="restartFile"
     )
     restartdatetime: Optional[str] = Field(None, alias="restartDateTime")
+
+    @validator("restartdatetime")
+    def _validate_datetime(cls, value, field):
+        return validate_datetime_string(value, field)
 
 
 class ExternalForcing(INIBasedModel):
@@ -737,6 +821,10 @@ class Trachytopes(INIBasedModel):
             "Interval for updating of bottom roughness due to trachytopes in seconds [s].",
             alias="dtTrt",
         )
+        trtmxr: Optional[str] = Field(
+            "Maximum recursion level for composite trachytope definitions",
+            alias="trtMxR",
+        )
 
     comments: Comments = Comments()
 
@@ -745,6 +833,7 @@ class Trachytopes(INIBasedModel):
     trtdef: Optional[Path] = Field(None, alias="trtDef")
     trtl: Optional[Path] = Field(None, alias="trtL")
     dttrt: float = Field(60.0, alias="dtTrt")
+    trtmxr: Optional[int] = Field(None, alias="trtMxR")
 
 
 ObsFile = Union[XYNModel, ObservationPointModel]
@@ -813,6 +902,13 @@ class Output(INIBasedModel):
         crsfile: Optional[str] = Field(
             "Space separated list of files, containing information about observation cross sections.",
             alias="crsFile",
+        )
+        foufile: Optional[str] = Field(
+            "Fourier analysis input file *.fou", alias="fouFile"
+        )
+        fouupdatestep: Optional[str] = Field(
+            "Fourier update step type: 0=every user time step, 1=every computational timestep, 2=same as history output.",
+            alias="fouUpdateStep",
         )
         hisfile: Optional[str] = Field(
             "*_his.nc History file in netCDF format.", alias="hisFile"
@@ -911,8 +1007,52 @@ class Output(INIBasedModel):
             "Write compound structure parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_compound",
         )
-        wrihis_lateral: Optional[str] = Field(
-            "Write lateral datato his file, (1: yes, 0: no).", alias="wrihis_lateral"
+        wrihis_turbulence: Optional[str] = Field(
+            "Write k, eps and vicww to his file (1: yes, 0: no)'",
+            alias="wrihis_turbulence",
+        )
+        wrihis_wind: Optional[str] = Field(
+            "Write wind velocities to his file (1: yes, 0: no)'", alias="wrihis_wind"
+        )
+        wrihis_rain: Optional[str] = Field(
+            "Write precipitation to his file (1: yes, 0: no)'", alias="wrihis_rain"
+        )
+        wrihis_infiltration: Optional[str] = Field(
+            "Write infiltration to his file (1: yes, 0: no)'",
+            alias="wrihis_infiltration",
+        )
+        wrihis_temperature: Optional[str] = Field(
+            "Write temperature to his file (1: yes, 0: no)'", alias="wrihis_temperature"
+        )
+        wrihis_waves: Optional[str] = Field(
+            "Write wave data to his file (1: yes, 0: no)'", alias="wrihis_waves"
+        )
+        wrihis_heat_fluxes: Optional[str] = Field(
+            "Write heat fluxes to his file (1: yes, 0: no)'", alias="wrihis_heat_fluxes"
+        )
+        wrihis_salinity: Optional[str] = Field(
+            "Write salinity to his file (1: yes, 0: no)'", alias="wrihis_salinity"
+        )
+        wrihis_density: Optional[str] = Field(
+            "Write density to his file (1: yes, 0: no)'", alias="wrihis_density"
+        )
+        wrihis_waterlevel_s1: Optional[str] = Field(
+            "Write water level to his file (1: yes, 0: no)'",
+            alias="wrihis_waterlevel_s1",
+        )
+        wrihis_bedlevel: Optional[str] = Field(
+            "Write bed level to his file (1: yes, 0: no)'", alias="wrihis_bedlevel"
+        )
+        wrihis_waterdepth: Optional[str] = Field(
+            "Write water depth to his file (1: yes, 0: no)'", alias="wrihis_waterdepth"
+        )
+        wrihis_velocity_vector: Optional[str] = Field(
+            "Write velocity vectors to his file (1: yes, 0: no)'",
+            alias="wrihis_velocity_vector",
+        )
+        wrihis_upward_velocity_component: Optional[str] = Field(
+            "Write upward velocity to his file (1: yes, 0: no)'",
+            alias="wrihis_upward_velocity_component",
         )
         wrihis_velocity: Optional[str] = Field(
             "Write velocity magnitude in observation point to his file, (1: yes, 0: no).",
@@ -921,6 +1061,24 @@ class Output(INIBasedModel):
         wrihis_discharge: Optional[str] = Field(
             "Write discharge magnitude in observation point to his file, (1: yes, 0: no).",
             alias="wrihis_discharge",
+        )
+        wrihis_sediment: Optional[str] = Field(
+            "Write sediment transport to his file (1: yes, 0: no)'",
+            alias="wrihis_sediment",
+        )
+        wrihis_constituents: Optional[str] = Field(
+            "Write tracers to his file (1: yes, 0: no)'", alias="wrihis_constituents"
+        )
+        wrihis_zcor: Optional[str] = Field(
+            "Write vertical coordinates to his file (1: yes, 0: no)'",
+            alias="wrihis_zcor",
+        )
+        wrihis_lateral: Optional[str] = Field(
+            "Write lateral data to his file, (1: yes, 0: no).", alias="wrihis_lateral"
+        )
+        wrihis_taucurrent: Optional[str] = Field(
+            "Write mean bed shear stress to his file (1: yes, 0: no)'",
+            alias="wrihis_taucurrent",
         )
         wrimap_waterlevel_s0: Optional[str] = Field(
             "Write water levels at old time level to map file, (1: yes, 0: no).",
@@ -934,6 +1092,10 @@ class Output(INIBasedModel):
             "Write evaporation to map file, (1: yes, 0: no).",
             alias="wrimap_evaporation",
         )
+        wrimap_waterdepth: Optional[str] = Field(
+            "Write water depths to map file (1: yes, 0: no).",
+            alias="wrimap_waterdepth",
+        )
         wrimap_velocity_component_u0: Optional[str] = Field(
             "Write velocities at old time level to map file, (1: yes, 0: no).",
             alias="wrimap_velocity_component_u0",
@@ -945,6 +1107,10 @@ class Output(INIBasedModel):
         wrimap_velocity_vector: Optional[str] = Field(
             "Write cell-center velocity vectors to map file, (1: yes, 0: no).",
             alias="wrimap_velocity_vector",
+        )
+        wrimap_velocity_magnitude: Optional[str] = Field(
+            "Write cell-center velocity vector magnitude to map file (1: yes, 0: no).",
+            alias="wrimap_velocity_magnitude",
         )
         wrimap_upward_velocity_component: Optional[str] = Field(
             "Write upward velocity component to map file, (1: yes, 0: no).",
@@ -987,6 +1153,10 @@ class Output(INIBasedModel):
         wrimap_wind: Optional[str] = Field(
             "Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind"
         )
+        writek_cdwind: Optional[str] = Field(
+            "Write wind friction coefficients to tek file (1: yes, 0: no).",
+            alias="writek_CdWind",
+        )
         wrimap_heat_fluxes: Optional[str] = Field(
             "Write heat fluxes to map file, (1: yes, 0: no).",
             alias="wrimap_heat_fluxes",
@@ -1023,6 +1193,18 @@ class Output(INIBasedModel):
             "Write water level gradient to map file (only for 1D links) (1:yes, 0:no).",
             alias="wrimap_water_level_gradient",
         )
+        wrimap_tidal_potential: Optional[str] = Field(
+            "Write tidal potential to map file (1: yes, 0: no)",
+            alias="wrimap_tidal_potential",
+        )
+        wrimap_sal_potential: Optional[str] = Field(
+            "Write self attraction and loading potential to map file (1: yes, 0: no)",
+            alias="wrimap_SAL_potential",
+        )
+        wrimap_internal_tides_dissipation: Optional[str] = Field(
+            "Write internal tides dissipation to map file (1: yes, 0: no)",
+            alias="wrimap_internal_tides_dissipation",
+        )
         wrimap_flow_analysis: Optional[str] = Field(
             "Write flow analysis data to the map file (1:yes, 0:no).",
             alias="wrimap_flow_analysis",
@@ -1056,7 +1238,8 @@ class Output(INIBasedModel):
             "Interval [s] between DELWAQ file outputs.", alias="waqInterval"
         )
         statsinterval: Optional[str] = Field(
-            "Interval [s] between simulation statistics output.", alias="statsInterval"
+            "Interval [s] between screen step outputs in seconds simulation time, if negative in seconds wall clock time.",
+            alias="statsInterval",
         )
         timingsinterval: Optional[str] = Field(
             "Timings output interval TimingsInterval.", alias="timingsInterval"
@@ -1090,6 +1273,10 @@ class Output(INIBasedModel):
     )
     obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
     crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
+    foufile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="fouFile"
+    )
+    fouupdatestep: int = Field(0, alias="fouUpdateStep")
     hisfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
     )
@@ -1123,14 +1310,35 @@ class Output(INIBasedModel):
     wrihis_structure_dambreak: bool = Field(True, alias="wrihis_structure_damBreak")
     wrihis_structure_uniweir: bool = Field(True, alias="wrihis_structure_uniWeir")
     wrihis_structure_compound: bool = Field(True, alias="wrihis_structure_compound")
-    wrihis_lateral: bool = Field(True, alias="wrihis_lateral")
+    wrihis_turbulence: bool = Field(True, alias="wrihis_turbulence")
+    wrihis_wind: bool = Field(True, alias="wrihis_wind")
+    wrihis_rain: bool = Field(True, alias="wrihis_rain")
+    wrihis_infiltration: bool = Field(True, alias="wrihis_infiltration")
+    wrihis_temperature: bool = Field(True, alias="wrihis_temperature")
+    wrihis_waves: bool = Field(True, alias="wrihis_waves")
+    wrihis_heat_fluxes: bool = Field(True, alias="wrihis_heat_fluxes")
+    wrihis_salinity: bool = Field(True, alias="wrihis_salinity")
+    wrihis_density: bool = Field(True, alias="wrihis_density")
+    wrihis_waterlevel_s1: bool = Field(True, alias="wrihis_waterlevel_s1")
+    wrihis_bedlevel: bool = Field(True, alias="wrihis_bedlevel")
+    wrihis_waterdepth: bool = Field(False, alias="wrihis_waterdepth")
+    wrihis_velocity_vector: bool = Field(True, alias="wrihis_velocity_vector")
+    wrihis_upward_velocity_component: bool = Field(
+        False, alias="wrihis_upward_velocity_component"
+    )
     wrihis_velocity: bool = Field(False, alias="wrihis_velocity")
     wrihis_discharge: bool = Field(False, alias="wrihis_discharge")
+    wrihis_sediment: bool = Field(True, alias="wrihis_sediment")
+    wrihis_constituents: bool = Field(True, alias="wrihis_constituents")
+    wrihis_zcor: bool = Field(True, alias="wrihis_zcor")
+    wrihis_lateral: bool = Field(True, alias="wrihis_lateral")
+    wrihis_taucurrent: bool = Field(True, alias="wrihis_taucurrent")
 
     # Map file
     wrimap_waterlevel_s0: bool = Field(True, alias="wrimap_waterLevel_s0")
     wrimap_waterlevel_s1: bool = Field(True, alias="wrimap_waterLevel_s1")
-    wrimap_evaporation: bool = Field(True, alias="wrimap_evaporation")
+    wrimap_evaporation: bool = Field(False, alias="wrimap_evaporation")
+    wrimap_waterdepth: bool = Field(True, alias="wrimap_waterdepth")
     wrimap_velocity_component_u0: bool = Field(
         True, alias="wrimap_velocity_component_u0"
     )
@@ -1138,6 +1346,7 @@ class Output(INIBasedModel):
         True, alias="wrimap_velocity_component_u1"
     )
     wrimap_velocity_vector: bool = Field(True, alias="wrimap_velocity_vector")
+    wrimap_velocity_magnitude: bool = Field(True, alias="wrimap_velocity_magnitude")
     wrimap_upward_velocity_component: bool = Field(
         False, alias="wrimap_upward_velocity_component"
     )
@@ -1156,6 +1365,7 @@ class Output(INIBasedModel):
     wrimap_turbulence: bool = Field(True, alias="wrimap_turbulence")
     wrimap_rain: bool = Field(False, alias="wrimap_rain")
     wrimap_wind: bool = Field(True, alias="wrimap_wind")
+    writek_cdwind: bool = Field(False, alias="writek_CdWind")
     wrimap_heat_fluxes: bool = Field(False, alias="wrimap_heat_fluxes")
     wrimap_wet_waterdepth_threshold: float = Field(
         2e-5, alias="wrimap_wet_waterDepth_threshold"
@@ -1177,6 +1387,11 @@ class Output(INIBasedModel):
     wrimap_water_level_gradient: bool = Field(
         False, alias="wrimap_water_level_gradient"
     )
+    wrimap_tidal_potential: bool = Field(True, alias="wrimap_tidal_potential")
+    wrimap_sal_potential: bool = Field(True, alias="wrimap_SAL_potential")
+    wrimap_internal_tides_dissipation: bool = Field(
+        True, alias="wrimap_internal_tides_dissipation"
+    )
     wrimap_flow_analysis: bool = Field(False, alias="wrimap_flow_analysis")
     mapoutputtimevector: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="mapOutputTimeVector"
@@ -1190,9 +1405,9 @@ class Output(INIBasedModel):
     waterdepthclasses: List[float] = Field([0.0], alias="waterDepthClasses")
     classmapinterval: List[float] = Field([0.0], alias="classMapInterval")
     waqinterval: List[float] = Field([0.0], alias="waqInterval")
-    statsinterval: List[float] = Field([0.0], alias="statsInterval")
+    statsinterval: List[float] = Field([-60.0], alias="statsInterval")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
-    richardsononoutput: bool = Field(True, alias="richardsonOnOutput")
+    richardsononoutput: bool = Field(False, alias="richardsonOnOutput")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
