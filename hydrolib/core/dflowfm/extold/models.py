@@ -455,19 +455,19 @@ class ExtOldForcing(BaseModel):
 
     @root_validator(skip_on_failure=True)
     def validate_forcing(cls, values):
-        class Field:
+        class _Field:
             def __init__(self, key: str) -> None:
                 self.alias = cls.__fields__[key].alias
                 self.value = values[key]
 
         def raise_error_only_allowed_when(
-            field: Field, dependency: Field, valid_dependency_value: str
+            field: _Field, dependency: _Field, valid_dependency_value: str
         ):
             error = f"{field.alias} only allowed when {dependency.alias} is {valid_dependency_value}"
             raise ValueError(error)
 
         def only_allowed_when(
-            field: Field, dependency: Field, valid_dependency_value: Any
+            field: _Field, dependency: _Field, valid_dependency_value: Any
         ):
             """This function checks if a particular field is allowed to have a value only when a dependency field has a specific value."""
 
@@ -476,22 +476,22 @@ class ExtOldForcing(BaseModel):
 
             raise_error_only_allowed_when(field, dependency, valid_dependency_value)
 
-        quantity = Field("quantity")
-        varname = Field("varname")
-        sourcemask = Field("sourcemask")
-        filetype = Field("filetype")
-        method = Field("method")
-        extrapolation_method = Field("extrapolation_method")
-        maxsearchradius = Field("maxsearchradius")
-        value = Field("value")
-        factor = Field("factor")
-        ifrctype = Field("ifrctyp")
-        averagingtype = Field("averagingtype")
-        relativesearchcellsize = Field("relativesearchcellsize")
-        extrapoltol = Field("extrapoltol")
-        percentileminmax = Field("percentileminmax")
-        area = Field("area")
-        nummin = Field("nummin")
+        quantity = _Field("quantity")
+        varname = _Field("varname")
+        sourcemask = _Field("sourcemask")
+        filetype = _Field("filetype")
+        method = _Field("method")
+        extrapolation_method = _Field("extrapolation_method")
+        maxsearchradius = _Field("maxsearchradius")
+        value = _Field("value")
+        factor = _Field("factor")
+        ifrctype = _Field("ifrctyp")
+        averagingtype = _Field("averagingtype")
+        relativesearchcellsize = _Field("relativesearchcellsize")
+        extrapoltol = _Field("extrapoltol")
+        percentileminmax = _Field("percentileminmax")
+        area = _Field("area")
+        nummin = _Field("nummin")
 
         only_allowed_when(varname, filetype, 11)
 
