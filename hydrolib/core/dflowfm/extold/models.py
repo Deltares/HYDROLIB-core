@@ -495,16 +495,27 @@ class ExtOldForcing(BaseModel):
 
         only_allowed_when(varname, filetype, ExtOldFileType.NetCDFGridData)
 
-        if sourcemask.value.filepath is not None and filetype.value not in [ExtOldFileType.ArcInfo, ExtOldFileType.CurvilinearData]:
+        if sourcemask.value.filepath is not None and filetype.value not in [
+            ExtOldFileType.ArcInfo,
+            ExtOldFileType.CurvilinearData,
+        ]:
             raise_error_only_allowed_when(
                 sourcemask, filetype, valid_dependency_value="4 or 6"
             )
 
-        if extrapolation_method.value == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights:
+        if (
+            extrapolation_method.value
+            == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+            and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
+        ):
             error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
             raise ValueError(error)
 
-        only_allowed_when(maxsearchradius, extrapolation_method, ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox)
+        only_allowed_when(
+            maxsearchradius,
+            extrapolation_method,
+            ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox,
+        )
         only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
 
         if factor.value is not None and not quantity.value.startswith(
