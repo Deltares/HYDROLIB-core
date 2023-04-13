@@ -2,7 +2,7 @@
 HYDROLIB-core 0.5.0 mainly adds more support for D-Flow FM 2D3D models in coastal applications.
 
 ### Compatibility Notes
-Support for MacOS is temporarily dropped, due to an upgrade to MeshKernel 2.0.2.
+Support for MacOS is temporarily dropped, due to an upgrade to MeshKernel 2.0.2, which has no MacOS version at the moment.
 We aim to re-enable this support in future releases.
 
 ### New Features
