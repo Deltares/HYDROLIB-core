@@ -3,9 +3,9 @@ This guide contains some more in-depth guidelines, tasks and examples that devel
 In addition to being a useful resource for developing, this documentation can also be helpful for code reviews.
 
 ## Explicitly exposing the public API
-Whenever you add new functionality that should (or could) be used by the users, make sure you explicitly expose them in the correct `__init__.py` files. To read from and write to
+Whenever you add new functionality that should (or could) be used by the users, make sure you explicitly expose them in the correct `__init__.py` files.
 
-For example, you have developed a new `TimModel` class that represents a `.tim` file. To read from and write to the underlying `.tim` files, you have also created a new `TimParser` class and `TimSerializer` class. While the `TimModel` class should be publicly exposed to the users, because it is part of the public API, the parser and serializer classes are implementation details that users should not be concerned with. They should therefore not be publicly exposed to the users. 
+For example, you have developed a new `TimModel` class that represents a `.tim` file. The `TimModel` makes use of the `TimParser` class and `TimSerializer` class. While the `TimModel` class should be publicly exposed to the users, because it is part of the public API, the parser and serializer classes are implementation details that users should not be concerned with. The parser and serializer should therefore not be publicly exposed to the users. 
 
 To expose the `TimModel` explicitly to our users, you have to update both the `hydrolib/core/dflowfm/tim/__init__.py` (assuming you created a new `tim` folder for this new functionality) and the `hydrolib/core/dflowfm/__init__.py`:
 
