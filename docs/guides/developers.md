@@ -28,7 +28,7 @@ from .tim import *
 ## Updating the documentation
 In the hydrolib-core repository there are several reference files that are used to automatically generate the [API reference](../reference/api.md). If you add or make changes to the existing API, always make sure the API reference is still up to date.
 
-For example, let's use the example that was used above, where the `TimModel` was introduced in hydrolib-core. Since this is new functionality that affects the API, we have to update the reference files. The API reference files are located at `docs\reference`. Since the `TimModel` was newly introduced, we should create a new file named `tim.md`. The contents of this file include a short description about what the '.tim' file is and what it is used for, followed by the actual API. You do not have to manually write the API, that is done for us by mkdocs. Since the newly introduced `TimParser` and `TimSerializer` are not part of the public API, they should not be added to the reference file. 
+Let's use the example mentioned before, where the `TimModel` was introduced in hydrolib-core. Since this is new functionality that affects the API, we have to update the reference files. The API reference files are located at `docs\reference`. Since the `TimModel` was newly introduced, we should create a new file named `tim.md`. The contents of this file include a short description about what the '.tim' file is and what it is used for, followed by the actual API. You do not have to manually write the API, that is done for us by mkdocs. Since the newly introduced `TimParser` and `TimSerializer` are not part of the public API, they should not be added to the reference file. 
 
 An example of such an `.md` can be found below:
 
