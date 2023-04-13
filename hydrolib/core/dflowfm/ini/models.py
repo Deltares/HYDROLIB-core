@@ -178,7 +178,7 @@ class INIBasedModel(BaseModel, ABC):
             prop = Property(
                 key=key,
                 value=self._convert_value(field_key, value, config, save_settings),
-                comment=getattr(self.comments, key.lower(), None),
+                comment=getattr(self.comments, field_key, None),
             )
             props.append(prop)
         return Section(header=self._header, content=props)
