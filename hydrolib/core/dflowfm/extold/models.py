@@ -493,19 +493,19 @@ class ExtOldForcing(BaseModel):
         area = _Field("area")
         nummin = _Field("nummin")
 
-        only_allowed_when(varname, filetype, 11)
+        only_allowed_when(varname, filetype, ExtOldFileType.NetCDFGridData)
 
-        if sourcemask.value.filepath is not None and filetype.value not in [4, 6]:
+        if sourcemask.value.filepath is not None and filetype.value not in [ExtOldFileType.ArcInfo, ExtOldFileType.CurvilinearData]:
             raise_error_only_allowed_when(
                 sourcemask, filetype, valid_dependency_value="4 or 6"
             )
 
-        if extrapolation_method.value == 1 and method.value != 3:
+        if extrapolation_method.value == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights:
             error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
             raise ValueError(error)
 
-        only_allowed_when(maxsearchradius, extrapolation_method, 1)
-        only_allowed_when(value, method, 4)
+        only_allowed_when(maxsearchradius, extrapolation_method, ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox)
+        only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
 
         if factor.value is not None and not quantity.value.startswith(
             ExtOldTracerQuantity.InitialTracer
@@ -514,14 +514,14 @@ class ExtOldForcing(BaseModel):
             raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
-        only_allowed_when(averagingtype, method, 6)
-        only_allowed_when(relativesearchcellsize, method, 6)
-        only_allowed_when(extrapoltol, method, 5)
-        only_allowed_when(percentileminmax, method, 6)
+        only_allowed_when(averagingtype, method, ExtOldMethod.Averaging)
+        only_allowed_when(relativesearchcellsize, method, ExtOldMethod.Averaging)
+        only_allowed_when(extrapoltol, method, ExtOldMethod.InterpolateTime)
+        only_allowed_when(percentileminmax, method, ExtOldMethod.Averaging)
         only_allowed_when(
             area, quantity, ExtOldQuantity.DischargeSalinityTemperatureSorSin
         )
-        only_allowed_when(nummin, method, 6)
+        only_allowed_when(nummin, method, ExtOldMethod.Averaging)
 
         return values
 
