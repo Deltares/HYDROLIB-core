@@ -32,7 +32,7 @@ class TimSerializer:
             - "timeseries" is a list of dictionaries with the key as "time" and values as "data".\n
                 - "time" is a time as a string.
                 - "data" is data as a list of strings.
-            
+
             config (TimSerializerConfig): The serialization configuration settings.
             save_settings (ModelSaveSettings): The save settings to be used.
         """

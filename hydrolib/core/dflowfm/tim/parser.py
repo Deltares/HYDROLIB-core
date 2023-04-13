@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 
 TimRecord = Dict[str, List[str]]
 
+
 class TimParser:
     """
     A parser for .tim files.
@@ -86,7 +87,7 @@ class TimParser:
 
             timrecord = {"time": time, "data": values}
             timeseries.append(timrecord)
-        
+
         return timeseries
 
     @staticmethod
@@ -95,7 +96,7 @@ class TimParser:
             raise ValueError(
                 f"Line {line_index}: comments are only supported at the start of the file, before the time series data."
             )
-        
+
     @staticmethod
     def _raise_error_if_values_empty(values: List[str], line_index: int) -> None:
         if len(values) == 0:

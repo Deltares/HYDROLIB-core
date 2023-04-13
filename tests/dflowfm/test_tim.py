@@ -315,7 +315,6 @@ class TestTimParser:
         expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the time series data."
         assert expected_error_msg in str(error.value)
 
-
     @pytest.mark.parametrize(
         "input_path",
         [
@@ -328,11 +327,7 @@ class TestTimParser:
                 id="triple_data_for_timeseries_with_empty_data",
             ),
             pytest.param(
-                Path(
-                    test_input_dir
-                    / "tim"
-                    / "bc_file_is_incorrect.bc"
-                ),
+                Path(test_input_dir / "tim" / "bc_file_is_incorrect.bc"),
                 id="bc_file_is_incorrect",
             ),
         ],
