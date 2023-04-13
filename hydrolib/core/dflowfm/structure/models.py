@@ -7,13 +7,13 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.dflow
 import logging
 from enum import Enum
 from operator import gt, ne
-from pathlib import Path
 from typing import Dict, List, Literal, Optional, Set, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator, validator
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -26,9 +26,12 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_forbidden_fields,
     validate_required_fields,
 )
+from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
 
 logger = logging.getLogger(__name__)
+
+ForcingData = Union[float, TimModel, ForcingModel]
 
 # TODO: handle comment blocks
 # TODO: handle duplicate keys
@@ -231,6 +234,32 @@ class Structure(INIBasedModel):
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
+    @classmethod
+    def validate(cls, v):
+        """Try to initialize subclass based on the `type` field.
+        This field is compared to each `type` field of the derived models of `Structure`.
+        The derived model with an equal structure type will be initialized.
+
+        Raises:
+            ValueError: When the given type is not a known structure type.
+        """
+
+        # should be replaced by discriminated unions once merged
+        # https://github.com/samuelcolvin/pydantic/pull/2336
+        if isinstance(v, dict):
+            for c in cls.__subclasses__():
+                if (
+                    c.__fields__.get("type").default.lower()
+                    == v.get("type", "").lower()
+                ):
+                    v = c(**v)
+                    break
+            else:
+                raise ValueError(
+                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
+                )
+        return super().validate(v)
+
     def _exclude_fields(self) -> Set:
         # exclude the non-applicable, or unset props like coordinates or branches
         if self.type == "compound":
@@ -304,7 +333,7 @@ class Weir(Structure):
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    crestlevel: Union[float, Path] = Field(alias="crestLevel")
+    crestlevel: ForcingData = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
@@ -386,7 +415,7 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[Union[float, Path]] = Field(alias="valveOpeningHeight")
+    valveopeningheight: Optional[ForcingData] = Field(alias="valveOpeningHeight")
     numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
     relopening: Optional[List[float]] = Field(alias="relOpening")
     losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
@@ -467,7 +496,7 @@ class Pump(Structure):
     orientation: Optional[Orientation] = Field(alias="orientation")
     controlside: Optional[str] = Field(alias="controlSide")  # TODO Enum
     numstages: Optional[int] = Field(alias="numStages")
-    capacity: Union[float, Path] = Field(alias="capacity")
+    capacity: ForcingData = Field(alias="capacity")
 
     startlevelsuctionside: Optional[List[float]] = Field(alias="startLevelSuctionSide")
     stoplevelsuctionside: Optional[List[float]] = Field(alias="stopLevelSuctionSide")
@@ -598,9 +627,9 @@ class Orifice(Structure):
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    crestlevel: Union[float, Path] = Field(alias="crestLevel")
+    crestlevel: ForcingData = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
-    gateloweredgelevel: Union[float, Path] = Field(alias="gateLowerEdgeLevel")
+    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
@@ -745,7 +774,7 @@ class GeneralStructure(Structure):
     upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
 
     crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
-    crestlevel: Optional[float] = Field(0.0, alias="crestLevel")
+    crestlevel: Optional[ForcingData] = Field(0.0, alias="crestLevel")
     crestlength: Optional[float] = Field(0.0, alias="crestLength")
 
     downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
@@ -753,7 +782,7 @@ class GeneralStructure(Structure):
     downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
     downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: Optional[float] = Field(11.0, alias="gateLowerEdgeLevel")
+    gateloweredgelevel: Optional[ForcingData] = Field(11.0, alias="gateLowerEdgeLevel")
     posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
     posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
     posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
@@ -766,7 +795,7 @@ class GeneralStructure(Structure):
     negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
     extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
     gateheight: Optional[float] = Field(1e10, alias="gateHeight")
-    gateopeningwidth: Optional[float] = Field(0.0, alias="gateOpeningWidth")
+    gateopeningwidth: Optional[ForcingData] = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
         GateOpeningHorizontalDirection.symmetric.value,
         alias="gateOpeningHorizontalDirection",
@@ -894,7 +923,9 @@ class Dambreak(Structure):
     waterleveldownstreamnodeid: Optional[str] = Field(
         alias="waterLevelDownstreamNodeId"
     )
-    dambreaklevelsandwidths: Optional[Path] = Field(alias="dambreakLevelsAndWidths")
+    dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(
+        alias="dambreakLevelsAndWidths"
+    )
 
     @validator("algorithm", pre=True)
     @classmethod
@@ -924,21 +955,21 @@ class Dambreak(Structure):
     @validator("dambreaklevelsandwidths")
     @classmethod
     def validate_dambreak_levels_and_widths(
-        cls, field_value: Optional[Path], values: dict
-    ) -> Optional[Path]:
+        cls, field_value: Optional[Union[TimModel, ForcingModel]], values: dict
+    ) -> Optional[Union[TimModel, ForcingModel]]:
         """
         Validates whether a dambreak can be created with the given dambreakLevelsAndWidths
         property. This property should be given when the algorithm value is 3.
 
         Args:
-            field_value (Optional[Path]): Value given for dambreakLevelsAndWidths.
+            field_value (Optional[Union[TimModel, ForcingModel]]): Value given for dambreakLevelsAndWidths.
             values (dict): Dictionary of values already validated (assuming algorithm is in it).
 
         Raises:
             ValueError: When algorithm value is not 3 and field_value has a value.
 
         Returns:
-            Optional[Path]: The value given for dambreakLevelsAndwidths.
+            Optional[Union[TimModel, ForcingModel]]: The value given for dambreakLevelsAndwidths.
         """
         # Retrieve the algorithm value (if not found use 0).
         algorithm_value = values.get("algorithm", 0)
@@ -1058,19 +1089,6 @@ class StructureGeneral(INIGeneral):
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
-StructureUnion = Union[
-    Weir,
-    UniversalWeir,
-    Culvert,
-    Pump,
-    Compound,
-    Orifice,
-    GeneralStructure,
-    Dambreak,
-    Bridge,
-]
-
-
 class StructureModel(INIModel):
     """
     The overall structure model that contains the contents of one structure file.
@@ -1083,7 +1101,7 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: List[StructureUnion] = []
+    structure: List[Structure] = []
 
     @classmethod
     def _ext(cls) -> str:

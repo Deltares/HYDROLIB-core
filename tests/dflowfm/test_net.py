@@ -404,6 +404,24 @@ class TestMesh2d:
         assert np.array_equiv(mesh.mesh2d_face_z, mesh2d_face_z)
         assert np.array_equiv(mesh.mesh2d_face_nodes, mesh2d_face_nodes)
 
+    def test_read_net_nc_2d_without_faces(self):
+        filepath = test_input_dir / "dflowfm_individual_files/network_nofaces_net.nc"
+
+        # Create network model
+        network = NetworkModel(filepath=filepath)
+        assert network._mesh1d.is_empty()
+        assert not network._mesh2d.is_empty()
+
+        assert len(network._mesh2d.mesh2d_face_x) == 0
+        assert len(network._mesh2d.mesh2d_face_y) == 0
+        assert len(network._mesh2d.mesh2d_face_z) == 0
+        assert network._mesh2d.mesh2d_face_nodes.shape == (0, 0)
+
+        assert len(network._mesh2d.mesh2d_node_x) == 238
+        assert len(network._mesh2d.mesh2d_node_x) == 238
+
+        assert len(network._mesh2d.mesh2d_edge_nodes) == 445
+
 
 class TestNCExplorer:
     mesh2d_file = test_input_dir / "ugrid_files" / "mesh2d_net.nc"

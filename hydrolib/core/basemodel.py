@@ -803,7 +803,8 @@ class FileModel(BaseModel, ABC):
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
             loading_path = context.resolve_casing(loading_path)
-            filepath = self._get_updated_file_path(filepath, loading_path)
+            if context.load_settings.resolve_casing:
+                filepath = self._get_updated_file_path(filepath, loading_path)
 
             logger.info(f"Loading data from {filepath}")
 
