@@ -36,6 +36,16 @@ class TestModels:
     """Test class to test all classes and methods contained in the
     hydrolib.core.dflowfm.mdu.models.py module"""
 
+    def test_default_fmmodel_isloadable(self):
+        outputfile = test_output_dir / "default_fmmodel.mdu"
+
+        fmmodel = FMModel()
+        fmmodel.filepath = outputfile
+        fmmodel.save()
+
+        importfm = FMModel(filepath=fmmodel.filepath)
+        assert isinstance(importfm, FMModel)
+
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
             test_input_dir

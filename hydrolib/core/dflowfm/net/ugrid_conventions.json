@@ -138,12 +138,14 @@
         "mesh2d_face_x": {
             "suffices": [
                 "_face_x"
-            ]
+            ],
+            "is_optional": true
         },
         "mesh2d_face_y": {
             "suffices": [
                 "_face_y"
-            ]
+            ],
+            "is_optional": true
         },
         "mesh2d_face_z": {
             "suffices": [
@@ -154,7 +156,8 @@
         "mesh2d_face_nodes": {
             "suffices": [
                 "_face_nodes"
-            ]
+            ],
+            "is_optional": true
         }
     },
     "link1d2d": {
