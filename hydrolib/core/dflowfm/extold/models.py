@@ -187,7 +187,7 @@ class ExtOldQuantity(str, Enum):
     SolarRadiation = "solarradiation"
     """Solar radiation"""
     DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
-    """Discharge, salinity and heat sources"""
+    """Discharge, salinity temperature source-sinks"""
 
     # Structure parameters
     Pump = "pump"
@@ -205,7 +205,7 @@ class ExtOldQuantity(str, Enum):
     InitialSalinity = "initialsalinity"
     """Initial salinity"""
     InitialSalinityTop = "initialsalinitytop"
-    """Initial salinity top"""
+    """Initial salinity top layer"""
     InitialTemperature = "initialtemperature"
     """Initial temperature"""
     InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
@@ -235,7 +235,7 @@ class ExtOldQuantity(str, Enum):
     MovingStationXY = "movingstationxy"
     """Moving observation point for output (time, x, y)"""
     WaveSignificantHeight = "wavesignificantheight"
-    """Wave significant heigth"""
+    """Wave significant height"""
     WavePeriod = "waveperiod"
     """Wave period"""
 
@@ -249,14 +249,14 @@ class ExtOldFileType(IntEnum):
     """1. Time series"""
     TimeSeriesMagnitudeAndDirection = 2
     """2. Time series magnitude and direction"""
-    SpatiallyVaryingWeather = 3
-    """3. Spatially varying weather"""
+    SpatiallyVaryingWindPressure = 3
+    """3. Spatially varying wind and pressure"""
     ArcInfo = 4
     """4. ArcInfo"""
     SpiderWebData = 5
     """5. Spiderweb data (cyclones)"""
     CurvilinearData = 6
-    """6. Curvilinear data"""
+    """6. Space-time data on curvilinear grid"""
     Samples = 7
     """7. Samples"""
     TriangulationMagnitudeAndDirection = 8
@@ -284,8 +284,8 @@ class ExtOldMethod(IntEnum):
     """4. Interpolate space"""
     InterpolateTime = 5
     """5. Interpolate time"""
-    Averaging = 6
-    """6. Averaging"""
+    AveragingSpace = 6
+    """6. Averaging in space"""
     InterpolateExtrapolateTime = 7
     """7. Interpolate/Extrapolate time"""
 
