@@ -408,9 +408,9 @@ class TestExtForcing:
             maxsearchradius = 1.23
 
             forcing = ExtOldForcing(
-                quantity=ExtOldQuantity.WaterLevelBnd,
+                quantity=ExtOldQuantity.AirPressureWindXWindY,
                 filename="",
-                filetype=9,
+                filetype=3,
                 method=3,
                 extrapolation_method=extrapolation_method,
                 maxsearchradius=maxsearchradius,
@@ -427,9 +427,9 @@ class TestExtForcing:
 
             with pytest.raises(ValueError) as error:
                 _ = ExtOldForcing(
-                    quantity=ExtOldQuantity.WaterLevelBnd,
+                    quantity=ExtOldQuantity.AirPressureWindXWindY,
                     filename="",
-                    filetype=9,
+                    filetype=3,
                     method=3,
                     extrapolation_method=extrapolation_method,
                     maxsearchradius=maxsearchradius,
