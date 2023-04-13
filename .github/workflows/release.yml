@@ -73,5 +73,5 @@ jobs:
         with:
           name: Release v${{ major }}.${{ minor }}.${{ patch }}
           tag_name: ${{ major }}.${{ minor }}.${{ patch }}
-          body_path: CHANGELOG.md
+          body_path: changelog.md
           token: ${{ secrets.GITHUB_TOKEN }}
