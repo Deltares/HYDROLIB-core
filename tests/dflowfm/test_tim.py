@@ -314,3 +314,34 @@ class TestTimParser:
 
         expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the time series data."
         assert expected_error_msg in str(error.value)
+
+
+    @pytest.mark.parametrize(
+        "input_path",
+        [
+            pytest.param(
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "triple_data_for_timeseries_with_empty_data.tim"
+                ),
+                id="triple_data_for_timeseries_with_empty_data",
+            ),
+            pytest.param(
+                Path(
+                    test_input_dir
+                    / "tim"
+                    / "bc_file_is_incorrect.bc"
+                ),
+                id="bc_file_is_incorrect",
+            ),
+        ],
+    )
+    def test_parse_data_throws_exception_error_parsing_tim_file_values_is_empty(
+        self, input_path
+    ):
+        with pytest.raises(ValueError) as error:
+            TimParser.parse(input_path)
+
+        expected_error_msg = f"Line {0}: Time series cannot be empty."
+        assert expected_error_msg in str(error.value)
