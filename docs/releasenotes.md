@@ -5,7 +5,7 @@ HYDROLIB-core 0.5.0 mainly adds more support for D-Flow FM 2D3D models in coasta
 Support for MacOS is temporarily dropped, due to an upgrade to MeshKernel 2.0.2.
 We aim to re-enable this support in future releases.
 
-### New features
+### New Features
 * Support for cross-platform path style ({{gh_pr(361)}}), more info in the [loading and saving tutorial](tutorials/loading_and_saving_a_model/#saving-and-loading-models-between-different-operating-systems).
 * Support for more MDU keywords (1D2D: see {{gh_issue(489)}}, 2D/3D: see {{gh_issue(474)}}, {{gh_issue(486)}}).
 * Support for `[Meteo]` blocks in external forcings files ({{gh_issue(446)}})
