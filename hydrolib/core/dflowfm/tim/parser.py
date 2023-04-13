@@ -66,7 +66,9 @@ class TimParser:
                 continue
 
             start_timeseries_index = line_index
-            return comments, start_timeseries_index
+            break
+
+        return comments, start_timeseries_index
 
     @staticmethod
     def _read_time_series_data(
