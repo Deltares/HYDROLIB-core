@@ -45,7 +45,7 @@ class XYZModel(ParsableFileModel):
         points: List of [`XYZPoint`][hydrolib.core.dflowfm.xyz.models.XYZPoint]
     """
 
-    points: List[XYZPoint]
+    points: List[XYZPoint] = []
 
     def dict(self, *args, **kwargs):
         # speed up serializing by not converting these lowest models to dict
@@ -66,5 +66,5 @@ class XYZModel(ParsableFileModel):
         return XYZSerializer.serialize
 
     @classmethod
-    def _get_parser(cls) -> Callable:
+    def _get_parser(cls) -> Callable[[Path], Dict]:
         return XYZParser.parse
