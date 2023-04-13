@@ -514,14 +514,14 @@ class ExtOldForcing(BaseModel):
             raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
-        only_allowed_when(averagingtype, method, ExtOldMethod.Averaging)
-        only_allowed_when(relativesearchcellsize, method, ExtOldMethod.Averaging)
+        only_allowed_when(averagingtype, method, ExtOldMethod.AveragingSpace)
+        only_allowed_when(relativesearchcellsize, method, ExtOldMethod.AveragingSpace)
         only_allowed_when(extrapoltol, method, ExtOldMethod.InterpolateTime)
-        only_allowed_when(percentileminmax, method, ExtOldMethod.Averaging)
+        only_allowed_when(percentileminmax, method, ExtOldMethod.AveragingSpace)
         only_allowed_when(
             area, quantity, ExtOldQuantity.DischargeSalinityTemperatureSorSin
         )
-        only_allowed_when(nummin, method, ExtOldMethod.Averaging)
+        only_allowed_when(nummin, method, ExtOldMethod.AveragingSpace)
 
         return values
 
