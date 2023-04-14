@@ -27,12 +27,12 @@ class NodeFileSerializer:
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with path.open("wb") as f:
+        with path.open("w", encoding="utf8") as f:
             for node in data["node"]:
                 line = (
-                    f"NODE {NodeFileSerializer._to_line(node, config)} node{os.linesep}"
+                    f"NODE {NodeFileSerializer._to_line(node, config)} node\n"
                 )
-                f.write(line.encode("utf8"))
+                f.write(line)
 
     @staticmethod
     def _to_line(node: Dict[str, Any], config: SerializerConfig) -> str:
@@ -72,10 +72,10 @@ class LinkFileSerializer:
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with path.open("wb") as f:
+        with path.open("w", encoding="utf8") as f:
             for link in data["link"]:
-                line = f"BRCH {LinkFileSerializer._to_line(link)} brch{os.linesep}"
-                f.write(line.encode("utf8"))
+                line = f"BRCH {LinkFileSerializer._to_line(link)} brch\n"
+                f.write(line)
 
     @staticmethod
     def _to_line(link: Dict[str, Any]) -> str:
