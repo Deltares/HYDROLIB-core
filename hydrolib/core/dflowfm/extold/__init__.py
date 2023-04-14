@@ -1,4 +1,5 @@
 from .models import (
+    ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
     ExtOldMethod,
@@ -8,6 +9,7 @@ from .models import (
 )
 
 __all__ = [
+    "ExtOldExtrapolationMethod",
     "ExtOldForcing",
     "ExtOldModel",
     "ExtOldQuantity",
