@@ -9,6 +9,7 @@ from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     get_enum_validator,
@@ -45,22 +46,6 @@ class InterpolationMethod(str, Enum):
     averaging = "averaging"  # grid cell averaging.
 
     allowedvaluestext = "Possible values: constant, triangulation, averaging."
-
-
-class Operand(str, Enum):
-    """
-    Enum class containing the valid values for the operand
-    attribute in several subclasses of AbstractIniField.
-    """
-
-    override = "O"  # override any previous data.
-    append = "A"  # append, sets only where data is still missing.
-    add = "+"  # adds the provided values to the existing values.
-    mult = "*"  # multiplies the existing values by the provided values.
-    max = "X"  # takes the maximum of the existing values and the provided values.
-    min = "N"  # takes the minimum of the existing values and the provided values.
-
-    allowedvaluestext = "Possible values: O, A, +, *, X, N."
 
 
 class AveragingType(str, Enum):

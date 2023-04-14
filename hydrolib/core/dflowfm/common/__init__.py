@@ -1,3 +1,3 @@
-from .models import LocationType
+from .models import LocationType, Operand
 
-__all__ = ["LocationType"]
+__all__ = ["LocationType", "Operand"]
