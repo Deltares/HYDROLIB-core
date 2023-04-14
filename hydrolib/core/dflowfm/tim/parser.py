@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Any, Dict, List, Tuple
 
 TimData = Dict[str, List[str]]
 

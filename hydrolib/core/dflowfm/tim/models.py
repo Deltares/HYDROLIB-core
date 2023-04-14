@@ -85,7 +85,7 @@ class TimModel(ParsableFileModel):
                 raise ValueError(
                     f"Time {timrecord.time}: Expected {n_columns} columns, but was {len(timrecord.data)}"
                 )
-    
+
     @staticmethod
     def _raise_error_if_duplicate_time(timeseries: List[TimRecord]) -> None:
         seen_times = set()
