@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Any, Tuple
 
 TimData = Dict[str, List[str]]
 
@@ -12,7 +12,7 @@ class TimParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> Dict[List[str], TimData]:
+    def parse(filepath: Path) -> Dict[str, List[Any]]:
         """Parse a .tim file into a dictionary with comments and time series data.
 
         Args:
@@ -20,7 +20,7 @@ class TimParser:
 
         Returns:
             Dict[str, List[Any]]: A dictionary with keys "comments" and "timeseries".
-            - "comments" is a list of strings representing comments found at the start of the file.
+            - "comments" represents comments found at the start of the file.
             - "timeseries" is a list of dictionaries with the key as "time" and values as "data".
                 - "time" is a time as a string.
                 - "data" is data as a list of strings.

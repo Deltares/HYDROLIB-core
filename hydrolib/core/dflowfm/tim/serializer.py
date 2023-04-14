@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Any, Optional
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
@@ -18,7 +18,7 @@ class TimSerializer:
     @staticmethod
     def serialize(
         path: Path,
-        data: Dict[List[str], Dict[str, List[str]]],
+        data: Dict[str, List[Any]],
         config: TimSerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> None:
@@ -27,9 +27,9 @@ class TimSerializer:
 
         Args:
             path (Path): The path to the destination .tim file.
-            data (Dict[List[str], Dict[str, List[str]]]): A dictionary with keys "comments" and "timeseries".\n
-            - "comments" is a list of strings representing comments found at the start of the file.\n
-            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".\n
+            data (Dict[str, List[Any]]): A dictionary with keys "comments" and "timeseries".
+            - "comments" represents comments found at the start of the file.
+            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".
                 - "time" is a time as a string.
                 - "data" is data as a list of strings.
 
@@ -48,14 +48,14 @@ class TimSerializer:
             file.write(file_content)
 
     @staticmethod
-    def _serialize_comment_lines(data) -> List[str]:
+    def _serialize_comment_lines(data: Dict[str, List[Any]]) -> List[str]:
         commentlines = []
         for comment in data["comments"]:
             commentlines.append(f"#{comment}")
         return commentlines
 
     @staticmethod
-    def _serialize_timeseries_lines(data, config) -> List[str]:
+    def _serialize_timeseries_lines(data: Dict[str, List[Any]], config: TimSerializerConfig) -> List[str]:
         format_float = lambda v: f"{v:{config.float_format}}"
         timeseriesblock = TimSerializer._serialize_to_timeseries_block(
             data, format_float
@@ -66,11 +66,11 @@ class TimSerializer:
         return timeserieslines
 
     @staticmethod
-    def _serialize_to_timeseries_block(data, format_float) -> TimeSeriesBlock:
+    def _serialize_to_timeseries_block(data: Dict[str, List[Any]], format_float) -> TimeSeriesBlock:
         timeseries_block: TimeSeriesBlock = []
-        for nested_data in data["timeseries"]:
-            time = nested_data["time"]
-            row_elements = nested_data["data"]
+        for timeseries in data["timeseries"]:
+            time = timeseries["time"]
+            row_elements = timeseries["data"]
             timeseries_row = [format_float(time)] + [
                 format_float(value) for value in row_elements
             ]
