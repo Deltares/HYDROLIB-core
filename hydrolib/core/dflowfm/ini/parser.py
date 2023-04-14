@@ -379,7 +379,7 @@ class Parser:
             r"([\d.]+)([dD])([+\-]?\d+)"
         )  # matches a float value: 1d9, 1D-3, 1.D+4, etc.
 
-        with filepath.open() as f:
+        with filepath.open(encoding="utf-8") as f:
             for line in f:
                 # Replace Fortran scientific notation for doubles
                 # Match number d/D +/- number (e.g. 1d-05 or 1.23D+01 or 1.d-4)
