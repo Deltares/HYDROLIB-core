@@ -118,4 +118,4 @@ nav:
       - RainfallRunoff:
           - reference/rr/rr.md
           - reference/rr/meteo.md
-  - Changelog: "changelog.md"
+  - Release notes: "releasenotes.md"
