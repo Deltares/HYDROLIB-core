@@ -23,7 +23,7 @@ class TimSerializer:
         save_settings: ModelSaveSettings,
     ) -> None:
         """
-        Serializes timeseries data to a file in .tim format.
+        Serialize timeseries data to a file in .tim format.
 
         Args:
             path (Path): The path to the destination .tim file.
