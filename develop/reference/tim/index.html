@@ -1639,7 +1639,7 @@ if the time series contains a duplicate time entry.</p></td>
     <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">timeseries</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
         <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
         <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
@@ -1794,7 +1794,7 @@ TimSerializer        </code>
     <span class="n">file_content</span> <span class="o">=</span> <span class="n">TimSerializer</span><span class="o">.</span><span class="n">_serialize_file_content</span><span class="p">(</span>
         <span class="n">timeserieslines</span><span class="p">,</span> <span class="n">commentlines</span>
     <span class="p">)</span>
-    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
 </code></pre></div>
         </details>
