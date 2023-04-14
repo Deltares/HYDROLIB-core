@@ -57,7 +57,7 @@ class Serializer:
             "\n".join(serialized_comments) + "\n" + "\n\n".join(serialized_blocks)
         )
 
-        with path.open("w") as f:
+        with path.open("w", encoding="utf8") as f:
             f.write(file_content)
 
     @staticmethod

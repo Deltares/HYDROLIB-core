@@ -29,10 +29,10 @@ def assert_files_equal(file: Path, reference_file: Path, skip_lines: list = []) 
         skip_lines (list): Optional parameter; the line indices to skip for comparison. Default is an empty list.
     """
 
-    with file.open() as af:
+    with file.open(encoding="utf8") as af:
         actual_lines = af.readlines()
 
-    with reference_file.open() as rf:
+    with reference_file.open(encoding="utf8") as rf:
         reference_lines = rf.readlines()
 
     assert len(actual_lines) == len(
@@ -166,7 +166,7 @@ def create_temp_file(content: str, filename: str) -> Generator[Path, None, None]
         Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
     """
     with get_temp_file(filename) as file:
-        with open(file, "w") as f:
+        with open(file, "w", encoding="utf8") as f:
             f.write(content)
         yield file
 

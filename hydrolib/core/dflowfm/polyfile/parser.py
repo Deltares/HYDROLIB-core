@@ -581,7 +581,7 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
 
     parser = Parser(filepath, has_z_value=has_z_values)
 
-    with filepath.open("r") as f:
+    with filepath.open("r", encoding="utf8") as f:
         for line in f:
             parser.feed_line(line)
 

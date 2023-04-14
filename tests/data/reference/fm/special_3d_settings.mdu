@@ -31,7 +31,7 @@ profDefFile                =                   # <*_profdefinition.def>) definit
 profDefXyzFile             =                   # <*_profdefinition.def>) definition for all profile nrs.
 manholeFile                =                   # File containing manholes (e.g. <*.dat>).
 partitionFile              =                   # <*_part.pol>, polyline(s) x, y.
-uniformWidth1D             = 2.0               #
+uniformWidth1D             = 2.0
 dxWuiMin2D                 = 0.1               # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu, Default = 0.1
 waterLevIni                = 0.0               # Initial water level at missing s0 values
 bedLevUni                  = 5.0               # Uniform bed level used at missing z values if BedlevType > 2
@@ -88,7 +88,7 @@ slopeDrop2D              = 0.0     # Apply droplosses only if local bottom slope
 drop1D                   = 0       # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
 chkAdvd                  = 0.1     # Check advection terms if depth < chkadvdp.
 teta0                    = 0.55    # Theta of time integration (0.5 < theta < 1)
-qhRelax                  = 0.01    #
+qhRelax                  = 0.01
 cstBnd                   = 0       # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
 maxitVerticalForesterSal = 0       # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).
 maxitVerticalForesterTem = 0       # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).

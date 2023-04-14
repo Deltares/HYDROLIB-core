@@ -41,7 +41,7 @@ class TimSerializer:
         file_content = TimSerializer._serialize_file_content(
             timeserieslines, commentlines
         )
-        with path.open("w") as file:
+        with path.open("w", encoding="utf8") as file:
             file.write(file_content)
 
     @staticmethod
