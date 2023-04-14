@@ -338,7 +338,7 @@ class ExtOldForcing(BaseModel):
     """
 
     method: ExtOldMethod = Field(alias="METHOD")
-    """Method: The method of interpolation.
+    """ExtOldMethod: The method of interpolation.
     
     Options:
     1. Pass through (no interpolation)
@@ -346,7 +346,7 @@ class ExtOldForcing(BaseModel):
     3. Interpolate time and space, save weights
     4. Interpolate space
     5. Interpolate time
-    6. Averaging
+    6. Averaging space
     7. Interpolate/Extrapolate time
     """
 
