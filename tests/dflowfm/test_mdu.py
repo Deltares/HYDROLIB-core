@@ -60,12 +60,12 @@ class TestModels:
         fmmodel.save()
 
         importfm = FMModel(filepath=fmmodel.filepath)
-        
+
         # Two different instances of the `Network` will fail the equality check
         network = Network()
         fmmodel.geometry.netfile.network = network
         importfm.geometry.netfile.network = network
-        
+
         assert importfm == fmmodel
 
     def test_mdu_file_with_network_is_read_correctly(self):

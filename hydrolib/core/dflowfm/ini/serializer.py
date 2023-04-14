@@ -239,7 +239,11 @@ class SectionSerializer:
         else:
             value = value_ws
 
-        comment = f" # {property.comment}" if not str_is_empty_or_none(property.comment) else ""
+        comment = (
+            f" # {property.comment}"
+            if not str_is_empty_or_none(property.comment)
+            else ""
+        )
 
         yield f"{indent}{key}{value}{comment}".rstrip()
 
