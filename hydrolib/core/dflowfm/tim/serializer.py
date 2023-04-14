@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
@@ -69,7 +69,7 @@ class TimSerializer:
 
     @staticmethod
     def _serialize_to_timeseries_block(
-        data: Dict[str, List[Any]], format_float
+        data: Dict[str, List[Any]], format_float: Callable[[float], str]
     ) -> TimeSeriesBlock:
         timeseries_block: TimeSeriesBlock = []
         for timeseries in data["timeseries"]:

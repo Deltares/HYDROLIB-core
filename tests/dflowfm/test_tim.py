@@ -332,8 +332,8 @@ class TestTimParser:
                 id="triple_data_for_timeseries_with_empty_data",
             ),
             pytest.param(
-                Path(test_input_dir / "tim" / "bc_file_is_incorrect.bc"),
-                id="bc_file_is_incorrect",
+                Path(test_input_dir / "tim" / "bc_file_format_incorrect_for_timmodel.bc"),
+                id="bc_file_format_incorrect_for_timmodel",
             ),
         ],
     )

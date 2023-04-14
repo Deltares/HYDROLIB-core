@@ -13,10 +13,10 @@ class TimRecord(BaseModel):
     """Single tim record, representing a time and a list of data."""
 
     time: float
-    """time: time of the time record."""
+    """float: Time of the time record."""
 
     data: List[float] = []
-    """data: record of the time recored"""
+    """List[float]: Record of the time record."""
 
 
 class TimModel(ParsableFileModel):
