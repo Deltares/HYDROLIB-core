@@ -13,7 +13,7 @@
     
     
       
-        <title>Observation point .ini files - hydrolib-core documentation</title>
+        <title>Observation point files - hydrolib-core documentation</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#observation-point-ini-files" class="md-skip">
+        <a href="#observation-point-files" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@ You're not viewing the latest release version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Observation point .ini files
+              Observation point files
             
           </span>
         </div>
@@ -1190,81 +1190,24 @@ You're not viewing the latest release version.
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Observation point .ini files
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
-        Observation point .ini files
+        Observation point files
       </a>
       
-        
+    </li>
+  
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+            
+          
+            
+              
   
   
   
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#model" class="md-nav__link">
-    Model
-  </a>
-  
-    <nav class="md-nav" aria-label="Model">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPoint" class="md-nav__link">
-    ObservationPoint
-  </a>
-  
-    <nav class="md-nav" aria-label="ObservationPoint">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPoint.validate_that_location_specification_is_correct" class="md-nav__link">
-    validate_that_location_specification_is_correct()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPointGeneral" class="md-nav__link">
-    ObservationPointGeneral
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPointModel" class="md-nav__link">
-    ObservationPointModel
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
+    <li class="md-nav__item">
+      <a href="../observationcrosssection/" class="md-nav__link">
+        Observation cross section files
+      </a>
     </li>
   
 
@@ -1381,61 +1324,6 @@ You're not viewing the latest release version.
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#model" class="md-nav__link">
-    Model
-  </a>
-  
-    <nav class="md-nav" aria-label="Model">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPoint" class="md-nav__link">
-    ObservationPoint
-  </a>
-  
-    <nav class="md-nav" aria-label="ObservationPoint">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPoint.validate_that_location_specification_is_correct" class="md-nav__link">
-    validate_that_location_specification_is_correct()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPointGeneral" class="md-nav__link">
-    ObservationPointGeneral
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.obs.models.ObservationPointModel" class="md-nav__link">
-    ObservationPointModel
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1446,14 +1334,20 @@ You're not viewing the latest release version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/Deltares/hydrolib-core/edit/main/docs/reference/obs.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/Deltares/hydrolib-core/edit/main/docs/reference/observationpoint.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
+<h1 id="observation-point-files">Observation point files<a class="headerlink" href="#observation-point-files" title="Permanent link">&para;</a></h1>
+<p>Observation point files come in two flavours:</p>
+<ul>
+<li>the official <code>*_obs.ini</code> format <a href="#observation-point-ini-files">see below</a></li>
+<li>the legacy <code>*.xyn</code> format  <a href="#legacy-observation-point-xyn-files">see below</a></li>
+</ul>
 <h1 id="observation-point-ini-files">Observation point .ini files<a class="headerlink" href="#observation-point-ini-files" title="Permanent link">&para;</a></h1>
-<p>The observation point module provides the specific logic for accessing observation point files
+<p>The <code>obs</code> module provides the specific logic for accessing observation point .ini files
 for a <a href="../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <p>Generic parsing and serializing functionality comes from the generic hydrolib.core.dflowfm.ini modules.</p>
 <p>An observation point .ini file is described by the classes below.</p>
@@ -1711,6 +1605,164 @@ ObservationPointModel            (<a title="hydrolib.core.dflowfm.ini.models.INI
 
   </div>
 
+<h1 id="legacy-observation-point-xyn-files">Legacy observation point .xyn files<a class="headerlink" href="#legacy-observation-point-xyn-files" title="Permanent link">&para;</a></h1>
+<p>The <code>xyn</code> module provides the specific logic for accessing legacy observation point files
+for a <a href="../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
+<p>An observation point .xyn file is described by the classes below.</p>
+<h2 id="model_1">Model<a class="headerlink" href="#model_1" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-object doc-module">
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.xyn.models.XYNModel" class="doc doc-heading">
+        <code>
+XYNModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="../api/#hydrolib.core.basemodel.ParsableFileModel">ParsableFileModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.xyn.models.XYNModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Observation station (.xyn) file.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.dflowfm.xyn.models.XYNModel.dict" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#hydrolib.core.dflowfm.xyn.models.XYNModel.dict" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/dflowfm/xyn/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># speed up serializing by not converting these lowest models to dict</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.xyn.models.XYNPoint" class="doc doc-heading">
+        <code>
+XYNPoint            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.xyn.models.XYNPoint" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Single XYN point, representing a named station location.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
               
             </article>
             
@@ -1746,13 +1798,13 @@ ObservationPointModel            (<a title="hydrolib.core.dflowfm.ini.models.INI
       
       
         
-        <a href="../rr/rr/" class="md-footer__link md-footer__link--next" aria-label="Next: RainfallRunoff file models" rel="next">
+        <a href="../observationcrosssection/" class="md-footer__link md-footer__link--next" aria-label="Next: Observation cross section files" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              RainfallRunoff file models
+              Observation cross section files
             </div>
           </div>
           <div class="md-footer__button md-icon">

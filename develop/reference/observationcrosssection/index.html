@@ -13,7 +13,7 @@
     
     
       
-        <title>Observation station files - hydrolib-core documentation</title>
+        <title>Observation cross section files - hydrolib-core documentation</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#observation-station-files" class="md-skip">
+        <a href="#observation-cross-section-files" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@ You're not viewing the latest release version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Observation station files
+              Observation cross section files
             
           </span>
         </div>
@@ -277,6 +277,8 @@ You're not viewing the latest release version.
         
   
   
+    
+  
 
 
   
@@ -288,7 +290,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-tabs__item">
-      <a href="../glossary/" class="md-tabs__link">
+      <a href="../glossary/" class="md-tabs__link md-tabs__link--active">
         API Reference
       </a>
     </li>
@@ -825,12 +827,14 @@ You're not viewing the latest release version.
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
       
       
       
@@ -977,14 +981,16 @@ You're not viewing the latest release version.
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_5_3" type="checkbox" id="__nav_5_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_3" type="checkbox" id="__nav_5_3" checked>
       
       
       
@@ -1175,9 +1181,33 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../obs/" class="md-nav__link">
-        Observation point .ini files
+      <a href="../observationpoint/" class="md-nav__link">
+        Observation point files
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Observation cross section files
+      </a>
+      
     </li>
   
 
@@ -1294,120 +1324,6 @@ You're not viewing the latest release version.
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#model" class="md-nav__link">
-    Model
-  </a>
-  
-    <nav class="md-nav" aria-label="Model">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.xyn.models.XYNModel" class="md-nav__link">
-    XYNModel
-  </a>
-  
-    <nav class="md-nav" aria-label="XYNModel">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.xyn.models.XYNModel.dict" class="md-nav__link">
-    dict()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.xyn.models.XYNPoint" class="md-nav__link">
-    XYNPoint
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#parser" class="md-nav__link">
-    Parser
-  </a>
-  
-    <nav class="md-nav" aria-label="Parser">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.xyn.parser.XYNParser" class="md-nav__link">
-    XYNParser
-  </a>
-  
-    <nav class="md-nav" aria-label="XYNParser">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.xyn.parser.XYNParser.parse" class="md-nav__link">
-    parse()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#serializer" class="md-nav__link">
-    Serializer
-  </a>
-  
-    <nav class="md-nav" aria-label="Serializer">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.xyn.serializer.XYNSerializer" class="md-nav__link">
-    XYNSerializer
-  </a>
-  
-    <nav class="md-nav" aria-label="XYNSerializer">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.xyn.serializer.XYNSerializer.serialize" class="md-nav__link">
-    serialize()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1418,16 +1334,23 @@ You're not viewing the latest release version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/Deltares/hydrolib-core/edit/main/docs/reference/xyn.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/Deltares/hydrolib-core/edit/main/docs/reference/observationcrosssection.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
-<h1 id="observation-station-files">Observation station files<a class="headerlink" href="#observation-station-files" title="Permanent link">&para;</a></h1>
-<p>Observation station .xyn files contain observation station data
+<h1 id="observation-cross-section-files">Observation cross section files<a class="headerlink" href="#observation-cross-section-files" title="Permanent link">&para;</a></h1>
+<p>Observation cross section files come in two flavours:</p>
+<ul>
+<li>the official <code>*_crs.ini</code> format <a href="#observation-cross-section-ini-files">see below</a></li>
+<li>the legacy <code>*.pli</code> format  <a href="#legacy-observation-cross-section-pli-files">see below</a></li>
+</ul>
+<h1 id="observation-cross-section-ini-files">Observation cross section .ini files<a class="headerlink" href="#observation-cross-section-ini-files" title="Permanent link">&para;</a></h1>
+<p>The <code>obscrosssection</code> module provides the specific logic for accessing observation cross section .ini files.
 for a <a href="../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
-<p>An observation station .xyn file is described by the classes below.</p>
+<p>Generic parsing and serializing functionality comes from the generic hydrolib.core.dflowfm.ini modules.</p>
+<p>An observation cross section .ini file is described by the classes below.</p>
 <h2 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h2>
 
 
@@ -1448,9 +1371,9 @@ for a <a href="../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 
 
 
-<h3 id="hydrolib.core.dflowfm.xyn.models.XYNModel" class="doc doc-heading">
+<h3 id="hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSection" class="doc doc-heading">
         <code>
-XYNModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="../api/#hydrolib.core.basemodel.ParsableFileModel">ParsableFileModel</a>)
+ObservationCrossSection            (<a title="hydrolib.core.dflowfm.ini.models.INIBasedModel" href="../ini/#hydrolib.core.dflowfm.ini.models.INIBasedModel">INIBasedModel</a>)
         </code>
 
 
@@ -1458,11 +1381,15 @@ XYNModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="
       <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
   </span>
 
-<a href="#hydrolib.core.dflowfm.xyn.models.XYNModel" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSection" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
-      <p>Observation station (.xyn) file.</p>
+      <p>The observation cross section that is included in the
+observation cross section file.</p>
+<p>All lowercased attributes match with the observation cross
+section output as described in [UM Sec.F2.4.1]
+(https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.4.1)</p>
 
 
 
@@ -1481,25 +1408,49 @@ XYNModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <div class="doc doc-object doc-method">
 
 
 
-<h4 id="hydrolib.core.dflowfm.xyn.models.XYNModel.dict" class="doc doc-heading">
-<code class="highlight language-python"><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<h4 id="hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSection.validate_that_location_specification_is_correct" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
 
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
 
-<a href="#hydrolib.core.dflowfm.xyn.models.XYNModel.dict" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSection.validate_that_location_specification_is_correct" class="headerlink" title="Permanent link">&para;</a></h4>
 
     <div class="doc doc-contents ">
 
-      <p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
+      <p>Validates that the correct location specification is given.</p>
 
         <details class="quote">
-          <summary>Source code in <code>hydrolib/core/dflowfm/xyn/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="c1"># speed up serializing by not converting these lowest models to dict</span>
-    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+          <summary>Source code in <code>hydrolib/core/dflowfm/obscrosssection/models.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">validate_location_specification</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
+            <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimum_num_coordinates</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1513,6 +1464,9 @@ XYNModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="
 
 
 
+
+
+
   </div>
 
     </div>
@@ -1527,9 +1481,9 @@ XYNModel            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="
 
 
 
-<h3 id="hydrolib.core.dflowfm.xyn.models.XYNPoint" class="doc doc-heading">
+<h3 id="hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSectionGeneral" class="doc doc-heading">
         <code>
-XYNPoint            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+ObservationCrossSectionGeneral            (<span title="hydrolib.core.dflowfm.ini.models.INIGeneral">INIGeneral</span>)
         </code>
 
 
@@ -1537,11 +1491,11 @@ XYNPoint            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
       <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
   </span>
 
-<a href="#hydrolib.core.dflowfm.xyn.models.XYNPoint" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSectionGeneral" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
-      <p>Single XYN point, representing a named station location.</p>
+      <p>The observation cross section file's <code>[General]</code> section with file meta data.</p>
 
 
 
@@ -1563,6 +1517,54 @@ XYNPoint            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
 
 
 
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSectionModel" class="doc doc-heading">
+        <code>
+ObservationCrossSectionModel            (<a title="hydrolib.core.dflowfm.ini.models.INIModel" href="../ini/#hydrolib.core.dflowfm.ini.models.INIModel">INIModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.obscrosssection.models.ObservationCrossSectionModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The overall observation cross section model that contains the contents
+of one observation cross section file.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1582,7 +1584,10 @@ XYNPoint            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
 
   </div>
 
-<h2 id="parser">Parser<a class="headerlink" href="#parser" title="Permanent link">&para;</a></h2>
+<h1 id="legacy-observation-cross-section-pli-files">Legacy observation cross section .pli files<a class="headerlink" href="#legacy-observation-cross-section-pli-files" title="Permanent link">&para;</a></h1>
+<p>Legacy .pli files for observation points are supported via the generic <code>polyfile</code> module.</p>
+<p>A polyfile (hence also an observation cross section .pli file) is described by the classes below.</p>
+<h2 id="model_1">Model<a class="headerlink" href="#model_1" title="Permanent link">&para;</a></h2>
 
 
   <div class="doc doc-object doc-module">
@@ -1590,6 +1595,7 @@ XYNPoint            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
 
     <div class="doc doc-contents first">
 
+      <p>models.py defines all classes and functions related to representing pol/pli(z) files.</p>
 
 
 
@@ -1602,193 +1608,64 @@ XYNPoint            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#
 
 
 
-<h3 id="hydrolib.core.dflowfm.xyn.parser.XYNParser" class="doc doc-heading">
+<h3 id="hydrolib.core.dflowfm.polyfile.models.Description" class="doc doc-heading">
         <code>
-XYNParser        </code>
+Description            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+        </code>
 
-
-
-<a href="#hydrolib.core.dflowfm.xyn.parser.XYNParser" class="headerlink" title="Permanent link">&para;</a></h3>
-
-    <div class="doc doc-contents ">
-
-      <p>A parser for .xyn files with contents like this:</p>
-<p>number number id</p>
-<p>Note that the amount of whitespace can vary.</p>
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="hydrolib.core.dflowfm.xyn.parser.XYNParser.parse" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span></code>
 
   <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
   </span>
 
-<a href="#hydrolib.core.dflowfm.xyn.parser.XYNParser.parse" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#hydrolib.core.dflowfm.polyfile.models.Description" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
-      <p>Parse an .xyn file into a Dict with the list of points read.</p>
+      <p>Description of a single PolyObject.</p>
+<p>The Description will be prepended to a block. Each line will
+start with a '*'.</p>
 
-<p><strong>Parameters:</strong></p>
+<p><strong>Attributes:</strong></p>
 <table>
   <thead>
     <tr>
       <th>Name</th>
       <th>Type</th>
       <th>Description</th>
-      <th>Default</th>
     </tr>
   </thead>
   <tbody>
       <tr>
-        <td><code>filepath</code></td>
-        <td><code>Path</code></td>
-        <td><p>.xyn file to be read.</p></td>
-        <td><em>required</em></td>
+        <td><code>content</code></td>
+        <td><code>str</code></td>
+        <td><p>The content of this Description.</p></td>
       </tr>
   </tbody>
 </table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>Dict[str, List[XYNPoint]]</code></td>
-      <td><p>dictionary with "points" value set to a list of points
-    each of which is a dict itself, with keys 'x', 'y', and 'n'.</p></td>
-    </tr>
-  </tbody>
-</table>
-<p><strong>Exceptions:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>ValueError</code></td>
-        <td><p>if a line in the file cannot be parsed
-or if the name contains whitespace while not surrounded with
-single quotes.</p></td>
-      </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>hydrolib/core/dflowfm/xyn/parser.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse an .xyn file into a Dict with the list of points read.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        filepath (Path): .xyn file to be read.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Dict[str, List[XYNPoint]]: dictionary with &quot;points&quot; value set to a list of points</span>
-<span class="sd">            each of which is a dict itself, with keys &#39;x&#39;, &#39;y&#39;, and &#39;n&#39;.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: if a line in the file cannot be parsed</span>
-<span class="sd">            or if the name contains whitespace while not surrounded with</span>
-<span class="sd">            single quotes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">is_surrounded_by_quotes</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">may_contain_whitespace</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">is_surrounded_by_quotes</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">contains_whitespace</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">name</span>
-
-    <span class="k">def</span> <span class="nf">contains_whitespace_while_not_allowed</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="n">may_contain_whitespace</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">contains_whitespace</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-
-    <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">linenr</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()):</span>
-
-            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">continue</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Error parsing XYN file &#39;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&#39;, line </span><span class="si">{</span><span class="n">linenr</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">contains_whitespace_while_not_allowed</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Error parsing XYN file &#39;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&#39;, line </span><span class="si">{</span><span class="n">linenr</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">. Name `</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">` contains whitespace, so should be enclosed in single quotes.&quot;</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">is_surrounded_by_quotes</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-
-
-  </div>
-
-    </div>
-
-  </div>
-
-
-
-
-
-  </div>
-
-    </div>
-
-  </div>
-
-<h2 id="serializer">Serializer<a class="headerlink" href="#serializer" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-object doc-module">
-
-
-    <div class="doc doc-contents first">
-
 
 
 
   <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
 
 
 
@@ -1797,17 +1674,49 @@ single quotes.</p></td>
 
 
 
-<h3 id="hydrolib.core.dflowfm.xyn.serializer.XYNSerializer" class="doc doc-heading">
+<h3 id="hydrolib.core.dflowfm.polyfile.models.Metadata" class="doc doc-heading">
         <code>
-XYNSerializer        </code>
+Metadata            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+        </code>
 
 
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
 
-<a href="#hydrolib.core.dflowfm.xyn.serializer.XYNSerializer" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#hydrolib.core.dflowfm.polyfile.models.Metadata" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
+      <p>Metadata of a single PolyObject.</p>
 
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>str</code></td>
+        <td><p>The name of the PolyObject</p></td>
+      </tr>
+      <tr>
+        <td><code>n_rows</code></td>
+        <td><code>int</code></td>
+        <td><p>The number of rows (i.e. Point instances) of the PolyObject</p></td>
+      </tr>
+      <tr>
+        <td><code>n_columns</code></td>
+        <td><code>int</code></td>
+        <td><p>The total number of values in a Point, including x, y, and z.</p></td>
+      </tr>
+  </tbody>
+</table>
 
 
 
@@ -1816,110 +1725,241 @@ XYNSerializer        </code>
 
 
 
-  <div class="doc doc-object doc-method">
 
 
 
-<h4 id="hydrolib.core.dflowfm.xyn.serializer.XYNSerializer.serialize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.polyfile.models.Point" class="doc doc-heading">
+        <code>
+Point            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+        </code>
+
 
   <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
   </span>
 
-<a href="#hydrolib.core.dflowfm.xyn.serializer.XYNSerializer.serialize" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#hydrolib.core.dflowfm.polyfile.models.Point" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
-      <p>Serializes the observation point data to an .xyn file at the specified path.</p>
-<p>If the name contains spaces, it will be surrounded with single quotes.</p>
+      <p>Point consisting of a x and y coordinate, an optional z coordinate and data.</p>
 
-<p><strong>Parameters:</strong></p>
+<p><strong>Attributes:</strong></p>
 <table>
   <thead>
     <tr>
       <th>Name</th>
       <th>Type</th>
       <th>Description</th>
-      <th>Default</th>
     </tr>
   </thead>
   <tbody>
       <tr>
-        <td><code>path</code></td>
-        <td><code>Path</code></td>
-        <td><p>The path to the destination file.</p></td>
-        <td><em>required</em></td>
+        <td><code>x</code></td>
+        <td><code>float</code></td>
+        <td><p>The x-coordinate of this Point</p></td>
+      </tr>
+      <tr>
+        <td><code>y</code></td>
+        <td><code>float</code></td>
+        <td><p>The y-coordinate of this Point</p></td>
+      </tr>
+      <tr>
+        <td><code>z</code></td>
+        <td><code>Optional[float]</code></td>
+        <td><p>An optional z-coordinate of this Point.</p></td>
       </tr>
       <tr>
         <td><code>data</code></td>
-        <td><code>Dict[str, List[XYNPoint]]</code></td>
-        <td><p>The data to be serialized.
-The dictionary should contain a single key 'points' that holds a list of XYNPoints.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>config</code></td>
-        <td><code>SerializerConfig</code></td>
-        <td><p>The serialization configuration.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>save_settings</code></td>
-        <td><code>ModelSaveSettings</code></td>
-        <td><p>The model save settings.</p></td>
-        <td><em>required</em></td>
+        <td><code>Sequence[float]</code></td>
+        <td><p>The additional data variables of this Point.</p></td>
       </tr>
   </tbody>
 </table>
-        <details class="quote">
-          <summary>Source code in <code>hydrolib/core/dflowfm/xyn/serializer.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span>
-    <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Serializes the observation point data to an .xyn file at the specified path.</span>
 
-<span class="sd">    If the name contains spaces, it will be surrounded with single quotes.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        path (Path): The path to the destination file.</span>
-<span class="sd">        data (Dict[str, List[XYNPoint]]): The data to be serialized.</span>
-<span class="sd">            The dictionary should contain a single key &#39;points&#39; that holds a list of XYNPoints.</span>
-<span class="sd">        config (SerializerConfig): The serialization configuration.</span>
-<span class="sd">        save_settings (ModelSaveSettings): The model save settings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">space</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
-    <span class="n">format_float</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
-    <span class="n">format_name</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">n</span> <span class="k">else</span> <span class="n">n</span>
+  <div class="doc doc-children">
 
-    <span class="n">serialized_points</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">]:</span>
-        <span class="n">serialized_point</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">format_float</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">),</span>
-                <span class="n">format_float</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
-                <span class="n">format_name</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">n</span><span class="p">),</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">serialized_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">serialized_point</span><span class="p">)</span>
 
-    <span class="n">file_content</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialized_points</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
-</code></pre></div>
-        </details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
     </div>
 
   </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.polyfile.models.PolyFile" class="doc doc-heading">
+        <code>
+PolyFile            (<a title="hydrolib.core.basemodel.ParsableFileModel" href="../api/#hydrolib.core.basemodel.ParsableFileModel">ParsableFileModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.polyfile.models.PolyFile" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Poly-file (.pol/.pli/.pliz) representation.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.polyfile.models.PolyObject" class="doc doc-heading">
+        <code>
+PolyObject            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hydrolib.core.basemodel.BaseModel">BaseModel</a>)
+        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.polyfile.models.PolyObject" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>PolyObject describing a single block in a poly file.</p>
+<p>The metadata should be consistent with the points:
+- The number of points should be equal to number of rows defined in the metadata
+- The data of each point should be equal to the number of columns defined in the
+  metadata.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>description</code></td>
+        <td><code>Optional[Description]</code></td>
+        <td><p>An optional description of this PolyObject</p></td>
+      </tr>
+      <tr>
+        <td><code>metadata</code></td>
+        <td><code>Metadata</code></td>
+        <td><p>The Metadata of this PolObject, describing the structure</p></td>
+      </tr>
+      <tr>
+        <td><code>points</code></td>
+        <td><code>List[Point]</code></td>
+        <td><p>The points describing this PolyObject, structured according to the Metadata</p></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1955,6 +1995,42 @@ The dictionary should contain a single key 'points' that holds a list of XYNPoin
       </main>
       
         <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../observationpoint/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Observation point files" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Observation point files
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../rr/rr/" class="md-footer__link md-footer__link--next" aria-label="Next: RainfallRunoff file models" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              RainfallRunoff file models
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
