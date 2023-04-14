@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-TimRecord = Dict[str, List[str]]
+TimData = Dict[str, List[str]]
 
 
 class TimParser:
@@ -12,25 +12,26 @@ class TimParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> Dict[List[str], TimRecord]:
+    def parse(filepath: Path) -> Dict[List[str], TimData]:
         """Parse a .tim file into a dictionary with comments and time series data.
 
         Args:
             filepath (Path): Path to the .tim file to be parsed.
 
         Returns:
-            Dict[List[str], Dict[str, List[str]]: A dictionary with keys "comments" and "timeseries".\n
-            - "comments" is a list of strings representing comments found at the start of the file.\n
-            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".\n
+            Dict[str, List[Any]]: A dictionary with keys "comments" and "timeseries".
+            - "comments" is a list of strings representing comments found at the start of the file.
+            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".
                 - "time" is a time as a string.
                 - "data" is data as a list of strings.
 
         Raises:
             ValueError: If the file contains a comment that is not at the start of the file.
+            ValueError: If the data of the timeseries is empty.
         """
 
         comments: List[str] = []
-        timeseries: List[TimRecord] = []
+        timeseries: List[TimData] = []
 
         with filepath.open() as file:
             lines = file.readlines()
@@ -73,8 +74,8 @@ class TimParser:
     @staticmethod
     def _read_time_series_data(
         lines: List[str], start_timeseries_index: int
-    ) -> List[TimRecord]:
-        timeseries: List[TimRecord] = []
+    ) -> List[TimData]:
+        timeseries: List[TimData] = []
         for line_index in range(start_timeseries_index, len(lines)):
             line = lines[line_index].strip()
 
