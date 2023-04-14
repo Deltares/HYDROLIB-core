@@ -75,21 +75,21 @@ class TimModel(ParsableFileModel):
 
         return v
 
-    def _raise_error_if_amount_of_columns_differ(self, timeseries: List[TimRecord]) -> None:
-        n_columns = len(self[0].data)
+    def _raise_error_if_amount_of_columns_differ(timeseries: List[TimRecord]) -> None:
+        n_columns = len(timeseries[0].data)
 
         if n_columns == 0:
             raise ValueError("Time series cannot be empty.")
 
-        for timrecord in self:
+        for timrecord in timeseries:
             if len(timrecord.data) != n_columns:
                 raise ValueError(
                     f"Time {timrecord.time}: Expected {n_columns} columns, but was {len(timrecord.data)}"
                 )
 
-    def _raise_error_if_duplicate_time(self, timeseries: List[TimRecord]) -> None:
+    def _raise_error_if_duplicate_time(timeseries: List[TimRecord]) -> None:
         seen_times = set()
-        for timrecord in self:
+        for timrecord in timeseries:
             if timrecord.time in seen_times:
                 raise ValueError(
                     f"Timeseries cannot contain duplicate times. Time: {timrecord.time} is duplicate."
