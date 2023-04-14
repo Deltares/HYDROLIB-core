@@ -378,33 +378,33 @@ class ExtOldForcing(BaseModel):
     """
 
     value: Optional[float] = Field(None, alias="VALUE")
-    """Optional[float]: custom coefficients for transformation."""
+    """Optional[float]: Custom coefficients for transformation."""
 
     factor: Optional[float] = Field(None, alias="FACTOR")
-    """Optional[float]: The factor."""
+    """Optional[float]: The conversion factor."""
 
     ifrctyp: Optional[float] = Field(None, alias="IFRCTYP")
     """Optional[float]: The friction type."""
 
     averagingtype: Optional[float] = Field(None, alias="AVERAGINGTYPE")
-    """Optional[float]: The averging type."""
+    """Optional[float]: The averaging type."""
 
     relativesearchcellsize: Optional[float] = Field(
         None, alias="RELATIVESEARCHCELLSIZE"
     )
-    """Optional[float]: The relative search cell size."""
+    """Optional[float]: The relative search cell size for samples inside a cell."""
 
     extrapoltol: Optional[float] = Field(None, alias="EXTRAPOLTOL")
     """Optional[float]: The extrapolation tolerance."""
 
     percentileminmax: Optional[float] = Field(None, alias="PERCENTILEMINMAX")
-    """Optional[float]: The percentile min max."""
+    """Optional[float]: Changes the min/max operator to an average of the highest/lowest data points. The value sets the percentage of the total set that is to be included.."""
 
     area: Optional[float] = Field(None, alias="AREA")
     """Optional[float]: The area for sources and sinks."""
 
     nummin: Optional[int] = Field(None, alias="NUMMIN")
-    """Optional[int]: The nummin."""
+    """Optional[int]: The minimum required number of source data points in each target cell."""
 
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
