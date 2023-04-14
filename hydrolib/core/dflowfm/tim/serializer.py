@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
 
@@ -55,7 +55,9 @@ class TimSerializer:
         return commentlines
 
     @staticmethod
-    def _serialize_timeseries_lines(data: Dict[str, List[Any]], config: TimSerializerConfig) -> List[str]:
+    def _serialize_timeseries_lines(
+        data: Dict[str, List[Any]], config: TimSerializerConfig
+    ) -> List[str]:
         format_float = lambda v: f"{v:{config.float_format}}"
         timeseriesblock = TimSerializer._serialize_to_timeseries_block(
             data, format_float
@@ -66,7 +68,9 @@ class TimSerializer:
         return timeserieslines
 
     @staticmethod
-    def _serialize_to_timeseries_block(data: Dict[str, List[Any]], format_float) -> TimeSeriesBlock:
+    def _serialize_to_timeseries_block(
+        data: Dict[str, List[Any]], format_float
+    ) -> TimeSeriesBlock:
         timeseries_block: TimeSeriesBlock = []
         for timeseries in data["timeseries"]:
             time = timeseries["time"]
