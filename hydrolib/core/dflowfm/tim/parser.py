@@ -16,7 +16,7 @@ class TimParser:
         """Parse a .tim file into a dictionary with comments and time series data.
 
         Args:
-            filepath (Path): Path to the .tim file to be read.
+            filepath (Path): Path to the .tim file to be parsed.
 
         Returns:
             Dict[List[str], Dict[str, List[str]]: A dictionary with keys "comments" and "timeseries".\n

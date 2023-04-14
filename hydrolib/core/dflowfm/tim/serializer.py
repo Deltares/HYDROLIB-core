@@ -27,7 +27,7 @@ class TimSerializer:
 
         Args:
             path (Path): The path to the destination .tim file.
-            data Dict[List[str], Dict[str, List[str]]]: A dictionary with keys "comments" and "timeseries".\n
+            data (Dict[List[str], Dict[str, List[str]]]): A dictionary with keys "comments" and "timeseries".\n
             - "comments" is a list of strings representing comments found at the start of the file.\n
             - "timeseries" is a list of dictionaries with the key as "time" and values as "data".\n
                 - "time" is a time as a string.
