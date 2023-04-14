@@ -35,7 +35,7 @@ class XYZParser:
 
         data: Dict = dict(points=[])
 
-        with filepath.open() as f:
+        with filepath.open(encoding="utf8") as f:
             for linenr, line in enumerate(f.readlines()):
 
                 line = line.strip()

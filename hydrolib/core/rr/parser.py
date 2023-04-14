@@ -54,5 +54,5 @@ def read(keys: Iterable[str], path: FilePath) -> Dict:
     Returns:
         RainfallRunoffModel: The RainfallRunoffModel corresponding with the file.
     """
-    with path.open("r") as f:
+    with path.open("r", encoding="utf8") as f:
         return parse(keys, f)
