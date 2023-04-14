@@ -38,16 +38,21 @@ class TestModels:
 
     def test_symbols_are_correctly_written_and_loaded_from_file(self):
         from hydrolib.core.dflowfm import FMModel
+
         path = test_output_dir / "test_symbols.mdu"
 
         model_a = FMModel()
-        assert model_a.physics.comments.initialtemperature == "Initial temperature [◦C]."
+        assert (
+            model_a.physics.comments.initialtemperature == "Initial temperature [◦C]."
+        )
         model_a.filepath = path
         model_a.save()
 
         model_b = FMModel(filepath=path)
-        assert model_b.physics.comments.initialtemperature == "Initial temperature [◦C]."
-        
+        assert (
+            model_b.physics.comments.initialtemperature == "Initial temperature [◦C]."
+        )
+
     def test_default_fmmodel_isloadable(self):
         outputfile = test_output_dir / "default_fmmodel.mdu"
 
