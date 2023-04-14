@@ -189,7 +189,7 @@ class ExtOldQuantity(str, Enum):
     DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
     """Discharge, salinity temperature source-sinks"""
     NudgeSalinityTemperature = "nudge_salinity_temperature"
-    """Nudging salinity and temperature""" 
+    """Nudging salinity and temperature"""
 
     # Structure parameters
     Pump = "pump"
