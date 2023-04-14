@@ -50,7 +50,7 @@ The merge commit message should adhere to the [conventional commit guidelines](h
 ### Coding guidelines
 * If there is code that needs to be tested, there should be tests written for it.
 * If there are any additions or changes to the public API, the documentation should be updated. 
-* Files should be added to the appropriate folder to keep modules and objects within the correct scope.  
+* Files should be added to the appropriate folder to keep modules and objects within the correct scope.
 
 ## Releasing
 ### Making a release on GitHub and PyPi
