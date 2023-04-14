@@ -823,7 +823,7 @@ class ForcingModel(INIModel):
         # This method now only supports per model settings, not per section.
         parser = Parser(ParserConfig(parse_datablocks=True, parse_comments=False))
 
-        with filepath.open() as f:
+        with filepath.open(encoding="utf8") as f:
             for line in f:
                 parser.feed_line(line)
 

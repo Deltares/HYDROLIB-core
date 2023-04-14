@@ -28,7 +28,7 @@ class Parser:
             "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
 
-        with filepath.open() as file:
+        with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
 
         comments, start_data_index = Parser._parse_header(lines)

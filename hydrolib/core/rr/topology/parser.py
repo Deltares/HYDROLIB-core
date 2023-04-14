@@ -32,7 +32,7 @@ class NetworkTopologyFileParser:
             warn(f"File: `{path}` not found, skipped parsing.")
             return []
 
-        with open(path) as file:
+        with open(path, encoding="utf8") as file:
             lines = file.readlines()
         return lines
 
