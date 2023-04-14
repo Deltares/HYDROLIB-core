@@ -223,6 +223,10 @@ class TestTimModel:
 
         assert expected_error_msg in str(error.value)
 
+class TestTimRecord:
+    def test_initialization(self):
+        record = TimRecord(time = 0)
+        assert len(record.data) == 0
 
 class TestTimParser:
     triple_data_for_timeseries = [
