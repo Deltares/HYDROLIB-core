@@ -10,15 +10,13 @@ from .serializer import TimSerializer, TimSerializerConfig
 
 
 class TimRecord(BaseModel):
-    """Single time record, representing a time and a list of data.
-
-    Attributes:
-        time: time of the time record.
-        data: record of the time recored.
-    """
+    """Single tim record, representing a time and a list of data."""
 
     time: float
-    data: List[float]
+    """time: time of the time record."""
+
+    data: List[float] = []
+    """data: record of the time recored"""
 
 
 class TimModel(ParsableFileModel):
@@ -48,7 +46,7 @@ class TimModel(ParsableFileModel):
         return TimSerializer.serialize
 
     @classmethod
-    def _get_parser(cls) -> Callable:
+    def _get_parser(cls) -> Callable[[Path], Dict]:
         return TimParser.parse
 
     @validator("timeseries")
@@ -75,6 +73,7 @@ class TimModel(ParsableFileModel):
 
         return v
 
+    @staticmethod
     def _raise_error_if_amount_of_columns_differ(timeseries: List[TimRecord]) -> None:
         n_columns = len(timeseries[0].data)
 
@@ -86,7 +85,8 @@ class TimModel(ParsableFileModel):
                 raise ValueError(
                     f"Time {timrecord.time}: Expected {n_columns} columns, but was {len(timrecord.data)}"
                 )
-
+    
+    @staticmethod
     def _raise_error_if_duplicate_time(timeseries: List[TimRecord]) -> None:
         seen_times = set()
         for timrecord in timeseries:

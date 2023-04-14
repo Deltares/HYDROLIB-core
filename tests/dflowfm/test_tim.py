@@ -100,6 +100,11 @@ class TestTimModel:
         TimRecord(time=120.00000, data=[0.0000000]),
     ]
 
+    def test_initialization(self):
+        model = TimModel()
+        assert len(model.comments) == 0
+        assert len(model.timeseries) == 0
+
     @pytest.mark.parametrize(
         "input_data, reference_path",
         [
