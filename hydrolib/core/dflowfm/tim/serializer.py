@@ -82,7 +82,9 @@ class TimSerializer:
         return timeseries_block
 
     @staticmethod
-    def _serialize_timeseries_to_lines(timeseries_block: TimeSeriesBlock, config: TimSerializerConfig) -> List[str]:
+    def _serialize_timeseries_to_lines(
+        timeseries_block: TimeSeriesBlock, config: TimSerializerConfig
+    ) -> List[str]:
         # Make sure the columns are aligned and have the proper spacing
         column_space = " " * config.column_spacing
         column_lengths = TimSerializer._get_column_lengths(timeseries_block)
