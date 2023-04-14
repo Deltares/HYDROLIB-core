@@ -33,7 +33,7 @@ class TimParser:
         comments: List[str] = []
         timeseries: List[TimData] = []
 
-        with filepath.open() as file:
+        with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
             comments, start_timeseries_index = TimParser._read_header_comments(lines)
             timeseries = TimParser._read_time_series_data(lines, start_timeseries_index)
