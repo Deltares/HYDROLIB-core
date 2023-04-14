@@ -29,9 +29,7 @@ class NodeFileSerializer:
 
         with path.open("w", encoding="utf8") as f:
             for node in data["node"]:
-                line = (
-                    f"NODE {NodeFileSerializer._to_line(node, config)} node\n"
-                )
+                line = f"NODE {NodeFileSerializer._to_line(node, config)} node\n"
                 f.write(line)
 
     @staticmethod
