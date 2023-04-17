@@ -15,6 +15,14 @@ on:
         description: "The new patch version."
         required: true
         type: string
+      increment:
+        description: "The type of increment."
+        required: true
+        type: choice
+        options:
+          - MAJOR
+          - MINOR
+          - PATCH
 
 jobs:
   release:
@@ -56,7 +64,7 @@ jobs:
 
       - name: Bump version
         run: |
-          poetry run cz bump --yes --increment ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
+          poetry run cz bump --yes --increment ${{ github.event.inputs.increment }}
           git push
           git push --tags
 
