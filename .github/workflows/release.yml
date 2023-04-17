@@ -56,7 +56,7 @@ jobs:
 
       - name: Bump version
         run: |
-          cz bump --yes --increment ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
+          poetry run cz bump --yes --increment ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
           git push
           git push --tags
 
