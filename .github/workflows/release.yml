@@ -95,5 +95,5 @@ jobs:
         with:
           name: Release v${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
           tag_name: ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
-          body_path: changelog.md
+          generate_release_notes: true
           token: ${{ secrets.GITHUB_TOKEN }}
