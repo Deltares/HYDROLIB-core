@@ -52,7 +52,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Generate changelog
-        run: cz changelog --unreleased-version="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}" --incremental
+        run: poetry run cz changelog --unreleased-version="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}" --incremental
 
       - name: Bump version
         run: |
