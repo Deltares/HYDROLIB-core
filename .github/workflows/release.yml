@@ -62,6 +62,20 @@ jobs:
       - name: Generate changelog
         run: poetry run cz changelog --unreleased-version="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}" --incremental
 
+      - name: Get user info
+        id: user_info
+        run: |
+          USER_JSON=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ github.actor }}")
+          USER_NAME=$(echo "$USER_JSON" | jq -r .name)
+          USER_EMAIL=$(echo "$USER_JSON" | jq -r .email)
+          echo "::set-output name=name::$USER_NAME"
+          echo "::set-output name=email::$USER_EMAIL"
+
+      - name: Configure git
+        run: |
+          git config --local user.email "${{ steps.user_info.outputs.email }}"
+          git config --local user.name "${{ steps.user_info.outputs.name }}"
+
       - name: Bump version
         run: |
           poetry run cz bump --yes --increment ${{ github.event.inputs.increment }}
