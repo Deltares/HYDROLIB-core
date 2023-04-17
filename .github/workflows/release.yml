@@ -15,6 +15,14 @@ on:
         description: "The new patch version."
         required: true
         type: string
+      increment:
+        description: "The type of increment."
+        required: true
+        type: choice
+        options:
+          - MAJOR
+          - MINOR
+          - PATCH
 
 jobs:
   release:
@@ -52,11 +60,25 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Generate changelog
-        run: cz changelog --unreleased-version="${{ major }}.${{ minor }}.${{ patch }}" --incremental
+        run: poetry run cz changelog --unreleased-version="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}" --incremental
+
+      - name: Get user info
+        id: user_info
+        run: |
+          USER_JSON=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ github.actor }}")
+          USER_NAME=$(echo "$USER_JSON" | jq -r .name)
+          USER_EMAIL=$(echo "$USER_JSON" | jq -r .email)
+          echo "::set-output name=name::$USER_NAME"
+          echo "::set-output name=email::$USER_EMAIL"
+
+      - name: Configure git
+        run: |
+          git config --local user.email "${{ steps.user_info.outputs.email }}"
+          git config --local user.name "${{ steps.user_info.outputs.name }}"
 
       - name: Bump version
         run: |
-          cz bump --yes --increment ${{ major }}.${{ minor }}.${{ patch }}
+          poetry run cz bump --yes --increment ${{ github.event.inputs.increment }}
           git push
           git push --tags
 
@@ -71,7 +93,7 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release v${{ major }}.${{ minor }}.${{ patch }}
-          tag_name: ${{ major }}.${{ minor }}.${{ patch }}
-          body_path: changelog.md
+          name: Release v${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
+          tag_name: ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
+          generate_release_notes: true
           token: ${{ secrets.GITHUB_TOKEN }}
