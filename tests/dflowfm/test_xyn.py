@@ -33,7 +33,7 @@ class TestXYNParser:
             parsed_contents = XYNParser.parse(xyn_file)
             assert expected_result == parsed_contents
 
-    def test_parse_xyn_file_with_single_quoted_name_removes_quotes_and_keeps_spaces(
+    def test_parse_xyn_file_with_single_quoted_name_removes_quotes_and_keeps_whitespace(
         self,
     ):
         file_content = """
@@ -50,7 +50,7 @@ class TestXYNParser:
             parsed_contents = XYNParser.parse(xyn_file)
             assert expected_result == parsed_contents
 
-    def test_parse_xyn_file_with_double_quoted_name_removes_quotes_and_keeps_spaces(
+    def test_parse_xyn_file_with_double_quoted_name_removes_quotes_and_keeps_whitespace(
         self,
     ):
         file_content = """
