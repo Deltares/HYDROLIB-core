@@ -44,5 +44,5 @@ class XYNSerializer:
 
         file_content: str = "\n".join(serialized_points)
 
-        with path.open("w") as f:
+        with path.open("w", encoding="utf8") as f:
             f.write(file_content)

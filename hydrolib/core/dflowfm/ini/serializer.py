@@ -239,7 +239,11 @@ class SectionSerializer:
         else:
             value = value_ws
 
-        comment = f" # {property.comment}" if property.comment is not None else ""
+        comment = (
+            f" # {property.comment}"
+            if not str_is_empty_or_none(property.comment)
+            else ""
+        )
 
         yield f"{indent}{key}{value}{comment}".rstrip()
 
@@ -325,7 +329,7 @@ def write_ini(path: Path, document: Document, config: INISerializerConfig) -> No
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    with path.open("wb") as f:
+    with path.open("w", encoding="utf8") as f:
 
         for line in serializer.serialize(document):
-            f.write((line + "\n").encode("utf8"))
+            f.write(line + "\n")

@@ -385,12 +385,6 @@ def _create_boundary(data: Dict) -> Boundary:
     "input_field, create_model, retrieve_field",
     [
         pytest.param(
-            "extforcefile",
-            lambda d: ExternalForcing(**d),
-            lambda m: m.extforcefile,
-            id="extforcefile",
-        ),
-        pytest.param(
             "restartfile",
             lambda d: Restart(**d),
             lambda m: m.restartfile,

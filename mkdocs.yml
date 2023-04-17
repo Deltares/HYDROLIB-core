@@ -83,7 +83,7 @@ nav:
           - "guides/documentation.md"
       - Support:
           - guides/gettinghelp.md
-  - Tutorials: 
+  - Tutorials:
       - tutorials/tutorials.md
       - tutorials/build_basic_model.ipynb
       - tutorials/loading_and_saving_a_model.md
@@ -114,8 +114,9 @@ nav:
           - reference/onedfield.md
           - reference/polyfile.md
           - reference/xyz.md
-          - reference/obs.md
+          - reference/observationpoint.md
+          - reference/observationcrosssection.md
       - RainfallRunoff:
           - reference/rr/rr.md
           - reference/rr/meteo.md
-  - Changelog: "changelog.md"
+  - Release notes: "releasenotes.md"

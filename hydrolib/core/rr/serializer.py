@@ -222,5 +222,5 @@ def write(
         save_settings (ModelSaveSettings): The model save settings.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w") as f:
+    with path.open("w", encoding="utf8") as f:
         f.write(serialize(data, save_settings))

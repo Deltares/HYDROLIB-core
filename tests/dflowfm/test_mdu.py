@@ -9,6 +9,7 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     VegetationModelNr,
 )
+from hydrolib.core.dflowfm.net.models import Network
 from hydrolib.core.dflowfm.obs.models import ObservationPoint, ObservationPointModel
 from hydrolib.core.dflowfm.obscrosssection.models import (
     ObservationCrossSection,
@@ -35,6 +36,37 @@ from ..utils import (
 class TestModels:
     """Test class to test all classes and methods contained in the
     hydrolib.core.dflowfm.mdu.models.py module"""
+
+    def test_symbols_are_correctly_written_and_loaded_from_file(self):
+        path = test_output_dir / "test_symbols.mdu"
+
+        model_a = FMModel()
+        assert (
+            model_a.physics.comments.initialtemperature == "Initial temperature [◦C]."
+        )
+        model_a.filepath = path
+        model_a.save()
+
+        model_b = FMModel(filepath=path)
+        assert (
+            model_b.physics.comments.initialtemperature == "Initial temperature [◦C]."
+        )
+
+    def test_default_fmmodel_saved_and_loaded_correctly(self):
+        outputfile = test_output_dir / "default_fmmodel.mdu"
+
+        fmmodel = FMModel()
+        fmmodel.filepath = outputfile
+        fmmodel.save()
+
+        importfm = FMModel(filepath=fmmodel.filepath)
+
+        # Two different instances of the `Network` will fail the equality check
+        network = Network()
+        fmmodel.geometry.netfile.network = network
+        importfm.geometry.netfile.network = network
+
+        assert importfm == fmmodel
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (

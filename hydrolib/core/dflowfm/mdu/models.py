@@ -12,6 +12,7 @@ from hydrolib.core.basemodel import (
 )
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
@@ -150,7 +151,7 @@ class Numerics(INIBasedModel):
             "Theta (implicitness) of time integration, 0.5 < Theta < 1.0.",
             alias="teta0",
         )
-        qhrelax: Optional[str] = Field("", alias="qhRelax")
+        qhrelax: Optional[str] = Field(None, alias="qhRelax")
         cstbnd: Optional[str] = Field(
             "Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).",
             alias="cstBnd",
@@ -762,9 +763,7 @@ class ExternalForcing(INIBasedModel):
     )
 
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="extForceFile"
-    )
+    extforcefile: Optional[ExtOldModel] = Field(None, alias="extForceFile")
     extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
@@ -1281,7 +1280,7 @@ class Output(INIBasedModel):
     hisfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
     )
-    hisinterval: List[float] = Field([300], alias="hisInterval")
+    hisinterval: List[float] = Field([300.0], alias="hisInterval")
     xlsinterval: List[float] = Field([0.0], alias="xlsInterval")
     mapfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="mapFile"
@@ -1519,7 +1518,7 @@ class Geometry(INIBasedModel):
         partitionfile: Optional[str] = Field(
             "<*_part.pol>, polyline(s) x, y.", alias="partitionFile"
         )
-        uniformwidth1d: Optional[str] = Field("", alias="uniformWidth1D")
+        uniformwidth1d: Optional[str] = Field(None, alias="uniformWidth1D")
         dxwuimin2d: Optional[str] = Field(
             "Smallest fraction dx/wu , set dx > Dxwuimin2D*wu",
             alias="dxWuiMin2D",
@@ -1786,12 +1785,12 @@ class GroundWater(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
-        groundwater: Optional[str] = Field("", alias="GroundWater")
+        groundwater: Optional[str] = Field(None, alias="GroundWater")
         infiltrationmodel: Optional[str] = Field(
             "Infiltration method (0: No infiltration, 1: Interception layer, 2: Constant infiltration capacity, 3: model unsaturated/saturated (with grw), 4: Horton).",
             alias="Infiltrationmodel",
         )
-        hinterceptionlayer: Optional[str] = Field("", alias="Hinterceptionlayer")
+        hinterceptionlayer: Optional[str] = Field(None, alias="Hinterceptionlayer")
         unifinfiltrationcapacity: Optional[str] = Field(
             "Uniform maximum infiltration capacity [m/s].",
             alias="UnifInfiltrationCapacity",
@@ -1874,7 +1873,7 @@ class Processes(INIBasedModel):
             "Waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
             alias="DtProcesses",
         )
-        dtmassbalance: Optional[str] = Field("", alias="DtMassBalance")
+        dtmassbalance: Optional[str] = Field(None, alias="DtMassBalance")
         processfluxintegration: Optional[str] = Field(
             "Process fluxes integration option (1: WAQ, 2: D-Flow FM).",
             alias="ProcessFluxIntegration",

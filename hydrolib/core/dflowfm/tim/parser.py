@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+TimData = Dict[str, List[str]]
+
 
 class TimParser:
     """
@@ -10,27 +12,28 @@ class TimParser:
     """
 
     @staticmethod
-    def parse(filepath: Path) -> Dict[str, Any]:
+    def parse(filepath: Path) -> Dict[str, List[Any]]:
         """Parse a .tim file into a dictionary with comments and time series data.
 
         Args:
-            filepath (Path): Path to the .tim file to be read.
+            filepath (Path): Path to the .tim file to be parsed.
 
         Returns:
-            Dict[str, Any]: A dictionary with keys "comments" and "timeseries", where "comments"
-                  is a list of strings representing comments found at the start of the file, and
-                  "timeseries" is a dictionary where each key is a time and each value
-                  is a list of strings.
+            Dict[str, List[Any]]: A dictionary with keys "comments" and "timeseries".
+            - "comments" represents comments found at the start of the file.
+            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".
+                - "time" is a time as a string.
+                - "data" is data as a list of strings.
 
         Raises:
-            ValueError: If the file contains a comment that is not at the start of the file or
-             if the time series contains a duplicate time entry.
+            ValueError: If the file contains a comment that is not at the start of the file.
+            ValueError: If the data of the timeseries is empty.
         """
 
         comments: List[str] = []
-        timeseries: Dict[str, List[str]] = {}
+        timeseries: List[TimData] = []
 
-        with filepath.open() as file:
+        with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
             comments, start_timeseries_index = TimParser._read_header_comments(lines)
             timeseries = TimParser._read_time_series_data(lines, start_timeseries_index)
@@ -71,8 +74,8 @@ class TimParser:
     @staticmethod
     def _read_time_series_data(
         lines: List[str], start_timeseries_index: int
-    ) -> Dict[str, List[str]]:
-        timeseries: Dict[str, List[str]] = {}
+    ) -> List[TimData]:
+        timeseries: List[TimData] = []
         for line_index in range(start_timeseries_index, len(lines)):
             line = lines[line_index].strip()
 
@@ -83,9 +86,11 @@ class TimParser:
 
             time, *values = line.split()
 
-            TimParser._raise_error_if_duplicate_time(time, timeseries, line_index + 1)
+            TimParser._raise_error_if_values_empty(values, line_index)
 
-            timeseries[time] = values
+            timrecord = {"time": time, "data": values}
+            timeseries.append(timrecord)
+
         return timeseries
 
     @staticmethod
@@ -96,10 +101,6 @@ class TimParser:
             )
 
     @staticmethod
-    def _raise_error_if_duplicate_time(
-        time: str, timeseries: Dict[str, List[str]], line_index: int
-    ) -> None:
-        if time in timeseries:
-            raise ValueError(
-                f"Line {line_index}: time series cannot contain duplicate times. Time: {time}"
-            )
+    def _raise_error_if_values_empty(values: List[str], line_index: int) -> None:
+        if len(values) == 0:
+            raise ValueError(f"Line {line_index}: Time series cannot be empty.")

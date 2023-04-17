@@ -25,11 +25,19 @@ class XYNParser:
         Raises:
             ValueError: if a line in the file cannot be parsed
                 or if the name contains whitespace while not surrounded with
-                single quotes.
+                single or double quotes.
         """
 
-        def is_surrounded_by_quotes(name: str) -> bool:
+        def is_surrounded_by_single_quotes(name: str) -> bool:
             return name.startswith("'") and name.endswith("'")
+
+        def is_surrounded_by_double_quotes(name: str) -> bool:
+            return name.startswith('"') and name.endswith('"')
+
+        def is_surrounded_by_quotes(name: str) -> bool:
+            return is_surrounded_by_single_quotes(
+                name
+            ) or is_surrounded_by_double_quotes(name)
 
         def may_contain_whitespace(name: str) -> bool:
             return is_surrounded_by_quotes(name)
@@ -42,7 +50,7 @@ class XYNParser:
 
         points = []
 
-        with filepath.open() as f:
+        with filepath.open(encoding="utf8") as f:
             for linenr, line in enumerate(f.readlines()):
 
                 line = line.strip()
@@ -58,7 +66,7 @@ class XYNParser:
 
                 if contains_whitespace_while_not_allowed(n):
                     raise ValueError(
-                        f"Error parsing XYN file '{filepath}', line {linenr+1}. Name `{n}` contains whitespace, so should be enclosed in single quotes."
+                        f"Error parsing XYN file '{filepath}', line {linenr+1}. Name `{n}` contains whitespace, so should be enclosed in quotes."
                     )
 
                 if is_surrounded_by_quotes(n):

@@ -26,7 +26,7 @@ class XYZSerializer:
         space = 1 * " "
         format_float = lambda x: f"{x:{config.float_format}}"
 
-        with path.open("w") as f:
+        with path.open("w", encoding="utf8") as f:
             for point in data["points"]:
                 geometry: str = space.join(
                     [format_float(p) for p in XYZSerializer._get_point_values(point)]

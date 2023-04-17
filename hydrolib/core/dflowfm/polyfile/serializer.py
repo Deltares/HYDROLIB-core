@@ -106,7 +106,7 @@ def write_polyfile(
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    with path.open("w") as f:
+    with path.open("w", encoding="utf8") as f:
 
         for line in serialized_data:
             f.write(line)
