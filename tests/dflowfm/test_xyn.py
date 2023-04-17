@@ -31,7 +31,7 @@ class TestXYNParser:
 
         with create_temp_file(file_content, "test.xyn") as xyn_file:
             parsed_contents = XYNParser.parse(xyn_file)
-            assert expected_result == parsed_contents
+        assert expected_result == parsed_contents
 
     def test_parse_xyn_file_with_single_quoted_name_removes_quotes_and_keeps_whitespace(
         self,
@@ -48,7 +48,7 @@ class TestXYNParser:
 
         with create_temp_file(file_content, "test.xyn") as xyn_file:
             parsed_contents = XYNParser.parse(xyn_file)
-            assert expected_result == parsed_contents
+        assert expected_result == parsed_contents
 
     def test_parse_xyn_file_with_double_quoted_name_removes_quotes_and_keeps_whitespace(
         self,
@@ -74,7 +74,7 @@ class TestXYNParser:
 
         with pytest.raises(ValueError) as error:
             with create_temp_file(file_content, "test.xyn") as xyn_file:
-                expected_message = f"Error parsing XYN file '{xyn_file}', line 1. Name `{name}` contains whitespace, so should be enclosed in single quotes."
+                expected_message = f"Error parsing XYN file '{xyn_file}', line 1. Name `{name}` contains whitespace, so should be enclosed in quotes."
                 _ = XYNParser.parse(xyn_file)
 
         assert expected_message in str(error.value)
@@ -99,7 +99,7 @@ class TestXYNSerializer:
 
             with open(xyn_file) as file:
                 file_content = file.readlines()
-            assert file_content == expected_file_content
+        assert file_content == expected_file_content
 
 
 class TestXYNModel:

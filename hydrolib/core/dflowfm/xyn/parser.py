@@ -66,7 +66,7 @@ class XYNParser:
 
                 if contains_whitespace_while_not_allowed(n):
                     raise ValueError(
-                        f"Error parsing XYN file '{filepath}', line {linenr+1}. Name `{n}` contains whitespace, so should be enclosed in single quotes."
+                        f"Error parsing XYN file '{filepath}', line {linenr+1}. Name `{n}` contains whitespace, so should be enclosed in quotes."
                     )
 
                 if is_surrounded_by_quotes(n):
