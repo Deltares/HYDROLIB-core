@@ -152,7 +152,7 @@ class TestXYNPoint:
         ("name"),
         [
             pytest.param("nameWith'SingleQuote", id="Name with single quote"),
-            pytest.param('nameWith"DoubleQuote', id="Name with single quote"),
+            pytest.param('nameWith"DoubleQuote', id="Name with double quote"),
             pytest.param(None, id="None value"),
             pytest.param("", id="Empty string"),
             pytest.param("     ", id="Whitespace only"),
