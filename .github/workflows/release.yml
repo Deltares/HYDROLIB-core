@@ -52,11 +52,11 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Generate changelog
-        run: cz changelog --unreleased-version="${{ major }}.${{ minor }}.${{ patch }}" --incremental
+        run: cz changelog --unreleased-version="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}" --incremental
 
       - name: Bump version
         run: |
-          cz bump --yes --increment ${{ major }}.${{ minor }}.${{ patch }}
+          cz bump --yes --increment ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
           git push
           git push --tags
 
@@ -71,7 +71,7 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release v${{ major }}.${{ minor }}.${{ patch }}
-          tag_name: ${{ major }}.${{ minor }}.${{ patch }}
+          name: Release v${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
+          tag_name: ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
           body_path: changelog.md
           token: ${{ secrets.GITHUB_TOKEN }}
