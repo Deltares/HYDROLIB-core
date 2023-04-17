@@ -36,6 +36,7 @@ HEADER = """
              : shiptxy, movingstationtxy                                                           filetype=1         method=1
              : discharge_salinity_temperature_sorsin                                               filetype=9         method=1
              : windstresscoefficient                                                               filetype=4,7,10    method=4
+             : nudge_salinity_temperature                                                          filetype=11        method=3
 
  kx = Vectormax = Nr of variables specified on the same time/space frame. Eg. Wind magnitude,direction: kx = 2
  FILETYPE=1  : uniform              kx = 1 value               1 dim array      uni
