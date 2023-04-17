@@ -38,9 +38,9 @@ class XYNPoint(BaseModel):
         if str_is_empty_or_none(value):
             raise ValueError("Name cannot be empty.")
 
-        if "'" in value:
+        if "'" in value or '"' in value:
             raise ValueError(
-                "Name cannot contain single quotes except at the start and end."
+                "Name cannot contain single or double quotes except at the start and end."
             )
 
         return value
