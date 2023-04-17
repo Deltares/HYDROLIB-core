@@ -1,1 +1,77 @@
+name: Automated release workflow
 
+on:
+  workflow_dispatch:
+    inputs:
+      major:
+        description: "The new major version."
+        required: true
+        type: string
+      minor:
+        description: "The new minor version."
+        required: true
+        type: string
+      patch:
+        description: "The new patch version."
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v2.3.0
+        with:
+          poetry-version: 1.4.0
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: venv-ubuntu-latest-3.8-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Set Poetry config
+        run: |
+          poetry config virtualenvs.in-project false
+          poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: Install Dependencies
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Generate changelog
+        run: cz changelog --unreleased-version="${{ major }}.${{ minor }}.${{ patch }}" --incremental
+
+      - name: Bump version
+        run: |
+          cz bump --yes --increment ${{ major }}.${{ minor }}.${{ patch }}
+          git push
+          git push --tags
+
+      - name: Build hydrolib-core package
+        run: poetry build
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ major }}.${{ minor }}.${{ patch }}
+          tag_name: ${{ major }}.${{ minor }}.${{ patch }}
+          body_path: changelog.md
+          token: ${{ secrets.GITHUB_TOKEN }}
