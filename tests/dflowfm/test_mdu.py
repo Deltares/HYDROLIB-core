@@ -154,7 +154,7 @@ class TestModels:
 
         fm_model.save(output_mdu, recurse=False)
 
-        assert_files_equal(output_mdu, reference_mdu)
+        assert_files_equal(output_mdu, reference_mdu, [0])
 
     def test_disk_only_file_model_list_fields_are_initialized_correctly(self):
         data = {"landboundaryfile": [Path("test.ldb")]}
