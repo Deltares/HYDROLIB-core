@@ -2651,7 +2651,7 @@ Parser        </code>
         <span class="sa">r</span><span class="s2">&quot;^([^#]*=\s*)([^#]*)(#.*)?&quot;</span>
     <span class="p">)</span>  <span class="c1"># matches whole line: &quot;Field = Value Maybe more # optional comment&quot;</span>
     <span class="n">progfloat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s2">&quot;([\d.]+)([dD])([+\-]?\d+)&quot;</span>
+        <span class="sa">r</span><span class="s2">&quot;([\d.]+)([dD])([+\-]?\d{1,3})&quot;</span>
     <span class="p">)</span>  <span class="c1"># matches a float value: 1d9, 1D-3, 1.D+4, etc.</span>
 
     <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
