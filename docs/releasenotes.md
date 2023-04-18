@@ -1,3 +1,7 @@
+## HYDROLIB-core 0.5.2 Release Notes
+HYDROLIB-core 0.5.2 only contains 'cosmetic' changes, and is otherwise equal to 0.5.0.
+See [0.5.0 release notes][hydrolib-core-050-release-notes] for the main 0.5 release notes.
+
 ## HYDROLIB-core 0.5.0 Release Notes
 HYDROLIB-core 0.5.0 mainly adds more support for D-Flow FM 2D3D models in coastal applications.
 
@@ -6,7 +10,7 @@ Support for MacOS is temporarily dropped, due to an upgrade to MeshKernel 2.0.2,
 We aim to re-enable this support in future releases.
 
 ### New Features
-* Support for cross-platform path style ({{gh_pr(361)}}), more info in the [loading and saving tutorial](tutorials/loading_and_saving_a_model/#saving-and-loading-models-between-different-operating-systems).
+* Support for cross-platform path style ({{gh_pr(361)}}), more info in the [loading and saving tutorial][saving-and-loading-models-between-different-operating-systems].
 * Support for more MDU keywords (1D2D: see {{gh_issue(489)}}, 2D/3D: see {{gh_issue(474)}}, {{gh_issue(486)}}).
 * Support for `[Meteo]` blocks in external forcings files ({{gh_issue(446)}})
 * Support for various legacy file formats, to facilitate future model conversions:
