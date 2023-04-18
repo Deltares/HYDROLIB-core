@@ -376,7 +376,7 @@ class Parser:
             r"^([^#]*=\s*)([^#]*)(#.*)?"
         )  # matches whole line: "Field = Value Maybe more # optional comment"
         progfloat = re.compile(
-            r"([\d.]+)([dD])([+\-]?\d+)"
+            r"([\d.]+)([dD])([+\-]?\d{1,3}})"
         )  # matches a float value: 1d9, 1D-3, 1.D+4, etc.
 
         with filepath.open(encoding="utf8") as f:
