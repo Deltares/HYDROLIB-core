@@ -43,6 +43,8 @@ class AutoStartOption(IntEnum):
 
 
 class General(INIGeneral):
+    """The MDU file's `[General]` section with file meta data."""
+
     class Comments(INIBasedModel.Comments):
         program: Optional[str] = Field("Program.", alias="program")
         version: Optional[str] = Field(
@@ -1764,7 +1766,7 @@ class Calibration(INIBasedModel):
 class InfiltrationMethod(IntEnum):
     """
     Enum class containing the valid values for the Infiltrationmodel
-    attribute in the [Groundwater][hydrolib.core.dflowfm.mdu.models.Groundwater] class.
+    attribute in the [GroundWater][hydrolib.core.dflowfm.mdu.models.GroundWater] class.
     """
 
     NoInfiltration = 0
