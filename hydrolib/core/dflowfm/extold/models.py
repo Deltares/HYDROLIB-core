@@ -245,7 +245,7 @@ class ExtOldQuantity(str, Enum):
 
 class ExtOldFileType(IntEnum):
     """Enum class containing the valid values for the `filetype` attribute
-    in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
+    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.
     """
 
     TimeSeries = 1
@@ -274,7 +274,7 @@ class ExtOldFileType(IntEnum):
 
 class ExtOldMethod(IntEnum):
     """Enum class containing the valid values for the `method` attribute
-    in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
+    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.
     """
 
     PassThrough = 1
@@ -295,7 +295,7 @@ class ExtOldMethod(IntEnum):
 
 class ExtOldExtrapolationMethod(IntEnum):
     """Enum class containing the valid values for the `extrapolation_method` attribute
-    in the [ExtForcing][hydrolib.core.dflowfm.extold.models.ExtForcing] class.
+    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.
     """
 
     NoSpatialExtrapolation = 0
@@ -550,7 +550,7 @@ class ExtOldModel(ParsableFileModel):
     comment: List[str] = HEADER.splitlines()[1:]
     """List[str]: The comments in the header of the external forcing file."""
     forcing: List[ExtOldForcing] = []
-    """List[ExtForcing]: The external forcing blocks in the external forcing file."""
+    """List[ExtOldForcing]: The external forcing/QUANTITY blocks in the external forcing file."""
 
     @classmethod
     def _ext(cls) -> str:
