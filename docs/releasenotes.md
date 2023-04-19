@@ -1,9 +1,9 @@
 ## HYDROLIB-core 0.5.2 Release Notes
-HYDROLIB-core 0.5.2 only contains 'cosmetic' changes, and is otherwise equal to 0.5.0.
-See [0.5.0 release notes][hydrolib-core-050-release-notes] for the main 0.5 release notes.
+HYDROLIB-core 0.5.2 only contains 'cosmetic' changes, and is otherwise equal to 0.5.1.
+See [0.5.1 release notes][hydrolib-core-051-release-notes] for the main 0.5 release notes.
 
-## HYDROLIB-core 0.5.0 Release Notes
-HYDROLIB-core 0.5.0 mainly adds more support for D-Flow FM 2D3D models in coastal applications.
+## HYDROLIB-core 0.5.1 Release Notes
+HYDROLIB-core 0.5.1 mainly adds more support for D-Flow FM 2D3D models in coastal applications.
 
 ### Compatibility Notes
 Support for MacOS is temporarily dropped, due to an upgrade to MeshKernel 2.0.2, which has no MacOS version at the moment.
