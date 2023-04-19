@@ -1,3 +1,9 @@
+## 0.5.2 (2023-04-19)
+
+### Fix
+
+- failing unittest + SonarCloud security issue (#541)
+
 ## 0.5.1 (2023-04-17)
 
 ### Feat
