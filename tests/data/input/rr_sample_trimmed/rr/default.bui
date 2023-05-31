@@ -1,19 +1,17 @@
-*Name of this file: \SOB_LITE\FIXED\DEFAULT.BUI
-*Date and time of construction: 17-04-1997 17:13:50
-*Enige algemene wenken:
-*Gebruik de default dataset voor overige invoer (altijd 1)
+*Name of this file: C:\checkouts\HYDROLIB-core_git\tests\data\input\rr_sample_trimmed\rr\default.bui
+*Date and time of construction: 31-05-23 14:33:12
+*Comments are following an * (asterisk) and written above variables
 1
-*Aantal stations
+*Number of stations
 1
-*Namen van stations
-’Station1’
-*Aantal gebeurtenissen (omdat het 1 bui betreft is dit altijd 1)
-*en het aantal seconden per waarnemingstijdstap (10800 = 3x3600)
+*Station Name
+'Station1'
+*Number_of_events seconds_per_timestamp
 1 10800
-*Elke commentaarregel wordt begonnen met een * (asteriks).
-*Eerste record bevat startdatum en -tijd, lengte van de gebeurtenis in dd hh mm ss
-*Het format is: yyyymmdd:hhmmss:ddhhmmss
-*Daarna voor elk station de neerslag in mm per tijdstap.
+* Event 1 duration days:1 hours:3 minutes:0 seconds:0
+* Start date and time of the event: yyyy mm dd hh mm ss
+* Duration of the event           : dd hh mm ss
+* Rainfall value per time step [mm/time step]
 1996 1 1 0 0 0 1 3 0 0
 0.2
 0.2

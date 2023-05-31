@@ -159,8 +159,8 @@ class BuiParser:
             Dict: Parsed values.
         """
 
-        def get_station_ids(line: str) -> List[str]:
-            return [s_id for s_id in line.split(",")]
+        def get_station_ids(lines: List[str]) -> List[str]:
+            return [s_id.strip("'\"") for s_id in lines]
 
         def parse_events_and_timestep(line: str) -> Tuple[int, int]:
             n_events_timestep = line.split()
@@ -171,16 +171,18 @@ class BuiParser:
             for line in filepath.read_text(encoding="utf8").splitlines()
             if not line.startswith("*")
         ]
+        number_of_stations = int(bui_lines[1])
+        last_station_line = 1 + number_of_stations
 
-        n_events, timestep = parse_events_and_timestep(bui_lines[3])
+        n_events, timestep = parse_events_and_timestep(bui_lines[last_station_line + 1])
 
         return dict(
             default_dataset=bui_lines[0],
             number_of_stations=bui_lines[1],
-            name_of_stations=get_station_ids(bui_lines[2]),
+            name_of_stations=get_station_ids(bui_lines[2 : last_station_line + 1]),
             number_of_events=n_events,
             seconds_per_timestep=timestep,
             precipitation_events=BuiEventListParser.parse(
-                "\n".join(bui_lines[4:]), n_events, timestep
+                "\n".join(bui_lines[last_station_line + 2 :]), n_events, timestep
             ),
         )
