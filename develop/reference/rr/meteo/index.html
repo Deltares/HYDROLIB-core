@@ -2685,8 +2685,8 @@ to the BuiModel.</p>
 <span class="sd">        Dict: Parsed values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get_station_ids</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">s_id</span> <span class="k">for</span> <span class="n">s_id</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+    <span class="k">def</span> <span class="nf">get_station_ids</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">s_id</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s_id</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">parse_events_and_timestep</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="n">n_events_timestep</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -2697,17 +2697,19 @@ to the BuiModel.</p>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">filepath</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
     <span class="p">]</span>
+    <span class="n">number_of_stations</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">last_station_line</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">number_of_stations</span>
 
-    <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span> <span class="o">=</span> <span class="n">parse_events_and_timestep</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span> <span class="o">=</span> <span class="n">parse_events_and_timestep</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="n">last_station_line</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">default_dataset</span><span class="o">=</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">number_of_stations</span><span class="o">=</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">name_of_stations</span><span class="o">=</span><span class="n">get_station_ids</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="n">name_of_stations</span><span class="o">=</span><span class="n">get_station_ids</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">2</span> <span class="p">:</span> <span class="n">last_station_line</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]),</span>
         <span class="n">number_of_events</span><span class="o">=</span><span class="n">n_events</span><span class="p">,</span>
         <span class="n">seconds_per_timestep</span><span class="o">=</span><span class="n">timestep</span><span class="p">,</span>
         <span class="n">precipitation_events</span><span class="o">=</span><span class="n">BuiEventListParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">4</span><span class="p">:]),</span> <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="n">last_station_line</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:]),</span> <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span>
         <span class="p">),</span>
     <span class="p">)</span>
 </code></pre></div>
@@ -3504,7 +3506,7 @@ Otherwise it will crash.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Serialized string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">data_to_serialize</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">station_id</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">station_id</span> <span class="ow">in</span> <span class="n">data_to_serialize</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
