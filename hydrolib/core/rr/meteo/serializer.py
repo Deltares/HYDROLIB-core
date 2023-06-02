@@ -216,7 +216,7 @@ class BuiSerializer:
         Returns:
             str: Serialized string.
         """
-        return str.join(" ", data_to_serialize)
+        return "\n".join(f"'{station_id}'" for station_id in data_to_serialize)
 
 
 def write_bui_file(

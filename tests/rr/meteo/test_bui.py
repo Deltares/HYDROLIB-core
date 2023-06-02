@@ -40,7 +40,7 @@ class BuiTestData:
     @staticmethod
     def default_bui_station() -> str:
         """Just a wrapper to return the default value for the default station name"""
-        return "’Station1’"
+        return "Station1"
 
     @staticmethod
     def bui_model() -> BuiModel:
@@ -89,7 +89,7 @@ class TestModel:
             model = BuiModel(filepath=test_file)
             event_list = model.precipitation_events
             assert len(event_list) == 404
-            station_events = model.get_station_events("'De Bilt'")
+            station_events = model.get_station_events("De Bilt")
             first_event = station_events[datetime(1955, 1, 15, 16, 45)]
             assert first_event[0] == 0.30
             assert first_event[-1] == 0
@@ -103,7 +103,7 @@ class TestModel:
             model = BuiModel(filepath=test_file)
             event_list = model.precipitation_events
             assert len(event_list) == 10
-            station_events = model.get_station_events("'De Bilt'")
+            station_events = model.get_station_events("De Bilt")
             first_event = station_events[datetime(2000, 1, 10)]
             assert first_event[0] == 0.30
             assert first_event[-1] == 0
@@ -116,6 +116,39 @@ class TestModel:
         Test class pointing to hydrolib.core.rr.meteo.models to test
         all the methods in the BuiModel class.
         """
+
+        def test_given_bui_file_loads_model(self):
+            test_file = test_input_dir / "rr_individual_files" / "DEFAULT_rr.BUI"
+            expected_number_of_events = 1
+            expected_number_of_stations = 7
+            expected_timeseries_length = 168
+
+            assert test_file.is_file()
+            model = BuiModel(filepath=test_file)
+            event_list = model.precipitation_events
+
+            assert len(event_list) == expected_number_of_events
+            assert model.number_of_events == expected_number_of_events
+
+            assert len(model.name_of_stations) == expected_number_of_stations
+            assert model.number_of_stations == expected_number_of_stations
+
+            assert event_list[0].start_time == datetime(2021, 4, 20, 7, 0)
+            assert model.precipitation_events[0].timeseries_length == timedelta(days=7)
+            assert (
+                len(event_list[0].precipitation_per_timestep)
+                == expected_timeseries_length
+            )
+
+            assert model.name_of_stations == [
+                "De Bilt",
+                "Cabauw",
+                "Den Helder",
+                "Texelhors",
+                "Berkhout",
+                "IJmuiden",
+                "Wijk aan Zee",
+            ]
 
         def test_given_filepath_all_properties_loaded(self):
             test_file = BuiTestData.default_bui_file()
@@ -135,7 +168,7 @@ class TestModel:
                 *Number of stations
                 1
                 *Station Name
-                ’Station1’
+                'Station1'
                 *Number_of_events seconds_per_timestamp
                 1 10800
                 * Event 1 duration days:1 hours:3 minutes:0 seconds:0
@@ -445,7 +478,7 @@ class TestSerializer:
                 *Number of stations
                 1
                 *Station Name
-                ’Station1’
+                'Station1'
                 *Number_of_events seconds_per_timestamp
                 1 10800
                 * Event 1 duration days:1 hours:3 minutes:0 seconds:0
@@ -466,7 +499,7 @@ class TestSerializer:
         def test_given_station_ids_serialize_into_text(self):
             stations_ids = ["Hello", "World", BuiTestData.default_bui_station()]
             serialized_text = BuiSerializer.serialize_stations_ids(stations_ids)
-            assert serialized_text == "Hello World ’Station1’"
+            assert serialized_text == "'Hello'\n'World'\n'Station1'"
 
         def test_given_precipitation_serialize_into_text(self):
             precipitation_per_timestep = [[1.23], [2.34], [3.45], [4.56]]
