@@ -147,9 +147,16 @@ class INIBasedModel(BaseModel, ABC):
             return str(int(v))
         elif isinstance(v, list):
             convert_value = lambda x: self._convert_value(key, x, config, save_settings)
-            return self.__class__.get_list_field_delimiter(key).join(
-                [convert_value(x) for x in v]
-            )
+            if isinstance(v[0], list):
+                converted_lines = []
+                for values_for_line in v:
+                    converted_line = self.__class__.get_list_field_delimiter(key).join([convert_value(x) for x in values_for_line])
+                    converted_lines.append(converted_line)
+                return "\n".join(converted_lines)
+            else:              
+                return self.__class__.get_list_field_delimiter(key).join(
+                    [convert_value(x) for x in v]
+                )
         elif isinstance(v, Enum):
             return v.value
         elif isinstance(v, float):

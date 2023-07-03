@@ -1613,6 +1613,9 @@ class Geometry(INIBasedModel):
         sigmagrowthfactor: Optional[str] = Field(
             "layer thickness growth factor from bed up.", alias="sigmaGrowthFactor"
         )
+        dxmin1d: Optional[str] = Field(
+            "Minimum 1D link length [m]", alias="dxmin1D"
+        )
         dxdoubleat1dendnodes: Optional[str] = Field(
             "Whether a 1D grid cell at the end of a network has to be extended with 0.5Δx.",
             alias="dxDoubleAt1DEndNodes",
@@ -1701,6 +1704,7 @@ class Geometry(INIBasedModel):
     numtopsig: int = Field(0, alias="numTopSig")
     numtopsiguniform: bool = Field(True, alias="numTopSigUniform")
     sigmagrowthfactor: float = Field(1.0, alias="sigmaGrowthFactor")
+    dxmin1d: float = Field(0.001, alias="dxmin1D")
     dztop: Optional[float] = Field(None, alias="dzTop")
     floorlevtoplay: Optional[float] = Field(None, alias="floorLevTopLay")
     dztopuniabovez: Optional[float] = Field(None, alias="dzTopUniAboveZ")

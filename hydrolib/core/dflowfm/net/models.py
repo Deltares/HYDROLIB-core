@@ -647,14 +647,8 @@ class Link1d2d(BaseModel):
         self.link1d2d_contact_type = np.append(
             self.link1d2d_contact_type, np.full(contacts.mesh1d_indices.size, 3)
         )
-        self.link1d2d_id = np.append(
-            self.link1d2d_id,
-            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
-        )
-        self.link1d2d_long_name = np.append(
-            self.link1d2d_long_name,
-            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
-        )
+        self.link1d2d_id = np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d])
+        self.link1d2d_long_name = np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d])
 
     def _link_from_1d_to_2d(
         self, node_mask: np.ndarray, polygon: mk.GeometryList = None
