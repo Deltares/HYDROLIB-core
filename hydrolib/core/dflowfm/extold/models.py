@@ -241,29 +241,27 @@ class ExtOldQuantity(str, Enum):
     """Wave significant height"""
     WavePeriod = "waveperiod"
     """Wave period"""
-    
-    #missing quantities from https://git.deltares.nl/oss/delft3d/-/blob/main/src/utils_lgpl/ec_module/packages/ec_module/src/ec_provider.F90#L2478-2615
+
+    # missing quantities from https://git.deltares.nl/oss/delft3d/-/blob/main/src/utils_lgpl/ec_module/packages/ec_module/src/ec_provider.F90#L2478-2615
     AirPressure = "airpressure"
-    StressX = "stressx" #eastward wind stress
-    StressY = "stressy" #northward wind stress
+    StressX = "stressx"  # eastward wind stress
+    StressY = "stressy"  # northward wind stress
     AirTemperature = "airtemperature"
-    Cloudiness = "cloudiness" #cloud cover (fraction)
+    Cloudiness = "cloudiness"  # cloud cover (fraction)
     Humidity = "humidity"
-    
-    #to be implemented in https://issuetracker.deltares.nl/browse/UNST-6593
+
+    # to be implemented in https://issuetracker.deltares.nl/browse/UNST-6593
     AirDensity = "airdensity"
-    Charnock = "charnock" 
-    Dewpoint = "dewpoint" #TODO: decide on name
-    #DewpointTemperature = "dewpointtemperature"
-    
-    
-    #in same file, but not sure if needed
-    #StressXY = "stressxy"
-    #AirpressureStressXStressY = "airpressure_stressx_stressy"
-    #WindSpeed = "wind_speed"
-    #WindFromDirection = "wind_from_direction"
-    #DewPointAirTemperatureCloudinessSolarradiation = "dewpoint_airtemperature_cloudiness_solarradiation"
-    
+    Charnock = "charnock"
+    Dewpoint = "dewpoint"  # TODO: decide on name
+    # DewpointTemperature = "dewpointtemperature"
+
+    # in same file, but not sure if needed
+    # StressXY = "stressxy"
+    # AirpressureStressXStressY = "airpressure_stressx_stressy"
+    # WindSpeed = "wind_speed"
+    # WindFromDirection = "wind_from_direction"
+    # DewPointAirTemperatureCloudinessSolarradiation = "dewpoint_airtemperature_cloudiness_solarradiation"
 
 
 class ExtOldFileType(IntEnum):
