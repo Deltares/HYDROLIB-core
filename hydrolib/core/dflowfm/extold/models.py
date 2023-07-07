@@ -211,7 +211,9 @@ class ExtOldQuantity(str, Enum):
     """WindSpeed"""
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
-    DewpointAirTemperatureCloudinessSolarradiation = "dewpoint_airtemperature_cloudiness_solarradiation"
+    DewpointAirTemperatureCloudinessSolarradiation = (
+        "dewpoint_airtemperature_cloudiness_solarradiation"
+    )
     """Dewpoint temperature, air temperature, cloudiness, solarradiation"""
     AirDensity = "airdensity"
     """Air density"""
@@ -219,7 +221,7 @@ class ExtOldQuantity(str, Enum):
     """Charnock coefficient"""
     DewpointTemperature = "dewpointtemperature"
     """DewpointTemperature"""
-    
+
     # Structure parameters
     Pump = "pump"
     """Pump capacity"""
