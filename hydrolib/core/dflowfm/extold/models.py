@@ -217,8 +217,8 @@ class ExtOldQuantity(str, Enum):
     """Air density"""
     Charnock = "charnock"
     """Charnock coefficient"""
-    DewpointTemperature = "dewpointtemperature"
-    """DewpointTemperature"""
+    Dewpoint = "dewpoint"
+    """Dewpoint temperature"""
     
     # Structure parameters
     Pump = "pump"
