@@ -211,7 +211,9 @@ class ExtOldQuantity(str, Enum):
     """WindSpeed"""
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
-    DewpointAirTemperatureCloudinessSolarradiation = "dewpoint_airtemperature_cloudiness_solarradiation"
+    DewpointAirTemperatureCloudinessSolarradiation = (
+        "dewpoint_airtemperature_cloudiness_solarradiation"
+    )
     """Dewpoint temperature, air temperature, cloudiness, solarradiation"""
     AirDensity = "airdensity"
     """Air density"""
