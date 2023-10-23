@@ -181,7 +181,7 @@ class Mesh2d(BaseModel):
         mesh2d_input = mk.MeshKernel()
         mesh2d_input.curvilinear_compute_rectangular_grid(params)
         mesh2d_input.curvilinear_convert_to_mesh2d() #convert to ugrid/mesh2d
-        mesh2d_input = mesh2d_input.mesh2d_get()
+        mesh2d_input = mesh2d_input.mesh2d_get() #get Mesh2d object
         
         # Process
         self._process(mesh2d_input)
