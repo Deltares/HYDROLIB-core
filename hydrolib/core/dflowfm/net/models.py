@@ -167,17 +167,22 @@ class Mesh2d(BaseModel):
         """
 
         xmin, ymin, xmax, ymax = extent
-
-        # Generate mesh
-        mesh2d_input = mk.Mesh2dFactory.create(
-            rows=int((ymax - ymin) / dy),
-            columns=int((xmax - xmin) / dx),
-            origin_x=xmin,
-            origin_y=ymin,
-            spacing_x=dx,
-            spacing_y=dy,
-        )
-
+        
+        rows = int((ymax - ymin) / dy)
+        columns = int((xmax - xmin) / dx)
+        
+        params = mk.MakeGridParameters(num_columns=columns,
+                                       num_rows=rows,
+                                       origin_x=xmin,
+                                       origin_y=ymin,
+                                       block_size_x=dx,
+                                       block_size_y=dy)
+        
+        mesh2d_input = mk.MeshKernel()
+        mesh2d_input.curvilinear_compute_rectangular_grid(params)
+        mesh2d_input.curvilinear_convert_to_mesh2d() #convert to ugrid/mesh2d
+        mesh2d_input = mesh2d_input.mesh2d_get()
+        
         # Process
         self._process(mesh2d_input)
 

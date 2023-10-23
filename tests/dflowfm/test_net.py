@@ -177,6 +177,7 @@ def test_create_2d():
 @pytest.mark.parametrize(
     "deletemeshoption,inside,nnodes,nedgenodes",
     [
+         #TODO: update expected values for nnodes/nedgenodes
         (DeleteMeshOption.INSIDE_NOT_INTERSECTED, False, 28, 90),
         (DeleteMeshOption.INSIDE_AND_INTERSECTED, False, 23, 72),
         (DeleteMeshOption.INSIDE_NOT_INTERSECTED, True, 23, 72),
