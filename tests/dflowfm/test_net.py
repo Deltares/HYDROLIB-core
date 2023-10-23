@@ -177,12 +177,10 @@ def test_create_2d():
 @pytest.mark.parametrize(
     "deletemeshoption,inside,nnodes,nedgenodes",
     [
-        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, False, 28, 90),
-        (DeleteMeshOption.ALL_COMPLETE_FACES, False, 23, 72),
-        (DeleteMeshOption.ALL_NODES, False, 23, 72),
-        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, True, 23, 72),
-        (DeleteMeshOption.ALL_COMPLETE_FACES, True, 31, 94),
-        (DeleteMeshOption.ALL_NODES, True, 22, 64),
+        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, False, 28, 90),
+        (DeleteMeshOption.INSIDE_AND_INTERSECTED, False, 23, 72),
+        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, True, 23, 72),
+        (DeleteMeshOption.INSIDE_AND_INTERSECTED, True, 31, 94),
     ],
 )
 def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes):
