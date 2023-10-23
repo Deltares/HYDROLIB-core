@@ -1105,11 +1105,11 @@ class Mesh1d(BaseModel):
 
 
 class Network:
-    def __init__(self, is_geographic: bool = False) -> None:
-        self.meshkernel = mk.MeshKernel(is_geographic=is_geographic)
+    def __init__(self, projection: bool = False) -> None:
+        self.meshkernel = mk.MeshKernel(projection=projection)
         # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
         # otherwise, and needed for reinitializing the meshkernel
-        self.meshkernel.is_geographic = is_geographic
+        self.meshkernel.projection = projection
 
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
@@ -1182,7 +1182,7 @@ class Network:
     def mesh2d_clip_mesh(
         self,
         geometrylist: mk.GeometryList,
-        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.ALL_FACE_CIRCUMCENTERS,
+        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         inside=True,
     ) -> None:
         self._mesh2d.clip(
