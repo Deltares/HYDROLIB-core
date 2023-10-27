@@ -193,7 +193,7 @@ class Mesh2d(BaseModel):
             geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
         """
         # Call meshkernel
-        self.meshkernel.mesh2d_make_mesh_from_polygon(geometry_list)
+        self.meshkernel.mesh2d_make_triangular_mesh_from_polygon(geometry_list)
 
         # Process new mesh
         self._process(self.get_mesh2d())
@@ -225,7 +225,7 @@ class Mesh2d(BaseModel):
     def clip(
         self,
         geometrylist: mk.GeometryList,
-        deletemeshoption: int = 1,
+        deletemeshoption: int = 1, #TODO: 1 was changed
         inside=False,
     ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
@@ -322,7 +322,7 @@ class Mesh2d(BaseModel):
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
-            min_face_size=10.0,  # Does nothing?
+            min_edge_size=10.0,  # Does nothing?
             refinement_type=1,  # No effect?
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,
@@ -635,7 +635,7 @@ class Link1d2d(BaseModel):
         self.link1d2d = np.empty((0, 2), np.int32)
         # The meshkernel object needs to be resetted
         self.meshkernel._deallocate_state()
-        self.meshkernel._allocate_state(self.meshkernel.is_geographic)
+        self.meshkernel._allocate_state(self.meshkernel.projection)
         self.meshkernel.contacts_get()
 
     def _process(self) -> None:
@@ -1110,11 +1110,11 @@ class Mesh1d(BaseModel):
 
 
 class Network:
-    def __init__(self, projection: bool = False) -> None:
+    def __init__(self, projection: mk.ProjectType = mk.ProjectionType.CARTESIAN) -> None:
         self.meshkernel = mk.MeshKernel(projection=projection)
         # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
         # otherwise, and needed for reinitializing the meshkernel
-        self.meshkernel.projection = projection
+        # self.meshkernel.projection = projection
 
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)

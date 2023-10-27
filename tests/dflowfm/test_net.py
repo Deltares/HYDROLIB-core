@@ -573,13 +573,13 @@ def test_create_triangular():
     )
 
     network.mesh2d_create_triangular_within_polygon(polygon)
-
+    
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_x,
+        network._mesh2d.mesh2d_node_x, # TODO: array([6., 4., 2., 0., 6., 4., 2., 0.])
         np.array([0.0, 6.0, 4.0, 2.0]),
     )
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_y,
+        network._mesh2d.mesh2d_node_y, #TODO: array([2., 7., 6., 0., 2., 7., 6., 0.])
         np.array([0.0, 2.0, 7.0, 6.0]),
     )
     assert np.array_equiv(
@@ -587,6 +587,16 @@ def test_create_triangular():
         np.array([[3, 0], [0, 1], [1, 3], [1, 2], [2, 3]]),
     )
 
+    #TODO: we end up with more x nodes than before in the network instance (see above)
+    #when doing this with meshkernel, we get the expected amount of nodes (see below)
+    #so something is failing in the network class of hydrolib-core
+    import meshkernel
+    mk2 = meshkernel.MeshKernel()
+    mk2.mesh2d_make_triangular_mesh_from_polygon(polygon)
+    mesh2d_obj = mk2.mesh2d_get()
+    print(mesh2d_obj.node_x) # [6. 4. 2. 0.]
+    print(mesh2d_obj.node_y) # [2. 7. 6. 0.]
+    
 
 def test_add_1d2d_links():
 
