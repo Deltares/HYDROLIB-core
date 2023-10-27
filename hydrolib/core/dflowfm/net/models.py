@@ -677,7 +677,8 @@ class Link1d2d(BaseModel):
 
         # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
         # The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
-        self.meshkernel.contacts_compute_single(node_mask=node_mask, polygons=polygon)
+        # TODO: tests/dflowfm/test_net.py::test_add_1d2d_links fails with the (now obligatory) projection_factor of 0.0, 0.5, 1.0, 5.0
+        self.meshkernel.contacts_compute_single(node_mask=node_mask, polygons=polygon, projection_factor=1.0)
         self._process()
 
         # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
