@@ -169,6 +169,10 @@ def test_create_2d():
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
 
+    #TODO: remove plotting
+    # _, ax = plt.subplots()
+    # mesh2d_output.plot_edges(ax=ax)
+
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == 45
     assert mesh2d_output.edge_nodes.size == 152
@@ -201,6 +205,11 @@ def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
     assert mesh2d_output.edge_nodes.size == nedgenodes # 2x nedges
     assert mesh2d_output.face_x.size == nfaces
 
+    #TODO: remove plotting
+    # _, ax = plt.subplots()
+    # mesh2d_output.plot_edges(ax=ax)
+    # ax.plot(polygon.x_coordinates, polygon.y_coordinates, "r-")
+
 
 def test_create_refine_2d():
 
@@ -222,13 +231,17 @@ def test_create_refine_2d():
 
     assert mesh2d_output.node_x.size == 114
     assert mesh2d_output.edge_nodes.size == 426
+    
+    #TODO: remove plotting
+    # _, ax = plt.subplots()
+    # mesh2d_output = mesh2d.get_mesh2d()
+    # mesh2d_output.plot_edges(ax=ax)
 
 
 cases = [
     test_input_dir / "e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc",
     test_input_dir / "e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_net.nc",
 ]
-
 
 @pytest.mark.parametrize(
     "filepath",

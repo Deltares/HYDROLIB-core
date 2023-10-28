@@ -229,7 +229,7 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
     def clip(
         self,
         geometrylist: mk.GeometryList,
-        deletemeshoption: int = 0, #TODO: 1 was changed, INSIDE_NOT_INTERSECTED/0 is used elsewhere in code  #deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
+        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         inside=False,
     ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
@@ -241,9 +241,7 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
 
         # Add current mesh to Mesh2d instance
         self._set_mesh2d()
-
-        deletemeshoption = mk.DeleteMeshOption(deletemeshoption)
-
+        
         # For clipping outside
         if not inside:
             # Check if a multipolygon was provided when clipping outside
@@ -681,7 +679,6 @@ class Link1d2d(BaseModel):
 
         # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
         # The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
-        # TODO: tests/dflowfm/test_net.py::test_add_1d2d_links fails with the (now obligatory) projection_factor of 0.0, 0.5, 1.0, 5.0
         self.meshkernel.contacts_compute_single(node_mask=node_mask, polygons=polygon, projection_factor=1.0)
         self._process()
 
