@@ -221,10 +221,11 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         self.mesh2d_face_nodes = np.full(
             (len(self.mesh2d_face_x), max(npf)), np.iinfo(np.int32).min
         )
-        idx = (
-            np.ones_like(self.mesh2d_face_nodes) * np.arange(max(npf))[None, :]
-        ) < npf[:, None]
-        self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
+        #TODO: commented since caused errors in hydromt_delft3dfm
+        # idx = (
+        #     np.ones_like(self.mesh2d_face_nodes) * np.arange(max(npf))[None, :]
+        # ) < npf[:, None]
+        # self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
 
     def clip(
         self,
