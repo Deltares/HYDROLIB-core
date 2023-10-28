@@ -199,10 +199,12 @@ class Mesh2d(BaseModel):
         self._process(self.get_mesh2d())
 
     def _process(self, mesh2d_input) -> None:
+        
         # Add input
-        self.meshkernel.mesh2d_set(mesh2d_input)
+        self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
         # Get output
-        mesh2d_output = self.meshkernel.mesh2d_get()
+        mesh2d_output = self.meshkernel.mesh2d_get() #better results for some testcases, comment above and: mesh2d_output = mesh2d_input
+            
         # Add to mesh2d variables
         self.mesh2d_node_x = mesh2d_output.node_x
         self.mesh2d_node_y = mesh2d_output.node_y
