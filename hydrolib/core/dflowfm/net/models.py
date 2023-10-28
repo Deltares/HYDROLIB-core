@@ -48,7 +48,7 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
     return lists
 
 
-class Mesh2d(BaseModel):
+class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel also has a Mesh2d class
     """Mesh2d defines a single two dimensional grid.
 
     Attributes:
@@ -181,10 +181,12 @@ class Mesh2d(BaseModel):
         mesh2d_input = mk.MeshKernel()
         mesh2d_input.curvilinear_compute_rectangular_grid(params)
         mesh2d_input.curvilinear_convert_to_mesh2d() #convert to ugrid/mesh2d
-        mesh2d_input = mesh2d_input.mesh2d_get() #get Mesh2d object
+        mesh2d_input_m2d = mesh2d_input.mesh2d_get() #get Mesh2d object
+        
+        # mesh2d_input_raw = mk.Mesh2d(mesh2d_input_m2d.node_x, mesh2d_input_m2d.node_y, mesh2d_input_m2d.edge_nodes)
         
         # Process
-        self._process(mesh2d_input)
+        self._process(mesh2d_input_m2d)
 
     def create_triangular(self, geometry_list: mk.GeometryList) -> None:
         """Create triangular grid within GeometryList object
@@ -201,9 +203,9 @@ class Mesh2d(BaseModel):
     def _process(self, mesh2d_input) -> None:
         
         # Add input
-        self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
+        # self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
         # Get output
-        mesh2d_output = self.meshkernel.mesh2d_get() #better results for some testcases, comment above and: mesh2d_output = mesh2d_input
+        mesh2d_output = mesh2d_input#self.meshkernel.mesh2d_get() #better results for some testcases, comment above and: mesh2d_output = mesh2d_input
             
         # Add to mesh2d variables
         self.mesh2d_node_x = mesh2d_output.node_x
@@ -299,7 +301,7 @@ class Mesh2d(BaseModel):
         # Process
         self._process(self.meshkernel.mesh2d_get())
 
-    def refine(self, polygon: mk.GeometryList, level: int):
+    def refine(self, polygon: mk.GeometryList, level: int, min_edge_size=10.0):
         """Refine the mesh within a polygon, by a number of steps (level)
 
         Args:
@@ -324,7 +326,7 @@ class Mesh2d(BaseModel):
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
-            min_edge_size=10.0,  # Does nothing?
+            min_edge_size=min_edge_size,  # Does nothing?
             refinement_type=1,  # No effect?
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,

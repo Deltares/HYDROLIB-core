@@ -175,19 +175,16 @@ def test_create_2d():
 
 
 @pytest.mark.parametrize(
-    "deletemeshoption,inside,nnodes,nedgenodes",
+    "deletemeshoption,inside,nnodes,nedgenodes,nfaces",
     [
-         #TODO: update expected values for nnodes/nedgenodes
-        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, False, 28, 90),
-        (DeleteMeshOption.INSIDE_AND_INTERSECTED, False, 23, 72),
-        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, True, 23, 72),
-        (DeleteMeshOption.INSIDE_AND_INTERSECTED, True, 31, 94),
+        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, False, 22, 68, 13),
+        (DeleteMeshOption.INSIDE_AND_INTERSECTED, False, 30, 98, 20),
+        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, True, 33, 100, 19),
+        (DeleteMeshOption.INSIDE_AND_INTERSECTED, True, 20, 62, 12),
     ],
 )
-def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes):
-
-    # TODO: "All complete faces, outside" does not have the expected behaviour, it is similar to "All nodes, outside"
-
+def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
+    
     polygon = GeometryList(
         x_coordinates=np.array([0.0, 6.0, 4.0, 2.0, 0.0]),
         y_coordinates=np.array([0.0, 2.0, 7.0, 6.0, 0.0]),
@@ -201,7 +198,8 @@ def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes):
     mesh2d.clip(polygon, deletemeshoption=deletemeshoption, inside=inside)
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == nnodes
-    assert mesh2d_output.edge_nodes.size == nedgenodes
+    assert mesh2d_output.edge_nodes.size == nedgenodes # 2x nedges
+    assert mesh2d_output.face_x.size == nfaces
 
 
 def test_create_refine_2d():
@@ -218,7 +216,7 @@ def test_create_refine_2d():
     # Create within bounding box
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
     # Refine
-    mesh2d.refine(polygon, 1)
+    mesh2d.refine(polygon, 1, min_edge_size=0.1)
 
     mesh2d_output = mesh2d.get_mesh2d()
 
@@ -575,27 +573,17 @@ def test_create_triangular():
     network.mesh2d_create_triangular_within_polygon(polygon)
     
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_x, # TODO: array([6., 4., 2., 0., 6., 4., 2., 0.])
-        np.array([0.0, 6.0, 4.0, 2.0]),
+        network._mesh2d.mesh2d_node_x,
+        np.array([6.0, 4.0, 2.0, 0.0]),
     )
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_y, #TODO: array([2., 7., 6., 0., 2., 7., 6., 0.])
-        np.array([0.0, 2.0, 7.0, 6.0]),
+        network._mesh2d.mesh2d_node_y,
+        np.array([2.0, 7.0, 6.0, 0.0]),
     )
     assert np.array_equiv(
         network._mesh2d.mesh2d_edge_nodes,
-        np.array([[3, 0], [0, 1], [1, 3], [1, 2], [2, 3]]),
+        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
     )
-
-    #TODO: we end up with more x nodes than before in the network instance (see above)
-    #when doing this with meshkernel, we get the expected amount of nodes (see below)
-    #so something is failing in the network class of hydrolib-core
-    import meshkernel
-    mk2 = meshkernel.MeshKernel()
-    mk2.mesh2d_make_triangular_mesh_from_polygon(polygon)
-    mesh2d_obj = mk2.mesh2d_get()
-    print(mesh2d_obj.node_x) # [6. 4. 2. 0.]
-    print(mesh2d_obj.node_y) # [2. 7. 6. 0.]
     
 
 def test_add_1d2d_links():
