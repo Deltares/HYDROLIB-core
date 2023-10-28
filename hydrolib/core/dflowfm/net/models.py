@@ -225,7 +225,7 @@ class Mesh2d(BaseModel):
     def clip(
         self,
         geometrylist: mk.GeometryList,
-        deletemeshoption: int = 1, #TODO: 1 was changed
+        deletemeshoption: int = 0, #TODO: 1 was changed, INSIDE_NOT_INTERSECTED/0 is used elsewhere in code  #deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         inside=False,
     ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
@@ -635,7 +635,7 @@ class Link1d2d(BaseModel):
         self.link1d2d = np.empty((0, 2), np.int32)
         # The meshkernel object needs to be resetted
         self.meshkernel._deallocate_state()
-        self.meshkernel._allocate_state(self.meshkernel.projection)
+        self.meshkernel._allocate_state(self.meshkernel.is_geographic) #TODO: .get_projection() might be better
         self.meshkernel.contacts_get()
 
     def _process(self) -> None:
@@ -1115,7 +1115,12 @@ class Network:
         self.meshkernel = mk.MeshKernel(projection=projection)
         # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
         # otherwise, and needed for reinitializing the meshkernel
-        # self.meshkernel.projection = projection
+        if projection == mk.ProjectionType.CARTESIAN:
+            is_geographic = False
+        else: #SPHERICAL or SPHERICALACCURATE
+            is_geographic = True
+        #TODO: this bool does not seems to have effect, maybe discontinue?
+        self.meshkernel.is_geographic = is_geographic
 
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
