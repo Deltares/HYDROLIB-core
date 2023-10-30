@@ -264,7 +264,7 @@ def test_read_net_nc(filepath):
     # network = networkmodel.network
     assert not network._mesh1d.is_empty()
     assert network._mesh2d.is_empty()
-    
+
     # test whether meshkernel instance and hydrolib mesh2d/mesh1d instance are consistent
     nnodes_internal = network._mesh2d.mesh2d_node_x.size
     nnodes_mk = network._mesh2d.get_mesh2d().node_x.size
@@ -274,7 +274,6 @@ def test_read_net_nc(filepath):
     nnodes_mk = network._mesh1d._get_mesh1d().node_x.size
     nnodes_mk2 = network._mesh1d.meshkernel.mesh1d_get().node_x.size
     assert nnodes_internal == nnodes_mk == nnodes_mk2
-
 
 
 @pytest.mark.parametrize("filepath", cases)
@@ -659,7 +658,6 @@ def test_add_1d2d_links():
     nnodes_mk = network._mesh1d._get_mesh1d().node_x.size
     nnodes_mk2 = network._mesh1d.meshkernel.mesh1d_get().node_x.size
     assert nnodes_internal == nnodes_mk == nnodes_mk2
-
 
 
 def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():

@@ -64,7 +64,7 @@ class UgridReader:
 
         # Process network
         mesh1d._process_network1d()
-        mesh1d._set_mesh1d() # TODO: we still require this here to sync new attrs with meshkernel instance
+        mesh1d._set_mesh1d()  # TODO: we still require this here to sync new attrs with meshkernel instance
 
         ds.close()
 
@@ -87,7 +87,7 @@ class UgridReader:
             setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
         # TODO: replace with xugrid reader
 
-        mesh2d._set_mesh2d() # TODO: we still require this here to sync new attrs with meshkernel instance
+        mesh2d._set_mesh2d()  # TODO: we still require this here to sync new attrs with meshkernel instance
 
         ds.close()
 
