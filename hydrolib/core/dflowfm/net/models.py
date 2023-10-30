@@ -224,8 +224,8 @@ class Mesh2d(
 
         self.mesh2d_face_x = mesh2d_output.face_x
         self.mesh2d_face_y = mesh2d_output.face_y
-        #TODO: commented since caused errors in hydromt_delft3dfm
-        #TODO: this is the mesh2d_face_node_connectivity, not mesh2d_face_nodes
+        # TODO: commented since caused errors in hydromt_delft3dfm
+        # TODO: this is the mesh2d_face_node_connectivity, not mesh2d_face_nodes
         npf = mesh2d_output.nodes_per_face
         self.mesh2d_face_nodes = np.full(
             (len(self.mesh2d_face_x), max(npf)), np.iinfo(np.int32).min
