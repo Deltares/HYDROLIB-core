@@ -10,7 +10,7 @@ from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
-from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, NetworkModel
+from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, NetworkModel, Network
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 
@@ -20,7 +20,7 @@ from ..utils import test_input_dir, test_output_dir
 def plot_network(network):
     _, ax = plt.subplots()
     ax.set_aspect(1.0)
-    network.plot(ax=ax)
+    network.plot(ax=ax) #TODO: does not exist
     ax.autoscale()
     plt.show()
 
@@ -50,7 +50,7 @@ def test_create_1d_by_branch():
     # Generate nodes on branch
     branch.generate_nodes(mesh1d_edge_length=1)
     # Create Mesh1d
-    network = NetworkModel()
+    network = Network()
     network.mesh1d_add_branch(branch)
 
     # Add second
@@ -71,10 +71,10 @@ def test_create_1d_by_branch():
     )
     network.mesh1d_add_branch(branch)
 
-    plot_network(network)
+    # plot_network(network)
 
     # Write to file
-    network.save(test_output_dir / "test_net.nc")
+    network.to_file(test_output_dir / "test_net.nc")
 
 
 @pytest.mark.plots
@@ -136,7 +136,8 @@ def test_create_1d_2d_1d2d():
     branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
 
     # Create Mesh1d
-    network = NetworkModel()
+    # networkmodel = NetworkModel()
+    network = Network()
     network.mesh1d_add_branch(branch, name="branch1")
 
     branch = Branch(geometry=np.array([[-25.0, 0.0], [x[0], y[0]]]))
@@ -147,7 +148,7 @@ def test_create_1d_2d_1d2d():
     network.mesh2d_create_rectilinear_within_extent(
         extent=(-22, -22, 22, 22), dx=2, dy=2
     )
-    network.mesh2d_clip_mesh(polygon=get_circle_gl(22))
+    network.mesh2d_clip_mesh(geometrylist=get_circle_gl(22))
 
     network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
     network.mesh2d_refine_mesh(polygon=get_circle_gl(3), level=1)
@@ -156,9 +157,9 @@ def test_create_1d_2d_1d2d():
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
 
     # Write to file
-    network.save(test_output_dir / "test_net.nc")
+    network.to_file(test_output_dir / "test_net.nc")
 
-    plot_network(network)
+    # plot_network(network)
 
 
 def test_create_2d():

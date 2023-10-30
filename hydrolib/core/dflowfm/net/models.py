@@ -141,6 +141,7 @@ class Mesh2d(
         reader.read_mesh2d(self)
 
     def _set_mesh2d(self) -> None:
+        #TODO: setting types is necessary since meshkernel.mesh2d_set requires them very specifically
         mesh2d = mk.Mesh2d(
             node_x=self.mesh2d_node_x.astype(np.float64),
             node_y=self.mesh2d_node_y.astype(np.float64),
