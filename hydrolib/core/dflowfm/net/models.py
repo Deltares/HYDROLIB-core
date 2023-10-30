@@ -84,41 +84,41 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
-    # mesh2d_node_x: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_node_y: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_node_z: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
+    mesh2d_node_x: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_node_y: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_node_z: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
 
-    # mesh2d_edge_x: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_edge_y: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_edge_z: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_edge_nodes: np.ndarray = Field(
-    #     default_factory=lambda: np.empty((0, 2), dtype=np.int32)
-    # )
+    mesh2d_edge_x: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_edge_y: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_edge_z: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_edge_nodes: np.ndarray = Field(
+        default_factory=lambda: np.empty((0, 2), dtype=np.int32)
+    )
 
-    # mesh2d_face_x: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_face_y: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_face_z: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_face_nodes: np.ndarray = Field(
-    #     default_factory=lambda: np.empty((0, 0), dtype=np.int32)
-    # )
+    mesh2d_face_x: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_face_y: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_face_z: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, dtype=np.double)
+    )
+    mesh2d_face_nodes: np.ndarray = Field(
+        default_factory=lambda: np.empty((0, 0), dtype=np.int32)
+    )
 
     def is_empty(self) -> bool:
         """Determine whether this Mesh2d is empty.
@@ -126,8 +126,7 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         Returns:
             (bool): Whether this Mesh2d is empty.
         """
-        # return self.mesh2d_node_x.size == 0
-        return self.get_mesh2d().node_x.size == 0
+        return self.mesh2d_node_x.size == 0
 
     def read_file(self, file_path: Path) -> None:
         """Read the Mesh2d from the file at file_path.
@@ -138,14 +137,14 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
 
-    # def _set_mesh2d(self) -> None:
-    #     mesh2d = mk.Mesh2d(
-    #         node_x=self.mesh2d_node_x,
-    #         node_y=self.mesh2d_node_y,
-    #         edge_nodes=self.mesh2d_edge_nodes.ravel(),
-    #     )
+    def _set_mesh2d(self) -> None:
+        mesh2d = mk.Mesh2d(
+            node_x=self.mesh2d_node_x,
+            node_y=self.mesh2d_node_y,
+            edge_nodes=self.mesh2d_edge_nodes.ravel(),
+        )
 
-    #     self.meshkernel.mesh2d_set(mesh2d)
+        self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
         """Get the mesh2d as represented in the MeshKernel
@@ -185,7 +184,7 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         mesh2d_input_m2d = mesh2d_input.mesh2d_get() #get Mesh2d object
         
         # mesh2d_input_raw = mk.Mesh2d(mesh2d_input_m2d.node_x, mesh2d_input_m2d.node_y, mesh2d_input_m2d.edge_nodes)
-       
+        
         # Process
         self._process(mesh2d_input_m2d)
 
@@ -202,29 +201,27 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         self._process(self.get_mesh2d())
 
     def _process(self, mesh2d_input) -> None:
-        return
-    
-        # # Add input
-        # self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
-        # # Get output
-        # mesh2d_output = self.meshkernel.mesh2d_get() #better results for some testcases, comment above and: mesh2d_output = mesh2d_input
-        # # mesh2d_output = mesh2d_input
         
-        # # Add to mesh2d variables
-        # self.mesh2d_node_x = mesh2d_output.node_x
-        # self.mesh2d_node_y = mesh2d_output.node_y
+        # Add input
+        # self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
+        # Get output
+        mesh2d_output = self.meshkernel.mesh2d_get() #better results for some testcases, comment above and: mesh2d_output = mesh2d_input
+            
+        # Add to mesh2d variables
+        self.mesh2d_node_x = mesh2d_output.node_x
+        self.mesh2d_node_y = mesh2d_output.node_y
 
-        # self.mesh2d_edge_x = mesh2d_output.edge_x
-        # self.mesh2d_edge_y = mesh2d_output.edge_y
-        # self.mesh2d_edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
+        self.mesh2d_edge_x = mesh2d_output.edge_x
+        self.mesh2d_edge_y = mesh2d_output.edge_y
+        self.mesh2d_edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
 
-        # self.mesh2d_face_x = mesh2d_output.face_x
-        # self.mesh2d_face_y = mesh2d_output.face_y
-        # npf = mesh2d_output.nodes_per_face
-        # self.mesh2d_face_nodes = np.full(
-        #     (len(self.mesh2d_face_x), max(npf)), np.iinfo(np.int32).min
-        # )
-        # #TODO: below causes errors in hydromt_delft3dfm
+        self.mesh2d_face_x = mesh2d_output.face_x
+        self.mesh2d_face_y = mesh2d_output.face_y
+        npf = mesh2d_output.nodes_per_face
+        self.mesh2d_face_nodes = np.full(
+            (len(self.mesh2d_face_x), max(npf)), np.iinfo(np.int32).min
+        )
+        #TODO: commented since caused errors in hydromt_delft3dfm
         # idx = (
         #     np.ones_like(self.mesh2d_face_nodes) * np.arange(max(npf))[None, :]
         # ) < npf[:, None]
@@ -648,25 +645,24 @@ class Link1d2d(BaseModel):
         """
         Get links from meshkernel and add to the array with link administration
         """
-        return
-        # contacts = self.meshkernel.contacts_get()
+        contacts = self.meshkernel.contacts_get()
 
-        # self.link1d2d = np.append(
-        #     self.link1d2d,
-        #     np.stack([contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1),
-        #     axis=0,
-        # )
-        # self.link1d2d_contact_type = np.append(
-        #     self.link1d2d_contact_type, np.full(contacts.mesh1d_indices.size, 3)
-        # )
-        # self.link1d2d_id = np.append(
-        #     self.link1d2d_id,
-        #     np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
-        # )
-        # self.link1d2d_long_name = np.append(
-        #     self.link1d2d_long_name,
-        #     np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
-        # )
+        self.link1d2d = np.append(
+            self.link1d2d,
+            np.stack([contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1),
+            axis=0,
+        )
+        self.link1d2d_contact_type = np.append(
+            self.link1d2d_contact_type, np.full(contacts.mesh1d_indices.size, 3)
+        )
+        self.link1d2d_id = np.append(
+            self.link1d2d_id,
+            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
+        )
+        self.link1d2d_long_name = np.append(
+            self.link1d2d_long_name,
+            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
+        )
 
     def _link_from_1d_to_2d(
         self, node_mask: np.ndarray, polygon: mk.GeometryList = None
@@ -684,7 +680,6 @@ class Link1d2d(BaseModel):
 
         # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
         # The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
-        # TODO: new projection_factor seems not to have effect
         self.meshkernel.contacts_compute_single(node_mask=node_mask, polygons=polygon, projection_factor=1.0)
         self._process()
 
@@ -793,60 +788,59 @@ class Mesh1d(BaseModel):
         Determine x, y locations of mesh1d nodes based on the network1d
         """
         # Create a list of coordinates to create the branches from
-        return
-        # ngeom = list(zip(self.network1d_geom_x, self.network1d_geom_y))
+        ngeom = list(zip(self.network1d_geom_x, self.network1d_geom_y))
 
-        # self.branches.clear()
+        self.branches.clear()
 
-        # for i, (name, nnodes) in enumerate(
-        #     zip(self.network1d_branch_id, self.network1d_part_node_count)
-        # ):
+        for i, (name, nnodes) in enumerate(
+            zip(self.network1d_branch_id, self.network1d_part_node_count)
+        ):
 
-        #     # Create network branch
-        #     # Get geometry of branch from network geometry
-        #     geometry = np.array([ngeom.pop(0) for _ in range(nnodes)])
-        #     # Get branch offsets
-        #     idx = self.mesh1d_node_branch_id == i
-        #     branch_offsets = self.mesh1d_node_branch_offset[idx]
-        #     mask = np.full(branch_offsets.shape, False)
+            # Create network branch
+            # Get geometry of branch from network geometry
+            geometry = np.array([ngeom.pop(0) for _ in range(nnodes)])
+            # Get branch offsets
+            idx = self.mesh1d_node_branch_id == i
+            branch_offsets = self.mesh1d_node_branch_offset[idx]
+            mask = np.full(branch_offsets.shape, False)
 
-        #     # Determine if a start or end coordinate needs to be added for constructing a complete branch
-        #     # As nodes are re-used, the last and first branch_offsets are often missing. However, they are still used
-        #     # for determining the length along the discretized branch.
-        #     if branch_offsets.size == 0 or not np.isclose(branch_offsets[0], 0.0):
-        #         branch_offsets = np.concatenate([[0], branch_offsets])
-        #         mask = np.concatenate([[True], mask])
-        #     length = np.hypot(*np.diff(geometry, axis=0).T).sum()
-        #     if not np.isclose(branch_offsets[-1], length):
-        #         branch_offsets = np.concatenate([branch_offsets, [length]])
-        #         mask = np.concatenate([mask, [True]])
+            # Determine if a start or end coordinate needs to be added for constructing a complete branch
+            # As nodes are re-used, the last and first branch_offsets are often missing. However, they are still used
+            # for determining the length along the discretized branch.
+            if branch_offsets.size == 0 or not np.isclose(branch_offsets[0], 0.0):
+                branch_offsets = np.concatenate([[0], branch_offsets])
+                mask = np.concatenate([[True], mask])
+            length = np.hypot(*np.diff(geometry, axis=0).T).sum()
+            if not np.isclose(branch_offsets[-1], length):
+                branch_offsets = np.concatenate([branch_offsets, [length]])
+                mask = np.concatenate([mask, [True]])
 
-        #     # Create instance of branch object and add to dictionary
-        #     geo_branch = Branch(geometry, branch_offsets=branch_offsets, mask=mask)
-        #     self.branches[name.strip()] = geo_branch
+            # Create instance of branch object and add to dictionary
+            geo_branch = Branch(geometry, branch_offsets=branch_offsets, mask=mask)
+            self.branches[name.strip()] = geo_branch
 
-        # # Convert list with all coordinates (except the appended ones for the schematized branches) to arrays
-        # node_x, node_y = np.vstack(
-        #     [branch.node_xy[~branch.mask] for branch in self.branches.values()]
-        # ).T
+        # Convert list with all coordinates (except the appended ones for the schematized branches) to arrays
+        node_x, node_y = np.vstack(
+            [branch.node_xy[~branch.mask] for branch in self.branches.values()]
+        ).T
 
-        # # Add to variables
-        # self.mesh1d_node_x = node_x
-        # self.mesh1d_node_y = node_y
+        # Add to variables
+        self.mesh1d_node_x = node_x
+        self.mesh1d_node_y = node_y
 
-        # # Calculate edge coordinates
-        # edge_x, edge_y = np.vstack(
-        #     [
-        #         branch.interpolate(
-        #             self.mesh1d_edge_branch_offset[self.mesh1d_edge_branch_id == i]
-        #         )
-        #         for i, branch in enumerate(self.branches.values())
-        #     ]
-        # ).T
+        # Calculate edge coordinates
+        edge_x, edge_y = np.vstack(
+            [
+                branch.interpolate(
+                    self.mesh1d_edge_branch_offset[self.mesh1d_edge_branch_id == i]
+                )
+                for i, branch in enumerate(self.branches.values())
+            ]
+        ).T
 
-        # # Add to variables
-        # self.mesh1d_edge_x = edge_x
-        # self.mesh1d_edge_y = edge_y
+        # Add to variables
+        self.mesh1d_edge_x = edge_x
+        self.mesh1d_edge_y = edge_y
 
     def _network1d_node_position(self, x: float, y: float) -> Union[np.int32, None]:
         """Determine the position (index) of a x, y coordinate in the network nodes
@@ -1229,7 +1223,6 @@ class Network:
             force_midpoint=force_midpoint,
         )
         self._mesh1d._set_mesh1d()
-        
         return name
 
 
