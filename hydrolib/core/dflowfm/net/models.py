@@ -206,8 +206,8 @@ class Mesh2d(
         # Process new mesh
         self._process(self.get_mesh2d())
 
-    def _process(self, mesh2d_input) -> None: #TODO: input arg is not used, so remove
-        
+    def _process(self, mesh2d_input) -> None:  # TODO: input arg is not used, so remove
+
         # Add input
         # self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
         # Get output
