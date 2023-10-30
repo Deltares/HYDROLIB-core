@@ -206,7 +206,7 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         # self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
         # Get output
         mesh2d_output = self.meshkernel.mesh2d_get() #better results for some testcases, comment above and: mesh2d_output = mesh2d_input
-            
+        
         # Add to mesh2d variables
         self.mesh2d_node_x = mesh2d_output.node_x
         self.mesh2d_node_y = mesh2d_output.node_y
@@ -217,15 +217,16 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
 
         self.mesh2d_face_x = mesh2d_output.face_x
         self.mesh2d_face_y = mesh2d_output.face_y
+        #TODO: commented since caused errors in hydromt_delft3dfm
         npf = mesh2d_output.nodes_per_face
         self.mesh2d_face_nodes = np.full(
             (len(self.mesh2d_face_x), max(npf)), np.iinfo(np.int32).min
         )
-        #TODO: commented since caused errors in hydromt_delft3dfm
-        # idx = (
-        #     np.ones_like(self.mesh2d_face_nodes) * np.arange(max(npf))[None, :]
-        # ) < npf[:, None]
-        # self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
+        idx = (
+            np.ones_like(self.mesh2d_face_nodes) * np.arange(max(npf))[None, :]
+        ) < npf[:, None]
+        self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
+        
 
     def clip(
         self,
