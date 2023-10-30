@@ -608,18 +608,19 @@ def test_create_triangular():
     )
 
     network.mesh2d_create_triangular_within_polygon(polygon)
-
+    mesh2d_output = network._mesh2d.get_mesh2d()
+    
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_x,
+        mesh2d_output.node_x,
         np.array([6.0, 4.0, 2.0, 0.0]),
     )
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_y,
+        mesh2d_output.node_y,
         np.array([2.0, 7.0, 6.0, 0.0]),
     )
     assert np.array_equiv(
-        network._mesh2d.mesh2d_edge_nodes,
-        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
+        mesh2d_output.edge_nodes,
+        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]).ravel(),
     )
 
 
