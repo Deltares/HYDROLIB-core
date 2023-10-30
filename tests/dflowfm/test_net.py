@@ -10,7 +10,7 @@ from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
-from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, NetworkModel, Network
+from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 
@@ -20,7 +20,7 @@ from ..utils import test_input_dir, test_output_dir
 def plot_network(network):
     _, ax = plt.subplots()
     ax.set_aspect(1.0)
-    network.plot(ax=ax) #TODO: does not exist
+    network.plot(ax=ax)  # TODO: does not exist
     ax.autoscale()
     plt.show()
 
