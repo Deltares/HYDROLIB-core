@@ -30,8 +30,11 @@ def _plot_mesh2d(mesh2d, ax=None, **kwargs):
 
     if ax is None:
         fig, ax = plt.subplots()
-    nodes2d = np.stack([mesh2d.mesh2d_node_x, mesh2d.mesh2d_node_y], axis=1)
-    edge_nodes = mesh2d.mesh2d_edge_nodes
+    
+    mesh2d_output = mesh2d.get_mesh2d()
+    
+    nodes2d = np.stack([mesh2d_output.node_x, mesh2d_output.node_y], axis=1)
+    edge_nodes = mesh2d_output.edge_nodes
     lc_mesh2d = LineCollection(nodes2d[edge_nodes], **kwargs)
     ax.add_collection(lc_mesh2d)
     ax.autoscale_view()
@@ -188,6 +191,9 @@ def test_create_2d():
     ],
 )
 def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
+    
+    # deletemeshoption = DeleteMeshOption.INSIDE_NOT_INTERSECTED
+    # inside = True
     
     polygon = GeometryList(
         x_coordinates=np.array([0.0, 6.0, 4.0, 2.0, 0.0]),
@@ -399,20 +405,21 @@ class TestMesh2d:
             dtype=np.int32,
         ),
         # fmt: on
+        mesh2d_output = mesh.get_mesh2d()
+        
+        assert np.array_equiv(mesh2d_output.node_x, mesh2d_node_x)
+        assert np.array_equiv(mesh2d_output.node_y, mesh2d_node_y)
+        assert np.array_equiv(mesh2d_output.node_z, mesh2d_node_z)
 
-        assert np.array_equiv(mesh.mesh2d_node_x, mesh2d_node_x)
-        assert np.array_equiv(mesh.mesh2d_node_y, mesh2d_node_y)
-        assert np.array_equiv(mesh.mesh2d_node_z, mesh2d_node_z)
+        assert np.array_equiv(mesh2d_output.edge_x, mesh2d_edge_x)
+        assert np.array_equiv(mesh2d_output.edge_y, mesh2d_edge_y)
+        assert np.array_equiv(mesh2d_output.edge_z, mesh2d_edge_z)
+        assert np.array_equiv(mesh2d_output.edge_nodes, mesh2d_edge_nodes)
 
-        assert np.array_equiv(mesh.mesh2d_edge_x, mesh2d_edge_x)
-        assert np.array_equiv(mesh.mesh2d_edge_y, mesh2d_edge_y)
-        assert np.array_equiv(mesh.mesh2d_edge_z, mesh2d_edge_z)
-        assert np.array_equiv(mesh.mesh2d_edge_nodes, mesh2d_edge_nodes)
-
-        assert np.array_equiv(mesh.mesh2d_face_x, mesh2d_face_x)
-        assert np.array_equiv(mesh.mesh2d_face_y, mesh2d_face_y)
-        assert np.array_equiv(mesh.mesh2d_face_z, mesh2d_face_z)
-        assert np.array_equiv(mesh.mesh2d_face_nodes, mesh2d_face_nodes)
+        assert np.array_equiv(mesh2d_output.face_x, mesh2d_face_x)
+        assert np.array_equiv(mesh2d_output.face_y, mesh2d_face_y)
+        assert np.array_equiv(mesh2d_output.face_z, mesh2d_face_z)
+        assert np.array_equiv(mesh2d_output.face_nodes, mesh2d_face_nodes)
 
     def test_read_net_nc_2d_without_faces(self):
         filepath = test_input_dir / "dflowfm_individual_files/network_nofaces_net.nc"
@@ -421,16 +428,17 @@ class TestMesh2d:
         network = NetworkModel(filepath=filepath)
         assert network._mesh1d.is_empty()
         assert not network._mesh2d.is_empty()
+        
+        mesh2d_output = network._mesh2d.get_mesh2d()
+        assert len(mesh2d_output.face_x) == 0
+        assert len(mesh2d_output.face_y) == 0
+        assert len(mesh2d_output.face_z) == 0
+        assert mesh2d_output.face_nodes.shape == (0, 0)
 
-        assert len(network._mesh2d.mesh2d_face_x) == 0
-        assert len(network._mesh2d.mesh2d_face_y) == 0
-        assert len(network._mesh2d.mesh2d_face_z) == 0
-        assert network._mesh2d.mesh2d_face_nodes.shape == (0, 0)
+        assert len(mesh2d_output.node_x) == 238
+        assert len(mesh2d_output.node_x) == 238
 
-        assert len(network._mesh2d.mesh2d_node_x) == 238
-        assert len(network._mesh2d.mesh2d_node_x) == 238
-
-        assert len(network._mesh2d.mesh2d_edge_nodes) == 445
+        assert len(mesh2d_output.edge_nodes) == 445
 
 
 class TestNCExplorer:
@@ -584,18 +592,20 @@ def test_create_triangular():
     )
 
     network.mesh2d_create_triangular_within_polygon(polygon)
+    mesh2d = network._mesh2d.get_mesh2d()
     
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_x,
+        mesh2d.node_x,
         np.array([6.0, 4.0, 2.0, 0.0]),
     )
     assert np.array_equiv(
-        network._mesh2d.mesh2d_node_y,
+        mesh2d.node_y,
         np.array([2.0, 7.0, 6.0, 0.0]),
     )
     assert np.array_equiv(
-        network._mesh2d.mesh2d_edge_nodes,
-        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
+        mesh2d.edge_nodes,
+        np.array([2, 3, 3, 0, 0, 2, 0, 1, 1, 2]),
+        # np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
     )
     
 
@@ -610,8 +620,10 @@ def test_add_1d2d_links():
     # Create Mesh2d
     network.mesh2d_create_rectilinear_within_extent(extent=(-5, -5, 5, 5), dx=1, dy=1)
 
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
+    # network._mesh1d._set_mesh1d() #TODO: already set with updated code
+    # network._mesh2d._set_mesh2d() #TODO: already set with updated code
+    # network._mesh1d.meshkernel.mesh1d_get().node_x
+    # network._mesh2d.meshkernel.mesh2d_get().node_x
 
     # Get required arguments
     node_mask = network._mesh1d.get_node_mask([branchid])
@@ -622,10 +634,13 @@ def test_add_1d2d_links():
 
     # Add links from 1d to 2d
     network._link1d2d._link_from_1d_to_2d(node_mask=node_mask, polygon=exterior)
-    assert np.array_equiv(
-        network._link1d2d.link1d2d,
-        np.array([[3, 70], [4, 62], [5, 54], [6, 45], [7, 37], [8, 29]]),
-    )
+    contacts = network._link1d2d.meshkernel.contacts_get()
+    assert np.array_equiv(contacts.mesh1d_indices, np.array([3, 4, 5, 6, 7, 8]))
+    assert np.array_equiv(contacts.mesh2d_indices, np.array([70, 62, 54, 45, 37, 29]))
+    # assert np.array_equiv(
+    #     network._link1d2d.link1d2d,
+    #     np.array([[3, 70], [4, 62], [5, 54], [6, 45], [7, 37], [8, 29]]),
+    # )
 
 
 def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
