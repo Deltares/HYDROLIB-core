@@ -88,6 +88,7 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
+addopts = "-m \"not plots\""
 markers = [
     "plots",
     "docker"

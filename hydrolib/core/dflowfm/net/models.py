@@ -780,7 +780,8 @@ class Mesh1d(BaseModel):
     )
 
     def is_empty(self) -> bool:
-        return self.mesh1d_node_x.size == 0
+        # return self.mesh1d_node_x.size == 0
+        return self.meshkernel.mesh1d_get().node_x.size == 0
 
     def _get_mesh1d(self) -> mk.Mesh1d:
         """Return mesh1d from meshkernel. Note that the meshkernel.Mesh1d instance

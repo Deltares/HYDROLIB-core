@@ -77,7 +77,7 @@ def test_create_1d_by_branch():
     network.to_file(test_output_dir / "test_net.nc")
 
 
-@pytest.mark.plots
+# @pytest.mark.plots
 def test_create_1d_branch_structure_offset():
 
     line = np.array([[0, 0], [100, 0]])
@@ -120,7 +120,7 @@ def get_circle_gl(r, detail=100):
     return polygon
 
 
-@pytest.mark.plots
+# @pytest.mark.plots
 def test_create_1d_2d_1d2d():
 
     # Define line (spiral)
@@ -261,8 +261,20 @@ def test_read_net_nc(filepath):
 
     # Create network model
     network = NetworkModel(filepath=filepath)
+    # network = networkmodel.network
     assert not network._mesh1d.is_empty()
     assert network._mesh2d.is_empty()
+    
+    # test whether meshkernel instance and hydrolib mesh2d/mesh1d instance are consistent
+    nnodes_internal = network._mesh2d.mesh2d_node_x.size
+    nnodes_mk = network._mesh2d.get_mesh2d().node_x.size
+    nnodes_mk2 = network._mesh2d.meshkernel.mesh2d_get().node_x.size
+    assert nnodes_internal == nnodes_mk == nnodes_mk2
+    nnodes_internal = network._mesh1d.mesh1d_node_x.size
+    nnodes_mk = network._mesh1d._get_mesh1d().node_x.size
+    nnodes_mk2 = network._mesh1d.meshkernel.mesh1d_get().node_x.size
+    assert nnodes_internal == nnodes_mk == nnodes_mk2
+
 
 
 @pytest.mark.parametrize("filepath", cases)
@@ -442,7 +454,8 @@ class TestMesh2d:
         # test whether meshkernel instance and hydrolib mesh2d instance are consistent
         nnodes_internal = network._mesh2d.mesh2d_node_x.size
         nnodes_mk = network._mesh2d.get_mesh2d().node_x.size
-        assert nnodes_internal == nnodes_mk
+        nnodes_mk2 = network._mesh2d.meshkernel.mesh2d_get().node_x.size
+        assert nnodes_internal == nnodes_mk == nnodes_mk2
 
 
 class TestNCExplorer:
@@ -640,6 +653,13 @@ def test_add_1d2d_links():
         network._link1d2d.link1d2d,
         np.array([[3, 70], [4, 62], [5, 54], [6, 45], [7, 37], [8, 29]]),
     )
+
+    # test whether meshkernel instance and hydrolib mesh2d instance are consistent
+    nnodes_internal = network._mesh1d.mesh1d_node_x.size
+    nnodes_mk = network._mesh1d._get_mesh1d().node_x.size
+    nnodes_mk2 = network._mesh1d.meshkernel.mesh1d_get().node_x.size
+    assert nnodes_internal == nnodes_mk == nnodes_mk2
+
 
 
 def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
