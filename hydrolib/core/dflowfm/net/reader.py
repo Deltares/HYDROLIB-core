@@ -86,7 +86,7 @@ class UgridReader:
             setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
         #TODO: replace with xugrid reader
         
-        mesh2d._set_mesh2d()
+        mesh2d._set_mesh2d() #TODO: we still require this here to sync new attrs with meshkernel instance
 
         ds.close()
 
