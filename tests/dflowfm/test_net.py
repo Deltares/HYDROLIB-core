@@ -236,8 +236,8 @@ def test_create_refine_2d():
     # check fnc
     fnc = mesh2d.mesh2d_face_nodes
     assert fnc.shape == (100, 4)
-    assert (fnc == -2147483648).sum() == 12 # amount of triangles
-    
+    assert (fnc == -2147483648).sum() == 12  # amount of triangles
+
     # TODO: remove plotting
     # _, ax = plt.subplots()
     # mesh2d_output = mesh2d.get_mesh2d()
@@ -433,12 +433,12 @@ class TestMesh2d:
         assert len(network._mesh2d.mesh2d_face_y) == 0
         assert len(network._mesh2d.mesh2d_face_z) == 0
         assert network._mesh2d.mesh2d_face_nodes.shape == (0, 0)
-        
+
         assert len(network._mesh2d.mesh2d_node_x) == 238
         assert len(network._mesh2d.mesh2d_node_x) == 238
 
         assert len(network._mesh2d.mesh2d_edge_nodes) == 445
-        
+
         # test whether meshkernel instance and hydrolib mesh2d instance are consistent
         nnodes_internal = network._mesh2d.mesh2d_node_x.size
         nnodes_mk = network._mesh2d.get_mesh2d().node_x.size
