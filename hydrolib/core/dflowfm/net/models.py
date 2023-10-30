@@ -48,7 +48,9 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
     return lists
 
 
-class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel also has a Mesh2d class
+class Mesh2d(
+    BaseModel
+):  # TODO: this is an inconvenient name since meshkernel also has a Mesh2d class
     """Mesh2d defines a single two dimensional grid.
 
     Attributes:
@@ -167,24 +169,26 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         """
 
         xmin, ymin, xmax, ymax = extent
-        
+
         rows = int((ymax - ymin) / dy)
         columns = int((xmax - xmin) / dx)
-        
-        params = mk.MakeGridParameters(num_columns=columns,
-                                       num_rows=rows,
-                                       origin_x=xmin,
-                                       origin_y=ymin,
-                                       block_size_x=dx,
-                                       block_size_y=dy)
-        
-        mesh2d_input = self.meshkernel #mk.MeshKernel()
+
+        params = mk.MakeGridParameters(
+            num_columns=columns,
+            num_rows=rows,
+            origin_x=xmin,
+            origin_y=ymin,
+            block_size_x=dx,
+            block_size_y=dy,
+        )
+
+        mesh2d_input = self.meshkernel  # mk.MeshKernel()
         mesh2d_input.curvilinear_compute_rectangular_grid(params)
-        mesh2d_input.curvilinear_convert_to_mesh2d() #convert to ugrid/mesh2d
-        mesh2d_input_m2d = mesh2d_input.mesh2d_get() #get Mesh2d object
-        
+        mesh2d_input.curvilinear_convert_to_mesh2d()  # convert to ugrid/mesh2d
+        mesh2d_input_m2d = mesh2d_input.mesh2d_get()  # get Mesh2d object
+
         # mesh2d_input_raw = mk.Mesh2d(mesh2d_input_m2d.node_x, mesh2d_input_m2d.node_y, mesh2d_input_m2d.edge_nodes)
-        
+
         # Process
         self._process(mesh2d_input_m2d)
 
@@ -201,12 +205,14 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         self._process(self.get_mesh2d())
 
     def _process(self, mesh2d_input) -> None:
-        
+
         # Add input
         # self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
         # Get output
-        mesh2d_output = self.meshkernel.mesh2d_get() #better results for some testcases, comment above and: mesh2d_output = mesh2d_input
-            
+        mesh2d_output = (
+            self.meshkernel.mesh2d_get()
+        )  # better results for some testcases, comment above and: mesh2d_output = mesh2d_input
+
         # Add to mesh2d variables
         self.mesh2d_node_x = mesh2d_output.node_x
         self.mesh2d_node_y = mesh2d_output.node_y
@@ -221,7 +227,7 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
         self.mesh2d_face_nodes = np.full(
             (len(self.mesh2d_face_x), max(npf)), np.iinfo(np.int32).min
         )
-        #TODO: commented since caused errors in hydromt_delft3dfm
+        # TODO: commented since caused errors in hydromt_delft3dfm
         # idx = (
         #     np.ones_like(self.mesh2d_face_nodes) * np.arange(max(npf))[None, :]
         # ) < npf[:, None]
@@ -242,7 +248,7 @@ class Mesh2d(BaseModel): #TODO: this is an inconvenient name since meshkernel al
 
         # Add current mesh to Mesh2d instance
         # self._set_mesh2d()
-        
+
         # For clipping outside
         if not inside:
             # Check if a multipolygon was provided when clipping outside
@@ -638,7 +644,9 @@ class Link1d2d(BaseModel):
         self.link1d2d = np.empty((0, 2), np.int32)
         # The meshkernel object needs to be resetted
         self.meshkernel._deallocate_state()
-        self.meshkernel._allocate_state(self.meshkernel.is_geographic) #TODO: .get_projection() might be better
+        self.meshkernel._allocate_state(
+            self.meshkernel.is_geographic
+        )  # TODO: .get_projection() might be better
         self.meshkernel.contacts_get()
 
     def _process(self) -> None:
@@ -680,7 +688,9 @@ class Link1d2d(BaseModel):
 
         # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
         # The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
-        self.meshkernel.contacts_compute_single(node_mask=node_mask, polygons=polygon, projection_factor=1.0)
+        self.meshkernel.contacts_compute_single(
+            node_mask=node_mask, polygons=polygon, projection_factor=1.0
+        )
         self._process()
 
         # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
@@ -1113,15 +1123,17 @@ class Mesh1d(BaseModel):
 
 
 class Network:
-    def __init__(self, projection: mk.ProjectType = mk.ProjectionType.CARTESIAN) -> None:
+    def __init__(
+        self, projection: mk.ProjectType = mk.ProjectionType.CARTESIAN
+    ) -> None:
         self.meshkernel = mk.MeshKernel(projection=projection)
         # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
         # otherwise, and needed for reinitializing the meshkernel
         if projection == mk.ProjectionType.CARTESIAN:
             is_geographic = False
-        else: #SPHERICAL or SPHERICALACCURATE
+        else:  # SPHERICAL or SPHERICALACCURATE
             is_geographic = True
-        #TODO: this bool does not seems to have effect, maybe discontinue?
+        # TODO: this bool does not seems to have effect, maybe discontinue?
         self.meshkernel.is_geographic = is_geographic
 
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
