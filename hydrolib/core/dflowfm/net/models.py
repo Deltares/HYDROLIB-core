@@ -142,9 +142,9 @@ class Mesh2d(
 
     def _set_mesh2d(self) -> None:
         mesh2d = mk.Mesh2d(
-            node_x=self.mesh2d_node_x.astype(float),
-            node_y=self.mesh2d_node_y.astype(float),
-            edge_nodes=self.mesh2d_edge_nodes.ravel().astype(int),
+            node_x=self.mesh2d_node_x.astype(np.float64),
+            node_y=self.mesh2d_node_y.astype(np.float64),
+            edge_nodes=self.mesh2d_edge_nodes.ravel().astype(np.int32),
         )
 
         self.meshkernel.mesh2d_set(mesh2d)
