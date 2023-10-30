@@ -128,7 +128,8 @@ class Mesh2d(
         Returns:
             (bool): Whether this Mesh2d is empty.
         """
-        return self.mesh2d_node_x.size == 0
+        # return self.mesh2d_node_x.size == 0
+        return self.meshkernel.mesh2d_get().node_x.size == 0
 
     def read_file(self, file_path: Path) -> None:
         """Read the Mesh2d from the file at file_path.
@@ -139,14 +140,14 @@ class Mesh2d(
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
 
-    # def _set_mesh2d(self) -> None:
-    #     mesh2d = mk.Mesh2d(
-    #         node_x=self.mesh2d_node_x,
-    #         node_y=self.mesh2d_node_y,
-    #         edge_nodes=self.mesh2d_edge_nodes.ravel(),
-    #     )
+    def _set_mesh2d(self) -> None:
+        mesh2d = mk.Mesh2d(
+            node_x=self.mesh2d_node_x.astype(float),
+            node_y=self.mesh2d_node_y.astype(float),
+            edge_nodes=self.mesh2d_edge_nodes.ravel().astype(int),
+        )
 
-    #     self.meshkernel.mesh2d_set(mesh2d)
+        self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
         """Get the mesh2d as represented in the MeshKernel

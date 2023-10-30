@@ -84,6 +84,9 @@ class UgridReader:
         # Read mesh1d
         for meshkey, nckey in self._explorer.mesh2d_var_name_mapping.items():
             setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
+        #TODO: replace with xugrid reader
+        
+        mesh2d._set_mesh2d()
 
         ds.close()
 
