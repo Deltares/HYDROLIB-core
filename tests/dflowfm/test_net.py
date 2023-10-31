@@ -156,6 +156,9 @@ def test_create_1d_2d_1d2d():
     # Add links
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
 
+    mesh2d_output = network._mesh2d.get_mesh2d()
+    assert len(mesh2d_output.face_x) == 152
+
     # Write to file
     network.to_file(test_output_dir / "test_net.nc")
 

@@ -82,7 +82,7 @@ class UgridReader:
 
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
-        # Read mesh1d
+        # Read mesh2d
         for meshkey, nckey in self._explorer.mesh2d_var_name_mapping.items():
             setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
         # TODO: replace with xugrid reader
