@@ -86,41 +86,41 @@ class Mesh2d(
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
-    mesh2d_node_x: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_node_y: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
+    # mesh2d_node_x: np.ndarray = Field(
+    #     default_factory=lambda: np.empty(0, dtype=np.double)
+    # )
+    # mesh2d_node_y: np.ndarray = Field(
+    #     default_factory=lambda: np.empty(0, dtype=np.double)
+    # )
     mesh2d_node_z: np.ndarray = Field(
         default_factory=lambda: np.empty(0, dtype=np.double)
     )
 
-    mesh2d_edge_x: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_edge_y: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_edge_z: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_edge_nodes: np.ndarray = Field(
-        default_factory=lambda: np.empty((0, 2), dtype=np.int32)
-    )
+    # mesh2d_edge_x: np.ndarray = Field(
+    #     default_factory=lambda: np.empty(0, dtype=np.double)
+    # )
+    # mesh2d_edge_y: np.ndarray = Field(
+    #     default_factory=lambda: np.empty(0, dtype=np.double)
+    # )
+    # mesh2d_edge_z: np.ndarray = Field(
+    #     default_factory=lambda: np.empty(0, dtype=np.double)
+    # )
+    # mesh2d_edge_nodes: np.ndarray = Field(
+    #     default_factory=lambda: np.empty((0, 2), dtype=np.int32)
+    # )
 
-    mesh2d_face_x: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_face_y: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
+    # mesh2d_face_x: np.ndarray = Field(
+    #     default_factory=lambda: np.empty(0, dtype=np.double)
+    # )
+    # mesh2d_face_y: np.ndarray = Field(
+    #     default_factory=lambda: np.empty(0, dtype=np.double)
+    # )
     mesh2d_face_z: np.ndarray = Field(
         default_factory=lambda: np.empty(0, dtype=np.double)
     )
-    mesh2d_face_nodes: np.ndarray = Field(
-        default_factory=lambda: np.empty((0, 0), dtype=np.int32)
-    )
+    # mesh2d_face_nodes: np.ndarray = Field(
+    #     default_factory=lambda: np.empty((0, 0), dtype=np.int32)
+    # )
 
     def is_empty(self) -> bool:
         """Determine whether this Mesh2d is empty.
@@ -140,12 +140,21 @@ class Mesh2d(
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
 
-    def _set_mesh2d(self) -> None:
+    def _set_mesh2d(self, node_x=None, node_y=None, edge_nodes=None) -> None:
         # TODO: setting types is necessary since meshkernel.mesh2d_set requires them very specifically
+        #TODO: this func is only used once, while providing input, so consider making it obligatory arguments
+        
+        if node_x is None:
+            node_x = self.mesh2d_node_x
+        if node_y is None:
+            node_y = self.mesh2d_node_y
+        if edge_nodes is None:
+            edge_nodes = self.mesh2d_edge_nodes.ravel()
+        
         mesh2d = mk.Mesh2d(
-            node_x=self.mesh2d_node_x.astype(np.float64),
-            node_y=self.mesh2d_node_y.astype(np.float64),
-            edge_nodes=self.mesh2d_edge_nodes.ravel().astype(np.int32),
+            node_x=node_x.astype(np.float64),
+            node_y=node_y.astype(np.float64),
+            edge_nodes=edge_nodes.ravel().astype(np.int32),
         )
 
         self.meshkernel.mesh2d_set(mesh2d)
@@ -207,31 +216,40 @@ class Mesh2d(
         self._process(self.get_mesh2d())
 
     def _process(self, mesh2d_input) -> None:  # TODO: input arg is not used, so remove
-
+        #TODO: remove this commented function
         # Add input
         # self.meshkernel.mesh2d_set(mesh2d_input) #TODO: in this meshkernel function duplicates the amount of nodes. Seems not desireable, but more testbanks fail if commented.
         # Get output
-        mesh2d_output = (
-            self.meshkernel.mesh2d_get()
-        )  # better results for some testcases, comment above and: mesh2d_output = mesh2d_input
-
+        # mesh2d_output = self.meshkernel.mesh2d_get()
+        
         # Add to mesh2d variables
-        self.mesh2d_node_x = mesh2d_output.node_x
-        self.mesh2d_node_y = mesh2d_output.node_y
+        # self.mesh2d_node_x = mesh2d_output.node_x
+        # self.mesh2d_node_y = mesh2d_output.node_y
 
-        self.mesh2d_edge_x = mesh2d_output.edge_x
-        self.mesh2d_edge_y = mesh2d_output.edge_y
-        self.mesh2d_edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
+        # self.mesh2d_edge_x = mesh2d_output.edge_x
+        # self.mesh2d_edge_y = mesh2d_output.edge_y
+        # self.mesh2d_edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
 
-        self.mesh2d_face_x = mesh2d_output.face_x
-        self.mesh2d_face_y = mesh2d_output.face_y
+        # self.mesh2d_face_x = mesh2d_output.face_x
+        # self.mesh2d_face_y = mesh2d_output.face_y
         # TODO: commented since caused errors in hydromt_delft3dfm
         # TODO: this is the mesh2d_face_node_connectivity, not mesh2d_face_nodes
+        return
+    
+    @property
+    def mesh2d_edge_nodes(self):
+        mesh2d_output = self.meshkernel.mesh2d_get()
+        edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
+        return edge_nodes
+        
+    @property
+    def mesh2d_face_nodes(self):
+        mesh2d_output = self.meshkernel.mesh2d_get()
         npf = mesh2d_output.nodes_per_face
-        fnc = np.full((len(mesh2d_output.face_x), max(npf)), np.iinfo(np.int32).min)
-        idx = (np.ones_like(fnc) * np.arange(max(npf))[None, :]) < npf[:, None]
-        fnc[idx] = mesh2d_output.face_nodes
-        self.mesh2d_face_nodes = fnc
+        face_node_connectivity = np.full((len(mesh2d_output.face_x), max(npf)), np.iinfo(np.int32).min)
+        idx = (np.ones_like(face_node_connectivity) * np.arange(max(npf))[None, :]) < npf[:, None]
+        face_node_connectivity[idx] = mesh2d_output.face_nodes
+        return face_node_connectivity
 
     def clip(
         self,

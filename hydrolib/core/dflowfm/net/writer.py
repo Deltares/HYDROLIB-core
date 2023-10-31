@@ -126,9 +126,11 @@ class UgridWriter:
         ncfile.createDimension(
             "max_nmesh2d_face_nodes", mesh2d.mesh2d_face_nodes.shape[1]
         )
+        mesh2d_output = mesh2d.get_mesh2d()
+        print(mesh2d.mesh2d_edge_nodes.shape[0])
         ncfile.createDimension("mesh2d_nEdges", mesh2d.mesh2d_edge_nodes.shape[0])
         ncfile.createDimension("mesh2d_nFaces", mesh2d.mesh2d_face_nodes.shape[0])
-        ncfile.createDimension("mesh2d_nNodes", mesh2d.mesh2d_node_x.size)
+        ncfile.createDimension("mesh2d_nNodes", mesh2d_output.node_x.size)
         if "Two" not in ncfile.dimensions:
             ncfile.createDimension("Two", 2)
 
@@ -373,8 +375,9 @@ class UgridWriter:
         mesh2d_node_z.coordinates = "mesh2d_node_x mesh2d_node_y"
         mesh2d_node_z.grid_mapping = ""
 
-        mesh2d_node_x[:] = mesh2d.mesh2d_node_x
-        mesh2d_node_y[:] = mesh2d.mesh2d_node_y
+        mesh2d_output = mesh2d.get_mesh2d()
+        mesh2d_node_x[:] = mesh2d_output.node_x
+        mesh2d_node_y[:] = mesh2d_output.node_y
 
         mesh2d_en = ncfile.createVariable(
             "mesh2d_edge_nodes",

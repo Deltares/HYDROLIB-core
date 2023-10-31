@@ -83,12 +83,23 @@ class UgridReader:
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh2d
-        for meshkey, nckey in self._explorer.mesh2d_var_name_mapping.items():
-            setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
-        # TODO: replace with xugrid reader
+        # for meshkey, nckey in self._explorer.mesh2d_var_name_mapping.items():
+        #     setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
+        
+        node_x = self._read_nc_attribute(ds["mesh2d_node_x"])
+        node_y = self._read_nc_attribute(ds["mesh2d_node_y"])
+        edge_nodes = self._read_nc_attribute(ds["mesh2d_edge_nodes"])
+        
+        # TODO: replace with xugrid reader?
 
-        mesh2d._set_mesh2d()  # TODO: we still require this here to sync new attrs with meshkernel instance
-
+        # TODO: we still require this here to sync new attrs with meshkernel instance
+        mesh2d._set_mesh2d(node_x=node_x, node_y=node_y, edge_nodes=edge_nodes)
+        mesh2d._process(None)
+        
+        # bathymetry
+        node_z = self._read_nc_attribute(ds["mesh2d_node_z"])
+        mesh2d.mesh2d_node_z = node_z
+        
         ds.close()
 
     def read_link1d2d(self, link1d2d: Link1d2d) -> None:
