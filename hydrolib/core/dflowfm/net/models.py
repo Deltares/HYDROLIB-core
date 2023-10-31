@@ -147,7 +147,7 @@ class Mesh2d(
             node_y=self.mesh2d_node_y.astype(np.float64),
             edge_nodes=self.mesh2d_edge_nodes.ravel().astype(np.int32),
         )
-        
+
         self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
@@ -228,12 +228,8 @@ class Mesh2d(
         # TODO: commented since caused errors in hydromt_delft3dfm
         # TODO: this is the mesh2d_face_node_connectivity, not mesh2d_face_nodes
         npf = mesh2d_output.nodes_per_face
-        fnc = np.full(
-            (len(mesh2d_output.face_x), max(npf)), np.iinfo(np.int32).min
-        )
-        idx = (
-            np.ones_like(fnc) * np.arange(max(npf))[None, :]
-        ) < npf[:, None]
+        fnc = np.full((len(mesh2d_output.face_x), max(npf)), np.iinfo(np.int32).min)
+        idx = (np.ones_like(fnc) * np.arange(max(npf))[None, :]) < npf[:, None]
         fnc[idx] = mesh2d_output.face_nodes
         self.mesh2d_face_nodes = fnc
 

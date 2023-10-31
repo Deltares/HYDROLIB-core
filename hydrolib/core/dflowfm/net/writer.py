@@ -428,7 +428,7 @@ class UgridWriter:
 
         mesh2d_face_z.coordinates = "mesh2d_face_x mesh2d_face_y"
         mesh2d_face_z.grid_mapping = ""
-        
+
         mesh2d_output = mesh2d.get_mesh2d()
         mesh2d_face_x[:] = mesh2d_output.face_x
         mesh2d_face_y[:] = mesh2d_output.face_y
