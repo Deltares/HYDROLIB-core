@@ -249,10 +249,7 @@ class Mesh2d(
             geometrylist (GeometryList): Polygon stored as GeometryList
             deletemeshoption (int, optional): [description]. Defaults to 1.
         """
-
-        # Add current mesh to Mesh2d instance
-        # self._set_mesh2d()
-
+        
         # For clipping outside
         if not inside:
             # Check if a multipolygon was provided when clipping outside
@@ -314,14 +311,7 @@ class Mesh2d(
             polygon (GeometryList): Polygon in which to refine
             level (int): Number of refinement steps
         """
-        # Add current mesh to Mesh2d instance
-        # mesh2d_input = mk.Mesh2d(
-        #     node_x=self.mesh2d_node_x,
-        #     node_y=self.mesh2d_node_y,
-        #     edge_nodes=self.mesh2d_edge_nodes.ravel(),
-        # )
-        # self.meshkernel.mesh2d_set(mesh2d_input)
-
+        
         # Check if parts are closed
         # if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
         #     polygon.x_coordinates[-1],
@@ -1181,7 +1171,6 @@ class Network:
         self, branchids: List[str] = None, polygon: GeometryList = None
     ) -> None:
         self._mesh1d._set_mesh1d()
-        # self._mesh2d._set_mesh2d()
 
         node_mask = self._mesh1d.get_node_mask(branchids)
         if polygon is None:
