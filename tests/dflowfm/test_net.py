@@ -201,10 +201,6 @@ def test_create_2d():
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
 
-    # TODO: remove plotting
-    # _, ax = plt.subplots()
-    # mesh2d_output.plot_edges(ax=ax)
-
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == 45
     assert mesh2d_output.edge_nodes.size == 152
@@ -237,11 +233,6 @@ def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
     assert mesh2d_output.edge_nodes.size == nedgenodes  # 2x nedges
     assert mesh2d_output.face_x.size == nfaces
 
-    # TODO: remove plotting
-    # _, ax = plt.subplots()
-    # mesh2d_output.plot_edges(ax=ax)
-    # ax.plot(polygon.x_coordinates, polygon.y_coordinates, "r-")
-
 
 def test_create_refine_2d():
 
@@ -268,11 +259,6 @@ def test_create_refine_2d():
     fnc = mesh2d.mesh2d_face_nodes
     assert fnc.shape == (100, 4)
     assert (fnc == -2147483648).sum() == 12  # amount of triangles
-
-    # TODO: remove plotting
-    # _, ax = plt.subplots()
-    # mesh2d_output = mesh2d.get_mesh2d()
-    # mesh2d_output.plot_edges(ax=ax)
 
 
 cases = [
@@ -664,19 +650,18 @@ def test_create_triangular():
     )
 
     network.mesh2d_create_triangular_within_polygon(polygon)
-    mesh2d_output = network._mesh2d.get_mesh2d()
-
+    
     assert np.array_equiv(
-        mesh2d_output.node_x,
+        network._mesh2d.mesh2d_node_x,
         np.array([6.0, 4.0, 2.0, 0.0]),
     )
     assert np.array_equiv(
-        mesh2d_output.node_y,
+        network._mesh2d.mesh2d_node_y,
         np.array([2.0, 7.0, 6.0, 0.0]),
     )
     assert np.array_equiv(
-        mesh2d_output.edge_nodes,
-        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]).ravel(),
+        network._mesh2d.mesh2d_edge_nodes,
+        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
     )
 
 
@@ -691,11 +676,11 @@ def test_add_1d2d_links():
     # Create Mesh2d
     network.mesh2d_create_rectilinear_within_extent(extent=(-5, -5, 5, 5), dx=1, dy=1)
 
-    # network._mesh1d._set_mesh1d() #TODO: already set with updated code
-    # network._mesh2d._set_mesh2d() #TODO: already set with updated code
-    network._mesh1d.meshkernel.mesh1d_get().node_x
-    network._mesh2d.meshkernel.mesh2d_get().node_x
-
+    m1d_nnodes = network._mesh1d.meshkernel.mesh1d_get().node_x.size
+    m2d_nnodes = network._mesh2d.meshkernel.mesh2d_get().node_x.size
+    assert m1d_nnodes == 12
+    assert m2d_nnodes == 121
+    
     # Get required arguments
     node_mask = network._mesh1d.get_node_mask([branchid])
     exterior = GeometryList(
