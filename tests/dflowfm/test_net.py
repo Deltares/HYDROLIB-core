@@ -17,15 +17,17 @@ from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 from ..utils import test_input_dir, test_output_dir
 
 
-def plot_network(network): #TODO: can be removed
+def plot_network(network):  # TODO: can be removed
     _, ax = plt.subplots()
     ax.set_aspect(1.0)
-    network.plot(ax=ax) #TODO: newly added but was already called
+    network.plot(ax=ax)  # TODO: newly added but was already called
     ax.autoscale()
     plt.show()
 
 
-def _plot_mesh2d(mesh2d, ax=None, **kwargs): #TODO, this can be removed meshkernel.mesh2d_get().plot_edges() does the trick
+def _plot_mesh2d(
+    mesh2d, ax=None, **kwargs
+):  # TODO, this can be removed meshkernel.mesh2d_get().plot_edges() does the trick
     from matplotlib.collections import LineCollection
 
     if ax is None:
@@ -166,14 +168,14 @@ def test_create_1d_2d_1d2d():
     assert network1_link1d2d.shape == (21, 2)
     assert network1_con_m1d.size == 21
     assert network1_con_m2d.size == 21
-    
+
     # Write to file
     file_out = Path(test_output_dir / "test_net.nc")
     network.to_file(file_out)
-    
-    #read from written file
+
+    # read from written file
     network2 = NetworkModel(file_out)
-    
+
     mesh2d_output = network2._mesh2d.get_mesh2d()
     assert len(network2._mesh2d.mesh2d_face_x) == 152
     mesh1d_output = network2._mesh1d._get_mesh1d()
@@ -183,10 +185,10 @@ def test_create_1d_2d_1d2d():
     network2_con_m1d = network2._link1d2d.meshkernel.contacts_get().mesh1d_indices
     network2_con_m2d = network2._link1d2d.meshkernel.contacts_get().mesh2d_indices
     assert network2_link1d2d.shape == (21, 2)
-    #TODO: below asserts fail, since the meshkernel contacts are not set upon reading (not implemented in meshkernel)
+    # TODO: below asserts fail, since the meshkernel contacts are not set upon reading (not implemented in meshkernel)
     # assert network2_con_m1d.size == 21
     # assert network2_con_m2d.size == 21
-    
+
     # plot both networks
     network.plot()
     network2.plot()
@@ -332,15 +334,15 @@ def test_read_write_read_compare_nodes(filepath):
 
     # Create network model
     network1 = NetworkModel(filepath=filepath)
-    
+
     # Save to temporary location
     save_path = (
         test_output_dir
-        / "test_read_write_read_compare"#.__name__
+        / "test_read_write_read_compare"  # .__name__
         / network1._generate_name()
     )
     network1.save(filepath=save_path)
-    
+
     # # Read a second network from this location
     network2 = NetworkModel(filepath=network1.filepath)
 
@@ -348,9 +350,9 @@ def test_read_write_read_compare_nodes(filepath):
     network1_mesh2d_node_x = network1._mesh2d.get_mesh2d().node_x
     network2_mesh1d_node_x = network2._mesh1d._get_mesh1d().node_x
     network2_mesh2d_node_x = network2._mesh2d.get_mesh2d().node_x
-    
+
     netw1_nnodes = len(network1_mesh1d_node_x) + len(network1_mesh2d_node_x)
-    
+
     assert netw1_nnodes > 0
     assert (network1_mesh1d_node_x == network2_mesh1d_node_x).all()
     assert (network1_mesh2d_node_x == network2_mesh2d_node_x).all()
@@ -480,13 +482,13 @@ class TestMesh2d:
         network = NetworkModel(filepath=filepath)
         assert network._mesh1d.is_empty()
         assert not network._mesh2d.is_empty()
-        
+
         mesh2d_output = network._mesh2d.get_mesh2d()
-        
-        #TODO: not empty anymore since meshkernel creates the face_node_connectivity
+
+        # TODO: not empty anymore since meshkernel creates the face_node_connectivity
         assert len(mesh2d_output.face_x) == 208
         assert len(mesh2d_output.face_y) == 208
-        assert len(network._mesh2d.mesh2d_face_z) == 0 #TODO: update face_z length
+        assert len(network._mesh2d.mesh2d_face_z) == 0  # TODO: update face_z length
         assert network._mesh2d.mesh2d_face_nodes.shape == (208, 4)
 
         assert len(mesh2d_output.node_x) == 238
@@ -646,7 +648,7 @@ def test_create_triangular():
     )
 
     network.mesh2d_create_triangular_within_polygon(polygon)
-    
+
     assert np.array_equiv(
         network._mesh2d.mesh2d_node_x,
         np.array([6.0, 4.0, 2.0, 0.0]),
@@ -676,7 +678,7 @@ def test_add_1d2d_links():
     m2d_nnodes = network._mesh2d.meshkernel.mesh2d_get().node_x.size
     assert m1d_nnodes == 12
     assert m2d_nnodes == 121
-    
+
     # Get required arguments
     node_mask = network._mesh1d.get_node_mask([branchid])
     exterior = GeometryList(
