@@ -84,42 +84,14 @@ class Mesh2d(BaseModel):
     """
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
-
-    # mesh2d_node_x: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_node_y: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
+    
+    # placeholders for bathymetry
     mesh2d_node_z: np.ndarray = Field(
         default_factory=lambda: np.empty(0, dtype=np.double)
     )
-
-    # mesh2d_edge_x: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_edge_y: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_edge_z: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_edge_nodes: np.ndarray = Field(
-    #     default_factory=lambda: np.empty((0, 2), dtype=np.int32)
-    # )
-
-    # mesh2d_face_x: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
-    # mesh2d_face_y: np.ndarray = Field(
-    #     default_factory=lambda: np.empty(0, dtype=np.double)
-    # )
     mesh2d_face_z: np.ndarray = Field(
         default_factory=lambda: np.empty(0, dtype=np.double)
     )
-    # mesh2d_face_nodes: np.ndarray = Field(
-    #     default_factory=lambda: np.empty((0, 0), dtype=np.int32)
-    # )
 
     @property
     def mesh2d_node_x(self):
