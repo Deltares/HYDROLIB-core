@@ -285,7 +285,7 @@ def test_read_write_read_compare(filepath):
 
     with open(path, "r") as f:
         conventions = json.load(f)
-    
+
     for cat, dct in conventions.items():
         if cat == "mesh2d":
             part1 = getattr(network1, "_mesh2d")

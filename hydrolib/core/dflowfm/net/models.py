@@ -83,7 +83,7 @@ class Mesh2d(BaseModel):
     """
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
-    
+
     # placeholders for bathymetry
     mesh2d_node_z: np.ndarray = Field(
         default_factory=lambda: np.empty(0, dtype=np.double)

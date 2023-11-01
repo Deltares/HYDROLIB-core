@@ -81,7 +81,7 @@ class UgridReader:
             return
 
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
-        
+
         # set mesh2d on meshkernel instance
         node_x = self._read_nc_attribute(ds["mesh2d_node_x"])
         node_y = self._read_nc_attribute(ds["mesh2d_node_y"])
