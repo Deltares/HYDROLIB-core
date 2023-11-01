@@ -49,7 +49,7 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
 
 
 # TODO: this is an inconvenient name since meshkernel also has a Mesh2d class
-class Mesh2d(BaseModel):  
+class Mesh2d(BaseModel):
     """Mesh2d defines a single two dimensional grid.
 
     Attributes:
@@ -120,48 +120,52 @@ class Mesh2d(BaseModel):
     # mesh2d_face_nodes: np.ndarray = Field(
     #     default_factory=lambda: np.empty((0, 0), dtype=np.int32)
     # )
-    
+
     @property
     def mesh2d_node_x(self):
         return self.meshkernel.mesh2d_get().node_x
-   
+
     @property
     def mesh2d_node_y(self):
         return self.meshkernel.mesh2d_get().node_y
-    
+
     @property
     def mesh2d_edge_x(self):
         return self.meshkernel.mesh2d_get().edge_x
-   
+
     @property
     def mesh2d_edge_y(self):
         return self.meshkernel.mesh2d_get().edge_y
-    
+
     @property
     def mesh2d_edge_nodes(self):
         mesh2d_output = self.meshkernel.mesh2d_get()
         edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
         return edge_nodes
-    
+
     @property
     def mesh2d_face_x(self):
         return self.meshkernel.mesh2d_get().face_x
-   
+
     @property
     def mesh2d_face_y(self):
         return self.meshkernel.mesh2d_get().face_y
-    
+
     @property
     def mesh2d_face_nodes(self):
         mesh2d_output = self.meshkernel.mesh2d_get()
         npf = mesh2d_output.nodes_per_face
         if self.is_empty():
             return np.empty((0, 0), dtype=np.int32)
-        face_node_connectivity = np.full((len(mesh2d_output.face_x), max(npf)), np.iinfo(np.int32).min)
-        idx = (np.ones_like(face_node_connectivity) * np.arange(max(npf))[None, :]) < npf[:, None]
+        face_node_connectivity = np.full(
+            (len(mesh2d_output.face_x), max(npf)), np.iinfo(np.int32).min
+        )
+        idx = (
+            np.ones_like(face_node_connectivity) * np.arange(max(npf))[None, :]
+        ) < npf[:, None]
         face_node_connectivity[idx] = mesh2d_output.face_nodes
         return face_node_connectivity
-    
+
     def is_empty(self) -> bool:
         """Determine whether this Mesh2d is empty.
 
@@ -185,7 +189,7 @@ class Mesh2d(BaseModel):
             node_y=node_y.astype(np.float64),
             edge_nodes=edge_nodes.ravel().astype(np.int32),
         )
-        
+
         self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
@@ -234,7 +238,7 @@ class Mesh2d(BaseModel):
         """
         # Call meshkernel
         self.meshkernel.mesh2d_make_triangular_mesh_from_polygon(geometry_list)
-    
+
     def clip(
         self,
         geometrylist: mk.GeometryList,
@@ -247,7 +251,7 @@ class Mesh2d(BaseModel):
             geometrylist (GeometryList): Polygon stored as GeometryList
             deletemeshoption (int, optional): [description]. Defaults to 1.
         """
-        
+
         # For clipping outside
         if not inside:
             # Check if a multipolygon was provided when clipping outside
@@ -309,7 +313,7 @@ class Mesh2d(BaseModel):
             polygon (GeometryList): Polygon in which to refine
             level (int): Number of refinement steps
         """
-        
+
         # Check if parts are closed
         # if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
         #     polygon.x_coordinates[-1],
@@ -729,8 +733,12 @@ class Mesh1d(BaseModel):
     network1d_edge_nodes: np.ndarray = Field(
         default_factory=lambda: np.empty((0, 2), np.int32)
     )
-    network1d_geom_x: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double)) #TODO: sync with meshkernel.node_x
-    network1d_geom_y: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double)) #TODO: sync with meshkernel.node_y
+    network1d_geom_x: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.double)
+    )  # TODO: sync with meshkernel.node_x
+    network1d_geom_y: np.ndarray = Field(
+        default_factory=lambda: np.empty(0, np.double)
+    )  # TODO: sync with meshkernel.node_y
     network1d_part_node_count: np.ndarray = Field(
         default_factory=lambda: np.empty(0, np.int32)
     )
@@ -748,8 +756,10 @@ class Mesh1d(BaseModel):
         default_factory=lambda: np.empty(0, np.double)
     )
 
-    mesh1d_edge_nodes: np.ndarray = Field( #TODO: sync with meshkernel.edge_nodes (ravelled)
-        default_factory=lambda: np.empty((0, 2), np.int32)
+    mesh1d_edge_nodes: np.ndarray = (
+        Field(  # TODO: sync with meshkernel.edge_nodes (ravelled)
+            default_factory=lambda: np.empty((0, 2), np.int32)
+        )
     )
     mesh1d_edge_x: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
     mesh1d_edge_y: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
@@ -1210,16 +1220,19 @@ class Network:
         )
         self._mesh1d._set_mesh1d()
         return name
-    
+
     def plot(self):
         import matplotlib.pyplot as plt
-        fig,ax = plt.subplots()
+
+        fig, ax = plt.subplots()
         mesh2d_output = self._mesh2d.get_mesh2d()
         mesh1d_output = self._mesh1d._get_mesh1d()
         links_output = self._link1d2d.meshkernel.contacts_get()
-        mesh2d_output.plot_edges(ax=ax, color='r')
-        mesh1d_output.plot_edges(ax=ax, color='g')
-        links_output.plot_edges(ax=ax, mesh1d=mesh1d_output, mesh2d=mesh2d_output, color='k')
+        mesh2d_output.plot_edges(ax=ax, color="r")
+        mesh1d_output.plot_edges(ax=ax, color="g")
+        links_output.plot_edges(
+            ax=ax, mesh1d=mesh1d_output, mesh2d=mesh2d_output, color="k"
+        )
 
 
 class NetworkModel(ParsableFileModel):
