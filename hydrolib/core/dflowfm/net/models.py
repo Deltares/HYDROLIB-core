@@ -632,9 +632,7 @@ class Link1d2d(BaseModel):
         self.link1d2d = np.empty((0, 2), np.int32)
         # The meshkernel object needs to be resetted
         self.meshkernel._deallocate_state()
-        self.meshkernel._allocate_state(
-            self.meshkernel.get_projection()
-        )
+        self.meshkernel._allocate_state(self.meshkernel.get_projection())
         self.meshkernel.contacts_get()
 
     def _process(self) -> None:
