@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import matplotlib.pyplot as plt
 import netCDF4 as nc
 import numpy as np
 import pytest
@@ -15,29 +14,6 @@ from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 
 from ..utils import test_input_dir, test_output_dir
-
-
-def plot_network(network):  # TODO: can be removed
-    _, ax = plt.subplots()
-    ax.set_aspect(1.0)
-    network.plot(ax=ax)  # TODO: newly added but was already called
-    ax.autoscale()
-    plt.show()
-
-
-def _plot_mesh2d(
-    mesh2d, ax=None, **kwargs
-):  # TODO, this can be removed meshkernel.mesh2d_get().plot_edges() does the trick
-    from matplotlib.collections import LineCollection
-
-    if ax is None:
-        fig, ax = plt.subplots()
-    nodes2d = np.stack([mesh2d.mesh2d_node_x, mesh2d.mesh2d_node_y], axis=1)
-    edge_nodes = mesh2d.mesh2d_edge_nodes
-    lc_mesh2d = LineCollection(nodes2d[edge_nodes], **kwargs)
-    ax.add_collection(lc_mesh2d)
-    ax.autoscale_view()
-    return ax
 
 
 @pytest.mark.plots
@@ -249,7 +225,7 @@ def test_create_refine_2d():
     # Create within bounding box
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
     # Refine
-    mesh2d.refine(polygon, levels=1, min_edge_size=0.1)
+    mesh2d.refine(polygon, level=1, min_edge_size=0.1)
 
     mesh2d_output = mesh2d.get_mesh2d()
 
