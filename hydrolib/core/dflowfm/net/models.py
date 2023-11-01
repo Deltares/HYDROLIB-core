@@ -48,7 +48,6 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
     return lists
 
 
-# TODO: this is an inconvenient name since meshkernel also has a Mesh2d class
 class Mesh2d(BaseModel):
     """Mesh2d defines a single two dimensional grid.
 
