@@ -633,8 +633,8 @@ class Link1d2d(BaseModel):
         # The meshkernel object needs to be resetted
         self.meshkernel._deallocate_state()
         self.meshkernel._allocate_state(
-            self.meshkernel.is_geographic
-        )  # TODO: .get_projection() might be better
+            self.meshkernel.get_projection()
+        )
         self.meshkernel.contacts_get()
 
     def _process(self) -> None:
@@ -1116,15 +1116,6 @@ class Network:
         self, projection: mk.ProjectType = mk.ProjectionType.CARTESIAN
     ) -> None:
         self.meshkernel = mk.MeshKernel(projection=projection)
-        # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
-        # otherwise, and needed for reinitializing the meshkernel
-        if projection == mk.ProjectionType.CARTESIAN:
-            is_geographic = False
-        else:  # SPHERICAL or SPHERICALACCURATE
-            is_geographic = True
-        # TODO: this bool does not seems to have effect, maybe discontinue?
-        self.meshkernel.is_geographic = is_geographic
-
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
         self._link1d2d = Link1d2d(meshkernel=self.meshkernel)
