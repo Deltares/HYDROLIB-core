@@ -247,7 +247,7 @@ def test_create_refine_2d():
     # Create within bounding box
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
     # Refine
-    mesh2d.refine(polygon, 1, min_edge_size=0.1)
+    mesh2d.refine(polygon, levels=1, min_edge_size=0.1)
 
     mesh2d_output = mesh2d.get_mesh2d()
 
@@ -308,7 +308,6 @@ def test_read_write_read_compare(filepath):
     with open(path, "r") as f:
         conventions = json.load(f)
     
-    #TODO: this currently fails since we removed many attrs from mesh
     for cat, dct in conventions.items():
         if cat == "mesh2d":
             part1 = getattr(network1, "_mesh2d")
@@ -378,7 +377,6 @@ class TestMesh2d:
                550., 100., 150., 200., 250., 300., 350., 400., 450., 500., 550.,
                600., 100., 150., 200., 250., 300., 350., 400., 450., 500., 550.,
                600., 200., 250., 300., 350., 400., 450., 500.], dtype=np.float64),
-        # mesh2d_edge_z=np.ndarray([], dtype=np.float64),
         mesh2d_edge_nodes=np.array([
             [ 0,  5],
             [ 5,  6],
@@ -462,14 +460,12 @@ class TestMesh2d:
             dtype=np.int32,
         ),
         # fmt: on
-        
         assert np.array_equiv(mesh.mesh2d_node_x, mesh2d_node_x)
         assert np.array_equiv(mesh.mesh2d_node_y, mesh2d_node_y)
         assert np.array_equiv(mesh.mesh2d_node_z, mesh2d_node_z)
 
         assert np.array_equiv(mesh.mesh2d_edge_x, mesh2d_edge_x)
         assert np.array_equiv(mesh.mesh2d_edge_y, mesh2d_edge_y)
-        # assert np.array_equiv(mesh.mesh2d_edge_z, mesh2d_edge_z) #TODO: edge_z is used nowhere in code except on init (removed)
         assert np.array_equiv(mesh.mesh2d_edge_nodes, mesh2d_edge_nodes)
 
         assert np.array_equiv(mesh.mesh2d_face_x, mesh2d_face_x)
