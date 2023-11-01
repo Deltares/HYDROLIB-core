@@ -81,12 +81,7 @@ class UgridReader:
             return
 
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
-
-        # Read mesh2d
-        # for meshkey, nckey in self._explorer.mesh2d_var_name_mapping.items():
-        #     setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
-        # TODO: replace with xugrid reader?
-
+        
         # set mesh2d on meshkernel instance
         node_x = self._read_nc_attribute(ds["mesh2d_node_x"])
         node_y = self._read_nc_attribute(ds["mesh2d_node_y"])
@@ -115,7 +110,8 @@ class UgridReader:
         for meshkey, nckey in self._explorer.link1d2d_var_name_mapping.items():
             setattr(link1d2d, meshkey, self._read_nc_attribute(ds[nckey]))
 
-        # TODO: setting contacts is not possible in meshkernel (e.g. with contacts_set())
+        # TODO: setting contacts is not possible yet in meshkernel
+        # https://github.com/Deltares/MeshKernelPy/issues/107
         # so misalignment between link1d2d.link1d2d and
         # empty _link1d2d.meshkernel.contacts_get().mesh2d_indices
         # mesh1d_indices = link1d2d.link1d2d[:,0]
