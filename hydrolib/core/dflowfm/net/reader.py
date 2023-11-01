@@ -118,6 +118,15 @@ class UgridReader:
         for meshkey, nckey in self._explorer.link1d2d_var_name_mapping.items():
             setattr(link1d2d, meshkey, self._read_nc_attribute(ds[nckey]))
 
+        # TODO: setting contacts is not possible in meshkernel (e.g. with contacts_set())
+        # so misalignment between link1d2d.link1d2d and 
+        # empty _link1d2d.meshkernel.contacts_get().mesh2d_indices
+        # mesh1d_indices = link1d2d.link1d2d[:,0]
+        # mesh2d_indices = link1d2d.link1d2d[:,1]
+        # import meshkernel as mk
+        # contacts = mk.Contacts(mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices)
+        # link1d2d.meshkernel.contacts_set(contacts)
+        
         ds.close()
 
     def _read_nc_attribute(self, attr: nc._netCDF4.Variable) -> np.ndarray:

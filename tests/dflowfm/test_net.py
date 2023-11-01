@@ -17,15 +17,15 @@ from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 from ..utils import test_input_dir, test_output_dir
 
 
-def plot_network(network):
+def plot_network(network): #TODO: can be removed
     _, ax = plt.subplots()
     ax.set_aspect(1.0)
-    network.plot(ax=ax)  # TODO: does not exist
+    network.plot(ax=ax) #TODO: newly added but was already called
     ax.autoscale()
     plt.show()
 
 
-def _plot_mesh2d(mesh2d, ax=None, **kwargs):
+def _plot_mesh2d(mesh2d, ax=None, **kwargs): #TODO, this can be removed meshkernel.mesh2d_get().plot_edges() does the trick
     from matplotlib.collections import LineCollection
 
     if ax is None:
@@ -161,34 +161,36 @@ def test_create_1d_2d_1d2d():
     mesh1d_output = network._mesh1d._get_mesh1d()
     assert len(mesh1d_output.node_x) == 110
 
-    network_link1d2d = network._link1d2d.link1d2d
-    network_con_m1d = network._link1d2d.meshkernel.contacts_get().mesh1d_indices
-    network_con_m2d = network._link1d2d.meshkernel.contacts_get().mesh2d_indices
-    assert network_link1d2d.shape == (21, 2)
-    assert network_con_m1d.size == 21
-    assert network_con_m2d.size == 21
-
+    network1_link1d2d = network._link1d2d.link1d2d
+    network1_con_m1d = network._link1d2d.meshkernel.contacts_get().mesh1d_indices
+    network1_con_m2d = network._link1d2d.meshkernel.contacts_get().mesh2d_indices
+    assert network1_link1d2d.shape == (21, 2)
+    assert network1_con_m1d.size == 21
+    assert network1_con_m2d.size == 21
+    
     # Write to file
     file_out = Path(test_output_dir / "test_net.nc")
     network.to_file(file_out)
     
     #read from written file
     network2 = NetworkModel(file_out)
-
+    
     mesh2d_output = network2._mesh2d.get_mesh2d()
-    assert len(mesh2d_output.face_x) == 152
+    assert len(network2._mesh2d.mesh2d_face_x) == 152
     mesh1d_output = network2._mesh1d._get_mesh1d()
     assert len(mesh1d_output.node_x) == 110
 
-    network_link1d2d = network2._link1d2d.link1d2d
-    network_con_m1d = network2._link1d2d.meshkernel.contacts_get().mesh1d_indices
-    network_con_m2d = network2._link1d2d.meshkernel.contacts_get().mesh2d_indices
-    assert network_link1d2d.shape == (21, 2)
-    #TODO: below fail, so the meshkernel instance is not up to date for some reason, should it be?
-    assert network_con_m1d.size == 21
-    assert network_con_m2d.size == 21
+    network2_link1d2d = network2._link1d2d.link1d2d
+    network2_con_m1d = network2._link1d2d.meshkernel.contacts_get().mesh1d_indices
+    network2_con_m2d = network2._link1d2d.meshkernel.contacts_get().mesh2d_indices
+    assert network2_link1d2d.shape == (21, 2)
+    #TODO: below asserts fail, since the meshkernel contacts are not set upon reading (not implemented in meshkernel)
+    assert network2_con_m1d.size == 21
+    assert network2_con_m2d.size == 21
     
-    # plot_network(network)
+    # plot both networks
+    network.plot()
+    network2.plot()
 
 
 def test_create_2d():
