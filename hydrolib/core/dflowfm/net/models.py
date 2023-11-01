@@ -48,9 +48,8 @@ def split_by(gl: mk.GeometryList, by: float) -> list:
     return lists
 
 
-class Mesh2d(
-    BaseModel
-):  # TODO: this is an inconvenient name since meshkernel also has a Mesh2d class
+# TODO: this is an inconvenient name since meshkernel also has a Mesh2d class
+class Mesh2d(BaseModel):  
     """Mesh2d defines a single two dimensional grid.
 
     Attributes:
@@ -169,8 +168,7 @@ class Mesh2d(
         Returns:
             (bool): Whether this Mesh2d is empty.
         """
-        # return self.mesh2d_node_x.size == 0
-        return self.meshkernel.mesh2d_get().node_x.size == 0
+        return self.mesh2d_node_x.size == 0
 
     def read_file(self, file_path: Path) -> None:
         """Read the Mesh2d from the file at file_path.
@@ -182,12 +180,12 @@ class Mesh2d(
         reader.read_mesh2d(self)
 
     def _set_mesh2d(self, node_x, node_y, edge_nodes) -> None:
-        # TODO: setting types is necessary since meshkernel.mesh2d_set requires them very specifically
         mesh2d = mk.Mesh2d(
             node_x=node_x.astype(np.float64),
             node_y=node_y.astype(np.float64),
             edge_nodes=edge_nodes.ravel().astype(np.int32),
         )
+        
         self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
@@ -763,8 +761,7 @@ class Mesh1d(BaseModel):
     )
 
     def is_empty(self) -> bool:
-        # return self.mesh1d_node_x.size == 0
-        return self.meshkernel.mesh1d_get().node_x.size == 0
+        return self.mesh1d_node_x.size == 0
 
     def _get_mesh1d(self) -> mk.Mesh1d:
         """Return mesh1d from meshkernel. Note that the meshkernel.Mesh1d instance
