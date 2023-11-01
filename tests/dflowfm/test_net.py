@@ -136,7 +136,6 @@ def test_create_1d_2d_1d2d():
     branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
 
     # Create Mesh1d
-    # networkmodel = NetworkModel()
     network = Network()
     network.mesh1d_add_branch(branch, name="branch1")
 
@@ -278,7 +277,6 @@ def test_read_net_nc(filepath):
 
     # Create network model
     network = NetworkModel(filepath=filepath)
-    # network = networkmodel.network
     assert not network._mesh1d.is_empty()
     assert network._mesh2d.is_empty()
 
@@ -335,7 +333,7 @@ def test_read_write_read_compare_nodes(filepath):
 
     # Create network model
     network1 = NetworkModel(filepath=filepath)
-    # network1 = Network.from_file(file_path=filepath)
+    
     # Save to temporary location
     save_path = (
         test_output_dir
