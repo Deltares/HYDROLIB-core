@@ -346,12 +346,6 @@ def test_read_write_read_compare_nodes(filepath):
     
     # # Read a second network from this location
     network2 = NetworkModel(filepath=network1.filepath)
-    
-    #TODO: empty links, is that correct?
-    # network1_link1d2d = network1._link1d2d.link1d2d
-    # network2_link1d2d = network2._link1d2d.link1d2d
-    # network1_con_m1d = network1._link1d2d.meshkernel.contacts_get().mesh1d_indices
-    # network1_con_m2d = network1._link1d2d.meshkernel.contacts_get().mesh2d_indices
 
     network1_mesh1d_node_x = network1._mesh1d._get_mesh1d().node_x
     network1_mesh2d_node_x = network1._mesh2d.get_mesh2d().node_x
