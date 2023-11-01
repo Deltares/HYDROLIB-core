@@ -376,9 +376,17 @@ class TestMesh2d:
         mesh2d_node_x=np.asarray([ 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 300.0, 300.0, 300.0, 300.0, 300.0, 300.0, 400.0, 400.0, 400.0, 400.0, 400.0, 400.0, 500.0, 500.0, 500.0, 500.0, ]),
         mesh2d_node_y=np.asarray([ 200.0,300.0, 400.0, 500.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 200.0, 300.0, 400.0, 500.0,]),
         mesh2d_node_z=np.asarray([-999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, ]),
-        mesh2d_edge_x=np.ndarray([], dtype=np.float64),
-        mesh2d_edge_y=np.ndarray([], dtype=np.float64),
-        mesh2d_edge_z=np.ndarray([], dtype=np.float64),
+        mesh2d_edge_x=np.asarray([ 50., 100.,  50.,   0., 100.,  50.,   0., 100.,  50.,   0., 150.,
+               200., 150., 100., 200., 150., 200., 150., 200., 150., 200., 150.,
+               100., 250., 300., 250., 300., 250., 300., 250., 300., 250., 300.,
+               250., 350., 400., 350., 400., 350., 400., 350., 400., 350., 400.,
+               350., 450., 500., 450., 500., 450., 500., 450.], dtype=np.float64),
+        mesh2d_edge_y=np.asarray([200., 250., 300., 250., 350., 400., 350., 450., 500., 450., 100.,
+               150., 200., 150., 250., 300., 350., 400., 450., 500., 550., 600.,
+               550., 100., 150., 200., 250., 300., 350., 400., 450., 500., 550.,
+               600., 100., 150., 200., 250., 300., 350., 400., 450., 500., 550.,
+               600., 200., 250., 300., 350., 400., 450., 500.], dtype=np.float64),
+        # mesh2d_edge_z=np.ndarray([], dtype=np.float64),
         mesh2d_edge_nodes=np.array([
             [ 0,  5],
             [ 5,  6],
@@ -467,9 +475,9 @@ class TestMesh2d:
         assert np.array_equiv(mesh.mesh2d_node_y, mesh2d_node_y)
         assert np.array_equiv(mesh.mesh2d_node_z, mesh2d_node_z)
 
-        # assert np.array_equiv(mesh.mesh2d_edge_x, mesh2d_edge_x) #TODO: fix expected values
-        # assert np.array_equiv(mesh.mesh2d_edge_y, mesh2d_edge_y) #TODO: fix expected values
-        # assert np.array_equiv(mesh.mesh2d_edge_z, mesh2d_edge_z) #TODO: edge_z is used nowhere in code except on init
+        assert np.array_equiv(mesh.mesh2d_edge_x, mesh2d_edge_x)
+        assert np.array_equiv(mesh.mesh2d_edge_y, mesh2d_edge_y)
+        # assert np.array_equiv(mesh.mesh2d_edge_z, mesh2d_edge_z) #TODO: edge_z is used nowhere in code except on init (removed)
         assert np.array_equiv(mesh.mesh2d_edge_nodes, mesh2d_edge_nodes)
 
         assert np.array_equiv(mesh.mesh2d_face_x, mesh2d_face_x)
