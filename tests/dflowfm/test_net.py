@@ -477,33 +477,17 @@ class TestMesh2d:
         ),
         # fmt: on
         
-        #TODO: also get commented properties from mesh
-        mesh2d_output = mesh.get_mesh2d()
-        mesh_mesh2d_node_x = mesh2d_output.node_x
-        mesh_mesh2d_node_y = mesh2d_output.node_y
-        # mesh_mesh2d_node_z = mesh2d_output.node_z
-        
-        mesh_mesh2d_edge_x = mesh2d_output.edge_x
-        mesh_mesh2d_edge_y = mesh2d_output.edge_y
-        # mesh_mesh2d_edge_z = mesh2d_output.edge_z 
-        # mesh_mesh2d_edge_nodes = mesh2d_output.edge_nodes
-        
-        mesh_mesh2d_face_x = mesh2d_output.face_x
-        mesh_mesh2d_face_y = mesh2d_output.face_y
-        # mesh_mesh2d_face_z = mesh2d_output.face_z #TODO: not available
-        # mesh_mesh2d_face_nodes = mesh2d_output.face_nodes
-        
-        assert np.array_equiv(mesh_mesh2d_node_x, mesh2d_node_x)
-        assert np.array_equiv(mesh_mesh2d_node_y, mesh2d_node_y)
+        assert np.array_equiv(mesh.mesh2d_node_x, mesh2d_node_x)
+        assert np.array_equiv(mesh.mesh2d_node_y, mesh2d_node_y)
         assert np.array_equiv(mesh.mesh2d_node_z, mesh2d_node_z)
 
-        # assert np.array_equiv(mesh_mesh2d_edge_x, mesh2d_edge_x) #TODO: fix expected values
-        # assert np.array_equiv(mesh_mesh2d_edge_y, mesh2d_edge_y) #TODO: fix expected values
+        # assert np.array_equiv(mesh.mesh2d_edge_x, mesh2d_edge_x) #TODO: fix expected values
+        # assert np.array_equiv(mesh.mesh2d_edge_y, mesh2d_edge_y) #TODO: fix expected values
         # assert np.array_equiv(mesh.mesh2d_edge_z, mesh2d_edge_z) #TODO: edge_z is used nowhere in code except on init
         assert np.array_equiv(mesh.mesh2d_edge_nodes, mesh2d_edge_nodes)
 
-        assert np.array_equiv(mesh_mesh2d_face_x, mesh2d_face_x)
-        assert np.array_equiv(mesh_mesh2d_face_y, mesh2d_face_y)
+        assert np.array_equiv(mesh.mesh2d_face_x, mesh2d_face_x)
+        assert np.array_equiv(mesh.mesh2d_face_y, mesh2d_face_y)
         assert np.array_equiv(mesh.mesh2d_face_z, mesh2d_face_z)
         assert np.array_equiv(mesh.mesh2d_face_nodes, mesh2d_face_nodes)
 

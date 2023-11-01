@@ -94,7 +94,6 @@ class UgridReader:
 
         # TODO: we still require this here to sync new attrs with meshkernel instance
         mesh2d._set_mesh2d(node_x=node_x, node_y=node_y, edge_nodes=edge_nodes)
-        mesh2d._process(None)
         
         # bathymetry
         node_z = self._read_nc_attribute(ds["mesh2d_node_z"])
