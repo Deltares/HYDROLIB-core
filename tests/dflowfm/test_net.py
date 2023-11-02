@@ -713,3 +713,11 @@ class TestFillValueConfiguration:
         assert config.int64_fill_value == nc.default_fillvals["i8"]
         assert config.float32_fill_value == nc.default_fillvals["f4"]
         assert config.float64_fill_value == nc.default_fillvals["f8"]
+
+
+def test_network_is_geographic():
+    network = Network()
+    assert network.is_geographic == False
+    
+    network = Network(is_geographic=True)
+    assert network.is_geographic == True

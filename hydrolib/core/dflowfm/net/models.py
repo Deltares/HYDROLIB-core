@@ -1088,9 +1088,12 @@ class Mesh1d(BaseModel):
 
 
 class Network:
-    def __init__(
-        self, projection: mk.ProjectType = mk.ProjectionType.CARTESIAN
-    ) -> None:
+    def __init__(self, is_geographic: bool = False) -> None:
+        if not is_geographic:
+            projection = mk.ProjectionType.CARTESIAN
+        else:
+            projection = mk.ProjectionType.SPHERICAL
+            
         self.meshkernel = mk.MeshKernel(projection=projection)
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
@@ -1133,7 +1136,16 @@ class Network:
 
         writer = UgridWriter()
         writer.write(self, file)
-
+    
+    @property
+    def is_geographic(self):
+        projection = self.meshkernel.get_projection()
+        if projection == mk.ProjectionType.CARTESIAN:
+            is_geographic = False
+        else:
+            is_geographic = True
+        return is_geographic
+        
     def link1d2d_from_1d_to_2d(
         self, branchids: List[str] = None, polygon: GeometryList = None
     ) -> None:
