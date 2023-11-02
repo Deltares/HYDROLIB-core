@@ -167,7 +167,8 @@ def test_create_1d_2d_1d2d():
 
     # plot both networks
     import matplotlib.pyplot as plt
-    fig,(ax1,ax2) = plt.subplots(1,2, figsize=(8,4))
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
     network.plot(ax=ax1)
     network2.plot(ax=ax2)
 
@@ -718,6 +719,6 @@ class TestFillValueConfiguration:
 def test_network_is_geographic():
     network = Network()
     assert network.is_geographic == False
-    
+
     network = Network(is_geographic=True)
     assert network.is_geographic == True
