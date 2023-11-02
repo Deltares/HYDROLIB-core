@@ -166,8 +166,10 @@ def test_create_1d_2d_1d2d():
     # assert network2_con_m2d.size == 21
 
     # plot both networks
-    network.plot()
-    network2.plot()
+    import matplotlib.pyplot as plt
+    fig,(ax1,ax2) = plt.subplots(1,2, figsize=(8,4))
+    network.plot(ax=ax1)
+    network2.plot(ax=ax2)
 
 
 def test_create_2d():

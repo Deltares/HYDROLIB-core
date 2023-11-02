@@ -1192,10 +1192,11 @@ class Network:
         self._mesh1d._set_mesh1d()
         return name
 
-    def plot(self):
+    def plot(self, ax=None):
         import matplotlib.pyplot as plt
-
-        fig, ax = plt.subplots()
+        
+        if ax is None:
+            _, ax = plt.subplots()
         mesh2d_output = self._mesh2d.get_mesh2d()
         mesh1d_output = self._mesh1d._get_mesh1d()
         links_output = self._link1d2d.meshkernel.contacts_get()
