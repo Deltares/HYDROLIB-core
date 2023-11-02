@@ -704,12 +704,13 @@ class Mesh1d(BaseModel):
     network1d_edge_nodes: np.ndarray = Field(
         default_factory=lambda: np.empty((0, 2), np.int32)
     )
+    # TODO: sync with node_x/node_y/edge_nodes with meshkernel: https://github.com/Deltares/HYDROLIB-core/issues/576
     network1d_geom_x: np.ndarray = Field(
         default_factory=lambda: np.empty(0, np.double)
-    )  # TODO: sync with meshkernel.node_x
+    )
     network1d_geom_y: np.ndarray = Field(
         default_factory=lambda: np.empty(0, np.double)
-    )  # TODO: sync with meshkernel.node_y
+    )
     network1d_part_node_count: np.ndarray = Field(
         default_factory=lambda: np.empty(0, np.int32)
     )
@@ -728,7 +729,7 @@ class Mesh1d(BaseModel):
     )
 
     mesh1d_edge_nodes: np.ndarray = (
-        Field(  # TODO: sync with meshkernel.edge_nodes (ravelled)
+        Field(
             default_factory=lambda: np.empty((0, 2), np.int32)
         )
     )

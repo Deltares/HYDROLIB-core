@@ -161,7 +161,8 @@ def test_create_1d_2d_1d2d():
     network2_con_m1d = network2._link1d2d.meshkernel.contacts_get().mesh1d_indices
     network2_con_m2d = network2._link1d2d.meshkernel.contacts_get().mesh2d_indices
     assert network2_link1d2d.shape == (21, 2)
-    # TODO: below asserts fail, since the meshkernel contacts are not set upon reading (not implemented in meshkernel)
+    # TODO: below asserts fail, since the meshkernel contacts are not set upon reading
+    # https://github.com/Deltares/HYDROLIB-core/issues/575
     # assert network2_con_m1d.size == 21
     # assert network2_con_m2d.size == 21
 
@@ -464,9 +465,11 @@ class TestMesh2d:
         mesh2d_output = network._mesh2d.get_mesh2d()
 
         # TODO: not empty anymore since meshkernel creates the face_node_connectivity
+        # https://github.com/Deltares/HYDROLIB-core/issues/578
         assert len(mesh2d_output.face_x) == 208
         assert len(mesh2d_output.face_y) == 208
-        assert len(network._mesh2d.mesh2d_face_z) == 0  # TODO: update face_z length
+        # TODO: update face_z length: https://github.com/Deltares/HYDROLIB-core/issues/579
+        assert len(network._mesh2d.mesh2d_face_z) == 0
         assert network._mesh2d.mesh2d_face_nodes.shape == (208, 4)
 
         assert len(mesh2d_output.node_x) == 238

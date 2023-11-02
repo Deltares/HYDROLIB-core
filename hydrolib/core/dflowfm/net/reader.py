@@ -64,7 +64,9 @@ class UgridReader:
 
         # Process network
         mesh1d._process_network1d()
-        mesh1d._set_mesh1d()  # TODO: we still require this here to sync new attrs with meshkernel instance
+        mesh1d._set_mesh1d()
+        # TODO: we still require this here to sync new attrs with meshkernel instance
+        # https://github.com/Deltares/HYDROLIB-core/issues/576
 
         ds.close()
 
@@ -112,6 +114,7 @@ class UgridReader:
 
         # TODO: setting contacts is not possible yet in meshkernel
         # https://github.com/Deltares/MeshKernelPy/issues/107
+        # https://github.com/Deltares/HYDROLIB-core/issues/575
         # so misalignment between link1d2d.link1d2d and
         # empty _link1d2d.meshkernel.contacts_get().mesh2d_indices
         # mesh1d_indices = link1d2d.link1d2d[:,0]
