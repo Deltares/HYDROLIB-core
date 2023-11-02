@@ -1020,11 +1020,11 @@ class Output(INIBasedModel):
         wrihis_wind: Optional[str] = Field(
             "Write wind velocities to his file (1: yes, 0: no)'", alias="wrihis_wind"
         )
-        wrihis_rain: Optional[str] = Field(
-            "Write precipitation to his file (1: yes, 0: no)'", alias="wrihis_rain"
-        )
         wrihis_airdensity: Optional[str] = Field(
             "Write air density to his file (1: yes, 0: no)", alias="wrihis_airdensity"
+        )
+        wrihis_rain: Optional[str] = Field(
+            "Write precipitation to his file (1: yes, 0: no)'", alias="wrihis_rain"
         )
         wrihis_infiltration: Optional[str] = Field(
             "Write infiltration to his file (1: yes, 0: no)'",
@@ -1327,8 +1327,8 @@ class Output(INIBasedModel):
     wrihis_structure_compound: bool = Field(True, alias="wrihis_structure_compound")
     wrihis_turbulence: bool = Field(True, alias="wrihis_turbulence")
     wrihis_wind: bool = Field(True, alias="wrihis_wind")
-    wrihis_rain: bool = Field(True, alias="wrihis_rain")
     wrihis_airdensity: bool = Field(True, alias="wrihis_airdensity")
+    wrihis_rain: bool = Field(True, alias="wrihis_rain")
     wrihis_infiltration: bool = Field(True, alias="wrihis_infiltration")
     wrihis_temperature: bool = Field(True, alias="wrihis_temperature")
     wrihis_waves: bool = Field(True, alias="wrihis_waves")
