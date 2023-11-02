@@ -1166,7 +1166,8 @@ class Output(INIBasedModel):
             "Write wind stress to map file (1: yes, 0: no)", alias="wrimap_windstress"
         )
         wrimap_airdensity: Optional[str] = Field(
-            "Write air density rates to map file (1: yes, 0: no)", alias="wrimap_airdensity"
+            "Write air density rates to map file (1: yes, 0: no)",
+            alias="wrimap_airdensity",
         )
         writek_cdwind: Optional[str] = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
