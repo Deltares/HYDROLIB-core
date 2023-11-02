@@ -550,6 +550,9 @@ class Wind(INIBasedModel):
         pavini: Optional[str] = Field(
             "Initial air pressure [N/m2], only applied if value > 0.", alias="pavIni"
         )
+        computedairdensity: Optional[str] = Field(
+            "Compute air density yes/no (), 1/0, default 0.", alias="computedAirdensity"
+        )
 
     comments: Comments = Comments()
 
@@ -564,6 +567,7 @@ class Wind(INIBasedModel):
     windpartialdry: bool = Field(True, alias="windPartialDry")
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
+    computedairdensity: bool = Field(False, alias="computedAirdensity")
 
     @classmethod
     def list_delimiter(cls) -> str:
@@ -1016,6 +1020,9 @@ class Output(INIBasedModel):
         wrihis_wind: Optional[str] = Field(
             "Write wind velocities to his file (1: yes, 0: no)'", alias="wrihis_wind"
         )
+        wrihis_airdensity: Optional[str] = Field(
+            "Write air density to his file (1: yes, 0: no)", alias="wrihis_airdensity"
+        )
         wrihis_rain: Optional[str] = Field(
             "Write precipitation to his file (1: yes, 0: no)'", alias="wrihis_rain"
         )
@@ -1154,6 +1161,13 @@ class Output(INIBasedModel):
         )
         wrimap_wind: Optional[str] = Field(
             "Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind"
+        )
+        wrimap_windstress: Optional[str] = Field(
+            "Write wind stress to map file (1: yes, 0: no)", alias="wrimap_windstress"
+        )
+        wrimap_airdensity: Optional[str] = Field(
+            "Write air density rates to map file (1: yes, 0: no)",
+            alias="wrimap_airdensity",
         )
         writek_cdwind: Optional[str] = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
@@ -1314,6 +1328,7 @@ class Output(INIBasedModel):
     wrihis_structure_compound: bool = Field(True, alias="wrihis_structure_compound")
     wrihis_turbulence: bool = Field(True, alias="wrihis_turbulence")
     wrihis_wind: bool = Field(True, alias="wrihis_wind")
+    wrihis_airdensity: bool = Field(False, alias="wrihis_airdensity")
     wrihis_rain: bool = Field(True, alias="wrihis_rain")
     wrihis_infiltration: bool = Field(True, alias="wrihis_infiltration")
     wrihis_temperature: bool = Field(True, alias="wrihis_temperature")
@@ -1367,6 +1382,8 @@ class Output(INIBasedModel):
     wrimap_turbulence: bool = Field(True, alias="wrimap_turbulence")
     wrimap_rain: bool = Field(False, alias="wrimap_rain")
     wrimap_wind: bool = Field(True, alias="wrimap_wind")
+    wrimap_windstress: bool = Field(False, alias="wrimap_windstress")
+    wrimap_airdensity: bool = Field(False, alias="wrimap_airdensity")
     writek_cdwind: bool = Field(False, alias="writek_CdWind")
     wrimap_heat_fluxes: bool = Field(False, alias="wrimap_heat_fluxes")
     wrimap_wet_waterdepth_threshold: float = Field(
