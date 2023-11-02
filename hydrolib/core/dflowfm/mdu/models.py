@@ -1023,6 +1023,9 @@ class Output(INIBasedModel):
         wrihis_rain: Optional[str] = Field(
             "Write precipitation to his file (1: yes, 0: no)'", alias="wrihis_rain"
         )
+        wrihis_airdensity: Optional[str] = Field(
+            "Write air density to his file (1: yes, 0: no)", alias="wrihis_airdensity"
+        )
         wrihis_infiltration: Optional[str] = Field(
             "Write infiltration to his file (1: yes, 0: no)'",
             alias="wrihis_infiltration",
@@ -1158,6 +1161,12 @@ class Output(INIBasedModel):
         )
         wrimap_wind: Optional[str] = Field(
             "Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind"
+        )
+        wrimap_windstress: Optional[str] = Field(
+            "Write wind stress to map file (1: yes, 0: no)", alias="wrimap_windstress"
+        )
+        wrimap_airdensity: Optional[str] = Field(
+            "Write air density rates to map file (1: yes, 0: no).", alias="wrimap_airdensity"
         )
         writek_cdwind: Optional[str] = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
@@ -1319,6 +1328,7 @@ class Output(INIBasedModel):
     wrihis_turbulence: bool = Field(True, alias="wrihis_turbulence")
     wrihis_wind: bool = Field(True, alias="wrihis_wind")
     wrihis_rain: bool = Field(True, alias="wrihis_rain")
+    wrihis_airdensity: bool = Field(True, alias="wrihis_airdensity")
     wrihis_infiltration: bool = Field(True, alias="wrihis_infiltration")
     wrihis_temperature: bool = Field(True, alias="wrihis_temperature")
     wrihis_waves: bool = Field(True, alias="wrihis_waves")
@@ -1371,6 +1381,8 @@ class Output(INIBasedModel):
     wrimap_turbulence: bool = Field(True, alias="wrimap_turbulence")
     wrimap_rain: bool = Field(False, alias="wrimap_rain")
     wrimap_wind: bool = Field(True, alias="wrimap_wind")
+    wrimap_windstress: bool = Field(True, alias="wrimap_windstress")
+    wrimap_airdensity: bool = Field(True, alias="wrimap_airdensity")
     writek_cdwind: bool = Field(False, alias="writek_CdWind")
     wrimap_heat_fluxes: bool = Field(False, alias="wrimap_heat_fluxes")
     wrimap_wet_waterdepth_threshold: float = Field(
