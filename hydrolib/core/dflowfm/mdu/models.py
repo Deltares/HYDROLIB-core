@@ -551,7 +551,7 @@ class Wind(INIBasedModel):
             "Initial air pressure [N/m2], only applied if value > 0.", alias="pavIni"
         )
         computedairdensity: Optional[str] = Field(
-            "Compute air density yes/no (),  1/0, default 0.", alias="computedAirdensity"
+            "Compute air density yes/no (), 1/0, default 0.", alias="computedAirdensity"
         )
 
     comments: Comments = Comments()
@@ -1166,7 +1166,7 @@ class Output(INIBasedModel):
             "Write wind stress to map file (1: yes, 0: no)", alias="wrimap_windstress"
         )
         wrimap_airdensity: Optional[str] = Field(
-            "Write air density rates to map file (1: yes, 0: no).", alias="wrimap_airdensity"
+            "Write air density rates to map file (1: yes, 0: no)", alias="wrimap_airdensity"
         )
         writek_cdwind: Optional[str] = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
