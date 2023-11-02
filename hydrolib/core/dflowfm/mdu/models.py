@@ -551,7 +551,7 @@ class Wind(INIBasedModel):
             "Initial air pressure [N/m2], only applied if value > 0.", alias="pavIni"
         )
         computedairdensity: Optional[str] = Field(
-            "Compute air density yes/no (),  1/0, default 0", alias="computedAirdensity"
+            "Compute air density yes/no (),  1/0, default 0.", alias="computedAirdensity"
         )
 
     comments: Comments = Comments()

@@ -163,6 +163,7 @@ relativeWind         = 0.5       # Wind speed relative to top-layer water speed,
 windPartialDry       = 1         # Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0 = no, 1 = yes = default
 pavBnd               = 101330.0  # Average air pressure on open boundaries (N/m2) (only applied if > 0)
 pavIni               = 0.0       # Initial air pressure [N/m2], only applied if value > 0.
+computedAirdensity   = 0         # Compute air density yes/no (), 1/0, default 0.
 
 [Time]
 refDate                 = 19971222       # Reference date (yyyymmdd)
@@ -249,6 +250,7 @@ wrihis_structure_uniWeir          = 0                                           
 wrihis_structure_compound         = 0                                                                               # compound structure parameters
 wrihis_turbulence                 = 1                                                                               # k, eps and vicww
 wrihis_wind                       = 1                                                                               # wind velocities
+wrihis_airdensity                 = 1                                                                               # write air density to his file (1: yes, 0: no)
 wrihis_rain                       = 1                                                                               # precipitation
 wrihis_infiltration               = 1                                                                               # Write infiltration to his file (1: yes, 0: no)'
 wrihis_temperature                = 1                                                                               # temperature
@@ -288,6 +290,8 @@ wrimap_chezy                      = 1                                           
 wrimap_turbulence                 = 1                                                                               # Write vicww, k and eps to map file (1: yes, 0: no)
 wrimap_rain                       = 1                                                                               # Write rainfall rates to map file (1: yes, 0: no)
 wrimap_wind                       = 1                                                                               # Write wind velocities to map file (1: yes, 0: no)
+wrimap_windstress                 = 1                                                                               # write wind stress to map file (1: yes, 0: no)
+wrimap_airdensity                 = 1                                                                               # write air density to map file (1: yes, 0: no)
 writek_CdWind                     = 0                                                                               # Write wind friction coeffs to tek file (1: yes, 0: no)
 wrimap_heat_fluxes                = 1                                                                               # Write heat fluxes to map file (1: yes, 0: no)
 wrimap_wet_waterDepth_threshold   = 2e-05                                                                           # Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.
