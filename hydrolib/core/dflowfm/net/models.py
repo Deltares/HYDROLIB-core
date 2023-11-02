@@ -1094,7 +1094,7 @@ class Network:
             projection = mk.ProjectionType.CARTESIAN
         else:
             projection = mk.ProjectionType.SPHERICAL
-            
+
         self.meshkernel = mk.MeshKernel(projection=projection)
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
@@ -1137,7 +1137,7 @@ class Network:
 
         writer = UgridWriter()
         writer.write(self, file)
-    
+
     @property
     def is_geographic(self):
         projection = self.meshkernel.get_projection()
@@ -1146,7 +1146,7 @@ class Network:
         else:
             is_geographic = True
         return is_geographic
-        
+
     def link1d2d_from_1d_to_2d(
         self, branchids: List[str] = None, polygon: GeometryList = None
     ) -> None:
@@ -1207,7 +1207,7 @@ class Network:
 
     def plot(self, ax=None):
         import matplotlib.pyplot as plt
-        
+
         if ax is None:
             _, ax = plt.subplots()
         mesh2d_output = self._mesh2d.get_mesh2d()
