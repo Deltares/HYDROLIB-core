@@ -550,6 +550,9 @@ class Wind(INIBasedModel):
         pavini: Optional[str] = Field(
             "Initial air pressure [N/m2], only applied if value > 0.", alias="pavIni"
         )
+        computedairdensity: Optional[str] = Field(
+            "Compute air density yes/no (),  1/0, default 0", alias="computedAirdensity"
+        )
 
     comments: Comments = Comments()
 
@@ -564,6 +567,7 @@ class Wind(INIBasedModel):
     windpartialdry: bool = Field(True, alias="windPartialDry")
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
+    computedairdensity: int = Field(0, alias="computedAirdensity")
 
     @classmethod
     def list_delimiter(cls) -> str:
