@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="hydrolib-core-guide-for-delft-software-days-2023">HYDROLIB-core guide for Delft Software Days 2023</h1>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#user-guide">User guide</a>
+<ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#run-the-demo-notebook">Run the demo notebook</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>This document contains instructions about the installation and usage of HYDROLIB-core during the Delft Software Days 2023.</p>
+<p>HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content.<br>
+HYDROLIB-core serves as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations in D-HYDRO.</p>
+<h2 id="user-guide">User guide</h2>
+<h3 id="requirements">Requirements</h3>
+<p>Before getting started with HYDROLIB-core, make sure you have the following software and tools installed:</p>
+<ul>
+<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/download">https://www.anaconda.com/download</a><br>
+Anaconda is an open-source distribution for Python and contains the package manager “conda”.<br>
+(!) Make sure to add Anaconda to your PATH environment variable during installation.</li>
+<li><strong>Visual Studio Code</strong>: <a href="https://code.visualstudio.com/download">https://code.visualstudio.com/download</a><br>
+Visual Studio Code  is a free, open-source and lightweight code editor for software development.</li>
+<li><strong>Visual Studio Code extensions for Python and Jupyter</strong>: In Visual Studio Code, navigate to the Extensions section on the left sidebar, search for “Python,” and install the extension. Additionally, search for “Jupyter” and install the Jupyter extension.</li>
+</ul>
+<h3 id="installation">Installation</h3>
+<p>Once you’ve installed the required software, you can create a Python 3.9 environment with HYDROLIB-core 0.5.2, the latest release. Follow these steps:</p>
+<ol>
+<li>Open your command line interface</li>
+<li>Enter the following commands:</li>
+</ol>
+<pre><code>conda create --name hydrolib-core-dsd python=3.9
+conda activate hydrolib-core-dsd
+pip install hydrolib-core
+pip install matplotlib
+conda deactivate
+</code></pre>
+<p>After executing these commands, an Anaconda environment with the latest HYDROLIB-core will be created. After deactivation, you can reactivate this environment at any time by using the following command:</p>
+<pre><code>conda activate hydrolib-core-dsd
+</code></pre>
+<p>If you’d like to remove the environment entirely, call the following command:</p>
+<pre><code>conda remove -n hydrolib-core-dsd --all
+</code></pre>
+<p>This will remove all the packages in the environment and the environment folder itself.</p>
+<h3 id="run-the-demo-notebook">Run the demo notebook</h3>
+<p>We’d like to be able to run the provided notebook. We can set it up with the following steps:</p>
+<ol>
+<li>Open Visual Studio Code</li>
+<li>Click on <code>File</code> &gt; <code>Open Folder...</code></li>
+<li>Select the folder <code>HYDROLIB-core-DSD-2023</code></li>
+<li>In the file explorer, select <code>dsd.ipynb</code></li>
+<li>Click on <code>Select Kernel</code> in the top right corner</li>
+<li>Select <code>Python Environments...</code></li>
+<li>Select <code>hydrolib-core-dsd</code>. This is the environment we created earlier.</li>
+</ol>
+</div>
+</body>
+
+</html>
