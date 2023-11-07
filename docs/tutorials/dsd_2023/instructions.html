@@ -12,6 +12,8 @@
   <div class="stackedit__html"><h1 id="hydrolib-core-guide-for-delft-software-days-2023">HYDROLIB-core guide for Delft Software Days 2023</h1>
 <h2 id="contents">Contents</h2>
 <ul>
+<li><a href="#hydrolib-core-guide-for-delft-software-days-2023">HYDROLIB-core guide for Delft Software Days 2023</a>
+<ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#user-guide">User guide</a>
@@ -19,6 +21,8 @@
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#run-the-demo-notebook">Run the demo notebook</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -38,35 +42,42 @@ Visual Studio Code  is a free, open-source and lightweight code editor for softw
 <li><strong>Visual Studio Code extensions for Python and Jupyter</strong>: In Visual Studio Code, navigate to the Extensions section on the left sidebar, search for “Python,” and install the extension. Additionally, search for “Jupyter” and install the Jupyter extension.</li>
 </ul>
 <h3 id="installation">Installation</h3>
-<p>Once you’ve installed the required software, you can create a Python 3.9 environment with HYDROLIB-core 0.5.2, the latest release. Follow these steps:</p>
+<p>Once you’ve installed the required software, you can create a Python 3.11 environment with HYDROLIB-core 0.5.2, the latest release.<br>
+Note that the environment that we are creating now contains not only HYDROLIB-core, but also the other packages that are needed today during the breakout sessions.</p>
+<p>Follow these steps:</p>
 <ol>
 <li>Open your command line interface</li>
 <li>Enter the following commands:</li>
 </ol>
-<pre><code>conda create --name hydrolib-core-dsd python=3.9
-conda activate hydrolib-core-dsd
-pip install hydrolib-core
-pip install matplotlib
+<pre><code>conda create --name dsd_env python=3.11 git -c conda-forge -y
+conda activate dsd_env
+pip install hydromt_delft3dfm[examples] dfm_tools
 conda deactivate
 </code></pre>
-<p>After executing these commands, an Anaconda environment with the latest HYDROLIB-core will be created. After deactivation, you can reactivate this environment at any time by using the following command:</p>
-<pre><code>conda activate hydrolib-core-dsd
+<p>After executing these commands, an Anaconda environment with the latest HYDROLIB-core is created. After deactivation, you can reactivate this environment at any time by using the following command:</p>
+<pre><code>conda activate dsd_env
 </code></pre>
 <p>If you’d like to remove the environment entirely, call the following command:</p>
-<pre><code>conda remove -n hydrolib-core-dsd --all
+<pre><code>conda remove -n dsd_env --all
 </code></pre>
 <p>This will remove all the packages in the environment and the environment folder itself.</p>
 <h3 id="run-the-demo-notebook">Run the demo notebook</h3>
 <p>We’d like to be able to run the provided notebook. We can set it up with the following steps:</p>
 <ol>
-<li>Open Visual Studio Code</li>
-<li>Click on <code>File</code> &gt; <code>Open Folder...</code></li>
-<li>Select the folder <code>HYDROLIB-core-DSD-2023</code></li>
-<li>In the file explorer, select <code>dsd.ipynb</code></li>
-<li>Click on <code>Select Kernel</code> in the top right corner</li>
-<li>Select <code>Python Environments...</code></li>
-<li>Select <code>hydrolib-core-dsd</code>. This is the environment we created earlier.</li>
+<li>Navigate to the <code>Modelbuilding_and_postprocessing-material\HYDROLIB-core</code> folder and go inside it</li>
+<li>Open the command line interface in this location (for Windows: type <code>cmd</code> in the address bar and press Enter)</li>
+<li>Call the following commands:</li>
 </ol>
+<pre><code>python -m ipykernel install --user --name=dsd_env
+jupyter notebook
+</code></pre>
+<p>The first command makes sure that Jupyter can pick up on the created <code>dsd_env</code> environment.<br>
+The second command opens Jupyter inside our work folder.</p>
+<ol start="4">
+<li>Once Jupyter has started, click on <code>demo.ipynb</code> inside the <code>demo</code> to open the notebook.</li>
+<li>In the menubar, select <code>Kernel</code> &gt; <code>Change kernel</code> &gt; <code>dsd_env</code></li>
+</ol>
+<p>Now the environment that we are using for this notebook is the correct one.</p>
 </div>
 </body>
 
