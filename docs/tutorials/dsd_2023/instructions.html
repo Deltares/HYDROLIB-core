@@ -9,7 +9,7 @@
 </head>
 
 <body class="stackedit">
-  <div class="stackedit__html"><h1 id="hydrolib-core-guide-for-delft-software-days-2023">HYDROLIB-core guide for Delft Software Days 2023</h1>
+  <div class="stackedit__html"><h1 id="hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</h1>
 <h2 id="contents">Contents</h2>
 <ul>
 <li><a href="#hydrolib-core-guide-for-delft-software-days-2023">HYDROLIB-core guide for Delft Software Days 2023</a>
@@ -52,6 +52,8 @@ Note that the environment that we are creating now contains not only HYDROLIB-co
 <pre><code>conda create --name dsd_env python=3.11 git -c conda-forge -y
 conda activate dsd_env
 pip install hydromt_delft3dfm[examples] dfm_tools
+pip install pyogrio
+pip install openpyxl
 conda deactivate
 </code></pre>
 <p>After executing these commands, an Anaconda environment with the latest HYDROLIB-core is created. After deactivation, you can reactivate this environment at any time by using the following command:</p>
@@ -62,22 +64,16 @@ conda deactivate
 </code></pre>
 <p>This will remove all the packages in the environment and the environment folder itself.</p>
 <h3 id="run-the-demo-notebook">Run the demo notebook</h3>
-<p>We’d like to be able to run the provided notebook. We can set it up with the following steps:</p>
+<p>We’d like to be able to run the provided demo notebook. We can set it up with the following steps:</p>
 <ol>
-<li>Navigate to the <code>Modelbuilding_and_postprocessing-material\HYDROLIB-core</code> folder and go inside it</li>
-<li>Open the command line interface in this location (for Windows: type <code>cmd</code> in the address bar and press Enter)</li>
-<li>Call the following commands:</li>
+<li>Open Visual Studio Code</li>
+<li>Go to <em>File</em> &gt; <em>Open Folder…</em></li>
+<li>Select the <em>HYDROLIB-core</em> folder</li>
+<li>From the file explorer on the left, open the <em>demo.ipynb</em> inside the <em>demo</em> folder</li>
+<li>On the top right, click on <em>Select Kernel</em> and then <em>Python Environments…</em></li>
+<li>Select <em>dsd_env</em> from the drop-down list</li>
+<li>Click on <em>Run all</em> to test if the notebook can be fully run</li>
 </ol>
-<pre><code>python -m ipykernel install --user --name=dsd_env
-jupyter notebook
-</code></pre>
-<p>The first command makes sure that Jupyter can pick up on the created <code>dsd_env</code> environment.<br>
-The second command opens Jupyter inside our work folder.</p>
-<ol start="4">
-<li>Once Jupyter has started, click on <code>demo.ipynb</code> inside the <code>demo</code> to open the notebook.</li>
-<li>In the menubar, select <code>Kernel</code> &gt; <code>Change kernel</code> &gt; <code>dsd_env</code></li>
-</ol>
-<p>Now the environment that we are using for this notebook is the correct one.</p>
 </div>
 </body>
 

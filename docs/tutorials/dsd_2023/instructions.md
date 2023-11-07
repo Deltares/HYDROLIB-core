@@ -1,8 +1,8 @@
-# HYDROLIB-core guide for Delft Software Days 2023
+# HYDROLIB-core guide for the Delft Software Days 2023
 
 ## Contents
 
-- [HYDROLIB-core guide for Delft Software Days 2023](#hydrolib-core-guide-for-delft-software-days-2023)
+- [HYDROLIB-core guide for the Delft Software Days 2023](#hydrolib-core-guide-for-the-delft-software-days-2023)
   - [Contents](#contents)
   - [Introduction](#introduction)
   - [User guide](#user-guide)
@@ -40,6 +40,8 @@ Follow these steps:
 conda create --name dsd_env python=3.11 git -c conda-forge -y
 conda activate dsd_env
 pip install hydromt_delft3dfm[examples] dfm_tools
+pip install pyogrio
+pip install openpyxl
 conda deactivate
 ```
 
@@ -59,20 +61,12 @@ This will remove all the packages in the environment and the environment folder 
 
 ### Run the demo notebook
 
-We'd like to be able to run the provided notebook. We can set it up with the following steps:
+We'd like to be able to run the provided demo notebook. We can set it up with the following steps:
 
-1. Navigate to the `Modelbuilding_and_postprocessing-material\HYDROLIB-core` folder and go inside it
-2. Open the command line interface in this location (for Windows: type `cmd` in the address bar and press Enter)
-3. Call the following commands:
-```
-python -m ipykernel install --user --name=dsd_env
-jupyter notebook
-```
-
-The first command makes sure that Jupyter can pick up on the created `dsd_env` environment.
-The second command opens Jupyter inside our work folder. 
-
-4. Once Jupyter has started, click on `demo.ipynb` inside the `demo` to open the notebook.
-5. In the menubar, select `Kernel` > `Change kernel` > `dsd_env`
-
-Now the environment that we are using for this notebook is the correct one.
+1. Open Visual Studio Code
+2. Go to *File* > *Open Folder...*
+3. Select the *HYDROLIB-core* folder
+4. From the file explorer on the left, open the *demo.ipynb* inside the *demo* folder 
+5. On the top right, click on *Select Kernel* and then *Python Environments...*
+6. Select *dsd_env* from the drop-down list
+7. Click on *Run all* to test if the notebook can be fully run
