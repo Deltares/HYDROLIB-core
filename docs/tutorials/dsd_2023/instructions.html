@@ -37,9 +37,6 @@ HYDROLIB-core serves as the basis for various pre- and postprocessing tools for 
 <li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/download">https://www.anaconda.com/download</a><br>
 Anaconda is an open-source distribution for Python and contains the package manager “conda”.<br>
 (!) Make sure to add Anaconda to your PATH environment variable during installation.</li>
-<li><strong>Visual Studio Code</strong>: <a href="https://code.visualstudio.com/download">https://code.visualstudio.com/download</a><br>
-Visual Studio Code  is a free, open-source and lightweight code editor for software development.</li>
-<li><strong>Visual Studio Code extensions for Python and Jupyter</strong>: In Visual Studio Code, navigate to the Extensions section on the left sidebar, search for “Python,” and install the extension. Additionally, search for “Jupyter” and install the Jupyter extension.</li>
 </ul>
 <h3 id="installation">Installation</h3>
 <p>Once you’ve installed the required software, you can create a Python 3.11 environment with HYDROLIB-core 0.5.2, the latest release.<br>
@@ -51,9 +48,7 @@ Note that the environment that we are creating now contains not only HYDROLIB-co
 </ol>
 <pre><code>conda create --name dsd_env python=3.11 git -c conda-forge -y
 conda activate dsd_env
-pip install hydromt_delft3dfm[examples] dfm_tools
-pip install pyogrio
-pip install openpyxl
+pip install hydromt_delft3dfm[examples] dfm_tools pyogrio openpyxl
 conda deactivate
 </code></pre>
 <p>After executing these commands, an Anaconda environment with the latest HYDROLIB-core is created. After deactivation, you can reactivate this environment at any time by using the following command:</p>
@@ -66,13 +61,18 @@ conda deactivate
 <h3 id="run-the-demo-notebook">Run the demo notebook</h3>
 <p>We’d like to be able to run the provided demo notebook. We can set it up with the following steps:</p>
 <ol>
-<li>Open Visual Studio Code</li>
-<li>Go to <em>File</em> &gt; <em>Open Folder…</em></li>
-<li>Select the <em>HYDROLIB-core</em> folder</li>
-<li>From the file explorer on the left, open the <em>demo.ipynb</em> inside the <em>demo</em> folder</li>
-<li>On the top right, click on <em>Select Kernel</em> and then <em>Python Environments…</em></li>
-<li>Select <em>dsd_env</em> from the drop-down list</li>
-<li>Click on <em>Run all</em> to test if the notebook can be fully run</li>
+<li>Open a command line in the <em>HYDROLIB-core</em> folder</li>
+<li>Activate the conda environment:</li>
+</ol>
+<pre><code>conda activate dsd_env
+</code></pre>
+<ol start="3">
+<li>And start Jupyter Notebook:</li>
+</ol>
+<pre><code>jupyter notebook
+</code></pre>
+<ol start="4">
+<li>Open the <em>demo.ipynb</em> inside the <em>demo</em> folder</li>
 </ol>
 </div>
 </body>

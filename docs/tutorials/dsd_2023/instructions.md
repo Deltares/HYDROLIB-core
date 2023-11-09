@@ -23,9 +23,6 @@ Before getting started with HYDROLIB-core, make sure you have the following soft
 - **Anaconda**: https://www.anaconda.com/download
 Anaconda is an open-source distribution for Python and contains the package manager "conda". 
 (!) Make sure to add Anaconda to your PATH environment variable during installation.
-- **Visual Studio Code**: https://code.visualstudio.com/download
-Visual Studio Code  is a free, open-source and lightweight code editor for software development.
-- **Visual Studio Code extensions for Python and Jupyter**: In Visual Studio Code, navigate to the Extensions section on the left sidebar, search for "Python," and install the extension. Additionally, search for "Jupyter" and install the Jupyter extension.
 
 ### Installation
 Once you've installed the required software, you can create a Python 3.11 environment with HYDROLIB-core 0.5.2, the latest release. 
@@ -39,9 +36,7 @@ Follow these steps:
 ```
 conda create --name dsd_env python=3.11 git -c conda-forge -y
 conda activate dsd_env
-pip install hydromt_delft3dfm[examples] dfm_tools
-pip install pyogrio
-pip install openpyxl
+pip install hydromt_delft3dfm[examples] dfm_tools pyogrio openpyxl
 conda deactivate
 ```
 
@@ -63,10 +58,13 @@ This will remove all the packages in the environment and the environment folder 
 
 We'd like to be able to run the provided demo notebook. We can set it up with the following steps:
 
-1. Open Visual Studio Code
-2. Go to *File* > *Open Folder...*
-3. Select the *HYDROLIB-core* folder
-4. From the file explorer on the left, open the *demo.ipynb* inside the *demo* folder 
-5. On the top right, click on *Select Kernel* and then *Python Environments...*
-6. Select *dsd_env* from the drop-down list
-7. Click on *Run all* to test if the notebook can be fully run
+1. Open a command line in the *HYDROLIB-core* folder
+2. Activate the conda environment:
+```
+conda activate dsd_env
+```
+3. And start Jupyter Notebook:
+```
+jupyter notebook
+```
+4. Open the *demo.ipynb* inside the *demo* folder
