@@ -1,3 +1,5 @@
+import contextlib
+import os
 import platform
 import re
 from enum import Enum, auto
@@ -176,6 +178,17 @@ def get_operating_system() -> OperatingSystem:
         return OperatingSystem.MACOS
 
     raise NotImplementedError(f"Operating system {operating_system} is not supported.")
+
+
+@contextlib.contextmanager
+def working_directory(path):
+    """Changes working directory and returns to previous on exit."""
+    prev_cwd = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
 
 
 class PathStyle(str, Enum):
