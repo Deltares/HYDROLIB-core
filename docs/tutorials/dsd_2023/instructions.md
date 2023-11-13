@@ -1,3 +1,4 @@
+
 # HYDROLIB-core guide for the Delft Software Days 2023
 
 ## Contents
@@ -80,7 +81,7 @@ In HYDROLIB-core, there is a class called FileModel, which is used to represent 
 The table below contains the models relevant for today's exercises. 
 
 ### Kernel files vs HYDROLIB-core FileModels
-| **Kernel file**                                    	| **FileModel (Python class in HYDROLIB-core)** 	| **File reference**                                         	|
+| **Kernel file**                                    	| **FileModel** 	| **File reference**                                         	|
 |---------------------------------------------	|------------------	|------------------------------------------------------------	|
 | Model definition file (*.mdu)               	| FMModel          	| -                                                          	|
 | Network file (*_net.nc)                     	| NetworkModel     	| Model definition file > geometry > netFile                 	|
@@ -96,17 +97,19 @@ The table below contains the models relevant for today's exercises.
 ### Commonly used functions of a FileModel
 Each FileModel offers a set of commonly used functions. 
 
-**__init__(): Initialize a new file model instance**
+**__init__()** --- Initialize a new file model instance
+
 Parameters (all optional):
 * `filepath (Path)`: The file path from which the file model should be loaded. Default to None.
 * `resolve_casing (bool)`: Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
 * `recurse (bool)`: Whether or not to recursively load the model. Defaults to True.
 * `path_style (str)`: Which path style is used in the loaded files. Options: 'unix', 'windows'. Defaults to the path style that matches the current operating system. 
 
-**save(): Export the file model data to a file**
+**save()** --- Export the file model data to a file
+
 Parameters (all optional):
 * `filepath (Path)`: The file path at which this model is saved. If None is specified it defaults to the filepath currently stored in the filemodel. Defaults to None.
 * `recurse (bool)`: Whether or not to recursively save all children of this file model, or only save this model. Defaults to False.
 * `path_style (str)`: With which file path style to save the model. File references will be written with the specified path style. Options: 'unix', 'windows'. Defaults to the path style used by the current operating system.
 
-**show_tree(): Print the file model tree**
+**show_tree()** --- Print the file model tree

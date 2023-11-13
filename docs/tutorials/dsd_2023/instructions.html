@@ -9,10 +9,28 @@
 </head>
 
 <body class="stackedit">
-  <div class="stackedit__html"><h1 id="hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</h1>
+  <div class="stackedit__left">
+    <div class="stackedit__toc">
+      
+<ul>
+<li><a href="#hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</a>
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#user-guide">User guide</a></li>
+<li><a href="#cheat-sheet">Cheat sheet</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+  </div>
+  <div class="stackedit__right">
+    <div class="stackedit__html">
+      <h1 id="hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</h1>
 <h2 id="contents">Contents</h2>
 <ul>
-<li><a href="#hydrolib-core-guide-for-delft-software-days-2023">HYDROLIB-core guide for Delft Software Days 2023</a>
+<li><a href="#hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</a>
 <ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#introduction">Introduction</a></li>
@@ -21,6 +39,12 @@
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#run-the-demo-notebook">Run the demo notebook</a></li>
+</ul>
+</li>
+<li><a href="#cheat-sheet">Cheat sheet</a>
+<ul>
+<li><a href="#kernel-files-vs-hydrolib-core-filemodels">Kernel files vs HYDROLIB-core FileModels</a></li>
+<li><a href="#commonly-used-functions-of-a-filemodel">Commonly used functions of a FileModel</a></li>
 </ul>
 </li>
 </ul>
@@ -74,7 +98,92 @@ conda deactivate
 <ol start="4">
 <li>Open the <em>demo.ipynb</em> inside the <em>demo</em> folder</li>
 </ol>
-</div>
+<h2 id="cheat-sheet">Cheat sheet</h2>
+<p>In HYDROLIB-core, there is a class called FileModel, which is used to represent an individual kernel file. This class has multiple derived implementations, with each one corresponding to a specific kernel file. Every FileModel, except for the root model, is referenced within another FileModel, following the same hierarchy as the kernel files themselves.</p>
+<p>The table below contains the models relevant for today’s exercises.</p>
+<h3 id="kernel-files-vs-hydrolib-core-filemodels">Kernel files vs HYDROLIB-core FileModels</h3>
+
+<table>
+<thead>
+<tr>
+<th><strong>Kernel file</strong></th>
+<th><strong>FileModel</strong></th>
+<th><strong>File reference</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model definition file (*.mdu)</td>
+<td>FMModel</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Network file (*_net.nc)</td>
+<td>NetworkModel</td>
+<td>Model definition file &gt; geometry &gt; netFile</td>
+</tr>
+<tr>
+<td>Cross-section location file (crosloc.ini)</td>
+<td>CrossLocModel</td>
+<td>Model definition file &gt; geometry &gt; crossLocFile</td>
+</tr>
+<tr>
+<td>Cross-section definition file (crosdef.ini)</td>
+<td>CrossDefModel</td>
+<td>Model definition file &gt; geometry &gt; crossDefFile</td>
+</tr>
+<tr>
+<td>Roughness file (roughness-*.ini)</td>
+<td>FrictionModel</td>
+<td>Model definition file &gt; geometry &gt; frictFile</td>
+</tr>
+<tr>
+<td>New external forcing file (*_bnd.ext)</td>
+<td>ExtModel</td>
+<td>Model definition file &gt; external forcing &gt; extForceFileNew</td>
+</tr>
+<tr>
+<td>Boundary conditions file (*.bc)</td>
+<td>ForcingModel</td>
+<td>New external forcing file &gt; boundary &gt; forcingFile</td>
+</tr>
+<tr>
+<td>1D initial conditions field file (*.ini)</td>
+<td>OneDFieldModel</td>
+<td>Initial field file &gt; initial &gt; dataFile</td>
+</tr>
+<tr>
+<td>Initial field file (*.ini)</td>
+<td>IniFieldModel</td>
+<td>Model definition file &gt; geometry &gt; iniFieldFile</td>
+</tr>
+<tr>
+<td>Structures file (structures.ini)</td>
+<td>StructureModel</td>
+<td>Model definition file &gt; geometry &gt; structureFile</td>
+</tr>
+</tbody>
+</table><h3 id="commonly-used-functions-of-a-filemodel">Commonly used functions of a FileModel</h3>
+<p>Each FileModel offers a set of commonly used functions.</p>
+<p><strong><strong>init</strong>()</strong> — Initialize a new file model instance</p>
+<p>Parameters (all optional):</p>
+<ul>
+<li><code>filepath (Path)</code>: The file path from which the file model should be loaded. Default to None.</li>
+<li><code>resolve_casing (bool)</code>: Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.</li>
+<li><code>recurse (bool)</code>: Whether or not to recursively load the model. Defaults to True.</li>
+<li><code>path_style (str)</code>: Which path style is used in the loaded files. Options: ‘unix’, ‘windows’. Defaults to the path style that matches the current operating system.</li>
+</ul>
+<p><strong>save()</strong> — Export the file model data to a file</p>
+<p>Parameters (all optional):</p>
+<ul>
+<li><code>filepath (Path)</code>: The file path at which this model is saved. If None is specified it defaults to the filepath currently stored in the filemodel. Defaults to None.</li>
+<li><code>recurse (bool)</code>: Whether or not to recursively save all children of this file model, or only save this model. Defaults to False.</li>
+<li><code>path_style (str)</code>: With which file path style to save the model. File references will be written with the specified path style. Options: ‘unix’, ‘windows’. Defaults to the path style used by the current operating system.</li>
+</ul>
+<p><strong>show_tree()</strong> — Print the file model tree</p>
+
+    </div>
+  </div>
 </body>
 
 </html>
