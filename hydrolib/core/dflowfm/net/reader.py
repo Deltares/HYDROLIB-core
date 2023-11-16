@@ -85,12 +85,12 @@ class UgridReader:
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         mapping = self._explorer.mesh2d_var_name_mapping
-        
-        #TODO: is this necessary or checked elsewhere already?
+
+        # TODO: is this necessary or checked elsewhere already?
         mesh2d_required = ["mesh2d_node_x", "mesh2d_node_y", "mesh2d_edge_nodes"]
         if not set(mesh2d_required).issubset(mapping.keys()):
             raise KeyError("not all required mesh2d attributes present in network")
-        
+
         # set mesh2d on meshkernel instance
         node_x = self._read_nc_attribute(ds[mapping["mesh2d_node_x"]])
         node_y = self._read_nc_attribute(ds[mapping["mesh2d_node_y"]])
