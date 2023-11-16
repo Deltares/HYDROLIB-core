@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import matplotlib.pyplot as plt
 import netCDF4 as nc
 import numpy as np
 import pytest
@@ -10,32 +9,11 @@ from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
-from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, NetworkModel
+from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 
 from ..utils import test_input_dir, test_output_dir
-
-
-def plot_network(network):
-    _, ax = plt.subplots()
-    ax.set_aspect(1.0)
-    network.plot(ax=ax)
-    ax.autoscale()
-    plt.show()
-
-
-def _plot_mesh2d(mesh2d, ax=None, **kwargs):
-    from matplotlib.collections import LineCollection
-
-    if ax is None:
-        fig, ax = plt.subplots()
-    nodes2d = np.stack([mesh2d.mesh2d_node_x, mesh2d.mesh2d_node_y], axis=1)
-    edge_nodes = mesh2d.mesh2d_edge_nodes
-    lc_mesh2d = LineCollection(nodes2d[edge_nodes], **kwargs)
-    ax.add_collection(lc_mesh2d)
-    ax.autoscale_view()
-    return ax
 
 
 @pytest.mark.plots
@@ -50,7 +28,7 @@ def test_create_1d_by_branch():
     # Generate nodes on branch
     branch.generate_nodes(mesh1d_edge_length=1)
     # Create Mesh1d
-    network = NetworkModel()
+    network = Network()
     network.mesh1d_add_branch(branch)
 
     # Add second
@@ -71,10 +49,10 @@ def test_create_1d_by_branch():
     )
     network.mesh1d_add_branch(branch)
 
-    plot_network(network)
+    network.plot()
 
     # Write to file
-    network.save(test_output_dir / "test_net.nc")
+    network.to_file(test_output_dir / "test_net.nc")
 
 
 @pytest.mark.plots
@@ -136,7 +114,7 @@ def test_create_1d_2d_1d2d():
     branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
 
     # Create Mesh1d
-    network = NetworkModel()
+    network = Network()
     network.mesh1d_add_branch(branch, name="branch1")
 
     branch = Branch(geometry=np.array([[-25.0, 0.0], [x[0], y[0]]]))
@@ -147,7 +125,7 @@ def test_create_1d_2d_1d2d():
     network.mesh2d_create_rectilinear_within_extent(
         extent=(-22, -22, 22, 22), dx=2, dy=2
     )
-    network.mesh2d_clip_mesh(polygon=get_circle_gl(22))
+    network.mesh2d_clip_mesh(geometrylist=get_circle_gl(22))
 
     network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
     network.mesh2d_refine_mesh(polygon=get_circle_gl(3), level=1)
@@ -155,10 +133,44 @@ def test_create_1d_2d_1d2d():
     # Add links
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
 
-    # Write to file
-    network.save(test_output_dir / "test_net.nc")
+    mesh2d_output = network._mesh2d.get_mesh2d()
+    assert len(mesh2d_output.face_x) == 152
+    mesh1d_output = network._mesh1d._get_mesh1d()
+    assert len(mesh1d_output.node_x) == 110
 
-    plot_network(network)
+    network1_link1d2d = network._link1d2d.link1d2d
+    network1_con_m1d = network._link1d2d.meshkernel.contacts_get().mesh1d_indices
+    network1_con_m2d = network._link1d2d.meshkernel.contacts_get().mesh2d_indices
+    assert network1_link1d2d.shape == (21, 2)
+    assert network1_con_m1d.size == 21
+    assert network1_con_m2d.size == 21
+
+    # Write to file
+    file_out = Path(test_output_dir / "test_net.nc")
+    network.to_file(file_out)
+
+    # read from written file
+    network2 = NetworkModel(file_out)
+
+    assert len(network2._mesh2d.mesh2d_face_x) == 152
+    mesh1d_output = network2._mesh1d._get_mesh1d()
+    assert len(mesh1d_output.node_x) == 110
+
+    network2_link1d2d = network2._link1d2d.link1d2d
+    network2_con_m1d = network2._link1d2d.meshkernel.contacts_get().mesh1d_indices
+    network2_con_m2d = network2._link1d2d.meshkernel.contacts_get().mesh2d_indices
+    assert network2_link1d2d.shape == (21, 2)
+    # TODO: below asserts fail, since the meshkernel contacts are not set upon reading
+    # https://github.com/Deltares/HYDROLIB-core/issues/575
+    # assert network2_con_m1d.size == 21
+    # assert network2_con_m2d.size == 21
+
+    # plot both networks
+    import matplotlib.pyplot as plt
+
+    _, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+    network.plot(ax=ax1)
+    network2.plot(ax=ax2)
 
 
 def test_create_2d():
@@ -175,19 +187,15 @@ def test_create_2d():
 
 
 @pytest.mark.parametrize(
-    "deletemeshoption,inside,nnodes,nedgenodes",
+    "deletemeshoption,inside,nnodes,nedgenodes,nfaces",
     [
-        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, False, 28, 90),
-        (DeleteMeshOption.ALL_COMPLETE_FACES, False, 23, 72),
-        (DeleteMeshOption.ALL_NODES, False, 23, 72),
-        (DeleteMeshOption.ALL_FACE_CIRCUMCENTERS, True, 23, 72),
-        (DeleteMeshOption.ALL_COMPLETE_FACES, True, 31, 94),
-        (DeleteMeshOption.ALL_NODES, True, 22, 64),
+        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, False, 22, 68, 13),
+        (DeleteMeshOption.INSIDE_AND_INTERSECTED, False, 30, 98, 20),
+        (DeleteMeshOption.INSIDE_NOT_INTERSECTED, True, 33, 100, 19),
+        (DeleteMeshOption.INSIDE_AND_INTERSECTED, True, 20, 62, 12),
     ],
 )
-def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes):
-
-    # TODO: "All complete faces, outside" does not have the expected behaviour, it is similar to "All nodes, outside"
+def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
 
     polygon = GeometryList(
         x_coordinates=np.array([0.0, 6.0, 4.0, 2.0, 0.0]),
@@ -202,7 +210,8 @@ def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes):
     mesh2d.clip(polygon, deletemeshoption=deletemeshoption, inside=inside)
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == nnodes
-    assert mesh2d_output.edge_nodes.size == nedgenodes
+    assert mesh2d_output.edge_nodes.size == nedgenodes  # 2x nedges
+    assert mesh2d_output.face_x.size == nfaces
 
 
 def test_create_refine_2d():
@@ -219,12 +228,18 @@ def test_create_refine_2d():
     # Create within bounding box
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
     # Refine
-    mesh2d.refine(polygon, 1)
+    mesh2d.refine(polygon, level=1, min_edge_size=0.1)
 
     mesh2d_output = mesh2d.get_mesh2d()
 
     assert mesh2d_output.node_x.size == 114
     assert mesh2d_output.edge_nodes.size == 426
+
+    # check fnc
+    fnc = mesh2d.mesh2d_face_nodes
+    assert fnc.shape == (100, 4)
+    fnc_fill_value = np.iinfo(np.int32).min
+    assert (fnc == fnc_fill_value).sum() == 12  # amount of triangles
 
 
 cases = [
@@ -292,6 +307,37 @@ def test_read_write_read_compare(filepath):
             np.testing.assert_array_equal(getattr(part1, key), getattr(part2, key))
 
 
+@pytest.mark.parametrize("filepath", cases)
+def test_read_write_read_compare_nodes(filepath):
+    # Get nc file path
+    assert filepath.exists()
+
+    # Create network model
+    network1 = NetworkModel(filepath=filepath)
+
+    # Save to temporary location
+    save_path = (
+        test_output_dir
+        / "test_read_write_read_compare_nodes"
+        / network1._generate_name()
+    )
+    network1.save(filepath=save_path)
+
+    # Read a second network from this location
+    network2 = NetworkModel(filepath=network1.filepath)
+
+    network1_mesh1d_node_x = network1._mesh1d._get_mesh1d().node_x
+    network1_mesh2d_node_x = network1._mesh2d.get_mesh2d().node_x
+    network2_mesh1d_node_x = network2._mesh1d._get_mesh1d().node_x
+    network2_mesh2d_node_x = network2._mesh2d.get_mesh2d().node_x
+
+    netw1_nnodes = len(network1_mesh1d_node_x) + len(network1_mesh2d_node_x)
+
+    assert netw1_nnodes > 0
+    assert (network1_mesh1d_node_x == network2_mesh1d_node_x).all()
+    assert (network1_mesh2d_node_x == network2_mesh2d_node_x).all()
+
+
 class TestMesh2d:
     test_file = test_input_dir / "ugrid_files" / "mesh2d_net.nc"
 
@@ -303,9 +349,16 @@ class TestMesh2d:
         mesh2d_node_x=np.asarray([ 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 300.0, 300.0, 300.0, 300.0, 300.0, 300.0, 400.0, 400.0, 400.0, 400.0, 400.0, 400.0, 500.0, 500.0, 500.0, 500.0, ]),
         mesh2d_node_y=np.asarray([ 200.0,300.0, 400.0, 500.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 200.0, 300.0, 400.0, 500.0,]),
         mesh2d_node_z=np.asarray([-999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, ]),
-        mesh2d_edge_x=np.ndarray([], dtype=np.float64),
-        mesh2d_edge_y=np.ndarray([], dtype=np.float64),
-        mesh2d_edge_z=np.ndarray([], dtype=np.float64),
+        mesh2d_edge_x=np.asarray([ 50., 100.,  50.,   0., 100.,  50.,   0., 100.,  50.,   0., 150.,
+               200., 150., 100., 200., 150., 200., 150., 200., 150., 200., 150.,
+               100., 250., 300., 250., 300., 250., 300., 250., 300., 250., 300.,
+               250., 350., 400., 350., 400., 350., 400., 350., 400., 350., 400.,
+               350., 450., 500., 450., 500., 450., 500., 450.], dtype=np.float64),
+        mesh2d_edge_y=np.asarray([200., 250., 300., 250., 350., 400., 350., 450., 500., 450., 100.,
+               150., 200., 150., 250., 300., 350., 400., 450., 500., 550., 600.,
+               550., 100., 150., 200., 250., 300., 350., 400., 450., 500., 550.,
+               600., 100., 150., 200., 250., 300., 350., 400., 450., 500., 550.,
+               600., 200., 250., 300., 350., 400., 450., 500.], dtype=np.float64),
         mesh2d_edge_nodes=np.array([
             [ 0,  5],
             [ 5,  6],
@@ -389,14 +442,12 @@ class TestMesh2d:
             dtype=np.int32,
         ),
         # fmt: on
-
         assert np.array_equiv(mesh.mesh2d_node_x, mesh2d_node_x)
         assert np.array_equiv(mesh.mesh2d_node_y, mesh2d_node_y)
         assert np.array_equiv(mesh.mesh2d_node_z, mesh2d_node_z)
 
         assert np.array_equiv(mesh.mesh2d_edge_x, mesh2d_edge_x)
         assert np.array_equiv(mesh.mesh2d_edge_y, mesh2d_edge_y)
-        assert np.array_equiv(mesh.mesh2d_edge_z, mesh2d_edge_z)
         assert np.array_equiv(mesh.mesh2d_edge_nodes, mesh2d_edge_nodes)
 
         assert np.array_equiv(mesh.mesh2d_face_x, mesh2d_face_x)
@@ -412,13 +463,18 @@ class TestMesh2d:
         assert network._mesh1d.is_empty()
         assert not network._mesh2d.is_empty()
 
-        assert len(network._mesh2d.mesh2d_face_x) == 0
-        assert len(network._mesh2d.mesh2d_face_y) == 0
-        assert len(network._mesh2d.mesh2d_face_z) == 0
-        assert network._mesh2d.mesh2d_face_nodes.shape == (0, 0)
+        mesh2d_output = network._mesh2d.get_mesh2d()
 
-        assert len(network._mesh2d.mesh2d_node_x) == 238
-        assert len(network._mesh2d.mesh2d_node_x) == 238
+        # TODO: not empty anymore since meshkernel creates the face_node_connectivity
+        # https://github.com/Deltares/HYDROLIB-core/issues/578
+        assert len(mesh2d_output.face_x) == 208
+        assert len(mesh2d_output.face_y) == 208
+        # TODO: update face_z length: https://github.com/Deltares/HYDROLIB-core/issues/579
+        assert len(network._mesh2d.mesh2d_face_z) == 0
+        assert network._mesh2d.mesh2d_face_nodes.shape == (208, 4)
+
+        assert len(mesh2d_output.node_x) == 238
+        assert len(mesh2d_output.node_x) == 238
 
         assert len(network._mesh2d.mesh2d_edge_nodes) == 445
 
@@ -577,15 +633,15 @@ def test_create_triangular():
 
     assert np.array_equiv(
         network._mesh2d.mesh2d_node_x,
-        np.array([0.0, 6.0, 4.0, 2.0]),
+        np.array([6.0, 4.0, 2.0, 0.0]),
     )
     assert np.array_equiv(
         network._mesh2d.mesh2d_node_y,
-        np.array([0.0, 2.0, 7.0, 6.0]),
+        np.array([2.0, 7.0, 6.0, 0.0]),
     )
     assert np.array_equiv(
         network._mesh2d.mesh2d_edge_nodes,
-        np.array([[3, 0], [0, 1], [1, 3], [1, 2], [2, 3]]),
+        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
     )
 
 
@@ -600,8 +656,10 @@ def test_add_1d2d_links():
     # Create Mesh2d
     network.mesh2d_create_rectilinear_within_extent(extent=(-5, -5, 5, 5), dx=1, dy=1)
 
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
+    m1d_nnodes = network._mesh1d.meshkernel.mesh1d_get().node_x.size
+    m2d_nnodes = network._mesh2d.meshkernel.mesh2d_get().node_x.size
+    assert m1d_nnodes == 12
+    assert m2d_nnodes == 121
 
     # Get required arguments
     node_mask = network._mesh1d.get_node_mask([branchid])
@@ -659,3 +717,11 @@ class TestFillValueConfiguration:
         assert config.int64_fill_value == nc.default_fillvals["i8"]
         assert config.float32_fill_value == nc.default_fillvals["f4"]
         assert config.float64_fill_value == nc.default_fillvals["f8"]
+
+
+def test_network_is_geographic():
+    network = Network()
+    assert network.is_geographic == False
+
+    network = Network(is_geographic=True)
+    assert network.is_geographic == True

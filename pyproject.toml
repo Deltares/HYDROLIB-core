@@ -21,7 +21,8 @@ netCDF4 = "^1.5"
 numpy = "^1.21"
 pydantic = "~1.10"
 lxml = "^4.6"
-meshkernel = "^2.0.2"
+meshkernel = "^3.0.0"
+type-enforced = "0.0.16"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
@@ -88,7 +89,6 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
-addopts = "-m \"not plots\""
 markers = [
     "plots",
     "docker"

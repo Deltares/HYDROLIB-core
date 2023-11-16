@@ -54,71 +54,106 @@ class Mesh2d(BaseModel):
     Attributes:
         meshkernel (mk.MeshKernel):
             The meshkernel used to manimpulate this Mesh2d.
-        mesh2d_node_x (np.ndarray):
-            The node positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_node_y (np.ndarray):
-            The node positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
         mesh2d_node_z (np.ndarray):
             The node positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_x (np.ndarray):
-            The edge positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_y (np.ndarray):
-            The edge positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_z (np.ndarray):
-            The edge positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_nodes (np.ndarray):
-            The mapping of edges to node indices. Defaults to
-            np.empty((0, 2), dtype=np.int32).
-
-
-        mesh2d_face_x (np.ndarray):
-            The face positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_face_y (np.ndarray):
-            The face positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
         mesh2d_face_z (np.ndarray):
             The face positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_face_nodes (np.ndarray):
-            The mapping of faces to node indices. Defaults to
-            np.empty((0, 0), dtype=np.int32)
     """
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
-    mesh2d_node_x: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_node_y: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
+    # placeholders for bathymetry
     mesh2d_node_z: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-
-    mesh2d_edge_x: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_edge_y: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_edge_z: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_edge_nodes: np.ndarray = Field(
-        default_factory=lambda: np.empty((0, 2), dtype=np.int32)
-    )
-
-    mesh2d_face_x: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, dtype=np.double)
-    )
-    mesh2d_face_y: np.ndarray = Field(
         default_factory=lambda: np.empty(0, dtype=np.double)
     )
     mesh2d_face_z: np.ndarray = Field(
         default_factory=lambda: np.empty(0, dtype=np.double)
     )
-    mesh2d_face_nodes: np.ndarray = Field(
-        default_factory=lambda: np.empty((0, 0), dtype=np.int32)
-    )
+
+    @property
+    def mesh2d_node_x(self) -> np.ndarray[float]:
+        """The x-coordinates of the nodes in the mesh.
+
+        Returns:
+            ndarray[float]: A 1D double array describing the x-coordinates of the nodes.
+        """
+        return self.meshkernel.mesh2d_get().node_x
+
+    @property
+    def mesh2d_node_y(self) -> np.ndarray[float]:
+        """The y-coordinates of the nodes in the mesh.
+
+        Returns:
+            ndarray[float]: A 1D double array describing the y-coordinates of the nodes.
+        """
+        return self.meshkernel.mesh2d_get().node_y
+
+    @property
+    def mesh2d_edge_x(self) -> np.ndarray[float]:
+        """The x-coordinates of the mesh edges' middle points.
+
+        Returns:
+            ndarray[float]: A 1D double array describing x-coordinates of the mesh edges' middle points.
+        """
+        return self.meshkernel.mesh2d_get().edge_x
+
+    @property
+    def mesh2d_edge_y(self) -> np.ndarray[float]:
+        """The y-coordinates of the mesh edges' middle points.
+
+        Returns:
+            ndarray[float]: A 1D double array describing y-coordinates of the mesh edges' middle points.
+        """
+        return self.meshkernel.mesh2d_get().edge_y
+
+    @property
+    def mesh2d_edge_nodes(self) -> np.ndarray[int, int]:
+        """The node indices of the mesh edges.
+
+        Returns:
+            np.ndarray[int, int]: A 2D integer array (nEdges, 2) containg the two node indices for each edge.
+        """
+        mesh2d_output = self.meshkernel.mesh2d_get()
+        edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
+        return edge_nodes
+
+    @property
+    def mesh2d_face_x(self) -> np.ndarray[float]:
+        """The x-coordinates of the mesh faces' mass centers.
+
+        Returns:
+            ndarray[float]: A 1D double array describing x-coordinates of the mesh faces' mass centers.
+        """
+        return self.meshkernel.mesh2d_get().face_x
+
+    @property
+    def mesh2d_face_y(self) -> np.ndarray[float]:
+        """The y-coordinates of the mesh faces' mass centers.
+
+        Returns:
+            ndarray[float]: A 1D double array describing y-coordinates of the mesh faces' mass centers.
+        """
+        return self.meshkernel.mesh2d_get().face_y
+
+    @property
+    def mesh2d_face_nodes(self) -> np.ndarray[int, int]:
+        """The node indices of the mesh faces
+
+        Returns:
+            np.ndarray[int, int]: A 2D integer array describing the nodes composing each mesh 2d face. A 2D integer array (nFaces, maxNodesPerFace) containg the node indices for each face.
+        """
+        mesh2d_output = self.meshkernel.mesh2d_get()
+        npf = mesh2d_output.nodes_per_face
+        if self.is_empty():
+            return np.empty((0, 0), dtype=np.int32)
+        face_node_connectivity = np.full(
+            (len(mesh2d_output.face_x), max(npf)), np.iinfo(np.int32).min
+        )
+        idx = (
+            np.ones_like(face_node_connectivity) * np.arange(max(npf))[None, :]
+        ) < npf[:, None]
+        face_node_connectivity[idx] = mesh2d_output.face_nodes
+        return face_node_connectivity
 
     def is_empty(self) -> bool:
         """Determine whether this Mesh2d is empty.
@@ -137,11 +172,11 @@ class Mesh2d(BaseModel):
         reader = UgridReader(file_path)
         reader.read_mesh2d(self)
 
-    def _set_mesh2d(self) -> None:
+    def _set_mesh2d(self, node_x, node_y, edge_nodes) -> None:
         mesh2d = mk.Mesh2d(
-            node_x=self.mesh2d_node_x,
-            node_y=self.mesh2d_node_y,
-            edge_nodes=self.mesh2d_edge_nodes.ravel(),
+            node_x=node_x.astype(np.float64),
+            node_y=node_y.astype(np.float64),
+            edge_nodes=edge_nodes.ravel().astype(np.int32),
         )
 
         self.meshkernel.mesh2d_set(mesh2d)
@@ -168,18 +203,21 @@ class Mesh2d(BaseModel):
 
         xmin, ymin, xmax, ymax = extent
 
-        # Generate mesh
-        mesh2d_input = mk.Mesh2dFactory.create(
-            rows=int((ymax - ymin) / dy),
-            columns=int((xmax - xmin) / dx),
+        rows = int((ymax - ymin) / dy)
+        columns = int((xmax - xmin) / dx)
+
+        params = mk.MakeGridParameters(
+            num_columns=columns,
+            num_rows=rows,
             origin_x=xmin,
             origin_y=ymin,
-            spacing_x=dx,
-            spacing_y=dy,
+            block_size_x=dx,
+            block_size_y=dy,
         )
 
-        # Process
-        self._process(mesh2d_input)
+        mesh2d_input = self.meshkernel  # mk.MeshKernel()
+        mesh2d_input.curvilinear_compute_rectangular_grid(params)
+        mesh2d_input.curvilinear_convert_to_mesh2d()  # convert to ugrid/mesh2d
 
     def create_triangular(self, geometry_list: mk.GeometryList) -> None:
         """Create triangular grid within GeometryList object
@@ -188,39 +226,12 @@ class Mesh2d(BaseModel):
             geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
         """
         # Call meshkernel
-        self.meshkernel.mesh2d_make_mesh_from_polygon(geometry_list)
-
-        # Process new mesh
-        self._process(self.get_mesh2d())
-
-    def _process(self, mesh2d_input) -> None:
-        # Add input
-        self.meshkernel.mesh2d_set(mesh2d_input)
-        # Get output
-        mesh2d_output = self.meshkernel.mesh2d_get()
-        # Add to mesh2d variables
-        self.mesh2d_node_x = mesh2d_output.node_x
-        self.mesh2d_node_y = mesh2d_output.node_y
-
-        self.mesh2d_edge_x = mesh2d_output.edge_x
-        self.mesh2d_edge_y = mesh2d_output.edge_y
-        self.mesh2d_edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
-
-        self.mesh2d_face_x = mesh2d_output.face_x
-        self.mesh2d_face_y = mesh2d_output.face_y
-        npf = mesh2d_output.nodes_per_face
-        self.mesh2d_face_nodes = np.full(
-            (len(self.mesh2d_face_x), max(npf)), np.iinfo(np.int32).min
-        )
-        idx = (
-            np.ones_like(self.mesh2d_face_nodes) * np.arange(max(npf))[None, :]
-        ) < npf[:, None]
-        self.mesh2d_face_nodes[idx] = mesh2d_output.face_nodes
+        self.meshkernel.mesh2d_make_triangular_mesh_from_polygon(geometry_list)
 
     def clip(
         self,
         geometrylist: mk.GeometryList,
-        deletemeshoption: int = 1,
+        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         inside=False,
     ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
@@ -229,11 +240,6 @@ class Mesh2d(BaseModel):
             geometrylist (GeometryList): Polygon stored as GeometryList
             deletemeshoption (int, optional): [description]. Defaults to 1.
         """
-
-        # Add current mesh to Mesh2d instance
-        self._set_mesh2d()
-
-        deletemeshoption = mk.DeleteMeshOption(deletemeshoption)
 
         # For clipping outside
         if not inside:
@@ -289,23 +295,13 @@ class Mesh2d(BaseModel):
                 invert_deletion=inside,
             )
 
-        # Process
-        self._process(self.meshkernel.mesh2d_get())
-
-    def refine(self, polygon: mk.GeometryList, level: int):
+    def refine(self, polygon: mk.GeometryList, level: int, min_edge_size=10.0):
         """Refine the mesh within a polygon, by a number of steps (level)
 
         Args:
             polygon (GeometryList): Polygon in which to refine
             level (int): Number of refinement steps
         """
-        # Add current mesh to Mesh2d instance
-        mesh2d_input = mk.Mesh2d(
-            node_x=self.mesh2d_node_x,
-            node_y=self.mesh2d_node_y,
-            edge_nodes=self.mesh2d_edge_nodes.ravel(),
-        )
-        self.meshkernel.mesh2d_set(mesh2d_input)
 
         # Check if parts are closed
         # if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
@@ -317,16 +313,13 @@ class Mesh2d(BaseModel):
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
-            min_face_size=10.0,  # Does nothing?
+            min_edge_size=min_edge_size,  # Does nothing?
             refinement_type=1,  # No effect?
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,
             max_refinement_iterations=level,
         )
         self.meshkernel.mesh2d_refine_based_on_polygon(polygon, parameters)
-
-        # Process
-        self._process(self.meshkernel.mesh2d_get())
 
 
 class Branch:
@@ -630,7 +623,7 @@ class Link1d2d(BaseModel):
         self.link1d2d = np.empty((0, 2), np.int32)
         # The meshkernel object needs to be resetted
         self.meshkernel._deallocate_state()
-        self.meshkernel._allocate_state(self.meshkernel.is_geographic)
+        self.meshkernel._allocate_state(self.meshkernel.get_projection())
         self.meshkernel.contacts_get()
 
     def _process(self) -> None:
@@ -672,7 +665,9 @@ class Link1d2d(BaseModel):
 
         # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
         # The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
-        self.meshkernel.contacts_compute_single(node_mask=node_mask, polygons=polygon)
+        self.meshkernel.contacts_compute_single(
+            node_mask=node_mask, polygons=polygon, projection_factor=1.0
+        )
         self._process()
 
         # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
@@ -727,6 +722,7 @@ class Mesh1d(BaseModel):
     network1d_edge_nodes: np.ndarray = Field(
         default_factory=lambda: np.empty((0, 2), np.int32)
     )
+    # TODO: sync with node_x/node_y/edge_nodes with meshkernel: https://github.com/Deltares/HYDROLIB-core/issues/576
     network1d_geom_x: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
     network1d_geom_y: np.ndarray = Field(default_factory=lambda: np.empty(0, np.double))
     network1d_part_node_count: np.ndarray = Field(
@@ -1106,11 +1102,12 @@ class Mesh1d(BaseModel):
 
 class Network:
     def __init__(self, is_geographic: bool = False) -> None:
-        self.meshkernel = mk.MeshKernel(is_geographic=is_geographic)
-        # Monkeypatch the meshkernel object, because the "is_geographic" is not saved
-        # otherwise, and needed for reinitializing the meshkernel
-        self.meshkernel.is_geographic = is_geographic
+        if not is_geographic:
+            projection = mk.ProjectionType.CARTESIAN
+        else:
+            projection = mk.ProjectionType.SPHERICAL
 
+        self.meshkernel = mk.MeshKernel(projection=projection)
         self._mesh1d = Mesh1d(meshkernel=self.meshkernel)
         self._mesh2d = Mesh2d(meshkernel=self.meshkernel)
         self._link1d2d = Link1d2d(meshkernel=self.meshkernel)
@@ -1153,11 +1150,23 @@ class Network:
         writer = UgridWriter()
         writer.write(self, file)
 
+    @property
+    def is_geographic(self) -> bool:
+        """Whether or not this network has a geographic projection.
+
+        Returns:
+            bool: True if this network is geographic; otherwise, False.
+        """
+        projection = self.meshkernel.get_projection()
+        if projection == mk.ProjectionType.CARTESIAN:
+            return False
+        else:
+            return True
+
     def link1d2d_from_1d_to_2d(
         self, branchids: List[str] = None, polygon: GeometryList = None
     ) -> None:
         self._mesh1d._set_mesh1d()
-        self._mesh2d._set_mesh2d()
 
         node_mask = self._mesh1d.get_node_mask(branchids)
         if polygon is None:
@@ -1182,7 +1191,7 @@ class Network:
     def mesh2d_clip_mesh(
         self,
         geometrylist: mk.GeometryList,
-        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.ALL_FACE_CIRCUMCENTERS,
+        deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         inside=True,
     ) -> None:
         self._mesh2d.clip(
@@ -1209,7 +1218,27 @@ class Network:
             long_name=long_name,
             force_midpoint=force_midpoint,
         )
+        self._mesh1d._set_mesh1d()
         return name
+
+    def plot(self, ax=None):
+        """Create a plot of the 1d2d links and edges within this network.
+
+        Args:
+            ax (matplotlib.pyplot.Axes, optional): The axes where to plot the edges. Defaults to None.
+        """
+        import matplotlib.pyplot as plt
+
+        if ax is None:
+            _, ax = plt.subplots()
+        mesh2d_output = self._mesh2d.get_mesh2d()
+        mesh1d_output = self._mesh1d._get_mesh1d()
+        links_output = self._link1d2d.meshkernel.contacts_get()
+        mesh2d_output.plot_edges(ax=ax, color="r")
+        mesh1d_output.plot_edges(ax=ax, color="g")
+        links_output.plot_edges(
+            ax=ax, mesh1d=mesh1d_output, mesh2d=mesh2d_output, color="k"
+        )
 
 
 class NetworkModel(ParsableFileModel):
@@ -1278,3 +1307,7 @@ class NetworkModel(ParsableFileModel):
     def _get_parser(cls):
         # Unused, but requires abstract implementation
         pass
+
+    @property
+    def plot(self):
+        return self.network.plot

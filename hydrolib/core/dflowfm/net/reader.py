@@ -12,7 +12,7 @@ import numpy as np
 from hydrolib.core.basemodel import BaseModel
 
 if TYPE_CHECKING:
-    from ..dflowfm.net.models import Link1d2d, Mesh1d, Mesh2d
+    from hydrolib.core.dflowfm.net.models import Link1d2d, Mesh1d, Mesh2d
 
 
 class UgridReader:
@@ -64,6 +64,9 @@ class UgridReader:
 
         # Process network
         mesh1d._process_network1d()
+        mesh1d._set_mesh1d()
+        # TODO: we still require this here to sync new attrs with meshkernel instance
+        # https://github.com/Deltares/HYDROLIB-core/issues/576
 
         ds.close()
 
@@ -81,9 +84,26 @@ class UgridReader:
 
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
-        # Read mesh1d
-        for meshkey, nckey in self._explorer.mesh2d_var_name_mapping.items():
-            setattr(mesh2d, meshkey, self._read_nc_attribute(ds[nckey]))
+        mapping = self._explorer.mesh2d_var_name_mapping
+
+        # TODO: is this necessary or checked elsewhere already?
+        mesh2d_required = ["mesh2d_node_x", "mesh2d_node_y", "mesh2d_edge_nodes"]
+        if not set(mesh2d_required).issubset(mapping.keys()):
+            raise KeyError("not all required mesh2d attributes present in network")
+
+        # set mesh2d on meshkernel instance
+        node_x = self._read_nc_attribute(ds[mapping["mesh2d_node_x"]])
+        node_y = self._read_nc_attribute(ds[mapping["mesh2d_node_y"]])
+        edge_nodes = self._read_nc_attribute(ds[mapping["mesh2d_edge_nodes"]])
+        mesh2d._set_mesh2d(node_x=node_x, node_y=node_y, edge_nodes=edge_nodes)
+
+        # bathymetry
+        if "mesh2d_node_z" in mapping.keys():
+            node_z = self._read_nc_attribute(ds[mapping["mesh2d_node_z"]])
+            mesh2d.mesh2d_node_z = node_z
+        if "mesh2d_face_z" in mapping.keys():
+            face_z = self._read_nc_attribute(ds[mapping["mesh2d_face_z"]])
+            mesh2d.mesh2d_face_z = face_z
 
         ds.close()
 
@@ -102,6 +122,17 @@ class UgridReader:
         # Read mesh1d
         for meshkey, nckey in self._explorer.link1d2d_var_name_mapping.items():
             setattr(link1d2d, meshkey, self._read_nc_attribute(ds[nckey]))
+
+        # TODO: setting contacts is not possible yet in meshkernel
+        # https://github.com/Deltares/MeshKernelPy/issues/107
+        # https://github.com/Deltares/HYDROLIB-core/issues/575
+        # so misalignment between link1d2d.link1d2d and
+        # empty _link1d2d.meshkernel.contacts_get().mesh2d_indices
+        # mesh1d_indices = link1d2d.link1d2d[:,0]
+        # mesh2d_indices = link1d2d.link1d2d[:,1]
+        # import meshkernel as mk
+        # contacts = mk.Contacts(mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices)
+        # link1d2d.meshkernel.contacts_set(contacts)
 
         ds.close()
 
