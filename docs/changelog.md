@@ -1,3 +1,14 @@
+## 0.6.0 (2023-11-16)
+
+### Feat
+
+- Add filetype 10 (polyfile) to class ExtOldFileType (#565)
+- Add missing oldext quantities (#557)
+
+### Fix
+
+- Rainfall Runoff .bui file with multiple stations gives parse error
+
 ## 0.5.2 (2023-04-19)
 
 ### Fix
