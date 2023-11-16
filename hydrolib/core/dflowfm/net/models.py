@@ -93,37 +93,77 @@ class Mesh2d(BaseModel):
     )
 
     @property
-    def mesh2d_node_x(self):
+    def mesh2d_node_x(self) -> np.ndarray[float]:
+        """The x-coordinates of the nodes in the mesh.
+
+        Returns:
+            ndarray[float]: A 1D double array describing the x-coordinates of the nodes.
+        """
         return self.meshkernel.mesh2d_get().node_x
 
     @property
-    def mesh2d_node_y(self):
+    def mesh2d_node_y(self) -> np.ndarray[float]:
+        """The y-coordinates of the nodes in the mesh.
+
+        Returns:
+            ndarray[float]: A 1D double array describing the y-coordinates of the nodes.
+        """
         return self.meshkernel.mesh2d_get().node_y
 
     @property
-    def mesh2d_edge_x(self):
+    def mesh2d_edge_x(self) -> np.ndarray[float]:
+        """The x-coordinates of the mesh edges' middle points.
+
+        Returns:
+            ndarray[float]: A 1D double array describing x-coordinates of the mesh edges' middle points.
+        """
         return self.meshkernel.mesh2d_get().edge_x
 
     @property
-    def mesh2d_edge_y(self):
+    def mesh2d_edge_y(self) -> np.ndarray[float]:
+        """The y-coordinates of the mesh edges' middle points.
+
+        Returns:
+            ndarray[float]: A 1D double array describing y-coordinates of the mesh edges' middle points.
+        """
         return self.meshkernel.mesh2d_get().edge_y
 
     @property
-    def mesh2d_edge_nodes(self):
+    def mesh2d_edge_nodes(self) -> np.ndarray[int, int]:
+        """The node indices of the mesh edges.
+
+        Returns:
+            np.ndarray[int, int]: A 2D integer array (nEdges, 2) containg the two node indices for each edge.
+        """
         mesh2d_output = self.meshkernel.mesh2d_get()
         edge_nodes = mesh2d_output.edge_nodes.reshape((-1, 2))
         return edge_nodes
 
     @property
-    def mesh2d_face_x(self):
+    def mesh2d_face_x(self) -> np.ndarray[float]:
+        """The x-coordinates of the mesh faces' mass centers.
+
+        Returns:
+            ndarray[float]: A 1D double array describing x-coordinates of the mesh faces' mass centers.
+        """
         return self.meshkernel.mesh2d_get().face_x
 
     @property
-    def mesh2d_face_y(self):
+    def mesh2d_face_y(self) -> np.ndarray[float]:
+        """The y-coordinates of the mesh faces' mass centers.
+
+        Returns:
+            ndarray[float]: A 1D double array describing y-coordinates of the mesh faces' mass centers.
+        """
         return self.meshkernel.mesh2d_get().face_y
 
     @property
-    def mesh2d_face_nodes(self):
+    def mesh2d_face_nodes(self) -> np.ndarray[int, int]:
+        """The node indices of the mesh faces
+
+        Returns:
+            np.ndarray[int, int]: A 2D integer array describing the nodes composing each mesh 2d face. A 2D integer array (nFaces, nNodesFace) containg the node indices for each face.
+        """
         mesh2d_output = self.meshkernel.mesh2d_get()
         npf = mesh2d_output.nodes_per_face
         if self.is_empty():
