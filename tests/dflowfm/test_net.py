@@ -152,7 +152,6 @@ def test_create_1d_2d_1d2d():
     # read from written file
     network2 = NetworkModel(file_out)
 
-    mesh2d_output = network2._mesh2d.get_mesh2d()
     assert len(network2._mesh2d.mesh2d_face_x) == 152
     mesh1d_output = network2._mesh1d._get_mesh1d()
     assert len(mesh1d_output.node_x) == 110
@@ -169,7 +168,7 @@ def test_create_1d_2d_1d2d():
     # plot both networks
     import matplotlib.pyplot as plt
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+    _, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
     network.plot(ax=ax1)
     network2.plot(ax=ax2)
 
