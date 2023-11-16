@@ -1152,7 +1152,7 @@ class Network:
 
     @property
     def is_geographic(self) -> bool:
-        """Whether or not this network has a geographic projection. 
+        """Whether or not this network has a geographic projection.
 
         Returns:
             bool: True if this network is geographic; otherwise, False.
@@ -1161,7 +1161,7 @@ class Network:
         if projection == mk.ProjectionType.CARTESIAN:
             return False
         else:
-           return True
+            return True
 
     def link1d2d_from_1d_to_2d(
         self, branchids: List[str] = None, polygon: GeometryList = None
@@ -1228,7 +1228,7 @@ class Network:
             ax (matplotlib.pyplot.Axes, optional): The axes where to plot the edges. Defaults to None.
         """
         import matplotlib.pyplot as plt
-        
+
         if ax is None:
             _, ax = plt.subplots()
         mesh2d_output = self._mesh2d.get_mesh2d()
