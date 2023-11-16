@@ -319,7 +319,7 @@ def test_read_write_read_compare_nodes(filepath):
     # Save to temporary location
     save_path = (
         test_output_dir
-        / "test_read_write_read_compare_nodes" 
+        / "test_read_write_read_compare_nodes"
         / network1._generate_name()
     )
     network1.save(filepath=save_path)
