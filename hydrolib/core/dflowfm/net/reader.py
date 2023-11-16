@@ -12,7 +12,7 @@ import numpy as np
 from hydrolib.core.basemodel import BaseModel
 
 if TYPE_CHECKING:
-    from ..dflowfm.net.models import Link1d2d, Mesh1d, Mesh2d
+    from hydrolib.core.dflowfm.net.models import Link1d2d, Mesh1d, Mesh2d
 
 
 class UgridReader:

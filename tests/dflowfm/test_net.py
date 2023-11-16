@@ -239,7 +239,8 @@ def test_create_refine_2d():
     # check fnc
     fnc = mesh2d.mesh2d_face_nodes
     assert fnc.shape == (100, 4)
-    assert (fnc == -2147483648).sum() == 12  # amount of triangles
+    fnc_fill_value = np.iinfo(np.int32).min
+    assert (fnc == fnc_fill_value).sum() == 12  # amount of triangles
 
 
 cases = [
@@ -318,12 +319,12 @@ def test_read_write_read_compare_nodes(filepath):
     # Save to temporary location
     save_path = (
         test_output_dir
-        / "test_read_write_read_compare"  # .__name__
+        / "test_read_write_read_compare_nodes" 
         / network1._generate_name()
     )
     network1.save(filepath=save_path)
 
-    # # Read a second network from this location
+    # Read a second network from this location
     network2 = NetworkModel(filepath=network1.filepath)
 
     network1_mesh1d_node_x = network1._mesh1d._get_mesh1d().node_x

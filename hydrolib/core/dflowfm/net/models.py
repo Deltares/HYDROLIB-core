@@ -54,32 +54,10 @@ class Mesh2d(BaseModel):
     Attributes:
         meshkernel (mk.MeshKernel):
             The meshkernel used to manimpulate this Mesh2d.
-        mesh2d_node_x (np.ndarray):
-            The node positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_node_y (np.ndarray):
-            The node positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
         mesh2d_node_z (np.ndarray):
             The node positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_x (np.ndarray):
-            The edge positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_y (np.ndarray):
-            The edge positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_z (np.ndarray):
-            The edge positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_edge_nodes (np.ndarray):
-            The mapping of edges to node indices. Defaults to
-            np.empty((0, 2), dtype=np.int32).
-
-
-        mesh2d_face_x (np.ndarray):
-            The face positions on the x-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_face_y (np.ndarray):
-            The face positions on the y-axis. Defaults to np.empty(0, dtype=np.double).
         mesh2d_face_z (np.ndarray):
             The face positions on the z-axis. Defaults to np.empty(0, dtype=np.double).
-        mesh2d_face_nodes (np.ndarray):
-            The mapping of faces to node indices. Defaults to
-            np.empty((0, 0), dtype=np.int32)
     """
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
@@ -162,7 +140,7 @@ class Mesh2d(BaseModel):
         """The node indices of the mesh faces
 
         Returns:
-            np.ndarray[int, int]: A 2D integer array describing the nodes composing each mesh 2d face. A 2D integer array (nFaces, nNodesFace) containg the node indices for each face.
+            np.ndarray[int, int]: A 2D integer array describing the nodes composing each mesh 2d face. A 2D integer array (nFaces, maxNodesPerFace) containg the node indices for each face.
         """
         mesh2d_output = self.meshkernel.mesh2d_get()
         npf = mesh2d_output.nodes_per_face
