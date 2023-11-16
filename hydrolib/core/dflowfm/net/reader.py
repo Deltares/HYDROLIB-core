@@ -91,14 +91,10 @@ class UgridReader:
         if not set(mesh2d_required).issubset(mapping.keys()):
             raise KeyError("not all required mesh2d attributes present in network")
         
-        varn_mesh2d_node_x = mapping["mesh2d_node_x"]
-        varn_mesh2d_node_y = mapping["mesh2d_node_y"]
-        varn_mesh2d_edge_nodes = mapping["mesh2d_edge_nodes"]
-        
         # set mesh2d on meshkernel instance
-        node_x = self._read_nc_attribute(ds[varn_mesh2d_node_x])
-        node_y = self._read_nc_attribute(ds[varn_mesh2d_node_y])
-        edge_nodes = self._read_nc_attribute(ds[varn_mesh2d_edge_nodes])
+        node_x = self._read_nc_attribute(ds[mapping["mesh2d_node_x"]])
+        node_y = self._read_nc_attribute(ds[mapping["mesh2d_node_y"]])
+        edge_nodes = self._read_nc_attribute(ds[mapping["mesh2d_edge_nodes"]])
         mesh2d._set_mesh2d(node_x=node_x, node_y=node_y, edge_nodes=edge_nodes)
 
         # bathymetry
