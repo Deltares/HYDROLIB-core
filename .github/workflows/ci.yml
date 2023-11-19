@@ -24,12 +24,12 @@ jobs:
         uses: abatilo/actions-poetry@v2.3.0
         with:
           poetry-version: 1.4.0
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v3
-        id: cache
-        with:
-          path: ~/.virtualenvs
-          key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      #- name: Cache Poetry virtualenv
+      #  uses: actions/cache@v3
+      #  id: cache
+      #  with:
+      #    path: ~/.virtualenvs
+      #    key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Set Poetry config
         run: |
