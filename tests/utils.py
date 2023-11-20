@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Generic, List, Optional, TypeVar
 
-from pydantic.generics import GenericModel
+from pydantic.v1.generics import GenericModel
 
 TWrapper = TypeVar("TWrapper")
 

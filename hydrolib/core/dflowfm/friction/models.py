@@ -3,8 +3,8 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Literal, Optional
 
-from pydantic import Field, NonNegativeInt, PositiveInt
-from pydantic.class_validators import validator
+from pydantic.v1 import Field, NonNegativeInt, PositiveInt
+from pydantic.v1.class_validators import validator
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,

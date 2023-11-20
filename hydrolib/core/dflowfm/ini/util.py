@@ -5,9 +5,9 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Type
 
-from pydantic.class_validators import root_validator, validator
-from pydantic.fields import ModelField
-from pydantic.main import BaseModel
+from pydantic.v1.class_validators import root_validator, validator
+from pydantic.v1.fields import ModelField
+from pydantic.v1.main import BaseModel
 
 from hydrolib.core.dflowfm.common.models import LocationType
 from hydrolib.core.utils import operator_str, str_is_empty_or_none, to_list

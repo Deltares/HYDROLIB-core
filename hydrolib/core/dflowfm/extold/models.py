@@ -2,7 +2,7 @@ from enum import Enum, IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from pydantic import Field, root_validator, validator
+from pydantic.v1 import Field, root_validator, validator
 
 from hydrolib.core.basemodel import (
     BaseModel,

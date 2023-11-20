@@ -14,9 +14,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union
 
-from pydantic import Extra
-from pydantic.class_validators import root_validator, validator
-from pydantic.fields import Field
+from pydantic.v1 import Extra
+from pydantic.v1.class_validators import root_validator, validator
+from pydantic.v1.fields import Field
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings
 from hydrolib.core.dflowfm.ini.io_models import Property, Section

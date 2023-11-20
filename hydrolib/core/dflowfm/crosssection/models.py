@@ -1,8 +1,8 @@
 import logging
 from typing import Dict, List, Literal, Optional
 
-from pydantic import Field, root_validator
-from pydantic.class_validators import validator
+from pydantic.v1 import Field, root_validator
+from pydantic.v1.class_validators import validator
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel

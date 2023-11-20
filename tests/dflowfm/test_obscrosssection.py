@@ -1,7 +1,7 @@
 from typing import List
 
 import pytest
-from pydantic.error_wrappers import ValidationError
+from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral
 from hydrolib.core.dflowfm.obscrosssection.models import (

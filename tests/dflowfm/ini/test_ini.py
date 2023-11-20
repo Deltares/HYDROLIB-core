@@ -3,7 +3,7 @@ from itertools import chain
 from typing import Iterable, List, Optional, Sequence, Tuple, Union
 
 import pytest
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,

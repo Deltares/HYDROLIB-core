@@ -4,9 +4,9 @@ from enum import Enum
 from math import isnan
 from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
-from pydantic import Extra, Field, root_validator
-from pydantic.class_validators import validator
-from pydantic.fields import ModelField
+from pydantic.v1 import Extra, Field, root_validator
+from pydantic.v1.class_validators import validator
+from pydantic.v1.fields import ModelField
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import (

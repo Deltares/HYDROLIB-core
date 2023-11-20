@@ -1,9 +1,9 @@
 import logging
 from typing import List, Literal, Optional
 
-from pydantic import Field
-from pydantic.class_validators import root_validator
-from pydantic.types import NonNegativeInt
+from pydantic.v1 import Field
+from pydantic.v1.class_validators import root_validator
+from pydantic.v1.types import NonNegativeInt
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (

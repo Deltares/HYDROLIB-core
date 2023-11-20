@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic import validator
+from pydantic.v1 import validator
 
 from hydrolib.core.basemodel import (
     BaseModel,

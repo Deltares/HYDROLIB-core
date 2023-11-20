@@ -3,8 +3,8 @@
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Optional
 
-from pydantic import Field, validator
-from pydantic.types import FilePath
+from pydantic.v1 import Field, validator
+from pydantic.v1.types import FilePath
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,

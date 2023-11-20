@@ -3,7 +3,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
-from pydantic import validator
+from pydantic.v1 import validator
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.ini.io_models import (

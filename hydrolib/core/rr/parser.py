@@ -2,7 +2,7 @@
 
 from typing import Dict, Iterable, Optional
 
-from pydantic.types import FilePath
+from pydantic.v1.types import FilePath
 
 
 def _strip(lines: Iterable[str]) -> Iterable[str]:

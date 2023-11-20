@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Dict, List, Literal, Optional, Type, Union
 
-from pydantic import Field, validator
+from pydantic.v1 import Field, validator
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import (

@@ -9,8 +9,8 @@ from enum import Enum
 from operator import gt, ne
 from typing import Dict, List, Literal, Optional, Set, Union
 
-from pydantic import Field
-from pydantic.class_validators import root_validator, validator
+from pydantic.v1 import Field
+from pydantic.v1.class_validators import root_validator, validator
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel

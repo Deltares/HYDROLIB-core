@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import pytest
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime

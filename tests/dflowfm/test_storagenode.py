@@ -1,5 +1,5 @@
 import pytest
-from pydantic.error_wrappers import ValidationError
+from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.storagenode.models import (
     Interpolation,

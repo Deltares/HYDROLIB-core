@@ -4,7 +4,7 @@ from typing import Dict, List, Literal
 
 import numpy as np
 import pytest
-from pydantic.error_wrappers import ValidationError
+from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import (
     T3D,

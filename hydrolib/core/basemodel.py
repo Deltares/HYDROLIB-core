@@ -26,10 +26,10 @@ from typing import (
 )
 from weakref import WeakValueDictionary
 
-from pydantic import BaseModel as PydanticBaseModel
-from pydantic import validator
-from pydantic.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.fields import ModelField, PrivateAttr
+from pydantic.v1 import BaseModel as PydanticBaseModel
+from pydantic.v1 import validator
+from pydantic.v1.error_wrappers import ErrorWrapper, ValidationError
+from pydantic.v1.fields import ModelField, PrivateAttr
 
 from hydrolib.core.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import (
