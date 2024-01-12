@@ -48,7 +48,7 @@ ipykernel = "^6.15.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.6.0"
+version = "0.6.1"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",
