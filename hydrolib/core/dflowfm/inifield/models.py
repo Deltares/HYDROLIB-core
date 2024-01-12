@@ -3,9 +3,9 @@ from abc import ABC
 from enum import Enum
 from typing import Dict, List, Literal, Optional
 
-from pydantic import Field
-from pydantic.class_validators import root_validator, validator
-from pydantic.types import NonNegativeFloat, PositiveInt
+from pydantic.v1 import Field
+from pydantic.v1.class_validators import root_validator, validator
+from pydantic.v1.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType

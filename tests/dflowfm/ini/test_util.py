@@ -1,9 +1,9 @@
 from typing import Dict, List, Literal, Optional
 
 import pytest
-from pydantic import Extra
-from pydantic.class_validators import root_validator
-from pydantic.error_wrappers import ValidationError
+from pydantic.v1 import Extra
+from pydantic.v1.class_validators import root_validator
+from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
