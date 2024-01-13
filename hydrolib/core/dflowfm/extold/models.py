@@ -439,6 +439,9 @@ class ExtOldForcing(BaseModel):
     nummin: Optional[int] = Field(None, alias="NUMMIN")
     """Optional[int]: The minimum required number of source data points in each target cell."""
 
+    def is_intermediate_link(self) -> bool:
+        return True
+
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
         if isinstance(value, ExtOldQuantity):
