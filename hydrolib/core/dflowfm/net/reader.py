@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
 import netCDF4 as nc
 import numpy as np
+from meshkernel import Contacts
 
 from hydrolib.core.basemodel import BaseModel
-from meshkernel import Contacts
 
 if TYPE_CHECKING:
     from hydrolib.core.dflowfm.net.models import Link1d2d, Mesh1d, Mesh2d
@@ -125,9 +125,11 @@ class UgridReader:
             setattr(link1d2d, meshkey, self._read_nc_attribute(ds[nckey]))
 
         # set contacts on meshkernel, use .copy() to avoid strided arrays
-        mesh1d_indices = link1d2d.link1d2d[:,0].copy()
-        mesh2d_indices = link1d2d.link1d2d[:,1].copy()
-        contacts = Contacts(mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices)
+        mesh1d_indices = link1d2d.link1d2d[:, 0].copy()
+        mesh2d_indices = link1d2d.link1d2d[:, 1].copy()
+        contacts = Contacts(
+            mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices
+        )
         link1d2d.meshkernel.contacts_set(contacts)
 
         ds.close()
