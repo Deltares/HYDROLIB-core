@@ -189,6 +189,8 @@ def validate_forbidden_fields(
 
     for field in field_names:
         if values.get(field) != None:
+            if isinstance(conditional_value, Enum):
+                conditional_value = conditional_value.value
             raise ValueError(
                 f"{field} is forbidden when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )
@@ -228,6 +230,8 @@ def validate_required_fields(
 
     for field in field_names:
         if values.get(field) == None:
+            if isinstance(conditional_value, Enum):
+                conditional_value = conditional_value.value
             raise ValueError(
                 f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )

@@ -188,7 +188,7 @@ class TestIniField:
             _ = InitialField(**inifield_values)
 
         expected_message = (
-            f"value should be provided when datafiletype is {DataFileType.polygon}"
+            f"value should be provided when datafiletype is {DataFileType.polygon.value}"
         )
 
         assert expected_message in str(error.value)

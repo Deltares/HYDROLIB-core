@@ -501,6 +501,8 @@ class ExtOldForcing(BaseModel):
         def raise_error_only_allowed_when(
             field: _Field, dependency: _Field, valid_dependency_value: str
         ):
+            if isinstance(valid_dependency_value, Enum):
+                valid_dependency_value = valid_dependency_value.value
             error = f"{field.alias} only allowed when {dependency.alias} is {valid_dependency_value}"
             raise ValueError(error)
 
