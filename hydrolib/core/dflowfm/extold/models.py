@@ -449,7 +449,7 @@ class ExtOldForcing(BaseModel):
 
         def raise_error_tracer_name(quantity: ExtOldTracerQuantity):
             raise ValueError(
-                f"QUANTITY '{quantity}' should be appended with a tracer name."
+                f"QUANTITY '{quantity.value}' should be appended with a tracer name."
             )
 
         if isinstance(value, ExtOldTracerQuantity):
@@ -559,7 +559,7 @@ class ExtOldForcing(BaseModel):
         if factor.value is not None and not quantity.value.startswith(
             ExtOldTracerQuantity.InitialTracer
         ):
-            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
+            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer.value}"
             raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
