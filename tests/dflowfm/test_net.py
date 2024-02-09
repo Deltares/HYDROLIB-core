@@ -160,10 +160,8 @@ def test_create_1d_2d_1d2d():
     network2_con_m1d = network2._link1d2d.meshkernel.contacts_get().mesh1d_indices
     network2_con_m2d = network2._link1d2d.meshkernel.contacts_get().mesh2d_indices
     assert network2_link1d2d.shape == (21, 2)
-    # TODO: below asserts fail, since the meshkernel contacts are not set upon reading
-    # https://github.com/Deltares/HYDROLIB-core/issues/575
-    # assert network2_con_m1d.size == 21
-    # assert network2_con_m2d.size == 21
+    assert network2_con_m1d.size == 21
+    assert network2_con_m2d.size == 21
 
     # plot both networks
     import matplotlib.pyplot as plt
