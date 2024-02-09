@@ -493,10 +493,10 @@ def validate_location_specification(
     def validate_location_type(expected_location_type: LocationType) -> None:
         location_type = values.get(fields.location_type.lower(), None)
         if str_is_empty_or_none(location_type):
-            values[fields.location_type.lower()] = expected_location_type
-        elif location_type != expected_location_type:
+            values[fields.location_type.lower()] = expected_location_type.value
+        elif location_type != expected_location_type.value:
             raise ValueError(
-                f"{fields.location_type} should be {expected_location_type} but was {location_type}"
+                f"{fields.location_type} should be {expected_location_type.value} but was {location_type}"
             )
 
     def validate_coordinates_with_num_coordinates() -> None:
