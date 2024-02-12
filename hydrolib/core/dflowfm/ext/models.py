@@ -1,8 +1,8 @@
-from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic.v1 import Field, root_validator, validator
+from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
@@ -185,7 +185,7 @@ class Lateral(INIBasedModel):
         return v
 
 
-class MeteoForcingFileType(str, Enum):
+class MeteoForcingFileType(StrEnum):
     """
     Enum class containing the valid values for the forcingFileType
     attribute in Meteo class.
@@ -203,7 +203,7 @@ class MeteoForcingFileType(str, Enum):
     allowedvaluestext = "Possible values: bcAscii, netcdf, uniform."
 
 
-class MeteoInterpolationMethod(str, Enum):
+class MeteoInterpolationMethod(StrEnum):
     """
     Enum class containing the valid values for the interpolationMethod
     attribute in Meteo class.

@@ -189,8 +189,6 @@ def validate_forbidden_fields(
 
     for field in field_names:
         if values.get(field) != None:
-            if isinstance(conditional_value, Enum):
-                conditional_value = conditional_value.value
             raise ValueError(
                 f"{field} is forbidden when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )
@@ -230,8 +228,6 @@ def validate_required_fields(
 
     for field in field_names:
         if values.get(field) == None:
-            if isinstance(conditional_value, Enum):
-                conditional_value = conditional_value.value
             raise ValueError(
                 f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )
@@ -496,8 +492,6 @@ def validate_location_specification(
 
     def validate_location_type(expected_location_type: LocationType) -> None:
         location_type = values.get(fields.location_type.lower(), None)
-        if isinstance(expected_location_type, Enum):
-            expected_location_type = expected_location_type.value
         if str_is_empty_or_none(location_type):
             values[fields.location_type.lower()] = expected_location_type
         elif location_type != expected_location_type:

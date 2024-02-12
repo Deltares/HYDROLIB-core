@@ -1,7 +1,7 @@
-from enum import Enum
+from strenum import StrEnum
 
 
-class LocationType(str, Enum):
+class LocationType(StrEnum):
     """
     Enum class containing the valid values for the locationType
     attribute in several classes such as Lateral and ObservationPoint.
@@ -17,7 +17,7 @@ class LocationType(str, Enum):
     """str: Denotes that both 1D and 2D locations may be selected."""
 
 
-class Operand(str, Enum):
+class Operand(StrEnum):
     """
     Enum class containing the valid values for the operand
     attribute in several subclasses of AbstractIniField and ExtOldForcing.

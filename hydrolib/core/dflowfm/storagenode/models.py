@@ -1,8 +1,8 @@
-from enum import Enum
 from typing import Dict, List, Literal, Optional
 
 from pydantic.v1.class_validators import root_validator, validator
 from pydantic.v1.fields import Field
+from strenum import StrEnum
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -14,7 +14,7 @@ from hydrolib.core.dflowfm.ini.util import (
 )
 
 
-class NodeType(str, Enum):
+class NodeType(StrEnum):
     """
     Enum class containing the valid values for the node type
     as used in StorageNode.
@@ -26,7 +26,7 @@ class NodeType(str, Enum):
     unspecified = "unspecified"
 
 
-class StorageType(str, Enum):
+class StorageType(StrEnum):
     """
     Enum class containing the valid values for the storage type
     as used in StorageNode.
@@ -36,7 +36,7 @@ class StorageType(str, Enum):
     closed = "closed"
 
 
-class Interpolation(str, Enum):
+class Interpolation(StrEnum):
     """
     Enum class containing the valid values for the interpolation type
     as used for a storage area table in StorageNode.

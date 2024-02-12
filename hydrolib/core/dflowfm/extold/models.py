@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic.v1 import Field, root_validator, validator
+from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
     BaseModel,
@@ -112,7 +113,7 @@ HEADER = """
 """
 
 
-class ExtOldTracerQuantity(str, Enum):
+class ExtOldTracerQuantity(StrEnum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings that are specific to tracers.
     """
@@ -123,7 +124,7 @@ class ExtOldTracerQuantity(str, Enum):
     """Initial tracer"""
 
 
-class ExtOldQuantity(str, Enum):
+class ExtOldQuantity(StrEnum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
     """
@@ -448,8 +449,6 @@ class ExtOldForcing(BaseModel):
             return value
 
         def raise_error_tracer_name(quantity: ExtOldTracerQuantity):
-            if isinstance(quantity, Enum):
-                quantity = quantity.value
             raise ValueError(
                 f"QUANTITY '{quantity}' should be appended with a tracer name."
             )
@@ -503,8 +502,6 @@ class ExtOldForcing(BaseModel):
         def raise_error_only_allowed_when(
             field: _Field, dependency: _Field, valid_dependency_value: str
         ):
-            if isinstance(valid_dependency_value, Enum):
-                valid_dependency_value = valid_dependency_value.value
             error = f"{field.alias} only allowed when {dependency.alias} is {valid_dependency_value}"
             raise ValueError(error)
 
@@ -563,10 +560,7 @@ class ExtOldForcing(BaseModel):
         if factor.value is not None and not quantity.value.startswith(
             ExtOldTracerQuantity.InitialTracer
         ):
-            initracer = ExtOldTracerQuantity.InitialTracer
-            if isinstance(initracer, Enum):
-                initracer = initracer.value
-            error = f"{factor.alias} only allowed when {quantity.alias} starts with {initracer}"
+            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
             raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)

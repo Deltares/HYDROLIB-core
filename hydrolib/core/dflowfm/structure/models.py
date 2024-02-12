@@ -11,6 +11,7 @@ from typing import Dict, List, Literal, Optional, Set, Union
 
 from pydantic.v1 import Field
 from pydantic.v1.class_validators import root_validator, validator
+from strenum import StrEnum
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -275,7 +276,7 @@ class Structure(INIBasedModel):
         return data.get("id") or data.get("name")
 
 
-class FlowDirection(str, Enum):
+class FlowDirection(StrEnum):
     """
     Enum class containing the valid values for the allowedFlowDirection
     attribute in several subclasses of Structure.
@@ -288,7 +289,7 @@ class FlowDirection(str, Enum):
     allowedvaluestext = "Possible values: both, positive, negative, none."
 
 
-class Orientation(str, Enum):
+class Orientation(StrEnum):
     """
     Enum class containing the valid values for the orientation
     attribute in several subclasses of Structure.
@@ -389,7 +390,7 @@ class UniversalWeir(Structure):
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
 
-class CulvertSubType(str, Enum):
+class CulvertSubType(StrEnum):
     """Enum class to store a [Culvert][hydrolib.core.dflowfm.structure.models.Culvert]'s subType."""
 
     culvert = "culvert"
@@ -662,7 +663,7 @@ class Orifice(Structure):
         return v
 
 
-class GateOpeningHorizontalDirection(str, Enum):
+class GateOpeningHorizontalDirection(StrEnum):
     """Horizontal opening direction of gate door[s]."""
 
     symmetric = "symmetric"

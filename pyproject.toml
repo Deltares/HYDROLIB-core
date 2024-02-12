@@ -20,6 +20,7 @@ numpy = "^1.21"
 pydantic = "^2.5"
 lxml = "^4.6"
 meshkernel = "^4.0.2"
+strenum = "^0.4.15"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
