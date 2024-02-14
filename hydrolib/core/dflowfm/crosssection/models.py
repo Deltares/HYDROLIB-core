@@ -243,7 +243,7 @@ class RectangleCrsDef(CrossSectionDefinition):
     type: Literal["rectangle"] = Field("rectangle")
     width: float
     height: float
-    closed: bool = Field(True)
+    closed: str = Field("no")
     frictionid: Optional[str] = Field(alias="frictionId")
     frictiontype: Optional[FrictionType] = Field(alias="frictionType")
     frictionvalue: Optional[float] = Field(alias="frictionValue")
