@@ -187,11 +187,11 @@ def test_create_2d():
 def test_create_2d_multiple_grids():
     bbox = (1.0, -2.0, 3.0, 4.0)
     bbox2 = (-2.0, -2.0, 0.0, 4.0)
-    
+
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
     mesh2d.create_rectilinear(extent=bbox2, dx=0.5, dy=0.75)
-    
+
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == 90
     assert mesh2d_output.edge_nodes.size == 304
