@@ -180,6 +180,10 @@ def test_create_2d():
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
 
     mesh2d_output = mesh2d.get_mesh2d()
+    assert np.isclose(min(mesh2d_output.node_x), 1)
+    assert np.isclose(max(mesh2d_output.node_x), 3)
+    assert np.isclose(min(mesh2d_output.node_y), -2)
+    assert np.isclose(max(mesh2d_output.node_y), 4)
     assert mesh2d_output.node_x.size == 45
     assert mesh2d_output.edge_nodes.size == 152
 
@@ -193,6 +197,10 @@ def test_create_2d_multiple_grids():
     mesh2d.create_rectilinear(extent=bbox2, dx=0.5, dy=0.75)
 
     mesh2d_output = mesh2d.get_mesh2d()
+    assert np.isclose(min(mesh2d_output.node_x), -2)
+    assert np.isclose(max(mesh2d_output.node_x), 3)
+    assert np.isclose(min(mesh2d_output.node_y), -2)
+    assert np.isclose(max(mesh2d_output.node_y), 4)
     assert mesh2d_output.node_x.size == 90
     assert mesh2d_output.edge_nodes.size == 304
 
