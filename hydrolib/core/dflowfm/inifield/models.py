@@ -1,11 +1,11 @@
 import logging
 from abc import ABC
-from enum import Enum
 from typing import Dict, List, Literal, Optional
 
 from pydantic.v1 import Field
 from pydantic.v1.class_validators import root_validator, validator
 from pydantic.v1.types import NonNegativeFloat, PositiveInt
+from strenum import StrEnum
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
@@ -20,7 +20,7 @@ from hydrolib.core.dflowfm.ini.util import (
 logger = logging.getLogger(__name__)
 
 
-class DataFileType(str, Enum):
+class DataFileType(StrEnum):
     """
     Enum class containing the valid values for the dataFileType
     attribute in several subclasses of AbstractIniField.
@@ -35,7 +35,7 @@ class DataFileType(str, Enum):
     allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
 
 
-class InterpolationMethod(str, Enum):
+class InterpolationMethod(StrEnum):
     """
     Enum class containing the valid values for the interpolationMethod
     attribute in several subclasses of AbstractIniField.
@@ -48,7 +48,7 @@ class InterpolationMethod(str, Enum):
     allowedvaluestext = "Possible values: constant, triangulation, averaging."
 
 
-class AveragingType(str, Enum):
+class AveragingType(StrEnum):
     """
     Enum class containing the valid values for the averagingType
     attribute in several subclasses of AbstractIniField.

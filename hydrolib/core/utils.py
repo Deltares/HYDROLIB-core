@@ -5,6 +5,8 @@ from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from typing import Any, Callable, List, Optional
 
+from strenum import StrEnum
+
 
 def example(a: float, b: float = 1.0) -> float:
     """[summary]
@@ -178,7 +180,7 @@ def get_operating_system() -> OperatingSystem:
     raise NotImplementedError(f"Operating system {operating_system} is not supported.")
 
 
-class PathStyle(str, Enum):
+class PathStyle(StrEnum):
     """Path style format."""
 
     UNIXLIKE = "unix"

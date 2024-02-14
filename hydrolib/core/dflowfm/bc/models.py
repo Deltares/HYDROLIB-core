@@ -10,13 +10,13 @@
 """
 import logging
 import re
-from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union
 
 from pydantic.v1 import Extra
 from pydantic.v1.class_validators import root_validator, validator
 from pydantic.v1.fields import Field
+from strenum import StrEnum
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
@@ -40,7 +40,7 @@ from hydrolib.core.utils import to_list
 logger = logging.getLogger(__name__)
 
 
-class VerticalInterpolation(str, Enum):
+class VerticalInterpolation(StrEnum):
     """Enum class containing the valid values for the vertical position type,
     which defines what the numeric values for vertical position specification mean.
     """
@@ -55,7 +55,7 @@ class VerticalInterpolation(str, Enum):
     """str: Equal to the value at the directly lower specified vertical position."""
 
 
-class VerticalPositionType(str, Enum):
+class VerticalPositionType(StrEnum):
     """Enum class containing the valid values for the vertical position type."""
 
     percentage_bed = "percBed"
@@ -71,7 +71,7 @@ class VerticalPositionType(str, Enum):
     """str: Absolute distance from the free surface downward."""
 
 
-class TimeInterpolation(str, Enum):
+class TimeInterpolation(StrEnum):
     """Enum class containing the valid values for the time interpolation."""
 
     linear = "linear"
@@ -830,7 +830,7 @@ class ForcingModel(INIModel):
         return parser.finalize().flatten(True, False)
 
 
-class RealTime(str, Enum):
+class RealTime(StrEnum):
     """
     Enum class containing the valid value for the "realtime" reserved
     keyword for real-time controlled forcing data, e.g., for hydraulic

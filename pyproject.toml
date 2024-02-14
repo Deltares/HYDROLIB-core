@@ -20,6 +20,7 @@ numpy = "^1.21"
 pydantic = "^2.5"
 lxml = "^4.6"
 meshkernel = "^4.0.2"
+strenum = "^0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
@@ -61,7 +62,7 @@ changelog_file = "docs/changelog.md"
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310']
+target-version = ['py38', 'py39', 'py310', 'py311']
 exclude = '''
 (
   /(

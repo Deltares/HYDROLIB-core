@@ -1,8 +1,9 @@
-from enum import Enum, IntEnum
+from enum import IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic.v1 import Field, root_validator, validator
+from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
     BaseModel,
@@ -112,7 +113,7 @@ HEADER = """
 """
 
 
-class ExtOldTracerQuantity(str, Enum):
+class ExtOldTracerQuantity(StrEnum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings that are specific to tracers.
     """
@@ -123,7 +124,7 @@ class ExtOldTracerQuantity(str, Enum):
     """Initial tracer"""
 
 
-class ExtOldQuantity(str, Enum):
+class ExtOldQuantity(StrEnum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
     """

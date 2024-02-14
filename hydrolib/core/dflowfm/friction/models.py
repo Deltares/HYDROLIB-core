@@ -1,10 +1,9 @@
 import logging
-from enum import Enum
-from pathlib import Path
 from typing import List, Literal, Optional
 
 from pydantic.v1 import Field, NonNegativeInt, PositiveInt
 from pydantic.v1.class_validators import validator
+from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
     DiskOnlyFileModel,
@@ -20,7 +19,7 @@ from hydrolib.core.dflowfm.ini.util import (
 logger = logging.getLogger(__name__)
 
 
-class FrictionType(str, Enum):
+class FrictionType(StrEnum):
     """
     Enum class containing the valid values for the frictionType
     attribute in several subclasses of Structure/CrossSection/friction.models.
