@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
