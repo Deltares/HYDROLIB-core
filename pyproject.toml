@@ -19,7 +19,7 @@ netCDF4 = "^1.5"
 numpy = "^1.21"
 pydantic = "^2.5"
 lxml = "^4.6"
-meshkernel = "^4.0.2"
+meshkernel = "^4.1.0"
 strenum = "^0"
 
 [tool.poetry.dev-dependencies]
