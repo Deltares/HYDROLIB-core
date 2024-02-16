@@ -1200,7 +1200,9 @@ class Network:
             inside=inside,
         )
 
-    def mesh2d_refine_mesh(self, polygon: mk.GeometryList, level: int = 1, min_edge_size: float = 10.0) -> None:
+    def mesh2d_refine_mesh(
+        self, polygon: mk.GeometryList, level: int = 1, min_edge_size: float = 10.0
+    ) -> None:
         self._mesh2d.refine(polygon=polygon, level=level, min_edge_size=min_edge_size)
 
     def mesh1d_add_branch(
