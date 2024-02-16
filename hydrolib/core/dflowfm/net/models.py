@@ -295,7 +295,7 @@ class Mesh2d(BaseModel):
                 invert_deletion=inside,
             )
 
-    def refine(self, polygon: mk.GeometryList, level: int, min_edge_size=10.0):
+    def refine(self, polygon: mk.GeometryList, level: int, min_edge_size: float = 10.0):
         """Refine the mesh within a polygon, by a number of steps (level)
 
         Args:
@@ -313,8 +313,8 @@ class Mesh2d(BaseModel):
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
-            min_edge_size=min_edge_size,  # Does nothing?
-            refinement_type=1,  # No effect?
+            min_edge_size=min_edge_size,
+            refinement_type=1,
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,
             max_refinement_iterations=level,
@@ -1200,8 +1200,8 @@ class Network:
             inside=inside,
         )
 
-    def mesh2d_refine_mesh(self, polygon: mk.GeometryList, level: int = 1) -> None:
-        self._mesh2d.refine(polygon=polygon, level=level)
+    def mesh2d_refine_mesh(self, polygon: mk.GeometryList, level: int = 1, min_edge_size: float = 10.0) -> None:
+        self._mesh2d.refine(polygon=polygon, level=level, min_edge_size=min_edge_size)
 
     def mesh1d_add_branch(
         self,
