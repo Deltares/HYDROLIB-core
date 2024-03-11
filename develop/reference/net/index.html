@@ -3468,7 +3468,7 @@ Mesh2d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hy
 
 
 <h4 id="hydrolib.core.dflowfm.net.models.Mesh2d.refine" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">refine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_edge_size</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">refine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span></code>
 
 
 <a href="#hydrolib.core.dflowfm.net.models.Mesh2d.refine" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -3504,7 +3504,7 @@ Mesh2d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hy
 </table>
         <details class="quote">
           <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">refine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">refine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the mesh within a polygon, by a number of steps (level)</span>
 
 <span class="sd">    Args:</span>
@@ -3522,8 +3522,8 @@ Mesh2d            (<a title="hydrolib.core.basemodel.BaseModel" href="../api/#hy
     <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
         <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">min_edge_size</span><span class="o">=</span><span class="n">min_edge_size</span><span class="p">,</span>  <span class="c1"># Does nothing?</span>
-        <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># No effect?</span>
+        <span class="n">min_edge_size</span><span class="o">=</span><span class="n">min_edge_size</span><span class="p">,</span>
+        <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
