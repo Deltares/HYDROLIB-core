@@ -534,7 +534,7 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
     ],
 )
 def test_dimr_with_fmcomponent_saving_process(tmp_path, input_process : int, expected_process_format : str):
-    component = RRComponent(name="test", workingDir='.', inputfile='test.mdu', process=input_process, mpiCommunicator="DFM_COMM_DFMWORLD")
+    component = FMComponent(name="test", workingDir='.', inputfile='test.mdu', process=input_process, mpiCommunicator="DFM_COMM_DFMWORLD")
     dimr = DIMR(component=component)
     save_location : Path = tmp_path/'dimr_config.xml'
     dimr.save(filepath=save_location)

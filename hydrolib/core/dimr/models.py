@@ -93,10 +93,10 @@ class FMComponent(Component):
         process_input = data.get('process', None)
         self.process = self._set_process_correctly(process_input)
     
-    def _set_process_correctly(self, data):
-        if not data or data == 0:
+    def _set_process_correctly(self, process_input):
+        if not process_input or process_input == 0:
             return None
-        return ' '.join(str(i) for i in range(data))
+        return ' '.join(str(i) for i in range(process_input))
 
     @classmethod
     def get_model(cls):
