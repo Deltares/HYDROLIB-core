@@ -87,16 +87,16 @@ class FMComponent(Component):
     """Component to include the D-Flow FM program in a DIMR control flow."""
 
     library: Literal["dflowfm"] = "dflowfm"
-    
+
     def __init__(self, **data):
         super().__init__(**data)
-        process_input = data.get('process', None)
+        process_input = data.get("process", None)
         self.process = self._set_process_correctly(process_input)
-    
+
     def _set_process_correctly(self, process_input):
         if not process_input or process_input == 0:
             return None
-        return ' '.join(str(i) for i in range(process_input))
+        return " ".join(str(i) for i in range(process_input))
 
     @classmethod
     def get_model(cls):
