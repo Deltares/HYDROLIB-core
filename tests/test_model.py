@@ -599,7 +599,8 @@ def test_fmcomponent_process_after_init(
         mpiCommunicator="DFM_COMM_DFMWORLD",
     )
     assert component.process == expected_process_format
-    
+
+
 def test_fmcomponent_without_process_after_init():
     expected_process_format = None
     component = FMComponent(
@@ -609,7 +610,8 @@ def test_fmcomponent_without_process_after_init():
         mpiCommunicator="DFM_COMM_DFMWORLD",
     )
     assert component.process == expected_process_format
-    
+
+
 @pytest.mark.parametrize(
     "input_process",
     [
@@ -618,15 +620,19 @@ def test_fmcomponent_without_process_after_init():
         pytest.param(0.5),
     ],
 )
-def test_fmcomponent_process_after_init_with_incorrect_input_throws_valueerror(input_process: int):
+def test_fmcomponent_process_after_init_with_incorrect_input_throws_valueerror(
+    input_process: int,
+):
     with pytest.raises(ValueError) as error:
         FMComponent(
-        name="test",
-        workingDir=".",
-        inputfile="test.mdu",
-        process=input_process,
-        mpiCommunicator="DFM_COMM_DFMWORLD",
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=input_process,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+
+    expected_message = (
+        f"Given process value {input_process}, is not of expected type {str(int)}"
     )
-        
-    expected_message = f"Given process value {input_process}, is not of expected type {str(int)}"
     assert expected_message in str(error.value)
