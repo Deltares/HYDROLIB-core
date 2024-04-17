@@ -92,10 +92,12 @@ class FMComponent(Component):
         super().__init__(**data)
         process_input = data.get("process", None)
         self.process = self._set_process_correctly(process_input)
-
-    def _set_process_correctly(self, process_input):
+    
+    def _set_process_correctly(self, process_input : int):
         if not process_input or process_input == 0:
             return None
+        if not isinstance(process_input, int):
+            raise ValueError(f"Given process value {process_input}, is not of expected type {str(int)}")
         return " ".join(str(i) for i in range(process_input))
 
     @classmethod
