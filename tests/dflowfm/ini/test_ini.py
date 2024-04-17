@@ -1,6 +1,7 @@
 import inspect
 from itertools import chain
 from typing import Iterable, List, Optional, Sequence, Tuple, Union
+from unittest.mock import Mock
 
 import pytest
 from pydantic.v1 import ValidationError
@@ -1802,3 +1803,26 @@ def test_serialize_deserialize_should_give_the_same_result():
     result = parser.finalize()
 
     assert result == document
+
+def test_parser_given_id_and_name_with_scientific_looking_notations_does_not_parse_as_scientific_notation(tmp_path):
+    
+    file_data = """        
+[StorageNode]
+    id                    = 0D05252      
+    name                  = 0D05252              
+    """
+    
+    temporary_file_path_node_file = tmp_path / "nodeFile.ini"
+    temporary_file_path_node_file.write_text(file_data)
+    
+    parser = Parser(Mock(spec=ParserConfig))
+    parse_data = parser.parse(temporary_file_path_node_file)
+    
+    id =  parse_data.sections[0].content[0]
+    name = parse_data.sections[0].content[1]
+    
+    assert id.key == "id"
+    assert id.value == "0D05252"
+    
+    assert name.key == "name"
+    assert name.value == "0D05252"

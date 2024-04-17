@@ -1,4 +1,4 @@
-import re
+from re import Pattern, compile
 from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
@@ -371,28 +371,40 @@ class Parser:
         if not config:
             config = ParserConfig()
         parser = cls(config)
+        
+        progNoScientificNotationkey = compile(
+            r'\b(?:id|name)\b'
+        )  # matches for non scientific notation keys, e.g. id, name, nodeId, ManholeId.
 
-        progline = re.compile(
+        progline = compile(
             r"^([^#]*=\s*)([^#]*)(#.*)?"
         )  # matches whole line: "Field = Value Maybe more # optional comment"
-        progfloat = re.compile(
+        progfloat = compile(
             r"([\d.]+)([dD])([+\-]?\d{1,3})"
         )  # matches a float value: 1d9, 1D-3, 1.D+4, etc.
 
         with filepath.open(encoding="utf8") as f:
             for line in f:
-                # Replace Fortran scientific notation for doubles
-                # Match number d/D +/- number (e.g. 1d-05 or 1.23D+01 or 1.d-4)
-                match = progline.match(line)
-                if match:  # Only process value
-                    line = (
-                        match.group(1)
-                        + progfloat.sub(r"\1e\3", match.group(2))
-                        + str(match.group(3) or "")
-                    )
-                else:  # Process full line
-                    line = progfloat.sub(r"\1e\3", line)
+                
+                match = progNoScientificNotationkey.search(line)
+                if not match:
+                    line = cls._replace_fortran_scientific_notation_for_doubles(progline, progfloat, line)
 
                 parser.feed_line(line)
 
         return parser.finalize()
+
+    @classmethod
+    def _replace_fortran_scientific_notation_for_doubles(cls, progline : Pattern[str], progfloat : Pattern[str], line : str):
+        # Replace Fortran scientific notation for doubles
+        # Match number d/D +/- number (e.g. 1d-05 or 1.23D+01 or 1.d-4)
+        match = progline.match(line)
+        if match:  # Only process value
+            line = (
+                        match.group(1)
+                        + progfloat.sub(r"\1e\3", match.group(2))
+                        + str(match.group(3) or "")
+                    )
+        else:  # Process full line
+            line = progfloat.sub(r"\1e\3", line)
+        return line
