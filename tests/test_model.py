@@ -522,3 +522,50 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
         assert relevant_field == input
     else:
         assert relevant_field.filepath == input
+
+@pytest.mark.parametrize(
+    "input_process, expected_process_format",
+    [
+        pytest.param(1, "0"),
+        pytest.param(2, "0 1"),
+        pytest.param(3, "0 1 2"),
+        pytest.param(4, "0 1 2 3"),
+        pytest.param(5, "0 1 2 3 4"),
+    ],
+)
+def test_dimr_with_fmcomponent_saving_process(tmp_path, input_process : int, expected_process_format : str):
+    component = RRComponent(name="test", workingDir='.', inputfile='test.mdu', process=input_process, mpiCommunicator="DFM_COMM_DFMWORLD")
+    dimr = DIMR(component=component)
+    save_location : Path = tmp_path/'dimr_config.xml'
+    dimr.save(filepath=save_location)
+    
+    line_to_check = f"<process>{expected_process_format}</process>"
+    
+    with open(save_location, 'r') as file:
+        assert any(line.strip() == line_to_check for line in file), f"File {save_location} does not contain the line: {line_to_check}"
+        
+def test_dimr_with_fmcomponent_saving_process_when_process_zero(tmp_path):
+    component = FMComponent(name="test", workingDir='.', inputfile='test.mdu', process=0, mpiCommunicator="DFM_COMM_DFMWORLD")
+    dimr = DIMR(component=component)
+    save_location : Path = tmp_path/'dimr_config.xml'
+    dimr.save(filepath=save_location)
+    
+    process = "<process>"
+    
+    with open(save_location, 'r') as file:
+        assert process not in file, f"File {save_location} does contain the line: {process}"
+
+@pytest.mark.parametrize(
+    "input_process, expected_process_format",
+    [
+        pytest.param(0, None),
+        pytest.param(1, "0"),
+        pytest.param(2, "0 1"),
+        pytest.param(3, "0 1 2"),
+        pytest.param(4, "0 1 2 3"),
+        pytest.param(5, "0 1 2 3 4"),
+    ],
+)
+def test_fmcomponent_process_after_init(input_process : int, expected_process_format : str):
+    component = FMComponent(name="test", workingDir='.', inputfile='test.mdu', process=input_process, mpiCommunicator="DFM_COMM_DFMWORLD")
+    assert component.process == expected_process_format

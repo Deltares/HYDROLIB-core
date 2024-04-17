@@ -52,7 +52,7 @@ class Component(BaseModel, ABC):
     name: str
     workingDir: Path
     inputFile: Path
-    process: Optional[int]
+    process: Optional[str]
     setting: Optional[List[KeyValuePair]] = []
     parameter: Optional[List[KeyValuePair]] = []
     mpiCommunicator: Optional[str]
@@ -87,6 +87,16 @@ class FMComponent(Component):
     """Component to include the D-Flow FM program in a DIMR control flow."""
 
     library: Literal["dflowfm"] = "dflowfm"
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        process_input = data.get('process', None)
+        self.process = self._set_process_correctly(process_input)
+    
+    def _set_process_correctly(self, data):
+        if not data or data == 0:
+            return None
+        return ' '.join(str(i) for i in range(data))
 
     @classmethod
     def get_model(cls):
