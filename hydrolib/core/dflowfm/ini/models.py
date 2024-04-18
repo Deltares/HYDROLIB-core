@@ -1,8 +1,8 @@
 import logging
-from re import compile
 from abc import ABC
 from enum import Enum
 from math import isnan
+from re import compile
 from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic.v1 import Extra, Field, root_validator
@@ -47,7 +47,9 @@ class INIBasedModel(BaseModel, ABC):
 
     _header: str
     _file_path_style_converter = FilePathStyleConverter()
-    _scientific_notation_regex = compile(r"([\d.]+)([dD])([+-]?\d{1,3})")  # matches a float: 1d9, 1D-3, 1.D+4, etc.
+    _scientific_notation_regex = compile(
+        r"([\d.]+)([dD])([+-]?\d{1,3})"
+    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
     class Config:
         extra = Extra.ignore
