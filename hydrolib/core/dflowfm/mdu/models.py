@@ -1650,6 +1650,55 @@ class Geometry(INIBasedModel):
             "Allow 1d boundary node when connectin branch leads to bifurcation (1: yes, 0: no).",
             alias="allowBndAtBifurcation",
         )
+        slotw1d: Optional[str] = Field("Minimum slotwidth 1D [m].", alias="slotw1D")
+        slotw2d: Optional[str] = Field("Minimum slotwidth 2D [m].", alias="slotw2D")
+        uniformheight1droofgutterpipes: Optional[str] = Field(
+            "Uniform height for roof gutter pipes [m].",
+            alias="uniformHeight1DRoofGutterPipes",
+        )
+        dxmin1d: Optional[str] = Field("Minimum 1D link length [m].", alias="dxmin1D")
+        uniformtyp1dstreetinlets: Optional[str] = Field(
+            "Uniform cross section type for street inlets (1: circle, 2: rectangle, -2: closed rectangle).",
+            alias="uniformTyp1DStreetInlets",
+        )
+        stretchtype: Optional[str] = Field(
+            "Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.",
+            alias="stretchType",
+        )
+        zlaybot: Optional[str] = Field(
+            "if specified, first z-layer starts from zlaybot [ ], if not, it starts from the lowest bed point.",
+            alias="zlayBot",
+        )
+        zlaytop: Optional[str] = Field(
+            "if specified, highest z-layer ends at zlaytop [ ], if not, it ends at the initial water level.",
+            alias="zlayTop",
+        )
+        uniformheight1d: Optional[str] = Field(
+            "Uniform height for 1D profiles and 1d2d internal links [m].",
+            alias="uniformHeight1D",
+        )
+        roofsfile: Optional[str] = Field(
+            "Polyline file <*_roof.pliz>, containing roofgutter heights x, y, z level.",
+            alias="roofsFile",
+        )
+        gulliesfile: Optional[str] = Field(
+            "Polyline file <*_gul.pliz>, containing lowest bed level along talweg x, y, z level.",
+            alias="gulliesFile",
+        )
+        uniformwidth1dstreetinlets: Optional[str] = Field(
+            "Uniform width for street inlets [m].", alias="uniformWidth1DStreetInlets"
+        )
+        uniformheight1dstreetinlets: Optional[str] = Field(
+            "Uniform height for street inlets [m]", alias="uniformHeight1DStreetInlets"
+        )
+        uniformtyp1droofgutterpipes: Optional[str] = Field(
+            "Uniform cross section type for type roof gutter pipes (1: circle, 2: rectangle, -2: closed rectangle).",
+            alias="uniformTyp1DRoofGutterPipes",
+        )
+        uniformwidth1droofgutterpipes: Optional[str] = Field(
+            "Uniform width for roof gutter pipes [m].",
+            alias="uniformWidth1DRoofGutterPipes",
+        )
 
     comments: Comments = Comments()
 
@@ -1735,6 +1784,25 @@ class Geometry(INIBasedModel):
     changestructuredimensions: bool = Field(True, alias="changeStructureDimensions")
     gridenclosurefile: Optional[PolyFile] = Field(None, alias="gridEnclosureFile")
     allowbndatbifurcation: bool = Field(False, alias="allowBndAtBifurcation")
+    slotw1d: float = Field(0.001, alias="slotw1D")
+    slotw2d: float = Field(0.001, alias="slotw2D")
+    uniformheight1droofgutterpipes: float = Field(
+        0.1, alias="uniformHeight1DRoofGutterPipes"
+    )
+    dxmin1d: float = Field(0.001, alias="dxmin1D")
+    uniformtyp1dstreetinlets: int = Field(-2, alias="uniformTyp1DStreetInlets")
+    stretchtype: int = Field(1, alias="stretchType")
+    zlaybot: int = Field(-999, alias="zlayBot")
+    zlaytop: int = Field(-999, alias="zlayTop")
+    uniformheight1d: float = Field(3.0, alias="uniformHeight1D")
+    roofsfile: Optional[PolyFile] = Field(None, alias="roofsFile")
+    gulliesfile: Optional[PolyFile] = Field(None, alias="gulliesFile")
+    uniformwidth1dstreetinlets: float = Field(0.2, alias="uniformWidth1DStreetInlets")
+    uniformheight1dstreetinlets: float = Field(0.1, alias="uniformHeight1DStreetInlets")
+    uniformtyp1droofgutterpipes: int = Field(-2, alias="uniformTyp1DRoofGutterPipes")
+    uniformwidth1droofgutterpipes: float = Field(
+        0.1, alias="uniformWidth1DRoofGutterPipes"
+    )
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "frictfile",
