@@ -1642,6 +1642,14 @@ class Geometry(INIBasedModel):
             "Change the structure dimensions in case these are inconsistent with the channel dimensions.",
             alias="changeStructureDimensions",
         )
+        gridenclosurefile: Optional[str] = Field(
+            "Enclosure file <*.pol> to clip outer parts from the grid.",
+            alias="gridEnclosureFile",
+        )
+        allowbndatbifurcation: Optional[str] = Field(
+            "Allow 1d boundary node when connectin branch leads to bifurcation (1: yes, 0: no).",
+            alias="allowBndAtBifurcation",
+        )
 
     comments: Comments = Comments()
 
@@ -1725,6 +1733,8 @@ class Geometry(INIBasedModel):
     dxdoubleat1dendnodes: bool = Field(True, alias="dxDoubleAt1DEndNodes")
     changevelocityatstructures: bool = Field(False, alias="changeVelocityAtStructures")
     changestructuredimensions: bool = Field(True, alias="changeStructureDimensions")
+    gridenclosurefile: Optional[PolyFile] = Field(None, alias="gridEnclosureFile")
+    allowbndatbifurcation: bool = Field(False, alias="allowBndAtBifurcation")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "frictfile",
