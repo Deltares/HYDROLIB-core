@@ -163,7 +163,10 @@ def _create_required_storage_node_values(usetable: bool) -> dict:
 
     return values
 
-def test_scientific_notation_in_ini_file_are_correctly_parsed_for_strings_and_floats(tmp_path):
+
+def test_scientific_notation_in_ini_file_are_correctly_parsed_for_strings_and_floats(
+    tmp_path,
+):
 
     file_data = """        
 [General]
