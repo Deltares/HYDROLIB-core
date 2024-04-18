@@ -88,7 +88,7 @@ class FMComponent(Component):
 
     library: Literal["dflowfm"] = "dflowfm"
 
-    @validator('process', pre=True, allow_reuse=True)
+    @validator("process", pre=True, allow_reuse=True)
     def _set_process_correctly(value: int):
         if not value or value == 0:
             return None
