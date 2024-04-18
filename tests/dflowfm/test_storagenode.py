@@ -162,3 +162,36 @@ def _create_required_storage_node_values(usetable: bool) -> dict:
         )
 
     return values
+
+def test_scientific_notation_in_ini_file_are_correctly_parsed_for_strings_and_floats(tmp_path):
+
+    file_data = """        
+[General]
+    fileVersion           = 2.00
+    fileType              = storageNodes
+    useStreetStorage      = 1
+
+[StorageNode]
+    id                    = 0D05252
+    name                  = 0D05252
+    nodeId                = Compartment002
+    ManholeId             = Manhole002
+    bedLevel              = -2e0
+    area                  = 0.4096000
+    streetLevel           = 0.000
+    storageType           = Reservoir
+    streetStorageArea     = 1d2
+    CompartmentShape      = Unknown
+    useTable              = False            
+    """
+
+    temporary_file_path_node_file = tmp_path / "nodeFile.ini"
+    temporary_file_path_node_file.write_text(file_data)
+
+    storage_node_model = StorageNodeModel(temporary_file_path_node_file)
+
+    storage_node = storage_node_model.storagenode[0]
+    assert storage_node.id == "0D05252"
+    assert storage_node.name == "0D05252"
+    assert storage_node.bedlevel == pytest.approx(-2e0)
+    assert storage_node.streetstoragearea == pytest.approx(1e2)
