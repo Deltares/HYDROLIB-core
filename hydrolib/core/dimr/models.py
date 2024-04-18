@@ -88,19 +88,15 @@ class FMComponent(Component):
 
     library: Literal["dflowfm"] = "dflowfm"
 
-    def __init__(self, **data):
-        super().__init__(**data)
-        process_input = data.get("process", None)
-        self.process = self._set_process_correctly(process_input)
-
-    def _set_process_correctly(self, process_input: int):
-        if not process_input or process_input == 0:
+    @validator('process', pre=True, allow_reuse=True)
+    def _set_process_correctly(value: int):
+        if not value or value == 0:
             return None
-        if not isinstance(process_input, int):
+        if not isinstance(value, int):
             raise ValueError(
-                f"Given process value {process_input}, is not of expected type {str(int)}"
+                f"Given process value {value}, is not of expected type {str(int)}"
             )
-        return " ".join(str(i) for i in range(process_input))
+        return " ".join(str(i) for i in range(value))
 
     @classmethod
     def get_model(cls):
