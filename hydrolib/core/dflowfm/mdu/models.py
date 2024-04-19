@@ -200,6 +200,112 @@ class Numerics(INIBasedModel):
         epshu: Optional[str] = Field(
             "Threshold water depth for wetting and drying [m].", alias="epsHu"
         )
+        fixedweirrelaxationcoef: Optional[str] = Field(
+            "Fixed weir relaxation coefficient for computation of energy loss.",
+            alias="fixedWeirRelaxationCoef",
+        )
+        implicitdiffusion2d: Optional[str] = Field(
+            "Implicit diffusion in 2D (0: no, 1:yes).",
+            alias="implicitDiffusion2D"
+        )
+        vertadvtyptem: Optional[str] = Field(
+            "Vertical advection type for temperature (0: none, 4: Theta implicit, 6: higher order explicit, no Forester filter).",
+            alias="vertAdvTypTem",
+        )
+        velmagnwarn: Optional[str] = Field(
+            "Warning level unitbrackets{m/s} on velocity magnitude (<= 0: no check).",
+            alias="velMagnWarn",
+        )
+        transportautotimestepdiff: Optional[str] = Field(
+            "Auto Timestepdiff in Transport, (0 : lim diff, no lim Dt, 1: no lim diff, lim Dt, 2: no lim diff, no lim Dt, 3: implicit (only 2D)).",
+            alias="transportAutoTimestepDiff",
+        )
+        sethorizontalbobsfor1d2d: Optional[str] = Field(
+            "Bobs are set to 2D bedlevel, to prevent incorrect storage in sewer system (0: no, 1:yes).",
+            alias="setHorizontalBobsFor1D2D",
+        )
+        diagnostictransport: Optional[str] = Field(
+            "No update of transport quantities, also known as diagnostic transport (0: no, 1: yes).",
+            alias="diagnosticTransport",
+        )
+        vertadvtypsal: Optional[str] = Field(
+            "Vertical advection type for salinity (0: none, 4: Theta implicit, 6: higher order explicit, no Forester filter).",
+            alias="vertAdvTypSal",
+        )
+        zerozbndinflowadvection: Optional[str] = Field(
+            "Switch for advection at open boundary (0: Neumann, 1=zero at inflow, 2=zero at inflow and outflow).",
+            alias="zeroZBndInflowAdection",
+        )
+        pure1d: Optional[str] = Field(
+            "Purely 1D advection (0: original advection using velocity vector, 1: pure 1D using flow volume vol1_f, 2: pure 1D using volume vol1)",
+            alias="pure1D",
+        )
+        testdryingflooding: Optional[str] = Field(
+            "Drying flooding algorithm (0: D-Flow FM, 1: Delft3DFLOW, 2: Similar to 0, and volume limitation in the transport solver based on Epshu).",
+            alias="testDryingFlooding",
+        )
+        logsolverconvergence: Optional[str] = Field(
+            "Print time step, number of solver iterations and solver residual to diagnostic output (0: no, 1: yes).",
+            alias="logSolverConvergence",
+        )
+        fixedweirscheme1d2d: Optional[str] = Field(
+            "Fixed weir scheme for 1d2d links (0: same as fixedweirscheme, 1: lateral iterative fixed weir scheme).",
+            alias="fixedWeirScheme1D2D",
+        )
+        horizontalmomentumfilter: Optional[str] = Field(
+            "Filter for reduction of checkerboarding; 0=No, 1=yes.",
+            alias="horizontalMomentumFilter",
+        )
+        maxnonlineariterations: Optional[str] = Field(
+            "Maximal iterations in non-linear iteration loop before a time step reduction is applied",
+            alias="maxNonLinearIterations",
+        )
+        maxvelocity: Optional[str] = Field(
+            "Upper bound [m/s] on velocity (<= 0: no bounds). Run will abort when violated.",
+            alias="maxVelocity",
+        )
+        waterlevelwarn: Optional[str] = Field(
+            "Warning level [m AD] on water level (<= 0: no check).",
+            alias="waterLevelWarn",
+        )
+        tspinupturblogprof: Optional[str] = Field(
+            "Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.",
+            alias="tspInputTurbLogProf",
+        )
+        fixedweirtopfrictcoef: Optional[Optional[str]] = Field(
+            "Uniform friction coefficient of the groyne part of fixed weirs [the unit depends on frictiontype].",
+            alias="fixedWeirTopFrictCoef",
+        )
+        fixedweir1d2d_dx: Optional[str] = Field(
+            "Extra delta x for lateral 1d2d fixed weirs.", alias="fixedWeir1D2D_dx"
+        )
+        junction1d: Optional[str] = Field(
+            "Advection at 1D junctions: (0: original 1D advection using velocity vector, 1 = same as along 1D channels using Pure1D=1).",
+            alias="junction1D",
+        )
+        fixedweirtopwidth: Optional[str] = Field(
+            "Uniform width of the groyne part of fixed weirs [m].",
+            alias="fixedWeirTopWidth",
+        )
+        vertadvtypmom: Optional[str] = Field(
+            "Vertical advection type in momentum equation; 3: Upwind implicit, 6: centerbased upwind explicit.",
+            alias="vertAdvTypMom",
+        )
+        checkerboardmonitor: Optional[str] = Field(
+            "Flag for checkerboarding output on history file (only for sigma layers yet); 0=No, 1=yes.",
+            alias="checkerboardMonitor",
+        )
+        velocitywarn: Optional[str] = Field(
+            "Warning level [m/s] on normal velocity(<= 0: no check).",
+            alias="velocityWarn",
+        )
+        adveccorrection1d2d: Optional[str] = Field(
+            "Advection correction of 1D2D link volume (0: regular advection, 1: link volume au*dx, 2: advection on 1D2D switched off.)",
+            alias="advecCorrection1D2D",
+        )
+        fixedweirtalud: Optional[str] = Field(
+            "Uniform talud slope of fixed weirs.", alias="fixedWeirTalud"
+        )
 
     comments: Comments = Comments()
 
@@ -236,6 +342,33 @@ class Numerics(INIBasedModel):
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")
     mintimestepbreak: float = Field(0.0, alias="minTimestepBreak")
     epshu: float = Field(0.0001, alias="epsHu")
+    fixedweirrelaxationcoef: float = Field(0.6, alias="fixedWeirRelaxationCoef")
+    implicitdiffusion2d: bool = Field(False, alias="implicitDiffusion2D")
+    vertadvtyptem: int = Field(6, alias="vertAdvTypTem")
+    velmagnwarn: float = Field(0.0, alias="velMagnWarn")
+    transportautotimestepdiff: int = Field(0, alias="transportAutoTimestepDiff")
+    sethorizontalbobsfor1d2d: bool = Field(False, alias="setHorizontalBobsFor1D2D")
+    diagnostictransport: bool = Field(False, alias="diagnosticTransport")
+    vertadvtypsal: int = Field(6, alias="vertAdvTypSal")
+    zerozbndinflowadvection: int = Field(0, alias="zeroZBndInflowAdection")
+    pure1d: int = Field(0, alias="pure1D")
+    testdryingflooding: int = Field(0, alias="testDryingFlooding")
+    logsolverconvergence: bool = Field(False, alias="logSolverConvergence")
+    fixedweirscheme1d2d: int = Field(0, alias="fixedWeirScheme1D2D")
+    horizontalmomentumfilter: bool = Field(False, alias="horizontalMomentumFilter")
+    maxnonlineariterations: int = Field(100, alias="maxNonLinearIterations")
+    maxvelocity: float = Field(0.0, alias="maxVelocity")
+    waterlevelwarn: float = Field(0.0, alias="waterLevelWarn")
+    tspinupturblogprof: float = Field(0.0, alias="tspInputTurbLogProf")
+    fixedweirtopfrictcoef: Optional[float] = Field(None, alias="fixedWeirTopFrictCoef")
+    fixedweir1d2d_dx: float = Field(50.0, alias="fixedWeir1D2D_dx")
+    junction1d: int = Field(0, alias="junction1D")
+    fixedweirtopwidth: int = Field(3, alias="fixedWeirTopWidth")
+    vertadvtypmom: int = Field(6, alias="vertAdvTypMom")
+    checkerboardmonitor: bool = Field(False, alias="checkerboardMonitor")
+    velocitywarn: float = Field(0.0, alias="velocityWarn")
+    adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
+    fixedweirtalud: int = Field(4, alias="fixedWeirTalud")
 
 
 class VolumeTables(INIBasedModel):
