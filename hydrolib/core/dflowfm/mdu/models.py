@@ -205,8 +205,7 @@ class Numerics(INIBasedModel):
             alias="fixedWeirRelaxationCoef",
         )
         implicitdiffusion2d: Optional[str] = Field(
-            "Implicit diffusion in 2D (0: no, 1:yes).",
-            alias="implicitDiffusion2D"
+            "Implicit diffusion in 2D (0: no, 1:yes).", alias="implicitDiffusion2D"
         )
         vertadvtyptem: Optional[str] = Field(
             "Vertical advection type for temperature (0: none, 4: Theta implicit, 6: higher order explicit, no Forester filter).",
@@ -686,6 +685,10 @@ class Wind(INIBasedModel):
         computedairdensity: Optional[str] = Field(
             "Compute air density yes/no (), 1/0, default 0.", alias="computedAirdensity"
         )
+        stresstowind: Optional[str] = Field(
+            "Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.",
+            alias="stressToWind",
+        )
 
     comments: Comments = Comments()
 
@@ -701,6 +704,7 @@ class Wind(INIBasedModel):
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
     computedairdensity: bool = Field(False, alias="computedAirdensity")
+    stresstowind: float = Field(0.0, alias="stressToWind")
 
     @classmethod
     def list_delimiter(cls) -> str:
