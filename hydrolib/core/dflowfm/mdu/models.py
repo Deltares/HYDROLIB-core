@@ -1400,6 +1400,75 @@ class Output(INIBasedModel):
         richardsononoutput: Optional[str] = Field(
             "Write Richardson number, (1: yes, 0: no).", alias="richardsonOnOutput"
         )
+        wrimap_every_dt: Optional[str] = Field(
+            "Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).",
+            alias="wrimap_input_dt",
+        )
+        wrimap_input_roughness: Optional[str] = Field(
+            "Write chezy input roughness on flow links to map file, (1: yes, 0: no).",
+            alias="wrimap_input_roughness",
+        )
+        wrimap_flowarea_au: Optional[str] = Field(
+            "Write flow areas au to map file (1: yes, 0: no).",
+            alias="wrimap_flowarea_au",
+        )
+        wrihis_airdensity: Optional[str] = Field(
+            "Write air density to his file (1: yes, 0: no).", alias="wrihis_airdensity"
+        )
+        wrimap_flow_flux_q1_main: Optional[str] = Field(
+            "Write flow flux in main channel to map file (1: yes, 0: no).",
+            alias="wrimap_flow_flux_q1_main",
+        )
+        wrimap_windstress: Optional[str] = Field(
+            "Write wind stress to map file (1: yes, 0: no).", alias="wrimap_windstress"
+        )
+        wrishp_genstruc: Optional[str] = Field(
+            "Writing general structures to shape file (0=no, 1=yes).",
+            alias="wrishp_genstruc",
+        )
+        wrimap_qin: Optional[str] = Field(
+            "Write sum of all influxes to map file (1: yes, 0: no).", alias="wrimap_qin"
+        )
+        wrimap_dtcell: Optional[str] = Field(
+            "Write time step per cell based on CFL (1: yes, 0: no).",
+            alias="wrimap_dtcell",
+        )
+        wrimap_velocity_vectorq: Optional[str] = Field(
+            "Write cell-center velocity vectors (discharge-based) to map file (1: yes, 0: no).",
+            alias="wrimap_velocity_vectorq",
+        )
+        wrimap_bnd: Optional[str] = Field(
+            "Write boundary points to map file (1: yes, 0: no).", alias="wrimap_bnd"
+        )
+        wrishp_dambreak: Optional[str] = Field(
+            "Writing dambreaks to shape file (0=no, 1=yes).", alias="wrishp_dambreak"
+        )
+        wrimap_waterdepth_hu: Optional[str] = Field(
+            "Write water depths on u-points to map file (1: yes, 0: no).",
+            alias="wrimap_waterdepth_hu",
+        )
+        ncmapdataprecision: Optional[str] = Field(
+            "Precision for NetCDF data in map files (double or single).",
+            alias="ncMapDataPrecision",
+        )
+        wrimap_interception: Optional[str] = Field(
+            "Write interception to map file (1: yes, 0: no).",
+            alias="wrimap_interception",
+        )
+        wrimap_airdensity: Optional[str] = Field(
+            "Write air density to map file, (1:yes, 0:no).", alias="wrimap_airdensity"
+        )
+        wrimap_volume1: Optional[str] = Field(
+            "Write volumes to map file (1: yes, 0: no).", alias="wrimap_volume1"
+        )
+        wrimap_ancillary_variables: Optional[str] = Field(
+            "Write ancillary variables attributes to map file (1: yes, 0: no).",
+            alias="wrimap_ancillary_variables",
+        )
+        wrimap_chezy_on_flow_links: Optional[str] = Field(
+            "Write chezy roughness on flow links to map file, (1: yes, 0: no)",
+            alias="wrimap_chezy_on_flow_links",
+        )
 
     comments: Comments = Comments()
 
@@ -1564,6 +1633,25 @@ class Output(INIBasedModel):
     statsinterval: List[float] = Field([-60.0], alias="statsInterval")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
     richardsononoutput: bool = Field(False, alias="richardsonOnOutput")
+    wrimap_every_dt: bool = Field(False, alias="wrimap_input_dt")
+    wrimap_input_roughness: bool = Field(False, alias="wrimap_input_roughness")
+    wrimap_flowarea_au: bool = Field(False, alias="wrimap_flowarea_au")
+    wrihis_airdensity: bool = Field(False, alias="wrihis_airdensity")
+    wrimap_flow_flux_q1_main: bool = Field(False, alias="wrimap_flow_flux_q1_main")
+    wrimap_windstress: bool = Field(False, alias="wrimap_windstress")
+    wrishp_genstruc: bool = Field(False, alias="wrishp_genstruc")
+    wrimap_qin: bool = Field(False, alias="wrimap_qin")
+    wrimap_dtcell: bool = Field(False, alias="wrimap_dtcell")
+    wrimap_velocity_vectorq: bool = Field(False, alias="wrimap_velocity_vectorq")
+    wrimap_bnd: bool = Field(False, alias="wrimap_bnd")
+    wrishp_dambreak: bool = Field(False, alias="wrishp_dambreak")
+    wrimap_waterdepth_hu: bool = Field(False, alias="wrimap_waterdepth_hu")
+    ncmapdataprecision: int = Field(0, alias="ncMapDataPrecision")
+    wrimap_interception: bool = Field(False, alias="wrimap_interception")
+    wrimap_airdensity: bool = Field(False, alias="wrimap_airdensity")
+    wrimap_volume1: bool = Field(False, alias="wrimap_volume1")
+    wrimap_ancillary_variables: bool = Field(False, alias="wrimap_ancillary_variables")
+    wrimap_chezy_on_flow_links: bool = Field(False, alias="wrimap_chezy_on_flow_links")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
