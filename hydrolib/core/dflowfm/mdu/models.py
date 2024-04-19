@@ -362,12 +362,12 @@ class Numerics(INIBasedModel):
     fixedweirtopfrictcoef: Optional[float] = Field(None, alias="fixedWeirTopFrictCoef")
     fixedweir1d2d_dx: float = Field(50.0, alias="fixedWeir1D2D_dx")
     junction1d: int = Field(0, alias="junction1D")
-    fixedweirtopwidth: int = Field(3, alias="fixedWeirTopWidth")
+    fixedweirtopwidth: float = Field(3.0, alias="fixedWeirTopWidth")
     vertadvtypmom: int = Field(6, alias="vertAdvTypMom")
     checkerboardmonitor: bool = Field(False, alias="checkerboardMonitor")
     velocitywarn: float = Field(0.0, alias="velocityWarn")
     adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
-    fixedweirtalud: int = Field(4, alias="fixedWeirTalud")
+    fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
 
 
 class VolumeTables(INIBasedModel):
