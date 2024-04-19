@@ -440,7 +440,7 @@ class TestBridge:
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
-    def test_bridge_with_unknown_parameter_is_ignored(self):
+    def test_bridge_with_unknown_parameter_is_not_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -475,7 +475,7 @@ class TestBridge:
         wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
         bridge = wrapper.val
 
-        assert bridge.dict().get("unknown") is None  # type: ignore
+        assert bridge.unknown == '10.0'
 
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
@@ -1617,7 +1617,7 @@ class TestWeir:
         assert weir.comments.crestwidth is None
         assert weir.comments.usevelocityheight == "My own special comment 2"
 
-    def test_weir_with_unknown_parameter_is_ignored(self):
+    def test_weir_with_unknown_parameter_is_not_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -1648,7 +1648,7 @@ class TestWeir:
         wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
         weir = wrapper.val
 
-        assert weir.dict().get("unknown") is None  # type: ignore
+        assert weir.unknown == '10.0'
 
         assert weir.id == "weir_id"
         assert weir.name == "weir"
@@ -2184,7 +2184,7 @@ class TestGeneralStructure:
         assert struct.comments.gateopeningwidth is None
         assert struct.comments.usevelocityheight == "My own special comment 2"
 
-    def test_general_structure_with_unknown_parameter_is_ignored(self):
+    def test_general_structure_with_unknown_parameter_is_not_ignored(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -2239,7 +2239,7 @@ class TestGeneralStructure:
         wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
         struct = wrapper.val
 
-        assert struct.dict().get("unknown") is None  # type: ignore
+        assert struct.unknown == '10.0'
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
