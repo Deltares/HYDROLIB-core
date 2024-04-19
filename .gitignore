@@ -135,3 +135,6 @@ tests/data/output
 
 # Visual Studio Code
 .vscode/
+
+# PyCharm
+.idea/
