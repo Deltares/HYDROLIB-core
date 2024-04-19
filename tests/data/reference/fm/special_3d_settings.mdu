@@ -139,12 +139,12 @@ tspInputTurbLogProf       = 0.0     # Spin up time [s] when starting with a para
 fixedWeirTopFrictCoef     = -999.0  # Uniform friction coefficient of the groyne part of fixed weirs
 fixedWeir1D2D_dx          = 50.0    # Extra delta x for lateral 1d2d fixed weirs.
 junction1D                = 0       # Advection at 1D junctions: (0: original 1D advection using velocity vector, 1 = same as along 1D channels using Pure1D=1).
-fixedWeirTopWidth         = 3       # Uniform width of the groyne part of fixed weirs
+fixedWeirTopWidth         = 3.0     # Uniform width of the groyne part of fixed weirs
 vertAdvTypMom             = 6       # Vertical advection type for u1: 0: No, 3: Upwind implicit, 4: Central implicit, 5: QUICKEST implicit., 6: centerbased upwind expl
 checkerboardMonitor       = 0       # Flag for checkerboarding output on history file (only for sigma layers yet); 0=No, 1=yes.
 velocityWarn              = 0.0     # Warning level [m/s] on normal velocity(<= 0: no check).
 advecCorrection1D2D       = 0       # Advection correction of 1D2D link volume (0: regular advection, 1: link volume au*dx, 2: advection on 1D2D switched off.)
-fixedWeirTalud            = 4       # Uniform talud slope of fixed weirs.
+fixedWeirTalud            = 4.0     # Uniform talud slope of fixed weirs.
 
 [Physics]
 unifFrictCoef              = 0.028   # Uniform friction coefficient (0: no friction)
