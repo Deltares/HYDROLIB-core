@@ -233,7 +233,7 @@ class Numerics(INIBasedModel):
         )
         zerozbndinflowadvection: Optional[str] = Field(
             "Switch for advection at open boundary (0: Neumann, 1=zero at inflow, 2=zero at inflow and outflow).",
-            alias="zeroZBndInflowAdection",
+            alias="zeroZBndInflowAdvection",
         )
         pure1d: Optional[str] = Field(
             "Purely 1D advection (0: original advection using velocity vector, 1: pure 1D using flow volume vol1_f, 2: pure 1D using volume vol1)",
@@ -269,7 +269,7 @@ class Numerics(INIBasedModel):
         )
         tspinupturblogprof: Optional[str] = Field(
             "Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.",
-            alias="tspInputTurbLogProf",
+            alias="tSpinUpTurbLogProf",
         )
         fixedweirtopfrictcoef: Optional[Optional[str]] = Field(
             "Uniform friction coefficient of the groyne part of fixed weirs [the unit depends on frictiontype].",
@@ -349,7 +349,7 @@ class Numerics(INIBasedModel):
     sethorizontalbobsfor1d2d: bool = Field(False, alias="setHorizontalBobsFor1D2D")
     diagnostictransport: bool = Field(False, alias="diagnosticTransport")
     vertadvtypsal: int = Field(6, alias="vertAdvTypSal")
-    zerozbndinflowadvection: int = Field(0, alias="zeroZBndInflowAdection")
+    zerozbndinflowadvection: int = Field(0, alias="zeroZBndInflowAdvection")
     pure1d: int = Field(0, alias="pure1D")
     testdryingflooding: int = Field(0, alias="testDryingFlooding")
     logsolverconvergence: bool = Field(False, alias="logSolverConvergence")
@@ -358,7 +358,7 @@ class Numerics(INIBasedModel):
     maxnonlineariterations: int = Field(100, alias="maxNonLinearIterations")
     maxvelocity: float = Field(0.0, alias="maxVelocity")
     waterlevelwarn: float = Field(0.0, alias="waterLevelWarn")
-    tspinupturblogprof: float = Field(0.0, alias="tspInputTurbLogProf")
+    tspinupturblogprof: float = Field(0.0, alias="tSpinUpTurbLogProf")
     fixedweirtopfrictcoef: Optional[float] = Field(None, alias="fixedWeirTopFrictCoef")
     fixedweir1d2d_dx: float = Field(50.0, alias="fixedWeir1D2D_dx")
     junction1d: int = Field(0, alias="junction1D")
