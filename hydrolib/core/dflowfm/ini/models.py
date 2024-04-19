@@ -48,8 +48,20 @@ class INIBasedModel(BaseModel, ABC):
     _file_path_style_converter = FilePathStyleConverter()
 
     class Config:
-        extra = Extra.ignore
+        extra = Extra.allow
         arbitrary_types_allowed = False
+        
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._check_for_unknown_keys()
+    
+    def _check_for_unknown_keys(self):
+        read_keys = set(self.__fields_set__)
+        known_keys = set(self.__fields__)
+        
+        unknown_keys = read_keys - known_keys - self._exclude_fields()
+        if unknown_keys:
+            print("Unknown keys included:", unknown_keys)
 
     @classmethod
     def _supports_comments(cls):
