@@ -704,7 +704,7 @@ class Wind(INIBasedModel):
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
     computedairdensity: bool = Field(False, alias="computedAirdensity")
-    stresstowind: float = Field(0.0, alias="stressToWind")
+    stresstowind: bool = Field(False, alias="stressToWind")
 
     @classmethod
     def list_delimiter(cls) -> str:
