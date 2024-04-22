@@ -126,7 +126,7 @@ transportAutoTimestepDiff = 0       # Auto Timestepdiff in Transport, (0 : lim d
 setHorizontalBobsFor1D2D  = 0       # Bobs are set to 2D bedlevel, to prevent incorrect storage in sewer system (0: no, 1:yes).
 diagnosticTransport       = 0       # No update of transport quantities, also known as diagnostic transport (0: no, 1: yes).
 vertAdvTypSal             = 6       # Vertical advection type for salinity (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester)
-zeroZBndInflowAdection    = 1       # On waterlevel boundaries set incoming advection velocity to zero (0=no, 1=on inflow, 2=also on outflow)
+zeroZBndInflowAdvection   = 1       # On waterlevel boundaries set incoming advection velocity to zero (0=no, 1=on inflow, 2=also on outflow)
 pure1D                    = 0       # Purely 1D advection (0: original advection using velocity vector, 1: pure 1D using flow volume vol1_f, 2: pure 1D using volume vol1)
 testDryingFlooding        = 0       # Drying flooding algorithm (0: D-Flow FM, 1: Delft3DFLOW, 2: Similar to 0, and volume limitation in the transport solver based on Epshu).
 logSolverConvergence      = 0       # Print time step, number of solver iterations and solver residual to diagnostic output (0: no, 1: yes).
@@ -135,7 +135,7 @@ horizontalMomentumFilter  = 0       # Filter for reduction of checkerboarding; 0
 maxNonLinearIterations    = 100     # Maximal iterations in non-linear iteration loop before a time step reduction is applied
 maxVelocity               = 0.0     # Upper bound [m/s] on velocity (<= 0: no bounds). Run will abort when violated.
 waterLevelWarn            = 0.0     # Warning level [m AD] on water level (<= 0: no check).
-tspInputTurbLogProf       = 0.0     # Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.
+tSpinUpTurbLogProf        = 0.0     # Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.
 fixedWeirTopFrictCoef     = -999.0  # Uniform friction coefficient of the groyne part of fixed weirs
 fixedWeir1D2D_dx          = 50.0    # Extra delta x for lateral 1d2d fixed weirs.
 junction1D                = 0       # Advection at 1D junctions: (0: original 1D advection using velocity vector, 1 = same as along 1D channels using Pure1D=1).
