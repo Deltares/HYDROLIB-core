@@ -208,7 +208,7 @@ windPartialDry       = 1         # Reduce windstress on water if link partially 
 pavBnd               = 101330.0  # Average air pressure on open boundaries (N/m2) (only applied if > 0)
 pavIni               = 0.0       # Initial air pressure [N/m2], only applied if value > 0.
 computedAirdensity   = 0         # Compute air density yes/no (), 1/0, default 0.
-stressToWind         = 0.0       # Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.
+stressToWind         = 0         # Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.
 
 [Time]
 refDate                 = 19971222       # Reference date (yyyymmdd)
