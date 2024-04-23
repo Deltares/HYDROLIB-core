@@ -16,8 +16,6 @@ from hydrolib.core.basemodel import (
     ModelSaveSettings,
     ParsableFileModel,
 )
-
-from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import (
     DataBlockINIBasedSerializerConfig,
@@ -25,6 +23,7 @@ from .serializer import (
     write_ini,
 )
 from .util import make_list_validator
+from ..ini.io_models import CommentBlock, Document, Property, Section
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +47,7 @@ class INIBasedModel(BaseModel, ABC):
     _file_path_style_converter = FilePathStyleConverter()
 
     class Config:
-        extra = Extra.ignore
+        extra = Extra.allow
         arbitrary_types_allowed = False
 
     @classmethod
@@ -269,6 +268,9 @@ class INIModel(ParsableFileModel):
     ini file will be (sub)class of INIBasedModel.
     """
 
+    class Config:
+        extra = Extra.allow
+
     serializer_config: INISerializerConfig = INISerializerConfig()
 
     general: INIGeneral
@@ -300,11 +302,54 @@ class INIModel(ParsableFileModel):
                     sections.append(
                         v._to_section(self.serializer_config, save_settings)
                     )
+            elif isinstance(value, dict):
+                sections.append(self._unknown_section_dict_to_section(value))
             else:
                 sections.append(
                     value._to_section(self.serializer_config, save_settings)
                 )
         return Document(header_comment=[header], sections=sections)
+
+    @staticmethod
+    def _unknown_section_dict_to_section(unknown_keywords: dict[str, str]) -> Section:
+        """
+        Converts a dictionary with unknown keyword-value pairs in an unknown section into a Section object.
+
+        Args:
+            unknown_keywords: Dictionary of unknown keyword-value pairs. The dictionary should contain a '_header' key
+            representing the section's name. It may optionally contain a 'comments' key where the value is another
+            dictionary. This dictionary should contain key-value paris, where the keys are the same as the unknown
+            keywords. Finally, the dictionary may contain any number of unknown keyword-value pairs that belong in
+            the unknown section.
+
+        Examples:
+            unknown_section = {
+                "_header": "UnknownSectionName",
+                "_comments": {
+                    "keyword1": "This is the comment for keyword1"
+                },
+                "keyword1": "Value for keyword1. This value also has a comment.",
+                "keyword2": "Value without a comment.",
+            }
+
+        Returns:
+            The section object representing the unknown section dictionary.
+
+        Raises:
+            KeyError: If any of the expected keys are missing in the dictionary.
+        """
+        props = []
+        for key, value in unknown_keywords.items():
+            if key in ["_header", "comments", "datablock"]:
+                continue
+
+            prop = Property(
+                key=key,
+                value=value,
+                comment=unknown_keywords.get("comment", {}).get(key),
+            )
+            props.append(prop)
+        return Section(header=unknown_keywords.get("_header"), content=props)
 
     def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
         write_ini(
