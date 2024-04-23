@@ -23,7 +23,6 @@ from hydrolib.core.dflowfm.polyfile.models import (
     PolyObject,
 )
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
-
 from ..utils import (
     assert_files_equal,
     assert_objects_equal,
@@ -164,6 +163,25 @@ class TestModels:
         assert model.landboundaryfile is not None
         assert len(model.landboundaryfile) == 1
         assert isinstance(model.landboundaryfile[0], DiskOnlyFileModel)
+
+    def test_mdu_with_unknown_section_and_unknown_keywords_reads_those_keywords(self):
+        input_mdu = (
+            test_input_dir / "dflowfm_individual_files" / "with_unknown_keywords.mdu"
+        )
+
+        fmmodel = FMModel(input_mdu)
+
+        assert isinstance(fmmodel.geometry.unknownkeyword, str)
+        assert fmmodel.geometry.unknownkeyword == "123"
+
+        assert isinstance(fmmodel.geometry.unknownkeywordwithcomment, str)
+        assert fmmodel.geometry.unknownkeywordwithcomment == "abc"
+        comment = fmmodel.geometry.comments.unknownkeywordwithcomment
+        assert comment == "This is a very informative comment :)"
+
+        assert isinstance(fmmodel.unknownsection, dict)
+        assert isinstance(fmmodel.unknownsection["unknownkeywordinunknownsection"], str)
+        assert fmmodel.unknownsection["unknownkeywordinunknownsection"] == r"C:\fakefile.xyz"
 
 
 class PyTestMatchAny:
