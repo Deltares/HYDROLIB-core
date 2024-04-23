@@ -184,6 +184,28 @@ class TestModels:
         assert fmmodel.unknownsection["unknownkeywordinunknownsection"] == r"C:\fakefile.xyz"
 
 
+    def test_fmmodel_with_unknown_sections_and_unknown_keywords_can_be_saved(self, tmp_path):
+        input_mdu = (
+                test_input_dir / "dflowfm_individual_files" / "with_unknown_keywords.mdu"
+        )
+
+        fmmodel = FMModel(input_mdu)
+
+        output_path = tmp_path / "test_saving_unknown_sections_and_unknown_keywords.mdu"
+        fmmodel.filepath = output_path
+        fmmodel.save()
+
+        with open(output_path, 'r') as file:
+            contents = file.read()
+
+        assert "unknownkeyword             = 123" in contents
+        assert "unknownkeywordwithcomment  = abc    # This is a very informative comment :)" in contents
+        assert "[UnknownSection]" in contents
+        assert r"unknownkeywordinunknownsection = C:\fakefile.xyz" in contents
+
+
+
+
 class PyTestMatchAny:
     def __eq__(self, other):
         return True
