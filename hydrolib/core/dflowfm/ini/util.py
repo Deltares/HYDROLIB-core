@@ -630,14 +630,14 @@ class UnknownKeyNotificationManager():
     Detects unknown keys and manages the notification to the user.
     """
     
-    def notify_unknown_keywords(self, data : dict[str, Any], section_header : str,  fields : dict[str, Any], excluded_fields : Set, config_extra : Extra):
+    def notify_unknown_keywords(self, data : Dict[str, Any], section_header : str,  fields : Dict[str, Any], excluded_fields : Set, config_extra : Extra):
         """
         Notify the user of unknown keywords.
 
         Args:
-            data (dict[str, Any])   : Input data containing all set properties which are checked on unknown keywords.
+            data (Dict[str, Any])   : Input data containing all set properties which are checked on unknown keywords.
             section_header (str)    : Header of the section in which unknown keys might be detected.
-            fields (dict[str, Any]) : Known fields of the section.
+            fields (Dict[str, Any]) : Known fields of the section.
             excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
             config_extra (Extra)    : Setting which determines if unknown keywords are allowed or dropped.
         """
@@ -648,21 +648,21 @@ class UnknownKeyNotificationManager():
         
         self._print_list_of_unknown_keywords(section_header, config_extra, unknown_keywords)
         
-    def notify_unknown_keyword(self, name : str, section_header : str,  fields : dict[str, Any], excluded_fields : Set, config_extra : Extra):
+    def notify_unknown_keyword(self, name : str, section_header : str,  fields : Dict[str, Any], excluded_fields : Set, config_extra : Extra):
         """
         Notify the user of a unknown keyword.
 
         Args:
             name (str)              : Keyword which is checked if it is an unknown keyword.
             section_header (str)    : Header of the section in which unknown keys might be detected.
-            fields (dict[str, Any]) : Known fields of the section.
+            fields (Dict[str, Any]) : Known fields of the section.
             excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
             config_extra (Extra)    : Setting which determines if unknown keywords are allowed or dropped.
         """
         if self._is_unknown_keyword(name, fields, excluded_fields):
             self._print_single_unknown_keyword(name, section_header, config_extra)
             
-    def _get_all_unknown_keywords(self, data : dict[str, Any], fields : dict[str, Any], excluded_fields : Set) -> list[str]:
+    def _get_all_unknown_keywords(self, data : Dict[str, Any], fields : Dict[str, Any], excluded_fields : Set) -> List[str]:
         list_of_unknown_keywords = []
         for name, _ in data.items():
             if self._is_unknown_keyword(name, fields, excluded_fields):
@@ -670,10 +670,10 @@ class UnknownKeyNotificationManager():
                 
         return list_of_unknown_keywords
             
-    def _is_unknown_keyword(self, name : str, fields : dict[str, Any], excluded_fields : Set):
+    def _is_unknown_keyword(self, name : str, fields : Dict[str, Any], excluded_fields : Set):
         return name not in fields and name not in excluded_fields
 
-    def _print_list_of_unknown_keywords(self, section_header : str, config_extra : Extra, list_of_unknown_keywords : list[str]):
+    def _print_list_of_unknown_keywords(self, section_header : str, config_extra : Extra, list_of_unknown_keywords : List[str]):
         if config_extra == Extra.allow:
             print(f"Unknown keywords are detected in '{section_header}', these keywords will be kept in memory but will have no validation:")
         else:
