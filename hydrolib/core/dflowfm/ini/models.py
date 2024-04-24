@@ -43,7 +43,7 @@ class INIBasedModel(BaseModel, ABC):
             descriptions for all data fields.
     """
 
-    _header: Literal["_header"] = "_header"
+    _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
     _unknown_key_notification_manager = UnknownKeyNotificationManager()
 
