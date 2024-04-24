@@ -3,8 +3,9 @@
 from datetime import datetime
 from enum import Enum
 from operator import eq
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Set, Type
 
+from pydantic import Extra
 from pydantic.v1.class_validators import root_validator, validator
 from pydantic.v1.fields import ModelField
 from pydantic.v1.main import BaseModel
@@ -622,3 +623,67 @@ def rename_keys_for_backwards_compatibility(
                 break
 
     return values
+
+class UnknownKeyNotificationManager():
+    """
+    Notification manager for unknown keys.
+    Detects unknown keys and manages the notification to the user.
+    """
+    
+    def notify_unknown_keywords(self, data : dict[str, Any], section_header : str,  fields : dict[str, Any], excluded_fields : Set, config_extra : Extra):
+        """
+        Notify the user of unknown keywords.
+
+        Args:
+            data (dict[str, Any])   : Input data containing all set properties which are checked on unknown keywords.
+            section_header (str)    : Header of the section in which unknown keys might be detected.
+            fields (dict[str, Any]) : Known fields of the section.
+            excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
+            config_extra (Extra)    : Setting which determines if unknown keywords are allowed or dropped.
+        """
+        unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
+                
+        if len(unknown_keywords) == 0:
+            return
+        
+        self._print_list_of_unknown_keywords(section_header, config_extra, unknown_keywords)
+        
+    def notify_unknown_keyword(self, name : str, section_header : str,  fields : dict[str, Any], excluded_fields : Set, config_extra : Extra):
+        """
+        Notify the user of a unknown keyword.
+
+        Args:
+            name (str)              : Keyword which is checked if it is an unknown keyword.
+            section_header (str)    : Header of the section in which unknown keys might be detected.
+            fields (dict[str, Any]) : Known fields of the section.
+            excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
+            config_extra (Extra)    : Setting which determines if unknown keywords are allowed or dropped.
+        """
+        if self._is_unknown_keyword(name, fields, excluded_fields):
+            self._print_single_unknown_keyword(name, section_header, config_extra)
+            
+    def _get_all_unknown_keywords(self, data : dict[str, Any], fields : dict[str, Any], excluded_fields : Set) -> list[str]:
+        list_of_unknown_keywords = []
+        for name, _ in data.items():
+            if self._is_unknown_keyword(name, fields, excluded_fields):
+                list_of_unknown_keywords.append(name)
+                
+        return list_of_unknown_keywords
+            
+    def _is_unknown_keyword(self, name : str, fields : dict[str, Any], excluded_fields : Set):
+        return name not in fields and name not in excluded_fields
+
+    def _print_list_of_unknown_keywords(self, section_header : str, config_extra : Extra, list_of_unknown_keywords : list[str]):
+        if config_extra == Extra.allow:
+            print(f"Unknown keywords are detected in '{section_header}', these keywords will be kept in memory but will have no validation:")
+        else:
+            print(f"Unknown keywords are detected in '{section_header}', these keywords will be dropped:")
+            
+        for name in list_of_unknown_keywords:
+            print(name)
+
+    def _print_single_unknown_keyword(self, name : str, section_header : str, config_extra : Extra):
+        if config_extra == Extra.allow:
+            print(f"Unknown keyword detected in '{section_header}', '{name}', keyword will be kept in memory but will have no validation.")
+        else:
+            print(f"Unknown keyword detected in '{section_header}', '{name}', keyword will be dropped.")
