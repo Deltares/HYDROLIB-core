@@ -24,9 +24,10 @@ from .serializer import (
     INISerializerConfig,
     write_ini,
 )
-from .util import make_list_validator, UnknownKeyNotificationManager
+from .util import UnknownKeyNotificationManager, make_list_validator
 
 logger = logging.getLogger(__name__)
+
 
 class INIBasedModel(BaseModel, ABC):
     """INIBasedModel defines the base model for blocks/chapters
@@ -50,15 +51,27 @@ class INIBasedModel(BaseModel, ABC):
     class Config:
         extra = Extra.ignore
         arbitrary_types_allowed = False
-        
+
     def __init__(self, **data):
         super().__init__(**data)
-        self._unknown_key_notification_manager.notify_unknown_keywords(data, self._header,  self.__fields__, self._exclude_fields(), self.Config.extra)
-    
+        self._unknown_key_notification_manager.notify_unknown_keywords(
+            data,
+            self._header,
+            self.__fields__,
+            self._exclude_fields(),
+            self.Config.extra,
+        )
+
     def __setattr__(self, name, value):
-        self._unknown_key_notification_manager.notify_unknown_keyword(name, self._header,  self.__fields__, self._exclude_fields(), self.Config.extra)
+        self._unknown_key_notification_manager.notify_unknown_keyword(
+            name,
+            self._header,
+            self.__fields__,
+            self._exclude_fields(),
+            self.Config.extra,
+        )
         super().__setattr__(name, value)
-    
+
     @classmethod
     def _supports_comments(cls):
         return True
