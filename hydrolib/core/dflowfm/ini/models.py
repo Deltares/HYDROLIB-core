@@ -52,9 +52,9 @@ class INIBasedModel(BaseModel, ABC):
         arbitrary_types_allowed = False
         
     def __init__(self, **data):
+        super().__init__(**data)
         for key, _ in data.items():
             self._notify_ingored_field(key)
-        super().__init__(**data)
     
     def __setattr__(self, name, value):
         self._notify_ingored_field(name)

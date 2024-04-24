@@ -470,9 +470,13 @@ class TestOutput:
         
     def test_mdu_unknown_keywords_allow_extra_setting_field_gives_message(self, capsys):
         model = FMModel()
+        config_extra_setting = model.general.Config.extra # Save the Config.extra to revert back to original setting after the test.
+        
         model.general.Config.extra = Extra.allow
         model.general.unknown = "something"
         captured = capsys.readouterr()
+        
+        model.general.Config.extra = config_extra_setting # Revert the Config.extra to the original setting, if this is not done it can affect other tests.
         
         section = "General"
         name = "unknown"
