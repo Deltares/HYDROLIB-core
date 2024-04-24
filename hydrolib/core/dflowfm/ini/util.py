@@ -681,6 +681,8 @@ class UnknownKeyNotificationManager():
             
         for name in list_of_unknown_keywords:
             print(name)
+            
+        print()
 
     def _print_single_unknown_keyword(self, name : str, section_header : str, config_extra : Extra):
         if config_extra == Extra.allow:
