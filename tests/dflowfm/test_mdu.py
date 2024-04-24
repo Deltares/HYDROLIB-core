@@ -392,8 +392,10 @@ class TestOutput:
             assert actual_point.x == expected_point.x
             assert actual_point.y == expected_point.y
             assert actual_point.name == expected_point.name
-        
-    def test_mdu_unknown_keywords_loading_gives_message_for_missing_keyword(self, tmp_path, capsys):
+
+    def test_mdu_unknown_keywords_loading_gives_message_for_missing_keyword(
+        self, tmp_path, capsys
+    ):
         tmp_mdu = """
         [General]
         fileVersion           = 1.09          
@@ -404,22 +406,29 @@ class TestOutput:
         pathsRelativeToParent = 0             
         unknownkey            = something
         """
-        
+
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
-        
-        with patch('hydrolib.core.dflowfm.ini.models.INIBasedModel.Config') as mock_config:
+
+        with patch(
+            "hydrolib.core.dflowfm.ini.models.INIBasedModel.Config"
+        ) as mock_config:
             mock_config.extra = Extra.ignore
-        
+
             FMModel(filepath=tmp_mdu_path)
             captured = capsys.readouterr()
-            
+
             section = "General"
             name = "unknownkey"
-            
-            assert f"Unknown keyword detected in '{section}', '{name}', keyword will be dropped." in captured.out
-        
-    def test_mdu_unknown_keywords_loading_gives_message_for_missing_keyword2(self, tmp_path, capsys):
+
+            assert (
+                f"Unknown keyword detected in '{section}', '{name}', keyword will be dropped."
+                in captured.out
+            )
+
+    def test_mdu_unknown_keywords_loading_gives_message_for_missing_keyword2(
+        self, tmp_path, capsys
+    ):
         tmp_mdu = """
         [General]
         fileVersion           = 1.09          
@@ -430,23 +439,29 @@ class TestOutput:
         pathsRelativeToParent = 0             
         unknownkey            = something
         """
-        
+
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
-        
-        
-        with patch('hydrolib.core.dflowfm.ini.models.INIBasedModel.Config') as mock_config:
+
+        with patch(
+            "hydrolib.core.dflowfm.ini.models.INIBasedModel.Config"
+        ) as mock_config:
             mock_config.extra = Extra.allow
-            
+
             FMModel(filepath=tmp_mdu_path)
             captured = capsys.readouterr()
-        
+
             section = "General"
             name = "unknownkey"
-        
-            assert f"Unknown keyword detected in '{section}', '{name}', keyword will be kept in memory but will have no validation." in captured.out
-    
-    def test_mdu_unknown_keywords_loading_does_not_give_message_on_exclude_fields(self, tmp_path, capsys):
+
+            assert (
+                f"Unknown keyword detected in '{section}', '{name}', keyword will be kept in memory but will have no validation."
+                in captured.out
+            )
+
+    def test_mdu_unknown_keywords_loading_does_not_give_message_on_exclude_fields(
+        self, tmp_path, capsys
+    ):
         tmp_mdu = """
         [General]
         fileVersion           = 1.09          
@@ -457,28 +472,33 @@ class TestOutput:
         pathsRelativeToParent = 0             
         unknownkey            = something
         """
-        
+
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
-        
+
         FMModel(filepath=tmp_mdu_path)
         captured = capsys.readouterr()
-        
+
         excluded_fields = ["comments", "datablock", "_header"]
         for excluded_field in excluded_fields:
             assert excluded_field not in captured.out
-        
+
     def test_mdu_unknown_keywords_allow_extra_setting_field_gives_message(self, capsys):
         model = FMModel()
-        config_extra_setting = model.general.Config.extra # Save the Config.extra to revert back to original setting after the test.
-        
+        config_extra_setting = (
+            model.general.Config.extra
+        )  # Save the Config.extra to revert back to original setting after the test.
+
         model.general.Config.extra = Extra.allow
         model.general.unknown = "something"
         captured = capsys.readouterr()
-        
-        model.general.Config.extra = config_extra_setting # Revert the Config.extra to the original setting, if this is not done it can affect other tests.
-        
+
+        model.general.Config.extra = config_extra_setting  # Revert the Config.extra to the original setting, if this is not done it can affect other tests.
+
         section = "General"
         name = "unknown"
-        
-        assert f"Unknown keyword detected in '{section}', '{name}', keyword will be kept in memory but will have no validation." in captured.out
+
+        assert (
+            f"Unknown keyword detected in '{section}', '{name}', keyword will be kept in memory but will have no validation."
+            in captured.out
+        )

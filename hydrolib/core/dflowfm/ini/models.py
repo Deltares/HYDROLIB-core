@@ -50,23 +50,26 @@ class INIBasedModel(BaseModel, ABC):
     class Config:
         extra = Extra.ignore
         arbitrary_types_allowed = False
-        
+
     def __init__(self, **data):
         super().__init__(**data)
         for key, _ in data.items():
             self._notify_ingored_field(key)
-    
+
     def __setattr__(self, name, value):
         self._notify_ingored_field(name)
         super().__setattr__(name, value)
-    
+
     def _notify_ingored_field(self, name):
         if name not in self.__fields__ and name not in self._exclude_fields():
             if self.Config.extra == Extra.allow:
-                print(f"Unknown keyword detected in '{self._header}', '{name}', keyword will be kept in memory but will have no validation.")
+                print(
+                    f"Unknown keyword detected in '{self._header}', '{name}', keyword will be kept in memory but will have no validation."
+                )
             else:
-                print(f"Unknown keyword detected in '{self._header}', '{name}', keyword will be dropped.")
-    
+                print(
+                    f"Unknown keyword detected in '{self._header}', '{name}', keyword will be dropped."
+                )
 
     @classmethod
     def _supports_comments(cls):
