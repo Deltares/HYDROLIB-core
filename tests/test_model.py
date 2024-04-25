@@ -527,7 +527,6 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
 @pytest.mark.parametrize(
     "input_process, expected_process_format",
     [
-        pytest.param(1, "0"),
         pytest.param(2, "0 1"),
         pytest.param(3, "0 1 2"),
         pytest.param(4, "0 1 2 3"),
@@ -555,13 +554,12 @@ def test_dimr_with_fmcomponent_saving_process(
             line.strip() == line_to_check for line in file
         ), f"File {save_location} does not contain the line: {line_to_check}"
 
-
-def test_dimr_with_fmcomponent_saving_process_when_process_zero(tmp_path):
+def test_dimr_with_fmcomponent_saving_process_when_process_one(tmp_path):
     component = FMComponent(
         name="test",
         workingDir=".",
         inputfile="test.mdu",
-        process=0,
+        process=1,
         mpiCommunicator="DFM_COMM_DFMWORLD",
     )
     dimr = DIMR(component=component)
@@ -575,13 +573,11 @@ def test_dimr_with_fmcomponent_saving_process_when_process_zero(tmp_path):
             process not in file
         ), f"File {save_location} does contain the line: {process}"
 
-
 @pytest.mark.parametrize(
     "input_process, expected_process_format",
     [
         pytest.param(None, None),
-        pytest.param(0, None),
-        pytest.param(1, "0"),
+        pytest.param(1, None),
         pytest.param(2, "0 1"),
         pytest.param(3, "0 1 2"),
         pytest.param(4, "0 1 2 3"),
@@ -634,5 +630,20 @@ def test_fmcomponent_process_after_init_with_incorrect_input_throws_valueerror(
 
     expected_message = (
         f"Given process value {input_process}, is not of expected type {str(int)}"
+    )
+    assert expected_message in str(error.value)
+
+def test_fmcomponent_process_after_init_with_input_process_zero_throws_valueerror():
+    with pytest.raises(ValueError) as error:
+        FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=0,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+
+    expected_message = (
+        "The keyword process can not be 0, please specify values 1 or greater."
     )
     assert expected_message in str(error.value)

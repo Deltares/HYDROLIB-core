@@ -88,10 +88,14 @@ class FMComponent(Component):
 
     library: Literal["dflowfm"] = "dflowfm"
 
-    @validator("process", pre=True, allow_reuse=True)
-    def _set_process_correctly(value: int):
-        if not value or value == 0:
+    @validator("process", pre=True)
+    def _set_process_correctly(cls, value: int):
+        if value is None or value == 1:
             return None
+        if value == 0:
+            raise ValueError(
+                "The keyword process can not be 0, please specify values 1 or greater."
+            )
         if not isinstance(value, int):
             raise ValueError(
                 f"Given process value {value}, is not of expected type {str(int)}"
