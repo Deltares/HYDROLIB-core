@@ -523,12 +523,9 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
     else:
         assert relevant_field.filepath == input
 
-
-class TestFmComponentProcess:
-    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process(
-        self, tmp_path
-    ):
-        process_digits: str = "0 1 2 3"
+class TestFmComponentProcessIntegrationWithDimr:
+    
+    def get_fm_dimr_config_data(self, input_data_process):
         dimr_config_data = f"""<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
@@ -540,54 +537,102 @@ class TestFmComponentProcess:
     <library>dflowfm</library>
     <workingDir>.</workingDir>
     <inputFile>test.mdu</inputFile>
-    <process>{process_digits}</process>
+    <process>{input_data_process}</process>
     <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
   </component>
 </dimrConfig>
 """
+        return dimr_config_data
+    
+    def get_fm_dimr_config_data_without_process(self):
+        dimr_config_data = """<?xml version="1.0" encoding="utf-8"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
+  <documentation>
+    <fileVersion>1.3</fileVersion>
+    <createdBy>hydrolib-core 0.7.0</createdBy>
+    <creationDate>2024-04-25T10:59:21.185365</creationDate>
+  </documentation>
+  <component name="test">
+    <library>dflowfm</library>
+    <workingDir>.</workingDir>
+    <inputFile>test.mdu</inputFile>
+    <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
+  </component>
+</dimrConfig>
+"""
+        return dimr_config_data
+    
+    def setup_temporary_files(self, tmp_path, dimr_config_data):
         temporary_dimr_config_file = tmp_path / "dimr_config.xml"
         temporary_dimr_config_file.write_text(dimr_config_data)
+        
         temp_mdu = tmp_path / "test.mdu"
         temp_mdu.write_text("")
-        temporary_dimr_config_file_save_location = tmp_path / "saved_dimr_config.xml"
+        temporary_save_location = tmp_path / "saved_dimr_config.xml"
+        return temporary_dimr_config_file, temporary_save_location
+    
+    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_without_process(
+        self, tmp_path
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data_without_process()
+        
+        temporary_dimr_config_file, temporary_save_location = self.setup_temporary_files(tmp_path, dimr_config_data)
 
         dimr_config = DIMR(filepath=temporary_dimr_config_file)
-        dimr_config.save(filepath=temporary_dimr_config_file_save_location)
+        dimr_config.save(filepath=temporary_save_location)
 
         assert_files_equal(
-            temporary_dimr_config_file, temporary_dimr_config_file_save_location
+            temporary_dimr_config_file, temporary_save_location
+        )
+    
+    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process(
+        self, tmp_path
+    ):
+        process_digits: str = "0 1 2 3"
+        dimr_config_data = self.get_fm_dimr_config_data(process_digits)
+        temporary_dimr_config_file, temporary_save_location = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert_files_equal(
+            temporary_dimr_config_file, temporary_save_location
         )
 
     def test_dimr_with_fmcomponent_given_old_incorrect_style_for_setting_process(
         self, tmp_path
     ):
         process_number_single_int: int = 4
-        dimr_config_data = f"""<?xml version="1.0" encoding="utf-8"?>
-<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
-  <documentation>
-    <fileVersion>1.3</fileVersion>
-    <createdBy>hydrolib-core 0.7.0</createdBy>
-    <creationDate>2024-04-25T10:59:21.185365</creationDate>
-  </documentation>
-  <component name="test">
-    <library>dflowfm</library>
-    <workingDir>.</workingDir>
-    <inputFile>test.mdu</inputFile>
-    <process>{process_number_single_int}</process>
-    <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
-  </component>
-</dimrConfig>
-"""
-        temporary_dimr_config_file = tmp_path / "dimr_config.xml"
-        temporary_dimr_config_file.write_text(dimr_config_data)
-        temp_mdu = tmp_path / "test.mdu"
-        temp_mdu.write_text("")
+        dimr_config_data = self.get_fm_dimr_config_data(process_number_single_int)
+        temporary_dimr_config_file, _ = self.setup_temporary_files(tmp_path, dimr_config_data)
 
         with pytest.raises(ValueError) as error:
             DIMR(filepath=temporary_dimr_config_file)
 
         expected_message = f"In component 'test', the keyword process '{process_number_single_int}', is incorrect."
-        assert expected_message in str(error.value)
+        errormessage = str(error.value)
+        assert expected_message in errormessage
+    
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param("This is incorrect"),
+            pytest.param(1.4234),
+            pytest.param("1234556"),
+        ],
+    )
+    def test_dimr_with_fmcomponent_given_old_incorrect_style_for_setting_process2(
+        self, tmp_path, input_process
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data(input_process)
+        temporary_dimr_config_file, _ = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        with pytest.raises(ValueError) as error:
+            DIMR(filepath=temporary_dimr_config_file)
+
+        expected_message = f"In component 'test', the keyword process '{input_process}', is incorrect."
+        errormessage = str(error.value)
+        assert expected_message in errormessage
 
     @pytest.mark.parametrize(
         "input_process, expected_process_format",
@@ -628,12 +673,19 @@ class TestFmComponentProcess:
                 line.strip() == line_to_check for line in file
             ), f"File {save_location} does not contain the line: {line_to_check}"
 
-    def test_dimr_with_fmcomponent_saving_process_when_process_one(self, tmp_path):
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param(None),
+            pytest.param(1),
+        ],
+    )
+    def test_dimr_with_fmcomponent_saving_process_when_process_should_be_left_out(self, tmp_path, input_process):
         component = FMComponent(
             name="test",
             workingDir=".",
             inputfile="test.mdu",
-            process=1,
+            process=input_process,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
 
@@ -648,19 +700,22 @@ class TestFmComponentProcess:
                 process not in file
             ), f"File {save_location} does contain the line: {process}"
 
+class TestFmComponentProcess:
+
+
     @pytest.mark.parametrize(
-        "input_process, expected_process_format",
+        "input_process",
         [
-            pytest.param(None, None),
-            pytest.param(1, 1),
-            pytest.param(2, 2),
-            pytest.param(3, 3),
-            pytest.param(4, 4),
-            pytest.param(5, 5),
+            pytest.param(None),
+            pytest.param(1),
+            pytest.param(2),
+            pytest.param(3),
+            pytest.param(4),
+            pytest.param(5),
         ],
     )
     def test_fmcomponent_process_after_init(
-        self, input_process: int, expected_process_format: str
+        self, input_process: int
     ):
         component = FMComponent(
             name="test",
@@ -669,21 +724,21 @@ class TestFmComponentProcess:
             process=input_process,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
-        assert component.process == expected_process_format
+        assert component.process == input_process
 
     @pytest.mark.parametrize(
-        "input_process, expected_process_format",
+        "input_process",
         [
-            pytest.param(None, None),
-            pytest.param(1, 1),
-            pytest.param(2, 2),
-            pytest.param(3, 3),
-            pytest.param(4, 4),
-            pytest.param(5, 5),
+            pytest.param(None),
+            pytest.param(1),
+            pytest.param(2),
+            pytest.param(3),
+            pytest.param(4),
+            pytest.param(5),
         ],
     )
     def test_fmcomponent_process_after_setting(
-        self, input_process: int, expected_process_format: str
+        self, input_process: int
     ):
         component = FMComponent(
             name="test",
@@ -692,7 +747,7 @@ class TestFmComponentProcess:
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
         component.process = input_process
-        assert component.process == expected_process_format
+        assert component.process == input_process
 
     def test_fmcomponent_without_process_after_init(self):
         expected_process_format = None
