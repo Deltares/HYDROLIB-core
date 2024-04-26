@@ -680,7 +680,7 @@ class TestFmComponentProcessIntegrationWithDimr:
             assert any(
                 line.strip() == line_to_check for line in file
             ), f"File {save_location} does not contain the line: {line_to_check}"
-            
+
     @pytest.mark.parametrize(
         "input_process, expected_process_format",
         [
