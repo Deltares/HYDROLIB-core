@@ -52,7 +52,7 @@ class Component(BaseModel, ABC):
     name: str
     workingDir: Path
     inputFile: Path
-    process: Optional[str]
+    process: Optional[int]
     setting: Optional[List[KeyValuePair]] = []
     parameter: Optional[List[KeyValuePair]] = []
     mpiCommunicator: Optional[str]
@@ -89,18 +89,39 @@ class FMComponent(Component):
     library: Literal["dflowfm"] = "dflowfm"
 
     @validator("process", pre=True)
-    def _set_process_correctly(cls, value: int):
-        if value is None or value == 1:
+    def validate_process(cls, value, values: dict) -> int:
+        if value is None:
             return None
-        if value == 0:
-            raise ValueError(
-                "The keyword process can not be 0, please specify values 1 or greater."
-            )
-        if not isinstance(value, int):
-            raise ValueError(
-                f"Given process value {value}, is not of expected type {str(int)}"
-            )
-        return " ".join(str(i) for i in range(value))
+        
+        if isinstance(value, str):
+            split_values = value.split()
+            if cls.validate_process_as_str(split_values):
+                return len(split_values)
+       
+        if isinstance(value, int):
+            if value <= 0:
+                raise ValueError(
+                    f"In component '{values.get('name')}', the keyword process can not be 0 or negative, please specify value of 1 or greater."
+                )
+            return value
+                
+        raise ValueError(
+            f"In component '{values.get('name')}', the keyword process '{value}', is incorrect."
+        )
+
+    @classmethod
+    def validate_process_as_str(cls, values : str) -> bool:
+        if len(values) < 1:
+            return False
+        
+        if values[0] != '0':
+            return False
+        
+        for value in values:
+            if not value.isdigit():
+                return False
+            
+        return True
 
     @classmethod
     def get_model(cls):
@@ -338,6 +359,30 @@ class DIMR(ParsableFileModel):
                 comp.model = comp.get_model()(filepath=comp.filepath)
             except NotImplementedError:
                 pass
+
+    def _save(self, save_settings: ModelSaveSettings) -> None: 
+        dimr_as_dict = self.dict()
+        fmcomponents = [item for item in self.component if isinstance(item, FMComponent)]
+        
+        list_of_fm_components_as_dict = []
+        for fmcomponent in fmcomponents:
+            if fmcomponent is None or fmcomponent.process is None:
+                continue
+            
+            if fmcomponent.process == 1:
+                fmcomponent_dictionary_value = "None"
+            else:
+                fmcomponent_dictionary_value = " ".join(str(i) for i in range(fmcomponent.process))
+            
+            fmcomponent_as_dict = fmcomponent.dict()
+            fmcomponent_as_dict.update({"process": fmcomponent_dictionary_value})
+            list_of_fm_components_as_dict.append(fmcomponent_as_dict)
+
+        if len(list_of_fm_components_as_dict) > 0:
+            dimr_as_dict.update({"component":list_of_fm_components_as_dict})
+        
+        self._serialize(dimr_as_dict, save_settings)
+
 
     @classmethod
     def _ext(cls) -> str:
