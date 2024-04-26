@@ -524,13 +524,11 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
         assert relevant_field.filepath == input
 
 
-    
-class TestFmComponentProcess():
-    
+class TestFmComponentProcess:
     def test_dimr_with_fmcomponent_given_correct_style_for_setting_process(
-    self, tmp_path
+        self, tmp_path
     ):
-        process_digits : str = "0 1 2 3"
+        process_digits: str = "0 1 2 3"
         dimr_config_data = f"""<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
@@ -552,17 +550,18 @@ class TestFmComponentProcess():
         temp_mdu = tmp_path / "test.mdu"
         temp_mdu.write_text("")
         temporary_dimr_config_file_save_location = tmp_path / "saved_dimr_config.xml"
-        
+
         dimr_config = DIMR(filepath=temporary_dimr_config_file)
         dimr_config.save(filepath=temporary_dimr_config_file_save_location)
-        
-        assert_files_equal(temporary_dimr_config_file, temporary_dimr_config_file_save_location)
 
+        assert_files_equal(
+            temporary_dimr_config_file, temporary_dimr_config_file_save_location
+        )
 
     def test_dimr_with_fmcomponent_given_old_incorrect_style_for_setting_process(
         self, tmp_path
     ):
-        process_number_single_int : int = 4
+        process_number_single_int: int = 4
         dimr_config_data = f"""<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
@@ -583,13 +582,11 @@ class TestFmComponentProcess():
         temporary_dimr_config_file.write_text(dimr_config_data)
         temp_mdu = tmp_path / "test.mdu"
         temp_mdu.write_text("")
-        
+
         with pytest.raises(ValueError) as error:
             DIMR(filepath=temporary_dimr_config_file)
 
-        expected_message = (
-            f"In component 'test', the keyword process '{process_number_single_int}', is incorrect."
-        )
+        expected_message = f"In component 'test', the keyword process '{process_number_single_int}', is incorrect."
         assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
@@ -611,7 +608,7 @@ class TestFmComponentProcess():
             process=input_process,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
-        
+
         component2 = FMComponent(
             name="test2",
             workingDir=".",
@@ -619,7 +616,7 @@ class TestFmComponentProcess():
             process=input_process,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
-        
+
         dimr = DIMR(component=[component, component2])
         save_location: Path = tmp_path / "dimr_config.xml"
         dimr.save(filepath=save_location)
@@ -639,7 +636,7 @@ class TestFmComponentProcess():
             process=1,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
-        
+
         dimr = DIMR(component=component)
         save_location: Path = tmp_path / "dimr_config.xml"
         dimr.save(filepath=save_location)
@@ -650,30 +647,7 @@ class TestFmComponentProcess():
             assert (
                 process not in file
             ), f"File {save_location} does contain the line: {process}"
-    
-    @pytest.mark.parametrize(
-    "input_process, expected_process_format",
-    [
-        pytest.param(None, None),
-        pytest.param(1, 1),
-        pytest.param(2, 2),
-        pytest.param(3, 3),
-        pytest.param(4, 4),
-        pytest.param(5, 5),
-    ],
-    )
-    def test_fmcomponent_process_after_init(self,
-        input_process: int, expected_process_format: str
-    ):
-        component = FMComponent(
-            name="test",
-            workingDir=".",
-            inputfile="test.mdu",
-            process=input_process,
-            mpiCommunicator="DFM_COMM_DFMWORLD",
-        )
-        assert component.process == expected_process_format
-        
+
     @pytest.mark.parametrize(
         "input_process, expected_process_format",
         [
@@ -685,8 +659,31 @@ class TestFmComponentProcess():
             pytest.param(5, 5),
         ],
     )
-    def test_fmcomponent_process_after_setting(self,
-        input_process: int, expected_process_format: str
+    def test_fmcomponent_process_after_init(
+        self, input_process: int, expected_process_format: str
+    ):
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=input_process,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+        assert component.process == expected_process_format
+
+    @pytest.mark.parametrize(
+        "input_process, expected_process_format",
+        [
+            pytest.param(None, None),
+            pytest.param(1, 1),
+            pytest.param(2, 2),
+            pytest.param(3, 3),
+            pytest.param(4, 4),
+            pytest.param(5, 5),
+        ],
+    )
+    def test_fmcomponent_process_after_setting(
+        self, input_process: int, expected_process_format: str
     ):
         component = FMComponent(
             name="test",
@@ -696,7 +693,6 @@ class TestFmComponentProcess():
         )
         component.process = input_process
         assert component.process == expected_process_format
-
 
     def test_fmcomponent_without_process_after_init(self):
         expected_process_format = None
@@ -708,7 +704,6 @@ class TestFmComponentProcess():
         )
         assert component.process == expected_process_format
 
-
     @pytest.mark.parametrize(
         "input_process",
         [
@@ -718,7 +713,8 @@ class TestFmComponentProcess():
         ],
     )
     def test_fmcomponent_process_after_init_with_incorrect_input_throws_valueerror(
-        self, input_process,
+        self,
+        input_process,
     ):
         with pytest.raises(ValueError) as error:
             FMComponent(
@@ -741,7 +737,10 @@ class TestFmComponentProcess():
             pytest.param(-1),
         ],
     )
-    def test_fmcomponent_process_after_init_with_input_process_zero_throws_valueerror(self, input_process: int,):
+    def test_fmcomponent_process_after_init_with_input_process_zero_throws_valueerror(
+        self,
+        input_process: int,
+    ):
         with pytest.raises(ValueError) as error:
             FMComponent(
                 name="test",
@@ -751,7 +750,5 @@ class TestFmComponentProcess():
                 mpiCommunicator="DFM_COMM_DFMWORLD",
             )
 
-        expected_message = (
-            "In component 'test', the keyword process can not be 0 or negative, please specify value of 1 or greater."
-        )
+        expected_message = "In component 'test', the keyword process can not be 0 or negative, please specify value of 1 or greater."
         assert expected_message in str(error.value)
