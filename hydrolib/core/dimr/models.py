@@ -362,30 +362,46 @@ class DIMR(ParsableFileModel):
 
     def _save(self, save_settings: ModelSaveSettings) -> None:
         dimr_as_dict = self.dict()
+        dimr_as_dict = self.update_dimr_dictonary_with_adjusted_fmcomponent_values(dimr_as_dict)
+        self._serialize(dimr_as_dict, save_settings)
+
+    def update_dimr_dictonary_with_adjusted_fmcomponent_values(self, dimr_as_dict : Dict):
         fmcomponents = [
             item for item in self.component if isinstance(item, FMComponent)
         ]
+        
+        list_of_fmcomponents_as_dict = self._get_list_of_updated_fm_components(fmcomponents)
+        dimr_as_dict = self._update_dimr_dictionary(dimr_as_dict, list_of_fmcomponents_as_dict)
+        return dimr_as_dict
 
+    def _update_dimr_dictionary(self, dimr_as_dict : Dict, list_of_fm_components_as_dict : List[Dict]) -> Dict:
+        if len(list_of_fm_components_as_dict) > 0:
+            dimr_as_dict.update({"component": list_of_fm_components_as_dict})
+            
+        return dimr_as_dict
+
+    def _get_list_of_updated_fm_components(self, fmcomponents : List[FMComponent]) -> List[Dict]:
         list_of_fm_components_as_dict = []
         for fmcomponent in fmcomponents:
             if fmcomponent is None or fmcomponent.process is None:
                 continue
 
             if fmcomponent.process == 1:
-                fmcomponent_dictionary_value = "None"
+                fmcomponent_process_value = "None"
             else:
-                fmcomponent_dictionary_value = " ".join(
+                fmcomponent_process_value = " ".join(
                     str(i) for i in range(fmcomponent.process)
                 )
 
-            fmcomponent_as_dict = fmcomponent.dict()
-            fmcomponent_as_dict.update({"process": fmcomponent_dictionary_value})
+            fmcomponent_as_dict = self._update_component_dictonary(fmcomponent, fmcomponent_process_value)
             list_of_fm_components_as_dict.append(fmcomponent_as_dict)
+            
+        return list_of_fm_components_as_dict
 
-        if len(list_of_fm_components_as_dict) > 0:
-            dimr_as_dict.update({"component": list_of_fm_components_as_dict})
-
-        self._serialize(dimr_as_dict, save_settings)
+    def _update_component_dictonary(self, fmcomponent : FMComponent, fmcomponent_process_value: str) -> Dict:
+        fmcomponent_as_dict = fmcomponent.dict()
+        fmcomponent_as_dict.update({"process": fmcomponent_process_value})
+        return fmcomponent_as_dict
 
     @classmethod
     def _ext(cls) -> str:
