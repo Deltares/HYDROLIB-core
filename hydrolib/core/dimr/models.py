@@ -89,7 +89,7 @@ class FMComponent(Component):
     library: Literal["dflowfm"] = "dflowfm"
 
     @validator("process", pre=True)
-    def validate_process(cls, value, values: dict) -> int:
+    def validate_process(cls, value, values: dict) -> Union[None, int]:
         if value is None:
             return None
 
