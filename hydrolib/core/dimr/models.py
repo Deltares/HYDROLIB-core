@@ -92,35 +92,35 @@ class FMComponent(Component):
     def validate_process(cls, value, values: dict) -> int:
         if value is None:
             return None
-        
+
         if isinstance(value, str):
             split_values = value.split()
             if cls.validate_process_as_str(split_values):
                 return len(split_values)
-       
+
         if isinstance(value, int):
             if value <= 0:
                 raise ValueError(
                     f"In component '{values.get('name')}', the keyword process can not be 0 or negative, please specify value of 1 or greater."
                 )
             return value
-                
+
         raise ValueError(
             f"In component '{values.get('name')}', the keyword process '{value}', is incorrect."
         )
 
     @classmethod
-    def validate_process_as_str(cls, values : str) -> bool:
+    def validate_process_as_str(cls, values: str) -> bool:
         if len(values) < 1:
             return False
-        
-        if values[0] != '0':
+
+        if values[0] != "0":
             return False
-        
+
         for value in values:
             if not value.isdigit():
                 return False
-            
+
         return True
 
     @classmethod
@@ -360,29 +360,32 @@ class DIMR(ParsableFileModel):
             except NotImplementedError:
                 pass
 
-    def _save(self, save_settings: ModelSaveSettings) -> None: 
+    def _save(self, save_settings: ModelSaveSettings) -> None:
         dimr_as_dict = self.dict()
-        fmcomponents = [item for item in self.component if isinstance(item, FMComponent)]
-        
+        fmcomponents = [
+            item for item in self.component if isinstance(item, FMComponent)
+        ]
+
         list_of_fm_components_as_dict = []
         for fmcomponent in fmcomponents:
             if fmcomponent is None or fmcomponent.process is None:
                 continue
-            
+
             if fmcomponent.process == 1:
                 fmcomponent_dictionary_value = "None"
             else:
-                fmcomponent_dictionary_value = " ".join(str(i) for i in range(fmcomponent.process))
-            
+                fmcomponent_dictionary_value = " ".join(
+                    str(i) for i in range(fmcomponent.process)
+                )
+
             fmcomponent_as_dict = fmcomponent.dict()
             fmcomponent_as_dict.update({"process": fmcomponent_dictionary_value})
             list_of_fm_components_as_dict.append(fmcomponent_as_dict)
 
         if len(list_of_fm_components_as_dict) > 0:
-            dimr_as_dict.update({"component":list_of_fm_components_as_dict})
-        
-        self._serialize(dimr_as_dict, save_settings)
+            dimr_as_dict.update({"component": list_of_fm_components_as_dict})
 
+        self._serialize(dimr_as_dict, save_settings)
 
     @classmethod
     def _ext(cls) -> str:
