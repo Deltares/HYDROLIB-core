@@ -586,11 +586,19 @@ class TestFmComponentProcessIntegrationWithDimr:
 
         assert_files_equal(temporary_dimr_config_file, temporary_save_location)
 
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param("0 1"),
+            pytest.param("0 1 2"),
+            pytest.param("0 1 2 3"),
+            pytest.param("0 1 2 3 4"),
+        ],
+    )
     def test_dimr_with_fmcomponent_given_correct_style_for_setting_process(
-        self, tmp_path
+        self, tmp_path, input_process
     ):
-        process_digits: str = "0 1 2 3"
-        dimr_config_data = self.get_fm_dimr_config_data(process_digits)
+        dimr_config_data = self.get_fm_dimr_config_data(input_process)
         (
             temporary_dimr_config_file,
             temporary_save_location,
@@ -662,6 +670,38 @@ class TestFmComponentProcessIntegrationWithDimr:
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
 
+        dimr = DIMR(component=component)
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        line_to_check = f"<process>{expected_process_format}</process>"
+
+        with open(save_location, "r") as file:
+            assert any(
+                line.strip() == line_to_check for line in file
+            ), f"File {save_location} does not contain the line: {line_to_check}"
+            
+    @pytest.mark.parametrize(
+        "input_process, expected_process_format",
+        [
+            pytest.param(2, "0 1"),
+            pytest.param(3, "0 1 2"),
+            pytest.param(4, "0 1 2 3"),
+            pytest.param(5, "0 1 2 3 4"),
+        ],
+    )
+    def test_dimr_with_multiple_fmcomponent_saving_process(
+        self, tmp_path, input_process: int, expected_process_format: str
+    ):
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=6,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+        line_to_check_first_component = f"<process>0 1 2 3 4 5</process>"
+
         component2 = FMComponent(
             name="test2",
             workingDir=".",
@@ -677,6 +717,9 @@ class TestFmComponentProcessIntegrationWithDimr:
         line_to_check = f"<process>{expected_process_format}</process>"
 
         with open(save_location, "r") as file:
+            assert any(
+                line.strip() == line_to_check_first_component for line in file
+            ), f"File {save_location} does not contain the line: {line_to_check_first_component}"
             assert any(
                 line.strip() == line_to_check for line in file
             ), f"File {save_location} does not contain the line: {line_to_check}"
