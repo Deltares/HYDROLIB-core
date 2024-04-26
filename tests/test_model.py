@@ -523,8 +523,8 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
     else:
         assert relevant_field.filepath == input
 
+
 class TestFmComponentProcessIntegrationWithDimr:
-    
     def get_fm_dimr_config_data(self, input_data_process):
         dimr_config_data = f"""<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
@@ -543,7 +543,7 @@ class TestFmComponentProcessIntegrationWithDimr:
 </dimrConfig>
 """
         return dimr_config_data
-    
+
     def get_fm_dimr_config_data_without_process(self):
         dimr_config_data = """<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
@@ -561,50 +561,54 @@ class TestFmComponentProcessIntegrationWithDimr:
 </dimrConfig>
 """
         return dimr_config_data
-    
+
     def setup_temporary_files(self, tmp_path, dimr_config_data):
         temporary_dimr_config_file = tmp_path / "dimr_config.xml"
         temporary_dimr_config_file.write_text(dimr_config_data)
-        
+
         temp_mdu = tmp_path / "test.mdu"
         temp_mdu.write_text("")
         temporary_save_location = tmp_path / "saved_dimr_config.xml"
         return temporary_dimr_config_file, temporary_save_location
-    
+
     def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_without_process(
         self, tmp_path
     ):
         dimr_config_data = self.get_fm_dimr_config_data_without_process()
-        
-        temporary_dimr_config_file, temporary_save_location = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
 
         dimr_config = DIMR(filepath=temporary_dimr_config_file)
         dimr_config.save(filepath=temporary_save_location)
 
-        assert_files_equal(
-            temporary_dimr_config_file, temporary_save_location
-        )
-    
+        assert_files_equal(temporary_dimr_config_file, temporary_save_location)
+
     def test_dimr_with_fmcomponent_given_correct_style_for_setting_process(
         self, tmp_path
     ):
         process_digits: str = "0 1 2 3"
         dimr_config_data = self.get_fm_dimr_config_data(process_digits)
-        temporary_dimr_config_file, temporary_save_location = self.setup_temporary_files(tmp_path, dimr_config_data)
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
 
         dimr_config = DIMR(filepath=temporary_dimr_config_file)
         dimr_config.save(filepath=temporary_save_location)
 
-        assert_files_equal(
-            temporary_dimr_config_file, temporary_save_location
-        )
+        assert_files_equal(temporary_dimr_config_file, temporary_save_location)
 
     def test_dimr_with_fmcomponent_given_old_incorrect_style_for_setting_process(
         self, tmp_path
     ):
         process_number_single_int: int = 4
         dimr_config_data = self.get_fm_dimr_config_data(process_number_single_int)
-        temporary_dimr_config_file, _ = self.setup_temporary_files(tmp_path, dimr_config_data)
+        temporary_dimr_config_file, _ = self.setup_temporary_files(
+            tmp_path, dimr_config_data
+        )
 
         with pytest.raises(ValueError) as error:
             DIMR(filepath=temporary_dimr_config_file)
@@ -612,7 +616,7 @@ class TestFmComponentProcessIntegrationWithDimr:
         expected_message = f"In component 'test', the keyword process '{process_number_single_int}', is incorrect."
         errormessage = str(error.value)
         assert expected_message in errormessage
-    
+
     @pytest.mark.parametrize(
         "input_process",
         [
@@ -625,12 +629,16 @@ class TestFmComponentProcessIntegrationWithDimr:
         self, tmp_path, input_process
     ):
         dimr_config_data = self.get_fm_dimr_config_data(input_process)
-        temporary_dimr_config_file, _ = self.setup_temporary_files(tmp_path, dimr_config_data)
+        temporary_dimr_config_file, _ = self.setup_temporary_files(
+            tmp_path, dimr_config_data
+        )
 
         with pytest.raises(ValueError) as error:
             DIMR(filepath=temporary_dimr_config_file)
 
-        expected_message = f"In component 'test', the keyword process '{input_process}', is incorrect."
+        expected_message = (
+            f"In component 'test', the keyword process '{input_process}', is incorrect."
+        )
         errormessage = str(error.value)
         assert expected_message in errormessage
 
@@ -680,7 +688,9 @@ class TestFmComponentProcessIntegrationWithDimr:
             pytest.param(1),
         ],
     )
-    def test_dimr_with_fmcomponent_saving_process_when_process_should_be_left_out(self, tmp_path, input_process):
+    def test_dimr_with_fmcomponent_saving_process_when_process_should_be_left_out(
+        self, tmp_path, input_process
+    ):
         component = FMComponent(
             name="test",
             workingDir=".",
@@ -700,9 +710,8 @@ class TestFmComponentProcessIntegrationWithDimr:
                 process not in file
             ), f"File {save_location} does contain the line: {process}"
 
+
 class TestFmComponentProcess:
-
-
     @pytest.mark.parametrize(
         "input_process",
         [
@@ -714,9 +723,7 @@ class TestFmComponentProcess:
             pytest.param(5),
         ],
     )
-    def test_fmcomponent_process_after_init(
-        self, input_process: int
-    ):
+    def test_fmcomponent_process_after_init(self, input_process: int):
         component = FMComponent(
             name="test",
             workingDir=".",
@@ -737,9 +744,7 @@ class TestFmComponentProcess:
             pytest.param(5),
         ],
     )
-    def test_fmcomponent_process_after_setting(
-        self, input_process: int
-    ):
+    def test_fmcomponent_process_after_setting(self, input_process: int):
         component = FMComponent(
             name="test",
             workingDir=".",
