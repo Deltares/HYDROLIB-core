@@ -172,19 +172,12 @@ def test_create_1d_2d_1d2d():
 
 
 def test_create_1d_2d_1d2d_meshkernel_only():
-    import numpy as np
     import matplotlib.pyplot as plt
     plt.close("all")
-    from meshkernel import (GeometryList, 
-                            MeshKernel,
+    from meshkernel import (MeshKernel,
                             Mesh1d,
                             MakeGridParameters,
                             DeleteMeshOption)
-
-    def get_circle_gl(r, detail=100):
-        t = np.r_[np.linspace(0, 2 * np.pi, detail), 0]
-        polygon = GeometryList(np.cos(t) * r, np.sin(t) * r)
-        return polygon
 
     # Define line (spiral)
     theta = np.arange(0.1, 20, 0.01)
@@ -198,10 +191,6 @@ def test_create_1d_2d_1d2d_meshkernel_only():
 
     # Create Mesh1d
     mki = MeshKernel()
-
-    # Create branch
-    # branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
-    # network.mesh1d_add_branch(branch, name="branch1")
 
     # def mesh1d_add_branch(mki, branch)
     mesh1d_node_x = np.array([  0.09950042,   0.28660095,   0.43879128,   0.53538953,
@@ -262,7 +251,6 @@ def test_create_1d_2d_1d2d_meshkernel_only():
                             )
     mki.mesh1d_set(m1d)
 
-
     # Add Mesh2d
     xmin, ymin, xmax, ymax = (-22, -22, 22, 22)
     dx=2
@@ -280,37 +268,24 @@ def test_create_1d_2d_1d2d_meshkernel_only():
     mki.curvilinear_compute_rectangular_grid(params)
     mki.curvilinear_convert_to_mesh2d()  # convert to ugrid/mesh2d
 
-
-    # network.mesh2d_clip_mesh(geometrylist=get_circle_gl(22))
+    # clip mesh inner circle
     mki.mesh2d_delete(
         geometry_list=get_circle_gl(22),
         delete_option=DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         invert_deletion=False,
     )
 
-    # network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
-    # network.mesh2d_refine_mesh(polygon=get_circle_gl(3), level=1)
-
     # Add links
-    # network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
-    node_mask = None
-    node_mask = np.full(nlinks+1, True, dtype=bool)
-
     mki.contacts_compute_single(
-        node_mask=node_mask, polygons=get_circle_gl(19), projection_factor=1.0
+        node_mask=np.full(nlinks+1, True, dtype=bool),
+        polygons=get_circle_gl(19), 
+        projection_factor=1.0
     )
-
-    # mesh2d_output = network._mesh2d.get_mesh2d()
-    # assert len(mesh2d_output.face_x) == 152
-    # mesh1d_output = network._mesh1d._get_mesh1d()
-    # assert len(mesh1d_output.node_x) == 100
 
     contacts = mki.contacts_get()
     network1_link1d2d = np.stack([contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1)
     assert network1_link1d2d.shape == (21, 2)
 
-
-    # network.plot(ax=ax1)
     fig, ax = plt.subplots()
     mesh2d_output = mki.mesh2d_get()
     mesh1d_output = mki.mesh1d_get()
@@ -320,7 +295,6 @@ def test_create_1d_2d_1d2d_meshkernel_only():
     links_output.plot_edges(
         ax=ax, mesh1d=mesh1d_output, mesh2d=mesh2d_output, color="k"
     )
-
 
 
 def test_create_2d():
