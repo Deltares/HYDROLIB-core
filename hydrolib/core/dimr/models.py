@@ -96,7 +96,7 @@ class FMComponent(Component):
         if isinstance(value, str):
             if cls._validate_process_as_str(value):
                 return cls._get_process_from_str(value)
-            
+
         if isinstance(value, int):
             if value <= 0:
                 raise ValueError(
@@ -107,40 +107,40 @@ class FMComponent(Component):
         raise ValueError(
             f"In component '{values.get('name')}', the keyword process '{value}', is incorrect."
         )
-    
+
     @classmethod
     def _get_process_from_str(cls, values: str) -> int:
-        if ':' in values:
-            semicolon_split_values = values.split(':')
+        if ":" in values:
+            semicolon_split_values = values.split(":")
             semicolon_process = int(semicolon_split_values[-1]) + 1
             return semicolon_process
-        
+
         return len(values.split())
 
     @classmethod
     def _validate_process_as_str(cls, values: str) -> bool:
-        if ':' in values:
+        if ":" in values:
             return cls._validate_process_as_semicolon_str(values)
-        
+
         return cls._validate_process_as_list_str(values)
-    
+
     @classmethod
     def _validate_process_as_semicolon_str(cls, values: str) -> bool:
-            semicolon_split_values = values.split(':')
-            
-            if len(semicolon_split_values) != 2:
-                return False
-            
-            last_value : str = semicolon_split_values[-1]
-            if last_value.isdigit():
-                return True
-            
+        semicolon_split_values = values.split(":")
+
+        if len(semicolon_split_values) != 2:
             return False
-        
+
+        last_value: str = semicolon_split_values[-1]
+        if last_value.isdigit():
+            return True
+
+        return False
+
     @classmethod
     def _validate_process_as_list_str(cls, values: str) -> bool:
         split_values = values.split()
-        
+
         if len(split_values) < 1:
             return False
 

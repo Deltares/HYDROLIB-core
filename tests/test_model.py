@@ -608,7 +608,7 @@ class TestFmComponentProcessIntegrationWithDimr:
         dimr_config.save(filepath=temporary_save_location)
 
         assert_files_equal(temporary_dimr_config_file, temporary_save_location)
-        
+
     @pytest.mark.parametrize(
         "input_process, expected_process",
         [
