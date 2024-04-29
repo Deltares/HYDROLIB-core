@@ -109,8 +109,9 @@ class FMComponent(Component):
     def _get_process_from_str(cls, values: str) -> int:
         if ":" in values:
             semicolon_split_values = values.split(":")
-            semicolon_process = int(semicolon_split_values[-1]) + 1
-            return semicolon_process
+            start_value = int(semicolon_split_values[0])
+            end_value = int(semicolon_split_values[-1])
+            return end_value - start_value + 1
 
         return len(values.split())
 
