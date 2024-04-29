@@ -54,4 +54,6 @@ jobs:
           git checkout $GITHUB_HEAD_REF
           git commit -am "autoformat: isort & black" && git push || true
       
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}

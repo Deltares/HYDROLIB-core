@@ -2,7 +2,7 @@
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
     <fileVersion>1.3</fileVersion>
-    <createdBy>hydrolib-core 0.6.1</createdBy>
+    <createdBy>hydrolib-core 0.7.0</createdBy>
     <creationDate>2020-03-17T10:02:49.4520672Z</creationDate>
   </documentation>
   <control>

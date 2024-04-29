@@ -1,3 +1,16 @@
+## 0.7.0 (2024-03-11)
+
+### Feat
+
+- Use new `contacts_set` function from MeshKernel 4.0.2 (#575)
+- Bump MeshKernel version to ^4.0.2 (#594)
+- Add support for Python 3.10 (#586)
+
+### Fix
+
+- It is not possible to refine meshes with cell sizes smaller than 10 m (#611)
+- Fix show tree output for old external forcing file (ExtOldForcing class) (#581)
+
 ## 0.6.1 (2024-01-12)
 
 ## 0.6.0 (2023-11-16)
