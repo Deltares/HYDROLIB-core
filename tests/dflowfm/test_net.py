@@ -440,9 +440,9 @@ def test_create_1d_2d_1d2d_meshkernel_only():
 
     # Add links
     mki.contacts_compute_single(
-        node_mask=np.full(nlinks+1, True, dtype=bool),
-        polygons=get_circle_gl(19), 
-        projection_factor=1.0
+        node_mask=np.full(nlinks + 1, True, dtype=bool),
+        polygons=get_circle_gl(19),
+        projection_factor=1.0,
     )
 
     contacts = mki.contacts_get()
