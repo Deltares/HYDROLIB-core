@@ -641,6 +641,25 @@ class TestFmComponentProcessIntegrationWithDimr:
         dimr_config.save(filepath=temporary_save_location)
 
         assert_files_equal(temporary_dimr_config_file, temporary_save_location)
+        
+    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_for_zero(
+        self, tmp_path
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data("0")
+        
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+        
+        dimr_config_data_expected = self.get_fm_dimr_config_data_without_process()
+        temporary_expected_dimr_config_file = tmp_path / "dimr_expected_config.xml"
+        temporary_expected_dimr_config_file.write_text(dimr_config_data_expected)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert_files_equal(temporary_expected_dimr_config_file, temporary_save_location)
 
     @pytest.mark.parametrize(
         "input_process, expected_process",
