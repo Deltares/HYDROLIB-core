@@ -445,7 +445,7 @@ class DIMR(ParsableFileModel):
                 fmcomponent_as_dict = self._update_component_dictonary(
                     fmcomponent, fmcomponent_process_value
                 )
-                
+
             list_of_fm_components_as_dict.append(fmcomponent_as_dict)
 
         return list_of_fm_components_as_dict
