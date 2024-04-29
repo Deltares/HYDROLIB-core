@@ -93,15 +93,10 @@ class FMComponent(Component):
         if value is None:
             return None
 
-        if isinstance(value, str):
-            if cls._validate_process_as_str(value):
-                return cls._get_process_from_str(value)
+        if isinstance(value, str) and cls._validate_process_as_str(value):
+            return cls._get_process_from_str(value)
 
-        if isinstance(value, int):
-            if value <= 0:
-                raise ValueError(
-                    f"In component '{values.get('name')}', the keyword process can not be 0 or negative, please specify value of 1 or greater."
-                )
+        if isinstance(value, int) and cls._validate_process_as_int(value, values.get('name')):
             return value
 
         raise ValueError(
@@ -152,6 +147,15 @@ class FMComponent(Component):
                 return False
 
         return True
+    
+    @classmethod
+    def _validate_process_as_int(cls, value: str, name : str) -> bool:
+        if value > 0:
+            return True
+        
+        raise ValueError(
+            f"In component '{name}', the keyword process can not be 0 or negative, please specify value of 1 or greater."
+        )
 
     @classmethod
     def get_model(cls):

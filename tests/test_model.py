@@ -727,7 +727,7 @@ class TestFmComponentProcessIntegrationWithDimr:
             process=6,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
-        line_to_check_first_component = f"<process>0 1 2 3 4 5</process>"
+        line_to_check_first_component = "<process>0 1 2 3 4 5</process>"
 
         component2 = FMComponent(
             name="test2",
