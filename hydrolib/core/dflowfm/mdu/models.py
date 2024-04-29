@@ -1451,6 +1451,10 @@ class Output(INIBasedModel):
             "Precision for NetCDF data in map files (double or single).",
             alias="ncMapDataPrecision",
         )
+        nchisdataprecision: Optional[str] = Field(
+            "Precision for NetCDF data in his files (double or single).",
+            alias="ncHisDataPrecision",
+        )
         wrimap_interception: Optional[str] = Field(
             "Write interception to map file (1: yes, 0: no).",
             alias="wrimap_interception",
@@ -1646,7 +1650,8 @@ class Output(INIBasedModel):
     wrimap_bnd: bool = Field(False, alias="wrimap_bnd")
     wrishp_dambreak: bool = Field(False, alias="wrishp_dambreak")
     wrimap_waterdepth_hu: bool = Field(False, alias="wrimap_waterdepth_hu")
-    ncmapdataprecision: int = Field(0, alias="ncMapDataPrecision")
+    ncmapdataprecision: Literal['single', 'double'] = Field('double', alias="ncMapDataPrecision")
+    nchisdataprecision: Literal['single', 'double'] = Field('double', alias="ncHisDataPrecision")
     wrimap_interception: bool = Field(False, alias="wrimap_interception")
     wrimap_airdensity: bool = Field(False, alias="wrimap_airdensity")
     wrimap_volume1: bool = Field(False, alias="wrimap_volume1")
