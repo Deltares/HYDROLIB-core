@@ -397,14 +397,11 @@ class DIMR(ParsableFileModel):
             except NotImplementedError:
                 pass
 
-    def _save(self, save_settings: ModelSaveSettings) -> None:
-        dimr_as_dict = self.dict()
-        dimr_as_dict = self.update_dimr_dictonary_with_adjusted_fmcomponent_values(
-            dimr_as_dict
-        )
-        self._serialize(dimr_as_dict, save_settings)
+    def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
+        dimr_as_dict = self._update_dimr_dictonary_with_adjusted_fmcomponent_values(data)
+        super()._serialize(dimr_as_dict, save_settings)
 
-    def update_dimr_dictonary_with_adjusted_fmcomponent_values(
+    def _update_dimr_dictonary_with_adjusted_fmcomponent_values(
         self, dimr_as_dict: Dict
     ):
         fmcomponents = [
