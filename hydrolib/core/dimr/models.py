@@ -92,14 +92,14 @@ class FMComponent(Component):
     def validate_process(cls, value, values: dict) -> Union[None, int]:
         """
         Validation for the process Attribute.
-        
+
         args:
             value : The value which is to be validated for process.
             values : FMComponent used to retrieve the name of the component.
-        
+
         Returns:
             int : The process as int, when given value is None, None is returned.
-            
+
         Raises:
             ValueError : When value is set to 0 or negative.
             ValueError : When value is not int or None.
@@ -363,7 +363,9 @@ class DIMR(ParsableFileModel):
                 pass
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
-        dimr_as_dict = self._update_dimr_dictonary_with_adjusted_fmcomponent_values(data)
+        dimr_as_dict = self._update_dimr_dictonary_with_adjusted_fmcomponent_values(
+            data
+        )
         super()._serialize(dimr_as_dict, save_settings)
 
     def _update_dimr_dictonary_with_adjusted_fmcomponent_values(
@@ -439,26 +441,26 @@ class DIMR(ParsableFileModel):
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
-        data = super()._parse(path)        
+        data = super()._parse(path)
         return cls._update_component(data)
 
     @classmethod
-    def _update_component(cls, data : Dict) -> Dict:
+    def _update_component(cls, data: Dict) -> Dict:
         component = data.get("component", None)
-        
+
         if not isinstance(component, Dict):
             return data
-        
+
         process_value = component.get("process", None)
-        
+
         if not isinstance(process_value, str):
             return data
-        
+
         if cls._is_valid_process_string(process_value):
             value_as_int = cls._parse_process(process_value)
             component.update({"process": value_as_int})
-            data.update({"component" : component})
-        
+            data.update({"component": component})
+
         return data
 
     @classmethod
@@ -506,4 +508,3 @@ class DIMR(ParsableFileModel):
                 return False
 
         return True
-    
