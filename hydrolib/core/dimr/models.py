@@ -91,7 +91,7 @@ class FMComponent(Component):
     @validator("process", pre=True)
     def validate_process(cls, value, values: dict) -> Union[None, int]:
         if value is None:
-            return None
+            return value
 
         if isinstance(value, str) and cls._validate_process_as_str(value):
             return cls._get_process_from_str(value)
@@ -152,7 +152,7 @@ class FMComponent(Component):
         return True
 
     @classmethod
-    def _validate_process_as_int(cls, value: str, name: str) -> bool:
+    def _validate_process_as_int(cls, value: int, name: str) -> bool:
         if value > 0:
             return True
 
