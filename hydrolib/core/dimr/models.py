@@ -90,6 +90,20 @@ class FMComponent(Component):
 
     @validator("process", pre=True)
     def validate_process(cls, value, values: dict) -> Union[None, int]:
+        """
+        Validation for the process Attribute.
+        
+        args:
+            value : The value which is to be validated for process.
+            values : FMComponent used to retrieve the name of the component.
+        
+        Returns:
+            int : The process as int, when given value is None, None is returned.
+            
+        Raises:
+            ValueError : When value is set to 0 or negative.
+            ValueError : When value is not int or None.
+        """
         if value is None:
             return value
 
