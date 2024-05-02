@@ -426,10 +426,10 @@ class DIMR(ParsableFileModel):
     @classmethod
     def _parse(cls, path: Path) -> Dict:
         data = super()._parse(path)        
-        return cls.update_component(data)
+        return cls._update_component(data)
 
     @classmethod
-    def update_component(cls, data : Dict) -> Dict:
+    def _update_component(cls, data : Dict) -> Dict:
         component = data.get("component", None)
         
         if not isinstance(component, Dict):
