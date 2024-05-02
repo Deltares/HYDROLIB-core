@@ -23,7 +23,7 @@ jobs:
       - name: Run image
         uses: abatilo/actions-poetry@v3
         with:
-          poetry-version: 1.7.1
+          poetry-version: 1.8.2
       - name: Cache Poetry virtualenv
         uses: actions/cache@v3
         id: cache
