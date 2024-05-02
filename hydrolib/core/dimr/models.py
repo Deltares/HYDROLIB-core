@@ -93,7 +93,7 @@ class FMComponent(Component):
         if value is None:
             return value
 
-        if isinstance(value, int) and cls._validate_process_as_int(
+        if isinstance(value, int) and cls._is_valid_process_int(
             value, values.get("name")
         ):
             return value
@@ -103,7 +103,7 @@ class FMComponent(Component):
         )
 
     @classmethod
-    def _validate_process_as_int(cls, value: int, name: str) -> bool:
+    def _is_valid_process_int(cls, value: int, name: str) -> bool:
         if value > 0:
             return True
 
@@ -349,9 +349,7 @@ class DIMR(ParsableFileModel):
                 pass
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
-        dimr_as_dict = self._update_dimr_dictonary_with_adjusted_fmcomponent_values(
-            data
-        )
+        dimr_as_dict = self._update_dimr_dictonary_with_adjusted_fmcomponent_values(data)
         super()._serialize(dimr_as_dict, save_settings)
 
     def _update_dimr_dictonary_with_adjusted_fmcomponent_values(
@@ -427,30 +425,30 @@ class DIMR(ParsableFileModel):
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
-        data = super()._parse(path)
+        data = super()._parse(path)        
         return cls.update_component(data)
 
     @classmethod
-    def update_component(cls, data: Dict) -> Dict:
+    def update_component(cls, data : Dict) -> Dict:
         component = data.get("component", None)
-
+        
         if not isinstance(component, Dict):
             return data
-
+        
         process_value = component.get("process", None)
-
+        
         if not isinstance(process_value, str):
             return data
-
-        if cls._validate_process_as_str(process_value):
-            value_as_int = cls._get_process_from_str(process_value)
+        
+        if cls._is_valid_process_string(process_value):
+            value_as_int = cls._parse_process(process_value)
             component.update({"process": value_as_int})
-            data.update({"component": component})
-
+            data.update({"component" : component})
+        
         return data
 
     @classmethod
-    def _get_process_from_str(cls, values: str) -> int:
+    def _parse_process(cls, values: str) -> int:
         if ":" in values:
             semicolon_split_values = values.split(":")
             start_value = int(semicolon_split_values[0])
@@ -460,14 +458,14 @@ class DIMR(ParsableFileModel):
         return len(values.split())
 
     @classmethod
-    def _validate_process_as_str(cls, values: str) -> bool:
+    def _is_valid_process_string(cls, values: str) -> bool:
         if ":" in values:
-            return cls._validate_process_as_semicolon_str(values)
+            return cls._is_valid_process_with_semicolon_string(values)
 
-        return cls._validate_process_as_list_str(values)
+        return cls._is_valid_process_list_string(values)
 
     @classmethod
-    def _validate_process_as_semicolon_str(cls, values: str) -> bool:
+    def _is_valid_process_with_semicolon_string(cls, values: str) -> bool:
         semicolon_split_values = values.split(":")
 
         if len(semicolon_split_values) != 2:
@@ -480,7 +478,7 @@ class DIMR(ParsableFileModel):
         return False
 
     @classmethod
-    def _validate_process_as_list_str(cls, values: str) -> bool:
+    def _is_valid_process_list_string(cls, values: str) -> bool:
         split_values = values.split()
 
         if len(split_values) < 1:
@@ -494,3 +492,4 @@ class DIMR(ParsableFileModel):
                 return False
 
         return True
+    
