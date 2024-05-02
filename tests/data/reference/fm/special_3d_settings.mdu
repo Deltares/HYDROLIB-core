@@ -70,8 +70,8 @@ uniformHeight1DRoofGutterPipes = 0.1               # Uniform height for roof gut
 dxmin1D                        = 0.001             # Minimum 1D link length [m].
 uniformTyp1DStreetInlets       = -2                # Uniform cross section type for street inlets (1: circle, 2: rectangle, -2: closed rectangle).
 stretchType                    = 1                 # Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.
-zlayBot                        = -999              # if specified, first z-layer starts from zlaybot [ ], if not, it starts from the lowest bed point.
-zlayTop                        = -999              # if specified, highest z-layer ends at zlaytop [ ], if not, it ends at the initial water level.
+zlayBot                        = -999.0            # if specified, first z-layer starts from zlaybot [ ], if not, it starts from the lowest bed point.
+zlayTop                        = -999.0            # if specified, highest z-layer ends at zlaytop [ ], if not, it ends at the initial water level.
 uniformHeight1D                = 3.0               # Uniform height for 1D profiles and 1d2d internal links [m].
 roofsFile                      =                   # Polyline file <*_roof.pliz>, containing roofgutter heights x, y, z level.
 gulliesFile                    =                   # Polyline file <*_gul.pliz>, containing lowest bed level along talweg x, y, z level.
@@ -373,7 +373,8 @@ wrimap_velocity_vectorq           = 1                                           
 wrimap_bnd                        = 0                                                                               # Write boundary points to map file (1: yes, 0: no).
 wrishp_dambreak                   = 0                                                                               # Writing dambreaks to shape file (0=no, 1=yes).
 wrimap_waterdepth_hu              = 1                                                                               # Write water depths on u-points to map file (1: yes, 0: no)
-ncMapDataPrecision                = 0                                                                               # Precision for NetCDF data in map files (double or single).
+ncMapDataPrecision                = double                                                                          # Precision for NetCDF data in map files (double or single).
+ncHisDataPrecision                = double                                                                          # Precision for NetCDF data in his files (double or single).
 wrimap_interception               = 1                                                                               # Write interception to map file (1: yes, 0: no)
 wrimap_volume1                    = 1                                                                               # Write volumes to map file (1: yes, 0: no)
 wrimap_ancillary_variables        = 1                                                                               # Write ancillary_variables attributes to map file (1: yes, 0: no)
