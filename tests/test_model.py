@@ -526,7 +526,7 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
 
 class TestFmComponentProcessIntegrationWithDimr:
     def get_fm_dimr_config_data(self, input_data_process):
-        dimr_config_data = f"""<?xml version="1.0" encoding="utf-8"?>
+        return f"""<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
     <fileVersion>1.3</fileVersion>
@@ -542,10 +542,9 @@ class TestFmComponentProcessIntegrationWithDimr:
   </component>
 </dimrConfig>
 """
-        return dimr_config_data
 
     def get_fm_dimr_config_data_without_process(self):
-        dimr_config_data = """<?xml version="1.0" encoding="utf-8"?>
+        return """<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
     <fileVersion>1.3</fileVersion>
@@ -560,7 +559,6 @@ class TestFmComponentProcessIntegrationWithDimr:
   </component>
 </dimrConfig>
 """
-        return dimr_config_data
 
     def setup_temporary_files(self, tmp_path, dimr_config_data):
         temporary_dimr_config_file = tmp_path / "dimr_config.xml"
@@ -690,7 +688,7 @@ class TestFmComponentProcessIntegrationWithDimr:
 
         assert dimr_config.component[0].process == expected_process
 
-    def test_dimr_with_fmcomponent_given_old_incorrect_style_for_setting_process(
+    def test_dimr_with_fmcomponent_given_old_invalid_style_for_setting_process_raises_valueerror(
         self, tmp_path
     ):
         process_number_single_int: int = 4
@@ -714,7 +712,7 @@ class TestFmComponentProcessIntegrationWithDimr:
             pytest.param("1234556"),
         ],
     )
-    def test_dimr_with_fmcomponent_given_old_incorrect_style_for_setting_process2(
+    def test_dimr_with_fmcomponent_given_invalid_style_for_setting_process_raises_valueerror(
         self, tmp_path, input_process
     ):
         dimr_config_data = self.get_fm_dimr_config_data(input_process)
@@ -896,7 +894,7 @@ class TestFmComponentProcess:
             pytest.param(3.5),
         ],
     )
-    def test_fmcomponent_process_after_init_with_incorrect_input_throws_valueerror(
+    def test_fmcomponent_process_after_init_with_invalid_type_input_raises_valueerror(
         self,
         input_process,
     ):
@@ -919,9 +917,10 @@ class TestFmComponentProcess:
         [
             pytest.param(0),
             pytest.param(-1),
+            pytest.param(-3),
         ],
     )
-    def test_fmcomponent_process_after_init_with_input_process_zero_throws_valueerror(
+    def test_fmcomponent_process_after_init_with_input_process_zero_or_negative_raises_valueerror(
         self,
         input_process: int,
     ):
