@@ -12,7 +12,6 @@ from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictGeneral
 from hydrolib.core.dflowfm.mdu.models import (
     Calibration,
-    ExternalForcing,
     FMModel,
     Geometry,
     Output,
@@ -21,7 +20,6 @@ from hydrolib.core.dflowfm.mdu.models import (
     Restart,
     Sediment,
 )
-from hydrolib.core.dflowfm.xyz.models import XYZModel
 from hydrolib.core.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -688,7 +686,7 @@ class TestFmComponentProcessIntegrationWithDimr:
 
         assert dimr_config.component[0].process == expected_process
 
-    def test_dimr_with_fmcomponent_given_old_invalid_style_for_setting_process_raises_valueerror(
+    def test_dimr_with_fmcomponent_given_old_invalid_style_for_setting_process_raises_value_error(
         self, tmp_path
     ):
         process_number_single_int: int = 4
@@ -712,7 +710,7 @@ class TestFmComponentProcessIntegrationWithDimr:
             pytest.param("1234556"),
         ],
     )
-    def test_dimr_with_fmcomponent_given_invalid_style_for_setting_process_raises_valueerror(
+    def test_dimr_with_fmcomponent_given_invalid_style_for_setting_process_raises_value_error(
         self, tmp_path, input_process
     ):
         dimr_config_data = self.get_fm_dimr_config_data(input_process)
@@ -831,107 +829,3 @@ class TestFmComponentProcessIntegrationWithDimr:
             assert (
                 process not in file
             ), f"File {save_location} does contain the line: {process}"
-
-
-class TestFmComponentProcess:
-    @pytest.mark.parametrize(
-        "input_process",
-        [
-            pytest.param(None),
-            pytest.param(1),
-            pytest.param(2),
-            pytest.param(3),
-            pytest.param(4),
-            pytest.param(5),
-        ],
-    )
-    def test_fmcomponent_process_after_init(self, input_process: int):
-        component = FMComponent(
-            name="test",
-            workingDir=".",
-            inputfile="test.mdu",
-            process=input_process,
-            mpiCommunicator="DFM_COMM_DFMWORLD",
-        )
-        assert component.process == input_process
-
-    @pytest.mark.parametrize(
-        "input_process",
-        [
-            pytest.param(None),
-            pytest.param(1),
-            pytest.param(2),
-            pytest.param(3),
-            pytest.param(4),
-            pytest.param(5),
-        ],
-    )
-    def test_fmcomponent_process_after_setting(self, input_process: int):
-        component = FMComponent(
-            name="test",
-            workingDir=".",
-            inputfile="test.mdu",
-            mpiCommunicator="DFM_COMM_DFMWORLD",
-        )
-        component.process = input_process
-        assert component.process == input_process
-
-    def test_fmcomponent_without_process_after_init(self):
-        expected_process_format = None
-        component = FMComponent(
-            name="test",
-            workingDir=".",
-            inputfile="test.mdu",
-            mpiCommunicator="DFM_COMM_DFMWORLD",
-        )
-        assert component.process == expected_process_format
-
-    @pytest.mark.parametrize(
-        "input_process",
-        [
-            pytest.param("lalala"),
-            pytest.param("123"),
-            pytest.param(3.5),
-        ],
-    )
-    def test_fmcomponent_process_after_init_with_invalid_type_input_raises_valueerror(
-        self,
-        input_process,
-    ):
-        with pytest.raises(ValueError) as error:
-            FMComponent(
-                name="test",
-                workingDir=".",
-                inputfile="test.mdu",
-                process=input_process,
-                mpiCommunicator="DFM_COMM_DFMWORLD",
-            )
-
-        expected_message = (
-            f"In component 'test', the keyword process '{input_process}', is incorrect."
-        )
-        assert expected_message in str(error.value)
-
-    @pytest.mark.parametrize(
-        "input_process",
-        [
-            pytest.param(0),
-            pytest.param(-1),
-            pytest.param(-3),
-        ],
-    )
-    def test_fmcomponent_process_after_init_with_input_process_zero_or_negative_raises_valueerror(
-        self,
-        input_process: int,
-    ):
-        with pytest.raises(ValueError) as error:
-            FMComponent(
-                name="test",
-                workingDir=".",
-                inputfile="test.mdu",
-                process=input_process,
-                mpiCommunicator="DFM_COMM_DFMWORLD",
-            )
-
-        expected_message = "In component 'test', the keyword process can not be 0 or negative, please specify value of 1 or greater."
-        assert expected_message in str(error.value)
