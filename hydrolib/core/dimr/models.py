@@ -464,25 +464,25 @@ class DIMR(ParsableFileModel):
         return data
 
     @classmethod
-    def _parse_process(cls, values: str) -> int:
-        if ":" in values:
-            semicolon_split_values = values.split(":")
+    def _parse_process(cls, process_value: str) -> int:
+        if ":" in process_value:
+            semicolon_split_values = process_value.split(":")
             start_value = int(semicolon_split_values[0])
             end_value = int(semicolon_split_values[-1])
             return end_value - start_value + 1
 
-        return len(values.split())
+        return len(process_value.split())
 
     @classmethod
-    def _is_valid_process_string(cls, values: str) -> bool:
-        if ":" in values:
-            return cls._is_valid_process_with_semicolon_string(values)
+    def _is_valid_process_string(cls, process_value: str) -> bool:
+        if ":" in process_value:
+            return cls._is_valid_process_with_semicolon_string(process_value)
 
-        return cls._is_valid_process_list_string(values)
+        return cls._is_valid_process_list_string(process_value)
 
     @classmethod
-    def _is_valid_process_with_semicolon_string(cls, values: str) -> bool:
-        semicolon_split_values = values.split(":")
+    def _is_valid_process_with_semicolon_string(cls, process_value: str) -> bool:
+        semicolon_split_values = process_value.split(":")
 
         if len(semicolon_split_values) != 2:
             return False
@@ -494,8 +494,8 @@ class DIMR(ParsableFileModel):
         return False
 
     @classmethod
-    def _is_valid_process_list_string(cls, values: str) -> bool:
-        split_values = values.split()
+    def _is_valid_process_list_string(cls, process_value: str) -> bool:
+        split_values = process_value.split()
 
         if len(split_values) < 1:
             return False
