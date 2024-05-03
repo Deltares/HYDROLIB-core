@@ -146,6 +146,7 @@ def test_serialize_float_are_formatted():
     assert file_path.is_file()
     assert_files_equal(file_path, reference_file)
 
+
 class TestFmComponentProcess:
     @pytest.mark.parametrize(
         "input_process",
