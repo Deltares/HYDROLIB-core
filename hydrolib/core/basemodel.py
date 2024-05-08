@@ -446,10 +446,10 @@ class FileModelCache:
                 The FileModel associated with the Path if it has been registered
                 before, otherwise None.
         """
-        fileModel = self._cache_dict.get(path, None)
-        if fileModel is None:
+        file_model = self._cache_dict.get(path, None)
+        if file_model is None:
             return None
-        return fileModel.model
+        return file_model.model
 
     def register_model(self, path: Path, model: "FileModel") -> None:
         """Register the model with the specified path in this FileModelCache.
