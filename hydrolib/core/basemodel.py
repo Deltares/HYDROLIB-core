@@ -408,7 +408,7 @@ class CachedPathFileModelData:
     """
     CachedPathFileModelData provides a simple structure to keep the Filemodel and checksum together.
     """
-    
+
     _model: "FileModel"
     _checksum: str
 
@@ -419,7 +419,7 @@ class CachedPathFileModelData:
 
     @property
     def checksum(self) -> str:
-        """"Checksum of the file the filemodel is based on."""
+        """ "Checksum of the file the filemodel is based on."""
         return self._checksum
 
     def __init__(self, model: "FileModel", checksum: str) -> None:
