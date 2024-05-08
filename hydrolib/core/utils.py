@@ -302,18 +302,19 @@ class FilePathStyleConverter:
 
         return posix_path
 
+
 class FileChecksumCalculator:
     """
     FileChecksumCalculator calculator used to calculate the checksum of a file.
     """
-    
+
     @staticmethod
     def calculate_checksum(filepath: Path) -> Optional[str]:
         """Calculate the checksum of the file from the given filepath.
-        
+
         Args:
             filepath (Path): The filepath to the file for which the checksum will be calculated.
-            
+
         Returns:
             [Optional[str]]:
                 The checksum of the file.
@@ -321,11 +322,11 @@ class FileChecksumCalculator:
         """
         if not filepath.exists() or not filepath.is_file():
             return None
-        
+
         return FileChecksumCalculator._calculate_sha256_checksum(filepath)
-    
+
     @staticmethod
-    def _calculate_sha256_checksum(filepath : Path) -> str:
+    def _calculate_sha256_checksum(filepath: Path) -> str:
         sha256_hash = sha256()
         with open(filepath, "rb") as file:
             for chunk in iter(lambda: file.read(4096), b""):

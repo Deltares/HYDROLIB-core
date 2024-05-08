@@ -403,22 +403,24 @@ class FilePathResolver:
         if relative_mode == ResolveRelativeMode.ToAnchor:
             self._anchors.pop()
 
-class CachedPathFileModelData():
 
-    _model : "FileModel"
-    _checksum : str
-    
+class CachedPathFileModelData:
+
+    _model: "FileModel"
+    _checksum: str
+
     @property
     def model(self) -> "FileModel":
         return self._model
-    
+
     @property
     def checksum(self) -> str:
         return self._checksum
 
-    def __init__(self, model : "FileModel", checksum : str) -> None:
+    def __init__(self, model: "FileModel", checksum: str) -> None:
         self._model = model
         self._checksum = checksum
+
 
 class FileModelCache:
     """
@@ -461,10 +463,10 @@ class FileModelCache:
             bool: Whether or not the cache is empty.
         """
         return not any(self._cache_dict)
-    
-    def exists(self, path : Path) -> bool:
+
+    def exists(self, path: Path) -> bool:
         """Whether or not the filepath is in the cache.
-        
+
         Args:
             path (Path): The path to verify if it is already added in the cache.
 
@@ -472,10 +474,10 @@ class FileModelCache:
             bool: Whether or not the path is in the cache.
         """
         return path in self._cache_dict
-    
-    def has_changed(self, path : Path) -> bool:
+
+    def has_changed(self, path: Path) -> bool:
         """Whether or not the file in the filepath has changed from the cache.
-        
+
         Args:
             path (Path): The path to verify verify against.
 
@@ -487,12 +489,13 @@ class FileModelCache:
         """
         if not self.exists(path):
             return True
-        
+
         checksum = self._get_checksum(path)
         return checksum != self._cache_dict.get(path).checksum
-    
-    def _get_checksum(self, path : Path) -> str:
+
+    def _get_checksum(self, path: Path) -> str:
         return FileChecksumCalculator.calculate_checksum(path)
+
 
 class ModelSaveSettings:
     """A class that holds the global settings for model saving."""
@@ -721,7 +724,7 @@ class FileLoadContext:
             file_path, self.load_settings.path_style
         )
         return Path(converted_file_path)
-    
+
     def is_content_changed(self, path: Path) -> bool:
         """Verify if the path is already known and if the content have changed.
 
@@ -731,7 +734,7 @@ class FileLoadContext:
         Args:
             path (Path): The relative path from which the model was loaded.
             model (FileModel): The loaded model.
-            
+
         Returns:
             True when the content from the path on the location has been changed.
             False when the content from the path is not priorly cached.
@@ -739,7 +742,6 @@ class FileLoadContext:
         """
         absolute_path = self._path_resolver.resolve(path)
         return self._cache.has_changed(absolute_path)
-        
 
 
 @contextmanager
@@ -878,7 +880,7 @@ class FileModel(BaseModel, ABC):
                 filepath = self._get_updated_file_path(filepath, loading_path)
 
             logger.info(f"Loading data from {filepath}")
-            
+
             data = context.retrieve_model(filepath)
             if context.is_content_changed(filepath):
                 data = self._load(loading_path)
