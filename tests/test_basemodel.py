@@ -3,6 +3,7 @@ import platform
 import shutil
 from pathlib import Path
 from typing import Sequence, Tuple
+from unittest.mock import patch
 
 import pytest
 
@@ -22,6 +23,8 @@ from hydrolib.core.basemodel import (
     context_file_loading,
     file_load_context,
 )
+from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.models import DIMR
 from hydrolib.core.utils import PathStyle
@@ -348,6 +351,133 @@ class TestFileModel:
         model = FMModel(given_path)
         assert model.filepath == expected_path
 
+class TestFileLoadContextReusingCachedFilesDuringInit:
+    
+    def test_loading_file_referenced_multiple_times_only_loads_once(self, tmp_path : Path):
+        bc_file_name = "bc_file.bc"
+        ext_file = self.create_ext_file_with_5_times_bc_file_reused(tmp_path, bc_file_name)
+        self.create_bc_file(tmp_path, bc_file_name)
+        
+        with patch.object(ForcingModel, '_load') as bc_mocked_load:
+            ExtModel(ext_file)
+            assert bc_mocked_load.call_count == 1
+            
+    def test_loading_multiple_files_referenced_multiple_times_only_loads_the_respective_files_once(self, tmp_path : Path):
+        first_bc_file_name = "bc_file.bc"
+        second_bc_file_name = "bc_file2.bc"
+        ext_file = self.create_ext_file_with_2_times_2_bc_file_reused(tmp_path, first_bc_file_name, second_bc_file_name)
+        self.create_bc_file(tmp_path, first_bc_file_name)
+        self.create_bc_file(tmp_path, second_bc_file_name)
+        
+        with patch.object(ForcingModel, '_load') as bc_mocked_load:
+            ExtModel(ext_file)
+            assert bc_mocked_load.call_count == 2
+
+    def create_bc_file(self, tmp_path : Path, name : str):
+        bc_file = tmp_path / name
+        bc_file_data = """[forcing]
+Name                = global
+Function            = timeseries
+Time-interpolation  = linear
+Quantity            = time 
+Unit                = minutes since 2006-12-25 0:00:00
+Quantity            = rainfall_rate
+Unit                = mm day-1
+   0.000000     0.0000000
+ 120.000000     0.0000000
+ 240.000000    10.0000000
+ 360.000000    31.6000000
+ 480.000000   100.0000000
+ 600.000000   120.0000000
+ 720.000000   100.0000000
+ 840.000000    70.0000000
+ 960.000000     0.0000000
+ 960.000000    54.0000000
+1080.000000    70.0000000
+1200.000000    35.0000000
+1320.000000     0.0000000
+1440.000000     0.0000000
+3000.000000     0.0000000
+"""
+        bc_file.write_text(bc_file_data)
+        
+    def change_bc_file(self, tmp_path : Path, name : str):
+        bc_file = tmp_path / name
+        bc_file_data = """[forcing]
+Name                = little_change_to_the_file
+Function            = timeseries
+Time-interpolation  = linear
+Quantity            = time 
+Unit                = minutes since 2006-12-25 0:00:00
+Quantity            = rainfall_rate
+Unit                = mm day-1
+   0.000000     0.0000000
+ 120.000000     0.0000000
+ 240.000000    10.0000000
+ 360.000000    31.6000000
+ 480.000000   100.0000000
+ 600.000000   120.0000000
+ 720.000000   100.0000000
+ 840.000000    70.0000000
+ 960.000000     0.0000000
+ 960.000000    54.0000000
+1080.000000    70.0000000
+1200.000000    35.0000000
+1320.000000     0.0000000
+1440.000000     0.0000000
+3000.000000     0.0000000
+"""
+        bc_file.write_text(bc_file_data)
+
+    def create_ext_file_with_5_times_bc_file_reused(self, tmp_path : Path, name : str) -> Path:
+        ext_file = tmp_path / "ext_file.ext"
+        ext_file_data = f"""[boundary]
+quantity=dischargebnd
+locationfile=boundary_conditions/Lek.pli
+forcingfile={name}
+[boundary]
+quantity=dischargebnd
+locationfile=boundary_conditions/Waal.pli
+forcingfile={name}
+[boundary]
+quantity=dischargebnd
+locationfile=boundary_conditions/Maas.pli
+forcingfile={name}
+[boundary]
+quantity=salinitybnd
+locationfile=boundary_conditions/rmm_zeerand_v3.pli
+forcingfile={name}
+[boundary]
+quantity=temperaturebnd
+locationfile=boundary_conditions/rmm_zeerand_v3.pli
+forcingfile={name}"""
+        
+        ext_file.write_text(ext_file_data)
+        return ext_file
+    
+    def create_ext_file_with_2_times_2_bc_file_reused(self, tmp_path : Path, name : str, name2 : str) -> Path:
+        ext_file = tmp_path / "ext_file.ext"
+        ext_file_data = f"""[boundary]
+quantity=dischargebnd
+locationfile=boundary_conditions/Lek.pli
+forcingfile={name}
+[boundary]
+quantity=dischargebnd
+locationfile=boundary_conditions/Waal.pli
+forcingfile={name}
+[boundary]
+quantity=dischargebnd
+locationfile=boundary_conditions/Maas.pli
+forcingfile={name2}
+[boundary]
+quantity=salinitybnd
+locationfile=boundary_conditions/rmm_zeerand_v3.pli
+forcingfile={name2}"""
+        
+        ext_file.write_text(ext_file_data)
+        return ext_file
+        
+        
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
