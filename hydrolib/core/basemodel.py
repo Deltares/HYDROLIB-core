@@ -807,13 +807,12 @@ class FileModel(BaseModel, ABC):
                 filepath = self._get_updated_file_path(filepath, loading_path)
 
             logger.info(f"Loading data from {filepath}")
-
-            data = self._load(loading_path)
-            context.register_model(filepath, self)
-            data["filepath"] = filepath
+            
+            if (data := context.retrieve_model(filepath)) is None:
+                data = self._load(loading_path)
+                context.register_model(filepath, self)
+                data["filepath"] = filepath
             kwargs.update(data)
-
-            context.register_model(filepath, self)
 
             # Note: the relative mode needs to be obtained from the data directly
             # because self._relative_mode has not been resolved yet (this is done as
