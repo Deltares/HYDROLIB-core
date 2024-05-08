@@ -5,6 +5,7 @@ import pytest
 
 from hydrolib.core.dflowfm.mdu.models import Geometry, Output
 from hydrolib.core.utils import (
+    FileChecksumCalculator,
     FilePathStyleConverter,
     PathStyle,
     get_substring_between,
@@ -342,3 +343,23 @@ class TestFilePathStyleConverter:
                 TestFilePathStyleConverter.run_and_assert_os_path_style_converter(
                     "from_os", source_path, PathStyle.UNIXLIKE, exp_target_path
                 )
+
+class TestFileChecksumCalculator:
+    def test_calculating_checksum_of_default_file_gives_expected_checksum(self, tmp_path: Path):
+        default_file = tmp_path / "default_file.txt"
+        default_file.write_text("Hello World")
+        expected_checksum = 'a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e'
+        
+        calculated_checksum = FileChecksumCalculator.calculate_checksum(default_file)
+        assert calculated_checksum == expected_checksum
+        
+    def test_calculating_checksum_of_non_existing_file_gives_none(self, tmp_path: Path):
+        non_existing_file = tmp_path / "non_existing_file.txt"
+        
+        calculated_checksum = FileChecksumCalculator.calculate_checksum(non_existing_file)
+        assert calculated_checksum is None
+        
+    def test_calculating_checksum_of_folder_gives_none(self, tmp_path: Path):
+        calculated_checksum = FileChecksumCalculator.calculate_checksum(tmp_path)
+        assert calculated_checksum is None
+        

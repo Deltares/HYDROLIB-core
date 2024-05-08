@@ -380,6 +380,44 @@ class TestFileModelCache:
 
         assert cache.retrieve_model(path) is model
 
+    def test_registed_model_when_cache_exists_returns_true(self, tmp_path):
+        cache = FileModelCache()
+        path = tmp_path / "some-dimr.xml"
+        model = DIMR()
+        cache.register_model(path, model)
+        
+        assert cache.exists(path)
+        
+    def test_no_registed_model_when_cache_exists_returns_false(self, tmp_path):
+        cache = FileModelCache()
+        path = tmp_path / "some-dimr.xml"
+        
+        assert not cache.exists(path)
+        
+    def test_has_changed_on_unchanged_file_returns_false(self, tmp_path : Path):
+        cache = FileModelCache()
+        path = tmp_path / "some-dimr.xml"
+        path.write_text("Hello World")
+        model = DIMR()
+        cache.register_model(path, model)
+        
+        assert not cache.has_changed(path)
+        
+    def test_has_changed_on_changed_file_returns_true(self, tmp_path : Path):
+        cache = FileModelCache()
+        path = tmp_path / "some-dimr.xml"
+        path.write_text("Hello World")
+        model = DIMR()
+        cache.register_model(path, model)
+        path.write_text("Hello World second time")
+        
+        assert cache.has_changed(path)
+        
+    def test_has_changed_when_no_registed_model_returns_true(self, tmp_path : Path):
+        cache = FileModelCache()
+        path = tmp_path / "some-dimr.xml"
+        
+        assert cache.has_changed(path)
 
 class TestFilePathResolver:
     @pytest.mark.parametrize(
@@ -629,6 +667,31 @@ class TestFileLoadContext:
         assert context.load_settings.recurse == first_bool
         assert context.load_settings.resolve_casing == first_bool
         assert context.load_settings.path_style == first_path_style
+        
+    def test_is_content_changed_on_unchanged_file_returns_false(self, tmp_path : Path):
+        context = FileLoadContext()
+        path = tmp_path / "some-dimr.xml"
+        path.write_text("Hello World")
+        model = DIMR()
+        context.register_model(path, model)
+        
+        assert not context.is_content_changed(path)
+        
+    def test_is_content_changed_on_changed_file_returns_true(self, tmp_path : Path):
+        context = FileLoadContext()
+        path = tmp_path / "some-dimr.xml"
+        path.write_text("Hello World")
+        model = DIMR()
+        context.register_model(path, model)
+        path.write_text("Hello World second time")
+        
+        assert context.is_content_changed(path)
+        
+    def test_is_content_changed_when_no_registed_model_returns_true(self, tmp_path : Path):
+        context = FileLoadContext()
+        path = tmp_path / "some-dimr.xml"
+        
+        assert context.is_content_changed(path)
 
 
 class TestDiskOnlyFileModel:
