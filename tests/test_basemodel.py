@@ -351,29 +351,37 @@ class TestFileModel:
         model = FMModel(given_path)
         assert model.filepath == expected_path
 
+
 class TestFileLoadContextReusingCachedFilesDuringInit:
-    
-    def test_loading_file_referenced_multiple_times_only_loads_once(self, tmp_path : Path):
+    def test_loading_file_referenced_multiple_times_only_loads_once(
+        self, tmp_path: Path
+    ):
         bc_file_name = "bc_file.bc"
-        ext_file = self.create_ext_file_with_5_times_bc_file_reused(tmp_path, bc_file_name)
+        ext_file = self.create_ext_file_with_5_times_bc_file_reused(
+            tmp_path, bc_file_name
+        )
         self.create_bc_file(tmp_path, bc_file_name)
-        
-        with patch.object(ForcingModel, '_load') as bc_mocked_load:
+
+        with patch.object(ForcingModel, "_load") as bc_mocked_load:
             ExtModel(ext_file)
             assert bc_mocked_load.call_count == 1
-            
-    def test_loading_multiple_files_referenced_multiple_times_only_loads_the_respective_files_once(self, tmp_path : Path):
+
+    def test_loading_multiple_files_referenced_multiple_times_only_loads_the_respective_files_once(
+        self, tmp_path: Path
+    ):
         first_bc_file_name = "bc_file.bc"
         second_bc_file_name = "bc_file2.bc"
-        ext_file = self.create_ext_file_with_2_times_2_bc_file_reused(tmp_path, first_bc_file_name, second_bc_file_name)
+        ext_file = self.create_ext_file_with_2_times_2_bc_file_reused(
+            tmp_path, first_bc_file_name, second_bc_file_name
+        )
         self.create_bc_file(tmp_path, first_bc_file_name)
         self.create_bc_file(tmp_path, second_bc_file_name)
-        
-        with patch.object(ForcingModel, '_load') as bc_mocked_load:
+
+        with patch.object(ForcingModel, "_load") as bc_mocked_load:
             ExtModel(ext_file)
             assert bc_mocked_load.call_count == 2
 
-    def create_bc_file(self, tmp_path : Path, name : str):
+    def create_bc_file(self, tmp_path: Path, name: str):
         bc_file = tmp_path / name
         bc_file_data = """[forcing]
 Name                = global
@@ -400,8 +408,8 @@ Unit                = mm day-1
 3000.000000     0.0000000
 """
         bc_file.write_text(bc_file_data)
-        
-    def change_bc_file(self, tmp_path : Path, name : str):
+
+    def change_bc_file(self, tmp_path: Path, name: str):
         bc_file = tmp_path / name
         bc_file_data = """[forcing]
 Name                = little_change_to_the_file
@@ -429,7 +437,9 @@ Unit                = mm day-1
 """
         bc_file.write_text(bc_file_data)
 
-    def create_ext_file_with_5_times_bc_file_reused(self, tmp_path : Path, name : str) -> Path:
+    def create_ext_file_with_5_times_bc_file_reused(
+        self, tmp_path: Path, name: str
+    ) -> Path:
         ext_file = tmp_path / "ext_file.ext"
         ext_file_data = f"""[boundary]
 quantity=dischargebnd
@@ -451,11 +461,13 @@ forcingfile={name}
 quantity=temperaturebnd
 locationfile=boundary_conditions/rmm_zeerand_v3.pli
 forcingfile={name}"""
-        
+
         ext_file.write_text(ext_file_data)
         return ext_file
-    
-    def create_ext_file_with_2_times_2_bc_file_reused(self, tmp_path : Path, name : str, name2 : str) -> Path:
+
+    def create_ext_file_with_2_times_2_bc_file_reused(
+        self, tmp_path: Path, name: str, name2: str
+    ) -> Path:
         ext_file = tmp_path / "ext_file.ext"
         ext_file_data = f"""[boundary]
 quantity=dischargebnd
@@ -473,11 +485,10 @@ forcingfile={name2}
 quantity=salinitybnd
 locationfile=boundary_conditions/rmm_zeerand_v3.pli
 forcingfile={name2}"""
-        
+
         ext_file.write_text(ext_file_data)
         return ext_file
-        
-        
+
 
 class TestContextManagerFileLoadContext:
     def test_context_is_created_and_disposed_properly(self):
