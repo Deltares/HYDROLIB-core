@@ -405,16 +405,21 @@ class FilePathResolver:
 
 
 class CachedPathFileModelData:
-
+    """
+    CachedPathFileModelData provides a simple structure to keep the Filemodel and checksum together.
+    """
+    
     _model: "FileModel"
     _checksum: str
 
     @property
     def model(self) -> "FileModel":
+        """FileModel."""
         return self._model
 
     @property
     def checksum(self) -> str:
+        """"Checksum of the file the filemodel is based on."""
         return self._checksum
 
     def __init__(self, model: "FileModel", checksum: str) -> None:
