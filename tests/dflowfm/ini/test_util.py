@@ -9,7 +9,7 @@ from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    UnknownKeyNotificationManager,
+    UnknownKeywordErrorManager,
     get_from_subclass_defaults,
     get_type_based_on_subclass_default_value,
     rename_keys_for_backwards_compatibility,
@@ -359,131 +359,25 @@ class GrandChildWithDefaultProperty(WithoutDefaultProperty):
     name: Literal["GrandChildWithDefaultProperty"] = "GrandChildWithDefaultProperty"
 
 
-class TestUnknownKeyNotificationManager:
+class TestUnknownKeywordErrorManager:
 
-    section_header = "section header"
-    fields = {}
-    excluded_fields = set()
-    name = "keyname"
-    second_name = "second_other"
-
-    @pytest.fixture
-    def setup(self):
-        self.section_header = "section header"
-        self.fields = {}
-        self.excluded_fields = set()
-        self.name = "keyname"
-        self.second_name = "second_other"
-
-    @pytest.mark.parametrize(
-        "config_extra, expected_message",
-        [
-            pytest.param(
-                Extra.allow,
-                f"Unknown keyword detected in '{section_header}', '{name}', keyword will be kept in memory but will have no validation.",
-            ),
-            pytest.param(
-                Extra.ignore,
-                f"Unknown keyword detected in '{section_header}', '{name}', keyword will be dropped.",
-            ),
-            pytest.param(
-                Extra.forbid,
-                f"Unknown keyword detected in '{section_header}', '{name}', keyword will be dropped.",
-            ),
-        ],
-    )
-    def test_unknown_keyword_given_and_unknown_keyword_gives_message_with_keyword_kept(
-        self, config_extra, expected_message, capsys, setup
+    def test_unknown_keywords_given_when_notify_unknown_keywords_gives_error_with_unknown_keywords(
+        self
     ):
-        uknm = UnknownKeyNotificationManager()
+        section_header = "section header"
+        fields = {}
+        excluded_fields = set()
+        name = "keyname"
+        second_name = "second_other"
+        
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1, second_name: 2}
+        
+        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, second_name]}'"
 
-        uknm.notify_unknown_keyword(
-            self.name,
-            self.section_header,
-            self.fields,
-            self.excluded_fields,
-            config_extra,
-        )
-        captured = capsys.readouterr()
+        with pytest.raises(ValueError) as exc_err:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
 
-        assert expected_message in captured.out
-
-    @pytest.mark.parametrize(
-        "config_extra",
-        [
-            pytest.param(Extra.allow),
-            pytest.param(Extra.ignore),
-            pytest.param(Extra.forbid),
-        ],
-    )
-    def test_unknown_keyword_given_no_unknown_keys_gives_no_message(
-        self, config_extra, capsys, setup
-    ):
-        uknm = UnknownKeyNotificationManager()
-        self.fields[self.name] = 1
-
-        uknm.notify_unknown_keyword(
-            self.name,
-            self.section_header,
-            self.fields,
-            self.excluded_fields,
-            config_extra,
-        )
-        captured = capsys.readouterr()
-
-        assert len(captured.out) == 0
-
-    @pytest.mark.parametrize(
-        "config_extra, expected_message",
-        [
-            pytest.param(
-                Extra.allow,
-                f"Unknown keywords are detected in '{section_header}', these keywords will be kept in memory but will have no validation:",
-            ),
-            pytest.param(
-                Extra.ignore,
-                f"Unknown keywords are detected in '{section_header}', these keywords will be dropped:",
-            ),
-            pytest.param(
-                Extra.forbid,
-                f"Unknown keywords are detected in '{section_header}', these keywords will be dropped:",
-            ),
-        ],
-    )
-    def test_unknown_keywords_given_and_unknown_keywords_gives_message_with_keyword_kept(
-        self, config_extra, expected_message, capsys, setup
-    ):
-        uknm = UnknownKeyNotificationManager()
-        data = {self.name: 1, self.second_name: 2}
-
-        uknm.notify_unknown_keywords(
-            data, self.section_header, self.fields, self.excluded_fields, config_extra
-        )
-        captured = capsys.readouterr()
-
-        assert expected_message in captured.out
-        assert self.name in captured.out
-        assert self.second_name in captured.out
-
-    @pytest.mark.parametrize(
-        "config_extra",
-        [
-            pytest.param(Extra.allow),
-            pytest.param(Extra.ignore),
-            pytest.param(Extra.forbid),
-        ],
-    )
-    def test_unknown_keywords_given_no_unknown_keys_gives_no_message(
-        self, config_extra, capsys, setup
-    ):
-        uknm = UnknownKeyNotificationManager()
-        data = {}
-        data[self.name] = 1
-        self.fields[self.name] = 1
-
-        uknm.notify_unknown_keywords(
-            data, self.section_header, self.fields, self.excluded_fields, config_extra
-        )
-        captured = capsys.readouterr()
-
-        assert len(captured.out) == 0
+        assert expected_message in str(exc_err.value)
