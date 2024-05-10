@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.4.1
+# written by HYDROLIB-core 0.7.0
 
 [General]
 fileVersion           = 1.09          # File format version (do not edit this)
@@ -9,59 +9,76 @@ autoStart             = 0             # Autostart simulation after loading MDU o
 pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir.
 
 [Geometry]
-netFile                    = SEA_coarse_net.nc # Unstructured grid file *_net.nc
-bathymetryFile             =                   # Removed since March 2022. See [geometry] keyword BedLevelFile.
-dryPointsFile              =                   # Dry points file *.xyz (third column dummy z values), or dry areas polygon file *.pol (third column 1/-1: inside/outside)
-structureFile              =                   # Hydraulic structure file (*.ini)
-iniFieldFile               =                   # Initial and parameter field file <*.ini>.
-waterLevIniFile            =                   # Initial water levels sample file <*.xyz>.
-landBoundaryFile           =                   # Only for plotting.
-thinDamFile                =                   # Polyline file *_thd.pli, containing thin dams
-fixedWeirFile              =                   # Polyline file *_fxw.pliz, containing fixed weirs with rows x, y, crest level, left ground level, right ground level
-pillarFile                 =                   # <*_pillar.pliz>, Polyline file containing four colums with x, y, diameter and Cd coefficient for bridge pillars.
-useCaching                 = 0                 # Use caching for geometrical/network-related items (0: no, 1: yes)
-vertPlizFile               =                   # <*_vlay.pliz>), = pliz with x, y, Z, first Z = nr of layers, second Z = laytyp.
-frictFile                  =                   # Location of the files with roughness data for 1D.
-crossDefFile               =                   # Cross section definitions for all cross section shapes.
-crossLocFile               =                   # Location definitions of the cross sections on a 1D network.
-storageNodeFile            =                   # File containing the specification of storage nodes and/or manholes to add extra storage to 1D models.
-1d2dLinkFile               =                   # File containing the custom parameterization of 1D-2D links.
-profLocFile                =                   # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
-profDefFile                =                   # <*_profdefinition.def>) definition for all profile nrs.
-profDefXyzFile             =                   # <*_profdefinition.def>) definition for all profile nrs.
-manholeFile                =                   # File containing manholes (e.g. <*.dat>).
-partitionFile              =                   # <*_part.pol>, polyline(s) x, y.
-uniformWidth1D             = 2.0
-dxWuiMin2D                 = 0.1               # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu, Default = 0.1
-waterLevIni                = 0.0               # Initial water level at missing s0 values
-bedLevUni                  = 5.0               # Uniform bed level used at missing z values if BedlevType > 2
-bedSlope                   = 0.0               # Bed slope inclination, sets zk = bedlevuni + x*bedslope ans sets zbndz = xbndz*bedslope.
-bedLevType                 = 3                 # Bathymetry specification [-] (3: at nodes, face levels mean of node values)
-blMeanBelow                = -999.0            # if not -999d0, below this level [m] the cell centre bedlevel is the mean of surrouding netnodes.
-blMinAbove                 = -999.0            # if not -999d0, above this level [m] the cell centre bedlevel is the min of surrouding netnodes.
-angLat                     = 0.0               # Angle of latitude S-N (deg), 0: no Coriolis
-angLon                     = 0.0               # Angle of longitude E-W (deg), 0: Greenwich, used in solar heat flux computation
-conveyance2D               = -1                # -1: R=HU,0: R=H, 1: R=A/P, 2: K=analytic-1D conv, 3: K=analytic-2D conv
-nonlin1D                   = 1                 # Non-linear 1D volumes, applicable for models with closed cross sections. 1=treat closed sections as partially open by using a Preissmann slot, 2=Nested Newton approach, 3=Partial Nested Newton approach.
-nonlin2D                   = 0                 # Non-linear 2D volumes, only i.c.m. ibedlevtype = 3 and Conveyance2D>=1.
-sillHeightMin              = 0.0               # Weir treatment only if both sills larger than this value (m)
-makeOrthoCenters           = 0                 # (1: yes, 0: no) switch from circumcentres to orthocentres in geominit.
-dCenterInside              = 1.0               # limit cell center; 1.0:in cell <-> 0.0:on c/g.
-baMin                      = 1e-06             # Minimum grid cell area [m2], i.c.m. cutcells.
-openBoundaryTolerance      = 0.1               # Search tolerance factor between boundary polyline and grid cells, in cell size units
-renumberFlowNodes          = 1                 # Renumber the flow nodes (1: yes, 0: no)
-kmx                        = 53                # Maximum number of vertical layers
-layerType                  = 1                 # Vertical layer type (1: all sigma, 2: all z, 3: use VertplizFile)
-numTopSig                  = 20                # Number of sigma layers in top of z-layer model
-numTopSigUniform           = 1                 # Number of sigma layers in top of z-layer model
-sigmaGrowthFactor          = 1.19              # Layer thickness growth factor from bed up
-dzTop                      = 5.0               # Z-layer thickness of layers above level Dztopuniabovez
-floorLevTopLay             = -5.0              # Floor level of top layer
-dzTopUniAboveZ             = -100.0            # Above level Dztopuniabovez layers will have uniform Dztop, SigmaGrowthFactor below this level
-keepZLayeringAtBed         = 2                 # bedlayerthickness = zlayerthickness at bed 0 or 1
-dxDoubleAt1DEndNodes       = 1                 # Whether a 1D grid cell at the end of a network has to be extended with 0.5Δx.
-changeVelocityAtStructures = 0                 # Ignore structure dimensions for the velocity at hydraulic structures, when calculating the surrounding cell centered flow velocities.
-changeStructureDimensions  = 1                 # Change the structure dimensions in case these are inconsistent with the channel dimensions.
+netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
+bathymetryFile                 =                   # Removed since March 2022. See [geometry] keyword BedLevelFile.
+dryPointsFile                  =                   # Dry points file *.xyz (third column dummy z values), or dry areas polygon file *.pol (third column 1/-1: inside/outside)
+structureFile                  =                   # Hydraulic structure file (*.ini)
+iniFieldFile                   =                   # Initial and parameter field file <*.ini>.
+waterLevIniFile                =                   # Initial water levels sample file <*.xyz>.
+landBoundaryFile               =                   # Only for plotting.
+thinDamFile                    =                   # Polyline file *_thd.pli, containing thin dams
+fixedWeirFile                  =                   # Polyline file *_fxw.pliz, containing fixed weirs with rows x, y, crest level, left ground level, right ground level
+pillarFile                     =                   # <*_pillar.pliz>, Polyline file containing four colums with x, y, diameter and Cd coefficient for bridge pillars.
+useCaching                     = 0                 # Use caching for geometrical/network-related items (0: no, 1: yes)
+vertPlizFile                   =                   # <*_vlay.pliz>), = pliz with x, y, Z, first Z = nr of layers, second Z = laytyp.
+frictFile                      =                   # Location of the files with roughness data for 1D.
+crossDefFile                   =                   # Cross section definitions for all cross section shapes.
+crossLocFile                   =                   # Location definitions of the cross sections on a 1D network.
+storageNodeFile                =                   # File containing the specification of storage nodes and/or manholes to add extra storage to 1D models.
+1d2dLinkFile                   =                   # File containing the custom parameterization of 1D-2D links.
+profLocFile                    =                   # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
+profDefFile                    =                   # <*_profdefinition.def>) definition for all profile nrs.
+profDefXyzFile                 =                   # <*_profdefinition.def>) definition for all profile nrs.
+manholeFile                    =                   # File containing manholes (e.g. <*.dat>).
+partitionFile                  =                   # <*_part.pol>, polyline(s) x, y.
+uniformWidth1D                 = 2.0
+dxWuiMin2D                     = 0.1               # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu, Default = 0.1
+waterLevIni                    = 0.0               # Initial water level at missing s0 values
+bedLevUni                      = 5.0               # Uniform bed level used at missing z values if BedlevType > 2
+bedSlope                       = 0.0               # Bed slope inclination, sets zk = bedlevuni + x*bedslope ans sets zbndz = xbndz*bedslope.
+bedLevType                     = 3                 # Bathymetry specification [-] (3: at nodes, face levels mean of node values)
+blMeanBelow                    = -999.0            # if not -999d0, below this level [m] the cell centre bedlevel is the mean of surrouding netnodes.
+blMinAbove                     = -999.0            # if not -999d0, above this level [m] the cell centre bedlevel is the min of surrouding netnodes.
+angLat                         = 0.0               # Angle of latitude S-N (deg), 0: no Coriolis
+angLon                         = 0.0               # Angle of longitude E-W (deg), 0: Greenwich, used in solar heat flux computation
+conveyance2D                   = -1                # -1: R=HU,0: R=H, 1: R=A/P, 2: K=analytic-1D conv, 3: K=analytic-2D conv
+nonlin1D                       = 1                 # Non-linear 1D volumes, applicable for models with closed cross sections. 1=treat closed sections as partially open by using a Preissmann slot, 2=Nested Newton approach, 3=Partial Nested Newton approach.
+nonlin2D                       = 0                 # Non-linear 2D volumes, only i.c.m. ibedlevtype = 3 and Conveyance2D>=1.
+sillHeightMin                  = 0.0               # Weir treatment only if both sills larger than this value (m)
+makeOrthoCenters               = 0                 # (1: yes, 0: no) switch from circumcentres to orthocentres in geominit.
+dCenterInside                  = 1.0               # limit cell center; 1.0:in cell <-> 0.0:on c/g.
+baMin                          = 1e-06             # Minimum grid cell area [m2], i.c.m. cutcells.
+openBoundaryTolerance          = 0.1               # Search tolerance factor between boundary polyline and grid cells, in cell size units
+renumberFlowNodes              = 1                 # Renumber the flow nodes (1: yes, 0: no)
+kmx                            = 53                # Maximum number of vertical layers
+layerType                      = 1                 # Vertical layer type (1: all sigma, 2: all z, 3: use VertplizFile)
+numTopSig                      = 20                # Number of sigma layers in top of z-layer model
+numTopSigUniform               = 1                 # Number of sigma layers in top of z-layer model
+sigmaGrowthFactor              = 1.19              # Layer thickness growth factor from bed up
+dzTop                          = 5.0               # Z-layer thickness of layers above level Dztopuniabovez
+floorLevTopLay                 = -5.0              # Floor level of top layer
+dzTopUniAboveZ                 = -100.0            # Above level Dztopuniabovez layers will have uniform Dztop, SigmaGrowthFactor below this level
+keepZLayeringAtBed             = 2                 # bedlayerthickness = zlayerthickness at bed 0 or 1
+dxDoubleAt1DEndNodes           = 1                 # Whether a 1D grid cell at the end of a network has to be extended with 0.5Δx.
+changeVelocityAtStructures     = 0                 # Ignore structure dimensions for the velocity at hydraulic structures, when calculating the surrounding cell centered flow velocities.
+changeStructureDimensions      = 1                 # Change the structure dimensions in case these are inconsistent with the channel dimensions.
+gridEnclosureFile              =                   # Enclosure file to clip outer parts from the grid *.pol
+allowBndAtBifurcation          = 0                 # Allow 1d boundary node when connectin branch leads to bifurcation (1: yes, 0: no).
+slotw1D                        = 0.001             # Minimum slotwidth 1D [m].
+slotw2D                        = 0.001             # Minimum slotwidth 2D [m].
+uniformHeight1DRoofGutterPipes = 0.1               # Uniform height for roof gutter pipes [m].
+dxmin1D                        = 0.001             # Minimum 1D link length [m].
+uniformTyp1DStreetInlets       = -2                # Uniform cross section type for street inlets (1: circle, 2: rectangle, -2: closed rectangle).
+stretchType                    = 1                 # Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.
+zlayBot                        = -999.0            # if specified, first z-layer starts from zlaybot [ ], if not, it starts from the lowest bed point.
+zlayTop                        = -999.0            # if specified, highest z-layer ends at zlaytop [ ], if not, it ends at the initial water level.
+uniformHeight1D                = 3.0               # Uniform height for 1D profiles and 1d2d internal links [m].
+roofsFile                      =                   # Polyline file <*_roof.pliz>, containing roofgutter heights x, y, z level.
+gulliesFile                    =                   # Polyline file <*_gul.pliz>, containing lowest bed level along talweg x, y, z level.
+uniformWidth1DStreetInlets     = 0.2               # Uniform width for street inlets [m].
+uniformHeight1DStreetInlets    = 0.1               # Uniform height for street inlets [m]
+uniformTyp1DRoofGutterPipes    = -2                # Uniform cross section type for type roof gutter pipes (1: circle, 2: rectangle, -2: closed rectangle).
+uniformWidth1DRoofGutterPipes  = 0.1               # Uniform width for roof gutter pipes [m].
 
 [VolumeTables]
 useVolumeTables    = 0   # Use volume tables for 1D grid cells (1: yes, 0 = no).
@@ -69,38 +86,65 @@ increment          = 0.2 # The height increment for the volume tables [m].
 useVolumeTableFile = 0   # Read and write the volume table from/to file (1: yes, 0= no).
 
 [Numerics]
-CFLMax                   = 0.7     # Maximum Courant number
-EpsMaxlev                = 1e-08   # Stop criterium for non linear iteration
-EpsMaxlevM               = 1e-08   # Stop criterium for Nested Newton loop in non linear iteration
-advecType                = 33      # Advection type (0: none, 1: Wenneker, 2: Wenneker q(uio-u), 3: Perot q(uio-u), 4: Perot q(ui-u), 5: Perot q(ui-u) without itself)
-timeStepType             = 2       # 0=only transport, 1=transport + velocity update, 2=full implicit step_reduce, 3=step_jacobi, 4=explicit.
-limTypHu                 = 0       # Limiter type for waterdepth in continuity eqn. (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
-limTypMom                = 4       # Limiter type for cell center advection velocity (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
-limTypSa                 = 4       # Limiter type for salinity transport (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
-icgSolver                = 4       # Solver type (1: sobekGS_OMP, 2: sobekGS_OMPthreadsafe, 3: sobekGS, 4: sobekGS + Saadilud, 5: parallel/global Saad, 6: parallel/Petsc, 7: parallel/GS)
-maxDegree                = 6       # Maximum degree in Gauss elimination
-fixedWeirScheme          = 9       # Fixed weir scheme (0: none, 1: compact stencil, 2: whole tile lifted, full subgrid weir + factor)
-fixedWeirContraction     = 1.0     # flow width = flow width*fixedWeirContraction.
-izBndPos                 = 1       # Position of z boundary (0: D3Dflow, 1: on net boundary, 2: on specified polyline)
-tlfSmo                   = 86400.0 # Fourier smoothing time (s) on water level boundaries
-keepSTBndOnOutflow       = 1       # Keep sal and tem signals on bnd also at outflow, 1=yes, 0=no=default=copy inside value on outflow
-slopeDrop2D              = 0.0     # Apply droplosses only if local bottom slope > Slopedrop2D, <=0 =no droplosses.
-drop1D                   = 0       # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
-chkAdvd                  = 0.1     # Check advection terms if depth < chkadvdp.
-teta0                    = 0.55    # Theta of time integration (0.5 < theta < 1)
-qhRelax                  = 0.01
-cstBnd                   = 0       # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
-maxitVerticalForesterSal = 0       # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).
-maxitVerticalForesterTem = 0       # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).
-turbulenceModel          = 3       # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
-turbulenceAdvection      = 3       # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
-antiCreep                = 0       # Include anti-creep calculation (0: no, 1: yes)
-barocZLayBed             = 0       # Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)
-barocPOnBnd              = 1
-maxWaterLevelDiff        = 0.0     # Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.
-maxVelocityDiff          = 0.0     # Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.
-minTimestepBreak         = 0.1     # smallest allowed timestep (in s), checked on a sliding average of several timesteps. Run will abort when violated.
-epsHu                    = 0.0001  # Threshold water depth for wet and dry cells
+CFLMax                    = 0.7     # Maximum Courant number
+EpsMaxlev                 = 1e-08   # Stop criterium for non linear iteration
+EpsMaxlevM                = 1e-08   # Stop criterium for Nested Newton loop in non linear iteration
+advecType                 = 33      # Advection type (0: none, 1: Wenneker, 2: Wenneker q(uio-u), 3: Perot q(uio-u), 4: Perot q(ui-u), 5: Perot q(ui-u) without itself)
+timeStepType              = 2       # 0=only transport, 1=transport + velocity update, 2=full implicit step_reduce, 3=step_jacobi, 4=explicit.
+limTypHu                  = 0       # Limiter type for waterdepth in continuity eqn. (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
+limTypMom                 = 4       # Limiter type for cell center advection velocity (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
+limTypSa                  = 4       # Limiter type for salinity transport (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
+icgSolver                 = 4       # Solver type (1: sobekGS_OMP, 2: sobekGS_OMPthreadsafe, 3: sobekGS, 4: sobekGS + Saadilud, 5: parallel/global Saad, 6: parallel/Petsc, 7: parallel/GS)
+maxDegree                 = 6       # Maximum degree in Gauss elimination
+fixedWeirScheme           = 9       # Fixed weir scheme (0: none, 1: compact stencil, 2: whole tile lifted, full subgrid weir + factor)
+fixedWeirContraction      = 1.0     # flow width = flow width*fixedWeirContraction.
+izBndPos                  = 1       # Position of z boundary (0: D3Dflow, 1: on net boundary, 2: on specified polyline)
+tlfSmo                    = 86400.0 # Fourier smoothing time (s) on water level boundaries
+keepSTBndOnOutflow        = 1       # Keep sal and tem signals on bnd also at outflow, 1=yes, 0=no=default=copy inside value on outflow
+slopeDrop2D               = 0.0     # Apply droplosses only if local bottom slope > Slopedrop2D, <=0 =no droplosses.
+drop1D                    = 0       # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
+chkAdvd                   = 0.1     # Check advection terms if depth < chkadvdp.
+teta0                     = 0.55    # Theta of time integration (0.5 < theta < 1)
+qhRelax                   = 0.01
+cstBnd                    = 0       # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
+maxitVerticalForesterSal  = 0       # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).
+maxitVerticalForesterTem  = 0       # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).
+turbulenceModel           = 3       # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
+turbulenceAdvection       = 3       # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
+antiCreep                 = 0       # Include anti-creep calculation (0: no, 1: yes)
+barocZLayBed              = 0       # Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)
+barocPOnBnd               = 1
+maxWaterLevelDiff         = 0.0     # Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.
+maxVelocityDiff           = 0.0     # Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.
+minTimestepBreak          = 0.1     # smallest allowed timestep (in s), checked on a sliding average of several timesteps. Run will abort when violated.
+epsHu                     = 0.0001  # Threshold water depth for wet and dry cells
+fixedWeirRelaxationCoef   = 0.6     # Fixed weir relaxation coefficient for computation of energy loss.
+implicitDiffusion2D       = 0       # Implicit diffusion in 2D (0: no, 1:yes).
+vertAdvTypTem             = 6       # Vertical advection type for temperature (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester)
+velMagnWarn               = 0.0     # Warning level unitbrackets{m/s} on velocity magnitude (<= 0: no check).
+transportAutoTimestepDiff = 0       # Auto Timestepdiff in Transport, (0 : lim diff, no lim Dt, 1: no lim diff, lim Dt, 2: no lim diff, no lim Dt, 3: implicit (only 2D)).
+setHorizontalBobsFor1D2D  = 0       # Bobs are set to 2D bedlevel, to prevent incorrect storage in sewer system (0: no, 1:yes).
+diagnosticTransport       = 0       # No update of transport quantities, also known as diagnostic transport (0: no, 1: yes).
+vertAdvTypSal             = 6       # Vertical advection type for salinity (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester)
+zeroZBndInflowAdvection   = 1       # On waterlevel boundaries set incoming advection velocity to zero (0=no, 1=on inflow, 2=also on outflow)
+pure1D                    = 0       # Purely 1D advection (0: original advection using velocity vector, 1: pure 1D using flow volume vol1_f, 2: pure 1D using volume vol1)
+testDryingFlooding        = 0       # Drying flooding algorithm (0: D-Flow FM, 1: Delft3DFLOW, 2: Similar to 0, and volume limitation in the transport solver based on Epshu).
+logSolverConvergence      = 0       # Print time step, number of solver iterations and solver residual to diagnostic output (0: no, 1: yes).
+fixedWeirScheme1D2D       = 0       # Fixed weir scheme for 1d2d links (0: same as fixedweirscheme, 1: lateral iterative fixed weir scheme).
+horizontalMomentumFilter  = 0       # Filter for reduction of checkerboarding; 0=No, 1=yes.
+maxNonLinearIterations    = 100     # Maximal iterations in non-linear iteration loop before a time step reduction is applied
+maxVelocity               = 0.0     # Upper bound [m/s] on velocity (<= 0: no bounds). Run will abort when violated.
+waterLevelWarn            = 0.0     # Warning level [m AD] on water level (<= 0: no check).
+tSpinUpTurbLogProf        = 0.0     # Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.
+fixedWeirTopFrictCoef     = -999.0  # Uniform friction coefficient of the groyne part of fixed weirs
+fixedWeir1D2D_dx          = 50.0    # Extra delta x for lateral 1d2d fixed weirs.
+junction1D                = 0       # Advection at 1D junctions: (0: original 1D advection using velocity vector, 1 = same as along 1D channels using Pure1D=1).
+fixedWeirTopWidth         = 3.0     # Uniform width of the groyne part of fixed weirs
+vertAdvTypMom             = 6       # Vertical advection type for u1: 0: No, 3: Upwind implicit, 4: Central implicit, 5: QUICKEST implicit., 6: centerbased upwind expl
+checkerboardMonitor       = 0       # Flag for checkerboarding output on history file (only for sigma layers yet); 0=No, 1=yes.
+velocityWarn              = 0.0     # Warning level [m/s] on normal velocity(<= 0: no check).
+advecCorrection1D2D       = 0       # Advection correction of 1D2D link volume (0: regular advection, 1: link volume au*dx, 2: advection on 1D2D switched off.)
+fixedWeirTalud            = 4.0     # Uniform talud slope of fixed weirs.
 
 [Physics]
 unifFrictCoef              = 0.028   # Uniform friction coefficient (0: no friction)
@@ -164,6 +208,7 @@ windPartialDry       = 1         # Reduce windstress on water if link partially 
 pavBnd               = 101330.0  # Average air pressure on open boundaries (N/m2) (only applied if > 0)
 pavIni               = 0.0       # Initial air pressure [N/m2], only applied if value > 0.
 computedAirdensity   = 0         # Compute air density yes/no (), 1/0, default 0.
+stressToWind         = 0         # Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.
 
 [Time]
 refDate                 = 19971222       # Reference date (yyyymmdd)
@@ -250,7 +295,7 @@ wrihis_structure_uniWeir          = 0                                           
 wrihis_structure_compound         = 0                                                                               # compound structure parameters
 wrihis_turbulence                 = 1                                                                               # k, eps and vicww
 wrihis_wind                       = 1                                                                               # wind velocities
-wrihis_airdensity                 = 0                                                                               # Write air density to his file (1: yes, 0: no)
+wrihis_airdensity                 = 0                                                                               # Write air density to his file (1: yes, 0: no).
 wrihis_rain                       = 1                                                                               # precipitation
 wrihis_infiltration               = 1                                                                               # Write infiltration to his file (1: yes, 0: no)'
 wrihis_temperature                = 1                                                                               # temperature
@@ -291,7 +336,7 @@ wrimap_turbulence                 = 1                                           
 wrimap_rain                       = 1                                                                               # Write rainfall rates to map file (1: yes, 0: no)
 wrimap_wind                       = 1                                                                               # Write wind velocities to map file (1: yes, 0: no)
 wrimap_windstress                 = 0                                                                               # Write wind stress to map file (1: yes, 0: no)
-wrimap_airdensity                 = 0                                                                               # Write air density rates to map file (1: yes, 0: no)
+wrimap_airdensity                 = 0                                                                               # Write air density to map file, (1:yes, 0:no).
 writek_CdWind                     = 0                                                                               # Write wind friction coeffs to tek file (1: yes, 0: no)
 wrimap_heat_fluxes                = 1                                                                               # Write heat fluxes to map file (1: yes, 0: no)
 wrimap_wet_waterDepth_threshold   = 2e-05                                                                           # Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.
@@ -317,6 +362,23 @@ waqInterval                       = 0.0                                         
 statsInterval                     = 3600.0                                                                          # Screen step output interval in seconds simulation time, if negative in seconds wall clock time
 timingsInterval                   = 0.0                                                                             # Timings statistics output interval
 richardsonOnOutput                = 0                                                                               # Write Richardson number, (1: yes, 0: no).
+wrimap_input_dt                   = 0                                                                               # Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).
+wrimap_input_roughness            = 0                                                                               # Write chezy input roughness on flow links to map file, (1: yes, 0: no).
+wrimap_flowarea_au                = 1                                                                               # Write flow areas au to map file (1: yes, 0: no)
+wrimap_flow_flux_q1_main          = 1                                                                               # Write flow flux in main channel to map file (1: yes, 0: no)
+wrishp_genstruc                   = 0                                                                               # general structures
+wrimap_qin                        = 0                                                                               # Write sum of all influxes to map file (1: yes, 0: no).
+wrimap_dtcell                     = 1                                                                               # Write time step per cell based on CFL (1: yes, 0: no)
+wrimap_velocity_vectorq           = 1                                                                               # Write cell-center velocity vectors (discharge-based) to map file (1: yes, 0: no)
+wrimap_bnd                        = 0                                                                               # Write boundary points to map file (1: yes, 0: no).
+wrishp_dambreak                   = 0                                                                               # Writing dambreaks to shape file (0=no, 1=yes).
+wrimap_waterdepth_hu              = 1                                                                               # Write water depths on u-points to map file (1: yes, 0: no)
+ncMapDataPrecision                = double                                                                          # Precision for NetCDF data in map files (double or single).
+ncHisDataPrecision                = double                                                                          # Precision for NetCDF data in his files (double or single).
+wrimap_interception               = 1                                                                               # Write interception to map file (1: yes, 0: no)
+wrimap_volume1                    = 1                                                                               # Write volumes to map file (1: yes, 0: no)
+wrimap_ancillary_variables        = 1                                                                               # Write ancillary_variables attributes to map file (1: yes, 0: no)
+wrimap_chezy_on_flow_links        = 0                                                                               # Write chezy roughness on flow links to map file, (1: yes, 0: no)
 
 [Calibration]
 UseCalibration = 0 # Activate calibration factor friction multiplier (1 = yes, 0 = no)

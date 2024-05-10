@@ -200,6 +200,111 @@ class Numerics(INIBasedModel):
         epshu: Optional[str] = Field(
             "Threshold water depth for wetting and drying [m].", alias="epsHu"
         )
+        fixedweirrelaxationcoef: Optional[str] = Field(
+            "Fixed weir relaxation coefficient for computation of energy loss.",
+            alias="fixedWeirRelaxationCoef",
+        )
+        implicitdiffusion2d: Optional[str] = Field(
+            "Implicit diffusion in 2D (0: no, 1:yes).", alias="implicitDiffusion2D"
+        )
+        vertadvtyptem: Optional[str] = Field(
+            "Vertical advection type for temperature (0: none, 4: Theta implicit, 6: higher order explicit, no Forester filter).",
+            alias="vertAdvTypTem",
+        )
+        velmagnwarn: Optional[str] = Field(
+            "Warning level unitbrackets{m/s} on velocity magnitude (<= 0: no check).",
+            alias="velMagnWarn",
+        )
+        transportautotimestepdiff: Optional[str] = Field(
+            "Auto Timestepdiff in Transport, (0 : lim diff, no lim Dt, 1: no lim diff, lim Dt, 2: no lim diff, no lim Dt, 3: implicit (only 2D)).",
+            alias="transportAutoTimestepDiff",
+        )
+        sethorizontalbobsfor1d2d: Optional[str] = Field(
+            "Bobs are set to 2D bedlevel, to prevent incorrect storage in sewer system (0: no, 1:yes).",
+            alias="setHorizontalBobsFor1D2D",
+        )
+        diagnostictransport: Optional[str] = Field(
+            "No update of transport quantities, also known as diagnostic transport (0: no, 1: yes).",
+            alias="diagnosticTransport",
+        )
+        vertadvtypsal: Optional[str] = Field(
+            "Vertical advection type for salinity (0: none, 4: Theta implicit, 6: higher order explicit, no Forester filter).",
+            alias="vertAdvTypSal",
+        )
+        zerozbndinflowadvection: Optional[str] = Field(
+            "Switch for advection at open boundary (0: Neumann, 1=zero at inflow, 2=zero at inflow and outflow).",
+            alias="zeroZBndInflowAdvection",
+        )
+        pure1d: Optional[str] = Field(
+            "Purely 1D advection (0: original advection using velocity vector, 1: pure 1D using flow volume vol1_f, 2: pure 1D using volume vol1)",
+            alias="pure1D",
+        )
+        testdryingflooding: Optional[str] = Field(
+            "Drying flooding algorithm (0: D-Flow FM, 1: Delft3DFLOW, 2: Similar to 0, and volume limitation in the transport solver based on Epshu).",
+            alias="testDryingFlooding",
+        )
+        logsolverconvergence: Optional[str] = Field(
+            "Print time step, number of solver iterations and solver residual to diagnostic output (0: no, 1: yes).",
+            alias="logSolverConvergence",
+        )
+        fixedweirscheme1d2d: Optional[str] = Field(
+            "Fixed weir scheme for 1d2d links (0: same as fixedweirscheme, 1: lateral iterative fixed weir scheme).",
+            alias="fixedWeirScheme1D2D",
+        )
+        horizontalmomentumfilter: Optional[str] = Field(
+            "Filter for reduction of checkerboarding; 0=No, 1=yes.",
+            alias="horizontalMomentumFilter",
+        )
+        maxnonlineariterations: Optional[str] = Field(
+            "Maximal iterations in non-linear iteration loop before a time step reduction is applied",
+            alias="maxNonLinearIterations",
+        )
+        maxvelocity: Optional[str] = Field(
+            "Upper bound [m/s] on velocity (<= 0: no bounds). Run will abort when violated.",
+            alias="maxVelocity",
+        )
+        waterlevelwarn: Optional[str] = Field(
+            "Warning level [m AD] on water level (<= 0: no check).",
+            alias="waterLevelWarn",
+        )
+        tspinupturblogprof: Optional[str] = Field(
+            "Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.",
+            alias="tSpinUpTurbLogProf",
+        )
+        fixedweirtopfrictcoef: Optional[Optional[str]] = Field(
+            "Uniform friction coefficient of the groyne part of fixed weirs [the unit depends on frictiontype].",
+            alias="fixedWeirTopFrictCoef",
+        )
+        fixedweir1d2d_dx: Optional[str] = Field(
+            "Extra delta x for lateral 1d2d fixed weirs.", alias="fixedWeir1D2D_dx"
+        )
+        junction1d: Optional[str] = Field(
+            "Advection at 1D junctions: (0: original 1D advection using velocity vector, 1 = same as along 1D channels using Pure1D=1).",
+            alias="junction1D",
+        )
+        fixedweirtopwidth: Optional[str] = Field(
+            "Uniform width of the groyne part of fixed weirs [m].",
+            alias="fixedWeirTopWidth",
+        )
+        vertadvtypmom: Optional[str] = Field(
+            "Vertical advection type in momentum equation; 3: Upwind implicit, 6: centerbased upwind explicit.",
+            alias="vertAdvTypMom",
+        )
+        checkerboardmonitor: Optional[str] = Field(
+            "Flag for checkerboarding output on history file (only for sigma layers yet); 0=No, 1=yes.",
+            alias="checkerboardMonitor",
+        )
+        velocitywarn: Optional[str] = Field(
+            "Warning level [m/s] on normal velocity(<= 0: no check).",
+            alias="velocityWarn",
+        )
+        adveccorrection1d2d: Optional[str] = Field(
+            "Advection correction of 1D2D link volume (0: regular advection, 1: link volume au*dx, 2: advection on 1D2D switched off.)",
+            alias="advecCorrection1D2D",
+        )
+        fixedweirtalud: Optional[str] = Field(
+            "Uniform talud slope of fixed weirs.", alias="fixedWeirTalud"
+        )
 
     comments: Comments = Comments()
 
@@ -236,6 +341,33 @@ class Numerics(INIBasedModel):
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")
     mintimestepbreak: float = Field(0.0, alias="minTimestepBreak")
     epshu: float = Field(0.0001, alias="epsHu")
+    fixedweirrelaxationcoef: float = Field(0.6, alias="fixedWeirRelaxationCoef")
+    implicitdiffusion2d: bool = Field(False, alias="implicitDiffusion2D")
+    vertadvtyptem: int = Field(6, alias="vertAdvTypTem")
+    velmagnwarn: float = Field(0.0, alias="velMagnWarn")
+    transportautotimestepdiff: int = Field(0, alias="transportAutoTimestepDiff")
+    sethorizontalbobsfor1d2d: bool = Field(False, alias="setHorizontalBobsFor1D2D")
+    diagnostictransport: bool = Field(False, alias="diagnosticTransport")
+    vertadvtypsal: int = Field(6, alias="vertAdvTypSal")
+    zerozbndinflowadvection: int = Field(0, alias="zeroZBndInflowAdvection")
+    pure1d: int = Field(0, alias="pure1D")
+    testdryingflooding: int = Field(0, alias="testDryingFlooding")
+    logsolverconvergence: bool = Field(False, alias="logSolverConvergence")
+    fixedweirscheme1d2d: int = Field(0, alias="fixedWeirScheme1D2D")
+    horizontalmomentumfilter: bool = Field(False, alias="horizontalMomentumFilter")
+    maxnonlineariterations: int = Field(100, alias="maxNonLinearIterations")
+    maxvelocity: float = Field(0.0, alias="maxVelocity")
+    waterlevelwarn: float = Field(0.0, alias="waterLevelWarn")
+    tspinupturblogprof: float = Field(0.0, alias="tSpinUpTurbLogProf")
+    fixedweirtopfrictcoef: Optional[float] = Field(None, alias="fixedWeirTopFrictCoef")
+    fixedweir1d2d_dx: float = Field(50.0, alias="fixedWeir1D2D_dx")
+    junction1d: int = Field(0, alias="junction1D")
+    fixedweirtopwidth: float = Field(3.0, alias="fixedWeirTopWidth")
+    vertadvtypmom: int = Field(6, alias="vertAdvTypMom")
+    checkerboardmonitor: bool = Field(False, alias="checkerboardMonitor")
+    velocitywarn: float = Field(0.0, alias="velocityWarn")
+    adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
+    fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
 
 
 class VolumeTables(INIBasedModel):
@@ -553,6 +685,10 @@ class Wind(INIBasedModel):
         computedairdensity: Optional[str] = Field(
             "Compute air density yes/no (), 1/0, default 0.", alias="computedAirdensity"
         )
+        stresstowind: Optional[str] = Field(
+            "Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.",
+            alias="stressToWind",
+        )
 
     comments: Comments = Comments()
 
@@ -568,6 +704,7 @@ class Wind(INIBasedModel):
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
     computedairdensity: bool = Field(False, alias="computedAirdensity")
+    stresstowind: bool = Field(False, alias="stressToWind")
 
     @classmethod
     def list_delimiter(cls) -> str:
@@ -1263,6 +1400,79 @@ class Output(INIBasedModel):
         richardsononoutput: Optional[str] = Field(
             "Write Richardson number, (1: yes, 0: no).", alias="richardsonOnOutput"
         )
+        wrimap_every_dt: Optional[str] = Field(
+            "Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).",
+            alias="wrimap_input_dt",
+        )
+        wrimap_input_roughness: Optional[str] = Field(
+            "Write chezy input roughness on flow links to map file, (1: yes, 0: no).",
+            alias="wrimap_input_roughness",
+        )
+        wrimap_flowarea_au: Optional[str] = Field(
+            "Write flow areas au to map file (1: yes, 0: no).",
+            alias="wrimap_flowarea_au",
+        )
+        wrihis_airdensity: Optional[str] = Field(
+            "Write air density to his file (1: yes, 0: no).", alias="wrihis_airdensity"
+        )
+        wrimap_flow_flux_q1_main: Optional[str] = Field(
+            "Write flow flux in main channel to map file (1: yes, 0: no).",
+            alias="wrimap_flow_flux_q1_main",
+        )
+        wrimap_windstress: Optional[str] = Field(
+            "Write wind stress to map file (1: yes, 0: no).", alias="wrimap_windstress"
+        )
+        wrishp_genstruc: Optional[str] = Field(
+            "Writing general structures to shape file (0=no, 1=yes).",
+            alias="wrishp_genstruc",
+        )
+        wrimap_qin: Optional[str] = Field(
+            "Write sum of all influxes to map file (1: yes, 0: no).", alias="wrimap_qin"
+        )
+        wrimap_dtcell: Optional[str] = Field(
+            "Write time step per cell based on CFL (1: yes, 0: no).",
+            alias="wrimap_dtcell",
+        )
+        wrimap_velocity_vectorq: Optional[str] = Field(
+            "Write cell-center velocity vectors (discharge-based) to map file (1: yes, 0: no).",
+            alias="wrimap_velocity_vectorq",
+        )
+        wrimap_bnd: Optional[str] = Field(
+            "Write boundary points to map file (1: yes, 0: no).", alias="wrimap_bnd"
+        )
+        wrishp_dambreak: Optional[str] = Field(
+            "Writing dambreaks to shape file (0=no, 1=yes).", alias="wrishp_dambreak"
+        )
+        wrimap_waterdepth_hu: Optional[str] = Field(
+            "Write water depths on u-points to map file (1: yes, 0: no).",
+            alias="wrimap_waterdepth_hu",
+        )
+        ncmapdataprecision: Optional[str] = Field(
+            "Precision for NetCDF data in map files (double or single).",
+            alias="ncMapDataPrecision",
+        )
+        nchisdataprecision: Optional[str] = Field(
+            "Precision for NetCDF data in his files (double or single).",
+            alias="ncHisDataPrecision",
+        )
+        wrimap_interception: Optional[str] = Field(
+            "Write interception to map file (1: yes, 0: no).",
+            alias="wrimap_interception",
+        )
+        wrimap_airdensity: Optional[str] = Field(
+            "Write air density to map file, (1:yes, 0:no).", alias="wrimap_airdensity"
+        )
+        wrimap_volume1: Optional[str] = Field(
+            "Write volumes to map file (1: yes, 0: no).", alias="wrimap_volume1"
+        )
+        wrimap_ancillary_variables: Optional[str] = Field(
+            "Write ancillary variables attributes to map file (1: yes, 0: no).",
+            alias="wrimap_ancillary_variables",
+        )
+        wrimap_chezy_on_flow_links: Optional[str] = Field(
+            "Write chezy roughness on flow links to map file, (1: yes, 0: no)",
+            alias="wrimap_chezy_on_flow_links",
+        )
 
     comments: Comments = Comments()
 
@@ -1427,6 +1637,30 @@ class Output(INIBasedModel):
     statsinterval: List[float] = Field([-60.0], alias="statsInterval")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
     richardsononoutput: bool = Field(False, alias="richardsonOnOutput")
+    wrimap_every_dt: bool = Field(False, alias="wrimap_input_dt")
+    wrimap_input_roughness: bool = Field(False, alias="wrimap_input_roughness")
+    wrimap_flowarea_au: bool = Field(False, alias="wrimap_flowarea_au")
+    wrihis_airdensity: bool = Field(False, alias="wrihis_airdensity")
+    wrimap_flow_flux_q1_main: bool = Field(False, alias="wrimap_flow_flux_q1_main")
+    wrimap_windstress: bool = Field(False, alias="wrimap_windstress")
+    wrishp_genstruc: bool = Field(False, alias="wrishp_genstruc")
+    wrimap_qin: bool = Field(False, alias="wrimap_qin")
+    wrimap_dtcell: bool = Field(False, alias="wrimap_dtcell")
+    wrimap_velocity_vectorq: bool = Field(False, alias="wrimap_velocity_vectorq")
+    wrimap_bnd: bool = Field(False, alias="wrimap_bnd")
+    wrishp_dambreak: bool = Field(False, alias="wrishp_dambreak")
+    wrimap_waterdepth_hu: bool = Field(False, alias="wrimap_waterdepth_hu")
+    ncmapdataprecision: Literal["single", "double"] = Field(
+        "double", alias="ncMapDataPrecision"
+    )
+    nchisdataprecision: Literal["single", "double"] = Field(
+        "double", alias="ncHisDataPrecision"
+    )
+    wrimap_interception: bool = Field(False, alias="wrimap_interception")
+    wrimap_airdensity: bool = Field(False, alias="wrimap_airdensity")
+    wrimap_volume1: bool = Field(False, alias="wrimap_volume1")
+    wrimap_ancillary_variables: bool = Field(False, alias="wrimap_ancillary_variables")
+    wrimap_chezy_on_flow_links: bool = Field(False, alias="wrimap_chezy_on_flow_links")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
@@ -1642,6 +1876,63 @@ class Geometry(INIBasedModel):
             "Change the structure dimensions in case these are inconsistent with the channel dimensions.",
             alias="changeStructureDimensions",
         )
+        gridenclosurefile: Optional[str] = Field(
+            "Enclosure file <*.pol> to clip outer parts from the grid.",
+            alias="gridEnclosureFile",
+        )
+        allowbndatbifurcation: Optional[str] = Field(
+            "Allow 1d boundary node when connectin branch leads to bifurcation (1: yes, 0: no).",
+            alias="allowBndAtBifurcation",
+        )
+        slotw1d: Optional[str] = Field("Minimum slotwidth 1D [m].", alias="slotw1D")
+        slotw2d: Optional[str] = Field("Minimum slotwidth 2D [m].", alias="slotw2D")
+        uniformheight1droofgutterpipes: Optional[str] = Field(
+            "Uniform height for roof gutter pipes [m].",
+            alias="uniformHeight1DRoofGutterPipes",
+        )
+        dxmin1d: Optional[str] = Field("Minimum 1D link length [m].", alias="dxmin1D")
+        uniformtyp1dstreetinlets: Optional[str] = Field(
+            "Uniform cross section type for street inlets (1: circle, 2: rectangle, -2: closed rectangle).",
+            alias="uniformTyp1DStreetInlets",
+        )
+        stretchtype: Optional[str] = Field(
+            "Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.",
+            alias="stretchType",
+        )
+        zlaybot: Optional[str] = Field(
+            "if specified, first z-layer starts from zlaybot [ ], if not, it starts from the lowest bed point.",
+            alias="zlayBot",
+        )
+        zlaytop: Optional[str] = Field(
+            "if specified, highest z-layer ends at zlaytop [ ], if not, it ends at the initial water level.",
+            alias="zlayTop",
+        )
+        uniformheight1d: Optional[str] = Field(
+            "Uniform height for 1D profiles and 1d2d internal links [m].",
+            alias="uniformHeight1D",
+        )
+        roofsfile: Optional[str] = Field(
+            "Polyline file <*_roof.pliz>, containing roofgutter heights x, y, z level.",
+            alias="roofsFile",
+        )
+        gulliesfile: Optional[str] = Field(
+            "Polyline file <*_gul.pliz>, containing lowest bed level along talweg x, y, z level.",
+            alias="gulliesFile",
+        )
+        uniformwidth1dstreetinlets: Optional[str] = Field(
+            "Uniform width for street inlets [m].", alias="uniformWidth1DStreetInlets"
+        )
+        uniformheight1dstreetinlets: Optional[str] = Field(
+            "Uniform height for street inlets [m]", alias="uniformHeight1DStreetInlets"
+        )
+        uniformtyp1droofgutterpipes: Optional[str] = Field(
+            "Uniform cross section type for type roof gutter pipes (1: circle, 2: rectangle, -2: closed rectangle).",
+            alias="uniformTyp1DRoofGutterPipes",
+        )
+        uniformwidth1droofgutterpipes: Optional[str] = Field(
+            "Uniform width for roof gutter pipes [m].",
+            alias="uniformWidth1DRoofGutterPipes",
+        )
 
     comments: Comments = Comments()
 
@@ -1725,6 +2016,27 @@ class Geometry(INIBasedModel):
     dxdoubleat1dendnodes: bool = Field(True, alias="dxDoubleAt1DEndNodes")
     changevelocityatstructures: bool = Field(False, alias="changeVelocityAtStructures")
     changestructuredimensions: bool = Field(True, alias="changeStructureDimensions")
+    gridenclosurefile: Optional[PolyFile] = Field(None, alias="gridEnclosureFile")
+    allowbndatbifurcation: bool = Field(False, alias="allowBndAtBifurcation")
+    slotw1d: float = Field(0.001, alias="slotw1D")
+    slotw2d: float = Field(0.001, alias="slotw2D")
+    uniformheight1droofgutterpipes: float = Field(
+        0.1, alias="uniformHeight1DRoofGutterPipes"
+    )
+    dxmin1d: float = Field(0.001, alias="dxmin1D")
+    uniformtyp1dstreetinlets: int = Field(-2, alias="uniformTyp1DStreetInlets")
+    stretchtype: int = Field(1, alias="stretchType")
+    zlaybot: float = Field(-999.0, alias="zlayBot")
+    zlaytop: float = Field(-999.0, alias="zlayTop")
+    uniformheight1d: float = Field(3.0, alias="uniformHeight1D")
+    roofsfile: Optional[PolyFile] = Field(None, alias="roofsFile")
+    gulliesfile: Optional[PolyFile] = Field(None, alias="gulliesFile")
+    uniformwidth1dstreetinlets: float = Field(0.2, alias="uniformWidth1DStreetInlets")
+    uniformheight1dstreetinlets: float = Field(0.1, alias="uniformHeight1DStreetInlets")
+    uniformtyp1droofgutterpipes: int = Field(-2, alias="uniformTyp1DRoofGutterPipes")
+    uniformwidth1droofgutterpipes: float = Field(
+        0.1, alias="uniformWidth1DRoofGutterPipes"
+    )
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "frictfile",
