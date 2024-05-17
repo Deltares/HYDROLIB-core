@@ -425,5 +425,6 @@ class ResearchSedtrails(INIBasedModel):
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
+    numerics: ResearchNumerics = Field(default_factory=ResearchNumerics)
     sedtrails: Optional[ResearchSedtrails] = Field(None)
 
