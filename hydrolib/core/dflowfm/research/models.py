@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm import (
     Numerics,
     Physics,
     Sediment,
-    Wind, Waves, Time, Restart, Trachytopes,
+    Wind, Waves, Time, Restart, Trachytopes, Output,
 )
 
 
@@ -623,6 +623,113 @@ class ResearchTrachytopes(Trachytopes):
     trtcll: Optional[DiskOnlyFileModel] = Field(None, alias="trtcll")
 
 
+class ResearchOutput(Output):
+    class Comments(Output.Comments):
+        mbalumpsourcesinks: Optional[str] = Field(
+            "Lump MBA source/sink mass balance terms (1: yes, 0: no).",
+            alias="mbalumpsourcesinks"
+        )
+        wrimap_nearfield: Optional[str] = Field(
+            "Write near field parameters (1: yes, 0: no).",
+            alias="wrimap_nearfield"
+        )
+        velocitymagnitudeclasses: Optional[str] = Field(
+            "Class map's list of class values for velocity magnitudes.",
+            alias="velocitymagnitudeclasses"
+        )
+        writedfminterpretedvalues: Optional[str] = Field(
+            "Write DFMinterpretedvalues (1: yes, 0: no).",
+            alias="writedfminterpretedvalues"
+        )
+        deleteobspointsoutsidegrid: Optional[str] = Field(
+            "0 - do not delete, 1 - delete.",
+            alias="deleteobspointsoutsidegrid"
+        )
+        mbalumpboundaries: Optional[str] = Field(
+            "Lump MBA boundary mass balance terms (1: yes, 0: no).",
+            alias="mbalumpboundaries"
+        )
+        writepart_domain: Optional[str] = Field(
+            "Write partition domain info. for postprocessing.",
+            alias="writepart_domain"
+        )
+        waqhoraggr: Optional[str] = Field(
+            "DELWAQ output horizontal aggregation file (*.dwq).",
+            alias="waqhoraggr"
+        )
+        writedetailedtimers: Optional[str] = Field(
+            "Write detailed timers output file (1: yes, 0: no).",
+            alias="writedetailedtimers"
+        )
+        metadatafile: Optional[str] = Field(
+            "metadata file",
+            alias="metadatafile"
+        )
+        mbainterval: Optional[str] = Field(
+            "Mass balance area output interval (s).",
+            alias="mbainterval"
+        )
+        velocitydirectionclassesinterval: Optional[str] = Field(
+            "Class map's step size of class values for velocity direction.",
+            alias="velocitydirectionclassesinterval"
+        )
+        wrirst_bnd: Optional[str] = Field(
+            "Write waterlevel",
+            alias="wrirst_bnd"
+        )
+        generateuuid: Optional[str] = Field(
+            "Generate UUID as unique dataset identifier and include in output NetCDF files.",
+            alias="generateuuid"
+        )
+        timesplitinterval: Optional[str] = Field(
+            "Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.",
+            alias="timesplitinterval"
+        )
+        rugfile: Optional[str] = Field(
+            "Polyline file *_rug.pli defining runup gauges.",
+            alias="rugfile"
+        )
+        mbawritecsv: Optional[str] = Field(
+            "Write mass balance area output to a csv-file (1: yes, 0: no).",
+            alias="mbawritecsv"
+        )
+        mbalumpfromtomba: Optional[str] = Field(
+            "Lump MBA from/to other areas mass balance terms (1: yes, 0: no).",
+            alias="mbalumpfromtomba"
+        )
+        mbalumpprocesses: Optional[str] = Field(
+            "Lump MBA processes mass balance terms (1: yes, 0: no).",
+            alias="mbalumpprocesses"
+        )
+        waqvertaggr: Optional[str] = Field(
+            "DELWAQ output vertical aggregation file (*.vag).",
+            alias="waqvertaggr"
+        )
+
+    comments: Comments = Comments()
+
+    mbalumpsourcesinks: Optional[bool] = Field(None, alias="mbalumpsourcesinks")
+    wrimap_nearfield: Optional[bool] = Field(None, alias="wrimap_nearfield")
+    velocitymagnitudeclasses: Optional[List[str]] = Field(None, alias="velocitymagnitudeclasses")
+    writedfminterpretedvalues: Optional[bool] = Field(None, alias="writedfminterpretedvalues")
+    deleteobspointsoutsidegrid: Optional[bool] = Field(None, alias="deleteobspointsoutsidegrid")
+    mbalumpboundaries: Optional[bool] = Field(None, alias="mbalumpboundaries")
+    writepart_domain: Optional[bool] = Field(None, alias="writepart_domain")
+    waqhoraggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqhoraggr")
+    writedetailedtimers: Optional[bool] = Field(None, alias="writedetailedtimers")
+    metadatafile: Optional[DiskOnlyFileModel] = Field(None, alias="metadatafile")
+    mbainterval: Optional[float] = Field(None, alias="mbainterval")
+    velocitydirectionclassesinterval: Optional[int] = Field(None, alias="velocitydirectionclassesinterval")
+    wrirst_bnd: Optional[bool] = Field(None, alias="wrirst_bnd")
+    generateuuid: Optional[bool] = Field(None, alias="generateuuid")
+    timesplitinterval: Optional[str] = Field(None, alias="timesplitinterval")
+    rugfile: Optional[PolyFile] = Field(None, alias="rugfile")
+    mbawritecsv: Optional[bool] = Field(None, alias="mbawritecsv")
+    mbalumpfromtomba: Optional[bool] = Field(None, alias="mbalumpfromtomba")
+    mbalumpprocesses: Optional[bool] = Field(None, alias="mbalumpprocesses")
+    waqvertaggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqvertaggr")
+
+
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
@@ -633,3 +740,4 @@ class ResearchFMModel(FMModel):
     waves: ResearchWaves = Field(default_factory=ResearchWaves)
     time: ResearchTime = Field(default_factory=ResearchTime)
     trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
+    output: ResearchOutput = Field(default_factory=ResearchOutput)
