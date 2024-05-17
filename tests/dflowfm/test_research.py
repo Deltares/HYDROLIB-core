@@ -1,18 +1,18 @@
-from pathlib import Path
-
-from hydrolib.core.dflowfm.research.models import ResearchFMModel
+from hydrolib.core.dflowfm.research.models import ResearchFMModel, ResearchGeneral, ResearchGeometry, ResearchNumerics, \
+    ResearchPhysics, ResearchSediment, ResearchWaves, ResearchTime, ResearchWind, ResearchTrachytopes, ResearchOutput
 
 
 class TestResearchFMModel:
     def test_create_research_fmmodel(self):
         model = ResearchFMModel()
 
-        model.geometry.toplayminthick = 123.456
-
-        model.filepath = Path(r"D:\temp\research.mdu")
-        model.save()
-
-    def test_load_research_model(self):
-        model = ResearchFMModel(filepath=Path(r"D:\temp\research.mdu"))
-
-        assert model.geometry.toplayminthick == 123.456
+        assert isinstance(model.general, ResearchGeneral)
+        assert isinstance(model.geometry, ResearchGeometry)
+        assert isinstance(model.numerics, ResearchNumerics)
+        assert isinstance(model.physics, ResearchPhysics)
+        assert isinstance(model.sediment, ResearchSediment)
+        assert isinstance(model.wind, ResearchWind)
+        assert isinstance(model.waves, ResearchWaves)
+        assert isinstance(model.time, ResearchTime)
+        assert isinstance(model.trachytopes, ResearchTrachytopes)
+        assert isinstance(model.output, ResearchOutput)
