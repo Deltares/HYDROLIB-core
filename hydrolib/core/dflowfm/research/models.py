@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm import (
     Numerics,
     Physics,
     Sediment,
-    Wind, Waves, Time, Restart, Trachytopes, Output,
+    Wind, Waves, Time, Restart, Trachytopes, Output, PolyFile,
 )
 
 
