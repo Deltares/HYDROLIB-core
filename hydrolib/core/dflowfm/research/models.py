@@ -351,6 +351,10 @@ class ResearchNumerics(Numerics):
             "Corrections for spherical coordinates.",
             alias="jasfer3d",
         )
+        vertadvtypmom3onbnd: Optional[str] = Field(
+            "vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd.",
+            alias="Vertadvtypmom3onbnd",
+        )
 
     comments: Comments = Comments()
 
@@ -416,6 +420,7 @@ class ResearchNumerics(Numerics):
     locsaltmax: Optional[float] = Field(None, alias="locsaltmax")
     cffachu: Optional[float] = Field(None, alias="cffachu")
     jasfer3d: Optional[bool] = Field(None, alias="jasfer3d")
+    vertadvtypmom3onbnd: Optional[int] = Field(None, alias="Vertadvtypmom3onbnd")
 
 
 class ResearchPhysics(Physics):
