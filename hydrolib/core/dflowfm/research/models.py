@@ -3,7 +3,15 @@ from typing import Optional
 from pydantic.v1 import Field
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm import Geometry, FMModel, General, Numerics, Physics, Sediment, Wind
+from hydrolib.core.dflowfm import (
+    FMModel,
+    General,
+    Geometry,
+    Numerics,
+    Physics,
+    Sediment,
+    Wind,
+)
 
 
 class ResearchGeneral(General):
@@ -480,18 +488,17 @@ class ResearchSediment(Sediment):
 class ResearchWind(Wind):
     class Comments(Wind.Comments):
         windhuorzwsbased: Optional[str] = Field(
-            "Wind hu or zws based, 0 = hu, 1 = zws.",
-            alias="windhuorzwsbased"
+            "Wind hu or zws based, 0 = hu, 1 = zws.", alias="windhuorzwsbased"
         )
         varyingairdensity: Optional[str] = Field(
-            "Compute air density yes/no (), 1/0, default 0.",
-            alias="varyingAirDensity"
+            "Compute air density yes/no (), 1/0, default 0.", alias="varyingAirDensity"
         )
 
     comments: Comments = Comments()
 
     windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
     varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
+
 
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
@@ -500,4 +507,3 @@ class ResearchFMModel(FMModel):
     physics: ResearchPhysics = Field(default_factory=ResearchPhysics)
     sediment: ResearchSediment = Field(default_factory=ResearchSediment)
     wind: ResearchWind = Field(default_factory=ResearchWind)
-

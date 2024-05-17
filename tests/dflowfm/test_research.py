@@ -15,5 +15,4 @@ class TestResearchFMModel:
     def test_load_research_model(self):
         model = ResearchFMModel(filepath=Path(r"D:\temp\research.mdu"))
 
-
         assert model.geometry.toplayminthick == 123.456
