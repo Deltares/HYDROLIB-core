@@ -768,4 +768,4 @@ class ResearchFMModel(FMModel):
     time: ResearchTime = Field(default_factory=ResearchTime)
     trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
     output: ResearchOutput = Field(default_factory=ResearchOutput)
-    processes: Optional[ResearchProcesses] = Field(default_factory=ResearchProcesses)
+    processes: Optional[ResearchProcesses] = Field(None)
