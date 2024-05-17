@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm import (
     Numerics,
     Physics,
     Sediment,
-    Wind, Waves, Time, Restart,
+    Wind, Waves, Time, Restart, Trachytopes,
 )
 
 
@@ -601,6 +601,28 @@ class ResearchRestart(Restart):
     rstignorebl: Optional[bool] = Field(None, alias="rstignorebl")
 
 
+class ResearchTrachytopes(Trachytopes):
+    class Comments(Trachytopes.Comments):
+        trtmth: Optional[str] = Field(
+            "Area averaging method, (1=Nikuradse k based, 2=Chezy C based (parallel and serial)).",
+            alias="trtmth"
+        )
+        trtmnh: Optional[str] = Field(
+            "Minimum water depth for roughness computations.",
+            alias="trtmnh"
+        )
+        trtcll: Optional[str] = Field(
+            "Calibration factor file for roughness from trachytopes (see also [calibration] block).",
+            alias="trtcll"
+        )
+
+    comments: Comments = Comments()
+
+    trtmth: Optional[int] = Field(None, alias="trtmth")
+    trtmnh: Optional[float] = Field(None, alias="trtmnh")
+    trtcll: Optional[DiskOnlyFileModel] = Field(None, alias="trtcll")
+
+
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
@@ -610,3 +632,4 @@ class ResearchFMModel(FMModel):
     wind: ResearchWind = Field(default_factory=ResearchWind)
     waves: ResearchWaves = Field(default_factory=ResearchWaves)
     time: ResearchTime = Field(default_factory=ResearchTime)
+    trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
