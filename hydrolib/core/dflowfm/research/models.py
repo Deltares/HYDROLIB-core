@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm import (
     Numerics,
     Physics,
     Sediment,
-    Wind, Waves,
+    Wind, Waves, Time,
 )
 
 
@@ -567,6 +567,28 @@ class ResearchWaves(Waves):
     jahissigwav: Optional[int] = Field(None, alias="jahissigwav")
 
 
+class ResearchTime(Time):
+    class Comments(Time.Comments):
+        timestepanalysis: Optional[str] = Field(
+            "0=no, 1=see file *.steps.",
+            alias="timestepanalysis"
+        )
+        autotimestepvisc: Optional[str] = Field(
+            "0 = no, 1 = yes (Time limitation based on explicit diffusive term).",
+            alias="autotimestepvisc"
+        )
+        dtfacmax: Optional[str] = Field(
+            "Max timestep increase factor ( ).",
+            alias="dtfacmax"
+        )
+
+    comment: Comments = Comments()
+
+    timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
+    autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
+    dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
+
+
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
@@ -575,3 +597,4 @@ class ResearchFMModel(FMModel):
     sediment: ResearchSediment = Field(default_factory=ResearchSediment)
     wind: ResearchWind = Field(default_factory=ResearchWind)
     waves: ResearchWaves = Field(default_factory=ResearchWaves)
+    time: ResearchTime = Field(default_factory=ResearchTime)
