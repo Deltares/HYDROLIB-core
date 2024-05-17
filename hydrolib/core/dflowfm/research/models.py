@@ -15,6 +15,7 @@ from hydrolib.core.dflowfm import (
 
 
 class ResearchGeneral(General):
+    """An extended [general] section that includes highly experimental research keywords."""
     class Comments(General.Comments):
         modelspecific: Optional[str] = Field(
             "Optional 'model specific ID', to enable certain custom runtime function calls (instead of via MDU name).",
@@ -32,6 +33,7 @@ class ResearchGeneral(General):
 
 
 class ResearchGeometry(Geometry):
+    """An extended [geometry] section that includes highly experimental research keywords."""
     class Comments(Geometry.Comments):
         toplayminthick: Optional[str] = Field(
             "Minimum top layer thickness(m), only for Z-layers.",
@@ -149,6 +151,7 @@ class ResearchGeometry(Geometry):
 
 
 class ResearchNumerics(Numerics):
+    """An extended [numerics] section that includes highly experimental research keywords."""
     class Comments(Numerics.Comments):
         faclaxturb: Optional[str] = Field(
             "Default: 0=TurKin0 from links, 1.0=from nodes. 0.5=fityfifty.",
@@ -416,6 +419,7 @@ class ResearchNumerics(Numerics):
 
 
 class ResearchPhysics(Physics):
+    """An extended [physics] section that includes highly experimental research keywords."""
     class Comments(Physics.Comments):
         surftempsmofac: Optional[str] = Field(
             "Hor. Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no.",
@@ -462,6 +466,7 @@ class ResearchPhysics(Physics):
 
 
 class ResearchSediment(Sediment):
+    """An extended [sediment] section that includes highly experimental research keywords."""
     class Comments(Sediment.Comments):
         mxgrkrone: Optional[str] = Field(
             "Highest fraction index treated by Krone.", alias="mxgrkrone"
@@ -486,6 +491,7 @@ class ResearchSediment(Sediment):
 
 
 class ResearchWind(Wind):
+    """An extended [wind] section that includes highly experimental research keywords."""
     class Comments(Wind.Comments):
         windhuorzwsbased: Optional[str] = Field(
             "Wind hu or zws based, 0 = hu, 1 = zws.", alias="windhuorzwsbased"
@@ -501,6 +507,7 @@ class ResearchWind(Wind):
 
 
 class ResearchWaves(Waves):
+    """An extended [waves] section that includes highly experimental research keywords."""
     class Comments(Waves.Comments):
         waveswartdelwaq: Optional[str] = Field(
             "If WaveSwartDelwaq == 1 .and. Tiwaq > 0 then increase tauwave to Delwaq with 0.5rhofwuorbuorb.",
@@ -568,6 +575,7 @@ class ResearchWaves(Waves):
 
 
 class ResearchTime(Time):
+    """An extended [time] section that includes highly experimental research keywords."""
     class Comments(Time.Comments):
         timestepanalysis: Optional[str] = Field(
             "0=no, 1=see file *.steps.",
@@ -590,6 +598,7 @@ class ResearchTime(Time):
 
 
 class ResearchRestart(Restart):
+    """An extended [restart] section that includes highly experimental research keywords."""
     class Comments(Restart.Comments):
         rstignorebl: Optional[str] = Field(
             "Flag indicating whether bed level from restart should be ignored (0=no (default), 1=yes).",
@@ -602,6 +611,7 @@ class ResearchRestart(Restart):
 
 
 class ResearchTrachytopes(Trachytopes):
+    """An extended [trachytopes] section that includes highly experimental research keywords."""
     class Comments(Trachytopes.Comments):
         trtmth: Optional[str] = Field(
             "Area averaging method, (1=Nikuradse k based, 2=Chezy C based (parallel and serial)).",
@@ -624,6 +634,7 @@ class ResearchTrachytopes(Trachytopes):
 
 
 class ResearchOutput(Output):
+    """An extended [output] section that includes highly experimental research keywords."""
     class Comments(Output.Comments):
         mbalumpsourcesinks: Optional[str] = Field(
             "Lump MBA source/sink mass balance terms (1: yes, 0: no).",
@@ -731,6 +742,7 @@ class ResearchOutput(Output):
 
 
 class ResearchProcesses(Processes):
+    """An extended [processes] section that includes highly experimental research keywords."""
     class Comments(Processes.Comments):
         substancedensitycoupling: Optional[str] = Field(
             "Substance rho coupling (0=no, 1=yes).",
@@ -743,6 +755,9 @@ class ResearchProcesses(Processes):
 
 
 class ResearchFMModel(FMModel):
+    """
+    An extended FMModel that includes highly experimental research sections and keywords.
+    """
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
     numerics: ResearchNumerics = Field(default_factory=ResearchNumerics)
