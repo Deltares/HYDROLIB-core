@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm import (
     Numerics,
     Physics,
     Sediment,
-    Wind, Waves, Time,
+    Wind, Waves, Time, Restart,
 )
 
 
@@ -587,6 +587,18 @@ class ResearchTime(Time):
     timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
     autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
     dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
+
+
+class ResearchRestart(Restart):
+    class Comments(Restart.Comments):
+        rstignorebl: Optional[str] = Field(
+            "Flag indicating whether bed level from restart should be ignored (0=no (default), 1=yes).",
+            alias="rstignorebl"
+        )
+
+    comments: Comments = Comments()
+
+    rstignorebl: Optional[bool] = Field(None, alias="rstignorebl")
 
 
 class ResearchFMModel(FMModel):
