@@ -3,7 +3,7 @@ from typing import Optional, Literal
 from pydantic.v1 import Field
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm import Geometry, FMModel, General, Numerics
+from hydrolib.core.dflowfm import Geometry, FMModel, General, Numerics, Physics
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 
 
@@ -408,6 +408,52 @@ class ResearchNumerics(Numerics):
     jasfer3d: Optional[bool] = Field(None, alias="jasfer3d")
 
 
+class ResearchPhysics(Physics):
+    class Comments(Physics.Comments):
+        surftempsmofac: Optional[str] = Field(
+            "Hor. Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no.",
+            alias="surftempsmofac"
+        )
+        selfattractionloading_correct_wl_with_ini: Optional[str] = Field(
+            "Correct water level with initial water level in Self attraction and loading (0=no, 1=yes).",
+            alias="selfattractionloading_correct_wl_with_ini"
+        )
+        nfentrainmentmomentum: Optional[str] = Field(
+            "1: Switch on momentum transfer in NearField related entrainment.",
+            alias="nfentrainmentmomentum"
+        )
+        uniffrictcoef1d2d: Optional[str] = Field(
+            "Uniform friction coefficient in 1D links (0: no friction).",
+            alias="unifFrictCoef1d2d"
+        )
+        equili: Optional[str] = Field(
+            "Equilibrium spiral flow intensity (0: no, 1: yes).",
+            alias="equili"
+        )
+        allowcoolingbelowzero: Optional[str] = Field(
+            "False	0 = no, 1 = yes.",
+            alias="allowCoolingBelowZero"
+        )
+        soiltempthick: Optional[str] = Field(
+            "Use soil temperature buffer if > 0.",
+            alias="soilTempThick"
+        )
+        selfattractionloading: Optional[str] = Field(
+            "Self attraction and loading (0=no, 1=yes, 2=only self attraction).",
+            alias="selfAttractionLoading"
+        )
+
+    comments: Comments = Comments()
+
+    surftempsmofac: Optional[float] = Field(None, alias="surftempsmofac")
+    selfattractionloading_correct_wl_with_ini: Optional[bool] = Field(None, alias="selfattractionloading_correct_wl_with_ini")
+    nfentrainmentmomentum: Optional[bool] = Field(None, alias="nfentrainmentmomentum")
+    uniffrictcoef1d2d: Optional[float] = Field(None, alias="unifFrictCoef1d2d")
+    equili: Optional[bool] = Field(None, alias="equili")
+    allowcoolingbelowzero: Optional[bool] = Field(None, alias="allowCoolingBelowZero")
+    soiltempthick: Optional[float] = Field(None, alias="soilTempThick")
+    selfattractionloading: Optional[int] = Field(None, alias="selfAttractionLoading")
+
 class ResearchSedtrails(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         sedtrailsoutputfile: Optional[str] = Field(
@@ -426,5 +472,6 @@ class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
     numerics: ResearchNumerics = Field(default_factory=ResearchNumerics)
+    physics: ResearchPhysics = Field(default_factory=ResearchPhysics)
     sedtrails: Optional[ResearchSedtrails] = Field(None)
 
