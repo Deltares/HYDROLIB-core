@@ -531,11 +531,16 @@ class ResearchWind(Wind):
         varyingairdensity: Optional[str] = Field(
             "Compute air density yes/no (), 1/0, default 0.", alias="varyingAirDensity"
         )
+        wind_eachstep: Optional[str] = Field(
+            "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
+            alias="Wind_eachstep"
+        )
 
     comments: Comments = Comments()
 
     windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
     varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
+    wind_eachstep: Optional[int] = Field(None, alias="Wind_eachstep")
 
 
 class ResearchWaves(Waves):
