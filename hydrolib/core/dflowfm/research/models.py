@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm import (
     Numerics,
     Physics,
     Sediment,
-    Wind, Waves, Time, Restart, Trachytopes, Output, PolyFile,
+    Wind, Waves, Time, Restart, Trachytopes, Output, PolyFile, Processes,
 )
 
 
@@ -730,6 +730,18 @@ class ResearchOutput(Output):
     waqvertaggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqvertaggr")
 
 
+class ResearchProcesses(Processes):
+    class Comments(Processes.Comments):
+        substancedensitycoupling: Optional[str] = Field(
+            "Substance rho coupling (0=no, 1=yes).",
+            alias="substancedensitycoupling"
+        )
+
+    comments: Comments = Comments()
+
+    substancedensitycoupling: Optional[bool] = Field(None, alias="substancedensitycoupling")
+
+
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
@@ -741,3 +753,4 @@ class ResearchFMModel(FMModel):
     time: ResearchTime = Field(default_factory=ResearchTime)
     trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
     output: ResearchOutput = Field(default_factory=ResearchOutput)
+    processes: Optional[ResearchProcesses] = Field(default_factory=ResearchProcesses)
