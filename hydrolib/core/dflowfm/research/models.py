@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic.v1 import Field
 
@@ -8,14 +8,22 @@ from hydrolib.core.dflowfm import (
     General,
     Geometry,
     Numerics,
+    Output,
     Physics,
+    PolyFile,
+    Processes,
+    Restart,
     Sediment,
-    Wind, Waves, Time, Restart, Trachytopes, Output, PolyFile, Processes,
+    Time,
+    Trachytopes,
+    Waves,
+    Wind,
 )
 
 
 class ResearchGeneral(General):
     """An extended [general] section that includes highly experimental research keywords."""
+
     class Comments(General.Comments):
         modelspecific: Optional[str] = Field(
             "Optional 'model specific ID', to enable certain custom runtime function calls (instead of via MDU name).",
@@ -34,6 +42,7 @@ class ResearchGeneral(General):
 
 class ResearchGeometry(Geometry):
     """An extended [geometry] section that includes highly experimental research keywords."""
+
     class Comments(Geometry.Comments):
         toplayminthick: Optional[str] = Field(
             "Minimum top layer thickness(m), only for Z-layers.",
@@ -157,6 +166,7 @@ class ResearchGeometry(Geometry):
 
 class ResearchNumerics(Numerics):
     """An extended [numerics] section that includes highly experimental research keywords."""
+
     class Comments(Numerics.Comments):
         faclaxturb: Optional[str] = Field(
             "Default: 0=TurKin0 from links, 1.0=from nodes. 0.5=fityfifty.",
@@ -430,6 +440,7 @@ class ResearchNumerics(Numerics):
 
 class ResearchPhysics(Physics):
     """An extended [physics] section that includes highly experimental research keywords."""
+
     class Comments(Physics.Comments):
         surftempsmofac: Optional[str] = Field(
             "Hor. Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no.",
@@ -482,7 +493,6 @@ class ResearchPhysics(Physics):
             alias="UnifFrictCoef1DgrLay",
         )
 
-
     comments: Comments = Comments()
 
     surftempsmofac: Optional[float] = Field(None, alias="surftempsmofac")
@@ -495,7 +505,9 @@ class ResearchPhysics(Physics):
     allowcoolingbelowzero: Optional[bool] = Field(None, alias="allowCoolingBelowZero")
     soiltempthick: Optional[float] = Field(None, alias="soilTempThick")
     selfattractionloading: Optional[int] = Field(None, alias="selfAttractionLoading")
-    prandtlnumbertemperature: Optional[float] = Field(None, alias="PrandtlNumberTemperature")
+    prandtlnumbertemperature: Optional[float] = Field(
+        None, alias="PrandtlNumberTemperature"
+    )
     schmidtnumbersalinity: Optional[float] = Field(None, alias="SchmidtNumberSalinity")
     schmidtnumbertracer: Optional[float] = Field(None, alias="SchmidtNumberTracer")
     umodlin: Optional[float] = Field(None, alias="Umodlin")
@@ -504,6 +516,7 @@ class ResearchPhysics(Physics):
 
 class ResearchSediment(Sediment):
     """An extended [sediment] section that includes highly experimental research keywords."""
+
     class Comments(Sediment.Comments):
         mxgrkrone: Optional[str] = Field(
             "Highest fraction index treated by Krone.", alias="mxgrkrone"
@@ -529,6 +542,7 @@ class ResearchSediment(Sediment):
 
 class ResearchWind(Wind):
     """An extended [wind] section that includes highly experimental research keywords."""
+
     class Comments(Wind.Comments):
         windhuorzwsbased: Optional[str] = Field(
             "Wind hu or zws based, 0 = hu, 1 = zws.", alias="windhuorzwsbased"
@@ -538,7 +552,7 @@ class ResearchWind(Wind):
         )
         wind_eachstep: Optional[str] = Field(
             "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
-            alias="Wind_eachstep"
+            alias="Wind_eachstep",
         )
 
     comments: Comments = Comments()
@@ -550,54 +564,50 @@ class ResearchWind(Wind):
 
 class ResearchWaves(Waves):
     """An extended [waves] section that includes highly experimental research keywords."""
+
     class Comments(Waves.Comments):
         waveswartdelwaq: Optional[str] = Field(
             "If WaveSwartDelwaq == 1 .and. Tiwaq > 0 then increase tauwave to Delwaq with 0.5rhofwuorbuorb.",
-            alias="waveswartdelwaq"
+            alias="waveswartdelwaq",
         )
         hwavuni: Optional[str] = Field(
-            "Root mean square wave height (m).",
-            alias="hwavuni"
+            "Root mean square wave height (m).", alias="hwavuni"
         )
         tifetchcomp: Optional[str] = Field(
-            "Time interval fetch comp (s) in wavemodel 1, 2.",
-            alias="tifetchcomp"
+            "Time interval fetch comp (s) in wavemodel 1, 2.", alias="tifetchcomp"
         )
         phiwavuni: Optional[str] = Field(
             "Root mean square wave direction, (deg), math convention.",
-            alias="phiwavuni"
+            alias="phiwavuni",
         )
         threedwavestreaming: Optional[str] = Field(
             "Influence of wave streaming. 0: no, 1: added to adve.",
-            alias="threedwavestreaming"
+            alias="threedwavestreaming",
         )
         threedwaveboundarylayer: Optional[str] = Field(
-            "Boundary layer formulation. 1: Sana.",
-            alias="threedwaveboundarylayer"
+            "Boundary layer formulation. 1: Sana.", alias="threedwaveboundarylayer"
         )
         twavuni: Optional[str] = Field(
-            "Root mean square wave period (s).",
-            alias="twavuni"
+            "Root mean square wave period (s).", alias="twavuni"
         )
         uorbfac: Optional[str] = Field(
-            "Orbital velocities: 0=D3D style; 1=Guza style.",
-            alias="uorbfac"
+            "Orbital velocities: 0=D3D style; 1=Guza style.", alias="uorbfac"
         )
         threedstokesprofile: Optional[str] = Field(
             "Stokes profile. 0: no, 1:uniform over depth, 2: 2nd order Stokes theory; 3: 2, with vertical stokes gradient in adve.",
-            alias="threedstokesprofile"
+            alias="threedstokesprofile",
         )
         jamapsigwav: Optional[str] = Field(
             "1: sign wave height on map output; 0: hrms wave height on map output. Default=0 (legacy behaviour).",
-            alias="jamapsigwav"
+            alias="jamapsigwav",
         )
         hminlw: Optional[str] = Field(
             "Cut-off depth for application of wave forces in momentum balance.",
-            alias="hminlw"
+            alias="hminlw",
         )
         jahissigwav: Optional[str] = Field(
             "Sign wave height on his output; 0: hrms wave height on his output. Default=1.",
-            alias="jahissigwav"
+            alias="jahissigwav",
         )
 
     comments: Comments = Comments()
@@ -607,7 +617,9 @@ class ResearchWaves(Waves):
     tifetchcomp: Optional[float] = Field(None, alias="tifetchcomp")
     phiwavuni: Optional[float] = Field(None, alias="phiwavuni")
     threedwavestreaming: Optional[int] = Field(None, alias="threedwavestreaming")
-    threedwaveboundarylayer: Optional[int] = Field(None, alias="threedwaveboundarylayer")
+    threedwaveboundarylayer: Optional[int] = Field(
+        None, alias="threedwaveboundarylayer"
+    )
     twavuni: Optional[float] = Field(None, alias="twavuni")
     uorbfac: Optional[int] = Field(None, alias="uorbfac")
     threedstokesprofile: Optional[int] = Field(None, alias="threedstokesprofile")
@@ -618,22 +630,21 @@ class ResearchWaves(Waves):
 
 class ResearchTime(Time):
     """An extended [time] section that includes highly experimental research keywords."""
+
     class Comments(Time.Comments):
         timestepanalysis: Optional[str] = Field(
-            "0=no, 1=see file *.steps.",
-            alias="timestepanalysis"
+            "0=no, 1=see file *.steps.", alias="timestepanalysis"
         )
         autotimestepvisc: Optional[str] = Field(
             "0 = no, 1 = yes (Time limitation based on explicit diffusive term).",
-            alias="autotimestepvisc"
+            alias="autotimestepvisc",
         )
         dtfacmax: Optional[str] = Field(
-            "Max timestep increase factor ( ).",
-            alias="dtfacmax"
+            "Max timestep increase factor ( ).", alias="dtfacmax"
         )
         tstarttlfsmo: Optional[str] = Field(
             "Start time of smoothing of boundary conditions (Tlfsmo) w.r.t. RefDate (in TUnit).",
-            alias="TStartTlfsmo"
+            alias="TStartTlfsmo",
         )
 
     comment: Comments = Comments()
@@ -646,10 +657,11 @@ class ResearchTime(Time):
 
 class ResearchRestart(Restart):
     """An extended [restart] section that includes highly experimental research keywords."""
+
     class Comments(Restart.Comments):
         rstignorebl: Optional[str] = Field(
             "Flag indicating whether bed level from restart should be ignored (0=no (default), 1=yes).",
-            alias="rstignorebl"
+            alias="rstignorebl",
         )
 
     comments: Comments = Comments()
@@ -659,18 +671,18 @@ class ResearchRestart(Restart):
 
 class ResearchTrachytopes(Trachytopes):
     """An extended [trachytopes] section that includes highly experimental research keywords."""
+
     class Comments(Trachytopes.Comments):
         trtmth: Optional[str] = Field(
             "Area averaging method, (1=Nikuradse k based, 2=Chezy C based (parallel and serial)).",
-            alias="trtmth"
+            alias="trtmth",
         )
         trtmnh: Optional[str] = Field(
-            "Minimum water depth for roughness computations.",
-            alias="trtmnh"
+            "Minimum water depth for roughness computations.", alias="trtmnh"
         )
         trtcll: Optional[str] = Field(
             "Calibration factor file for roughness from trachytopes (see also [calibration] block).",
-            alias="trtcll"
+            alias="trtcll",
         )
 
     comments: Comments = Comments()
@@ -682,123 +694,119 @@ class ResearchTrachytopes(Trachytopes):
 
 class ResearchOutput(Output):
     """An extended [output] section that includes highly experimental research keywords."""
+
     class Comments(Output.Comments):
         mbalumpsourcesinks: Optional[str] = Field(
             "Lump MBA source/sink mass balance terms (1: yes, 0: no).",
-            alias="mbalumpsourcesinks"
+            alias="mbalumpsourcesinks",
         )
         wrimap_nearfield: Optional[str] = Field(
-            "Write near field parameters (1: yes, 0: no).",
-            alias="wrimap_nearfield"
+            "Write near field parameters (1: yes, 0: no).", alias="wrimap_nearfield"
         )
         velocitymagnitudeclasses: Optional[str] = Field(
             "Class map's list of class values for velocity magnitudes.",
-            alias="velocitymagnitudeclasses"
+            alias="velocitymagnitudeclasses",
         )
         writedfminterpretedvalues: Optional[str] = Field(
             "Write DFMinterpretedvalues (1: yes, 0: no).",
-            alias="writedfminterpretedvalues"
+            alias="writedfminterpretedvalues",
         )
         deleteobspointsoutsidegrid: Optional[str] = Field(
-            "0 - do not delete, 1 - delete.",
-            alias="deleteobspointsoutsidegrid"
+            "0 - do not delete, 1 - delete.", alias="deleteobspointsoutsidegrid"
         )
         mbalumpboundaries: Optional[str] = Field(
             "Lump MBA boundary mass balance terms (1: yes, 0: no).",
-            alias="mbalumpboundaries"
+            alias="mbalumpboundaries",
         )
         writepart_domain: Optional[str] = Field(
-            "Write partition domain info. for postprocessing.",
-            alias="writepart_domain"
+            "Write partition domain info. for postprocessing.", alias="writepart_domain"
         )
         waqhoraggr: Optional[str] = Field(
-            "DELWAQ output horizontal aggregation file (*.dwq).",
-            alias="waqhoraggr"
+            "DELWAQ output horizontal aggregation file (*.dwq).", alias="waqhoraggr"
         )
         writedetailedtimers: Optional[str] = Field(
             "Write detailed timers output file (1: yes, 0: no).",
-            alias="writedetailedtimers"
+            alias="writedetailedtimers",
         )
-        metadatafile: Optional[str] = Field(
-            "metadata file",
-            alias="metadatafile"
-        )
+        metadatafile: Optional[str] = Field("metadata file", alias="metadatafile")
         mbainterval: Optional[str] = Field(
-            "Mass balance area output interval (s).",
-            alias="mbainterval"
+            "Mass balance area output interval (s).", alias="mbainterval"
         )
         velocitydirectionclassesinterval: Optional[str] = Field(
             "Class map's step size of class values for velocity direction.",
-            alias="velocitydirectionclassesinterval"
+            alias="velocitydirectionclassesinterval",
         )
-        wrirst_bnd: Optional[str] = Field(
-            "Write waterlevel",
-            alias="wrirst_bnd"
-        )
+        wrirst_bnd: Optional[str] = Field("Write waterlevel", alias="wrirst_bnd")
         generateuuid: Optional[str] = Field(
             "Generate UUID as unique dataset identifier and include in output NetCDF files.",
-            alias="generateuuid"
+            alias="generateuuid",
         )
         timesplitinterval: Optional[str] = Field(
             "Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.",
-            alias="timesplitinterval"
+            alias="timesplitinterval",
         )
         rugfile: Optional[str] = Field(
-            "Polyline file *_rug.pli defining runup gauges.",
-            alias="rugfile"
+            "Polyline file *_rug.pli defining runup gauges.", alias="rugfile"
         )
         mbawritecsv: Optional[str] = Field(
             "Write mass balance area output to a csv-file (1: yes, 0: no).",
-            alias="mbawritecsv"
+            alias="mbawritecsv",
         )
         mbalumpfromtomba: Optional[str] = Field(
             "Lump MBA from/to other areas mass balance terms (1: yes, 0: no).",
-            alias="mbalumpfromtomba"
+            alias="mbalumpfromtomba",
         )
         mbalumpprocesses: Optional[str] = Field(
             "Lump MBA processes mass balance terms (1: yes, 0: no).",
-            alias="mbalumpprocesses"
+            alias="mbalumpprocesses",
         )
         waqvertaggr: Optional[str] = Field(
-            "DELWAQ output vertical aggregation file (*.vag).",
-            alias="waqvertaggr"
+            "DELWAQ output vertical aggregation file (*.vag).", alias="waqvertaggr"
         )
 
         mbawritenetcdf: Optional[str] = Field(
             "Write mass balance area output to a netCDF-file (1: yes, 0: no).",
-            alias="MbaWriteNetCDF"
+            alias="MbaWriteNetCDF",
         )
         mbawritetxt: Optional[str] = Field(
             "Write mass balance area output to a txt-file (1: yes, 0: no).",
-            alias="MbaWriteTxt"
+            alias="MbaWriteTxt",
         )
         nccompression: Optional[str] = Field(
             "Whether or not (1/0) to apply compression to NetCDF output files - NOTE: only works when NcFormat = 4.",
-            alias="NcCompression"
+            alias="NcCompression",
         )
         wrimap_ice: Optional[str] = Field(
             "Write output to map file for ice cover, 0=no (default), 1=yes.",
-            alias="Wrimap_ice"
+            alias="Wrimap_ice",
         )
         wrimap_trachytopes: Optional[str] = Field(
             "Write trachytope roughnesses to map file (1: yes, 0: no).",
-            alias="Wrimap_trachytopes"
+            alias="Wrimap_trachytopes",
         )
 
     comments: Comments = Comments()
 
     mbalumpsourcesinks: Optional[bool] = Field(None, alias="mbalumpsourcesinks")
     wrimap_nearfield: Optional[bool] = Field(None, alias="wrimap_nearfield")
-    velocitymagnitudeclasses: Optional[List[str]] = Field(None, alias="velocitymagnitudeclasses")
-    writedfminterpretedvalues: Optional[bool] = Field(None, alias="writedfminterpretedvalues")
-    deleteobspointsoutsidegrid: Optional[bool] = Field(None, alias="deleteobspointsoutsidegrid")
+    velocitymagnitudeclasses: Optional[List[str]] = Field(
+        None, alias="velocitymagnitudeclasses"
+    )
+    writedfminterpretedvalues: Optional[bool] = Field(
+        None, alias="writedfminterpretedvalues"
+    )
+    deleteobspointsoutsidegrid: Optional[bool] = Field(
+        None, alias="deleteobspointsoutsidegrid"
+    )
     mbalumpboundaries: Optional[bool] = Field(None, alias="mbalumpboundaries")
     writepart_domain: Optional[bool] = Field(None, alias="writepart_domain")
     waqhoraggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqhoraggr")
     writedetailedtimers: Optional[bool] = Field(None, alias="writedetailedtimers")
     metadatafile: Optional[DiskOnlyFileModel] = Field(None, alias="metadatafile")
     mbainterval: Optional[float] = Field(None, alias="mbainterval")
-    velocitydirectionclassesinterval: Optional[int] = Field(None, alias="velocitydirectionclassesinterval")
+    velocitydirectionclassesinterval: Optional[int] = Field(
+        None, alias="velocitydirectionclassesinterval"
+    )
     wrirst_bnd: Optional[bool] = Field(None, alias="wrirst_bnd")
     generateuuid: Optional[bool] = Field(None, alias="generateuuid")
     timesplitinterval: Optional[str] = Field(None, alias="timesplitinterval")
@@ -816,21 +824,24 @@ class ResearchOutput(Output):
 
 class ResearchProcesses(Processes):
     """An extended [processes] section that includes highly experimental research keywords."""
+
     class Comments(Processes.Comments):
         substancedensitycoupling: Optional[str] = Field(
-            "Substance rho coupling (0=no, 1=yes).",
-            alias="substancedensitycoupling"
+            "Substance rho coupling (0=no, 1=yes).", alias="substancedensitycoupling"
         )
 
     comments: Comments = Comments()
 
-    substancedensitycoupling: Optional[bool] = Field(None, alias="substancedensitycoupling")
+    substancedensitycoupling: Optional[bool] = Field(
+        None, alias="substancedensitycoupling"
+    )
 
 
 class ResearchFMModel(FMModel):
     """
     An extended FMModel that includes highly experimental research sections and keywords.
     """
+
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
     numerics: ResearchNumerics = Field(default_factory=ResearchNumerics)

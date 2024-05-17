@@ -1,5 +1,16 @@
-from hydrolib.core.dflowfm.research.models import ResearchFMModel, ResearchGeneral, ResearchGeometry, ResearchNumerics, \
-    ResearchPhysics, ResearchSediment, ResearchWaves, ResearchTime, ResearchWind, ResearchTrachytopes, ResearchOutput
+from hydrolib.core.dflowfm.research.models import (
+    ResearchFMModel,
+    ResearchGeneral,
+    ResearchGeometry,
+    ResearchNumerics,
+    ResearchOutput,
+    ResearchPhysics,
+    ResearchSediment,
+    ResearchTime,
+    ResearchTrachytopes,
+    ResearchWaves,
+    ResearchWind,
+)
 
 
 class TestResearchFMModel:
