@@ -123,6 +123,10 @@ class ResearchGeometry(Geometry):
             "Only in pipes: groundlayer thickness (m).",
             alias="groundLayerThickness",
         )
+        extrbl: Optional[str] = Field(
+            "Extrapolation of bed level at boundaries according to the slope: 0 = no extrapolation (default); 1 = extrapolate.",
+            alias="ExtrBl",
+        )
 
     comments: Comments = Comments()
 
@@ -148,6 +152,7 @@ class ResearchGeometry(Geometry):
     orgfloorlevtoplaydef: Optional[bool] = Field(None, alias="orgFloorLevelTopLayDef")
     pipefile: Optional[DiskOnlyFileModel] = Field(None, alias="pipeFile")
     groundlayerthickness: Optional[float] = Field(None, alias="groundLayerThickness")
+    extrbl: Optional[bool] = Field(None, alias="ExtrBl")
 
 
 class ResearchNumerics(Numerics):
