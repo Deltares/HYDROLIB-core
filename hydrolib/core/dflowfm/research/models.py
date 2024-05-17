@@ -3,7 +3,7 @@ from typing import Optional, Literal
 from pydantic.v1 import Field
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm import Geometry, FMModel, General, Numerics, Physics
+from hydrolib.core.dflowfm import Geometry, FMModel, General, Numerics, Physics, Sediment
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 
 
@@ -454,6 +454,33 @@ class ResearchPhysics(Physics):
     soiltempthick: Optional[float] = Field(None, alias="soilTempThick")
     selfattractionloading: Optional[int] = Field(None, alias="selfAttractionLoading")
 
+
+class ResearchSediment(Sediment):
+    class Comments(Sediment.Comments):
+        mxgrkrone: Optional[str] = Field(
+            "Highest fraction index treated by Krone.",
+            alias="mxgrkrone"
+        )
+        seddenscoupling: Optional[str] = Field(
+            "Sed rho coupling (0=no, 1=yes).",
+            alias="seddensCoupling"
+        )
+        implicitfallvelocity: Optional[str] = Field(
+            "1=Impl., 0 = Expl.",
+            alias="implicitFallVelocity"
+        )
+        nr_of_sedfractions: Optional[str] = Field(
+            "Nr of sediment fractions, (specify the next parameters for each fraction).",
+            alias="nr_of_sedfractions"
+        )
+
+    comments: Comments = Comments()
+
+    mxgrkrone: Optional[int] = Field(None, alias="mxgrkrone")
+    seddenscoupling: Optional[bool] = Field(None, alias="seddensCoupling")
+    implicitfallvelocity: Optional[int] = Field(None, alias="implicitFallVelocity")
+    nr_of_sedfractions: Optional[int] = Field(None, alias="nr_of_sedfractions")
+
 class ResearchSedtrails(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         sedtrailsoutputfile: Optional[str] = Field(
@@ -473,5 +500,6 @@ class ResearchFMModel(FMModel):
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
     numerics: ResearchNumerics = Field(default_factory=ResearchNumerics)
     physics: ResearchPhysics = Field(default_factory=ResearchPhysics)
+    sediment = ResearchSediment = Field(default_factory=ResearchSediment)
     sedtrails: Optional[ResearchSedtrails] = Field(None)
 
