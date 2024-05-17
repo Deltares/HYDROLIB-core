@@ -168,163 +168,153 @@ class ResearchNumerics(Numerics):
         )
         coriohhtrsh: Optional[str] = Field(
             "0=default=no safety in hu/hus weightings, only for Newcorio=1.",
-            alias="coriohhtrsh"
+            alias="coriohhtrsh",
         )
         limtypw: Optional[str] = Field(
             "Limiter type for wave action transport (0: none, 1: minmod, 2: van Leer, 3: Koren, 4: monotone central).",
-            alias="limtypw"
+            alias="limtypw",
         )
         huweirregular: Optional[str] = Field(
             "For villemonte and Tabellenboek, regular hu below Huweirregular.",
-            alias="huweirregular"
+            alias="huweirregular",
         )
         structurelayersactive: Optional[str] = Field(
             "0=structure flow through all layers, 1=structure flow only through open layers.",
-            alias="structureLayersActive"
+            alias="structureLayersActive",
         )
         corioadamsbashfordfac: Optional[str] = Field(
             "0.5	0=No, 0.5d0=AdamsBashford, only for Newcorio=1.",
-            alias="corioadamsbashfordfac"
+            alias="corioadamsbashfordfac",
         )
         vertadvtypsal: Optional[str] = Field(
             "Vertical advection type for salinity (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester).",
-            alias="vertadvtypsal"
+            alias="vertadvtypsal",
         )
         baorgfracmin: Optional[str] = Field(
             "Cell area = max(orgcellarea*Baorgfracmin, cutcell area)",
-            alias="baorgfracmin"
+            alias="baorgfracmin",
         )
         epstke: Optional[str] = Field(
-            "TKE=max(TKE, EpsTKE), default=1d-32",
-            alias="epstke"
+            "TKE=max(TKE, EpsTKE), default=1d-32", alias="epstke"
         )
         jadrhodz: Optional[str] = Field(
             "1:central org, 2:centralnew, 3:upw cell, 4:most stratf. cell, 5:least stratf. cell.",
-            alias="jadrhodz"
+            alias="jadrhodz",
         )
         logprofkepsbndin: Optional[str] = Field(
             "Inflow: 0=0 keps, 1 = log keps inflow, 2 = log keps in and outflow.",
-            alias="logprofkepsbndin"
+            alias="logprofkepsbndin",
         )
         epshstem: Optional[str] = Field(
-            "Only compute heatflx + evap if depth > epshstem.",
-            alias="epshstem"
+            "Only compute heatflx + evap if depth > epshstem.", alias="epshstem"
         )
         newcorio: Optional[str] = Field(
             "0=prior to 27-11-2019, 1=no normal forcing on open bnds, plus 12 variants.",
-            alias="newcorio"
+            alias="newcorio",
         )
         diffusiononbnd: Optional[str] = Field(
             "On open boundaries, 0 switches off horizontal diffusion Default = 1.",
-            alias="diffusiononbnd"
+            alias="diffusiononbnd",
         )
         barrieradvection: Optional[str] = Field(
-            "1 = no correction, 2 = advection correction.",
-            alias="barrieradvection"
+            "1 = no correction, 2 = advection correction.", alias="barrieradvection"
         )
         rhointerfaces: Optional[str] = Field(
             "Evaluate rho at interfaces, 0=org at centers, 1=at interfaces.",
-            alias="rhointerfaces"
+            alias="rhointerfaces",
         )
         logprofatubndin: Optional[str] = Field(
             "ubnds inflow: 0=uniform U1, 1 = log U1, 2 = user3D.",
-            alias="logprofatubndin"
+            alias="logprofatubndin",
         )
         horadvtypzlayer: Optional[str] = Field(
             "Horizontal advection treatment of z-layers (1: default, 2: sigma-like).",
-            alias="horadvtypzlayer"
+            alias="horadvtypzlayer",
         )
         chkdifd: Optional[str] = Field(
             "Check diffusion terms if depth < chkdifd, only if jatransportautotimestepdiff==1.",
-            alias="chkdifd"
+            alias="chkdifd",
         )
         lateral_fixedweir_umin: Optional[str] = Field(
             "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
-            alias="lateral_fixedweir_umin"
+            alias="lateral_fixedweir_umin",
         )
         fixedweirfrictscheme: Optional[str] = Field(
             "Fixed weir friction scheme (0: friction based on hu, 1: friction based on subgrid weir friction scheme).",
-            alias="fixedWeirFrictScheme"
+            alias="fixedWeirFrictScheme",
         )
         icoriolistype: Optional[str] = Field(
             "0=No, 5=default, 3, 4 no weights, 5-10 Kleptsova hu/hs, 25-30 Ham hs/hu, odd: 2D hs/hu, even: hsk/huk.",
-            alias="icoriolistype"
+            alias="icoriolistype",
         )
         zwsbtol: Optional[str] = Field(
-            "Tolerance for zws(kb-1) at bed.",
-            alias="zwsbtol"
+            "Tolerance for zws(kb-1) at bed.", alias="zwsbtol"
         )
         cfexphu: Optional[str] = Field(
-            "Exp for including (1-CFL) in sethu.",
-            alias="cfexphu"
+            "Exp for including (1-CFL) in sethu.", alias="cfexphu"
         )
         drop3d: Optional[str] = Field(
             "Apply droplosses in 3D if z upwind below bob + 2/3 hu*drop3D.",
-            alias="drop3d"
+            alias="drop3d",
         )
         zlayercenterbedvel: Optional[str] = Field(
             "Reconstruction of center velocity at half closed bedcells (0=no, 1: copy bed link velocities).",
-            alias="zlayercenterbedvel"
+            alias="zlayercenterbedvel",
         )
         cffacver: Optional[str] = Field(
             "Factor for including (1-CFL) in HO term vertical (0d0: no, 1d0: yes).",
-            alias="cffacver"
+            alias="cffacver",
         )
         eddyviscositybedfacmax: Optional[str] = Field(
-            "Limit eddy viscosity at bed.",
-            alias="eddyviscositybedfacmax"
+            "Limit eddy viscosity at bed.", alias="eddyviscositybedfacmax"
         )
         epseps: Optional[str] = Field(
-            "EPS=max(EPS, EpsEPS), default=1d-32, (or TAU).",
-            alias="epseps"
+            "EPS=max(EPS, EpsEPS), default=1d-32, (or TAU).", alias="epseps"
         )
         lateral_fixedweir_umin_method: Optional[str] = Field(
             "Method for minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
-            alias="lateral_fixedweir_umin_method"
+            alias="lateral_fixedweir_umin_method",
         )
         lateral_fixedweir_minimal_1d2d_embankment: Optional[str] = Field(
             "Minimal crest height of 1D2D SOBEK-DFM embankments.",
-            alias="lateral_fixedweir_minimal_1d2d_embankment"
+            alias="lateral_fixedweir_minimal_1d2d_embankment",
         )
         testfixedweirs: Optional[str] = Field(
             "Test for fixed weir algoritms (0 = Sieben2010, 1 = Sieben2007 ).",
-            alias="testFixedWeirs"
+            alias="testFixedWeirs",
         )
         jposhchk: Optional[str] = Field(
             "Check for positive waterdepth (0: no, 1: 0.7dts, just redo, 2: 1.0dts, close all links, 3: 0.7dts, close all links, 4: 1.0dts, reduce au, 5: 0.7dts, reduce au, 6: 1.0dts, close outflowing links, 7: 0.7*dts, close outflowing link.",
-            alias="jposhchk"
+            alias="jposhchk",
         )
         cfconhormom: Optional[str] = Field(
             "Constant for including (1-CFL) in HO term horizontal mom.",
-            alias="jposhchk"
+            alias="jposhchk",
         )
         cffachormom: Optional[str] = Field(
             "Factor for including (1-CFL) in HO term horizontal mom (0d0: no, 1d0: yes).",
-            alias="cffachormom"
+            alias="cffachormom",
         )
         trsh_u1lb: Optional[str] = Field(
-            "2D bedfriction in 3D below this threshold (m).",
-            alias="trsh_u1lb"
+            "2D bedfriction in 3D below this threshold (m).", alias="trsh_u1lb"
         )
         corioconstant: Optional[str] = Field(
             "0=default, 1=Coriolis constant in sferic models anyway, 2=beta plane, both in cart. and spher. coord.",
-            alias="corioconstant"
+            alias="corioconstant",
         )
         jaupwindsrc: Optional[str] = Field(
             "1st-order upwind advection at sources/sinks (1) or higher-order (0).",
-            alias="jaupwindsrc"
+            alias="jaupwindsrc",
         )
         locsaltlev: Optional[str] = Field(
-            "Salinity level for case of lock exchange.",
-            alias="locsaltlev"
+            "Salinity level for case of lock exchange.", alias="locsaltlev"
         )
         subsuplupdates1: Optional[str] = Field(
             "Update water levels (S1) due to subsidence / uplift.",
-            alias="subsuplupdates1"
+            alias="subsuplupdates1",
         )
         linkdriedmx: Optional[str] = Field(
-            "Nr of Au reduction steps after having dried.",
-            alias="linkdriedmx"
+            "Nr of Au reduction steps after having dried.", alias="linkdriedmx"
         )
         maxitpresdens: Optional[str] = Field(
             "Max nr of iterations in pressure-density coupling, only used if idensform > 10.",
@@ -377,7 +367,9 @@ class ResearchNumerics(Numerics):
     logprofatubndin: Optional[int] = Field(None, alias="logprofatubndin")
     horadvtypzlayer: Optional[int] = Field(None, alias="horadvtypzlayer")
     chkdifd: Optional[float] = Field(None, alias="chkdifd")
-    lateral_fixedweir_umin: Optional[float] = Field(None, alias="lateral_fixedweir_umin")
+    lateral_fixedweir_umin: Optional[float] = Field(
+        None, alias="lateral_fixedweir_umin"
+    )
     fixedweirfrictscheme: Optional[int] = Field(None, alias="fixedWeirFrictScheme")
     icoriolistype: Optional[int] = Field(None, alias="icoriolistype")
     zwsbtol: Optional[float] = Field(None, alias="zwsbtol")
@@ -385,10 +377,16 @@ class ResearchNumerics(Numerics):
     drop3d: Optional[float] = Field(None, alias="drop3d")
     zlayercenterbedvel: Optional[int] = Field(None, alias="zlayercenterbedvel")
     cffacver: Optional[float] = Field(None, alias="cffacver")
-    eddyviscositybedfacmax: Optional[float] = Field(None, alias="eddyviscositybedfacmax")
+    eddyviscositybedfacmax: Optional[float] = Field(
+        None, alias="eddyviscositybedfacmax"
+    )
     epseps: Optional[float] = Field(None, alias="epseps")
-    lateral_fixedweir_umin_method: Optional[int] = Field(None, alias="lateral_fixedweir_umin_method")
-    lateral_fixedweir_minimal_1d2d_embankment: Optional[float] = Field(None, alias="lateral_fixedweir_minimal_1d2d_embankment")
+    lateral_fixedweir_umin_method: Optional[int] = Field(
+        None, alias="lateral_fixedweir_umin_method"
+    )
+    lateral_fixedweir_minimal_1d2d_embankment: Optional[float] = Field(
+        None, alias="lateral_fixedweir_minimal_1d2d_embankment"
+    )
     testfixedweirs: Optional[int] = Field(None, alias="testFixedWeirs")
     jposhchk: Optional[int] = Field(None, alias="jposhchk")
     cfconhormom: Optional[float] = Field(None, alias="cfconhormom")
@@ -400,7 +398,9 @@ class ResearchNumerics(Numerics):
     subsuplupdates1: Optional[bool] = Field(None, alias="subsuplupdates1")
     linkdriedmx: Optional[int] = Field(None, alias="linkdriedmx")
     maxitpresdens: Optional[int] = Field(None, alias="maxItPresDens")
-    lateral_fixedweir_relax: Optional[float] = Field(None, alias="lateral_fixedweir_relax")
+    lateral_fixedweir_relax: Optional[float] = Field(
+        None, alias="lateral_fixedweir_relax"
+    )
     numlimdt_baorg: Optional[int] = Field(None, alias="numlimdt_baorg")
     locsaltmax: Optional[float] = Field(None, alias="locsaltmax")
     cffachu: Optional[float] = Field(None, alias="cffachu")
@@ -411,41 +411,40 @@ class ResearchPhysics(Physics):
     class Comments(Physics.Comments):
         surftempsmofac: Optional[str] = Field(
             "Hor. Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no.",
-            alias="surftempsmofac"
+            alias="surftempsmofac",
         )
         selfattractionloading_correct_wl_with_ini: Optional[str] = Field(
             "Correct water level with initial water level in Self attraction and loading (0=no, 1=yes).",
-            alias="selfattractionloading_correct_wl_with_ini"
+            alias="selfattractionloading_correct_wl_with_ini",
         )
         nfentrainmentmomentum: Optional[str] = Field(
             "1: Switch on momentum transfer in NearField related entrainment.",
-            alias="nfentrainmentmomentum"
+            alias="nfentrainmentmomentum",
         )
         uniffrictcoef1d2d: Optional[str] = Field(
             "Uniform friction coefficient in 1D links (0: no friction).",
-            alias="unifFrictCoef1d2d"
+            alias="unifFrictCoef1d2d",
         )
         equili: Optional[str] = Field(
-            "Equilibrium spiral flow intensity (0: no, 1: yes).",
-            alias="equili"
+            "Equilibrium spiral flow intensity (0: no, 1: yes).", alias="equili"
         )
         allowcoolingbelowzero: Optional[str] = Field(
-            "False	0 = no, 1 = yes.",
-            alias="allowCoolingBelowZero"
+            "False	0 = no, 1 = yes.", alias="allowCoolingBelowZero"
         )
         soiltempthick: Optional[str] = Field(
-            "Use soil temperature buffer if > 0.",
-            alias="soilTempThick"
+            "Use soil temperature buffer if > 0.", alias="soilTempThick"
         )
         selfattractionloading: Optional[str] = Field(
             "Self attraction and loading (0=no, 1=yes, 2=only self attraction).",
-            alias="selfAttractionLoading"
+            alias="selfAttractionLoading",
         )
 
     comments: Comments = Comments()
 
     surftempsmofac: Optional[float] = Field(None, alias="surftempsmofac")
-    selfattractionloading_correct_wl_with_ini: Optional[bool] = Field(None, alias="selfattractionloading_correct_wl_with_ini")
+    selfattractionloading_correct_wl_with_ini: Optional[bool] = Field(
+        None, alias="selfattractionloading_correct_wl_with_ini"
+    )
     nfentrainmentmomentum: Optional[bool] = Field(None, alias="nfentrainmentmomentum")
     uniffrictcoef1d2d: Optional[float] = Field(None, alias="unifFrictCoef1d2d")
     equili: Optional[bool] = Field(None, alias="equili")
@@ -457,20 +456,17 @@ class ResearchPhysics(Physics):
 class ResearchSediment(Sediment):
     class Comments(Sediment.Comments):
         mxgrkrone: Optional[str] = Field(
-            "Highest fraction index treated by Krone.",
-            alias="mxgrkrone"
+            "Highest fraction index treated by Krone.", alias="mxgrkrone"
         )
         seddenscoupling: Optional[str] = Field(
-            "Sed rho coupling (0=no, 1=yes).",
-            alias="seddensCoupling"
+            "Sed rho coupling (0=no, 1=yes).", alias="seddensCoupling"
         )
         implicitfallvelocity: Optional[str] = Field(
-            "1=Impl., 0 = Expl.",
-            alias="implicitFallVelocity"
+            "1=Impl., 0 = Expl.", alias="implicitFallVelocity"
         )
         nr_of_sedfractions: Optional[str] = Field(
             "Nr of sediment fractions, (specify the next parameters for each fraction).",
-            alias="nr_of_sedfractions"
+            alias="nr_of_sedfractions",
         )
 
     comments: Comments = Comments()

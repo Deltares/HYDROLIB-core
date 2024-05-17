@@ -17,5 +17,3 @@ class TestResearchFMModel:
 
 
         assert model.geometry.toplayminthick == 123.456
-
-
