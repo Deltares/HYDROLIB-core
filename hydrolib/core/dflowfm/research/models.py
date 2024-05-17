@@ -456,6 +456,28 @@ class ResearchPhysics(Physics):
             alias="selfAttractionLoading",
         )
 
+        prandtlnumbertemperature: Optional[str] = Field(
+            "Turbulent Prandtl number for temperature.",
+            alias="PrandtlNumberTemperature",
+        )
+        schmidtnumbersalinity: Optional[str] = Field(
+            "Turbulent Schmidt number for salinity.",
+            alias="SchmidtNumberSalinity",
+        )
+        schmidtnumbertracer: Optional[str] = Field(
+            "Turbulent Schmidt number for tracer(s).",
+            alias="SchmidtNumberTracer",
+        )
+        umodlin: Optional[str] = Field(
+            "Linear friction umod, for ifrctyp=4,5,6.",
+            alias="Umodlin",
+        )
+        uniffrictcoef1dgrlay: Optional[str] = Field(
+            "Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction).",
+            alias="UnifFrictCoef1DgrLay",
+        )
+
+
     comments: Comments = Comments()
 
     surftempsmofac: Optional[float] = Field(None, alias="surftempsmofac")
@@ -468,6 +490,11 @@ class ResearchPhysics(Physics):
     allowcoolingbelowzero: Optional[bool] = Field(None, alias="allowCoolingBelowZero")
     soiltempthick: Optional[float] = Field(None, alias="soilTempThick")
     selfattractionloading: Optional[int] = Field(None, alias="selfAttractionLoading")
+    prandtlnumbertemperature: Optional[float] = Field(None, alias="PrandtlNumberTemperature")
+    schmidtnumbersalinity: Optional[float] = Field(None, alias="SchmidtNumberSalinity")
+    schmidtnumbertracer: Optional[float] = Field(None, alias="SchmidtNumberTracer")
+    umodlin: Optional[float] = Field(None, alias="Umodlin")
+    uniffrictcoef1dgrlay: Optional[float] = Field(None, alias="UnifFrictCoef1DgrLay")
 
 
 class ResearchSediment(Sediment):
