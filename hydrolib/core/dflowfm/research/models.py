@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm import (
     Numerics,
     Physics,
     Sediment,
-    Wind,
+    Wind, Waves,
 )
 
 
@@ -500,6 +500,73 @@ class ResearchWind(Wind):
     varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
 
 
+class ResearchWaves(Waves):
+    class Comments(Waves.Comments):
+        waveswartdelwaq: Optional[str] = Field(
+            "If WaveSwartDelwaq == 1 .and. Tiwaq > 0 then increase tauwave to Delwaq with 0.5rhofwuorbuorb.",
+            alias="waveswartdelwaq"
+        )
+        hwavuni: Optional[str] = Field(
+            "Root mean square wave height (m).",
+            alias="hwavuni"
+        )
+        tifetchcomp: Optional[str] = Field(
+            "Time interval fetch comp (s) in wavemodel 1, 2.",
+            alias="tifetchcomp"
+        )
+        phiwavuni: Optional[str] = Field(
+            "Root mean square wave direction, (deg), math convention.",
+            alias="phiwavuni"
+        )
+        threedwavestreaming: Optional[str] = Field(
+            "Influence of wave streaming. 0: no, 1: added to adve.",
+            alias="threedwavestreaming"
+        )
+        threedwaveboundarylayer: Optional[str] = Field(
+            "Boundary layer formulation. 1: Sana.",
+            alias="threedwaveboundarylayer"
+        )
+        twavuni: Optional[str] = Field(
+            "Root mean square wave period (s).",
+            alias="twavuni"
+        )
+        uorbfac: Optional[str] = Field(
+            "Orbital velocities: 0=D3D style; 1=Guza style.",
+            alias="uorbfac"
+        )
+        threedstokesprofile: Optional[str] = Field(
+            "Stokes profile. 0: no, 1:uniform over depth, 2: 2nd order Stokes theory; 3: 2, with vertical stokes gradient in adve.",
+            alias="threedstokesprofile"
+        )
+        jamapsigwav: Optional[str] = Field(
+            "1: sign wave height on map output; 0: hrms wave height on map output. Default=0 (legacy behaviour).",
+            alias="jamapsigwav"
+        )
+        hminlw: Optional[str] = Field(
+            "Cut-off depth for application of wave forces in momentum balance.",
+            alias="hminlw"
+        )
+        jahissigwav: Optional[str] = Field(
+            "Sign wave height on his output; 0: hrms wave height on his output. Default=1.",
+            alias="jahissigwav"
+        )
+
+    comments: Comments = Comments()
+
+    waveswartdelwaq: Optional[bool] = Field(None, alias="waveswartdelwaq")
+    hwavuni: Optional[float] = Field(None, alias="hwavuni")
+    tifetchcomp: Optional[float] = Field(None, alias="tifetchcomp")
+    phiwavuni: Optional[float] = Field(None, alias="phiwavuni")
+    threedwavestreaming: Optional[int] = Field(None, alias="threedwavestreaming")
+    threedwaveboundarylayer: Optional[int] = Field(None, alias="threedwaveboundarylayer")
+    twavuni: Optional[float] = Field(None, alias="twavuni")
+    uorbfac: Optional[int] = Field(None, alias="uorbfac")
+    threedstokesprofile: Optional[int] = Field(None, alias="threedstokesprofile")
+    jamapsigwav: Optional[int] = Field(None, alias="jamapsigwav")
+    hminlw: Optional[float] = Field(None, alias="hminlw")
+    jahissigwav: Optional[int] = Field(None, alias="jahissigwav")
+
+
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
@@ -507,3 +574,4 @@ class ResearchFMModel(FMModel):
     physics: ResearchPhysics = Field(default_factory=ResearchPhysics)
     sediment: ResearchSediment = Field(default_factory=ResearchSediment)
     wind: ResearchWind = Field(default_factory=ResearchWind)
+    waves: ResearchWaves = Field(default_factory=ResearchWaves)
