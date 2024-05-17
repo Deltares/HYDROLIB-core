@@ -649,7 +649,7 @@ class ResearchRestart(Restart):
 
     comments: Comments = Comments()
 
-    rstignorebl: Optional[bool] = Field(None, alias="rstignorebl")
+    rstignorebl: Optional[bool] = Field(None, alias="RstIgnoreBl")
 
 
 class ResearchTrachytopes(Trachytopes):
@@ -808,6 +808,7 @@ class ResearchFMModel(FMModel):
     wind: ResearchWind = Field(default_factory=ResearchWind)
     waves: ResearchWaves = Field(default_factory=ResearchWaves)
     time: ResearchTime = Field(default_factory=ResearchTime)
+    restart: ResearchRestart = Field(default_factory=ResearchRestart)
     trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
     output: ResearchOutput = Field(default_factory=ResearchOutput)
     processes: Optional[ResearchProcesses] = Field(None)
