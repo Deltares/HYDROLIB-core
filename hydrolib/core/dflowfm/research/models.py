@@ -500,6 +500,6 @@ class ResearchFMModel(FMModel):
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)
     numerics: ResearchNumerics = Field(default_factory=ResearchNumerics)
     physics: ResearchPhysics = Field(default_factory=ResearchPhysics)
-    sediment = ResearchSediment = Field(default_factory=ResearchSediment)
+    sediment: ResearchSediment = Field(default_factory=ResearchSediment)
     sedtrails: Optional[ResearchSedtrails] = Field(None)
 
