@@ -626,12 +626,17 @@ class ResearchTime(Time):
             "Max timestep increase factor ( ).",
             alias="dtfacmax"
         )
+        tstarttlfsmo: Optional[str] = Field(
+            "Start time of smoothing of boundary conditions (Tlfsmo) w.r.t. RefDate (in TUnit).",
+            alias="TStartTlfsmo"
+        )
 
     comment: Comments = Comments()
 
     timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
     autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
     dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
+    tstarttlfsmo: Optional[float] = Field(None, alias="TStartTlfsmo")
 
 
 class ResearchRestart(Restart):
