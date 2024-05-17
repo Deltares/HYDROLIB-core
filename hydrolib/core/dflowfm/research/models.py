@@ -764,6 +764,27 @@ class ResearchOutput(Output):
             alias="waqvertaggr"
         )
 
+        mbawritenetcdf: Optional[str] = Field(
+            "Write mass balance area output to a netCDF-file (1: yes, 0: no).",
+            alias="MbaWriteNetCDF"
+        )
+        mbawritetxt: Optional[str] = Field(
+            "Write mass balance area output to a txt-file (1: yes, 0: no).",
+            alias="MbaWriteTxt"
+        )
+        nccompression: Optional[str] = Field(
+            "Whether or not (1/0) to apply compression to NetCDF output files - NOTE: only works when NcFormat = 4.",
+            alias="NcCompression"
+        )
+        wrimap_ice: Optional[str] = Field(
+            "Write output to map file for ice cover, 0=no (default), 1=yes.",
+            alias="Wrimap_ice"
+        )
+        wrimap_trachytopes: Optional[str] = Field(
+            "Write trachytope roughnesses to map file (1: yes, 0: no).",
+            alias="Wrimap_trachytopes"
+        )
+
     comments: Comments = Comments()
 
     mbalumpsourcesinks: Optional[bool] = Field(None, alias="mbalumpsourcesinks")
@@ -786,6 +807,11 @@ class ResearchOutput(Output):
     mbalumpfromtomba: Optional[bool] = Field(None, alias="mbalumpfromtomba")
     mbalumpprocesses: Optional[bool] = Field(None, alias="mbalumpprocesses")
     waqvertaggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqvertaggr")
+    mbawritenetcdf: Optional[bool] = Field(None, alias="MbaWriteNetCDF")
+    mbawritetxt: Optional[bool] = Field(None, alias="MbaWriteTxt")
+    nccompression: Optional[bool] = Field(None, alias="NcCompression")
+    wrimap_ice: Optional[bool] = Field(None, alias="Wrimap_ice")
+    wrimap_trachytopes: Optional[bool] = Field(None, alias="Wrimap_trachytopes")
 
 
 class ResearchProcesses(Processes):
