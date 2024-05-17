@@ -18,8 +18,9 @@ class TestResearchFMModel:
         model = ResearchFMModel(filepath=Path(r"D:\temp\research.mdu"))
         assert model.sedtrails is not None
         assert model.sedtrails.sedtrailsoutputfile is not None
-        assert str(model.sedtrails.sedtrailsoutputfile.filepath) == r"D:\temp\allow_extra.mdu"
+        assert (
+            str(model.sedtrails.sedtrailsoutputfile.filepath)
+            == r"D:\temp\allow_extra.mdu"
+        )
 
         assert model.geometry.toplayminthick == 123.456
-
-
