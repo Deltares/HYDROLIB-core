@@ -1,10 +1,9 @@
-from typing import Optional, Literal
+from typing import Optional
 
 from pydantic.v1 import Field
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm import Geometry, FMModel, General, Numerics, Physics, Sediment
-from hydrolib.core.dflowfm.ini.models import INIBasedModel
 
 
 class ResearchGeneral(General):
@@ -481,19 +480,6 @@ class ResearchSediment(Sediment):
     implicitfallvelocity: Optional[int] = Field(None, alias="implicitFallVelocity")
     nr_of_sedfractions: Optional[int] = Field(None, alias="nr_of_sedfractions")
 
-class ResearchSedtrails(INIBasedModel):
-    class Comments(INIBasedModel.Comments):
-        sedtrailsoutputfile: Optional[str] = Field(
-            "Sedtrails time-avgd output file.",
-            alias="sedtrailsOutputFile",
-        )
-
-    comments: Comments = Comments()
-
-    _header: Literal["Sedtrails"] = "Sedtrails"
-
-    sedtrailsoutputfile: Optional[DiskOnlyFileModel] = Field(default=None, alias="sedtrailsOutputFile")
-
 
 class ResearchFMModel(FMModel):
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
@@ -501,5 +487,4 @@ class ResearchFMModel(FMModel):
     numerics: ResearchNumerics = Field(default_factory=ResearchNumerics)
     physics: ResearchPhysics = Field(default_factory=ResearchPhysics)
     sediment: ResearchSediment = Field(default_factory=ResearchSediment)
-    sedtrails: Optional[ResearchSedtrails] = Field(None)
 
