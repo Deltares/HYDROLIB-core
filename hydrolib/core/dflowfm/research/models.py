@@ -36,8 +36,8 @@ class ResearchGeneral(General):
 
     comments: Comments = Comments()
 
-    modelspecific: Optional[str] = Field(None, alias="modelspecific")
-    inputspecific: Optional[bool] = Field(None, alias="inputspecific")
+    research_modelspecific: Optional[str] = Field(None, alias="modelspecific")
+    research_inputspecific: Optional[bool] = Field(None, alias="inputspecific")
 
 
 class ResearchGeometry(Geometry):
@@ -139,29 +139,29 @@ class ResearchGeometry(Geometry):
 
     comments: Comments = Comments()
 
-    toplayminthick: Optional[float] = Field(None, alias="topLayMinThick")
-    helmert: Optional[bool] = Field(None, alias="helmert")
-    waterdepthini1d: Optional[float] = Field(None, alias="waterDepthIni1d")
-    zlayeratubybob: Optional[int] = Field(None, alias="zLayerAtuByBob")
-    shipdeffile: Optional[DiskOnlyFileModel] = Field(None, alias="shipDefFile")
-    stripmesh: Optional[bool] = Field(None, alias="stripMesh")
-    bedwavelength: Optional[float] = Field(None, alias="bedWaveLength")
-    removesmalllinkstrsh: Optional[float] = Field(None, alias="removeSmallLinksTrsh")
-    createlinks1d2d: Optional[bool] = Field(None, alias="createLinks1d2d")
-    bedwaveamplitude: Optional[float] = Field(None, alias="bedWaveAmplitude")
-    uniformhu: Optional[float] = Field(None, alias="uniformhu")
-    tsigma: Optional[float] = Field(None, alias="tSigma")
-    dpuopt: Optional[int] = Field(None, alias="dpuopt")
-    ihuzcsig: Optional[int] = Field(None, alias="ihuzcsig")
-    ihuz: Optional[int] = Field(None, alias="ihuz")
-    cosphiutrsh: Optional[float] = Field(None, alias="cosphiutrsh")
-    cutcelllist: Optional[DiskOnlyFileModel] = Field(None, alias="cutCellList")
-    uniformtyp1d: Optional[int] = Field(None, alias="uniformTyp1d")
-    oned2dinternallinktype: Optional[int] = Field(None, alias="oned2dInternalLinkType")
-    orgfloorlevtoplaydef: Optional[bool] = Field(None, alias="orgFloorLevelTopLayDef")
-    pipefile: Optional[DiskOnlyFileModel] = Field(None, alias="pipeFile")
-    groundlayerthickness: Optional[float] = Field(None, alias="groundLayerThickness")
-    extrbl: Optional[bool] = Field(None, alias="ExtrBl")
+    research_toplayminthick: Optional[float] = Field(None, alias="topLayMinThick")
+    research_helmert: Optional[bool] = Field(None, alias="helmert")
+    research_waterdepthini1d: Optional[float] = Field(None, alias="waterDepthIni1d")
+    research_zlayeratubybob: Optional[int] = Field(None, alias="zLayerAtuByBob")
+    research_shipdeffile: Optional[DiskOnlyFileModel] = Field(None, alias="shipDefFile")
+    research_stripmesh: Optional[bool] = Field(None, alias="stripMesh")
+    research_bedwavelength: Optional[float] = Field(None, alias="bedWaveLength")
+    research_removesmalllinkstrsh: Optional[float] = Field(None, alias="removeSmallLinksTrsh")
+    research_createlinks1d2d: Optional[bool] = Field(None, alias="createLinks1d2d")
+    research_bedwaveamplitude: Optional[float] = Field(None, alias="bedWaveAmplitude")
+    research_uniformhu: Optional[float] = Field(None, alias="uniformhu")
+    research_tsigma: Optional[float] = Field(None, alias="tSigma")
+    research_dpuopt: Optional[int] = Field(None, alias="dpuopt")
+    research_ihuzcsig: Optional[int] = Field(None, alias="ihuzcsig")
+    research_ihuz: Optional[int] = Field(None, alias="ihuz")
+    research_cosphiutrsh: Optional[float] = Field(None, alias="cosphiutrsh")
+    research_cutcelllist: Optional[DiskOnlyFileModel] = Field(None, alias="cutCellList")
+    research_uniformtyp1d: Optional[int] = Field(None, alias="uniformTyp1d")
+    research_oned2dinternallinktype: Optional[int] = Field(None, alias="oned2dInternalLinkType")
+    research_orgfloorlevtoplaydef: Optional[bool] = Field(None, alias="orgFloorLevelTopLayDef")
+    research_pipefile: Optional[DiskOnlyFileModel] = Field(None, alias="pipeFile")
+    research_groundlayerthickness: Optional[float] = Field(None, alias="groundLayerThickness")
+    research_extrbl: Optional[bool] = Field(None, alias="ExtrBl")
 
 
 class ResearchNumerics(Numerics):
@@ -373,69 +373,69 @@ class ResearchNumerics(Numerics):
 
     comments: Comments = Comments()
 
-    faclaxturb: Optional[float] = Field(None, alias="faclaxturb")
-    jafaclaxturbtyp: Optional[int] = Field(None, alias="jafaclaxturbtyp")
-    locsaltmin: Optional[float] = Field(None, alias="locsaltmin")
-    lincontin: Optional[int] = Field(None, alias="lincontin")
-    cfexphormom: Optional[float] = Field(None, alias="cfexphormom")
-    jbasqbnddownwindhs: Optional[int] = Field(None, alias="jbasqbnddownwindhs")
-    coriohhtrsh: Optional[float] = Field(None, alias="coriohhtrsh")
-    limtypw: Optional[int] = Field(None, alias="limtypw")
-    huweirregular: Optional[float] = Field(None, alias="huweirregular")
-    structurelayersactive: Optional[int] = Field(None, alias="structureLayersActive")
-    corioadamsbashfordfac: Optional[float] = Field(None, alias="corioadamsbashfordfac")
-    vertadvtypsal: Optional[int] = Field(None, alias="vertadvtypsal")
-    baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
-    epstke: Optional[float] = Field(None, alias="epstke")
-    jadrhodz: Optional[int] = Field(None, alias="jadrhodz")
-    logprofkepsbndin: Optional[int] = Field(None, alias="logprofkepsbndin")
-    epshstem: Optional[float] = Field(None, alias="epshstem")
-    newcorio: Optional[bool] = Field(None, alias="newcorio")
-    diffusiononbnd: Optional[bool] = Field(None, alias="diffusiononbnd")
-    barrieradvection: Optional[int] = Field(None, alias="barrieradvection")
-    rhointerfaces: Optional[int] = Field(None, alias="rhointerfaces")
-    logprofatubndin: Optional[int] = Field(None, alias="logprofatubndin")
-    horadvtypzlayer: Optional[int] = Field(None, alias="horadvtypzlayer")
-    chkdifd: Optional[float] = Field(None, alias="chkdifd")
-    lateral_fixedweir_umin: Optional[float] = Field(
+    research_faclaxturb: Optional[float] = Field(None, alias="faclaxturb")
+    research_jafaclaxturbtyp: Optional[int] = Field(None, alias="jafaclaxturbtyp")
+    research_locsaltmin: Optional[float] = Field(None, alias="locsaltmin")
+    research_lincontin: Optional[int] = Field(None, alias="lincontin")
+    research_cfexphormom: Optional[float] = Field(None, alias="cfexphormom")
+    research_jbasqbnddownwindhs: Optional[int] = Field(None, alias="jbasqbnddownwindhs")
+    research_coriohhtrsh: Optional[float] = Field(None, alias="coriohhtrsh")
+    research_limtypw: Optional[int] = Field(None, alias="limtypw")
+    research_huweirregular: Optional[float] = Field(None, alias="huweirregular")
+    research_structurelayersactive: Optional[int] = Field(None, alias="structureLayersActive")
+    research_corioadamsbashfordfac: Optional[float] = Field(None, alias="corioadamsbashfordfac")
+    research_vertadvtypsal: Optional[int] = Field(None, alias="vertadvtypsal")
+    research_baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
+    research_epstke: Optional[float] = Field(None, alias="epstke")
+    research_jadrhodz: Optional[int] = Field(None, alias="jadrhodz")
+    research_logprofkepsbndin: Optional[int] = Field(None, alias="logprofkepsbndin")
+    research_epshstem: Optional[float] = Field(None, alias="epshstem")
+    research_newcorio: Optional[bool] = Field(None, alias="newcorio")
+    research_diffusiononbnd: Optional[bool] = Field(None, alias="diffusiononbnd")
+    research_barrieradvection: Optional[int] = Field(None, alias="barrieradvection")
+    research_rhointerfaces: Optional[int] = Field(None, alias="rhointerfaces")
+    research_logprofatubndin: Optional[int] = Field(None, alias="logprofatubndin")
+    research_horadvtypzlayer: Optional[int] = Field(None, alias="horadvtypzlayer")
+    research_chkdifd: Optional[float] = Field(None, alias="chkdifd")
+    research_lateral_fixedweir_umin: Optional[float] = Field(
         None, alias="lateral_fixedweir_umin"
     )
-    fixedweirfrictscheme: Optional[int] = Field(None, alias="fixedWeirFrictScheme")
-    icoriolistype: Optional[int] = Field(None, alias="icoriolistype")
-    zwsbtol: Optional[float] = Field(None, alias="zwsbtol")
-    cfexphu: Optional[float] = Field(None, alias="cfexphu")
-    drop3d: Optional[float] = Field(None, alias="drop3d")
-    zlayercenterbedvel: Optional[int] = Field(None, alias="zlayercenterbedvel")
-    cffacver: Optional[float] = Field(None, alias="cffacver")
-    eddyviscositybedfacmax: Optional[float] = Field(
+    research_fixedweirfrictscheme: Optional[int] = Field(None, alias="fixedWeirFrictScheme")
+    research_icoriolistype: Optional[int] = Field(None, alias="icoriolistype")
+    research_zwsbtol: Optional[float] = Field(None, alias="zwsbtol")
+    research_cfexphu: Optional[float] = Field(None, alias="cfexphu")
+    research_drop3d: Optional[float] = Field(None, alias="drop3d")
+    research_zlayercenterbedvel: Optional[int] = Field(None, alias="zlayercenterbedvel")
+    research_cffacver: Optional[float] = Field(None, alias="cffacver")
+    research_eddyviscositybedfacmax: Optional[float] = Field(
         None, alias="eddyviscositybedfacmax"
     )
-    epseps: Optional[float] = Field(None, alias="epseps")
-    lateral_fixedweir_umin_method: Optional[int] = Field(
+    research_epseps: Optional[float] = Field(None, alias="epseps")
+    research_lateral_fixedweir_umin_method: Optional[int] = Field(
         None, alias="lateral_fixedweir_umin_method"
     )
-    lateral_fixedweir_minimal_1d2d_embankment: Optional[float] = Field(
+    research_lateral_fixedweir_minimal_1d2d_embankment: Optional[float] = Field(
         None, alias="lateral_fixedweir_minimal_1d2d_embankment"
     )
-    testfixedweirs: Optional[int] = Field(None, alias="testFixedWeirs")
-    jposhchk: Optional[int] = Field(None, alias="jposhchk")
-    cfconhormom: Optional[float] = Field(None, alias="cfconhormom")
-    cffachormom: Optional[float] = Field(None, alias="cffachormom")
-    trsh_u1lb: Optional[float] = Field(None, alias="trsh_u1lb")
-    corioconstant: Optional[int] = Field(None, alias="corioconstant")
-    jaupwindsrc: Optional[int] = Field(None, alias="jaupwindsrc")
-    locsaltlev: Optional[float] = Field(None, alias="locsaltlev")
-    subsuplupdates1: Optional[bool] = Field(None, alias="subsuplupdates1")
-    linkdriedmx: Optional[int] = Field(None, alias="linkdriedmx")
-    maxitpresdens: Optional[int] = Field(None, alias="maxItPresDens")
-    lateral_fixedweir_relax: Optional[float] = Field(
+    research_testfixedweirs: Optional[int] = Field(None, alias="testFixedWeirs")
+    research_jposhchk: Optional[int] = Field(None, alias="jposhchk")
+    research_cfconhormom: Optional[float] = Field(None, alias="cfconhormom")
+    research_cffachormom: Optional[float] = Field(None, alias="cffachormom")
+    research_trsh_u1lb: Optional[float] = Field(None, alias="trsh_u1lb")
+    research_corioconstant: Optional[int] = Field(None, alias="corioconstant")
+    research_jaupwindsrc: Optional[int] = Field(None, alias="jaupwindsrc")
+    research_locsaltlev: Optional[float] = Field(None, alias="locsaltlev")
+    research_subsuplupdates1: Optional[bool] = Field(None, alias="subsuplupdates1")
+    research_linkdriedmx: Optional[int] = Field(None, alias="linkdriedmx")
+    research_maxitpresdens: Optional[int] = Field(None, alias="maxItPresDens")
+    research_lateral_fixedweir_relax: Optional[float] = Field(
         None, alias="lateral_fixedweir_relax"
     )
-    numlimdt_baorg: Optional[int] = Field(None, alias="numlimdt_baorg")
-    locsaltmax: Optional[float] = Field(None, alias="locsaltmax")
-    cffachu: Optional[float] = Field(None, alias="cffachu")
-    jasfer3d: Optional[bool] = Field(None, alias="jasfer3d")
-    vertadvtypmom3onbnd: Optional[int] = Field(None, alias="Vertadvtypmom3onbnd")
+    research_numlimdt_baorg: Optional[int] = Field(None, alias="numlimdt_baorg")
+    research_locsaltmax: Optional[float] = Field(None, alias="locsaltmax")
+    research_cffachu: Optional[float] = Field(None, alias="cffachu")
+    research_jasfer3d: Optional[bool] = Field(None, alias="jasfer3d")
+    research_vertadvtypmom3onbnd: Optional[int] = Field(None, alias="Vertadvtypmom3onbnd")
 
 
 class ResearchPhysics(Physics):
@@ -495,23 +495,23 @@ class ResearchPhysics(Physics):
 
     comments: Comments = Comments()
 
-    surftempsmofac: Optional[float] = Field(None, alias="surftempsmofac")
-    selfattractionloading_correct_wl_with_ini: Optional[bool] = Field(
+    research_surftempsmofac: Optional[float] = Field(None, alias="surftempsmofac")
+    research_selfattractionloading_correct_wl_with_ini: Optional[bool] = Field(
         None, alias="selfattractionloading_correct_wl_with_ini"
     )
-    nfentrainmentmomentum: Optional[bool] = Field(None, alias="nfentrainmentmomentum")
-    uniffrictcoef1d2d: Optional[float] = Field(None, alias="unifFrictCoef1d2d")
-    equili: Optional[bool] = Field(None, alias="equili")
-    allowcoolingbelowzero: Optional[bool] = Field(None, alias="allowCoolingBelowZero")
-    soiltempthick: Optional[float] = Field(None, alias="soilTempThick")
-    selfattractionloading: Optional[int] = Field(None, alias="selfAttractionLoading")
-    prandtlnumbertemperature: Optional[float] = Field(
+    research_nfentrainmentmomentum: Optional[bool] = Field(None, alias="nfentrainmentmomentum")
+    research_uniffrictcoef1d2d: Optional[float] = Field(None, alias="unifFrictCoef1d2d")
+    research_equili: Optional[bool] = Field(None, alias="equili")
+    research_allowcoolingbelowzero: Optional[bool] = Field(None, alias="allowCoolingBelowZero")
+    research_soiltempthick: Optional[float] = Field(None, alias="soilTempThick")
+    research_selfattractionloading: Optional[int] = Field(None, alias="selfAttractionLoading")
+    research_prandtlnumbertemperature: Optional[float] = Field(
         None, alias="PrandtlNumberTemperature"
     )
-    schmidtnumbersalinity: Optional[float] = Field(None, alias="SchmidtNumberSalinity")
-    schmidtnumbertracer: Optional[float] = Field(None, alias="SchmidtNumberTracer")
-    umodlin: Optional[float] = Field(None, alias="Umodlin")
-    uniffrictcoef1dgrlay: Optional[float] = Field(None, alias="UnifFrictCoef1DgrLay")
+    research_schmidtnumbersalinity: Optional[float] = Field(None, alias="SchmidtNumberSalinity")
+    research_schmidtnumbertracer: Optional[float] = Field(None, alias="SchmidtNumberTracer")
+    research_umodlin: Optional[float] = Field(None, alias="Umodlin")
+    research_uniffrictcoef1dgrlay: Optional[float] = Field(None, alias="UnifFrictCoef1DgrLay")
 
 
 class ResearchSediment(Sediment):
@@ -534,10 +534,10 @@ class ResearchSediment(Sediment):
 
     comments: Comments = Comments()
 
-    mxgrkrone: Optional[int] = Field(None, alias="mxgrkrone")
-    seddenscoupling: Optional[bool] = Field(None, alias="seddensCoupling")
-    implicitfallvelocity: Optional[int] = Field(None, alias="implicitFallVelocity")
-    nr_of_sedfractions: Optional[int] = Field(None, alias="nr_of_sedfractions")
+    research_mxgrkrone: Optional[int] = Field(None, alias="mxgrkrone")
+    research_seddenscoupling: Optional[bool] = Field(None, alias="seddensCoupling")
+    research_implicitfallvelocity: Optional[int] = Field(None, alias="implicitFallVelocity")
+    research_nr_of_sedfractions: Optional[int] = Field(None, alias="nr_of_sedfractions")
 
 
 class ResearchWind(Wind):
@@ -557,9 +557,9 @@ class ResearchWind(Wind):
 
     comments: Comments = Comments()
 
-    windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
-    varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
-    wind_eachstep: Optional[int] = Field(None, alias="Wind_eachstep")
+    research_windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
+    research_varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
+    research_wind_eachstep: Optional[int] = Field(None, alias="Wind_eachstep")
 
 
 class ResearchWaves(Waves):
@@ -612,20 +612,20 @@ class ResearchWaves(Waves):
 
     comments: Comments = Comments()
 
-    waveswartdelwaq: Optional[bool] = Field(None, alias="waveswartdelwaq")
-    hwavuni: Optional[float] = Field(None, alias="hwavuni")
-    tifetchcomp: Optional[float] = Field(None, alias="tifetchcomp")
-    phiwavuni: Optional[float] = Field(None, alias="phiwavuni")
-    threedwavestreaming: Optional[int] = Field(None, alias="threedwavestreaming")
-    threedwaveboundarylayer: Optional[int] = Field(
+    research_waveswartdelwaq: Optional[bool] = Field(None, alias="waveswartdelwaq")
+    research_hwavuni: Optional[float] = Field(None, alias="hwavuni")
+    research_tifetchcomp: Optional[float] = Field(None, alias="tifetchcomp")
+    research_phiwavuni: Optional[float] = Field(None, alias="phiwavuni")
+    research_threedwavestreaming: Optional[int] = Field(None, alias="threedwavestreaming")
+    research_threedwaveboundarylayer: Optional[int] = Field(
         None, alias="threedwaveboundarylayer"
     )
-    twavuni: Optional[float] = Field(None, alias="twavuni")
-    uorbfac: Optional[int] = Field(None, alias="uorbfac")
-    threedstokesprofile: Optional[int] = Field(None, alias="threedstokesprofile")
-    jamapsigwav: Optional[int] = Field(None, alias="jamapsigwav")
-    hminlw: Optional[float] = Field(None, alias="hminlw")
-    jahissigwav: Optional[int] = Field(None, alias="jahissigwav")
+    research_twavuni: Optional[float] = Field(None, alias="twavuni")
+    research_uorbfac: Optional[int] = Field(None, alias="uorbfac")
+    research_threedstokesprofile: Optional[int] = Field(None, alias="threedstokesprofile")
+    research_jamapsigwav: Optional[int] = Field(None, alias="jamapsigwav")
+    research_hminlw: Optional[float] = Field(None, alias="hminlw")
+    research_jahissigwav: Optional[int] = Field(None, alias="jahissigwav")
 
 
 class ResearchTime(Time):
@@ -649,10 +649,10 @@ class ResearchTime(Time):
 
     comment: Comments = Comments()
 
-    timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
-    autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
-    dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
-    tstarttlfsmo: Optional[float] = Field(None, alias="TStartTlfsmo")
+    research_timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
+    research_autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
+    research_dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
+    research_tstarttlfsmo: Optional[float] = Field(None, alias="TStartTlfsmo")
 
 
 class ResearchRestart(Restart):
@@ -666,7 +666,7 @@ class ResearchRestart(Restart):
 
     comments: Comments = Comments()
 
-    rstignorebl: Optional[bool] = Field(None, alias="RstIgnoreBl")
+    research_rstignorebl: Optional[bool] = Field(None, alias="RstIgnoreBl")
 
 
 class ResearchTrachytopes(Trachytopes):
@@ -687,9 +687,9 @@ class ResearchTrachytopes(Trachytopes):
 
     comments: Comments = Comments()
 
-    trtmth: Optional[int] = Field(None, alias="trtmth")
-    trtmnh: Optional[float] = Field(None, alias="trtmnh")
-    trtcll: Optional[DiskOnlyFileModel] = Field(None, alias="trtcll")
+    research_trtmth: Optional[int] = Field(None, alias="trtmth")
+    research_trtmnh: Optional[float] = Field(None, alias="trtmnh")
+    research_trtcll: Optional[DiskOnlyFileModel] = Field(None, alias="trtcll")
 
 
 class ResearchOutput(Output):
@@ -787,39 +787,39 @@ class ResearchOutput(Output):
 
     comments: Comments = Comments()
 
-    mbalumpsourcesinks: Optional[bool] = Field(None, alias="mbalumpsourcesinks")
-    wrimap_nearfield: Optional[bool] = Field(None, alias="wrimap_nearfield")
-    velocitymagnitudeclasses: Optional[List[str]] = Field(
+    research_mbalumpsourcesinks: Optional[bool] = Field(None, alias="mbalumpsourcesinks")
+    research_wrimap_nearfield: Optional[bool] = Field(None, alias="wrimap_nearfield")
+    research_velocitymagnitudeclasses: Optional[List[str]] = Field(
         None, alias="velocitymagnitudeclasses"
     )
-    writedfminterpretedvalues: Optional[bool] = Field(
+    research_writedfminterpretedvalues: Optional[bool] = Field(
         None, alias="writedfminterpretedvalues"
     )
-    deleteobspointsoutsidegrid: Optional[bool] = Field(
+    research_deleteobspointsoutsidegrid: Optional[bool] = Field(
         None, alias="deleteobspointsoutsidegrid"
     )
-    mbalumpboundaries: Optional[bool] = Field(None, alias="mbalumpboundaries")
-    writepart_domain: Optional[bool] = Field(None, alias="writepart_domain")
-    waqhoraggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqhoraggr")
-    writedetailedtimers: Optional[bool] = Field(None, alias="writedetailedtimers")
-    metadatafile: Optional[DiskOnlyFileModel] = Field(None, alias="metadatafile")
-    mbainterval: Optional[float] = Field(None, alias="mbainterval")
-    velocitydirectionclassesinterval: Optional[int] = Field(
+    research_mbalumpboundaries: Optional[bool] = Field(None, alias="mbalumpboundaries")
+    research_writepart_domain: Optional[bool] = Field(None, alias="writepart_domain")
+    research_waqhoraggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqhoraggr")
+    research_writedetailedtimers: Optional[bool] = Field(None, alias="writedetailedtimers")
+    research_metadatafile: Optional[DiskOnlyFileModel] = Field(None, alias="metadatafile")
+    research_mbainterval: Optional[float] = Field(None, alias="mbainterval")
+    research_velocitydirectionclassesinterval: Optional[int] = Field(
         None, alias="velocitydirectionclassesinterval"
     )
-    wrirst_bnd: Optional[bool] = Field(None, alias="wrirst_bnd")
-    generateuuid: Optional[bool] = Field(None, alias="generateuuid")
-    timesplitinterval: Optional[str] = Field(None, alias="timesplitinterval")
-    rugfile: Optional[PolyFile] = Field(None, alias="rugfile")
-    mbawritecsv: Optional[bool] = Field(None, alias="mbawritecsv")
-    mbalumpfromtomba: Optional[bool] = Field(None, alias="mbalumpfromtomba")
-    mbalumpprocesses: Optional[bool] = Field(None, alias="mbalumpprocesses")
-    waqvertaggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqvertaggr")
-    mbawritenetcdf: Optional[bool] = Field(None, alias="MbaWriteNetCDF")
-    mbawritetxt: Optional[bool] = Field(None, alias="MbaWriteTxt")
-    nccompression: Optional[bool] = Field(None, alias="NcCompression")
-    wrimap_ice: Optional[bool] = Field(None, alias="Wrimap_ice")
-    wrimap_trachytopes: Optional[bool] = Field(None, alias="Wrimap_trachytopes")
+    research_wrirst_bnd: Optional[bool] = Field(None, alias="wrirst_bnd")
+    research_generateuuid: Optional[bool] = Field(None, alias="generateuuid")
+    research_timesplitinterval: Optional[str] = Field(None, alias="timesplitinterval")
+    research_rugfile: Optional[PolyFile] = Field(None, alias="rugfile")
+    research_mbawritecsv: Optional[bool] = Field(None, alias="mbawritecsv")
+    research_mbalumpfromtomba: Optional[bool] = Field(None, alias="mbalumpfromtomba")
+    research_mbalumpprocesses: Optional[bool] = Field(None, alias="mbalumpprocesses")
+    research_waqvertaggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqvertaggr")
+    research_mbawritenetcdf: Optional[bool] = Field(None, alias="MbaWriteNetCDF")
+    research_mbawritetxt: Optional[bool] = Field(None, alias="MbaWriteTxt")
+    research_nccompression: Optional[bool] = Field(None, alias="NcCompression")
+    research_wrimap_ice: Optional[bool] = Field(None, alias="Wrimap_ice")
+    research_wrimap_trachytopes: Optional[bool] = Field(None, alias="Wrimap_trachytopes")
 
 
 class ResearchProcesses(Processes):
@@ -832,7 +832,7 @@ class ResearchProcesses(Processes):
 
     comments: Comments = Comments()
 
-    substancedensitycoupling: Optional[bool] = Field(
+    research_substancedensitycoupling: Optional[bool] = Field(
         None, alias="substancedensitycoupling"
     )
 
