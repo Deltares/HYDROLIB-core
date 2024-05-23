@@ -374,9 +374,9 @@ class TestFileLoadContextReusingCachedFilesDuringInit:
             tmp_path, bc_file_name
         )
         self.create_bc_file(tmp_path, bc_file_name)
-        
+
         model = ExtModel(ext_file)
-        
+
         assert model.boundary[0].forcingfile is model.boundary[1].forcingfile
         assert model.boundary[1].forcingfile is model.boundary[2].forcingfile
         assert model.boundary[2].forcingfile is model.boundary[3].forcingfile

@@ -865,7 +865,7 @@ class FileModel(BaseModel, ABC):
         """
         if self._has_been_loaded_from_cache:
             return
-        
+
         if not filepath:
             super().__init__(*args, **kwargs)
             return
