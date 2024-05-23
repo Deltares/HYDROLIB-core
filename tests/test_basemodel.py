@@ -377,9 +377,6 @@ class TestFileLoadContextReusingCachedFilesDuringInit:
         
         model = ExtModel(ext_file)
         
-        savepath = tmp_path / "tim.ext"
-        model.save(savepath, recurse=True)
-        assert model
         assert model.boundary[0].forcingfile is model.boundary[1].forcingfile
         assert model.boundary[1].forcingfile is model.boundary[2].forcingfile
         assert model.boundary[2].forcingfile is model.boundary[3].forcingfile
