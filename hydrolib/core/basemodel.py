@@ -833,8 +833,10 @@ class FileModel(BaseModel, ABC):
         filepath = FileModel._change_to_path(filepath)
         with file_load_context() as context:
             if (file_model := context.retrieve_model(filepath)) is not None:
+                cls._has_been_loaded_from_cache = True
                 return file_model
             else:
+                cls._has_been_loaded_from_cache = False
                 return super().__new__(cls)
 
     def __init__(
@@ -861,6 +863,9 @@ class FileModel(BaseModel, ABC):
         Raises:
             ValueError: When an unsupported path style is passed.
         """
+        if self._has_been_loaded_from_cache:
+            return
+        
         if not filepath:
             super().__init__(*args, **kwargs)
             return
@@ -886,11 +891,9 @@ class FileModel(BaseModel, ABC):
 
             logger.info(f"Loading data from {filepath}")
 
-            data = context.retrieve_model(filepath)
-            if context.is_content_changed(filepath):
-                data = self._load(loading_path)
-                context.register_model(filepath, self)
-                data["filepath"] = filepath
+            data = self._load(loading_path)
+            context.register_model(filepath, self)
+            data["filepath"] = filepath
             kwargs.update(data)
 
             # Note: the relative mode needs to be obtained from the data directly

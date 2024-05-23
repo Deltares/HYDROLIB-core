@@ -366,6 +366,25 @@ class TestFileLoadContextReusingCachedFilesDuringInit:
             ExtModel(ext_file)
             assert bc_mocked_load.call_count == 1
 
+    def test_loading_file_referenced_multiple_times_has_loaded_data_as_same_instance(
+        self, tmp_path: Path
+    ):
+        bc_file_name = "bc_file.bc"
+        ext_file = self.create_ext_file_with_5_times_bc_file_reused(
+            tmp_path, bc_file_name
+        )
+        self.create_bc_file(tmp_path, bc_file_name)
+        
+        model = ExtModel(ext_file)
+        
+        savepath = tmp_path / "tim.ext"
+        model.save(savepath, recurse=True)
+        assert model
+        assert model.boundary[0].forcingfile is model.boundary[1].forcingfile
+        assert model.boundary[1].forcingfile is model.boundary[2].forcingfile
+        assert model.boundary[2].forcingfile is model.boundary[3].forcingfile
+        assert model.boundary[3].forcingfile is model.boundary[4].forcingfile
+
     def test_loading_multiple_files_referenced_multiple_times_only_loads_the_respective_files_once(
         self, tmp_path: Path
     ):
