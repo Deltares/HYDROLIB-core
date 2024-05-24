@@ -46,7 +46,7 @@ class ResearchGeometry(Geometry):
     class Comments(Geometry.Comments):
         toplayminthick: Optional[str] = Field(
             "Minimum top layer thickness(m), only for Z-layers.",
-            alias="topLayMinThick",
+            alias="toplayminthick",
         )
         helmert: Optional[str] = Field(
             "Use Helmert (0: no, 1: yes).",
@@ -54,35 +54,35 @@ class ResearchGeometry(Geometry):
         )
         waterdepthini1d: Optional[str] = Field(
             "Initial waterdepth in 1D.",
-            alias="waterDepthIni1d",
+            alias="waterdepthini1d",
         )
         zlayeratubybob: Optional[str] = Field(
             "Lowest connected cells governed by bob instead of by bL L/R.",
-            alias="zLayerAtuByBob",
+            alias="zlayeratubybob",
         )
         shipdeffile: Optional[str] = Field(
             "File *.shd containing ship definitions.",
-            alias="shipDefFile",
+            alias="shipdeffile",
         )
         stripmesh: Optional[str] = Field(
             "Strip unused nodes and links from the mesh after clipping (1: strip, 0: do not strip).",
-            alias="stripMesh",
+            alias="stripmesh",
         )
         bedwavelength: Optional[str] = Field(
             "Bed testcases.",
-            alias="bedWaveLength",
+            alias="bedwavelength",
         )
         removesmalllinkstrsh: Optional[str] = Field(
             "0.1	0-1, 0= no removes.",
-            alias="removeSmallLinksTrsh",
+            alias="removesmalllinkstrsh",
         )
         createlinks1d2d: Optional[str] = Field(
             "Ruecksichtslos create links between 1D nodes and 2D cells when initializing model (1: yes, 0: no).",
-            alias="createLinks1d2d",
+            alias="createlinks1d2d",
         )
         bedwaveamplitude: Optional[str] = Field(
             "Bed testcases.",
-            alias="bedWaveAmplitude",
+            alias="bedwaveamplitude",
         )
         uniformhu: Optional[str] = Field(
             "Waterdepth in rigid-lid-like solution.",
@@ -90,7 +90,7 @@ class ResearchGeometry(Geometry):
         )
         tsigma: Optional[str] = Field(
             "Sigma Adaptation period for Layertype==4 (s).",
-            alias="tSigma",
+            alias="tsigma",
         )
         dpuopt: Optional[str] = Field(
             "Bed level interpolation at velocity point in case of tile approach bed level: 1 = max (default); 2 = mean.",
@@ -110,58 +110,58 @@ class ResearchGeometry(Geometry):
         )
         cutcelllist: Optional[str] = Field(
             "File with names of cutcell polygons, e.g. cutcellpolygons.lst.",
-            alias="cutCellList",
+            alias="cutcelllist",
         )
         uniformtyp1d: Optional[str] = Field(
             "Uniform type for channel profiles not specified by profloc.",
-            alias="uniformTyp1d",
+            alias="uniformtyp1d",
         )
         oned2dinternallinktype: Optional[str] = Field(
             "Link treatment method for type-3 internal links.",
-            alias="oned2dInternalLinkType",
+            alias="oned2dinternallinktype",
         )
         orgfloorlevtoplaydef: Optional[str] = Field(
             "Keep original definition of Floor level of top layer.",
-            alias="orgFloorLevelTopLayDef",
+            alias="orgfloorlevtoplaydef",
         )
         pipefile: Optional[str] = Field(
             "File *.pliz containing pipe-based 'culverts'.",
-            alias="pipeFile",
+            alias="pipefile",
         )
         groundlayerthickness: Optional[str] = Field(
             "Only in pipes: groundlayer thickness (m).",
-            alias="groundLayerThickness",
+            alias="groundlayerthickness",
         )
         extrbl: Optional[str] = Field(
             "Extrapolation of bed level at boundaries according to the slope: 0 = no extrapolation (default); 1 = extrapolate.",
-            alias="ExtrBl",
+            alias="extrbl",
         )
 
     comments: Comments = Comments()
 
-    research_toplayminthick: Optional[float] = Field(None, alias="topLayMinThick")
+    research_toplayminthick: Optional[float] = Field(None, alias="toplayminthick")
     research_helmert: Optional[bool] = Field(None, alias="helmert")
-    research_waterdepthini1d: Optional[float] = Field(None, alias="waterDepthIni1d")
-    research_zlayeratubybob: Optional[int] = Field(None, alias="zLayerAtuByBob")
-    research_shipdeffile: Optional[DiskOnlyFileModel] = Field(None, alias="shipDefFile")
-    research_stripmesh: Optional[bool] = Field(None, alias="stripMesh")
-    research_bedwavelength: Optional[float] = Field(None, alias="bedWaveLength")
-    research_removesmalllinkstrsh: Optional[float] = Field(None, alias="removeSmallLinksTrsh")
-    research_createlinks1d2d: Optional[bool] = Field(None, alias="createLinks1d2d")
-    research_bedwaveamplitude: Optional[float] = Field(None, alias="bedWaveAmplitude")
+    research_waterdepthini1d: Optional[float] = Field(None, alias="waterdepthini1d")
+    research_zlayeratubybob: Optional[int] = Field(None, alias="zlayeratubybob")
+    research_shipdeffile: Optional[DiskOnlyFileModel] = Field(None, alias="shipdeffile")
+    research_stripmesh: Optional[bool] = Field(None, alias="stripmesh")
+    research_bedwavelength: Optional[float] = Field(None, alias="bedwavelength")
+    research_removesmalllinkstrsh: Optional[float] = Field(None, alias="removesmalllinkstrsh")
+    research_createlinks1d2d: Optional[bool] = Field(None, alias="createlinks1d2d")
+    research_bedwaveamplitude: Optional[float] = Field(None, alias="bedwaveamplitude")
     research_uniformhu: Optional[float] = Field(None, alias="uniformhu")
-    research_tsigma: Optional[float] = Field(None, alias="tSigma")
+    research_tsigma: Optional[float] = Field(None, alias="tsigma")
     research_dpuopt: Optional[int] = Field(None, alias="dpuopt")
     research_ihuzcsig: Optional[int] = Field(None, alias="ihuzcsig")
     research_ihuz: Optional[int] = Field(None, alias="ihuz")
     research_cosphiutrsh: Optional[float] = Field(None, alias="cosphiutrsh")
-    research_cutcelllist: Optional[DiskOnlyFileModel] = Field(None, alias="cutCellList")
-    research_uniformtyp1d: Optional[int] = Field(None, alias="uniformTyp1d")
-    research_oned2dinternallinktype: Optional[int] = Field(None, alias="oned2dInternalLinkType")
-    research_orgfloorlevtoplaydef: Optional[bool] = Field(None, alias="orgFloorLevelTopLayDef")
-    research_pipefile: Optional[DiskOnlyFileModel] = Field(None, alias="pipeFile")
-    research_groundlayerthickness: Optional[float] = Field(None, alias="groundLayerThickness")
-    research_extrbl: Optional[bool] = Field(None, alias="ExtrBl")
+    research_cutcelllist: Optional[DiskOnlyFileModel] = Field(None, alias="cutcelllist")
+    research_uniformtyp1d: Optional[int] = Field(None, alias="uniformtyp1d")
+    research_oned2dinternallinktype: Optional[int] = Field(None, alias="oned2dinternallinktype")
+    research_orgfloorlevtoplaydef: Optional[bool] = Field(None, alias="orgfloorlevtoplaydef")
+    research_pipefile: Optional[DiskOnlyFileModel] = Field(None, alias="pipefile")
+    research_groundlayerthickness: Optional[float] = Field(None, alias="groundlayerthickness")
+    research_extrbl: Optional[bool] = Field(None, alias="extrbl")
 
 
 class ResearchNumerics(Numerics):
@@ -206,7 +206,7 @@ class ResearchNumerics(Numerics):
         )
         structurelayersactive: Optional[str] = Field(
             "0=structure flow through all layers, 1=structure flow only through open layers.",
-            alias="structureLayersActive",
+            alias="structurelayersactive",
         )
         corioadamsbashfordfac: Optional[str] = Field(
             "0.5	0=No, 0.5d0=AdamsBashford, only for Newcorio=1.",
@@ -267,7 +267,7 @@ class ResearchNumerics(Numerics):
         )
         fixedweirfrictscheme: Optional[str] = Field(
             "Fixed weir friction scheme (0: friction based on hu, 1: friction based on subgrid weir friction scheme).",
-            alias="fixedWeirFrictScheme",
+            alias="fixedweirfrictscheme",
         )
         icoriolistype: Optional[str] = Field(
             "0=No, 5=default, 3, 4 no weights, 5-10 Kleptsova hu/hs, 25-30 Ham hs/hu, odd: 2D hs/hu, even: hsk/huk.",
@@ -344,7 +344,7 @@ class ResearchNumerics(Numerics):
         )
         maxitpresdens: Optional[str] = Field(
             "Max nr of iterations in pressure-density coupling, only used if idensform > 10.",
-            alias="maxItPresDens",
+            alias="maxitpresdens",
         )
         lateral_fixedweir_relax: Optional[str] = Field(
             "Relaxation factor for iterative lateral 1d2d weir coupling algorithm.",
@@ -368,7 +368,7 @@ class ResearchNumerics(Numerics):
         )
         vertadvtypmom3onbnd: Optional[str] = Field(
             "vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd.",
-            alias="Vertadvtypmom3onbnd",
+            alias="vertadvtypmom3onbnd",
         )
 
     comments: Comments = Comments()
@@ -382,7 +382,7 @@ class ResearchNumerics(Numerics):
     research_coriohhtrsh: Optional[float] = Field(None, alias="coriohhtrsh")
     research_limtypw: Optional[int] = Field(None, alias="limtypw")
     research_huweirregular: Optional[float] = Field(None, alias="huweirregular")
-    research_structurelayersactive: Optional[int] = Field(None, alias="structureLayersActive")
+    research_structurelayersactive: Optional[int] = Field(None, alias="structurelayersactive")
     research_corioadamsbashfordfac: Optional[float] = Field(None, alias="corioadamsbashfordfac")
     research_vertadvtypsal: Optional[int] = Field(None, alias="vertadvtypsal")
     research_baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
@@ -400,7 +400,7 @@ class ResearchNumerics(Numerics):
     research_lateral_fixedweir_umin: Optional[float] = Field(
         None, alias="lateral_fixedweir_umin"
     )
-    research_fixedweirfrictscheme: Optional[int] = Field(None, alias="fixedWeirFrictScheme")
+    research_fixedweirfrictscheme: Optional[int] = Field(None, alias="fixedweirfrictscheme")
     research_icoriolistype: Optional[int] = Field(None, alias="icoriolistype")
     research_zwsbtol: Optional[float] = Field(None, alias="zwsbtol")
     research_cfexphu: Optional[float] = Field(None, alias="cfexphu")
@@ -427,7 +427,7 @@ class ResearchNumerics(Numerics):
     research_locsaltlev: Optional[float] = Field(None, alias="locsaltlev")
     research_subsuplupdates1: Optional[bool] = Field(None, alias="subsuplupdates1")
     research_linkdriedmx: Optional[int] = Field(None, alias="linkdriedmx")
-    research_maxitpresdens: Optional[int] = Field(None, alias="maxItPresDens")
+    research_maxitpresdens: Optional[int] = Field(None, alias="maxitpresdens")
     research_lateral_fixedweir_relax: Optional[float] = Field(
         None, alias="lateral_fixedweir_relax"
     )
@@ -435,7 +435,7 @@ class ResearchNumerics(Numerics):
     research_locsaltmax: Optional[float] = Field(None, alias="locsaltmax")
     research_cffachu: Optional[float] = Field(None, alias="cffachu")
     research_jasfer3d: Optional[bool] = Field(None, alias="jasfer3d")
-    research_vertadvtypmom3onbnd: Optional[int] = Field(None, alias="Vertadvtypmom3onbnd")
+    research_vertadvtypmom3onbnd: Optional[int] = Field(None, alias="vertadvtypmom3onbnd")
 
 
 class ResearchPhysics(Physics):
@@ -456,41 +456,41 @@ class ResearchPhysics(Physics):
         )
         uniffrictcoef1d2d: Optional[str] = Field(
             "Uniform friction coefficient in 1D links (0: no friction).",
-            alias="unifFrictCoef1d2d",
+            alias="uniffrictcoef1d2d",
         )
         equili: Optional[str] = Field(
             "Equilibrium spiral flow intensity (0: no, 1: yes).", alias="equili"
         )
         allowcoolingbelowzero: Optional[str] = Field(
-            "False	0 = no, 1 = yes.", alias="allowCoolingBelowZero"
+            "False	0 = no, 1 = yes.", alias="allowcoolingbelowzero"
         )
         soiltempthick: Optional[str] = Field(
-            "Use soil temperature buffer if > 0.", alias="soilTempThick"
+            "Use soil temperature buffer if > 0.", alias="soiltempthick"
         )
         selfattractionloading: Optional[str] = Field(
             "Self attraction and loading (0=no, 1=yes, 2=only self attraction).",
-            alias="selfAttractionLoading",
+            alias="selfattractionloading",
         )
 
         prandtlnumbertemperature: Optional[str] = Field(
             "Turbulent Prandtl number for temperature.",
-            alias="PrandtlNumberTemperature",
+            alias="prandtlnumbertemperature",
         )
         schmidtnumbersalinity: Optional[str] = Field(
             "Turbulent Schmidt number for salinity.",
-            alias="SchmidtNumberSalinity",
+            alias="schmidtnumbersalinity",
         )
         schmidtnumbertracer: Optional[str] = Field(
             "Turbulent Schmidt number for tracer(s).",
-            alias="SchmidtNumberTracer",
+            alias="schmidtnumbertracer",
         )
         umodlin: Optional[str] = Field(
             "Linear friction umod, for ifrctyp=4,5,6.",
-            alias="Umodlin",
+            alias="umodlin",
         )
         uniffrictcoef1dgrlay: Optional[str] = Field(
             "Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction).",
-            alias="UnifFrictCoef1DgrLay",
+            alias="uniffrictcoef1dgrlay",
         )
 
     comments: Comments = Comments()
@@ -500,18 +500,18 @@ class ResearchPhysics(Physics):
         None, alias="selfattractionloading_correct_wl_with_ini"
     )
     research_nfentrainmentmomentum: Optional[bool] = Field(None, alias="nfentrainmentmomentum")
-    research_uniffrictcoef1d2d: Optional[float] = Field(None, alias="unifFrictCoef1d2d")
+    research_uniffrictcoef1d2d: Optional[float] = Field(None, alias="uniffrictcoef1d2d")
     research_equili: Optional[bool] = Field(None, alias="equili")
-    research_allowcoolingbelowzero: Optional[bool] = Field(None, alias="allowCoolingBelowZero")
-    research_soiltempthick: Optional[float] = Field(None, alias="soilTempThick")
-    research_selfattractionloading: Optional[int] = Field(None, alias="selfAttractionLoading")
+    research_allowcoolingbelowzero: Optional[bool] = Field(None, alias="allowcoolingbelowzero")
+    research_soiltempthick: Optional[float] = Field(None, alias="soiltempthick")
+    research_selfattractionloading: Optional[int] = Field(None, alias="selfattractionloading")
     research_prandtlnumbertemperature: Optional[float] = Field(
-        None, alias="PrandtlNumberTemperature"
+        None, alias="prandtlnumbertemperature"
     )
-    research_schmidtnumbersalinity: Optional[float] = Field(None, alias="SchmidtNumberSalinity")
-    research_schmidtnumbertracer: Optional[float] = Field(None, alias="SchmidtNumberTracer")
-    research_umodlin: Optional[float] = Field(None, alias="Umodlin")
-    research_uniffrictcoef1dgrlay: Optional[float] = Field(None, alias="UnifFrictCoef1DgrLay")
+    research_schmidtnumbersalinity: Optional[float] = Field(None, alias="schmidtnumbersalinity")
+    research_schmidtnumbertracer: Optional[float] = Field(None, alias="schmidtnumbertracer")
+    research_umodlin: Optional[float] = Field(None, alias="umodlin")
+    research_uniffrictcoef1dgrlay: Optional[float] = Field(None, alias="uniffrictcoef1dgrlay")
 
 
 class ResearchSediment(Sediment):
@@ -522,10 +522,10 @@ class ResearchSediment(Sediment):
             "Highest fraction index treated by Krone.", alias="mxgrkrone"
         )
         seddenscoupling: Optional[str] = Field(
-            "Sed rho coupling (0=no, 1=yes).", alias="seddensCoupling"
+            "Sed rho coupling (0=no, 1=yes).", alias="seddenscoupling"
         )
         implicitfallvelocity: Optional[str] = Field(
-            "1=Impl., 0 = Expl.", alias="implicitFallVelocity"
+            "1=Impl., 0 = Expl.", alias="implicitfallvelocity"
         )
         nr_of_sedfractions: Optional[str] = Field(
             "Nr of sediment fractions, (specify the next parameters for each fraction).",
@@ -535,8 +535,8 @@ class ResearchSediment(Sediment):
     comments: Comments = Comments()
 
     research_mxgrkrone: Optional[int] = Field(None, alias="mxgrkrone")
-    research_seddenscoupling: Optional[bool] = Field(None, alias="seddensCoupling")
-    research_implicitfallvelocity: Optional[int] = Field(None, alias="implicitFallVelocity")
+    research_seddenscoupling: Optional[bool] = Field(None, alias="seddenscoupling")
+    research_implicitfallvelocity: Optional[int] = Field(None, alias="implicitfallvelocity")
     research_nr_of_sedfractions: Optional[int] = Field(None, alias="nr_of_sedfractions")
 
 
@@ -552,14 +552,14 @@ class ResearchWind(Wind):
         )
         wind_eachstep: Optional[str] = Field(
             "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
-            alias="Wind_eachstep",
+            alias="wind_eachstep",
         )
 
     comments: Comments = Comments()
 
     research_windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
     research_varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
-    research_wind_eachstep: Optional[int] = Field(None, alias="Wind_eachstep")
+    research_wind_eachstep: Optional[int] = Field(None, alias="wind_eachstep")
 
 
 class ResearchWaves(Waves):
@@ -644,7 +644,7 @@ class ResearchTime(Time):
         )
         tstarttlfsmo: Optional[str] = Field(
             "Start time of smoothing of boundary conditions (Tlfsmo) w.r.t. RefDate (in TUnit).",
-            alias="TStartTlfsmo",
+            alias="tstarttlfsmo",
         )
 
     comment: Comments = Comments()
@@ -652,7 +652,7 @@ class ResearchTime(Time):
     research_timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
     research_autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
     research_dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
-    research_tstarttlfsmo: Optional[float] = Field(None, alias="TStartTlfsmo")
+    research_tstarttlfsmo: Optional[float] = Field(None, alias="tstarttlfsmo")
 
 
 class ResearchRestart(Restart):
@@ -666,7 +666,7 @@ class ResearchRestart(Restart):
 
     comments: Comments = Comments()
 
-    research_rstignorebl: Optional[bool] = Field(None, alias="RstIgnoreBl")
+    research_rstignorebl: Optional[bool] = Field(None, alias="rstignorebl")
 
 
 class ResearchTrachytopes(Trachytopes):
@@ -766,23 +766,23 @@ class ResearchOutput(Output):
 
         mbawritenetcdf: Optional[str] = Field(
             "Write mass balance area output to a netCDF-file (1: yes, 0: no).",
-            alias="MbaWriteNetCDF",
+            alias="mbawritenetcdf",
         )
         mbawritetxt: Optional[str] = Field(
             "Write mass balance area output to a txt-file (1: yes, 0: no).",
-            alias="MbaWriteTxt",
+            alias="mbawritetxt",
         )
         nccompression: Optional[str] = Field(
             "Whether or not (1/0) to apply compression to NetCDF output files - NOTE: only works when NcFormat = 4.",
-            alias="NcCompression",
+            alias="nccompression",
         )
         wrimap_ice: Optional[str] = Field(
             "Write output to map file for ice cover, 0=no (default), 1=yes.",
-            alias="Wrimap_ice",
+            alias="wrimap_ice",
         )
         wrimap_trachytopes: Optional[str] = Field(
             "Write trachytope roughnesses to map file (1: yes, 0: no).",
-            alias="Wrimap_trachytopes",
+            alias="wrimap_trachytopes",
         )
 
     comments: Comments = Comments()
@@ -815,11 +815,11 @@ class ResearchOutput(Output):
     research_mbalumpfromtomba: Optional[bool] = Field(None, alias="mbalumpfromtomba")
     research_mbalumpprocesses: Optional[bool] = Field(None, alias="mbalumpprocesses")
     research_waqvertaggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqvertaggr")
-    research_mbawritenetcdf: Optional[bool] = Field(None, alias="MbaWriteNetCDF")
-    research_mbawritetxt: Optional[bool] = Field(None, alias="MbaWriteTxt")
-    research_nccompression: Optional[bool] = Field(None, alias="NcCompression")
-    research_wrimap_ice: Optional[bool] = Field(None, alias="Wrimap_ice")
-    research_wrimap_trachytopes: Optional[bool] = Field(None, alias="Wrimap_trachytopes")
+    research_mbawritenetcdf: Optional[bool] = Field(None, alias="mbawritenetcdf")
+    research_mbawritetxt: Optional[bool] = Field(None, alias="mbawritetxt")
+    research_nccompression: Optional[bool] = Field(None, alias="nccompression")
+    research_wrimap_ice: Optional[bool] = Field(None, alias="wrimap_ice")
+    research_wrimap_trachytopes: Optional[bool] = Field(None, alias="wrimap_trachytopes")
 
 
 class ResearchProcesses(Processes):
