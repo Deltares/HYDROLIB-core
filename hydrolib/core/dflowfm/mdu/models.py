@@ -2379,7 +2379,7 @@ class FMModel(INIModel):
     physics: Physics = Field(default_factory=Physics)
     sediment: Sediment = Field(default_factory=Sediment)
     wind: Wind = Field(default_factory=Wind)
-    waves: Optional[Waves] = Field(None)
+    waves: Optional[Waves] = None
     time: Time = Field(default_factory=Time)
     restart: Restart = Field(default_factory=Restart)
     external_forcing: ExternalForcing = Field(default_factory=ExternalForcing)
