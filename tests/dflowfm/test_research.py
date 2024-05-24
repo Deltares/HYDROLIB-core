@@ -11,6 +11,7 @@ from hydrolib.core.dflowfm.research.models import (
     ResearchWaves,
     ResearchWind,
 )
+from tests.utils import test_input_dir
 
 
 class TestResearchFMModel:
@@ -27,3 +28,24 @@ class TestResearchFMModel:
         assert isinstance(model.time, ResearchTime)
         assert isinstance(model.trachytopes, ResearchTrachytopes)
         assert isinstance(model.output, ResearchOutput)
+
+    def test_load_model_with_research_keywords_as_researchfmmodel(self):
+        input_mdu = (
+                test_input_dir / "research" / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
+        )
+
+        model = ResearchFMModel(filepath=input_mdu)
+
+        # there are too many research keywords to test, so here we just assert a couple of them
+        assert model.general.research_inputspecific == False
+        assert model.geometry.research_helmert == False
+        assert model.numerics.research_epseps == 1e-32
+        assert model.physics.research_uniffrictcoef1d2d == 2.3e-2
+        assert model.sediment.research_implicitfallvelocity == 1
+        assert model.wind.research_wind_eachstep == 0
+        assert model.waves.research_threedwaveboundarylayer == 1
+        assert model.time.research_dtfacmax == 1.1
+        assert model.trachytopes.research_trtmnh == 0.1
+        assert model.output.research_mbainterval == 0.0
+
+
