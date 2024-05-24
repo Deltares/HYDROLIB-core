@@ -51,5 +51,3 @@ class TestResearchFMModel:
         assert model.time.research_dtfacmax == pytest.approx(1.1)
         assert model.trachytopes.research_trtmnh == pytest.approx(0.1)
         assert model.output.research_mbainterval == pytest.approx(0.0)
-
-
