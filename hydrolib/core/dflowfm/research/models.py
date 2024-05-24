@@ -19,6 +19,7 @@ from hydrolib.core.dflowfm import (
     Waves,
     Wind,
 )
+from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
 
 
 class ResearchGeneral(General):
@@ -825,7 +826,7 @@ class ResearchOutput(Output):
         None, alias="mbalumpsourcesinks"
     )
     research_wrimap_nearfield: Optional[bool] = Field(None, alias="wrimap_nearfield")
-    research_velocitymagnitudeclasses: Optional[List[str]] = Field(
+    research_velocitymagnitudeclasses: Optional[List[float]] = Field(
         None, alias="velocitymagnitudeclasses"
     )
     research_writedfminterpretedvalues: Optional[bool] = Field(
@@ -861,6 +862,10 @@ class ResearchOutput(Output):
     research_wrimap_ice: Optional[bool] = Field(None, alias="wrimap_ice")
     research_wrimap_trachytopes: Optional[bool] = Field(
         None, alias="wrimap_trachytopes"
+    )
+
+    _split_to_list = get_split_string_on_delimiter_validator(
+            "research_velocitymagnitudeclasses",
     )
 
 
