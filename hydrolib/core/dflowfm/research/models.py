@@ -315,7 +315,7 @@ class ResearchNumerics(Numerics):
         )
         cfconhormom: Optional[str] = Field(
             "Constant for including (1-CFL) in HO term horizontal mom.",
-            alias="jposhchk",
+            alias="cfconhormom",
         )
         cffachormom: Optional[str] = Field(
             "Factor for including (1-CFL) in HO term horizontal mom (0d0: no, 1d0: yes).",
