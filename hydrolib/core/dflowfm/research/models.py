@@ -647,7 +647,7 @@ class ResearchTime(Time):
             alias="tstarttlfsmo",
         )
 
-    comment: Comments = Comments()
+    comments: Comments = Comments()
 
     research_timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
     research_autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
