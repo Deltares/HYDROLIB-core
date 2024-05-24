@@ -31,7 +31,9 @@ class TestResearchFMModel:
 
     def test_load_model_with_research_keywords_as_researchfmmodel(self):
         input_mdu = (
-                test_input_dir / "research" / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
+            test_input_dir
+            / "research"
+            / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
         )
 
         model = ResearchFMModel(filepath=input_mdu)
@@ -47,5 +49,3 @@ class TestResearchFMModel:
         assert model.time.research_dtfacmax == 1.1
         assert model.trachytopes.research_trtmnh == 0.1
         assert model.output.research_mbainterval == 0.0
-
-
