@@ -863,7 +863,7 @@ class ResearchOutput(Output):
     )
 
     _split_to_list = get_split_string_on_delimiter_validator(
-            "research_velocitymagnitudeclasses",
+        "research_velocitymagnitudeclasses",
     )
 
 
