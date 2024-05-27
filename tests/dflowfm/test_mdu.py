@@ -1,8 +1,6 @@
 from pathlib import Path
-from unittest import mock
-from unittest.mock import patch
 
-from pydantic.v1.config import Extra
+import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.mdu.models import (
@@ -392,9 +390,9 @@ class TestOutput:
             assert actual_point.x == expected_point.x
             assert actual_point.y == expected_point.y
             assert actual_point.name == expected_point.name
-
-    def test_mdu_unknown_keywords_loading_gives_message_for_missing_keyword(
-        self, tmp_path, capsys
+            
+    def test_mdu_unknown_keyword_loading_throws_valueerror_for_unknown_keyword(
+        self, tmp_path
     ):
         tmp_mdu = """
         [General]
@@ -410,25 +408,18 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        with patch(
-            "hydrolib.core.dflowfm.ini.models.INIBasedModel.Config"
-        ) as mock_config:
-            mock_config.extra = Extra.ignore
+        section_header = "General"
+        name = "unknownkey"
+        
+        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name]}'"
 
+        with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
-            captured = capsys.readouterr()
-
-            section = "General"
-            name = "unknownkey"
-
-            assert (
-                f"Unknown keywords are detected in '{section}', these keywords will be dropped:"
-                in captured.out
-            )
-            assert name in captured.out
-
-    def test_mdu_unknown_keywords_loading_gives_message_for_missing_keyword2(
-        self, tmp_path, capsys
+            
+        assert expected_message in str(exc_err.value)
+        
+    def test_mdu_unknown_keywords_loading_throws_valueerror_for_unknown_keywords(
+        self, tmp_path
     ):
         tmp_mdu = """
         [General]
@@ -439,30 +430,25 @@ class TestOutput:
         autoStart             = 0             
         pathsRelativeToParent = 0             
         unknownkey            = something
+        unknownkey2           = something2
         """
 
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        with patch(
-            "hydrolib.core.dflowfm.ini.models.INIBasedModel.Config"
-        ) as mock_config:
-            mock_config.extra = Extra.allow
+        section_header = "General"
+        name = "unknownkey"
+        name2 = "unknownkey2"
+        
+        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, name2]}'"
 
+        with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
-            captured = capsys.readouterr()
+            
+        assert expected_message in str(exc_err.value)
 
-            section = "General"
-            name = "unknownkey"
-
-            assert (
-                f"Unknown keywords are detected in '{section}', these keywords will be kept in memory but will have no validation:"
-                in captured.out
-            )
-            assert name in captured.out
-
-    def test_mdu_unknown_keywords_loading_does_not_give_message_on_exclude_fields(
-        self, tmp_path, capsys
+    def test_mdu_unknown_keywords_loading_thrown_valueerror_for_unknown_keyword_does_not_include_excluded_fields(
+        self, tmp_path
     ):
         tmp_mdu = """
         [General]
@@ -478,29 +464,10 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        FMModel(filepath=tmp_mdu_path)
-        captured = capsys.readouterr()
+        with pytest.raises(ValueError) as exc_err:
+            model = FMModel(filepath=tmp_mdu_path)
 
-        excluded_fields = ["comments", "datablock", "_header"]
-        for excluded_field in excluded_fields:
-            assert excluded_field not in captured.out
-
-    def test_mdu_unknown_keywords_allow_extra_setting_field_gives_message(self, capsys):
-        model = FMModel()
-        config_extra_setting = (
-            model.general.Config.extra
-        )  # Save the Config.extra to revert back to original setting after the test.
-
-        model.general.Config.extra = Extra.allow
-        model.general.unknown = "something"
-        captured = capsys.readouterr()
-
-        model.general.Config.extra = config_extra_setting  # Revert the Config.extra to the original setting, if this is not done it can affect other tests.
-
-        section = "General"
-        name = "unknown"
-
-        assert (
-            f"Unknown keyword detected in '{section}', '{name}', keyword will be kept in memory but will have no validation."
-            in captured.out
-        )
+            excluded_fields = model._exclude_fields()
+            assert len(excluded_fields) > 0
+            for excluded_field in excluded_fields:
+                assert excluded_field not in str(exc_err.value)

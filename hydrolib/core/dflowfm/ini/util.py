@@ -641,7 +641,7 @@ class UnknownKeywordErrorManager:
         Notify the user of unknown keywords.
 
         Args:
-            data (Dict[str, Any])   : Input data containing all set properties which are checked on unknown keywords.
+            data (Dict[str, Any])   : Input data containing all properties which are checked on unknown keywords.
             section_header (str)    : Header of the section in which unknown keys might be detected.
             fields (Dict[str, Any]) : Known fields of the section.
             excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
