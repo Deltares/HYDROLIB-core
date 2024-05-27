@@ -634,7 +634,7 @@ class UnknownKeywordErrorManager:
         self,
         data: Dict[str, Any],
         section_header: str,
-        fields: Dict[str, Any],
+        fields: Dict[str, ModelField],
         excluded_fields: Set,
     ):
         """
@@ -643,7 +643,7 @@ class UnknownKeywordErrorManager:
         Args:
             data (Dict[str, Any])   : Input data containing all properties which are checked on unknown keywords.
             section_header (str)    : Header of the section in which unknown keys might be detected.
-            fields (Dict[str, Any]) : Known fields of the section.
+            fields (Dict[str, ModelField]) : Known fields of the section.
             excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
         """
         unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
@@ -654,7 +654,7 @@ class UnknownKeywordErrorManager:
         raise ValueError(f"Unknown keywords are detected in section: '{section_header}', '{unknown_keywords}'")
 
     def _get_all_unknown_keywords(
-        self, data: Dict[str, Any], fields: Dict[str, Any], excluded_fields: Set
+        self, data: Dict[str, Any], fields: Dict[str, ModelField], excluded_fields: Set
     ) -> List[str]:
         list_of_unknown_keywords = []
         for name in data:
@@ -664,6 +664,10 @@ class UnknownKeywordErrorManager:
         return list_of_unknown_keywords
 
     def _is_unknown_keyword(
-        self, name: str, fields: Dict[str, Any], excluded_fields: Set
+        self, name: str, fields: Dict[str, ModelField], excluded_fields: Set
     ):
-        return name not in fields and name not in excluded_fields
+        for model_field in fields.values():
+            if name == model_field.name or name == model_field.alias:
+                return False
+            
+        return name not in excluded_fields

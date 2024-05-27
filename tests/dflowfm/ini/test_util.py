@@ -1,5 +1,7 @@
 from typing import Dict, List, Literal, Optional
+from unittest.mock import Mock
 
+from pydantic.v1.fields import ModelField
 import pytest
 from pydantic.v1 import Extra
 from pydantic.v1.class_validators import root_validator
@@ -381,3 +383,70 @@ class TestUnknownKeywordErrorManager:
             )
 
         assert expected_message in str(exc_err.value)
+
+    def test_keyword_given_known_as_alias_does_not_throw_exception(
+        self
+    ):
+        section_header = "section header"
+        excluded_fields = set()
+        name = "keyname"
+        
+        mocked_field = Mock(spec=ModelField)
+        mocked_field.name = "name"
+        mocked_field.alias = name
+
+        fields = {"name": mocked_field}
+        
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1}
+            
+        try:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+        except:
+            pytest.fail("Exception is thrown, no exception is expected for this test.")
+            
+    def test_keyword_given_known_as_name_does_not_throw_exception(
+        self
+    ):
+        section_header = "section header"
+        excluded_fields = set()
+        name = "keyname"
+
+        mocked_field = Mock(spec=ModelField)
+        mocked_field.name = "name"
+        mocked_field.alias = name
+        
+        fields = {name: mocked_field}
+        
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1}
+            
+        try:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+        except:
+            pytest.fail("Exception is thrown, no exception is expected for this test.")
+            
+            
+    def test_keyword_given_known_as_excluded_field_does_not_throw_exception(
+        self
+    ):
+        section_header = "section header"
+        excluded_fields = set()
+        name = "keyname"
+        excluded_fields.add(name)
+        
+        fields = {}
+        
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1}
+            
+        try:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+        except:
+            pytest.fail("Exception is thrown, no exception is expected for this test.")
