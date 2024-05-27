@@ -5,8 +5,7 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic import Extra
-from pydantic.v1.class_validators import root_validator, validator
+from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import ModelField
 from pydantic.v1.main import BaseModel
 
@@ -658,7 +657,7 @@ class UnknownKeywordErrorManager:
         self, data: Dict[str, Any], fields: Dict[str, Any], excluded_fields: Set
     ) -> List[str]:
         list_of_unknown_keywords = []
-        for name, _ in data.items():
+        for name in data:
             if self._is_unknown_keyword(name, fields, excluded_fields):
                 list_of_unknown_keywords.append(name)
 
