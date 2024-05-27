@@ -762,7 +762,9 @@ class ResearchOutput(Output):
             "Write detailed timers output file (1: yes, 0: no).",
             alias="writedetailedtimers",
         )
-        research_metadatafile: Optional[str] = Field("metadata file", alias="metadatafile")
+        research_metadatafile: Optional[str] = Field(
+            "metadata file", alias="metadatafile"
+        )
         research_mbainterval: Optional[str] = Field(
             "Mass balance area output interval (s).", alias="mbainterval"
         )
@@ -770,7 +772,9 @@ class ResearchOutput(Output):
             "Class map's step size of class values for velocity direction.",
             alias="velocitydirectionclassesinterval",
         )
-        research_wrirst_bnd: Optional[str] = Field("Write waterlevel", alias="wrirst_bnd")
+        research_wrirst_bnd: Optional[str] = Field(
+            "Write waterlevel", alias="wrirst_bnd"
+        )
         research_generateuuid: Optional[str] = Field(
             "Generate UUID as unique dataset identifier and include in output NetCDF files.",
             alias="generateuuid",
