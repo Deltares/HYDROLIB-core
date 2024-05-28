@@ -837,11 +837,12 @@ class FileModel(BaseModel, ABC):
         filepath = FileModel._change_to_path(filepath)
         with file_load_context() as context:
             if (file_model := context.retrieve_model(filepath)) is not None:
-                cls._has_been_loaded_from_cache = True
-                return file_model
-            else:
-                cls._has_been_loaded_from_cache = False
-                return super().__new__(cls)
+                if not context.is_content_changed(filepath):
+                    cls._has_been_loaded_from_cache = True
+                    return file_model
+            
+            cls._has_been_loaded_from_cache = False
+            return super().__new__(cls)
 
     def __init__(
         self,
