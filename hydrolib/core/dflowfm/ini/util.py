@@ -680,7 +680,7 @@ class ExtendedUnknownKeywordErrorManager(UnknownKeywordErrorManager):
     Extended Error manager for unknown keys, this class can filter out specific keys which should not trigger an unknown key error.
     """
 
-    _field_specific: set = {}
+    _field_specific: set = set()
 
     def _is_unknown_keyword(
         self, name: str, fields: Dict[str, ModelField], excluded_fields: Set
@@ -703,7 +703,6 @@ class ForcingUnknownKeywordErrorManager(ExtendedUnknownKeywordErrorManager):
         "time_interpolation",
         "vertical_position_specification",
         "vertical_interpolation",
-        "vertical_position_type",
         "vertical_position_type",
         "vertical_position",
         "vector",

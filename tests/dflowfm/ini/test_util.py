@@ -402,7 +402,7 @@ class TestUnknownKeywordErrorManager:
             ukem.raise_error_for_unknown_keywords(
                 data, section_header, fields, excluded_fields
             )
-        except:
+        except ValueError:
             pytest.fail("Exception is thrown, no exception is expected for this test.")
 
     def test_keyword_given_known_as_name_does_not_throw_exception(self):
@@ -423,7 +423,7 @@ class TestUnknownKeywordErrorManager:
             ukem.raise_error_for_unknown_keywords(
                 data, section_header, fields, excluded_fields
             )
-        except:
+        except ValueError:
             pytest.fail("Exception is thrown, no exception is expected for this test.")
 
     def test_keyword_given_known_as_excluded_field_does_not_throw_exception(self):
@@ -441,7 +441,7 @@ class TestUnknownKeywordErrorManager:
             ukem.raise_error_for_unknown_keywords(
                 data, section_header, fields, excluded_fields
             )
-        except:
+        except ValueError:
             pytest.fail("Exception is thrown, no exception is expected for this test.")
 
     def test_keyword_given_known_as_extended_field_does_not_throw_exception(self):
@@ -459,5 +459,5 @@ class TestUnknownKeywordErrorManager:
             ukem.raise_error_for_unknown_keywords(
                 data, section_header, fields, excluded_fields
             )
-        except:
+        except ValueError:
             pytest.fail("Exception is thrown, no exception is expected for this test.")
