@@ -7,6 +7,7 @@ from pydantic.v1.class_validators import validator
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
+    CrsUnknownKeywordErrorManager,
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     get_enum_validator,
@@ -73,6 +74,10 @@ class CrossSectionDefinition(INIBasedModel):
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id")
+    
+    @classmethod    
+    def _get_unknown_keyword_error_manager(cls):
+        return CrsUnknownKeywordErrorManager()
 
     @classmethod
     def _duplicate_keys_as_list(cls):

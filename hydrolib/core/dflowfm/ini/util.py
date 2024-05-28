@@ -671,3 +671,29 @@ class UnknownKeywordErrorManager:
                 return False
             
         return name not in excluded_fields
+    
+class ExtendedUnknownKeywordErrorManager(UnknownKeywordErrorManager):
+    """
+    Extended Error manager for unknown keys, this class can filter out specific keys which should not trigger an unknown key error.
+    """
+    
+    _field_specific : set = {}
+    
+    def _is_unknown_keyword(
+        self, name: str, fields: Dict[str, ModelField], excluded_fields: Set
+    ):
+        is_unknown_keyword = super()._is_unknown_keyword(name, fields, excluded_fields)
+        
+        if name in self._field_specific:
+            return False
+        
+        return is_unknown_keyword
+    
+class ForcingUnknownKeywordErrorManager(ExtendedUnknownKeywordErrorManager):
+    _field_specific : set = {'timeinterpolation', 'quantity', 'unit', 'manholename', 'vertpositionindex', 'time_interpolation', 'vertical_position_specification', 'vertical_interpolation', 'vertical_position_type', 'vertical_position_type', 'vertical_position', 'vector'}
+
+class CrsUnknownKeywordErrorManager(ExtendedUnknownKeywordErrorManager):
+    _field_specific : set = {'template', 'height', 'width', 'r', 'r1', 'r2', 'r3', 'a', 'a1'}
+    
+class MeteoUnknownKeywordErrorManager(ExtendedUnknownKeywordErrorManager):
+    _field_specific : set = {'locationtype', 'locationfile'}

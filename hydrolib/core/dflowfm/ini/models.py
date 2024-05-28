@@ -47,7 +47,6 @@ class INIBasedModel(BaseModel, ABC):
 
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
-    _unknown_keyword_error_manager = UnknownKeywordErrorManager()
     _scientific_notation_regex = compile(
         r"([\d.]+)([dD])([+-]?\d{1,3})"
     )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
@@ -58,12 +57,17 @@ class INIBasedModel(BaseModel, ABC):
 
     def __init__(self, **data):
         super().__init__(**data)
-        self._unknown_keyword_error_manager.raise_error_for_unknown_keywords(
+        unknown_keyword_error_manager = self._get_unknown_keyword_error_manager()
+        unknown_keyword_error_manager.raise_error_for_unknown_keywords(
             data,
             self._header,
             self.__fields__,
             self._exclude_fields(),
         )
+    
+    @classmethod    
+    def _get_unknown_keyword_error_manager(cls):
+        return UnknownKeywordErrorManager()
 
     @classmethod
     def _supports_comments(cls):

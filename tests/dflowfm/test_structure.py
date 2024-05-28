@@ -286,7 +286,6 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
-        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -319,7 +318,6 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
-        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -440,7 +438,7 @@ class TestBridge:
         assert bridge.friction == 70
         assert bridge.length == 9.75
 
-    def test_bridge_with_unknown_parameter_is_ignored(self):
+    def test_bridge_with_unknown_parameter_throws_valueerror(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -472,24 +470,12 @@ class TestBridge:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
-        bridge = wrapper.val
+        expected_message = "Unknown keywords are detected in section: 'Structure', '['unknown']'"
 
-        assert bridge.dict().get("unknown") is None  # type: ignore
+        with pytest.raises(ValueError) as exc_err:
+            WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
 
-        assert bridge.id == "RS1-KBR31"
-        assert bridge.name == "RS1-KBR31name"
-        assert bridge.branchid == "riv_RS1_264"
-        assert bridge.chainage == 104.184
-        assert bridge.type == "bridge"
-        assert bridge.allowedflowdir == FlowDirection.both
-        assert bridge.csdefid == "W_980.1S_0"
-        assert bridge.shift == 0.0
-        assert bridge.inletlosscoeff == 1
-        assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == FrictionType.strickler
-        assert bridge.friction == 70
-        assert bridge.length == 9.75
+        assert expected_message in str(exc_err.value)
 
     def test_bridge_with_missing_required_parameters(self):
         parser = Parser(ParserConfig())
@@ -1617,7 +1603,7 @@ class TestWeir:
         assert weir.comments.crestwidth is None
         assert weir.comments.usevelocityheight == "My own special comment 2"
 
-    def test_weir_with_unknown_parameter_is_ignored(self):
+    def test_weir_with_unknown_parameter_throws_valueerror(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -1645,21 +1631,13 @@ class TestWeir:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
-        weir = wrapper.val
+        expected_message = "Unknown keywords are detected in section: 'Structure', '['unknown']'"
 
-        assert weir.dict().get("unknown") is None  # type: ignore
+        with pytest.raises(ValueError) as exc_err:
+            WrapperTest[Weir].parse_obj({"val": document.sections[0]})
 
-        assert weir.id == "weir_id"
-        assert weir.name == "weir"
-        assert weir.branchid == "branch"
-        assert weir.chainage == 3.0
-        assert weir.type == "weir"
-        assert weir.allowedflowdir == FlowDirection.positive
-        assert weir.crestlevel == 10.5
-        assert weir.crestwidth is None
-        assert weir.usevelocityheight == False
-
+        assert expected_message in str(exc_err.value)
+        
     @pytest.mark.parametrize(
         "input,expected",
         _get_allowedflowdir_cases(),
@@ -2184,7 +2162,7 @@ class TestGeneralStructure:
         assert struct.comments.gateopeningwidth is None
         assert struct.comments.usevelocityheight == "My own special comment 2"
 
-    def test_general_structure_with_unknown_parameter_is_ignored(self):
+    def test_general_structure_with_unknown_parameter_throws_valueerror(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -2236,47 +2214,12 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
-        struct = wrapper.val
+        expected_message = "Unknown keywords are detected in section: 'Structure', '['unknown']'"
 
-        assert struct.dict().get("unknown") is None  # type: ignore
+        with pytest.raises(ValueError) as exc_err:
+            WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
 
-        assert struct.id == "id"
-        assert struct.name == "extravagante_waarde"
-        assert struct.branchid == "stump"
-        assert struct.chainage == 13.53
-        assert struct.type == "generalStructure"
-        assert struct.allowedflowdir == FlowDirection.positive
-        assert struct.upstream1width == 111.0
-        assert struct.upstream1level == 112.0
-        assert struct.upstream2width == 113.0
-        assert struct.upstream2level == 114.0
-        assert struct.crestwidth == 115.0
-        assert struct.crestlevel == 116.0
-        assert struct.crestlength == 117.0
-        assert struct.downstream1width == 118.0
-        assert struct.downstream1level == 119.0
-        assert struct.downstream2width == 119.1
-        assert struct.downstream2level == 119.2
-        assert struct.gateloweredgelevel == 119.3
-        assert struct.posfreegateflowcoeff == 119.4
-        assert struct.posdrowngateflowcoeff == 119.5
-        assert struct.posfreeweirflowcoeff == 119.6
-        assert struct.posdrownweirflowcoeff == 119.7
-        assert struct.poscontrcoeffreegate == 119.8
-        assert struct.negfreegateflowcoeff == 119.9
-        assert struct.negdrowngateflowcoeff == 118.1
-        assert struct.negfreeweirflowcoeff == 118.2
-        assert struct.negdrownweirflowcoeff == 118.3
-        assert struct.negcontrcoeffreegate == 118.4
-        assert struct.extraresistance == 118.5
-        assert struct.gateheight == 118.6
-        assert struct.gateopeningwidth == 118.7
-        assert (
-            struct.gateopeninghorizontaldirection
-            == GateOpeningHorizontalDirection.from_right
-        )
-        assert struct.usevelocityheight == False
+        assert expected_message in str(exc_err.value)
 
     def _create_required_general_structure_values(self) -> dict:
         general_structure_values = dict()

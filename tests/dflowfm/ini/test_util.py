@@ -9,6 +9,7 @@ from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
+    ExtendedUnknownKeywordErrorManager,
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     UnknownKeywordErrorManager,
@@ -442,6 +443,26 @@ class TestUnknownKeywordErrorManager:
         fields = {}
         
         ukem = UnknownKeywordErrorManager()
+        data = {name: 1}
+            
+        try:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+        except:
+            pytest.fail("Exception is thrown, no exception is expected for this test.")
+            
+    def test_keyword_given_known_as_extended_field_does_not_throw_exception(
+        self
+    ):
+        section_header = "section header"
+        excluded_fields = set()
+        name = "keyname"
+        
+        fields = {}
+        
+        ukem = ExtendedUnknownKeywordErrorManager()
+        ukem._field_specific = {name}
         data = {name: 1}
             
         try:
