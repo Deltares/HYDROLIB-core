@@ -624,6 +624,7 @@ def rename_keys_for_backwards_compatibility(
 
     return values
 
+
 class UnknownKeywordErrorManager(ABC):
     """
     Base Error manager for unknown keys.
@@ -662,6 +663,7 @@ class DefaultUnknownKeywordErrorManager(UnknownKeywordErrorManager):
         excluded_fields: Set,
     ):
         return
+
 
 class MduUnknownKeywordErrorManager(UnknownKeywordErrorManager):
     """

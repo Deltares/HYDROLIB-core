@@ -25,7 +25,11 @@ from .serializer import (
     INISerializerConfig,
     write_ini,
 )
-from .util import DefaultUnknownKeywordErrorManager, UnknownKeywordErrorManager, make_list_validator
+from .util import (
+    DefaultUnknownKeywordErrorManager,
+    UnknownKeywordErrorManager,
+    make_list_validator,
+)
 
 logger = logging.getLogger(__name__)
 
