@@ -184,6 +184,7 @@ def test_scientific_notation_in_ini_file_are_correctly_parsed_for_strings_and_fl
     streetLevel           = 0.000
     storageType           = Reservoir
     streetStorageArea     = 1d2
+    CompartmentShape      = Unknown
     useTable              = False            
     """
 

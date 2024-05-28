@@ -286,6 +286,7 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -318,6 +319,7 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
+        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -2275,11 +2277,6 @@ class TestGeneralStructure:
             == GateOpeningHorizontalDirection.from_right
         )
         assert struct.usevelocityheight == False
-
-    def _create_required_general_structure_values(self) -> dict:
-        general_structure_values = dict()
-        general_structure_values.update(create_structure_values("generalStructure"))
-        return general_structure_values
 
     def _create_required_general_structure_values(self) -> dict:
         general_structure_values = dict()
