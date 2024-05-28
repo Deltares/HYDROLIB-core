@@ -543,13 +543,13 @@ class TestFileModelCache:
         model = DIMR()
         cache.register_model(path, model)
 
-        assert cache.exists(path)
+        assert cache._exists(path)
 
     def test_no_registed_model_when_cache_exists_returns_false(self, tmp_path):
         cache = FileModelCache()
         path = tmp_path / "some-dimr.xml"
 
-        assert not cache.exists(path)
+        assert not cache._exists(path)
 
     def test_has_changed_on_unchanged_file_returns_false(self, tmp_path: Path):
         cache = FileModelCache()

@@ -1,7 +1,7 @@
 import platform
 import re
 from enum import Enum, auto
-from hashlib import sha256
+from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from typing import Any, Callable, List, Optional
@@ -323,12 +323,12 @@ class FileChecksumCalculator:
         if not filepath.exists() or not filepath.is_file():
             return None
 
-        return FileChecksumCalculator._calculate_sha256_checksum(filepath)
+        return FileChecksumCalculator._calculate_md5_checksum(filepath)
 
     @staticmethod
-    def _calculate_sha256_checksum(filepath: Path) -> str:
-        sha256_hash = sha256()
+    def _calculate_md5_checksum(filepath: Path) -> str:
+        md5_hash = md5()
         with open(filepath, "rb") as file:
             for chunk in iter(lambda: file.read(4096), b""):
-                sha256_hash.update(chunk)
-        return sha256_hash.hexdigest()
+                md5_hash.update(chunk)
+        return md5_hash.hexdigest()

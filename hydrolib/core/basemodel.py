@@ -404,9 +404,9 @@ class FilePathResolver:
             self._anchors.pop()
 
 
-class CachedPathFileModelData:
+class CachedFileModel:
     """
-    CachedPathFileModelData provides a simple structure to keep the Filemodel and checksum together.
+    CachedFileModel provides a simple structure to keep the Filemodel and checksum together.
     """
 
     _model: "FileModel"
@@ -423,9 +423,13 @@ class CachedPathFileModelData:
         return self._checksum
 
     def __init__(self, model: "FileModel", checksum: str) -> None:
+        """Create a new empty CachedFileModel.
+        Args:
+            model (FileModel): filemodel to cache.
+            checksum (str): checksum of the file.
+        """
         self._model = model
         self._checksum = checksum
-
 
 class FileModelCache:
     """
@@ -435,7 +439,7 @@ class FileModelCache:
 
     def __init__(self):
         """Create a new empty FileModelCache."""
-        self._cache_dict: Dict[Path, CachedPathFileModelData] = {}
+        self._cache_dict: Dict[Path, CachedFileModel] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
         """Retrieve the model associated with the (absolute) path if
@@ -446,10 +450,10 @@ class FileModelCache:
                 The FileModel associated with the Path if it has been registered
                 before, otherwise None.
         """
-        file_model = self._cache_dict.get(path, None)
-        if file_model is None:
+        cached_file_model = self._cache_dict.get(path, None)
+        if cached_file_model is None:
             return None
-        return file_model.model
+        return cached_file_model.model
 
     def register_model(self, path: Path, model: "FileModel") -> None:
         """Register the model with the specified path in this FileModelCache.
@@ -459,7 +463,7 @@ class FileModelCache:
             model (FileModel): The model to be associated with the path.
         """
         checksum = self._get_checksum(path)
-        self._cache_dict[path] = CachedPathFileModelData(model, checksum)
+        self._cache_dict[path] = CachedFileModel(model, checksum)
 
     def is_empty(self) -> bool:
         """Whether or not this file model cache is empty.
@@ -469,7 +473,7 @@ class FileModelCache:
         """
         return not any(self._cache_dict)
 
-    def exists(self, path: Path) -> bool:
+    def _exists(self, path: Path) -> bool:
         """Whether or not the filepath is in the cache.
 
         Args:
@@ -492,13 +496,13 @@ class FileModelCache:
             True when the file does not exist in caching reference.
             False when the file has not changed.
         """
-        if not self.exists(path):
+        if not self._exists(path):
             return True
 
         checksum = self._get_checksum(path)
         return checksum != self._cache_dict.get(path).checksum
 
-    def _get_checksum(self, path: Path) -> str:
+    def _get_checksum(self, path: Path) -> Optional[str]:
         return FileChecksumCalculator.calculate_checksum(path)
 
 

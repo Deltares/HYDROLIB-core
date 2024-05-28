@@ -352,7 +352,7 @@ class TestFileChecksumCalculator:
         default_file = tmp_path / "default_file.txt"
         default_file.write_text("Hello World")
         expected_checksum = (
-            "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"
+            "b10a8db164e0754105b7a99be72e3fe5"
         )
 
         calculated_checksum = FileChecksumCalculator.calculate_checksum(default_file)
