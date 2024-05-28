@@ -265,8 +265,8 @@ class Meteo(INIBasedModel):
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         alias="interpolationMethod"
     )
-    
-    @classmethod    
+
+    @classmethod
     def _get_unknown_keyword_error_manager(cls):
         return MeteoUnknownKeywordErrorManager()
 

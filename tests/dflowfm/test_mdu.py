@@ -390,7 +390,7 @@ class TestOutput:
             assert actual_point.x == expected_point.x
             assert actual_point.y == expected_point.y
             assert actual_point.name == expected_point.name
-            
+
     def test_mdu_unknown_keyword_loading_throws_valueerror_for_unknown_keyword(
         self, tmp_path
     ):
@@ -410,14 +410,16 @@ class TestOutput:
 
         section_header = "General"
         name = "unknownkey"
-        
-        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name]}'"
+
+        expected_message = (
+            f"Unknown keywords are detected in section: '{section_header}', '{[name]}'"
+        )
 
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
-            
+
         assert expected_message in str(exc_err.value)
-        
+
     def test_mdu_unknown_keywords_loading_throws_valueerror_for_unknown_keywords(
         self, tmp_path
     ):
@@ -439,12 +441,12 @@ class TestOutput:
         section_header = "General"
         name = "unknownkey"
         name2 = "unknownkey2"
-        
+
         expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, name2]}'"
 
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
-            
+
         assert expected_message in str(exc_err.value)
 
     def test_mdu_unknown_keywords_loading_thrown_valueerror_for_unknown_keyword_does_not_include_excluded_fields(

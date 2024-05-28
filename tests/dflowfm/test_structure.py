@@ -470,7 +470,9 @@ class TestBridge:
 
         document = parser.finalize()
 
-        expected_message = "Unknown keywords are detected in section: 'Structure', '['unknown']'"
+        expected_message = (
+            "Unknown keywords are detected in section: 'Structure', '['unknown']'"
+        )
 
         with pytest.raises(ValueError) as exc_err:
             WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
@@ -1631,13 +1633,15 @@ class TestWeir:
 
         document = parser.finalize()
 
-        expected_message = "Unknown keywords are detected in section: 'Structure', '['unknown']'"
+        expected_message = (
+            "Unknown keywords are detected in section: 'Structure', '['unknown']'"
+        )
 
         with pytest.raises(ValueError) as exc_err:
             WrapperTest[Weir].parse_obj({"val": document.sections[0]})
 
         assert expected_message in str(exc_err.value)
-        
+
     @pytest.mark.parametrize(
         "input,expected",
         _get_allowedflowdir_cases(),
@@ -2214,7 +2218,9 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        expected_message = "Unknown keywords are detected in section: 'Structure', '['unknown']'"
+        expected_message = (
+            "Unknown keywords are detected in section: 'Structure', '['unknown']'"
+        )
 
         with pytest.raises(ValueError) as exc_err:
             WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})

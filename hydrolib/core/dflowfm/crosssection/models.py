@@ -74,8 +74,8 @@ class CrossSectionDefinition(INIBasedModel):
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id")
-    
-    @classmethod    
+
+    @classmethod
     def _get_unknown_keyword_error_manager(cls):
         return CrsUnknownKeywordErrorManager()
 

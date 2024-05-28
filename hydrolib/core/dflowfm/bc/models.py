@@ -177,7 +177,7 @@ class ForcingBase(DataBlockINIBasedModel):
     quantityunitpair: List[ScalarOrVectorQUP]
     """List[ScalarOrVectorQUP]: List of header lines for one or more quantities and their unit. Describes the columns in the actual datablock."""
 
-    @classmethod    
+    @classmethod
     def _get_unknown_keyword_error_manager(cls):
         return ForcingUnknownKeywordErrorManager()
 

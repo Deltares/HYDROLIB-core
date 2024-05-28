@@ -64,8 +64,8 @@ class INIBasedModel(BaseModel, ABC):
             self.__fields__,
             self._exclude_fields(),
         )
-    
-    @classmethod    
+
+    @classmethod
     def _get_unknown_keyword_error_manager(cls):
         return UnknownKeywordErrorManager()
 
