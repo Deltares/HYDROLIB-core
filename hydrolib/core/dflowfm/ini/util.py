@@ -1,5 +1,6 @@
 """util.py provides additional utility methods related to handling ini files.
 """
+from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 from operator import eq
@@ -623,13 +624,12 @@ def rename_keys_for_backwards_compatibility(
 
     return values
 
-
-class UnknownKeywordErrorManager:
+class UnknownKeywordErrorManager(ABC):
     """
-    Error manager for unknown keys.
-    Detects unknown keys and manages the Error to the user.
+    Base Error manager for unknown keys.
     """
 
+    @abstractmethod
     def raise_error_for_unknown_keywords(
         self,
         data: Dict[str, Any],
@@ -646,6 +646,36 @@ class UnknownKeywordErrorManager:
             fields (Dict[str, ModelField]) : Known fields of the section.
             excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
         """
+
+
+class DefaultUnknownKeywordErrorManager(UnknownKeywordErrorManager):
+    """
+    Default Error manager for unknown keys.
+    Does no checks for unknown keywords.
+    """
+
+    def raise_error_for_unknown_keywords(
+        self,
+        data: Dict[str, Any],
+        section_header: str,
+        fields: Dict[str, ModelField],
+        excluded_fields: Set,
+    ):
+        return
+
+class MduUnknownKeywordErrorManager(UnknownKeywordErrorManager):
+    """
+    Error manager for unknown keys.
+    Detects unknown keys and manages the Error to the user.
+    """
+
+    def raise_error_for_unknown_keywords(
+        self,
+        data: Dict[str, Any],
+        section_header: str,
+        fields: Dict[str, ModelField],
+        excluded_fields: Set,
+    ):
         unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
 
         if len(unknown_keywords) == 0:
@@ -673,55 +703,3 @@ class UnknownKeywordErrorManager:
                 return False
 
         return name not in excluded_fields
-
-
-class ExtendedUnknownKeywordErrorManager(UnknownKeywordErrorManager):
-    """
-    Extended Error manager for unknown keys, this class can filter out specific keys which should not trigger an unknown key error.
-    """
-
-    _field_specific: set = set()
-
-    def _is_unknown_keyword(
-        self, name: str, fields: Dict[str, ModelField], excluded_fields: Set
-    ):
-        is_unknown_keyword = super()._is_unknown_keyword(name, fields, excluded_fields)
-
-        if name in self._field_specific:
-            return False
-
-        return is_unknown_keyword
-
-
-class ForcingUnknownKeywordErrorManager(ExtendedUnknownKeywordErrorManager):
-    _field_specific: set = {
-        "timeinterpolation",
-        "quantity",
-        "unit",
-        "manholename",
-        "vertpositionindex",
-        "time_interpolation",
-        "vertical_position_specification",
-        "vertical_interpolation",
-        "vertical_position_type",
-        "vertical_position",
-        "vector",
-    }
-
-
-class CrsUnknownKeywordErrorManager(ExtendedUnknownKeywordErrorManager):
-    _field_specific: set = {
-        "template",
-        "height",
-        "width",
-        "r",
-        "r1",
-        "r2",
-        "r3",
-        "a",
-        "a1",
-    }
-
-
-class MeteoUnknownKeywordErrorManager(ExtendedUnknownKeywordErrorManager):
-    _field_specific: set = {"locationtype", "locationfile"}

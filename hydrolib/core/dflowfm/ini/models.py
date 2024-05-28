@@ -25,7 +25,7 @@ from .serializer import (
     INISerializerConfig,
     write_ini,
 )
-from .util import UnknownKeywordErrorManager, make_list_validator
+from .util import DefaultUnknownKeywordErrorManager, UnknownKeywordErrorManager, make_list_validator
 
 logger = logging.getLogger(__name__)
 
@@ -66,8 +66,8 @@ class INIBasedModel(BaseModel, ABC):
         )
 
     @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return UnknownKeywordErrorManager()
+    def _get_unknown_keyword_error_manager(cls) -> UnknownKeywordErrorManager:
+        return DefaultUnknownKeywordErrorManager()
 
     @classmethod
     def _supports_comments(cls):

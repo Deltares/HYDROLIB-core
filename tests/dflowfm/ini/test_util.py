@@ -9,10 +9,9 @@ from pydantic.v1.fields import ModelField
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
-    ExtendedUnknownKeywordErrorManager,
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    UnknownKeywordErrorManager,
+    MduUnknownKeywordErrorManager,
     get_from_subclass_defaults,
     get_type_based_on_subclass_default_value,
     rename_keys_for_backwards_compatibility,
@@ -372,7 +371,7 @@ class TestUnknownKeywordErrorManager:
         name = "keyname"
         second_name = "second_other"
 
-        ukem = UnknownKeywordErrorManager()
+        ukem = MduUnknownKeywordErrorManager()
         data = {name: 1, second_name: 2}
 
         expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, second_name]}'"
@@ -395,7 +394,7 @@ class TestUnknownKeywordErrorManager:
 
         fields = {"name": mocked_field}
 
-        ukem = UnknownKeywordErrorManager()
+        ukem = MduUnknownKeywordErrorManager()
         data = {name: 1}
 
         try:
@@ -416,7 +415,7 @@ class TestUnknownKeywordErrorManager:
 
         fields = {name: mocked_field}
 
-        ukem = UnknownKeywordErrorManager()
+        ukem = MduUnknownKeywordErrorManager()
         data = {name: 1}
 
         try:
@@ -434,25 +433,7 @@ class TestUnknownKeywordErrorManager:
 
         fields = {}
 
-        ukem = UnknownKeywordErrorManager()
-        data = {name: 1}
-
-        try:
-            ukem.raise_error_for_unknown_keywords(
-                data, section_header, fields, excluded_fields
-            )
-        except ValueError:
-            pytest.fail("Exception is thrown, no exception is expected for this test.")
-
-    def test_keyword_given_known_as_extended_field_does_not_throw_exception(self):
-        section_header = "section header"
-        excluded_fields = set()
-        name = "keyname"
-
-        fields = {}
-
-        ukem = ExtendedUnknownKeywordErrorManager()
-        ukem._field_specific = {name}
+        ukem = MduUnknownKeywordErrorManager()
         data = {name: 1}
 
         try:

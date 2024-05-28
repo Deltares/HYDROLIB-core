@@ -18,7 +18,6 @@ from hydrolib.core.dflowfm.ini.models import (
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    MeteoUnknownKeywordErrorManager,
     get_enum_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
@@ -265,10 +264,6 @@ class Meteo(INIBasedModel):
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         alias="interpolationMethod"
     )
-
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MeteoUnknownKeywordErrorManager()
 
     def is_intermediate_link(self) -> bool:
         return True

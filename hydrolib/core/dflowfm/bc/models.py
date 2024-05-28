@@ -28,7 +28,6 @@ from hydrolib.core.dflowfm.ini.models import (
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
-    ForcingUnknownKeywordErrorManager,
     get_enum_validator,
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
@@ -176,10 +175,6 @@ class ForcingBase(DataBlockINIBasedModel):
 
     quantityunitpair: List[ScalarOrVectorQUP]
     """List[ScalarOrVectorQUP]: List of header lines for one or more quantities and their unit. Describes the columns in the actual datablock."""
-
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return ForcingUnknownKeywordErrorManager()
 
     def _exclude_fields(self) -> Set:
         return {"quantityunitpair"}.union(super()._exclude_fields())
