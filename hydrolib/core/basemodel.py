@@ -431,6 +431,7 @@ class CachedFileModel:
         self._model = model
         self._checksum = checksum
 
+
 class FileModelCache:
     """
     FileModelCache provides a simple structure to register and retrieve FileModel
@@ -840,7 +841,7 @@ class FileModel(BaseModel, ABC):
                 if not context.is_content_changed(filepath):
                     cls._has_been_loaded_from_cache = True
                     return file_model
-            
+
             cls._has_been_loaded_from_cache = False
             return super().__new__(cls)
 
