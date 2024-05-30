@@ -9,6 +9,7 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
+    UnknownKeywordErrorManager,
     get_enum_validator,
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
@@ -70,6 +71,13 @@ class CrossSectionDefinition(INIBasedModel):
     id: str = Field(alias="id")
     type: str = Field(alias="type")
     thalweg: Optional[float]
+    
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The CrossSectionDefinition does not currently support raising an error on unknown keywords.
+        """
+        return None
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id")

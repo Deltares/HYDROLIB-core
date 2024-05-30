@@ -1,6 +1,5 @@
 """util.py provides additional utility methods related to handling ini files.
 """
-from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 from operator import eq
@@ -625,47 +624,7 @@ def rename_keys_for_backwards_compatibility(
     return values
 
 
-class UnknownKeywordErrorManager(ABC):
-    """
-    Base Error manager for unknown keys.
-    """
-
-    @abstractmethod
-    def raise_error_for_unknown_keywords(
-        self,
-        data: Dict[str, Any],
-        section_header: str,
-        fields: Dict[str, ModelField],
-        excluded_fields: Set,
-    ):
-        """
-        Notify the user of unknown keywords.
-
-        Args:
-            data (Dict[str, Any])   : Input data containing all properties which are checked on unknown keywords.
-            section_header (str)    : Header of the section in which unknown keys might be detected.
-            fields (Dict[str, ModelField]) : Known fields of the section.
-            excluded_fields (Set)   : Fields which should be excluded from the check for unknown keywords.
-        """
-
-
-class DefaultUnknownKeywordErrorManager(UnknownKeywordErrorManager):
-    """
-    Default Error manager for unknown keys.
-    Does no checks for unknown keywords.
-    """
-
-    def raise_error_for_unknown_keywords(
-        self,
-        data: Dict[str, Any],
-        section_header: str,
-        fields: Dict[str, ModelField],
-        excluded_fields: Set,
-    ):
-        return
-
-
-class MduUnknownKeywordErrorManager(UnknownKeywordErrorManager):
+class UnknownKeywordErrorManager:
     """
     Error manager for unknown keys.
     Detects unknown keys and manages the Error to the user.

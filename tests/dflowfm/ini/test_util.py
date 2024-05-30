@@ -11,7 +11,7 @@ from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    MduUnknownKeywordErrorManager,
+    UnknownKeywordErrorManager,
     get_from_subclass_defaults,
     get_type_based_on_subclass_default_value,
     rename_keys_for_backwards_compatibility,
@@ -371,7 +371,7 @@ class TestUnknownKeywordErrorManager:
         name = "keyname"
         second_name = "second_other"
 
-        ukem = MduUnknownKeywordErrorManager()
+        ukem = UnknownKeywordErrorManager()
         data = {name: 1, second_name: 2}
 
         expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, second_name]}'"
@@ -394,7 +394,7 @@ class TestUnknownKeywordErrorManager:
 
         fields = {"name": mocked_field}
 
-        ukem = MduUnknownKeywordErrorManager()
+        ukem = UnknownKeywordErrorManager()
         data = {name: 1}
 
         try:
@@ -415,7 +415,7 @@ class TestUnknownKeywordErrorManager:
 
         fields = {name: mocked_field}
 
-        ukem = MduUnknownKeywordErrorManager()
+        ukem = UnknownKeywordErrorManager()
         data = {name: 1}
 
         try:
@@ -433,7 +433,7 @@ class TestUnknownKeywordErrorManager:
 
         fields = {}
 
-        ukem = MduUnknownKeywordErrorManager()
+        ukem = UnknownKeywordErrorManager()
         data = {name: 1}
 
         try:

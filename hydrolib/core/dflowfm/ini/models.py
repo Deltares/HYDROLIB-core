@@ -26,7 +26,6 @@ from .serializer import (
     write_ini,
 )
 from .util import (
-    DefaultUnknownKeywordErrorManager,
     UnknownKeywordErrorManager,
     make_list_validator,
 )
@@ -59,19 +58,9 @@ class INIBasedModel(BaseModel, ABC):
         extra = Extra.ignore
         arbitrary_types_allowed = False
 
-    def __init__(self, **data):
-        super().__init__(**data)
-        unknown_keyword_error_manager = self._get_unknown_keyword_error_manager()
-        unknown_keyword_error_manager.raise_error_for_unknown_keywords(
-            data,
-            self._header,
-            self.__fields__,
-            self._exclude_fields(),
-        )
-
     @classmethod
-    def _get_unknown_keyword_error_manager(cls) -> UnknownKeywordErrorManager:
-        return DefaultUnknownKeywordErrorManager()
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        return UnknownKeywordErrorManager()
 
     @classmethod
     def _supports_comments(cls):
@@ -120,6 +109,18 @@ class INIBasedModel(BaseModel, ABC):
             arbitrary_types_allowed = False
 
     comments: Optional[Comments] = Comments()
+
+    @root_validator(pre=True)
+    def _validate_unknown_keywords(cls, values):
+        unknown_keyword_error_manager = cls._get_unknown_keyword_error_manager()
+        if unknown_keyword_error_manager:
+            unknown_keyword_error_manager.raise_error_for_unknown_keywords(
+                values,
+                cls._header,
+                cls.__fields__,
+                cls._exclude_fields(),
+            )
+        return values
 
     @root_validator(pre=True)
     def _skip_nones_and_set_header(cls, values):
@@ -237,6 +238,13 @@ class DataBlockINIBasedModel(INIBasedModel):
     datablock: Datablock = []
 
     _make_lists = make_list_validator("datablock")
+    
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The DataBlockINIBasedModel does not need to raise an error on unknown keywords.
+        """
+        return None
 
     def _to_section(
         self,

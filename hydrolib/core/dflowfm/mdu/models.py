@@ -17,7 +17,6 @@ from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
-    MduUnknownKeywordErrorManager,
     get_split_string_on_delimiter_validator,
     validate_datetime_string,
 )
@@ -72,10 +71,6 @@ class General(INIGeneral):
     fileversion: str = Field("1.09", alias="fileVersion")
     autostart: Optional[AutoStartOption] = Field(AutoStartOption.no, alias="autoStart")
     pathsrelativetoparent: bool = Field(False, alias="pathsRelativeToParent")
-
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
 
 
 class Numerics(INIBasedModel):
@@ -374,9 +369,7 @@ class Numerics(INIBasedModel):
     adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
     fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class VolumeTables(INIBasedModel):
@@ -409,9 +402,7 @@ class VolumeTables(INIBasedModel):
     increment: float = Field(0.2, alias="increment")
     usevolumetablefile: bool = Field(False, alias="useVolumeTableFile")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Physics(INIBasedModel):
@@ -627,9 +618,7 @@ class Physics(INIBasedModel):
     secondaryflow: bool = Field(False, alias="secondaryFlow")
     betaspiral: float = Field(0.0, alias="betaSpiral")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Sediment(INIBasedModel):
@@ -660,9 +649,7 @@ class Sediment(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile"
     )
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Wind(INIBasedModel):
@@ -736,9 +723,7 @@ class Wind(INIBasedModel):
         "windspeedbreakpoints",
     )
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Waves(INIBasedModel):
@@ -771,9 +756,7 @@ class Waves(INIBasedModel):
     rouwav: str = Field("FR84", alias="rouWav")
     gammax: float = Field(0.5, alias="gammaX")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Time(INIBasedModel):
@@ -857,9 +840,7 @@ class Time(INIBasedModel):
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Restart(INIBasedModel):
@@ -898,9 +879,7 @@ class Restart(INIBasedModel):
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class ExternalForcing(INIBasedModel):
@@ -953,9 +932,7 @@ class ExternalForcing(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Hydrology(INIBasedModel):
@@ -979,9 +956,7 @@ class Hydrology(INIBasedModel):
     _header: Literal["Hydrology"] = "Hydrology"
     interceptionmodel: bool = Field(False, alias="interceptionModel")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Trachytopes(INIBasedModel):
@@ -1023,9 +998,7 @@ class Trachytopes(INIBasedModel):
     dttrt: float = Field(60.0, alias="dtTrt")
     trtmxr: Optional[int] = Field(None, alias="trtMxR")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 ObsFile = Union[XYNModel, ObservationPointModel]
@@ -1729,9 +1702,7 @@ class Output(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Geometry(INIBasedModel):
@@ -2104,9 +2075,7 @@ class Geometry(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class Calibration(INIBasedModel):
@@ -2148,9 +2117,7 @@ class Calibration(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile"
     )
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class InfiltrationMethod(IntEnum):
@@ -2224,9 +2191,7 @@ class GroundWater(INIBasedModel):
     h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
     sgrwini: Optional[float] = Field(None, alias="sgrwini")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class ProcessFluxIntegration(IntEnum):
@@ -2315,9 +2280,7 @@ class Processes(INIBasedModel):
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class ParticlesThreeDType(IntEnum):
@@ -2377,9 +2340,7 @@ class Particles(INIBasedModel):
         ParticlesThreeDType.DepthAveraged, alias="3Dtype"
     )
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
+
 
 
 class VegetationModelNr(IntEnum):
@@ -2434,9 +2395,6 @@ class Vegetation(INIBasedModel):
     stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
     densvegminbap: Optional[float] = Field(0.0, alias="Densvegminbap")
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls):
-        return MduUnknownKeywordErrorManager()
 
 
 class FMModel(INIModel):
