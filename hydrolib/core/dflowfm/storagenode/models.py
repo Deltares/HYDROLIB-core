@@ -162,7 +162,7 @@ class StorageNode(INIBasedModel):
     interpolate: Optional[Interpolation] = Field(
         Interpolation.linear.value, alias="interpolate"
     )
-    
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """

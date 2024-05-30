@@ -25,10 +25,7 @@ from .serializer import (
     INISerializerConfig,
     write_ini,
 )
-from .util import (
-    UnknownKeywordErrorManager,
-    make_list_validator,
-)
+from .util import UnknownKeywordErrorManager, make_list_validator
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +235,7 @@ class DataBlockINIBasedModel(INIBasedModel):
     datablock: Datablock = []
 
     _make_lists = make_list_validator("datablock")
-    
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """

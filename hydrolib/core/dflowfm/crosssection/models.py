@@ -71,7 +71,7 @@ class CrossSectionDefinition(INIBasedModel):
     id: str = Field(alias="id")
     type: str = Field(alias="type")
     thalweg: Optional[float]
-    
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """

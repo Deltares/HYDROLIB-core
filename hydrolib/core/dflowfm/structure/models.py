@@ -83,7 +83,7 @@ class Structure(INIBasedModel):
     _loc_coord_fields = {"numcoordinates", "xcoordinates", "ycoordinates"}
     _loc_branch_fields = {"branchid", "chainage"}
     _loc_all_fields = _loc_coord_fields | _loc_branch_fields
-    
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """

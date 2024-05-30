@@ -249,7 +249,7 @@ class Meteo(INIBasedModel):
         )
 
     comments: Comments = Comments()
-    
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """

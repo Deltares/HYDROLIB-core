@@ -370,8 +370,6 @@ class Numerics(INIBasedModel):
     fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
 
 
-
-
 class VolumeTables(INIBasedModel):
     """
     The `[VolumeTables]` section in an MDU file.
@@ -401,8 +399,6 @@ class VolumeTables(INIBasedModel):
     usevolumetables: bool = Field(False, alias="useVolumeTables")
     increment: float = Field(0.2, alias="increment")
     usevolumetablefile: bool = Field(False, alias="useVolumeTableFile")
-
-
 
 
 class Physics(INIBasedModel):
@@ -619,8 +615,6 @@ class Physics(INIBasedModel):
     betaspiral: float = Field(0.0, alias="betaSpiral")
 
 
-
-
 class Sediment(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         sedimentmodelnr: Optional[str] = Field(
@@ -648,8 +642,6 @@ class Sediment(INIBasedModel):
     sedfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile"
     )
-
-
 
 
 class Wind(INIBasedModel):
@@ -724,8 +716,6 @@ class Wind(INIBasedModel):
     )
 
 
-
-
 class Waves(INIBasedModel):
     """
     The `[Waves]` section in an MDU file.
@@ -755,8 +745,6 @@ class Waves(INIBasedModel):
     wavemodelnr: int = Field(3, alias="waveModelNr")
     rouwav: str = Field("FR84", alias="rouWav")
     gammax: float = Field(0.5, alias="gammaX")
-
-
 
 
 class Time(INIBasedModel):
@@ -841,8 +829,6 @@ class Time(INIBasedModel):
         return validate_datetime_string(value, field)
 
 
-
-
 class Restart(INIBasedModel):
     """
     The `[Restart]` section in an MDU file.
@@ -878,8 +864,6 @@ class Restart(INIBasedModel):
     @validator("restartdatetime")
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
-
-
 
 
 class ExternalForcing(INIBasedModel):
@@ -933,8 +917,6 @@ class ExternalForcing(INIBasedModel):
         return True
 
 
-
-
 class Hydrology(INIBasedModel):
     """
     The `[Hydrology]` section in an MDU file.
@@ -955,8 +937,6 @@ class Hydrology(INIBasedModel):
 
     _header: Literal["Hydrology"] = "Hydrology"
     interceptionmodel: bool = Field(False, alias="interceptionModel")
-
-
 
 
 class Trachytopes(INIBasedModel):
@@ -997,8 +977,6 @@ class Trachytopes(INIBasedModel):
     trtl: Optional[Path] = Field(None, alias="trtL")
     dttrt: float = Field(60.0, alias="dtTrt")
     trtmxr: Optional[int] = Field(None, alias="trtMxR")
-
-
 
 
 ObsFile = Union[XYNModel, ObservationPointModel]
@@ -1703,8 +1681,6 @@ class Output(INIBasedModel):
         return True
 
 
-
-
 class Geometry(INIBasedModel):
     """
     The `[Geometry]` section in an MDU file.
@@ -2076,8 +2052,6 @@ class Geometry(INIBasedModel):
         return True
 
 
-
-
 class Calibration(INIBasedModel):
     """
     The `[Calibration]` section in an MDU file.
@@ -2116,8 +2090,6 @@ class Calibration(INIBasedModel):
     areafile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile"
     )
-
-
 
 
 class InfiltrationMethod(IntEnum):
@@ -2190,8 +2162,6 @@ class GroundWater(INIBasedModel):
     bgrwuni: Optional[float] = Field(None, alias="bgrwuni")
     h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
     sgrwini: Optional[float] = Field(None, alias="sgrwini")
-
-
 
 
 class ProcessFluxIntegration(IntEnum):
@@ -2281,8 +2251,6 @@ class Processes(INIBasedModel):
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
 
-
-
 class ParticlesThreeDType(IntEnum):
     """
     Enum class containing the valid values for the 3Dtype
@@ -2341,8 +2309,6 @@ class Particles(INIBasedModel):
     )
 
 
-
-
 class VegetationModelNr(IntEnum):
     """
     Enum class containing the valid values for the VegetationModelNr
@@ -2394,7 +2360,6 @@ class Vegetation(INIBasedModel):
     rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
     stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
     densvegminbap: Optional[float] = Field(0.0, alias="Densvegminbap")
-
 
 
 class FMModel(INIModel):
