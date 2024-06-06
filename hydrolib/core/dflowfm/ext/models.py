@@ -9,6 +9,7 @@ from hydrolib.core.basemodel import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import (
     INIBasedModel,
     INIGeneral,
@@ -194,11 +195,23 @@ class MeteoForcingFileType(StrEnum):
     bcascii = "bcAscii"
     """str: Space-uniform time series in <*.bc> file."""
 
-    netcdf = "netcdf"
-    """str: NetCDF, either with gridded data, or multiple station time series."""
-
     uniform = "uniform"
     """str: Space-uniform time series in <*.tim> file."""
+
+    unimagdir = "uniMagDir"
+    """str: Space-uniform wind magnitude+direction in <*.tim> file."""
+
+    meteogridequi = "meteoGridEqui"
+    """str: Space- and time-varying wind and pressure on an equidistant grid in <*.amu/v/p> files."""
+
+    spiderweb = "spiderweb"
+    """str: Space- and time-varying cyclone wind and pressure in <*.spw> files."""
+
+    meteogridcurvi = "meteoGridCurvi"
+    """str: Space- and time-varying wind and pressure on a curvilinear grid in <*.grd+*.amu/v/p> files."""
+
+    netcdf = "netcdf"
+    """str: NetCDF, either with gridded data, or multiple station time series."""
 
     allowedvaluestext = "Possible values: bcAscii, netcdf, uniform."
 
@@ -246,6 +259,10 @@ class Meteo(INIBasedModel):
         interpolationmethod: Optional[str] = Field(
             "Type of (spatial) interpolation.", alias="interpolationMethod"
         )
+        operand: Optional[str] = Field(
+            "How this data is combined with previous data for the same quantity (if any).",
+            alias="operand",
+        )
 
     comments: Comments = Comments()
 
@@ -264,6 +281,7 @@ class Meteo(INIBasedModel):
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         alias="interpolationMethod"
     )
+    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
 
     def is_intermediate_link(self) -> bool:
         return True
