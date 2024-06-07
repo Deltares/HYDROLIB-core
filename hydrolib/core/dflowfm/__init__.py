@@ -12,9 +12,9 @@ from .obs import *
 from .obscrosssection import *
 from .onedfield import *
 from .polyfile import *
+from .research import *
 from .storagenode import *
 from .structure import *
 from .tim import *
 from .xyn import *
 from .xyz import *
-from .research import *
