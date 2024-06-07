@@ -98,7 +98,7 @@ class ResearchGeometry(Geometry):
             alias="dpuopt",
         )
         research_ihuzcsig: Optional[str] = Field(
-            "ihuzcsig",
+            "If keepzlayeringatbed>=2 : 1,2,3=av,mx,mn of Leftsig,Rightsig,4=uniform'",
             alias="ihuzcsig",
         )
         research_ihuz: Optional[str] = Field(
@@ -763,7 +763,7 @@ class ResearchOutput(Output):
             alias="writedetailedtimers",
         )
         research_metadatafile: Optional[str] = Field(
-            "metadata file", alias="metadatafile"
+            "Metadata NetCDF file with user-defined global dataset attributes (*_meta.nc).", alias="metadatafile"
         )
         research_mbainterval: Optional[str] = Field(
             "Mass balance area output interval (s).", alias="mbainterval"
