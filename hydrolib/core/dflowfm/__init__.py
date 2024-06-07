@@ -17,3 +17,4 @@ from .structure import *
 from .tim import *
 from .xyn import *
 from .xyz import *
+from .research import *
