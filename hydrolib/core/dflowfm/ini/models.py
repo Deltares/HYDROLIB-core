@@ -25,7 +25,7 @@ from .serializer import (
     INISerializerConfig,
     write_ini,
 )
-from .util import make_list_validator
+from .util import UnknownKeywordErrorManager, make_list_validator
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class INIBasedModel(BaseModel, ABC):
             descriptions for all data fields.
     """
 
-    _header: str
+    _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
     _scientific_notation_regex = compile(
         r"([\d.]+)([dD])([+-]?\d{1,3})"
@@ -54,6 +54,10 @@ class INIBasedModel(BaseModel, ABC):
     class Config:
         extra = Extra.ignore
         arbitrary_types_allowed = False
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        return UnknownKeywordErrorManager()
 
     @classmethod
     def _supports_comments(cls):
@@ -102,6 +106,18 @@ class INIBasedModel(BaseModel, ABC):
             arbitrary_types_allowed = False
 
     comments: Optional[Comments] = Comments()
+
+    @root_validator(pre=True)
+    def _validate_unknown_keywords(cls, values):
+        unknown_keyword_error_manager = cls._get_unknown_keyword_error_manager()
+        if unknown_keyword_error_manager:
+            unknown_keyword_error_manager.raise_error_for_unknown_keywords(
+                values,
+                cls._header,
+                cls.__fields__,
+                cls._exclude_fields(),
+            )
+        return values
 
     @root_validator(pre=True)
     def _skip_nones_and_set_header(cls, values):
@@ -219,6 +235,13 @@ class DataBlockINIBasedModel(INIBasedModel):
     datablock: Datablock = []
 
     _make_lists = make_list_validator("datablock")
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The DataBlockINIBasedModel does not need to raise an error on unknown keywords.
+        """
+        return None
 
     def _to_section(
         self,

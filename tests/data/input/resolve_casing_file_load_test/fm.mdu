@@ -6,7 +6,6 @@ Program           = D-Flow FM
 Version           = 1.2.124.69571M
 fileType          = modelDef
 fileVersion       = 1.09
-GuiVersion        = 4.5.0.491
 AutoStart         = 0
 PathsRelativeToParent= 1
 
@@ -69,13 +68,11 @@ TimeStepType      = 2
 Limtyphu          = 0
 Limtypmom         = 4
 Limtypsa          = 4
-TransportMethod   = 1
 Vertadvtypsal     = 5
 Icgsolver         = 4
 Maxdegree         = 6
 FixedWeirScheme   = 6
 FixedWeirContraction= 1
-FixedWeirfrictscheme= 0
 Fixedweirtopwidth = 3
 Fixedweirtopfrictcoef= -999
 Fixedweirtalud    = 4
@@ -86,7 +83,6 @@ Drop1D            = 1
 Chkadvd           = 0.1
 Teta0             = 0.55
 Qhrelax           = 0.01
-Jbasqbnddownwindhs= 0
 cstbnd            = 0
 Maxitverticalforestersal= 0
 Maxitverticalforestertem= 0
@@ -101,14 +97,12 @@ EpsMaxlevm        = 0.0001
 maxNonlinearIterations= 100
 setHorizontalBobsFor1d2d= 0
 Pure1D            = 0
-jposhchk          = 2
 
 [physics]
 UnifFrictCoef     = 0.023
 UnifFrictType     = 1
 UnifFrictCoef1D   = 0.023
 UnifFrictCoefLin  = 0
-Umodlin           = 0
 Vicouv            = 1
 Dicouv            = 1
 Vicoww            = 5E-05
@@ -136,7 +130,6 @@ Stanton           = -1
 Dalton            = -1
 Backgroundwatertemperature= 6
 SecondaryFlow     = 0
-EffectSpiral      = 0
 BetaSpiral        = 0
 Temperature       = 0
 
@@ -150,7 +143,6 @@ PavIni            = 0
 
 [waves]
 Wavemodelnr       = 0
-WaveNikuradse     = 0.01
 Rouwav            = FR84
 Gammax            = 1
 
@@ -206,7 +198,6 @@ XLSInterval       =
 MapFile           =
 MapInterval       = 3600
 RstInterval       = 0
-S1incinterval     =
 MapFormat         = 4
 Wrihis_balance    = 1
 Wrihis_sourcesink = 1
@@ -273,10 +264,7 @@ ClassMapFile      =
 WaterlevelClasses = 0
 WaterdepthClasses = 0
 ClassMapInterval  = 0
-VelocityMagnitudeClasses= 0
-VelocityDirectionClassesInterval= 30
 StatsInterval     =
-Writebalancefile  = 0
 TimingsInterval   =
 Richardsononoutput= 1
 NcFormat          = 3
@@ -289,7 +277,6 @@ FouUpdateStep     = 0
 [volumeTables]
 useVolumeTables   = 1
 increment         = 0.1
-useVolumeTablesFile= 1
 
 [hydrology]
 InterceptionModel = 0
