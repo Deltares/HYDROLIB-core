@@ -763,7 +763,8 @@ class ResearchOutput(Output):
             alias="writedetailedtimers",
         )
         research_metadatafile: Optional[str] = Field(
-            "Metadata NetCDF file with user-defined global dataset attributes (*_meta.nc).", alias="metadatafile"
+            "Metadata NetCDF file with user-defined global dataset attributes (*_meta.nc).",
+            alias="metadatafile",
         )
         research_mbainterval: Optional[str] = Field(
             "Mass balance area output interval (s).", alias="mbainterval"
