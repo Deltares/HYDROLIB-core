@@ -2,6 +2,7 @@ import logging
 from abc import ABC
 from enum import Enum
 from math import isnan
+from re import compile
 from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
 
 from pydantic.v1 import Extra, Field, root_validator
@@ -24,7 +25,7 @@ from .serializer import (
     INISerializerConfig,
     write_ini,
 )
-from .util import make_list_validator
+from .util import UnknownKeywordErrorManager, make_list_validator
 
 logger = logging.getLogger(__name__)
 
@@ -44,12 +45,19 @@ class INIBasedModel(BaseModel, ABC):
             descriptions for all data fields.
     """
 
-    _header: str
+    _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
+    _scientific_notation_regex = compile(
+        r"([\d.]+)([dD])([+-]?\d{1,3})"
+    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
     class Config:
         extra = Extra.ignore
         arbitrary_types_allowed = False
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        return UnknownKeywordErrorManager()
 
     @classmethod
     def _supports_comments(cls):
@@ -100,6 +108,18 @@ class INIBasedModel(BaseModel, ABC):
     comments: Optional[Comments] = Comments()
 
     @root_validator(pre=True)
+    def _validate_unknown_keywords(cls, values):
+        unknown_keyword_error_manager = cls._get_unknown_keyword_error_manager()
+        if unknown_keyword_error_manager:
+            unknown_keyword_error_manager.raise_error_for_unknown_keywords(
+                values,
+                cls._header,
+                cls.__fields__,
+                cls._exclude_fields(),
+            )
+        return values
+
+    @root_validator(pre=True)
     def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields."""
         dropkeys = []
@@ -122,6 +142,24 @@ class INIBasedModel(BaseModel, ABC):
             logging.warning(f"Dropped unsupported comments from {cls.__name__} init.")
             v = None
         return v
+
+    @validator("*", pre=True, allow_reuse=True)
+    def replace_fortran_scientific_notation_for_floats(cls, value, field):
+        if field.type_ != float:
+            return value
+
+        return cls._replace_fortran_scientific_notation(value)
+
+    @classmethod
+    def _replace_fortran_scientific_notation(cls, value):
+        if isinstance(value, str):
+            return cls._scientific_notation_regex.sub(r"\1e\3", value)
+        if isinstance(value, list):
+            for i, v in enumerate(value):
+                if isinstance(v, str):
+                    value[i] = cls._scientific_notation_regex.sub(r"\1e\3", v)
+
+        return value
 
     @classmethod
     def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
@@ -197,6 +235,13 @@ class DataBlockINIBasedModel(INIBasedModel):
     datablock: Datablock = []
 
     _make_lists = make_list_validator("datablock")
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The DataBlockINIBasedModel does not need to raise an error on unknown keywords.
+        """
+        return None
 
     def _to_section(
         self,

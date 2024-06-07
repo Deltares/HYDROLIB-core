@@ -51,19 +51,13 @@ Dxwuimin2D                          = 0.1                                       
 #------------------------------------------------------------------------------------------------------
 CFLMax                              = 0.7                                                                 # Maximum Courant number
 AdvecType                           = 33                                                                  # Advection type (0: none, 1: Wenneker, 2: Wenneker q(uio-u), 3: Perot q(uio-u), 4: Perot q(ui-u), 5: Perot q(ui-u) without itself)
-Newcorio                            = 1                                                                   # 0=No, 1=yes, if jsferic then spatially varying, if icoriolistype==6 then constant (anglat)
-Corioadamsbashfordfac               = 0.5
 Limtyphu                            = 0                                                                   # Limiter type for waterdepth in continuity eqn. (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
 Limtypmom                           = 4                                                                   # Limiter type for cell center advection velocity (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
 Limtypsa                            = 4                                                                   # Limiter type for salinity transport (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
 Vertadvtypsal                       = 6                                                                   # Vertical advection type for salinity (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester)
 Vertadvtyptem                       = 6                                                                   # Vertical advection type for temperature (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester)
 Vertadvtypmom                       = 6                                                                   # Vertical advection type for u1: 0: No, 3: Upwind implicit, 4: Central implicit, 5: QUICKEST implicit., 6: centerbased upwind expl
-Vertadvtypmom3onbnd                 = 0                                                                   # vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd
-Jarhoxu                             = 0                                                                   # Inlcude density gradient in advection term (0: no, 1: yes, 2: Also in barotrop and baroclin pressure term)
-Horadvtypzlayer                     = 0                                                                   # Horizontal advection treatment of z-layers (1: default, 2: sigma-like)
 Zerozbndinflowadvection             = 1                                                                   # On waterlevel boundaries set incoming advection velocity to zero (0=no, 1=on inflow, 2=also on outflow)
-Zlayercenterbedvel                  = 1                                                                   # reconstruction of center velocity at half closed bedcells (0=no, 1: copy bed link velocities)
 Icgsolver                           = 4                                                                   # Solver type (1: sobekGS_OMP, 2: sobekGS_OMPthreadsafe, 3: sobekGS, 4: sobekGS + Saadilud, 5: parallel/global Saad, 6: parallel/Petsc, 7: parallel/GS)
 Maxdegree                           = 6                                                                   # Maximum degree in Gauss elimination
 FixedWeirScheme                     = 9                                                                   # Fixed weir scheme (0: none, 1: compact stencil, 2: whole tile lifted, full subgrid weir + factor)
@@ -72,18 +66,12 @@ Fixedweirtopfrictcoef               = -999.                                     
 Izbndpos                            = 1                                                                   # Position of z boundary (0: D3Dflow, 1: on net boundary, 2: on specified polyline)
 Tlfsmo                              = 86400.                                                              # Fourier smoothing time (s) on water level boundaries
 Keepstbndonoutflow                  = 1                                                                   # Keep sal and tem signals on bnd also at outflow, 1=yes, 0=no=default=copy inside value on outflow
-Logprofkepsbndin                    = 0                                                                   # inflow: 0=0 keps, 1 = log keps inflow, 2 = log keps in and outflow
-Drop3D                              = 1.                                                                  # Apply droplosses in 3D if z upwind below bob + 2/3 hu*drop3D
-Epshstem                            = 1.d-3                                                               # Only compute heatflx + evap if depth > epshstem
-Zwsbtol                             = 0.                                                                  # tolerance for zws(kb-1) at bed
 Teta0                               = 0.55                                                                # Theta of time integration (0.5 < theta < 1)
 Turbulencemodel                     = 3                                                                   # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
 Turbulenceadvection                 = 3                                                                   # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
 AntiCreep                           = 0                                                                   # Include anti-creep calculation (0: no, 1: yes)
-Eddyviscositybedfacmax              = 0.                                                                  # Limit eddy viscosity at bed )
 MinTimestepBreak                    = 0.1                                                                 # smallest allowed timestep (in s), checked on a sliding average of several timesteps. Run will abort when violated.
 Epshu                               = 1.d-4                                                               # Threshold water depth for wet and dry cells
-jasfer3D                            = 1                                                                   # corrections for spherical coordinates
 Barocponbnd                         = 1
 
 #======================================================================================================
@@ -125,12 +113,10 @@ Stanton                             = 1.3d-3                                    
 Dalton                              = 1.3d-3                                                              # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
 Tempmax                             = 50.                                                                 # Limit the temperature
 Tempmin                             = -5.                                                                 # Limit the temperature
-Soiltempthick                       = 0.                                                                  # Use soil temperature buffer if > 0, e.g. 0.2 (m)
 Heat_eachstep                       = 1                                                                   # 1=heat each timestep, 0=heat each usertimestep
 RhoairRhowater                      = 1                                                                   # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
 SecondaryFlow                       = 0                                                                   # Secondary flow (0: no, 1: yes)
 IniWithNudge                        = 2                                                                   # Initialize salinity and temperature with nudge variables
-Jadelvappos                         = 0
 
 #======================================================================================================
 [wind]
@@ -140,7 +126,6 @@ Jadelvappos                         = 0
 ICdtyp                              = 4                                                                   # Wind drag coefficient type (1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955, 5=Hwang 2005, 6=Wuest 2005, 7=Hersbach 2010 (2 pts)
 Cdbreakpoints                       = 2.5d-2                                                              # Wind drag coefficient break points
 Relativewind                        = 0.5                                                                 # Wind speed relative to top-layer water speed, 1=yes, 0 = no)
-Windhuorzwsbased                    = 0                                                                   # Wind hu or zws based , 0 = hu, 1 = zws
 Windpartialdry                      = 1                                                                   # Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0 = no, 1 = yes = default
 Rhoair                              = 1.2265                                                              # Air density (kg/m3)
 PavBnd                              = 101330.                                                             # Average air pressure on open boundaries (N/m2) (only applied if > 0)
@@ -161,7 +146,6 @@ Tzone                               = 0.                                        
 DtUser                              = 600.                                                                # Time interval (s) for external forcing update
 DtNodal                             = 21600.                                                              # Time interval (s) for updating nodal factors in astronomical boundary conditions
 DtMax                               = 120.                                                                # Maximal computation timestep (s)
-Dtfacmax                            = 1.1                                                                 # Max timestep increase factor ( )
 DtInit                              = 60.                                                                 # Initial computation timestep (s)
 AutoTimestep                        = 3                                                                   # 0 = no, 1 = 2D (hor. out), 3=3D (hor. out), 5 = 3D (hor. inout + ver. inout), smallest dt
 
@@ -287,8 +271,6 @@ Wrimap_flow_flux_q1_main                  = 1                   # Write flow flu
 Wrimap_numlimdt                           = 1                   # Write the number times a cell was Courant limiting to map file (1: yes, 0: no). (Consider using Wrimap_flow_analysis instead.)
 Wrimap_taucurrent                         = 1                   # Write the shear stress to map file (1: yes, 0: no)
 Wrimap_chezy                              = 1                   # Write the chezy roughness to map file (1: yes, 0: no)
-Wrimap_salinity                           = 1                   # Write salinity to map file (1: yes, 0: no)
-Wrimap_temperature                        = 1                   # Write temperature to map file (1: yes, 0: no)
 Wrimap_turbulence                         = 1                   # Write vicww, k and eps to map file (1: yes, 0: no)
 Wrimap_rain                               = 1                   # Write rainfall rates to map file (1: yes, 0: no)
 Wrimap_interception                       = 1                   # Write interception to map file (1: yes, 0: no)
@@ -321,12 +303,9 @@ wrishp_genstruc                     = 0                                         
 #------------------------------------------------------------------------------------------------------
 # Miscellaneous
 #------------------------------------------------------------------------------------------------------
-Writepart_domain                    = 1                                                                   # Write partition domain info. for postprocessing
-WriteDFMinterpretedvalues           = 0                                                                   # Write DFMinterpretedvalues (1: yes, 0: no)
 MapOutputTimeVector                 =                                                                     # File (*.mpt) containing fixed map output times (s) w.r.t. RefDate
 FullGridOutput                      = 0                                                                   # Full grid output mode (0: compact, 1: full time-varying grid data)
 EulerVelocities                     = 0                                                                   # Euler velocities output (0: GLM, 1: Euler velocities)
-Wrirst_bnd                          = 1                                                                   # Write waterlevel, bedlevel and coordinates of boundaries to restart files
 #------------------------------------------------------------------------------------------------------
 # Uneditable
 #------------------------------------------------------------------------------------------------------

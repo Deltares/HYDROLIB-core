@@ -6,6 +6,7 @@ from strenum import StrEnum
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
+    UnknownKeywordErrorManager,
     get_enum_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
@@ -161,6 +162,13 @@ class StorageNode(INIBasedModel):
     interpolate: Optional[Interpolation] = Field(
         Interpolation.linear.value, alias="interpolate"
     )
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The StorageNode does not currently support raising an error on unknown keywords.
+        """
+        return None
 
     _interpolation_validator = get_enum_validator("interpolate", enum=Interpolation)
     _nodetype_validator = get_enum_validator("nodetype", enum=NodeType)

@@ -13,7 +13,6 @@ from hydrolib.core.dflowfm.ini.io_models import (
     Property,
     Section,
 )
-from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.ini.parser import (
     Parser,
     ParserConfig,
@@ -379,12 +378,6 @@ class TestParser:
         [
             ("someParam = 1.0 # comment text", "someparam", "1.0"),
             ("someParam = 1.0", "someparam", "1.0"),
-            ("someParam = 1d0 # comment text", "someparam", "1e0"),
-            ("someParam = 1d-2", "someparam", "1e-2"),
-            ("someParam = 1d+2", "someparam", "1e+2"),
-            ("someParam = 1.d+2", "someparam", "1.e+2"),
-            ("someParam = -1.d-2", "someparam", "-1.e-2"),
-            ("someParam1D2D = -1.d-2", "someparam1d2d", "-1.e-2"),
         ],
     )
     def test_float_values(
