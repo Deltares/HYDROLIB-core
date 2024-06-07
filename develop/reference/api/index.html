@@ -1004,6 +1004,40 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel" class="md-nav__link">
+    CachedFileModel
+  </a>
+  
+    <nav class="md-nav" aria-label="CachedFileModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel.checksum" class="md-nav__link">
+    checksum
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel.model" class="md-nav__link">
+    model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.DiskOnlyFileModel" class="md-nav__link">
     DiskOnlyFileModel
   </a>
@@ -1082,6 +1116,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext.initialize_load_settings" class="md-nav__link">
     initialize_load_settings()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileLoadContext.is_content_changed" class="md-nav__link">
+    is_content_changed()
   </a>
   
 </li>
@@ -1206,6 +1247,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileModelCache.__init__" class="md-nav__link">
     __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileModelCache.has_changed" class="md-nav__link">
+    has_changed()
   </a>
   
 </li>
@@ -1942,6 +1990,40 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel" class="md-nav__link">
+    CachedFileModel
+  </a>
+  
+    <nav class="md-nav" aria-label="CachedFileModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel.checksum" class="md-nav__link">
+    checksum
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.CachedFileModel.model" class="md-nav__link">
+    model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.DiskOnlyFileModel" class="md-nav__link">
     DiskOnlyFileModel
   </a>
@@ -2020,6 +2102,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileLoadContext.initialize_load_settings" class="md-nav__link">
     initialize_load_settings()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileLoadContext.is_content_changed" class="md-nav__link">
+    is_content_changed()
   </a>
   
 </li>
@@ -2144,6 +2233,13 @@ You're not viewing the latest release version.
           <li class="md-nav__item">
   <a href="#hydrolib.core.basemodel.FileModelCache.__init__" class="md-nav__link">
     __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.basemodel.FileModelCache.has_changed" class="md-nav__link">
+    has_changed()
   </a>
   
 </li>
@@ -2819,6 +2915,152 @@ is intended to be used as a BaseModel class member variable name.</p>
 
 
 
+<h3 id="hydrolib.core.basemodel.CachedFileModel" class="doc doc-heading">
+        <code>
+CachedFileModel        </code>
+
+
+
+<a href="#hydrolib.core.basemodel.CachedFileModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>CachedFileModel provides a simple structure to keep the Filemodel and checksum together.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.CachedFileModel.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">FileModel</span><span class="p">,</span> <span class="n">checksum</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#hydrolib.core.basemodel.CachedFileModel.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Create a new empty CachedFileModel.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>model</code></td>
+        <td><code>FileModel</code></td>
+        <td><p>filemodel to cache.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>checksum</code></td>
+        <td><code>str</code></td>
+        <td><p>checksum of the file.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">,</span> <span class="n">checksum</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new empty CachedFileModel.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        model (FileModel): filemodel to cache.</span>
+<span class="sd">        checksum (str): checksum of the file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_checksum</span> <span class="o">=</span> <span class="n">checksum</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.basemodel.CachedFileModel.checksum" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">checksum</span><span class="p">:</span> <span class="nb">str</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+<a href="#hydrolib.core.basemodel.CachedFileModel.checksum" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>"Checksum of the file the filemodel is based on.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="hydrolib.core.basemodel.CachedFileModel.model" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">model</span><span class="p">:</span> <span class="n">FileModel</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+<a href="#hydrolib.core.basemodel.CachedFileModel.model" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>FileModel.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
 <h3 id="hydrolib.core.basemodel.DiskOnlyFileModel" class="doc doc-heading">
         <code>
 DiskOnlyFileModel            (<a title="hydrolib.core.basemodel.FileModel" href="#hydrolib.core.basemodel.FileModel">FileModel</a>)
@@ -3370,6 +3612,93 @@ path, the latest added anchor path is returned.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_settings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_settings</span> <span class="o">=</span> <span class="n">ModelLoadSettings</span><span class="p">(</span><span class="n">recurse</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="p">,</span> <span class="n">path_style</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.FileLoadContext.is_content_changed" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_content_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
+
+
+<a href="#hydrolib.core.basemodel.FileLoadContext.is_content_changed" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Verify if the path is already known and if the content have changed.</p>
+<p>Relative paths will be resolved based on the current state of the
+FileLoadContext.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>path</code></td>
+        <td><code>Path</code></td>
+        <td><p>The relative path from which the model was loaded.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>model</code></td>
+        <td><code>FileModel</code></td>
+        <td><p>The loaded model.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>True when the content from the path on the location has been changed.
+False when the content from the path is not priorly cached.
+False when the content from the path on the location has not been changed.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_content_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify if the path is already known and if the content have changed.</span>
+
+<span class="sd">    Relative paths will be resolved based on the current state of the</span>
+<span class="sd">    FileLoadContext.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (Path): The relative path from which the model was loaded.</span>
+<span class="sd">        model (FileModel): The loaded model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True when the content from the path on the location has been changed.</span>
+<span class="sd">        False when the content from the path is not priorly cached.</span>
+<span class="sd">        False when the content from the path on the location has not been changed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">absolute_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">has_changed</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3997,6 +4326,9 @@ If the filepath is provided, it is read from disk.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: When an unsupported path style is passed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_loaded_from_cache</span><span class="p">:</span>
+        <span class="k">return</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span>
@@ -4026,8 +4358,6 @@ If the filepath is provided, it is read from disk.</p>
         <span class="n">context</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filepath</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-
-        <span class="n">context</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># Note: the relative mode needs to be obtained from the data directly</span>
         <span class="c1"># because self._relative_mode has not been resolved yet (this is done as</span>
@@ -4121,9 +4451,12 @@ If the file at the provided file path was already parsed, this instance is retur
     <span class="n">filepath</span> <span class="o">=</span> <span class="n">FileModel</span><span class="o">.</span><span class="n">_change_to_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">file_model</span> <span class="o">:=</span> <span class="n">context</span><span class="o">.</span><span class="n">retrieve_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">file_model</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="o">.</span><span class="n">is_content_changed</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_has_been_loaded_from_cache</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">return</span> <span class="n">file_model</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_has_been_loaded_from_cache</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -4489,7 +4822,87 @@ objects.</p>
           <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new empty FileModelCache.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">CachedFileModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="hydrolib.core.basemodel.FileModelCache.has_changed" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">has_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
+
+
+<a href="#hydrolib.core.basemodel.FileModelCache.has_changed" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Whether or not the file in the filepath has changed from the cache.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>path</code></td>
+        <td><code>Path</code></td>
+        <td><p>The path to verify verify against.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>Whether or the file has changed.
+True when the file has changed.
+True when the file does not exist in caching reference.
+False when the file has not changed.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>hydrolib/core/basemodel.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">has_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether or not the file in the filepath has changed from the cache.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (Path): The path to verify verify against.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether or the file has changed.</span>
+<span class="sd">        True when the file has changed.</span>
+<span class="sd">        True when the file does not exist in caching reference.</span>
+<span class="sd">        False when the file has not changed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">checksum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_checksum</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">checksum</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">checksum</span>
 </code></pre></div>
         </details>
     </div>
@@ -4596,7 +5009,8 @@ objects.</p>
 <span class="sd">        path (Path): The path to associate the model with.</span>
 <span class="sd">        model (FileModel): The model to be associated with the path.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">checksum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_checksum</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">CachedFileModel</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">checksum</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -4649,7 +5063,10 @@ it has been registered before, otherwise return None.</p>
 <span class="sd">            The FileModel associated with the Path if it has been registered</span>
 <span class="sd">            before, otherwise None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">cached_file_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cached_file_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">cached_file_model</span><span class="o">.</span><span class="n">model</span>
 </code></pre></div>
         </details>
     </div>
