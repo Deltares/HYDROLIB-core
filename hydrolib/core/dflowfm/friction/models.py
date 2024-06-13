@@ -1,5 +1,6 @@
 import logging
 from typing import List, Literal, Optional
+import numpy as np
 
 from pydantic.v1 import Field, NonNegativeInt, PositiveInt
 from pydantic.v1.class_validators import validator
@@ -165,7 +166,7 @@ class FrictBranch(INIBasedModel):
     levels: Optional[List[float]]
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
     chainage: Optional[List[float]]
-    frictionvalues: Optional[List[float]] = Field(
+    frictionvalues: Optional[List[List[float]]] = Field(
         alias="frictionValues"
     )  # TODO: turn this into List[List[float]], see issue #143.
 
@@ -216,7 +217,7 @@ class FrictBranch(INIBasedModel):
             else values["numlevels"]
         )
         numvals = max(1, values["numlocations"]) * numlevels
-        if v is not None and len(v) != numvals:
+        if v is not None and np.asarray(v).size != numvals:
             raise ValueError(
                 f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={values.get('branchid', '')})."
             )
