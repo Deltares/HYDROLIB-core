@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from pydantic.v1 import Field
 
@@ -19,6 +19,7 @@ from hydrolib.core.dflowfm import (
     Waves,
     Wind,
 )
+from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
 
 
@@ -887,6 +888,35 @@ class ResearchProcesses(Processes):
     )
 
 
+class ResearchSedTrails(INIBasedModel):
+    class Comments(INIBasedModel.Comments):
+        research_sedtrailsgrid: Optional[str] = Field(
+            "Grid file for sedtrails output locations on corners.", alias="sedtrailsgrid"
+        )
+        research_sedtrailsanalysis: Optional[str] = Field(
+            "Sedtrails analysis. Should be all, transport, flowvelocity or soulsby.", alias="sedtrailsanalysis"
+        )
+        research_sedtrailsinterval: Optional[str] = Field(
+            "Sedtrails output times (s), interval, starttime, stoptime (s), if starttime, stoptime are left blank, use whole simulation period.",
+            alias="sedtrailsinterval"
+        )
+        research_sedtrailsoutputfile: Optional[str] = Field(
+            "Sedtrails time-avgd output file.", alias="sedtrailsoutputfile"
+        )
+
+    comments: Comments = Comments()
+    _header: Literal["sedtrails"] = "sedtrails"
+
+    research_sedtrailsgrid: Optional[DiskOnlyFileModel] = Field(None, alias="sedtrailsgrid")
+    research_sedtrailsanalysis: Optional[Literal["all", "transport", "flowvelocity", "soulsby"]] = Field(None, alias="sedtrailsanalysis")
+    research_sedtrailsinterval: Optional[List[float]] = Field(None, alias="sedtrailsinterval")
+    research_sedtrailsoutputfile: Optional[DiskOnlyFileModel] = Field(None, alias="sedtrailsoutputfile")
+
+    _split_to_list = get_split_string_on_delimiter_validator(
+        "research_sedtrailsinterval",
+    )
+
+
 class ResearchFMModel(FMModel):
     """
     An extended FMModel that includes highly experimental research sections and keywords.
@@ -904,3 +934,4 @@ class ResearchFMModel(FMModel):
     trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
     output: ResearchOutput = Field(default_factory=ResearchOutput)
     processes: Optional[ResearchProcesses] = Field(None)
+    sedtrails: Optional[ResearchSedTrails] = Field(None)

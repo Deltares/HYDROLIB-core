@@ -11,7 +11,7 @@ from hydrolib.core.dflowfm.research.models import (
     ResearchTime,
     ResearchTrachytopes,
     ResearchWaves,
-    ResearchWind,
+    ResearchWind, ResearchSedTrails,
 )
 from tests.utils import test_input_dir
 
@@ -51,3 +51,26 @@ class TestResearchFMModel:
         assert model.time.research_dtfacmax == pytest.approx(1.1)
         assert model.trachytopes.research_trtmnh == pytest.approx(0.1)
         assert model.output.research_mbainterval == pytest.approx(0.0)
+
+    def test_sedtrails_fromscratch(self):
+        model = ResearchFMModel()
+        model.sedtrails = ResearchSedTrails()
+
+        model.sedtrails.research_sedtrailsgrid = r"c:\random.txt"
+        model.sedtrails.research_sedtrailsanalysis = "all"
+        model.sedtrails.research_sedtrailsinterval = [1., 2., 3.]
+        model.sedtrails.research_sedtrailsoutputfile = r"c:\random2.txt"
+
+    def test_sedtrails_can_be_loaded_from_mdu(self):
+        input_mdu = (
+                test_input_dir
+                / "research"
+                / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
+        )
+
+        model = ResearchFMModel(filepath=input_mdu)
+
+        assert str(model.sedtrails.research_sedtrailsgrid) == r"c:\test.txt"
+        assert model.sedtrails.research_sedtrailsanalysis == "all"
+        assert model.sedtrails.research_sedtrailsinterval == [3600., 1.1, 2.2]
+        assert str(model.sedtrails.research_sedtrailsoutputfile) == r"d:\test2.txt"
