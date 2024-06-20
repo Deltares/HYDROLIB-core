@@ -22,7 +22,6 @@ from hydrolib.core.dflowfm.polyfile.parser import (
     read_polyfile,
 )
 from hydrolib.core.dflowfm.polyfile.serializer import Serializer, write_polyfile
-
 from ..utils import assert_files_equal, test_input_dir, test_output_dir
 
 
@@ -269,6 +268,7 @@ class TestParser:
             ("*         ", False),
             ("", False),
             ("Not a comment but a regular string", True),
+            ("Name with spaces", True),
             ("      ", False),
         ],
     )
