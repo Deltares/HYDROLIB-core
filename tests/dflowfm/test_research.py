@@ -8,7 +8,6 @@ from hydrolib.core.dflowfm.research.models import (
     ResearchOutput,
     ResearchPhysics,
     ResearchSediment,
-    ResearchSedTrails,
     ResearchTime,
     ResearchTrachytopes,
     ResearchWaves,
