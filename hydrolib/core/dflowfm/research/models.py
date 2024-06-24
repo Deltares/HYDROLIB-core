@@ -945,4 +945,4 @@ class ResearchFMModel(FMModel):
     trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
     output: ResearchOutput = Field(default_factory=ResearchOutput)
     processes: Optional[ResearchProcesses] = Field(None)
-    sedtrails: Optional[ResearchSedTrails] = Field(None)
+    sedtrails: Optional[ResearchSedtrails] = Field(None)
