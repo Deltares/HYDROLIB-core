@@ -890,6 +890,7 @@ class ResearchProcesses(Processes):
 
 class ResearchSedtrails(INIBasedModel):
     """The `[Sedtrails]` section in an MDU file."""
+
     class Comments(INIBasedModel.Comments):
         research_sedtrailsgrid: Optional[str] = Field(
             "Grid file for sedtrails output locations on corners.",

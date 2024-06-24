@@ -8,11 +8,11 @@ from hydrolib.core.dflowfm.research.models import (
     ResearchOutput,
     ResearchPhysics,
     ResearchSediment,
+    ResearchSedtrails,
     ResearchTime,
     ResearchTrachytopes,
     ResearchWaves,
     ResearchWind,
-    ResearchSedtrails,
 )
 from tests.utils import test_input_dir
 
