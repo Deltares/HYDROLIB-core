@@ -12,6 +12,7 @@ from hydrolib.core.dflowfm.research.models import (
     ResearchTrachytopes,
     ResearchWaves,
     ResearchWind,
+    ResearchSedtrails,
 )
 from tests.utils import test_input_dir
 
@@ -54,7 +55,7 @@ class TestResearchFMModel:
 
     def test_sedtrails_fromscratch(self):
         model = ResearchFMModel()
-        model.sedtrails = ResearchSedTrails()
+        model.sedtrails = ResearchSedtrails()
 
         model.sedtrails.research_sedtrailsgrid = r"c:\random.txt"
         model.sedtrails.research_sedtrailsanalysis = "all"
