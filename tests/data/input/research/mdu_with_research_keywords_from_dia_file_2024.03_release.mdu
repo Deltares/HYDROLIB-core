@@ -544,3 +544,9 @@ Wriwaqbot3Doutput                         = 0                   # Write 3D water
 VolumeDryThreshold                        = 1.d-3               # Volume below which segments are marked as dry. (m3)
 DepthDryThreshold                         = 1.d-3               # Water depth below which segments are marked as dry. (m)
 SubstanceDensityCoupling                  = 0                   # Substance density coupling (1: yes, 0: no). It only functions correctly when all substances are sediments.
+
+[sedtrails]
+SedtrailsGrid                             = c:\test.txt         # Grid file for sedtrails output locations on corners
+SedtrailsAnalysis                         = all                 # Sedtrails analysis. Should be all, transport, flowvelocity or soulsby.
+SedtrailsInterval                         = 3600. 1.1 2.2         # Sedtrails output times (s), interval, starttime, stoptime (s), if starttime, stoptime are left blank, use whole simulation period
+SedtrailsOutputFile                       = d:\test2.txt        # Sedtrails time-avgd output file
