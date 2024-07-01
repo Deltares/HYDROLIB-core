@@ -314,6 +314,10 @@ class Numerics(INIBasedModel):
             "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
             alias="lateralFixedWeirUmin"
         )
+        jasfer3d: Optional[str] = Field(
+            "Corrections for spherical coordinates (0: no, 1: yes).",
+            alias="jasfer3D",
+        )
 
     comments: Comments = Comments()
 
@@ -378,6 +382,7 @@ class Numerics(INIBasedModel):
     adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
     fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
     lateralfixedweirumin: float = Field(0.0, alias="lateralFixedWeirUmin")
+    jasfer3d: Optional[bool] = Field(False, alias="jasfer3D")
 
 
 class VolumeTables(INIBasedModel):

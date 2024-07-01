@@ -363,10 +363,6 @@ class ResearchNumerics(Numerics):
             "Factor for including (1-CFL) in sethu (0d0: no, 1d0: yes).",
             alias="cffachu",
         )
-        research_jasfer3d: Optional[str] = Field(
-            "Corrections for spherical coordinates.",
-            alias="jasfer3d",
-        )
         research_vertadvtypmom3onbnd: Optional[str] = Field(
             "vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd.",
             alias="vertadvtypmom3onbnd",
@@ -437,7 +433,6 @@ class ResearchNumerics(Numerics):
     research_numlimdt_baorg: Optional[int] = Field(None, alias="numlimdt_baorg")
     research_locsaltmax: Optional[float] = Field(None, alias="locsaltmax")
     research_cffachu: Optional[float] = Field(None, alias="cffachu")
-    research_jasfer3d: Optional[bool] = Field(None, alias="jasfer3d")
     research_vertadvtypmom3onbnd: Optional[int] = Field(
         None, alias="vertadvtypmom3onbnd"
     )
