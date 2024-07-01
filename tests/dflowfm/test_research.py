@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from hydrolib.core.dflowfm.research.models import (
@@ -51,3 +53,9 @@ class TestResearchFMModel:
         assert model.time.research_dtfacmax == pytest.approx(1.1)
         assert model.trachytopes.research_trtmnh == pytest.approx(0.1)
         assert model.output.research_mbainterval == pytest.approx(0.0)
+
+    def test_can_save_and_load_research_model_from_scratch_without_errors(self):
+        file_mdu = Path("mdu.mdu")
+        mdu = ResearchFMModel()
+        mdu.save(file_mdu)
+        _ = ResearchFMModel(file_mdu)
