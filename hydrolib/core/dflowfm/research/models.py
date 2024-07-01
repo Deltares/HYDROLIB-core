@@ -221,10 +221,6 @@ class ResearchNumerics(Numerics):
             "0.5	0=No, 0.5d0=AdamsBashford, only for Newcorio=1.",
             alias="corioadamsbashfordfac",
         )
-        research_vertadvtypsal: Optional[str] = Field(
-            "Vertical advection type for salinity (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester).",
-            alias="vertadvtypsal",
-        )
         research_baorgfracmin: Optional[str] = Field(
             "Cell area = max(orgcellarea*Baorgfracmin, cutcell area)",
             alias="baorgfracmin",
@@ -397,7 +393,6 @@ class ResearchNumerics(Numerics):
     research_corioadamsbashfordfac: Optional[float] = Field(
         None, alias="corioadamsbashfordfac"
     )
-    research_vertadvtypsal: Optional[int] = Field(None, alias="vertadvtypsal")
     research_baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
     research_epstke: Optional[float] = Field(None, alias="epstke")
     research_jadrhodz: Optional[int] = Field(None, alias="jadrhodz")
