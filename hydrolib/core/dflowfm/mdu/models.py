@@ -1311,6 +1311,10 @@ class Output(INIBasedModel):
             "Write air density rates to map file (1: yes, 0: no)",
             alias="wrimap_airdensity",
         )
+        wrimap_calibration: Optional[str] = Field(
+            "Write roughness calibration factors to map file.",
+            alias="wrimap_calibration"
+        )
         writek_cdwind: Optional[str] = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
             alias="writek_CdWind",
@@ -1599,6 +1603,7 @@ class Output(INIBasedModel):
     wrimap_wind: bool = Field(True, alias="wrimap_wind")
     wrimap_windstress: bool = Field(False, alias="wrimap_windstress")
     wrimap_airdensity: bool = Field(False, alias="wrimap_airdensity")
+    wrimap_calibration: bool = Field(True, alias="wrimap_calibration")
     writek_cdwind: bool = Field(False, alias="writek_CdWind")
     wrimap_heat_fluxes: bool = Field(False, alias="wrimap_heat_fluxes")
     wrimap_wet_waterdepth_threshold: float = Field(
