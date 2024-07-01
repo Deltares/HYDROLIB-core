@@ -382,7 +382,7 @@ class Numerics(INIBasedModel):
     adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
     fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
     lateralfixedweirumin: float = Field(0.0, alias="lateralFixedWeirUmin")
-    jasfer3d: Optional[bool] = Field(False, alias="jasfer3D")
+    jasfer3d: bool = Field(False, alias="jasfer3D")
 
 
 class VolumeTables(INIBasedModel):
