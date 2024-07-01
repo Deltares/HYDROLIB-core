@@ -735,9 +735,6 @@ class ResearchOutput(Output):
             "Lump MBA boundary mass balance terms (1: yes, 0: no).",
             alias="mbalumpboundaries",
         )
-        research_writepart_domain: Optional[str] = Field(
-            "Write partition domain info. for postprocessing.", alias="writepart_domain"
-        )
         research_waqhoraggr: Optional[str] = Field(
             "DELWAQ output horizontal aggregation file (*.dwq).", alias="waqhoraggr"
         )
@@ -822,7 +819,6 @@ class ResearchOutput(Output):
         None, alias="deleteobspointsoutsidegrid"
     )
     research_mbalumpboundaries: Optional[bool] = Field(None, alias="mbalumpboundaries")
-    research_writepart_domain: Optional[bool] = Field(None, alias="writepart_domain")
     research_waqhoraggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqhoraggr")
     research_writedetailedtimers: Optional[bool] = Field(
         None, alias="writedetailedtimers"

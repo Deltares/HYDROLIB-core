@@ -1500,6 +1500,10 @@ class Output(INIBasedModel):
             "Write chezy roughness on flow links to map file, (1: yes, 0: no)",
             alias="wrimap_chezy_on_flow_links",
         )
+        writepart_domain: Optional[str] = Field(
+            "Write partition domain info. for postprocessing (0: no, 1: yes).",
+            alias="writepart_domain"
+        )
 
     comments: Comments = Comments()
 
@@ -1691,6 +1695,7 @@ class Output(INIBasedModel):
     wrimap_volume1: bool = Field(False, alias="wrimap_volume1")
     wrimap_ancillary_variables: bool = Field(False, alias="wrimap_ancillary_variables")
     wrimap_chezy_on_flow_links: bool = Field(False, alias="wrimap_chezy_on_flow_links")
+    writepart_domain: bool = Field(True, alias="writepart_domain")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
