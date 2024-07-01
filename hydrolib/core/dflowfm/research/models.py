@@ -266,10 +266,6 @@ class ResearchNumerics(Numerics):
             "Check diffusion terms if depth < chkdifd, only if jatransportautotimestepdiff==1.",
             alias="chkdifd",
         )
-        research_lateral_fixedweir_umin: Optional[str] = Field(
-            "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
-            alias="lateral_fixedweir_umin",
-        )
         research_fixedweirfrictscheme: Optional[str] = Field(
             "Fixed weir friction scheme (0: friction based on hu, 1: friction based on subgrid weir friction scheme).",
             alias="fixedweirfrictscheme",
@@ -405,9 +401,6 @@ class ResearchNumerics(Numerics):
     research_logprofatubndin: Optional[int] = Field(None, alias="logprofatubndin")
     research_horadvtypzlayer: Optional[int] = Field(None, alias="horadvtypzlayer")
     research_chkdifd: Optional[float] = Field(None, alias="chkdifd")
-    research_lateral_fixedweir_umin: Optional[float] = Field(
-        None, alias="lateral_fixedweir_umin"
-    )
     research_fixedweirfrictscheme: Optional[int] = Field(
         None, alias="fixedweirfrictscheme"
     )

@@ -305,6 +305,10 @@ class Numerics(INIBasedModel):
         fixedweirtalud: Optional[str] = Field(
             "Uniform talud slope of fixed weirs.", alias="fixedWeirTalud"
         )
+        lateralfixedweirumin: Optional[str] = Field(
+            "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
+            alias="lateralFixedWeirUmin"
+        )
 
     comments: Comments = Comments()
 
@@ -368,6 +372,7 @@ class Numerics(INIBasedModel):
     velocitywarn: float = Field(0.0, alias="velocityWarn")
     adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
     fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
+    lateralfixedweirumin: float = Field(0.0, alias="lateralFixedWeirUmin")
 
 
 class VolumeTables(INIBasedModel):
