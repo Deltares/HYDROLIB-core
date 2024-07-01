@@ -1504,6 +1504,10 @@ class Output(INIBasedModel):
             "Write partition domain info. for postprocessing (0: no, 1: yes).",
             alias="writepart_domain"
         )
+        velocitydirectionclassesinterval: Optional[str] = Field(
+            "Class map's step size of class values for velocity direction.",
+            alias="VelocityDirectionClassesInterval",
+        )
 
     comments: Comments = Comments()
 
@@ -1696,6 +1700,9 @@ class Output(INIBasedModel):
     wrimap_ancillary_variables: bool = Field(False, alias="wrimap_ancillary_variables")
     wrimap_chezy_on_flow_links: bool = Field(False, alias="wrimap_chezy_on_flow_links")
     writepart_domain: bool = Field(True, alias="writepart_domain")
+    velocitydirectionclassesinterval: float = Field(
+        0.0, alias="VelocityDirectionClassesInterval"
+    )
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",

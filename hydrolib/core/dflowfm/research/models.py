@@ -749,10 +749,6 @@ class ResearchOutput(Output):
         research_mbainterval: Optional[str] = Field(
             "Mass balance area output interval (s).", alias="mbainterval"
         )
-        research_velocitydirectionclassesinterval: Optional[str] = Field(
-            "Class map's step size of class values for velocity direction.",
-            alias="velocitydirectionclassesinterval",
-        )
         research_wrirst_bnd: Optional[str] = Field(
             "Write waterlevel", alias="wrirst_bnd"
         )
@@ -827,9 +823,6 @@ class ResearchOutput(Output):
         None, alias="metadatafile"
     )
     research_mbainterval: Optional[float] = Field(None, alias="mbainterval")
-    research_velocitydirectionclassesinterval: Optional[int] = Field(
-        None, alias="velocitydirectionclassesinterval"
-    )
     research_wrirst_bnd: Optional[bool] = Field(None, alias="wrirst_bnd")
     research_generateuuid: Optional[bool] = Field(None, alias="generateuuid")
     research_timesplitinterval: Optional[str] = Field(None, alias="timesplitinterval")
