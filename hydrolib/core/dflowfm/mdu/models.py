@@ -1424,7 +1424,7 @@ class Output(INIBasedModel):
         )
         wrimap_every_dt: Optional[str] = Field(
             "Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).",
-            alias="wrimap_input_dt",
+            alias="wrimap_every_dt",
         )
         wrimap_input_roughness: Optional[str] = Field(
             "Write chezy input roughness on flow links to map file, (1: yes, 0: no).",
@@ -1662,7 +1662,7 @@ class Output(INIBasedModel):
     statsinterval: List[float] = Field([-60.0], alias="statsInterval")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
     richardsononoutput: bool = Field(False, alias="richardsonOnOutput")
-    wrimap_every_dt: bool = Field(False, alias="wrimap_input_dt")
+    wrimap_every_dt: bool = Field(False, alias="wrimap_every_dt")
     wrimap_input_roughness: bool = Field(False, alias="wrimap_input_roughness")
     wrimap_flowarea_au: bool = Field(False, alias="wrimap_flowarea_au")
     wrihis_airdensity: bool = Field(False, alias="wrihis_airdensity")
