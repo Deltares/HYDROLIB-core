@@ -310,9 +310,9 @@ class Numerics(INIBasedModel):
         fixedweirtalud: Optional[str] = Field(
             "Uniform talud slope of fixed weirs.", alias="fixedWeirTalud"
         )
-        lateralfixedweirumin: Optional[str] = Field(
+        lateral_fixedweir_umin: Optional[str] = Field(
             "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
-            alias="lateralFixedWeirUmin"
+            alias="lateral_fixedweir_umin"
         )
         jasfer3d: Optional[str] = Field(
             "Corrections for spherical coordinates (0: no, 1: yes).",
@@ -381,7 +381,7 @@ class Numerics(INIBasedModel):
     velocitywarn: float = Field(0.0, alias="velocityWarn")
     adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
     fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
-    lateralfixedweirumin: float = Field(0.0, alias="lateralFixedWeirUmin")
+    lateral_fixedweir_umin: float = Field(0.0, alias="lateral_fixedweir_umin")
     jasfer3d: bool = Field(False, alias="jasfer3D")
 
 
