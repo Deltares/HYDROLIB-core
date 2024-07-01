@@ -221,10 +221,6 @@ class ResearchNumerics(Numerics):
             "0.5	0=No, 0.5d0=AdamsBashford, only for Newcorio=1.",
             alias="corioadamsbashfordfac",
         )
-        research_vertadvtypsal: Optional[str] = Field(
-            "Vertical advection type for salinity (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester).",
-            alias="vertadvtypsal",
-        )
         research_baorgfracmin: Optional[str] = Field(
             "Cell area = max(orgcellarea*Baorgfracmin, cutcell area)",
             alias="baorgfracmin",
@@ -270,10 +266,6 @@ class ResearchNumerics(Numerics):
             "Check diffusion terms if depth < chkdifd, only if jatransportautotimestepdiff==1.",
             alias="chkdifd",
         )
-        research_lateral_fixedweir_umin: Optional[str] = Field(
-            "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
-            alias="lateral_fixedweir_umin",
-        )
         research_fixedweirfrictscheme: Optional[str] = Field(
             "Fixed weir friction scheme (0: friction based on hu, 1: friction based on subgrid weir friction scheme).",
             alias="fixedweirfrictscheme",
@@ -316,7 +308,7 @@ class ResearchNumerics(Numerics):
         )
         research_testfixedweirs: Optional[str] = Field(
             "Test for fixed weir algoritms (0 = Sieben2010, 1 = Sieben2007 ).",
-            alias="testFixedWeirs",
+            alias="testfixedweirs",
         )
         research_jposhchk: Optional[str] = Field(
             "Check for positive waterdepth (0: no, 1: 0.7dts, just redo, 2: 1.0dts, close all links, 3: 0.7dts, close all links, 4: 1.0dts, reduce au, 5: 0.7dts, reduce au, 6: 1.0dts, close outflowing links, 7: 0.7*dts, close outflowing link.",
@@ -371,10 +363,6 @@ class ResearchNumerics(Numerics):
             "Factor for including (1-CFL) in sethu (0d0: no, 1d0: yes).",
             alias="cffachu",
         )
-        research_jasfer3d: Optional[str] = Field(
-            "Corrections for spherical coordinates.",
-            alias="jasfer3d",
-        )
         research_vertadvtypmom3onbnd: Optional[str] = Field(
             "vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd.",
             alias="vertadvtypmom3onbnd",
@@ -397,7 +385,6 @@ class ResearchNumerics(Numerics):
     research_corioadamsbashfordfac: Optional[float] = Field(
         None, alias="corioadamsbashfordfac"
     )
-    research_vertadvtypsal: Optional[int] = Field(None, alias="vertadvtypsal")
     research_baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
     research_epstke: Optional[float] = Field(None, alias="epstke")
     research_jadrhodz: Optional[int] = Field(None, alias="jadrhodz")
@@ -410,9 +397,6 @@ class ResearchNumerics(Numerics):
     research_logprofatubndin: Optional[int] = Field(None, alias="logprofatubndin")
     research_horadvtypzlayer: Optional[int] = Field(None, alias="horadvtypzlayer")
     research_chkdifd: Optional[float] = Field(None, alias="chkdifd")
-    research_lateral_fixedweir_umin: Optional[float] = Field(
-        None, alias="lateral_fixedweir_umin"
-    )
     research_fixedweirfrictscheme: Optional[int] = Field(
         None, alias="fixedweirfrictscheme"
     )
@@ -432,7 +416,7 @@ class ResearchNumerics(Numerics):
     research_lateral_fixedweir_minimal_1d2d_embankment: Optional[float] = Field(
         None, alias="lateral_fixedweir_minimal_1d2d_embankment"
     )
-    research_testfixedweirs: Optional[int] = Field(None, alias="testFixedWeirs")
+    research_testfixedweirs: Optional[int] = Field(None, alias="testfixedweirs")
     research_jposhchk: Optional[int] = Field(None, alias="jposhchk")
     research_cfconhormom: Optional[float] = Field(None, alias="cfconhormom")
     research_cffachormom: Optional[float] = Field(None, alias="cffachormom")
@@ -449,7 +433,6 @@ class ResearchNumerics(Numerics):
     research_numlimdt_baorg: Optional[int] = Field(None, alias="numlimdt_baorg")
     research_locsaltmax: Optional[float] = Field(None, alias="locsaltmax")
     research_cffachu: Optional[float] = Field(None, alias="cffachu")
-    research_jasfer3d: Optional[bool] = Field(None, alias="jasfer3d")
     research_vertadvtypmom3onbnd: Optional[int] = Field(
         None, alias="vertadvtypmom3onbnd"
     )
@@ -578,7 +561,7 @@ class ResearchWind(Wind):
             "Wind hu or zws based, 0 = hu, 1 = zws.", alias="windhuorzwsbased"
         )
         research_varyingairdensity: Optional[str] = Field(
-            "Compute air density yes/no (), 1/0, default 0.", alias="varyingAirDensity"
+            "Compute air density yes/no (), 1/0, default 0.", alias="varyingairdensity"
         )
         research_wind_eachstep: Optional[str] = Field(
             "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
@@ -588,7 +571,7 @@ class ResearchWind(Wind):
     comments: Comments = Comments()
 
     research_windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
-    research_varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
+    research_varyingairdensity: Optional[bool] = Field(None, alias="varyingairdensity")
     research_wind_eachstep: Optional[int] = Field(None, alias="wind_eachstep")
 
 
@@ -752,9 +735,6 @@ class ResearchOutput(Output):
             "Lump MBA boundary mass balance terms (1: yes, 0: no).",
             alias="mbalumpboundaries",
         )
-        research_writepart_domain: Optional[str] = Field(
-            "Write partition domain info. for postprocessing.", alias="writepart_domain"
-        )
         research_waqhoraggr: Optional[str] = Field(
             "DELWAQ output horizontal aggregation file (*.dwq).", alias="waqhoraggr"
         )
@@ -768,10 +748,6 @@ class ResearchOutput(Output):
         )
         research_mbainterval: Optional[str] = Field(
             "Mass balance area output interval (s).", alias="mbainterval"
-        )
-        research_velocitydirectionclassesinterval: Optional[str] = Field(
-            "Class map's step size of class values for velocity direction.",
-            alias="velocitydirectionclassesinterval",
         )
         research_wrirst_bnd: Optional[str] = Field(
             "Write waterlevel", alias="wrirst_bnd"
@@ -839,7 +815,6 @@ class ResearchOutput(Output):
         None, alias="deleteobspointsoutsidegrid"
     )
     research_mbalumpboundaries: Optional[bool] = Field(None, alias="mbalumpboundaries")
-    research_writepart_domain: Optional[bool] = Field(None, alias="writepart_domain")
     research_waqhoraggr: Optional[DiskOnlyFileModel] = Field(None, alias="waqhoraggr")
     research_writedetailedtimers: Optional[bool] = Field(
         None, alias="writedetailedtimers"
@@ -848,9 +823,6 @@ class ResearchOutput(Output):
         None, alias="metadatafile"
     )
     research_mbainterval: Optional[float] = Field(None, alias="mbainterval")
-    research_velocitydirectionclassesinterval: Optional[int] = Field(
-        None, alias="velocitydirectionclassesinterval"
-    )
     research_wrirst_bnd: Optional[bool] = Field(None, alias="wrirst_bnd")
     research_generateuuid: Optional[bool] = Field(None, alias="generateuuid")
     research_timesplitinterval: Optional[str] = Field(None, alias="timesplitinterval")
