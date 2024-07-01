@@ -316,7 +316,7 @@ class ResearchNumerics(Numerics):
         )
         research_testfixedweirs: Optional[str] = Field(
             "Test for fixed weir algoritms (0 = Sieben2010, 1 = Sieben2007 ).",
-            alias="testFixedWeirs",
+            alias="testfixedweirs",
         )
         research_jposhchk: Optional[str] = Field(
             "Check for positive waterdepth (0: no, 1: 0.7dts, just redo, 2: 1.0dts, close all links, 3: 0.7dts, close all links, 4: 1.0dts, reduce au, 5: 0.7dts, reduce au, 6: 1.0dts, close outflowing links, 7: 0.7*dts, close outflowing link.",
@@ -432,7 +432,7 @@ class ResearchNumerics(Numerics):
     research_lateral_fixedweir_minimal_1d2d_embankment: Optional[float] = Field(
         None, alias="lateral_fixedweir_minimal_1d2d_embankment"
     )
-    research_testfixedweirs: Optional[int] = Field(None, alias="testFixedWeirs")
+    research_testfixedweirs: Optional[int] = Field(None, alias="testfixedweirs")
     research_jposhchk: Optional[int] = Field(None, alias="jposhchk")
     research_cfconhormom: Optional[float] = Field(None, alias="cfconhormom")
     research_cffachormom: Optional[float] = Field(None, alias="cffachormom")
@@ -578,7 +578,7 @@ class ResearchWind(Wind):
             "Wind hu or zws based, 0 = hu, 1 = zws.", alias="windhuorzwsbased"
         )
         research_varyingairdensity: Optional[str] = Field(
-            "Compute air density yes/no (), 1/0, default 0.", alias="varyingAirDensity"
+            "Compute air density yes/no (), 1/0, default 0.", alias="varyingairdensity"
         )
         research_wind_eachstep: Optional[str] = Field(
             "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
@@ -588,7 +588,7 @@ class ResearchWind(Wind):
     comments: Comments = Comments()
 
     research_windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
-    research_varyingairdensity: Optional[bool] = Field(None, alias="varyingAirDensity")
+    research_varyingairdensity: Optional[bool] = Field(None, alias="varyingairdensity")
     research_wind_eachstep: Optional[int] = Field(None, alias="wind_eachstep")
 
 
