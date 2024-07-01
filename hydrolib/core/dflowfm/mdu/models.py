@@ -62,6 +62,10 @@ class General(INIGeneral):
             "Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir",
             alias="pathsRelativeToParent",
         )
+        guiversion: Optional[str] = Field(
+            "DeltaShell FM suite version.",
+            alias="guiVersion"
+        )
 
     comments: Comments = Comments()
     _header: Literal["General"] = "General"
@@ -71,6 +75,7 @@ class General(INIGeneral):
     fileversion: str = Field("1.09", alias="fileVersion")
     autostart: Optional[AutoStartOption] = Field(AutoStartOption.no, alias="autoStart")
     pathsrelativetoparent: bool = Field(False, alias="pathsRelativeToParent")
+    guiversion: Optional[str] = Field(None, alias="guiVersion")
 
 
 class Numerics(INIBasedModel):
