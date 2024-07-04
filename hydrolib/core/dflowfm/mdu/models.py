@@ -635,7 +635,7 @@ class Sediment(INIBasedModel):
     )
 
     _header: Literal["Sediment"] = "Sediment"
-    sedimentmodelnr: Optional[int] = Field(alias="Sedimentmodelnr")
+    sedimentmodelnr: Optional[int] = Field(0, alias="Sedimentmodelnr")
     morfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="MorFile"
     )
