@@ -218,7 +218,7 @@ class ResearchNumerics(Numerics):
             alias="structurelayersactive",
         )
         research_corioadamsbashfordfac: Optional[str] = Field(
-            "0.5	0=No, 0.5d0=AdamsBashford, only for Newcorio=1.",
+            "Adams-Bashford factor in Coriolis term (0: No/explicit, 0.5d0=Adams-Bashford), only for Newcorio=1.",
             alias="corioadamsbashfordfac",
         )
         research_baorgfracmin: Optional[str] = Field(
@@ -281,7 +281,7 @@ class ResearchNumerics(Numerics):
             "Exp for including (1-CFL) in sethu.", alias="cfexphu"
         )
         research_drop3d: Optional[str] = Field(
-            "Apply droplosses in 3D if z upwind below bob + 2/3 hu*drop3D.",
+            "Waterdepth factor, apply droplosses in 3D if z upwind below bob + 2/3 hu*drop3D.",
             alias="drop3d",
         )
         research_zlayercenterbedvel: Optional[str] = Field(
