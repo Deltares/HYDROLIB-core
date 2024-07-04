@@ -371,6 +371,10 @@ class ResearchNumerics(Numerics):
             "0=use der. types. , 1 = less, 2 = lesser, 5 = also dealloc der. types.",
             alias="noderivedtypes",
         )
+        research_jadelvappos: Optional[str] = Field(
+            "Only positive forced evaporation fluxes(0: no, 1: yes).",
+            alias="jadelvappos",
+        )
 
     comments: Comments = Comments()
 
@@ -441,6 +445,7 @@ class ResearchNumerics(Numerics):
         None, alias="vertadvtypmom3onbnd"
     )
     research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
+    research_jadelvappos: Optional[bool] = Field(None, alias="jadelvapos")
 
 
 class ResearchPhysics(Physics):
