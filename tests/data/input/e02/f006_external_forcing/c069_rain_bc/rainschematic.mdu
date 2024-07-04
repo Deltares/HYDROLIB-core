@@ -50,7 +50,6 @@ TimeStepType                         = 2                                     #  
 Limtyphu                             = 0                                     # Limiter type for waterdepth in continuity eq., 0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
 Limtypmom                            = 4                                     # Limiter type for cell center advection velocity, 0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
 Limtypsa                             = 4                                     # Limiter type for salinity transport,           0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
-TransportMethod                      = 1                                     # Transport method, 0=Herman method, 1=Sander method
 Vertadvtypsal                        = 5                                     # Vertical advection type for salinity, 0=No, 1=UpwexpL, 2=Centralexpl, 3=UpwimpL, 4=CentraLimpL, 5=4 but 3 for neg. stratif., 6=higher order expl, no forester
 Horadvtypzlayer                      = 0                                     # Horizontal advection treatment zlayer, 1=default, 2 = Sigma like
 Icgsolver                            = 4                                     # Solver type , 1 = sobekGS_OMP, 2 = sobekGS_OMPthreadsafe, 3 = sobekGS, 4 = sobekGS + Saadilud, 5 = parallel/global Saad, 6 = parallel/Petsc, 7 = parallel/GS
@@ -72,7 +71,6 @@ Jbasqbnddownwindhs                   = 0                                     # 0
 cstbnd                               = 0                                     # Delft-3D type velocity treatment near boundaries for small coastal models (1) or not (0)
 Maxitverticalforestersal             = 100                                   # 0 : no vertical filter, > 0 = Max nr of iterations
 Maxitverticalforestertem             = 0                                     # 0 : no vertical filter for temp, > 0 = Max nr of iterations
-Jaorgsethu                           = 1                                     # Velocity reconstruction scheme (0 : setumod, sethu, setau sequence, 1 : sethu, setau, setumod sequence (standard))
 Turbulencemodel                      = 3                                     # 0=no, 1 = constant, 2 = algebraic, 3 = k-eps, 4 = k-tau
 Turbulenceadvection                  = 3                                     # 0=no, 3 = hor. expl., vert. impl.
 AntiCreep                            = 0                                     # Include anti-creep calculation, (0=no, 1=yes)

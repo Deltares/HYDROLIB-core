@@ -74,7 +74,6 @@ Jbasqbnddownwindhs                   = 0                                     # 0
 cstbnd                               = 0                                     # Delft-3D type velocity treatment near boundaries for small coastal models (1) or not (0)
 Maxitverticalforestersal             = 100                                   # 0 : no vertical filter, > 0 = Max nr of iterations
 Maxitverticalforestertem             = 0                                     # 0 : no vertical filter for temp, > 0 = Max nr of iterations
-Jaorgsethu                           = 1                                     # Velocity reconstruction scheme (0 : setumod, sethu, setau sequence, 1 : sethu, setau, setumod sequence (standard))
 Turbulencemodel                      = 3                                     # 0=no, 1 = constant, 2 = algebraic, 3 = k-eps, 4 = k-tau
 Turbulenceadvection                  = 3                                     # 0=no, 3 = hor. expl., vert. impl.
 AntiCreep                            = 0                                     # Include anti-creep calculation, (0=no, 1=yes)
