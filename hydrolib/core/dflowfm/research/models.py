@@ -417,7 +417,9 @@ class ResearchNumerics(Numerics):
     research_zwsbtol: Optional[float] = Field(None, alias="zwsbtol")
     research_cfexphu: Optional[float] = Field(None, alias="cfexphu")
     research_drop3d: Optional[float] = Field(None, alias="drop3d")
-    research_zlayercenterbedvel: Optional[int] = Field(None, alias="zlayercenterbedvel")
+    research_zlayercenterbedvel: Optional[bool] = Field(
+        None, alias="zlayercenterbedvel"
+    )
     research_cffacver: Optional[float] = Field(None, alias="cffacver")
     research_eddyviscositybedfacmax: Optional[float] = Field(
         None, alias="eddyviscositybedfacmax"
