@@ -396,7 +396,7 @@ class VolumeTables(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         usevolumetables: Optional[str] = Field(
-            "Use volume tables for 1D grid cells (1: yes, 0 = no).",
+            "Use 1D volume tables (0: no, 1: yes).",
             alias="useVolumeTables",
         )
         increment: Optional[str] = Field(
