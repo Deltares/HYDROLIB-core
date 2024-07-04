@@ -221,11 +221,15 @@ class INIBasedModel(BaseModel, ABC):
         return Section(header=self._header, content=props)
 
     def _should_not_be_serialized(self, key: str, value: Any) -> bool:
-        field_type = self.__fields__.get(key).type_
+        if key in self._exclude_fields():
+            return True
 
-        return key in self._exclude_fields() or (
-            value is None and not field_type == FileModel
-        )
+        field = self.__fields__.get(key)
+
+        if not field:
+            return value is None
+
+        return value is None and not field.type_ == FileModel
 
 
 Datablock = List[List[Union[float, str]]]
