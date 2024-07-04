@@ -115,7 +115,6 @@ Secchidepth                          = 1.                                    # W
 Stanton                              = -1.                                   # Coefficient for convective heat flux ( ) , if negative, Cd wind*abs(Stanton)
 Dalton                               = -1.                                   # Coefficient for evaporative heat flux ( ), if negative, Cd wind*abs(Dalton)
 SecondaryFlow                        = 0                                     # Secondary flow (0=no, 1=yes)
-EffectSpiral                         = 0.                                    # Factor for weighing the effect of the spiral flow intensity on transport angle
 BetaSpiral                           = 0.                                    # Factor for weighing the effect of the spiral flow on flow dispersion stresses
  
 [grw]
@@ -134,7 +133,6 @@ Gapres                               = 101325.0000000                        # O
  
 [waves]
 Wavemodelnr                          = 0                                     # Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = Delft3D-WAVE, 4=wave group forcing
-WaveNikuradse                        = 1.d-2                                 # Wave friction Nikuradse ks coefficient, used in Krone Swart, e.g. 0.01 m
 Rouwav                               =                                       # Friction model for wave induced shear stress
 Gammax                               = 1.                                    # Maximum wave height/water depth ratio
  
@@ -168,11 +166,9 @@ XLSInterval                          =                                       # I
 MapFile                              =                                       # *_map.nc Map file in NetCDF format.
 MapInterval                          = 0.0                                   # Map file output, given as "interval" "start period" "end period" (s)
 RstInterval                          = 0.0                                   # Restart file output, given as "interval" "start period" "end period" (s)
-S1incinterval                        =                                       # Interval (m) in incremental file for waterlevels S1
 WaqFileBase                          =                                       # Basename (without extension) for all Delwaq files to be written.
 WaqInterval                          =                                       # Interval (in s) between Delwaq file outputs
 StatsInterval                        =                                       # Interval (in s) between simulation statistics output.
-Writebalancefile                     = 0                                     # Write Balancefile, 1=yes, 0=no
 TimingsInterval                      =                                       # Timings output interval
 TimeSplitInterval                    = 0X                                    # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
 MapFormat                            = 4                                     # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
