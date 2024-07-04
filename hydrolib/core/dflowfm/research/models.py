@@ -663,7 +663,8 @@ class ResearchTime(Time):
 
     class Comments(Time.Comments):
         research_timestepanalysis: Optional[str] = Field(
-            "0=no, 1=see file *.steps.", alias="timestepanalysis"
+            "Write time steps analysis file *.steps (0: no, 1: yes).",
+            alias="timestepanalysis",
         )
         research_autotimestepvisc: Optional[str] = Field(
             "0 = no, 1 = yes (Time limitation based on explicit diffusive term).",
@@ -679,7 +680,7 @@ class ResearchTime(Time):
 
     comments: Comments = Comments()
 
-    research_timestepanalysis: Optional[int] = Field(None, alias="timestepanalysis")
+    research_timestepanalysis: Optional[bool] = Field(None, alias="timestepanalysis")
     research_autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
     research_dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
     research_tstarttlfsmo: Optional[float] = Field(None, alias="tstarttlfsmo")
