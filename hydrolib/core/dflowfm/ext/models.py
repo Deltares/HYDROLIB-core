@@ -223,6 +223,7 @@ class MeteoInterpolationMethod(StrEnum):
     """
 
     nearestnb = "nearestNb"
+    linearSpaceTime = "linearSpaceTime"
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
 
     allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
@@ -248,6 +249,9 @@ class Meteo(INIBasedModel):
         forcingfiletype: Optional[str] = Field(
             "Type of forcingFile.", alias="forcingFileType"
         )
+        forcingVariableName: Optional[str] = Field(
+            "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3", alias="forcingVariableName"
+        )
         targetmaskfile: Optional[str] = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
             alias="targetMaskFile",
@@ -263,6 +267,14 @@ class Meteo(INIBasedModel):
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
+        extrapolationAllowed: Optional[str] = Field(
+            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
+            alias="extrapolationAllowed"
+        )
+        extrapolationSearchRadius: Optional[str] = Field(
+            "Maximum search radius for nearest neighbor extrapolation in space.",
+            alias="extrapolationSearchRadius"
+        )
 
     comments: Comments = Comments()
 
@@ -275,6 +287,7 @@ class Meteo(INIBasedModel):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
+    forcingVariableName: Optional[str] = Field(alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
@@ -282,6 +295,11 @@ class Meteo(INIBasedModel):
         alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
+    extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
+    extrapolationSearchRadius: Optional[float] = Field(alias="extrapolationSearchRadius")
+    averagingType: Optional[int] = Field(alias="averagingType")
+    averagingNumMin: Optional[float] = Field(alias="averagingNumMin")
+    averagingPercentile: Optional[float] = Field(alias="averagingPercentile")
 
     def is_intermediate_link(self) -> bool:
         return True

@@ -3,14 +3,15 @@ import math
 import os
 import re
 import sys
+from pathlib import Path
 from typing import Dict, List, Literal, Optional, Tuple
 
-from pydantic import Extra
+from pydantic import Extra, FilePath
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm import FMModel
-from hydrolib.core.dflowfm.ext.models import ExtModel, Meteo, MeteoForcingFileType
+from hydrolib.core.dflowfm.ext.models import ExtModel, Meteo, MeteoForcingFileType, MeteoInterpolationMethod
 from hydrolib.core.dflowfm.extold.models import *
 from hydrolib.core.dflowfm.inifield.models import AveragingType, InterpolationMethod
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
@@ -68,6 +69,8 @@ def _oldfiletype_to_forcing_file_type(
         forcing_file_type = MeteoForcingFileType.meteogridcurvi
     elif oldfiletype == 9:
         forcing_file_type = MeteoForcingFileType.meteogridcurvi
+    elif oldfiletype == 11:
+        forcing_file_type = MeteoForcingFileType.netcdf
     else:
         forcing_file_type = "unknown"
 
@@ -76,7 +79,7 @@ def _oldfiletype_to_forcing_file_type(
 
 def _oldmethod_to_interpolation_method(
     oldmethod: int,
-) -> Union[InterpolationMethod, str]:
+) -> Union[InterpolationMethod, MeteoInterpolationMethod, str]:
     """Convert old external forcing `METHOD` integer value to valid
         `interpolationMethod` string value.
 
@@ -88,7 +91,9 @@ def _oldmethod_to_interpolation_method(
             or "unknown" for invalid input.
     """
 
-    if oldmethod in [1, 2, 3, 5]:
+    if oldmethod in [1, 2, 3, 11]:
+        interpolation_method = MeteoInterpolationMethod.linearSpaceTime
+    elif oldmethod == 5: 
         interpolation_method = InterpolationMethod.triangulation
     elif oldmethod == 4:
         interpolation_method = InterpolationMethod.constant
@@ -96,7 +101,7 @@ def _oldmethod_to_interpolation_method(
         interpolation_method = InterpolationMethod.averaging
     else:
         interpolation_method = "unknown"
-
+    return interpolation_method
 
 def _oldmethod_to_averaging_type(
     oldmethod: int,
@@ -137,44 +142,36 @@ def ext_old_to_new(
         print(f"* {structurefile}")
 
     # TODO: isolate this in helper function
-    extold_model = ExtOldModel(extoldfile)
-
+    try:
+        extold_model = ExtOldModel(extoldfile)
+    except Exception as error:
+        print("The old external forcing file contained invalid input:", error)
+        return
+    
     ext_model = ExtModel()
     ext_model.filepath = extfile
 
-    i_meteo = 0  # TODO: remove hardcoding
-    meteo_data = {}
-    meteo_data["quantity"] = extold_model.forcing[i_meteo].quantity
-    meteo_data["forcingfile"] = extold_model.forcing[i_meteo].filename
-    meteo_data["forcingfiletype"] = _oldfiletype_to_forcing_file_type(
-        extold_model.forcing[i_meteo].filetype
-    )
-    # TODO: varname
-    # TODO: sourcemask
-    meteo_data["interpolationmethod"] = _oldmethod_to_interpolation_method(
-        extold_model.forcing[i_meteo].method
-    )
-    if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
-        meteo_data["averagingtype"] = _oldmethod_to_averaging_type(
-            extold_model.forcing[i_meteo].method
-        )
-        meteo_data["averagingrelsize"] = extold_model.forcing[
-            i_meteo
-        ].relativesearchcellsize
-        meteo_data["averagingnummin"] = extold_model.forcing[i_meteo].nummin
-        meteo_data["averagingpercentile"] = extold_model.forcing[
-            i_meteo
-        ].percentileminmax
+    for forcing in extold_model.forcing:
+        meteo_data = {}
+        meteo_data["quantity"] = forcing.quantity 
+        meteo_data["forcingfile"] = forcing.filename
+        meteo_data["forcingfiletype"] = _oldfiletype_to_forcing_file_type(forcing.filetype)
+        meteo_data["forcingVariableName"] = forcing.varname
+        meteo_data["sourceMaskFile"] = forcing.sourcemask
+        meteo_data["interpolationmethod"] = _oldmethod_to_interpolation_method(forcing.method)
+        if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
+            meteo_data["averagingtype"] = _oldmethod_to_averaging_type(forcing.method)
+            meteo_data["averagingrelsize"] = forcing.relativesearchcellsize
+            meteo_data["averagingnummin"] = forcing.nummin
+            meteo_data["averagingpercentile"] = forcing.percentileminmax
 
-    # TODO: meteo_data["extrapolationallowed"] = extold_model.forcing[i_meteo].extrapolation_method
-    # TODO: maxsearchradius -> extrapolationSearchRadius
-
-    meteo_data["operand"] = extold_model.forcing[i_meteo].operand
-    meteo_block = Meteo(**meteo_data)
-    ext_model.meteo.append(meteo_block)
-    ext_model.save()
-    print(meteo_block)
-
+        meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
+        meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
+        meteo_data["operand"] = forcing.operand
+        meteo_block = Meteo(**meteo_data)
+        ext_model.meteo.append(meteo_block)
+        ext_model.save()
+        print(meteo_block)
 
 def ext_old_to_new_from_mdu(
     mdufile: PathOrStr,
@@ -207,7 +204,10 @@ def ext_old_to_new_from_mdu(
     fmmodel = LegacyFMModel(mdufile, recurse=False)
     workdir = fmmodel._resolved_filepath.parent
     os.chdir(workdir)
-
+    if fmmodel.external_forcing.extforcefile is None:
+        if _verbose:
+            print(f"mdufile: {mdufile} does not contain an old style external forcing file")
+            return
     # Input file:
     extoldfile = fmmodel.external_forcing.extforcefile._resolved_filepath
     # Output files:
@@ -230,6 +230,23 @@ def ext_old_to_new_from_mdu(
     ext_old_to_new(extoldfile, extfile, inifieldfile, structurefile)
 
 
+    newmdufile: PathOrStr = fmmodel.filepath.stem + "_new" + ".mdu"
+    newmdufile = workdir / newmdufile
+    fmmodel.filepath = FilePath(newmdufile)
+    fmmodel.external_forcing.extforcefile = None
+    fmmodel.external_forcing.extforcefilenew = extfile
+    fmmodel.save()
+    if _verbose:
+            print(f"succesfully saved converted file {newmdufile} ")
+
+def ext_old_to_new_dir_recursive(
+    dir: PathOrStr,
+):
+    
+    for path in Path(dir).rglob('*.mdu'):
+        if "_ext" not in path.name:
+            ext_old_to_new_from_mdu(path)    
+    
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=_program,
@@ -253,6 +270,12 @@ def _get_parser() -> argparse.ArgumentParser:
         help="Input EXTOLDFILE to be converted.",
     )
     parser.add_argument(
+        "--dir",
+        "-d",
+        action="store",
+        help="Folder to recursively convert .mdufiles in",
+    )
+    parser.add_argument(
         "--outfiles",
         "-o",
         action="store",
@@ -273,7 +296,7 @@ def main(args=None):
     """
     global _verbose
 
-    parser = _get_parser()
+    parser = _get_parser() 
     args = parser.parse_args(args)
     _verbose = args.verbose
 
@@ -292,8 +315,10 @@ def main(args=None):
         ext_old_to_new_from_mdu(args.mdufile, **outfiles)
     elif args.extoldfile is not None:
         ext_old_to_new(args.extoldfile, **outfiles)
+    elif args.dir is not None:
+        ext_old_to_new_dir_recursive(args.dir)
     else:
-        print("Error: Missing input file(s), use either -m or -e.")
+        ext_old_to_new_dir_recursive(os.getcwd())
 
     #     sys.exit(1)
 

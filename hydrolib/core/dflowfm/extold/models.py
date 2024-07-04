@@ -324,6 +324,8 @@ class ExtOldMethod(IntEnum):
     """6. Averaging in space"""
     InterpolateExtrapolateTime = 7
     """7. Interpolate/Extrapolate time"""
+    Obsolete = 11
+    """11. METHOD=11 is obsolete; use METHOD=3 and EXTRAPOLATION_METHOD=1"""
 
 
 class ExtOldExtrapolationMethod(IntEnum):
@@ -545,7 +547,7 @@ class ExtOldForcing(BaseModel):
         if (
             extrapolation_method.value
             == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
-            and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
+            and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights and method.value != ExtOldMethod.Obsolete
         ):
             error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
             raise ValueError(error)
