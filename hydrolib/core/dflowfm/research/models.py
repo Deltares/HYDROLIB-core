@@ -375,6 +375,10 @@ class ResearchNumerics(Numerics):
             "Only positive forced evaporation fluxes(0: no, 1: yes).",
             alias="jadelvappos",
         )
+        research_jarhoxu: Optional[str] = Field(
+            "Include density gradient in advection term (0: no(strongly advised), 1: yes, 2: Also in barotropic and baroclinic pressure term, 3,4: Also in vertical advection).",
+            alias="jarhoxu",
+        )
 
     comments: Comments = Comments()
 
@@ -446,6 +450,7 @@ class ResearchNumerics(Numerics):
     )
     research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
     research_jadelvappos: Optional[bool] = Field(None, alias="jadelvapos")
+    research_jarhoxu: Optional[int] = Field(None, alias="jarhoxu")
 
 
 class ResearchPhysics(Physics):
