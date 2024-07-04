@@ -486,7 +486,7 @@ class ResearchPhysics(Physics):
             "Use soil temperature buffer if > 0.", alias="soiltempthick"
         )
         research_selfattractionloading: Optional[str] = Field(
-            "Self attraction and loading (0=no, 1=yes, 2=only self attraction).",
+            "Use self attraction and loading (0: no, 1: yes, 2: only self attraction).",
             alias="selfattractionloading",
         )
         research_prandtlnumbertemperature: Optional[str] = Field(
