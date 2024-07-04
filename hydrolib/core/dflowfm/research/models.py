@@ -501,10 +501,6 @@ class ResearchPhysics(Physics):
             "Turbulent Schmidt number for tracer(s).",
             alias="schmidtnumbertracer",
         )
-        research_umodlin: Optional[str] = Field(
-            "Linear friction umod, for ifrctyp=4,5,6.",
-            alias="umodlin",
-        )
         research_uniffrictcoef1dgrlay: Optional[str] = Field(
             "Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction).",
             alias="uniffrictcoef1dgrlay",
@@ -537,7 +533,6 @@ class ResearchPhysics(Physics):
     research_schmidtnumbertracer: Optional[float] = Field(
         None, alias="schmidtnumbertracer"
     )
-    research_umodlin: Optional[float] = Field(None, alias="umodlin")
     research_uniffrictcoef1dgrlay: Optional[float] = Field(
         None, alias="uniffrictcoef1dgrlay"
     )
