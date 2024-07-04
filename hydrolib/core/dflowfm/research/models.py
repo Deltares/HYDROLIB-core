@@ -367,6 +367,10 @@ class ResearchNumerics(Numerics):
             "vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd.",
             alias="vertadvtypmom3onbnd",
         )
+        research_noderivedtypes: Optional[str] = Field(
+            "0=use der. types. , 1 = less, 2 = lesser, 5 = also dealloc der. types.",
+            alias="noderivedtypes",
+        )
 
     comments: Comments = Comments()
 
@@ -436,6 +440,7 @@ class ResearchNumerics(Numerics):
     research_vertadvtypmom3onbnd: Optional[int] = Field(
         None, alias="vertadvtypmom3onbnd"
     )
+    research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
 
 
 class ResearchPhysics(Physics):
