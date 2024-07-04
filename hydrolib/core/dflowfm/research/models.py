@@ -259,7 +259,7 @@ class ResearchNumerics(Numerics):
             alias="logprofatubndin",
         )
         research_horadvtypzlayer: Optional[str] = Field(
-            "Horizontal advection treatment of z-layers (1: default, 2: sigma-like).",
+            "Vertical treatment of horizontal advection in z-layers (0: default, 1: N/A, 2: sigma-like).",
             alias="horadvtypzlayer",
         )
         research_chkdifd: Optional[str] = Field(
