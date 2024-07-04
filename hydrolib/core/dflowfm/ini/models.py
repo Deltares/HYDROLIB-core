@@ -17,8 +17,6 @@ from hydrolib.core.basemodel import (
     ModelSaveSettings,
     ParsableFileModel,
 )
-
-from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import (
     DataBlockINIBasedSerializerConfig,
@@ -26,6 +24,7 @@ from .serializer import (
     write_ini,
 )
 from .util import UnknownKeywordErrorManager, make_list_validator
+from ..ini.io_models import CommentBlock, Document, Property, Section
 
 logger = logging.getLogger(__name__)
 
@@ -206,7 +205,7 @@ class INIBasedModel(BaseModel, ABC):
     ) -> Section:
         props = []
         for key, value in self:
-            if key in self._exclude_fields():
+            if self._should_not_be_serialized(key, value):
                 continue
 
             field_key = key
@@ -220,6 +219,13 @@ class INIBasedModel(BaseModel, ABC):
             )
             props.append(prop)
         return Section(header=self._header, content=props)
+
+    def _should_not_be_serialized(self, key: str, value: Any) -> bool:
+        field_type = self.__fields__.get(key).type_
+
+        return key in self._exclude_fields() or (
+            value is None and not field_type == FileModel
+        )
 
 
 Datablock = List[List[Union[float, str]]]
