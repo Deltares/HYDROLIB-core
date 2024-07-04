@@ -1712,6 +1712,8 @@ class TestSerializer:
     def test_filemodel_keyword_with_none_value_does_get_added_to_section(self):
         class TestINIBasedModel(INIBasedModel):
             random_property: FileModel = Field(None)
+            random_property2: Union[FileModel, str] = Field(None)
+            random_property3: List[FileModel] = Field(None)
 
         config = INISerializerConfig()
         settings = ModelSaveSettings()
@@ -1719,9 +1721,13 @@ class TestSerializer:
 
         section = model._to_section(config, settings)
 
-        assert len(section.content) == 1
+        assert len(section.content) == 3
         assert section.content[0].key == "random_property"
         assert section.content[0].value == ""
+        assert section.content[1].key == "random_property2"
+        assert section.content[1].value == ""
+        assert section.content[2].key == "random_property3"
+        assert section.content[2].value == ""
 
 
 def test_serialize_deserialize_should_give_the_same_result():
