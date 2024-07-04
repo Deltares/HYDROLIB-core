@@ -1,10 +1,11 @@
 import inspect
 from itertools import chain
-from typing import Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Iterable, List, Optional, Union
 
 import pytest
-from pydantic.v1 import ValidationError
+from pydantic.v1 import ValidationError, Field
 
+from hydrolib.core.basemodel import ModelSaveSettings, FileModel
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,
@@ -13,6 +14,7 @@ from hydrolib.core.dflowfm.ini.io_models import (
     Property,
     Section,
 )
+from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.ini.parser import (
     Parser,
     ParserConfig,
@@ -28,7 +30,6 @@ from hydrolib.core.dflowfm.ini.serializer import (
     _serialize_comment_block,
     write_ini,
 )
-
 from ...utils import test_output_dir
 
 
@@ -1695,6 +1696,32 @@ class TestSerializer:
         result = "\n".join(serializer.serialize(document))
 
         assert result == input_str
+
+    def test_non_filemodel_keyword_with_none_value_does_not_get_added_to_section(self):
+        class TestINIBasedModel(INIBasedModel):
+            random_property: str = Field(None)
+
+        config = INISerializerConfig()
+        settings = ModelSaveSettings()
+        model = TestINIBasedModel()
+
+        section = model._to_section(config, settings)
+
+        assert len(section.content) == 0
+
+    def test_filemodel_keyword_with_none_value_does_get_added_to_section(self):
+        class TestINIBasedModel(INIBasedModel):
+            random_property: FileModel = Field(None)
+
+        config = INISerializerConfig()
+        settings = ModelSaveSettings()
+        model = TestINIBasedModel()
+
+        section = model._to_section(config, settings)
+
+        assert len(section.content) == 1
+        assert section.content[0].key == "random_property"
+        assert section.content[0].value == ""
 
 
 def test_serialize_deserialize_should_give_the_same_result():
