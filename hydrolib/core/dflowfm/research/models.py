@@ -434,7 +434,7 @@ class ResearchNumerics(Numerics):
     research_cffachormom: Optional[float] = Field(None, alias="cffachormom")
     research_trsh_u1lb: Optional[float] = Field(None, alias="trsh_u1lb")
     research_corioconstant: Optional[int] = Field(None, alias="corioconstant")
-    research_jaupwindsrc: Optional[int] = Field(None, alias="jaupwindsrc")
+    research_jaupwindsrc: Optional[bool] = Field(None, alias="jaupwindsrc")
     research_locsaltlev: Optional[float] = Field(None, alias="locsaltlev")
     research_subsuplupdates1: Optional[bool] = Field(None, alias="subsuplupdates1")
     research_linkdriedmx: Optional[int] = Field(None, alias="linkdriedmx")
