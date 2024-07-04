@@ -293,7 +293,8 @@ class ResearchNumerics(Numerics):
             alias="cffacver",
         )
         research_eddyviscositybedfacmax: Optional[str] = Field(
-            "Limit eddy viscosity at bed.", alias="eddyviscositybedfacmax"
+            "Limit eddy viscosity at bed (factor 0.0-1.0 of first layer above).",
+            alias="eddyviscositybedfacmax",
         )
         research_epseps: Optional[str] = Field(
             "EPS=max(EPS, EpsEPS), default=1d-32, (or TAU).", alias="epseps"
