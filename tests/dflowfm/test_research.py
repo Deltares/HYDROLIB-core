@@ -50,7 +50,7 @@ class TestResearchFMModel:
         assert model.sediment.research_implicitfallvelocity == 1
         assert model.wind.research_wind_eachstep == 0
         assert model.waves.research_threedwaveboundarylayer == 1
-        assert model.time.research_dtfacmax == pytest.approx(1.1)
+        assert model.time.research_tstarttlfsmo == pytest.approx(1.1)
         assert model.trachytopes.research_trtmnh == pytest.approx(0.1)
         assert model.output.research_mbainterval == pytest.approx(0.0)
 

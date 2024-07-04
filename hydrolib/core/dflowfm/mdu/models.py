@@ -818,6 +818,9 @@ class Time(INIBasedModel):
             "Update interval for time dependent roughness parameters [s].",
             alias="updateRoughnessInterval",
         )
+        dtfacmax: Optional[str] = Field(
+            "Max timestep increase factor in successive time steps.", alias="Dtfacmax"
+        )
 
     comments: Comments = Comments()
 
@@ -837,6 +840,7 @@ class Time(INIBasedModel):
     startdatetime: Optional[str] = Field(None, alias="startDateTime")
     stopdatetime: Optional[str] = Field(None, alias="stopDateTime")
     updateroughnessinterval: float = Field(86400.0, alias="updateRoughnessInterval")
+    dtfacmax: float = Field(1.1, alias="Dtfacmax")
 
     @validator("startdatetime", "stopdatetime")
     def _validate_datetime(cls, value, field):

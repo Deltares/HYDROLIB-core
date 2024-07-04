@@ -670,9 +670,6 @@ class ResearchTime(Time):
             "0 = no, 1 = yes (Time limitation based on explicit diffusive term).",
             alias="autotimestepvisc",
         )
-        research_dtfacmax: Optional[str] = Field(
-            "Max timestep increase factor ( ).", alias="dtfacmax"
-        )
         research_tstarttlfsmo: Optional[str] = Field(
             "Start time of smoothing of boundary conditions (Tlfsmo) w.r.t. RefDate (in TUnit).",
             alias="tstarttlfsmo",
@@ -682,7 +679,6 @@ class ResearchTime(Time):
 
     research_timestepanalysis: Optional[bool] = Field(None, alias="timestepanalysis")
     research_autotimestepvisc: Optional[bool] = Field(None, alias="autotimestepvisc")
-    research_dtfacmax: Optional[float] = Field(None, alias="dtfacmax")
     research_tstarttlfsmo: Optional[float] = Field(None, alias="tstarttlfsmo")
 
 
