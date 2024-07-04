@@ -63,8 +63,7 @@ class General(INIGeneral):
             alias="pathsRelativeToParent",
         )
         guiversion: Optional[str] = Field(
-            "DeltaShell FM suite version.",
-            alias="guiVersion"
+            "DeltaShell FM suite version.", alias="guiVersion"
         )
 
     comments: Comments = Comments()
@@ -312,7 +311,7 @@ class Numerics(INIBasedModel):
         )
         lateral_fixedweir_umin: Optional[str] = Field(
             "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
-            alias="lateral_fixedweir_umin"
+            alias="lateral_fixedweir_umin",
         )
         jasfer3d: Optional[str] = Field(
             "Corrections for spherical coordinates (0: no, 1: yes).",
@@ -1323,15 +1322,13 @@ class Output(INIBasedModel):
         )
         wrimap_calibration: Optional[str] = Field(
             "Write roughness calibration factors to map file.",
-            alias="wrimap_calibration"
+            alias="wrimap_calibration",
         )
         wrimap_salinity: Optional[str] = Field(
-            "Write salinity to map file.",
-            alias="wrimap_salinity"
+            "Write salinity to map file.", alias="wrimap_salinity"
         )
         wrimap_temperature: Optional[str] = Field(
-            "Write temperature to map file.",
-            alias="wrimap_temperature"
+            "Write temperature to map file.", alias="wrimap_temperature"
         )
         writek_cdwind: Optional[str] = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
@@ -1502,7 +1499,7 @@ class Output(INIBasedModel):
         )
         writepart_domain: Optional[str] = Field(
             "Write partition domain info. for postprocessing (0: no, 1: yes).",
-            alias="writepart_domain"
+            alias="writepart_domain",
         )
         velocitydirectionclassesinterval: Optional[str] = Field(
             "Class map's step size of class values for velocity direction.",
