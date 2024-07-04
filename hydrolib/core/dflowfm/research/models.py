@@ -136,6 +136,10 @@ class ResearchGeometry(Geometry):
             "Extrapolation of bed level at boundaries according to the slope: 0 = no extrapolation (default); 1 = extrapolate.",
             alias="extrbl",
         )
+        research_keepzlay1bedvol: Optional[str] = Field(
+            "Correct volumes when keepzlayeringatbed=1 (0: too large bedcell volumes, 1: correct bedcell volumes).",
+            alias="keepzlay1bedvol",
+        )
 
     comments: Comments = Comments()
 
@@ -170,6 +174,7 @@ class ResearchGeometry(Geometry):
         None, alias="groundlayerthickness"
     )
     research_extrbl: Optional[bool] = Field(None, alias="extrbl")
+    research_keepzlay1bedvol: Optional[bool] = Field(None, alias="keepzlay1bedvol")
 
 
 class ResearchNumerics(Numerics):
