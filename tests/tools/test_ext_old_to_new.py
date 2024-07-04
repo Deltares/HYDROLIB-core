@@ -39,7 +39,18 @@ class TestExtOldToNew:
         )
         ext_old_to_new.ext_old_to_new_from_mdu(mdu_filename)
         assert True
-        # assert isinstance(forcing.filename, TimModel)
+
+    def test_basinsquares(self):
+        ext_old_to_new._verbose = True
+        mdu_filename = (
+            test_input_dir
+            / "e02"
+            / "f006_external_forcing"
+            / "c020_basinnofriction_squares"
+            / "basinsquares.mdu"
+        )
+        ext_old_to_new.ext_old_to_new_from_mdu(mdu_filename)
+        assert True
 
     def test_recursive(self):
         ext_old_to_new._verbose = True
@@ -47,7 +58,7 @@ class TestExtOldToNew:
             / "e02"
             / "f006_external_forcing"
         )
-
         ext_old_to_new.ext_old_to_new_dir_recursive(dir)
         assert True
-        # assert isinstance(forcing.filename, TimModel)
+
+

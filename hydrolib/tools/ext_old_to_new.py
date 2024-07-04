@@ -23,6 +23,12 @@ from hydrolib.core.dflowfm.mdu.models import General
 _program: str = "ext_old_to_new"
 _verbose: bool = False
 
+def __contains__(cls, item):
+        try:
+            cls(item)
+        except ValueError:
+            return False
+        return True    
 
 def read_extold_data(extoldfile: PathOrStr) -> ExtOldModel:
     """Read a legacy D-Flow FM external forcings file (.ext) into an
@@ -152,27 +158,28 @@ def ext_old_to_new(
     ext_model.filepath = extfile
 
     for forcing in extold_model.forcing:
-        meteo_data = {}
-        meteo_data["quantity"] = forcing.quantity 
-        meteo_data["forcingfile"] = forcing.filename
-        meteo_data["forcingfiletype"] = _oldfiletype_to_forcing_file_type(forcing.filetype)
-        meteo_data["forcingVariableName"] = forcing.varname
-        meteo_data["sourceMaskFile"] = forcing.sourcemask
-        meteo_data["interpolationmethod"] = _oldmethod_to_interpolation_method(forcing.method)
-        if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
-            meteo_data["averagingtype"] = _oldmethod_to_averaging_type(forcing.method)
-            meteo_data["averagingrelsize"] = forcing.relativesearchcellsize
-            meteo_data["averagingnummin"] = forcing.nummin
-            meteo_data["averagingpercentile"] = forcing.percentileminmax
+        if __contains__(ExtOldMeteoQuantity,forcing.quantity):
+            meteo_data = {}
+            meteo_data["quantity"] = forcing.quantity 
+            meteo_data["forcingfile"] = forcing.filename
+            meteo_data["forcingfiletype"] = _oldfiletype_to_forcing_file_type(forcing.filetype)
+            meteo_data["forcingVariableName"] = forcing.varname
+            meteo_data["sourceMaskFile"] = forcing.sourcemask
+            meteo_data["interpolationmethod"] = _oldmethod_to_interpolation_method(forcing.method)
+            if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
+                meteo_data["averagingtype"] = _oldmethod_to_averaging_type(forcing.method)
+                meteo_data["averagingrelsize"] = forcing.relativesearchcellsize
+                meteo_data["averagingnummin"] = forcing.nummin
+                meteo_data["averagingpercentile"] = forcing.percentileminmax
 
-        meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
-        meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
-        meteo_data["operand"] = forcing.operand
-        
-        meteo_block = Meteo(**meteo_data)
-        ext_model.meteo.append(meteo_block)
-        ext_model.save()
-        print(meteo_block)
+            meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
+            meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
+            meteo_data["operand"] = forcing.operand
+
+            meteo_block = Meteo(**meteo_data)
+            ext_model.meteo.append(meteo_block)
+            ext_model.save()
+            print(meteo_block)
 
 def ext_old_to_new_from_mdu(
     mdufile: PathOrStr,
@@ -227,18 +234,21 @@ def ext_old_to_new_from_mdu(
         if fmmodel.geometry.structurefile
         else workdir / structurefile
     )
-
+    
     ext_old_to_new(extoldfile, extfile, inifieldfile, structurefile)
-
-
-    newmdufile: PathOrStr = fmmodel.filepath.stem + "_new" + ".mdu"
-    newmdufile = workdir / newmdufile
-    fmmodel.filepath = FilePath(newmdufile)
-    fmmodel.external_forcing.extforcefile = None
-    fmmodel.external_forcing.extforcefilenew = extfile
-    fmmodel.save()
-    if _verbose:
-            print(f"succesfully saved converted file {newmdufile} ")
+    try: 
+        ExtModel(extfile)
+        newmdufile: PathOrStr = fmmodel.filepath.stem + "_new" + ".mdu"
+        newmdufile = workdir / newmdufile
+        fmmodel.filepath = FilePath(newmdufile)
+        fmmodel.external_forcing.extforcefile = None
+        fmmodel.external_forcing.extforcefilenew = extfile
+        fmmodel.save()
+        if _verbose:
+                print(f"succesfully saved converted file {newmdufile} ")
+    except Exception as error:
+        print("The converter did not produce a valid ext file:", error)
+        return
 
 def ext_old_to_new_dir_recursive(
     dir: PathOrStr,
