@@ -168,6 +168,7 @@ def ext_old_to_new(
         meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
         meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
         meteo_data["operand"] = forcing.operand
+        
         meteo_block = Meteo(**meteo_data)
         ext_model.meteo.append(meteo_block)
         ext_model.save()
