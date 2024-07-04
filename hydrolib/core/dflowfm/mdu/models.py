@@ -2204,7 +2204,6 @@ class Processes(INIBasedModel):
             "Waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
             alias="DtProcesses",
         )
-        dtmassbalance: Optional[str] = Field(None, alias="DtMassBalance")
         processfluxintegration: Optional[str] = Field(
             "Process fluxes integration option (1: WAQ, 2: D-Flow FM).",
             alias="ProcessFluxIntegration",
@@ -2242,7 +2241,6 @@ class Processes(INIBasedModel):
     )
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
-    dtmassbalance: Optional[float] = Field(0.0, alias="DtMassBalance")
     processfluxintegration: Optional[ProcessFluxIntegration] = Field(
         ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration"
     )
