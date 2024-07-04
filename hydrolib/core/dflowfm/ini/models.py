@@ -3,7 +3,18 @@ from abc import ABC
 from enum import Enum
 from math import isnan
 from re import compile
-from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
+from typing import (
+    Any,
+    Callable,
+    List,
+    Literal,
+    Optional,
+    Set,
+    Type,
+    Union,
+    get_origin,
+    get_args,
+)
 
 from pydantic.v1 import Extra, Field, root_validator
 from pydantic.v1.class_validators import validator
@@ -225,11 +236,36 @@ class INIBasedModel(BaseModel, ABC):
             return True
 
         field = self.__fields__.get(key)
-
         if not field:
             return value is None
 
-        return value is None and not field.type_ == FileModel
+        field_type = field.type_
+        if self._is_union(field_type):
+            return self._value_is_none_and_types_are_not_filemodel(field_type, value)
+
+        if self._is_list(field_type):
+            field_type = get_args(field_type)[0]
+
+        return self._value_is_none_and_type_is_not_filemodel(field, value)
+
+    @staticmethod
+    def _is_union(field_type):
+        return get_origin(field_type) is Union
+
+    @staticmethod
+    def _value_is_none_and_types_are_not_filemodel(field_type, value):
+        return (
+            not any(issubclass(arg, FileModel) for arg in get_args(field_type))
+            and value is None
+        )
+
+    @staticmethod
+    def _is_list(field_type):
+        return get_origin(field_type) is List
+
+    @staticmethod
+    def _value_is_none_and_type_is_not_filemodel(field, value):
+        return value is None and not issubclass(field.type_, FileModel)
 
 
 Datablock = List[List[Union[float, str]]]
