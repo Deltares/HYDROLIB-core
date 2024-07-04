@@ -1509,6 +1509,10 @@ class Output(INIBasedModel):
             "Class map's step size of class values for velocity direction.",
             alias="VelocityDirectionClassesInterval",
         )
+        velocitymagnitudeclasses: Optional[str] = Field(
+            "Class map's list of class values for velocity magnitudes.",
+            alias="VelocityMagnitudeClasses",
+        )
 
     comments: Comments = Comments()
 
@@ -1704,6 +1708,9 @@ class Output(INIBasedModel):
     velocitydirectionclassesinterval: float = Field(
         0.0, alias="VelocityDirectionClassesInterval"
     )
+    velocitymagnitudeclasses: List[float] = Field(
+        [0.0], alias="VelocityMagnitudeClasses"
+    )
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
@@ -1718,6 +1725,7 @@ class Output(INIBasedModel):
         "waqinterval",
         "statsinterval",
         "timingsinterval",
+        "velocitymagnitudeclasses",
     )
 
     def is_intermediate_link(self) -> bool:

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydantic.v1 import Field
 
@@ -19,7 +19,6 @@ from hydrolib.core.dflowfm import (
     Waves,
     Wind,
 )
-from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
 
 
 class ResearchGeneral(General):
@@ -730,10 +729,7 @@ class ResearchOutput(Output):
         research_wrimap_nearfield: Optional[str] = Field(
             "Write near field parameters (1: yes, 0: no).", alias="wrimap_nearfield"
         )
-        research_velocitymagnitudeclasses: Optional[str] = Field(
-            "Class map's list of class values for velocity magnitudes.",
-            alias="velocitymagnitudeclasses",
-        )
+
         research_writedfminterpretedvalues: Optional[str] = Field(
             "Write DFMinterpretedvalues (1: yes, 0: no).",
             alias="writedfminterpretedvalues",
@@ -815,9 +811,6 @@ class ResearchOutput(Output):
         None, alias="mbalumpsourcesinks"
     )
     research_wrimap_nearfield: Optional[bool] = Field(None, alias="wrimap_nearfield")
-    research_velocitymagnitudeclasses: Optional[List[float]] = Field(
-        None, alias="velocitymagnitudeclasses"
-    )
     research_writedfminterpretedvalues: Optional[bool] = Field(
         None, alias="writedfminterpretedvalues"
     )
@@ -847,10 +840,6 @@ class ResearchOutput(Output):
     research_wrimap_ice: Optional[bool] = Field(None, alias="wrimap_ice")
     research_wrimap_trachytopes: Optional[bool] = Field(
         None, alias="wrimap_trachytopes"
-    )
-
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "research_velocitymagnitudeclasses",
     )
 
 
