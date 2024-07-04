@@ -364,7 +364,7 @@ class ResearchNumerics(Numerics):
             alias="cffachu",
         )
         research_vertadvtypmom3onbnd: Optional[str] = Field(
-            "vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd.",
+            "Vert. adv. u1 bnd UpwimpL: 0=follow javau , 1 = on bnd, 2= on and near bnd.",
             alias="vertadvtypmom3onbnd",
         )
         research_noderivedtypes: Optional[str] = Field(
