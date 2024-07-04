@@ -12,8 +12,8 @@ from typing import (
     Set,
     Type,
     Union,
-    get_origin,
     get_args,
+    get_origin,
 )
 
 from pydantic.v1 import Extra, Field, root_validator
@@ -28,6 +28,8 @@ from hydrolib.core.basemodel import (
     ModelSaveSettings,
     ParsableFileModel,
 )
+
+from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import (
     DataBlockINIBasedSerializerConfig,
@@ -35,7 +37,6 @@ from .serializer import (
     write_ini,
 )
 from .util import UnknownKeywordErrorManager, make_list_validator
-from ..ini.io_models import CommentBlock, Document, Property, Section
 
 logger = logging.getLogger(__name__)
 
