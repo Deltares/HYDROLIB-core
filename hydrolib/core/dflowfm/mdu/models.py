@@ -310,7 +310,7 @@ class Numerics(INIBasedModel):
             "Uniform talud slope of fixed weirs.", alias="fixedWeirTalud"
         )
         lateral_fixedweir_umin: Optional[str] = Field(
-            "Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
+            "Minimal velocity threshold for weir losses in iterative lateral 1d2d weir coupling.",
             alias="lateral_fixedweir_umin",
         )
         jasfer3d: Optional[str] = Field(
