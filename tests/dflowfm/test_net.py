@@ -136,7 +136,7 @@ def network_1d_2d_1d2dlinks():
 @pytest.mark.plots
 def test_create_1d_2d_1d2d():
     network = network_1d_2d_1d2dlinks()
-    
+
     mesh2d_output = network._mesh2d.get_mesh2d()
     assert len(mesh2d_output.face_x) == 152
     mesh1d_output = network._mesh1d._get_mesh1d()
