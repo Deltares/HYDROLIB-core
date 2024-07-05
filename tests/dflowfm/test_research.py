@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from hydrolib.core.dflowfm.research.models import (
@@ -48,6 +50,38 @@ class TestResearchFMModel:
         assert model.sediment.research_implicitfallvelocity == 1
         assert model.wind.research_wind_eachstep == 0
         assert model.waves.research_threedwaveboundarylayer == 1
-        assert model.time.research_dtfacmax == pytest.approx(1.1)
+        assert model.time.research_tstarttlfsmo == pytest.approx(1.1)
         assert model.trachytopes.research_trtmnh == pytest.approx(0.1)
         assert model.output.research_mbainterval == pytest.approx(0.0)
+
+    def test_save_model_with_single_research_keyword_does_not_write_other_research_keywords(
+        self, tmpdir: Path
+    ):
+        model = ResearchFMModel()
+        model.geometry.research_waterdepthini1d = 12.34  # a random research keyword
+
+        save_path = tmpdir / "test.mdu"
+        model.save(filepath=save_path)
+
+        # I picked 5 random research keywords to check
+        keywords_to_check = [
+            "inputspecific",
+            "toplayminthick",
+            "faclaxturb",
+            "surftempsmofac",
+            "mbalumpsourcesinks",
+        ]
+
+        with open(save_path, "r") as file:
+            content = file.read()
+
+        for keyword in keywords_to_check:
+            assert keyword not in content
+
+        assert "waterdepthini1d" in content
+
+    def test_can_save_and_load_research_model_from_scratch_without_errors(self):
+        file_mdu = Path("mdu.mdu")
+        mdu = ResearchFMModel()
+        mdu.save(file_mdu)
+        _ = ResearchFMModel(file_mdu)

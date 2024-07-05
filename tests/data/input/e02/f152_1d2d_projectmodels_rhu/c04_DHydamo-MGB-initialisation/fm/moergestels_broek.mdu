@@ -11,9 +11,7 @@ PathsRelativeToParent             = 0                   # Whether or not (1/0) t
 
 [geometry]
 NetFile                           = moergestels_broek_net.nc# Unstructured grid file *_net.nc
-BathymetryFile                    =                      
-OneDNetworkFile                   =                     # 1d networkfile
-BedlevelFile                      =                     # street_level.xyz , Bedlevels points file e.g. *.xyz, only needed for bedlevtype not equal 3
+BathymetryFile                    =
 DryPointsFile                     =                     # Dry points file *.xyz (third column dummy z values), or dry areas polygon file *.pol (third column 1/-1: inside/outside)
 WaterLevIniFile                   =                     # Initial water levels sample file *.xyz
 LandBoundaryFile                  = structures.ldb      #  Land boundaries file *.ldb, used for visualization
