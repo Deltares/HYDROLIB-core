@@ -98,7 +98,8 @@ def get_circle_gl(r, detail=100):
     return polygon
 
 
-def network_1d_2d_1d2dlinks():
+@pytest.mark.plots
+def test_create_1d_2d_1d2d():
     # Define line (spiral)
     theta = np.arange(0.1, 20, 0.01)
 
@@ -130,13 +131,7 @@ def network_1d_2d_1d2dlinks():
 
     # Add links
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
-    return network
 
-
-@pytest.mark.plots
-def test_create_1d_2d_1d2d():
-    network = network_1d_2d_1d2dlinks()
-    
     mesh2d_output = network._mesh2d.get_mesh2d()
     assert len(mesh2d_output.face_x) == 152
     mesh1d_output = network._mesh1d._get_mesh1d()
@@ -181,9 +176,37 @@ def test_create_1d_2d_1d2d_call_link_generation_twice():
     this testcase checks whether that is the case.
     Related issue: https://github.com/Deltares/HYDROLIB-core/issues/546
     """
-    network = network_1d_2d_1d2dlinks()
+    # Define line (spiral)
+    theta = np.arange(0.1, 20, 0.01)
 
-    # Add links again, do this twice to check if contacts are overwritten and not appended
+    y = np.sin(theta) * theta
+    x = np.cos(theta) * theta
+
+    dists = np.r_[0.0, np.cumsum(np.hypot(np.diff(x), np.diff(y)))]
+    dists = dists[np.arange(0, len(dists), 20)]
+
+    # Create branch
+    branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
+
+    # Create Mesh1d
+    network = Network()
+    network.mesh1d_add_branch(branch, name="branch1")
+
+    branch = Branch(geometry=np.array([[-25.0, 0.0], [x[0], y[0]]]))
+    branch.generate_nodes(mesh1d_edge_length=2.5)
+    network.mesh1d_add_branch(branch, name="branch2")
+
+    # Add Mesh2d
+    network.mesh2d_create_rectilinear_within_extent(
+        extent=(-22, -22, 22, 22), dx=2, dy=2
+    )
+    network.mesh2d_clip_mesh(geometrylist=get_circle_gl(22))
+
+    network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
+    network.mesh2d_refine_mesh(polygon=get_circle_gl(3), level=1)
+
+    # Add links, do this twice to check if contacts are overwritten and not appended
+    network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
 
     network1_link1d2d = network._link1d2d.link1d2d
