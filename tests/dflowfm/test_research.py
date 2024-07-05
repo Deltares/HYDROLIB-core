@@ -86,6 +86,7 @@ class TestResearchFMModel:
         mdu = ResearchFMModel()
         mdu.save(file_mdu)
         _ = ResearchFMModel(file_mdu)
+
     def test_sedtrails_fromscratch(self):
         model = ResearchFMModel()
         model.sedtrails = ResearchSedtrails()
