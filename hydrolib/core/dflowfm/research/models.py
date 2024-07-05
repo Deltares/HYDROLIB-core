@@ -458,7 +458,7 @@ class ResearchNumerics(Numerics):
         None, alias="vertadvtypmom3onbnd"
     )
     research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
-    research_jadelvappos: Optional[bool] = Field(None, alias="jadelvapos")
+    research_jadelvappos: Optional[bool] = Field(None, alias="jadelvappos")
     research_jarhoxu: Optional[int] = Field(None, alias="jarhoxu")
 
 
