@@ -28,8 +28,6 @@ from hydrolib.core.basemodel import (
     ModelSaveSettings,
     ParsableFileModel,
 )
-
-from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import (
     DataBlockINIBasedSerializerConfig,
@@ -37,6 +35,7 @@ from .serializer import (
     write_ini,
 )
 from .util import UnknownKeywordErrorManager, make_list_validator
+from ..ini.io_models import CommentBlock, Document, Property, Section
 
 logger = logging.getLogger(__name__)
 
@@ -217,7 +216,7 @@ class INIBasedModel(BaseModel, ABC):
     ) -> Section:
         props = []
         for key, value in self:
-            if self._should_not_be_serialized(key, value):
+            if not self._should_be_serialized(key, value):
                 continue
 
             field_key = key
@@ -232,41 +231,38 @@ class INIBasedModel(BaseModel, ABC):
             props.append(prop)
         return Section(header=self._header, content=props)
 
-    def _should_not_be_serialized(self, key: str, value: Any) -> bool:
+    def _should_be_serialized(self, key: str, value: Any) -> bool:
         if key in self._exclude_fields():
-            return True
+            return False
 
         field = self.__fields__.get(key)
         if not field:
-            return value is None
+            return value is not None
 
         field_type = field.type_
         if self._is_union(field_type):
-            return self._value_is_none_and_types_are_not_filemodel(field_type, value)
+            return value is not None or self._union_has_filemodel(field_type)
 
         if self._is_list(field_type):
             field_type = get_args(field_type)[0]
 
-        return self._value_is_none_and_type_is_not_filemodel(field, value)
+        return self._value_is_not_none_or_type_is_filemodel(field_type, value)
 
     @staticmethod
-    def _is_union(field_type):
+    def _is_union(field_type: type) -> bool:
         return get_origin(field_type) is Union
 
     @staticmethod
-    def _value_is_none_and_types_are_not_filemodel(field_type, value):
-        return (
-            not any(issubclass(arg, FileModel) for arg in get_args(field_type))
-            and value is None
-        )
+    def _union_has_filemodel(field_type: type) -> bool:
+        return any(issubclass(arg, FileModel) for arg in get_args(field_type))
 
     @staticmethod
-    def _is_list(field_type):
+    def _is_list(field_type: type) -> bool:
         return get_origin(field_type) is List
 
     @staticmethod
-    def _value_is_none_and_type_is_not_filemodel(field, value):
-        return value is None and not issubclass(field.type_, FileModel)
+    def _value_is_not_none_or_type_is_filemodel(field_type: type, value: Any) -> bool:
+        return value is not None or issubclass(field_type, FileModel)
 
 
 Datablock = List[List[Union[float, str]]]
