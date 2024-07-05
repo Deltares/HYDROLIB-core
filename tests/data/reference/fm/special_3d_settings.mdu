@@ -7,6 +7,7 @@ program               = D-Flow FM     # Program
 version               = 1.2.100.66357 # Version number of computational kernel
 autoStart             = 0             # Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).
 pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir.
+guiVersion            =               # DeltaShell FM suite version.
 
 [Geometry]
 netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
@@ -81,7 +82,7 @@ uniformTyp1DRoofGutterPipes    = -2                # Uniform cross section type 
 uniformWidth1DRoofGutterPipes  = 0.1               # Uniform width for roof gutter pipes [m].
 
 [VolumeTables]
-useVolumeTables    = 0   # Use volume tables for 1D grid cells (1: yes, 0 = no).
+useVolumeTables    = 0   # Use 1D volume tables (0: no, 1: yes).
 increment          = 0.2 # The height increment for the volume tables [m].
 useVolumeTableFile = 0   # Read and write the volume table from/to file (1: yes, 0= no).
 
@@ -145,6 +146,8 @@ checkerboardMonitor       = 0       # Flag for checkerboarding output on history
 velocityWarn              = 0.0     # Warning level [m/s] on normal velocity(<= 0: no check).
 advecCorrection1D2D       = 0       # Advection correction of 1D2D link volume (0: regular advection, 1: link volume au*dx, 2: advection on 1D2D switched off.)
 fixedWeirTalud            = 4.0     # Uniform talud slope of fixed weirs.
+lateral_fixedweir_umin    = 0.0     # Minimal velocity threshold for weir losses in iterative lateral 1d2d weir coupling.
+jasfer3D                  = 0       # Corrections for spherical coordinates (0: no, 1: yes).
 
 [Physics]
 unifFrictCoef              = 0.028   # Uniform friction coefficient (0: no friction)
@@ -226,6 +229,7 @@ tStop                   = 86400.0        # Stop time w.r.t. RefDate [TUnit].
 startDateTime           = 19980101000000 # Start date time (yyyymmddHHMMSS)
 stopDateTime            = 19980110000000 # Stop date time (yyyymmddHHMMSS)
 updateRoughnessInterval = 86400.0        # Update interval for time dependent roughness parameters [s].
+Dtfacmax                = 1.1            # Max timestep increase factor in successive time steps.
 
 [Restart]
 restartFile     =  # Restart netcdf-file, either *_rst.nc or *_map.nc
@@ -337,6 +341,9 @@ wrimap_rain                       = 1                                           
 wrimap_wind                       = 1                                                                               # Write wind velocities to map file (1: yes, 0: no)
 wrimap_windstress                 = 0                                                                               # Write wind stress to map file (1: yes, 0: no)
 wrimap_airdensity                 = 0                                                                               # Write air density to map file, (1:yes, 0:no).
+wrimap_calibration                = 1                                                                               # Write roughness calibration factors to map file.
+wrimap_salinity                   = 1                                                                               # Write salinity to map file.
+wrimap_temperature                = 1                                                                               # Write temperature to map file.
 writek_CdWind                     = 0                                                                               # Write wind friction coeffs to tek file (1: yes, 0: no)
 wrimap_heat_fluxes                = 1                                                                               # Write heat fluxes to map file (1: yes, 0: no)
 wrimap_wet_waterDepth_threshold   = 2e-05                                                                           # Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.
@@ -362,7 +369,7 @@ waqInterval                       = 0.0                                         
 statsInterval                     = 3600.0                                                                          # Screen step output interval in seconds simulation time, if negative in seconds wall clock time
 timingsInterval                   = 0.0                                                                             # Timings statistics output interval
 richardsonOnOutput                = 0                                                                               # Write Richardson number, (1: yes, 0: no).
-wrimap_input_dt                   = 0                                                                               # Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).
+wrimap_every_dt                   = 0                                                                               # Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).
 wrimap_input_roughness            = 0                                                                               # Write chezy input roughness on flow links to map file, (1: yes, 0: no).
 wrimap_flowarea_au                = 1                                                                               # Write flow areas au to map file (1: yes, 0: no)
 wrimap_flow_flux_q1_main          = 1                                                                               # Write flow flux in main channel to map file (1: yes, 0: no)
@@ -379,6 +386,9 @@ wrimap_interception               = 1                                           
 wrimap_volume1                    = 1                                                                               # Write volumes to map file (1: yes, 0: no)
 wrimap_ancillary_variables        = 1                                                                               # Write ancillary_variables attributes to map file (1: yes, 0: no)
 wrimap_chezy_on_flow_links        = 0                                                                               # Write chezy roughness on flow links to map file, (1: yes, 0: no)
+writepart_domain                  = 1                                                                               # Write partition domain info. for postprocessing (0: no, 1: yes).
+VelocityDirectionClassesInterval  = 0.0                                                                             # Class map's step size of class values for velocity direction.
+VelocityMagnitudeClasses          = 0.0                                                                             # Class map's list of class values for velocity magnitudes.
 
 [Calibration]
 UseCalibration = 0 # Activate calibration factor friction multiplier (1 = yes, 0 = no)
