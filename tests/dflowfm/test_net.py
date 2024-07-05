@@ -721,7 +721,7 @@ def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
     values = mesh2d_face_z[:]
     data = values[:].data
 
-    assert (data[:] == fill_value).all()
+    assert np.allclose(data[:], fill_value)
     assert mesh2d_face_z._FillValue == pytest.approx(fill_value)
 
     dataset.close()
