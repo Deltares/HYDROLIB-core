@@ -79,6 +79,7 @@ class TestResearchFMModel:
             assert keyword not in content
 
         assert "waterdepthini1d" in content
+
     def test_can_save_and_load_research_model_from_scratch_without_errors(self):
         file_mdu = Path("mdu.mdu")
         mdu = ResearchFMModel()
