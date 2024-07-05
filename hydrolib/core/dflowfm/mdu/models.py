@@ -62,6 +62,9 @@ class General(INIGeneral):
             "Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir",
             alias="pathsRelativeToParent",
         )
+        guiversion: Optional[str] = Field(
+            "DeltaShell FM suite version.", alias="guiVersion"
+        )
 
     comments: Comments = Comments()
     _header: Literal["General"] = "General"
@@ -71,6 +74,7 @@ class General(INIGeneral):
     fileversion: str = Field("1.09", alias="fileVersion")
     autostart: Optional[AutoStartOption] = Field(AutoStartOption.no, alias="autoStart")
     pathsrelativetoparent: bool = Field(False, alias="pathsRelativeToParent")
+    guiversion: Optional[str] = Field(None, alias="guiVersion")
 
 
 class Numerics(INIBasedModel):
@@ -305,6 +309,14 @@ class Numerics(INIBasedModel):
         fixedweirtalud: Optional[str] = Field(
             "Uniform talud slope of fixed weirs.", alias="fixedWeirTalud"
         )
+        lateral_fixedweir_umin: Optional[str] = Field(
+            "Minimal velocity threshold for weir losses in iterative lateral 1d2d weir coupling.",
+            alias="lateral_fixedweir_umin",
+        )
+        jasfer3d: Optional[str] = Field(
+            "Corrections for spherical coordinates (0: no, 1: yes).",
+            alias="jasfer3D",
+        )
 
     comments: Comments = Comments()
 
@@ -368,6 +380,8 @@ class Numerics(INIBasedModel):
     velocitywarn: float = Field(0.0, alias="velocityWarn")
     adveccorrection1d2d: int = Field(0, alias="advecCorrection1D2D")
     fixedweirtalud: float = Field(4.0, alias="fixedWeirTalud")
+    lateral_fixedweir_umin: float = Field(0.0, alias="lateral_fixedweir_umin")
+    jasfer3d: bool = Field(False, alias="jasfer3D")
 
 
 class VolumeTables(INIBasedModel):
@@ -382,7 +396,7 @@ class VolumeTables(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         usevolumetables: Optional[str] = Field(
-            "Use volume tables for 1D grid cells (1: yes, 0 = no).",
+            "Use 1D volume tables (0: no, 1: yes).",
             alias="useVolumeTables",
         )
         increment: Optional[str] = Field(
@@ -804,6 +818,9 @@ class Time(INIBasedModel):
             "Update interval for time dependent roughness parameters [s].",
             alias="updateRoughnessInterval",
         )
+        dtfacmax: Optional[str] = Field(
+            "Max timestep increase factor in successive time steps.", alias="Dtfacmax"
+        )
 
     comments: Comments = Comments()
 
@@ -823,6 +840,7 @@ class Time(INIBasedModel):
     startdatetime: Optional[str] = Field("", alias="startDateTime")
     stopdatetime: Optional[str] = Field("", alias="stopDateTime")
     updateroughnessinterval: float = Field(86400.0, alias="updateRoughnessInterval")
+    dtfacmax: float = Field(1.1, alias="Dtfacmax")
 
     @validator("startdatetime", "stopdatetime")
     def _validate_datetime(cls, value, field):
@@ -1306,6 +1324,16 @@ class Output(INIBasedModel):
             "Write air density rates to map file (1: yes, 0: no)",
             alias="wrimap_airdensity",
         )
+        wrimap_calibration: Optional[str] = Field(
+            "Write roughness calibration factors to map file.",
+            alias="wrimap_calibration",
+        )
+        wrimap_salinity: Optional[str] = Field(
+            "Write salinity to map file.", alias="wrimap_salinity"
+        )
+        wrimap_temperature: Optional[str] = Field(
+            "Write temperature to map file.", alias="wrimap_temperature"
+        )
         writek_cdwind: Optional[str] = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
             alias="writek_CdWind",
@@ -1402,7 +1430,7 @@ class Output(INIBasedModel):
         )
         wrimap_every_dt: Optional[str] = Field(
             "Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).",
-            alias="wrimap_input_dt",
+            alias="wrimap_every_dt",
         )
         wrimap_input_roughness: Optional[str] = Field(
             "Write chezy input roughness on flow links to map file, (1: yes, 0: no).",
@@ -1472,6 +1500,18 @@ class Output(INIBasedModel):
         wrimap_chezy_on_flow_links: Optional[str] = Field(
             "Write chezy roughness on flow links to map file, (1: yes, 0: no)",
             alias="wrimap_chezy_on_flow_links",
+        )
+        writepart_domain: Optional[str] = Field(
+            "Write partition domain info. for postprocessing (0: no, 1: yes).",
+            alias="writepart_domain",
+        )
+        velocitydirectionclassesinterval: Optional[str] = Field(
+            "Class map's step size of class values for velocity direction.",
+            alias="VelocityDirectionClassesInterval",
+        )
+        velocitymagnitudeclasses: Optional[str] = Field(
+            "Class map's list of class values for velocity magnitudes.",
+            alias="VelocityMagnitudeClasses",
         )
 
     comments: Comments = Comments()
@@ -1594,6 +1634,9 @@ class Output(INIBasedModel):
     wrimap_wind: bool = Field(True, alias="wrimap_wind")
     wrimap_windstress: bool = Field(False, alias="wrimap_windstress")
     wrimap_airdensity: bool = Field(False, alias="wrimap_airdensity")
+    wrimap_calibration: bool = Field(True, alias="wrimap_calibration")
+    wrimap_salinity: bool = Field(True, alias="wrimap_salinity")
+    wrimap_temperature: bool = Field(True, alias="wrimap_temperature")
     writek_cdwind: bool = Field(False, alias="writek_CdWind")
     wrimap_heat_fluxes: bool = Field(False, alias="wrimap_heat_fluxes")
     wrimap_wet_waterdepth_threshold: float = Field(
@@ -1637,7 +1680,7 @@ class Output(INIBasedModel):
     statsinterval: List[float] = Field([-60.0], alias="statsInterval")
     timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
     richardsononoutput: bool = Field(False, alias="richardsonOnOutput")
-    wrimap_every_dt: bool = Field(False, alias="wrimap_input_dt")
+    wrimap_every_dt: bool = Field(False, alias="wrimap_every_dt")
     wrimap_input_roughness: bool = Field(False, alias="wrimap_input_roughness")
     wrimap_flowarea_au: bool = Field(False, alias="wrimap_flowarea_au")
     wrihis_airdensity: bool = Field(False, alias="wrihis_airdensity")
@@ -1661,6 +1704,13 @@ class Output(INIBasedModel):
     wrimap_volume1: bool = Field(False, alias="wrimap_volume1")
     wrimap_ancillary_variables: bool = Field(False, alias="wrimap_ancillary_variables")
     wrimap_chezy_on_flow_links: bool = Field(False, alias="wrimap_chezy_on_flow_links")
+    writepart_domain: bool = Field(True, alias="writepart_domain")
+    velocitydirectionclassesinterval: float = Field(
+        0.0, alias="VelocityDirectionClassesInterval"
+    )
+    velocitymagnitudeclasses: List[float] = Field(
+        [0.0], alias="VelocityMagnitudeClasses"
+    )
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
@@ -1675,6 +1725,7 @@ class Output(INIBasedModel):
         "waqinterval",
         "statsinterval",
         "timingsinterval",
+        "velocitymagnitudeclasses",
     )
 
     def is_intermediate_link(self) -> bool:

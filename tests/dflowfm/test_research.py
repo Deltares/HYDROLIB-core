@@ -50,7 +50,7 @@ class TestResearchFMModel:
         assert model.sediment.research_implicitfallvelocity == 1
         assert model.wind.research_wind_eachstep == 0
         assert model.waves.research_threedwaveboundarylayer == 1
-        assert model.time.research_dtfacmax == pytest.approx(1.1)
+        assert model.time.research_tstarttlfsmo == pytest.approx(1.1)
         assert model.trachytopes.research_trtmnh == pytest.approx(0.1)
         assert model.output.research_mbainterval == pytest.approx(0.0)
 
@@ -79,3 +79,8 @@ class TestResearchFMModel:
             assert keyword not in content
 
         assert "waterdepthini1d" in content
+    def test_can_save_and_load_research_model_from_scratch_without_errors(self):
+        file_mdu = Path("mdu.mdu")
+        mdu = ResearchFMModel()
+        mdu.save(file_mdu)
+        _ = ResearchFMModel(file_mdu)
