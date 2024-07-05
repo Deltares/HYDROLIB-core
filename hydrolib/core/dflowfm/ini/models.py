@@ -28,6 +28,8 @@ from hydrolib.core.basemodel import (
     ModelSaveSettings,
     ParsableFileModel,
 )
+
+from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import (
     DataBlockINIBasedSerializerConfig,
@@ -35,7 +37,6 @@ from .serializer import (
     write_ini,
 )
 from .util import UnknownKeywordErrorManager, make_list_validator
-from ..ini.io_models import CommentBlock, Document, Property, Section
 
 logger = logging.getLogger(__name__)
 
