@@ -384,7 +384,6 @@ AdditionalHistoryOutputFile               =                     # extra history 
 StatisticsFile                            =                     # statistics file
 ThetaVertical                             = 0.                  # theta vertical for waq
 DtProcesses                               = 0.                  # waq processes time step
-DtMassBalance                             = 0.                  # waq mass balance output time step
 ProcessFluxIntegration                    = 1                   # Process fluxes integration option (1: WAQ, 2: D-Flow FM)
 Wriwaqbot3Doutput                         = 0                   # Write 3D water quality bottom variables (1: yes, 0: no)
 VolumeDryThreshold                        = 1.d-3

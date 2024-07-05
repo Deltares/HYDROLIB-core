@@ -7,7 +7,6 @@ program               = D-Flow FM     # Program
 version               = 1.2.100.66357 # Version number of computational kernel
 autoStart             = 0             # Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).
 pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir.
-guiVersion            =               # DeltaShell FM suite version.
 
 [Geometry]
 netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
@@ -32,7 +31,7 @@ profDefFile                    =                   # <*_profdefinition.def>) def
 profDefXyzFile                 =                   # <*_profdefinition.def>) definition for all profile nrs.
 manholeFile                    =                   # File containing manholes (e.g. <*.dat>).
 partitionFile                  =                   # <*_part.pol>, polyline(s) x, y.
-uniformWidth1D                 = 2.0
+uniformWidth1D                 = 2.0               # Uniform width for channel profiles not specified by profloc
 dxWuiMin2D                     = 0.1               # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu, Default = 0.1
 waterLevIni                    = 0.0               # Initial water level at missing s0 values
 bedLevUni                      = 5.0               # Uniform bed level used at missing z values if BedlevType > 2
@@ -197,9 +196,9 @@ secondaryFlow              = 0       # Secondary flow (0: no, 1: yes)
 betaSpiral                 = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).
 
 [Sediment]
-Sedimentmodelnr =  # Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).
-MorFile         =  # Morphology settings file (*.mor)
-SedFile         =  # Sediment characteristics file (*.sed)
+Sedimentmodelnr = 0 # Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).
+MorFile         =   # Morphology settings file (*.mor)
+SedFile         =   # Sediment characteristics file (*.sed)
 
 [Wind]
 iCdTyp               = 4         # Wind drag coefficient type (1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955, 5=Hwang 2005, 6=Wuest 2005, 7=Hersbach 2010 (2 pts)
@@ -238,9 +237,6 @@ restartDateTime =  # Restart date and time (yyyymmddhhmmss) when restarting from
 [External Forcing]
 extForceFile    = SEA_3D_3km_spatial.ext # Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification
 extForceFileNew =                        # New format for external forcings file *.ext, link with bc-format boundary conditions specification
-rainfall        =                        # Include rainfall, (0=no, 1=yes).
-qExt            =                        # Include user Qin/out, externally provided, (0=no, 1=yes).
-evaporation     =                        # Include evaporation in water balance, (0=no, 1=yes).
 windExt         = 1                      # Include wind, externally provided, (0=no, 1=reserved for EC, 2=yes)
 
 [Hydrology]

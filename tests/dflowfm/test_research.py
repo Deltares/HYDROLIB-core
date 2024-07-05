@@ -54,6 +54,32 @@ class TestResearchFMModel:
         assert model.trachytopes.research_trtmnh == pytest.approx(0.1)
         assert model.output.research_mbainterval == pytest.approx(0.0)
 
+    def test_save_model_with_single_research_keyword_does_not_write_other_research_keywords(
+        self, tmpdir: Path
+    ):
+        model = ResearchFMModel()
+        model.geometry.research_waterdepthini1d = 12.34  # a random research keyword
+
+        save_path = tmpdir / "test.mdu"
+        model.save(filepath=save_path)
+
+        # I picked 5 random research keywords to check
+        keywords_to_check = [
+            "inputspecific",
+            "toplayminthick",
+            "faclaxturb",
+            "surftempsmofac",
+            "mbalumpsourcesinks",
+        ]
+
+        with open(save_path, "r") as file:
+            content = file.read()
+
+        for keyword in keywords_to_check:
+            assert keyword not in content
+
+        assert "waterdepthini1d" in content
+
     def test_can_save_and_load_research_model_from_scratch_without_errors(self):
         file_mdu = Path("mdu.mdu")
         mdu = ResearchFMModel()
