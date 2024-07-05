@@ -13,7 +13,6 @@ from hydrolib.core.dflowfm.research.models import (
     ResearchSedtrails,
     ResearchTime,
     ResearchTrachytopes,
-    ResearchWaves,
     ResearchWind,
 )
 from tests.utils import test_input_dir
@@ -29,7 +28,6 @@ class TestResearchFMModel:
         assert isinstance(model.physics, ResearchPhysics)
         assert isinstance(model.sediment, ResearchSediment)
         assert isinstance(model.wind, ResearchWind)
-        assert isinstance(model.waves, ResearchWaves)
         assert isinstance(model.time, ResearchTime)
         assert isinstance(model.trachytopes, ResearchTrachytopes)
         assert isinstance(model.output, ResearchOutput)
