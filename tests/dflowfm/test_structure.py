@@ -28,7 +28,6 @@ from hydrolib.core.dflowfm.structure.models import (
     Weir,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
-
 from ..utils import (
     WrapperTest,
     create_temp_file,
@@ -1067,22 +1066,22 @@ class TestDambreak:
         assert dambreak_obj.type == "dambreak"
         assert dambreak_obj.id == "dambreak"
         assert dambreak_obj.polylinefile.filepath == Path("dambreak2ddrybreach.pli")
-        assert dambreak_obj.startlocationx == 1.2
-        assert dambreak_obj.startlocationy == 4.0
+        assert dambreak_obj.startlocationx == pytest.approx(1.2)
+        assert dambreak_obj.startlocationy == pytest.approx(4.0)
         assert dambreak_obj.algorithm == 3
-        assert dambreak_obj.crestlevelini == 0.4
+        assert dambreak_obj.crestlevelini == pytest.approx(0.4)
         assert dambreak_obj.breachwidthini == 1
-        assert dambreak_obj.crestlevelmin == 0.2
-        assert dambreak_obj.timetobreachtomaximumdepth == 0.1
+        assert dambreak_obj.crestlevelmin == pytest.approx(0.2)
+        assert dambreak_obj.timetobreachtomaximumdepth == pytest.approx(0.1)
         assert dambreak_obj.f1 == 1
         assert dambreak_obj.f2 == 1
-        assert dambreak_obj.ucrit == 0.001
-        assert dambreak_obj.t0 == 0.0001
+        assert dambreak_obj.ucrit == pytest.approx(0.001)
+        assert dambreak_obj.t0 == pytest.approx(0.0001)
         assert dambreak_obj.dambreaklevelsandwidths.filepath.name == "dambreak.tim"
-        assert dambreak_obj.waterlevelupstreamlocationx == 1.2
-        assert dambreak_obj.waterlevelupstreamlocationy == 2.3
-        assert dambreak_obj.waterleveldownstreamlocationx == 3.4
-        assert dambreak_obj.waterleveldownstreamlocationy == 4.5
+        assert dambreak_obj.waterlevelupstreamlocationx == pytest.approx(1.2)
+        assert dambreak_obj.waterlevelupstreamlocationy == pytest.approx(2.3)
+        assert dambreak_obj.waterleveldownstreamlocationx == pytest.approx(3.4)
+        assert dambreak_obj.waterleveldownstreamlocationy == pytest.approx(4.5)
         assert dambreak_obj.waterlevelupstreamnodeid == None
         assert dambreak_obj.waterleveldownstreamnodeid == None
 
@@ -1118,17 +1117,17 @@ class TestDambreak:
         assert dambreak.id == "NLNJ-2021"
         assert dambreak.name == "NederlandNaranjito2021"
         assert dambreak.type == "dambreak"
-        assert dambreak.startlocationx == 4.2
-        assert dambreak.startlocationy == 2.4
+        assert dambreak.startlocationx == pytest.approx(4.2)
+        assert dambreak.startlocationy == pytest.approx(2.4)
         assert dambreak.algorithm == 1
         assert dambreak.crestlevelini == 1
         assert dambreak.breachwidthini == 24
         assert dambreak.crestlevelmin == 42
-        assert dambreak.t0 == 2.2
-        assert dambreak.timetobreachtomaximumdepth == 4.4
-        assert dambreak.f1 == 22.4
-        assert dambreak.f2 == 44.2
-        assert dambreak.ucrit == 44.22
+        assert dambreak.t0 == pytest.approx(2.2)
+        assert dambreak.timetobreachtomaximumdepth == pytest.approx(4.4)
+        assert dambreak.f1 == pytest.approx(22.4)
+        assert dambreak.f2 == pytest.approx(44.2)
+        assert dambreak.ucrit == pytest.approx(44.22)
         assert dambreak.numcoordinates == 2
         assert dambreak.xcoordinates == [4.2, 2.4]
         assert dambreak.ycoordinates == [2.4, 4.2]

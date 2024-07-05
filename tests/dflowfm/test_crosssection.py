@@ -15,7 +15,6 @@ from hydrolib.core.dflowfm.crosssection.models import (
     ZWRiverCrsDef,
 )
 from hydrolib.core.dflowfm.friction.models import FrictionType
-
 from ..utils import (
     assert_files_equal,
     test_data_dir,
@@ -33,7 +32,7 @@ class TestCrossSectionDefinition:
         assert isinstance(m.definition[0], CircleCrsDef)
         assert m.definition[0].id == "Prof1"
         assert m.definition[0].thalweg == 0.0
-        assert m.definition[0].diameter == 2.0
+        assert m.definition[0].diameter == pytest.approx(2.0)
         assert m.definition[0].frictionid == "Brick"
 
     def test_crossdef_list_delimiters(self):
@@ -293,13 +292,13 @@ class TestCrossSectionLocation:
         assert isinstance(m.crosssection[0], CrossSection)
         assert m.crosssection[0].id == "Channel1_50.000"
         assert m.crosssection[0].branchid == "Channel1"
-        assert m.crosssection[0].shift == 1.0
+        assert m.crosssection[0].shift == pytest.approx(1.0)
         assert m.crosssection[0].definitionid == "Prof1"
 
         assert isinstance(m.crosssection[1], CrossSection)
         assert m.crosssection[1].id == "Channel2_300.000"
         assert m.crosssection[1].branchid == "Channel2"
-        assert m.crosssection[1].shift == 0.0
+        assert m.crosssection[1].shift == pytest.approx(0.0)
         assert m.crosssection[1].definitionid == "Prof2"
 
     @pytest.mark.parametrize(

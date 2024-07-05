@@ -12,7 +12,6 @@ from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
-
 from ..utils import test_input_dir, test_output_dir
 
 
@@ -721,8 +720,8 @@ def test_write_netcdf_with_custom_fillvalue_correctly_writes_fillvalue():
     values = mesh2d_face_z[:]
     data = values[:].data
 
-    assert (data[:] == fill_value).all()
-    assert mesh2d_face_z._FillValue == fill_value
+    assert (data[:] == pytest.approx(fill_value)).all()
+    assert mesh2d_face_z._FillValue == pytest.approx(fill_value)
 
     dataset.close()
 

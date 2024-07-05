@@ -22,7 +22,6 @@ from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
-
 from ..utils import (
     assert_files_equal,
     create_temp_file_from_lines,
@@ -454,7 +453,7 @@ class TestExtForcing:
                 value=value,
             )
 
-            assert forcing.value == value
+            assert forcing.value == pytest.approx(value)
 
         def test_validate_sourcemask_with_invalid_method(self):
             method = 1
@@ -487,7 +486,7 @@ class TestExtForcing:
                 factor=factor,
             )
 
-            assert forcing.factor == factor
+            assert forcing.factor == pytest.approx(factor)
 
         def test_validate_factor_with_invalid_quantity(self):
             quantity = ExtOldQuantity.WaterLevelBnd
@@ -520,7 +519,7 @@ class TestExtForcing:
                 ifrctyp=ifrctyp,
             )
 
-            assert forcing.ifrctyp == ifrctyp
+            assert forcing.ifrctyp == pytest.approx(ifrctyp)
 
         def test_validate_ifrctyp_with_invalid_quantity(self):
             quantity = ExtOldQuantity.WaterLevelBnd
@@ -553,7 +552,7 @@ class TestExtForcing:
                 averagingtype=averagingtype,
             )
 
-            assert forcing.averagingtype == averagingtype
+            assert forcing.averagingtype == pytest.approx(averagingtype)
 
         def test_validate_averagingtype_with_invalid_method(self):
             method = 1
@@ -586,7 +585,9 @@ class TestExtForcing:
                 relativesearchcellsize=relativesearchcellsize,
             )
 
-            assert forcing.relativesearchcellsize == relativesearchcellsize
+            assert forcing.relativesearchcellsize == pytest.approx(
+                relativesearchcellsize
+            )
 
         def test_validate_relativesearchcellsize_with_invalid_method(self):
             method = 1
@@ -619,7 +620,7 @@ class TestExtForcing:
                 extrapoltol=extrapoltol,
             )
 
-            assert forcing.extrapoltol == extrapoltol
+            assert forcing.extrapoltol == pytest.approx(extrapoltol)
 
         def test_validate_extrapoltol_with_invalid_method(self):
             method = 1
@@ -652,7 +653,7 @@ class TestExtForcing:
                 percentileminmax=percentileminmax,
             )
 
-            assert forcing.percentileminmax == percentileminmax
+            assert forcing.percentileminmax == pytest.approx(percentileminmax)
 
         def test_validate_percentileminmax_with_invalid_method(self):
             method = 1
@@ -687,7 +688,7 @@ class TestExtForcing:
                 area=area,
             )
 
-            assert forcing.area == area
+            assert forcing.area == pytest.approx(area)
 
         def test_validate_area_with_invalid_quantity(self):
             quantity = ExtOldQuantity.WaterLevelBnd
@@ -794,7 +795,7 @@ class TestExtOldModel:
         assert forcing_1.filetype == ExtOldFileType.NetCDFGridData
         assert forcing_1.method == ExtOldMethod.InterpolateSpace
         assert forcing_1.operand == Operand.add
-        assert forcing_1.value == 0.0125
+        assert forcing_1.value == pytest.approx(0.0125)
         assert forcing_1.factor == None
         assert forcing_1.ifrctyp == None
         assert forcing_1.averagingtype == None
