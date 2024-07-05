@@ -712,7 +712,7 @@ class Wind(INIBasedModel):
     windspeedbreakpoints: List[float] = Field(
         [0.0, 100.0], alias="windSpeedBreakpoints"
     )
-    rhoair: float = Field(1.205, alias="rhoAir")
+    rhoair: float = Field(1.2, alias="rhoAir")
     relativewind: float = Field(0.0, alias="relativeWind")
     windpartialdry: bool = Field(True, alias="windPartialDry")
     pavbnd: float = Field(0.0, alias="pavBnd")
