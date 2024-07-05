@@ -7,7 +7,6 @@ program               = D-Flow FM     # Program
 version               = 1.2.100.66357 # Version number of computational kernel
 autoStart             = 0             # Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).
 pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir.
-guiVersion            =               # DeltaShell FM suite version.
 
 [Geometry]
 netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
