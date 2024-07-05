@@ -330,25 +330,37 @@ class UgridWriter:
         mesh1d_node_offset.units = "m"
         mesh1d_node_offset[:] = mesh1d.mesh1d_node_branch_offset
 
-        mesh_edge_x = ncfile.createVariable("mesh1d_edge_x", np.float64, "mesh1d_nEdges")
+        mesh_edge_x = ncfile.createVariable(
+            "mesh1d_edge_x", np.float64, "mesh1d_nEdges"
+        )
         mesh_edge_x.standard_name = "projection_x_coordinate"
-        mesh_edge_x.long_name = "Characteristic x-coordinate of the mesh edge (e.g. midpoint)"
+        mesh_edge_x.long_name = (
+            "Characteristic x-coordinate of the mesh edge (e.g. midpoint)"
+        )
         mesh_edge_x.units = "m"
         mesh_edge_x[:] = mesh1d.mesh1d_edge_x
 
-        mesh_edge_y = ncfile.createVariable("mesh1d_edge_y", np.float64, "mesh1d_nEdges")
+        mesh_edge_y = ncfile.createVariable(
+            "mesh1d_edge_y", np.float64, "mesh1d_nEdges"
+        )
         mesh_edge_y.standard_name = "projection_y_coordinate"
-        mesh_edge_y.long_name = "Characteristic y-coordinate of the mesh edge (e.g. midpoint)"
+        mesh_edge_y.long_name = (
+            "Characteristic y-coordinate of the mesh edge (e.g. midpoint)"
+        )
         mesh_edge_y.units = "m"
         mesh_edge_y[:] = mesh1d.mesh1d_edge_y
 
-        mesh_node_x = ncfile.createVariable("mesh1d_node_x", np.float64, "mesh1d_nNodes")
+        mesh_node_x = ncfile.createVariable(
+            "mesh1d_node_x", np.float64, "mesh1d_nNodes"
+        )
         mesh_node_x.standard_name = "projection_x_coordinate"
         mesh_node_x.long_name = "x coordinates of mesh nodes"
         mesh_node_x.units = "m"
         mesh_node_x[:] = mesh1d.mesh1d_node_x
 
-        mesh_node_y = ncfile.createVariable("mesh1d_node_y", np.float64, "mesh1d_nNodes")
+        mesh_node_y = ncfile.createVariable(
+            "mesh1d_node_y", np.float64, "mesh1d_nNodes"
+        )
         mesh_node_y.standard_name = "projection_y_coordinate"
         mesh_node_y.long_name = "y coordinates of mesh nodes"
         mesh_node_y.units = "m"
