@@ -8,6 +8,7 @@ from .models import (
     ResearchProcesses,
     ResearchRestart,
     ResearchSediment,
+    ResearchSedtrails,
     ResearchTime,
     ResearchTrachytopes,
     ResearchWaves,
@@ -28,4 +29,5 @@ __all__ = [
     "ResearchTrachytopes",
     "ResearchWaves",
     "ResearchWind",
+    "ResearchSedtrails",
 ]
