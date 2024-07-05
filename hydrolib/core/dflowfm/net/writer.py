@@ -330,7 +330,6 @@ class UgridWriter:
         mesh1d_node_offset.units = "m"
         mesh1d_node_offset[:] = mesh1d.mesh1d_node_branch_offset
 
-
         mesh_edge_x = ncfile.createVariable("mesh1d_edge_x", np.float64, "mesh1d_nEdges")
         mesh_edge_x.standard_name = "projection_x_coordinate"
         mesh_edge_x.long_name = "Characteristic x-coordinate of the mesh edge (e.g. midpoint)"

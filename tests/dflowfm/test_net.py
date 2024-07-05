@@ -100,7 +100,6 @@ def get_circle_gl(r, detail=100):
 
 @pytest.mark.plots
 def test_create_1d_2d_1d2d():
-
     # Define line (spiral)
     theta = np.arange(0.1, 20, 0.01)
 
@@ -171,8 +170,53 @@ def test_create_1d_2d_1d2d():
     network2.plot(ax=ax2)
 
 
-def test_create_2d():
+def test_create_1d_2d_1d2d_call_link_generation_twice():
+    """
+    a second generation of links should overwrite the existing links,
+    this testcase checks whether that is the case.
+    Related issue: https://github.com/Deltares/HYDROLIB-core/issues/546
+    """
+    # Define line (spiral)
+    theta = np.arange(0.1, 20, 0.01)
 
+    y = np.sin(theta) * theta
+    x = np.cos(theta) * theta
+
+    dists = np.r_[0.0, np.cumsum(np.hypot(np.diff(x), np.diff(y)))]
+    dists = dists[np.arange(0, len(dists), 20)]
+
+    # Create branch
+    branch = Branch(geometry=np.stack([x, y], axis=1), branch_offsets=dists)
+
+    # Create Mesh1d
+    network = Network()
+    network.mesh1d_add_branch(branch, name="branch1")
+
+    branch = Branch(geometry=np.array([[-25.0, 0.0], [x[0], y[0]]]))
+    branch.generate_nodes(mesh1d_edge_length=2.5)
+    network.mesh1d_add_branch(branch, name="branch2")
+
+    # Add Mesh2d
+    network.mesh2d_create_rectilinear_within_extent(
+        extent=(-22, -22, 22, 22), dx=2, dy=2
+    )
+    network.mesh2d_clip_mesh(geometrylist=get_circle_gl(22))
+
+    network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
+    network.mesh2d_refine_mesh(polygon=get_circle_gl(3), level=1)
+
+    # Add links, do this twice to check if contacts are overwritten and not appended
+    network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
+    network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
+
+    network1_link1d2d = network._link1d2d.link1d2d
+    assert network1_link1d2d.shape == (21, 2)
+    assert len(network._link1d2d.link1d2d_contact_type) == 21
+    assert len(network._link1d2d.link1d2d_id) == 21
+    assert len(network._link1d2d.link1d2d_long_name) == 21
+
+
+def test_create_2d():
     # Define polygon
     bbox = (1.0, -2.0, 3.0, 4.0)
 

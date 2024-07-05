@@ -121,12 +121,13 @@ class UgridReader:
         ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
 
         # Read mesh1d
-        for meshkey, nckey in self._explorer.link1d2d_var_name_mapping.items():
-            setattr(link1d2d, meshkey, self._read_nc_attribute(ds[nckey]))
-
+        link1d2d_contact_type_arr = self._read_nc_attribute(ds['link1d2d_contact_type'])
+        assert (link1d2d_contact_type_arr == 3).all()
+        
+        link1d2d_arr = self._read_nc_attribute(ds['link1d2d'])
         # set contacts on meshkernel, use .copy() to avoid strided arrays
-        mesh1d_indices = link1d2d.link1d2d[:, 0].copy()
-        mesh2d_indices = link1d2d.link1d2d[:, 1].copy()
+        mesh1d_indices = link1d2d_arr[:, 0].copy()
+        mesh2d_indices = link1d2d_arr[:, 1].copy()
         contacts = Contacts(
             mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices
         )
