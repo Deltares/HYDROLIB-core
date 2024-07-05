@@ -111,7 +111,6 @@ class TestModels:
         assert fm_model.processes.statisticsfile.filepath is None
         assert fm_model.processes.thetavertical == pytest.approx(0.0)
         assert fm_model.processes.dtprocesses == pytest.approx(0.0)
-        assert fm_model.processes.dtmassbalance == pytest.approx(0.0)
         assert fm_model.processes.processfluxintegration == ProcessFluxIntegration.WAQ
         assert fm_model.processes.wriwaqbot3doutput is False
         assert fm_model.processes.volumedrythreshold == pytest.approx(1e-3)

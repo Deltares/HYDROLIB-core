@@ -3,7 +3,18 @@ from abc import ABC
 from enum import Enum
 from math import isnan
 from re import compile
-from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
+from typing import (
+    Any,
+    Callable,
+    List,
+    Literal,
+    Optional,
+    Set,
+    Type,
+    Union,
+    get_args,
+    get_origin,
+)
 
 from pydantic.v1 import Extra, Field, root_validator
 from pydantic.v1.class_validators import validator
@@ -206,7 +217,7 @@ class INIBasedModel(BaseModel, ABC):
     ) -> Section:
         props = []
         for key, value in self:
-            if key in self._exclude_fields():
+            if not self._should_be_serialized(key, value):
                 continue
 
             field_key = key
@@ -220,6 +231,39 @@ class INIBasedModel(BaseModel, ABC):
             )
             props.append(prop)
         return Section(header=self._header, content=props)
+
+    def _should_be_serialized(self, key: str, value: Any) -> bool:
+        if key in self._exclude_fields():
+            return False
+
+        field = self.__fields__.get(key)
+        if not field:
+            return value is not None
+
+        field_type = field.type_
+        if self._is_union(field_type):
+            return value is not None or self._union_has_filemodel(field_type)
+
+        if self._is_list(field_type):
+            field_type = get_args(field_type)[0]
+
+        return self._value_is_not_none_or_type_is_filemodel(field_type, value)
+
+    @staticmethod
+    def _is_union(field_type: type) -> bool:
+        return get_origin(field_type) is Union
+
+    @staticmethod
+    def _union_has_filemodel(field_type: type) -> bool:
+        return any(issubclass(arg, FileModel) for arg in get_args(field_type))
+
+    @staticmethod
+    def _is_list(field_type: type) -> bool:
+        return get_origin(field_type) is List
+
+    @staticmethod
+    def _value_is_not_none_or_type_is_filemodel(field_type: type, value: Any) -> bool:
+        return value is not None or issubclass(field_type, FileModel)
 
 
 Datablock = List[List[Union[float, str]]]
