@@ -1420,17 +1420,17 @@ class TestOrifice:
         assert structure.name == "structure_name"
         assert structure.type == "orifice"
         assert structure.branchid == "branch_id"
-        assert structure.chainage == 1.23
+        assert structure.chainage == pytest.approx(1.23)
         assert structure.allowedflowdir == FlowDirection.positive
-        assert structure.crestlevel == 2.34
-        assert structure.crestwidth == 3.45
-        assert structure.gateloweredgelevel == 4.56
-        assert structure.corrcoeff == 5.67
+        assert structure.crestlevel == pytest.approx(2.34)
+        assert structure.crestwidth == pytest.approx(3.45)
+        assert structure.gateloweredgelevel == pytest.approx(4.56)
+        assert structure.corrcoeff == pytest.approx(5.67)
         assert structure.usevelocityheight == True
         assert structure.uselimitflowpos == True
-        assert structure.limitflowpos == 6.78
+        assert structure.limitflowpos == pytest.approx(6.78)
         assert structure.uselimitflowneg == True
-        assert structure.limitflowneg == 7.89
+        assert structure.limitflowneg == pytest.approx(7.89)
 
     @pytest.mark.parametrize(
         "limitflow, uselimitflow",
@@ -1521,10 +1521,10 @@ class TestWeir:
         assert weir.id == "structure_id"
         assert weir.name == "structure_name"
         assert weir.branchid == "branch_id"
-        assert weir.chainage == 1.23
+        assert weir.chainage == pytest.approx(1.23)
         assert weir.allowedflowdir == FlowDirection.positive
-        assert weir.crestlevel == 2.34
-        assert weir.crestwidth == 3.45
+        assert weir.crestlevel == pytest.approx(2.34)
+        assert weir.crestwidth == pytest.approx(3.45)
         assert weir.usevelocityheight == True
         assert (
             weir.comments.name
@@ -1573,10 +1573,10 @@ class TestWeir:
         assert weir.id == "weir_id"
         assert weir.name == "weir"
         assert weir.branchid == "branch"
-        assert weir.chainage == 3.0
+        assert weir.chainage == pytest.approx(3.0)
         assert weir.type == "weir"
         assert weir.allowedflowdir == FlowDirection.positive
-        assert weir.crestlevel == 10.5
+        assert weir.crestlevel == pytest.approx(10.5)
         assert weir.crestwidth is None
         assert weir.usevelocityheight == False
 
@@ -1652,10 +1652,10 @@ class TestWeir:
         assert weir.id == "weir_id"
         assert weir.name == "weir"
         assert weir.branchid == "branch"
-        assert weir.chainage == 3.0
+        assert weir.chainage == pytest.approx(3.0)
         assert weir.type == "weir"
         assert weir.allowedflowdir == FlowDirection.positive
-        assert weir.crestlevel == 10.5
+        assert weir.crestlevel == pytest.approx(10.5)
         assert weir.crestwidth is None
         assert weir.usevelocityheight == False
 
@@ -1718,7 +1718,7 @@ class TestPump:
         assert pump.id == "structure_id"
         assert pump.name == "structure_name"
         assert pump.branchid == "branch_id"
-        assert pump.capacity == 2.34
+        assert pump.capacity == pytest.approx(2.34)
         assert pump.orientation == Orientation.negative
         assert pump.numreductionlevels == 2
         assert pump.head == [0, 2]
@@ -1757,10 +1757,10 @@ class TestPump:
         assert structure.id == "pump_id"
         assert structure.name == "pump_nm"
         assert structure.branchid == "branch"
-        assert structure.chainage == 3.0
+        assert structure.chainage == pytest.approx(3.0)
         assert structure.type == "pump"
         assert structure.orientation == Orientation.positive
-        assert structure.capacity == 10.5
+        assert structure.capacity == pytest.approx(10.5)
 
     @pytest.mark.parametrize(
         "input,expected",
@@ -1957,34 +1957,34 @@ class TestGeneralStructure:
         assert struct.id == "structure_id"
         assert struct.name == "structure_name"
         assert struct.branchid == "branch_id"
-        assert struct.chainage == 1.23
+        assert struct.chainage == pytest.approx(1.23)
 
         assert struct.allowedflowdir == FlowDirection.positive
-        assert struct.upstream1width == 1.0
-        assert struct.upstream1level == 2.0
-        assert struct.upstream2width == 3.0
-        assert struct.upstream2level == 4.0
-        assert struct.crestwidth == 5.0
-        assert struct.crestlevel == 6.0
-        assert struct.crestlength == 7.0
-        assert struct.downstream1width == 8.0
-        assert struct.downstream1level == 9.0
-        assert struct.downstream2width == 9.1
-        assert struct.downstream2level == 9.2
-        assert struct.gateloweredgelevel == 9.3
-        assert struct.posfreegateflowcoeff == 9.4
-        assert struct.posdrowngateflowcoeff == 9.5
-        assert struct.posfreeweirflowcoeff == 9.6
-        assert struct.posdrownweirflowcoeff == 9.7
-        assert struct.poscontrcoeffreegate == 9.8
-        assert struct.negfreegateflowcoeff == 9.9
-        assert struct.negdrowngateflowcoeff == 8.1
-        assert struct.negfreeweirflowcoeff == 8.2
-        assert struct.negdrownweirflowcoeff == 8.3
-        assert struct.negcontrcoeffreegate == 8.4
-        assert struct.extraresistance == 8.5
-        assert struct.gateheight == 8.6
-        assert struct.gateopeningwidth == 8.7
+        assert struct.upstream1width == pytest.approx(1.0)
+        assert struct.upstream1level == pytest.approx(2.0)
+        assert struct.upstream2width == pytest.approx(3.0)
+        assert struct.upstream2level == pytest.approx(4.0)
+        assert struct.crestwidth == pytest.approx(5.0)
+        assert struct.crestlevel == pytest.approx(6.0)
+        assert struct.crestlength == pytest.approx(7.0)
+        assert struct.downstream1width == pytest.approx(8.0)
+        assert struct.downstream1level == pytest.approx(9.0)
+        assert struct.downstream2width == pytest.approx(9.1)
+        assert struct.downstream2level == pytest.approx(9.2)
+        assert struct.gateloweredgelevel == pytest.approx(9.3)
+        assert struct.posfreegateflowcoeff == pytest.approx(9.4)
+        assert struct.posdrowngateflowcoeff == pytest.approx(9.5)
+        assert struct.posfreeweirflowcoeff == pytest.approx(9.6)
+        assert struct.posdrownweirflowcoeff == pytest.approx(9.7)
+        assert struct.poscontrcoeffreegate == pytest.approx(9.8)
+        assert struct.negfreegateflowcoeff == pytest.approx(9.9)
+        assert struct.negdrowngateflowcoeff == pytest.approx(8.1)
+        assert struct.negfreeweirflowcoeff == pytest.approx(8.2)
+        assert struct.negdrownweirflowcoeff == pytest.approx(8.3)
+        assert struct.negcontrcoeffreegate == pytest.approx(8.4)
+        assert struct.extraresistance == pytest.approx(8.5)
+        assert struct.gateheight == pytest.approx(8.6)
+        assert struct.gateopeningwidth == pytest.approx(8.7)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_left
@@ -2064,34 +2064,34 @@ class TestGeneralStructure:
         assert struct.id == "potato_id"
         assert struct.name == "structure_potato"
         assert struct.branchid == "branch"
-        assert struct.chainage == 3.53
+        assert struct.chainage == pytest.approx(3.53)
         assert struct.type == "generalStructure"
         assert struct.allowedflowdir == FlowDirection.positive
-        assert struct.upstream1width == 11.0
-        assert struct.upstream1level == 12.0
-        assert struct.upstream2width == 13.0
-        assert struct.upstream2level == 14.0
-        assert struct.crestwidth == 15.0
-        assert struct.crestlevel == 16.0
-        assert struct.crestlength == 17.0
-        assert struct.downstream1width == 18.0
-        assert struct.downstream1level == 19.0
-        assert struct.downstream2width == 19.1
-        assert struct.downstream2level == 19.2
-        assert struct.gateloweredgelevel == 19.3
-        assert struct.posfreegateflowcoeff == 19.4
-        assert struct.posdrowngateflowcoeff == 19.5
-        assert struct.posfreeweirflowcoeff == 19.6
-        assert struct.posdrownweirflowcoeff == 19.7
-        assert struct.poscontrcoeffreegate == 19.8
-        assert struct.negfreegateflowcoeff == 19.9
-        assert struct.negdrowngateflowcoeff == 18.1
-        assert struct.negfreeweirflowcoeff == 18.2
-        assert struct.negdrownweirflowcoeff == 18.3
-        assert struct.negcontrcoeffreegate == 18.4
-        assert struct.extraresistance == 18.5
-        assert struct.gateheight == 18.6
-        assert struct.gateopeningwidth == 18.7
+        assert struct.upstream1width == pytest.approx(11.0)
+        assert struct.upstream1level == pytest.approx(12.0)
+        assert struct.upstream2width == pytest.approx(13.0)
+        assert struct.upstream2level == pytest.approx(14.0)
+        assert struct.crestwidth == pytest.approx(15.0)
+        assert struct.crestlevel == pytest.approx(16.0)
+        assert struct.crestlength == pytest.approx(17.0)
+        assert struct.downstream1width == pytest.approx(18.0)
+        assert struct.downstream1level == pytest.approx(19.0)
+        assert struct.downstream2width == pytest.approx(19.1)
+        assert struct.downstream2level == pytest.approx(19.2)
+        assert struct.gateloweredgelevel == pytest.approx(19.3)
+        assert struct.posfreegateflowcoeff == pytest.approx(19.4)
+        assert struct.posdrowngateflowcoeff == pytest.approx(19.5)
+        assert struct.posfreeweirflowcoeff == pytest.approx(19.6)
+        assert struct.posdrownweirflowcoeff == pytest.approx(19.7)
+        assert struct.poscontrcoeffreegate == pytest.approx(19.8)
+        assert struct.negfreegateflowcoeff == pytest.approx(19.9)
+        assert struct.negdrowngateflowcoeff == pytest.approx(18.1)
+        assert struct.negfreeweirflowcoeff == pytest.approx(18.2)
+        assert struct.negdrownweirflowcoeff == pytest.approx(18.3)
+        assert struct.negcontrcoeffreegate == pytest.approx(18.4)
+        assert struct.extraresistance == pytest.approx(18.5)
+        assert struct.gateheight == pytest.approx(18.6)
+        assert struct.gateopeningwidth == pytest.approx(18.7)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_left
@@ -2243,34 +2243,34 @@ class TestGeneralStructure:
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
         assert struct.branchid == "stump"
-        assert struct.chainage == 13.53
+        assert struct.chainage == pytest.approx(13.53)
         assert struct.type == "generalStructure"
         assert struct.allowedflowdir == FlowDirection.positive
-        assert struct.upstream1width == 111.0
-        assert struct.upstream1level == 112.0
-        assert struct.upstream2width == 113.0
-        assert struct.upstream2level == 114.0
-        assert struct.crestwidth == 115.0
-        assert struct.crestlevel == 116.0
-        assert struct.crestlength == 117.0
-        assert struct.downstream1width == 118.0
-        assert struct.downstream1level == 119.0
-        assert struct.downstream2width == 119.1
-        assert struct.downstream2level == 119.2
-        assert struct.gateloweredgelevel == 119.3
-        assert struct.posfreegateflowcoeff == 119.4
-        assert struct.posdrowngateflowcoeff == 119.5
-        assert struct.posfreeweirflowcoeff == 119.6
-        assert struct.posdrownweirflowcoeff == 119.7
-        assert struct.poscontrcoeffreegate == 119.8
-        assert struct.negfreegateflowcoeff == 119.9
-        assert struct.negdrowngateflowcoeff == 118.1
-        assert struct.negfreeweirflowcoeff == 118.2
-        assert struct.negdrownweirflowcoeff == 118.3
-        assert struct.negcontrcoeffreegate == 118.4
-        assert struct.extraresistance == 118.5
-        assert struct.gateheight == 118.6
-        assert struct.gateopeningwidth == 118.7
+        assert struct.upstream1width == pytest.approx(111.0)
+        assert struct.upstream1level == pytest.approx(112.0)
+        assert struct.upstream2width == pytest.approx(113.0)
+        assert struct.upstream2level == pytest.approx(114.0)
+        assert struct.crestwidth == pytest.approx(115.0)
+        assert struct.crestlevel == pytest.approx(116.0)
+        assert struct.crestlength == pytest.approx(117.0)
+        assert struct.downstream1width == pytest.approx(118.0)
+        assert struct.downstream1level == pytest.approx(119.0)
+        assert struct.downstream2width == pytest.approx(119.1)
+        assert struct.downstream2level == pytest.approx(119.2)
+        assert struct.gateloweredgelevel == pytest.approx(119.3)
+        assert struct.posfreegateflowcoeff == pytest.approx(119.4)
+        assert struct.posdrowngateflowcoeff == pytest.approx(119.5)
+        assert struct.posfreeweirflowcoeff == pytest.approx(119.6)
+        assert struct.posdrownweirflowcoeff == pytest.approx(119.7)
+        assert struct.poscontrcoeffreegate == pytest.approx(119.8)
+        assert struct.negfreegateflowcoeff == pytest.approx(119.9)
+        assert struct.negdrowngateflowcoeff == pytest.approx(118.1)
+        assert struct.negfreeweirflowcoeff == pytest.approx(118.2)
+        assert struct.negdrownweirflowcoeff == pytest.approx(118.3)
+        assert struct.negcontrcoeffreegate == pytest.approx(118.4)
+        assert struct.extraresistance == pytest.approx(118.5)
+        assert struct.gateheight == pytest.approx(118.6)
+        assert struct.gateopeningwidth == pytest.approx(118.7)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_right

@@ -22,8 +22,8 @@ class TestNode:
         assert node.modelnodetype == 2
         assert node.netternodetype == 44
         assert node.objectid == "node_obid"
-        assert node.xposition == 1.23
-        assert node.yposition == 2.34
+        assert node.xposition == pytest.approx(1.23)
+        assert node.yposition == pytest.approx(2.34)
 
     def test_optional_fields_have_correct_defaults(self):
         node = Node(**create_required_node_values())
