@@ -589,29 +589,31 @@ class Link1d2d(BaseModel):
     """
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
-    
+
     @property
     def link1d2d(self) -> np.ndarray[np.int32]:
         contacts = self.meshkernel.contacts_get()
-        link1d2d_arr = np.stack([contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1)
+        link1d2d_arr = np.stack(
+            [contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1
+        )
         return link1d2d_arr
-    
+
     @property
     def link1d2d_contact_type(self) -> np.ndarray[np.int32]:
         contacts = self.meshkernel.contacts_get()
         link1d2d_contact_type_arr = np.full(contacts.mesh1d_indices.size, 3)
         return link1d2d_contact_type_arr
-    
+
     @property
     def link1d2d_id(self) -> np.ndarray[object]:
         link1d2d_id_arr = np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d])
         return link1d2d_id_arr
-    
+
     @property
     def link1d2d_long_name(self) -> np.ndarray[object]:
         link1d2d_id_arr = np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d])
         return link1d2d_id_arr
-    
+
     def is_empty(self) -> bool:
         """Whether this Link1d2d is currently empty.
 
@@ -660,7 +662,7 @@ class Link1d2d(BaseModel):
         self.meshkernel.contacts_compute_single(
             node_mask=node_mask, polygons=polygon, projection_factor=1.0
         )
-        
+
         # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
         # a bounding polygon or the end points of the 1d mesh.
 
@@ -669,7 +671,7 @@ class Link1d2d(BaseModel):
     ):
         """"""
         self.meshkernel.contacts_compute_with_points(node_mask=node_mask, points=points)
-        
+
     def _link_from_2d_to_1d_lateral(
         self,
         node_mask: np.ndarray,
