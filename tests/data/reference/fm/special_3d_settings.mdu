@@ -146,7 +146,7 @@ checkerboardMonitor       = 0       # Flag for checkerboarding output on history
 velocityWarn              = 0.0     # Warning level [m/s] on normal velocity(<= 0: no check).
 advecCorrection1D2D       = 0       # Advection correction of 1D2D link volume (0: regular advection, 1: link volume au*dx, 2: advection on 1D2D switched off.)
 fixedWeirTalud            = 4.0     # Uniform talud slope of fixed weirs.
-lateral_fixedweir_umin    = 0.0     # Minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.
+lateral_fixedweir_umin    = 0.0     # Minimal velocity threshold for weir losses in iterative lateral 1d2d weir coupling.
 jasfer3D                  = 0       # Corrections for spherical coordinates (0: no, 1: yes).
 
 [Physics]
