@@ -378,10 +378,7 @@ class ResearchNumerics(Numerics):
             "0=use der. types. , 1 = less, 2 = lesser, 5 = also dealloc der. types.",
             alias="noderivedtypes",
         )
-        research_jadelvappos: Optional[str] = Field(
-            "Only positive forced evaporation fluxes(0: no, 1: yes).",
-            alias="jadelvappos",
-        )
+
         research_jarhoxu: Optional[str] = Field(
             "Include density gradient in advection term (0: no(strongly advised), 1: yes, 2: Also in barotropic and baroclinic pressure term, 3,4: Also in vertical advection).",
             alias="jarhoxu",
@@ -458,7 +455,6 @@ class ResearchNumerics(Numerics):
         None, alias="vertadvtypmom3onbnd"
     )
     research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
-    research_jadelvappos: Optional[bool] = Field(None, alias="jadelvappos")
     research_jarhoxu: Optional[int] = Field(None, alias="jarhoxu")
 
 
@@ -511,6 +507,10 @@ class ResearchPhysics(Physics):
             "Linear friction umod, for ifrctyp=4,5,6.",
             alias="umodlin",
         )
+        research_jadelvappos: Optional[str] = Field(
+            "Only positive forced evaporation fluxes(0: no, 1: yes).",
+            alias="jadelvappos",
+        )
         research_uniffrictcoef1dgrlay: Optional[str] = Field(
             "Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction).",
             alias="uniffrictcoef1dgrlay",
@@ -544,6 +544,7 @@ class ResearchPhysics(Physics):
         None, alias="schmidtnumbertracer"
     )
     research_umodlin: Optional[float] = Field(None, alias="umodlin")
+    research_jadelvappos: Optional[bool] = Field(None, alias="jadelvappos")
     research_uniffrictcoef1dgrlay: Optional[float] = Field(
         None, alias="uniffrictcoef1dgrlay"
     )
