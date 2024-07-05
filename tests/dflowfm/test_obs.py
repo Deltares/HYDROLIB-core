@@ -71,8 +71,8 @@ class TestObservationPointModel:
         filepath = test_data_dir / "input/dflowfm_individual_files/obsPoints_obs.ini"
         m = ObservationPointModel(filepath)
         assert len(m.observationpoint) == 5
-        assert m.observationpoint[1].x == -2.73750000
-        assert m.observationpoint[1].y == 5.15083334e01
+        assert m.observationpoint[1].x == pytest.approx(-2.73750000)
+        assert m.observationpoint[1].y == pytest.approx(5.15083334e01)
         assert m.observationpoint[2].name == "#St Helier Jersey#"
         assert m.observationpoint[3].locationtype == LocationType.oned
         assert m.observationpoint[4].locationtype == LocationType.oned
