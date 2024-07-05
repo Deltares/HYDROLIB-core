@@ -922,7 +922,7 @@ class ResearchFMModel(FMModel):
     physics: ResearchPhysics = Field(default_factory=ResearchPhysics)
     sediment: ResearchSediment = Field(default_factory=ResearchSediment)
     wind: ResearchWind = Field(default_factory=ResearchWind)
-    waves: ResearchWaves = Field(default_factory=ResearchWaves)
+    waves: Optional[ResearchWaves] = Field(None)
     time: ResearchTime = Field(default_factory=ResearchTime)
     restart: ResearchRestart = Field(default_factory=ResearchRestart)
     trachytopes: ResearchTrachytopes = Field(default_factory=ResearchTrachytopes)
