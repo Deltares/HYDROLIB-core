@@ -111,7 +111,6 @@ class TestModels:
         assert fm_model.processes.statisticsfile.filepath is None
         assert fm_model.processes.thetavertical == 0.0
         assert fm_model.processes.dtprocesses == 0.0
-        assert fm_model.processes.dtmassbalance == 0.0
         assert fm_model.processes.processfluxintegration == ProcessFluxIntegration.WAQ
         assert fm_model.processes.wriwaqbot3doutput is False
         assert fm_model.processes.volumedrythreshold == 1e-3
