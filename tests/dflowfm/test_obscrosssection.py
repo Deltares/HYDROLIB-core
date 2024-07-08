@@ -155,7 +155,9 @@ class TestObservationCrossSectionModel:
         assert isinstance(model.observationcrosssection, List)
         assert len(model.observationcrosssection) == 0
 
-    def test_locationtype_is_not_written_for_observationcrosssection(self, tmp_path: Path):
+    def test_locationtype_is_not_written_for_observationcrosssection(
+        self, tmp_path: Path
+    ):
         model = ObservationCrossSectionModel()
         model.observationcrosssection.append(
             ObservationCrossSection(
