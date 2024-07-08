@@ -54,11 +54,6 @@ class TestExtOldToNew:
 
     def test_recursive(self):
         ext_old_to_new._verbose = True
-        dir = (       test_input_dir
-            / "e02"
-            / "f006_external_forcing"
-        )
+        dir = test_input_dir / "e02" / "f006_external_forcing"
         ext_old_to_new.ext_old_to_new_dir_recursive(dir)
         assert True
-
-

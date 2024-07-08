@@ -250,7 +250,8 @@ class Meteo(INIBasedModel):
             "Type of forcingFile.", alias="forcingFileType"
         )
         forcingVariableName: Optional[str] = Field(
-            "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3", alias="forcingVariableName"
+            "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
+            alias="forcingVariableName",
         )
         targetmaskfile: Optional[str] = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
@@ -269,11 +270,11 @@ class Meteo(INIBasedModel):
         )
         extrapolationAllowed: Optional[str] = Field(
             "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
-            alias="extrapolationAllowed"
+            alias="extrapolationAllowed",
         )
         extrapolationSearchRadius: Optional[str] = Field(
             "Maximum search radius for nearest neighbor extrapolation in space.",
-            alias="extrapolationSearchRadius"
+            alias="extrapolationSearchRadius",
         )
 
     comments: Comments = Comments()
@@ -296,7 +297,9 @@ class Meteo(INIBasedModel):
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
-    extrapolationSearchRadius: Optional[float] = Field(alias="extrapolationSearchRadius")
+    extrapolationSearchRadius: Optional[float] = Field(
+        alias="extrapolationSearchRadius"
+    )
     averagingType: Optional[int] = Field(alias="averagingType")
     averagingNumMin: Optional[float] = Field(alias="averagingNumMin")
     averagingPercentile: Optional[float] = Field(alias="averagingPercentile")

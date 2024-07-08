@@ -123,6 +123,7 @@ class ExtOldTracerQuantity(StrEnum):
     InitialTracer = "initialtracer"
     """Initial tracer"""
 
+
 class ExtOldBoundaryQuantity(StrEnum):
     # Boundary conditions
     WaterLevelBnd = "waterlevelbnd"
@@ -154,9 +155,10 @@ class ExtOldBoundaryQuantity(StrEnum):
     QhBnd = "qhbnd"
     """Discharge-water level dependency"""
 
+
 class ExtOldMeteoQuantity(StrEnum):
 
-     # Meteorological fields
+    # Meteorological fields
     WindX = "windx"
     """Wind x component"""
     WindY = "windy"
@@ -219,7 +221,8 @@ class ExtOldMeteoQuantity(StrEnum):
     """Charnock coefficient"""
     Dewpoint = "dewpoint"
     """Dewpoint temperature"""
-    
+
+
 class ExtOldQuantity(StrEnum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
@@ -643,7 +646,8 @@ class ExtOldForcing(BaseModel):
         if (
             extrapolation_method.value
             == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
-            and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights and method.value != ExtOldMethod.Obsolete
+            and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
+            and method.value != ExtOldMethod.Obsolete
         ):
             error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
             raise ValueError(error)
