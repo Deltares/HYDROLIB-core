@@ -418,6 +418,34 @@ class UgridWriter:
             (nc_mesh2d.edge_dimension, "Two"),
             fill_value=self._fill_value_config.int32_fill_value,
         )
+
+        # add edge x and y
+        mesh2d_ex = ncfile.createVariable(
+            "mesh2d_edge_x",
+            np.float64,
+            nc_mesh2d.edge_dimension,
+        )
+
+        mesh2d_ey = ncfile.createVariable(
+            "mesh2d_edge_y",
+            np.float64,
+            nc_mesh2d.edge_dimension,
+        )
+
+        for var, dim in zip([mesh2d_ex, mesh2d_ey], list("xy")):
+            setattr(var, "units", "m")
+            setattr(var, "mesh", "mesh2d")
+            setattr(var, "location", "edge")
+            setattr(
+                var,
+                "standard_name",
+                f"projection_{dim}_coordinate",
+            )
+            setattr(var, "long_name", f"{dim}-coordinate of the mesh edge")
+
+        mesh2d_ex[:] = mesh2d.mesh2d_edge_x
+        mesh2d_ey[:] = mesh2d.mesh2d_edge_y
+
         mesh2d_en.cf_role = "edge_node_connectivity"
         mesh2d_en.long_name = "maps every edge to the two nodes that it connects"
         mesh2d_en.start_index = 1
