@@ -26,7 +26,9 @@ class TestLocationValidationConfiguration:
         assert config.validate_coordinates == True
         assert config.validate_branch == True
         assert config.validate_num_coordinates == True
+        assert config.validate_location_type == True
         assert config.minimum_num_coordinates == 0
+
 
 
 class TestLocationValidationFieldNames:

@@ -412,6 +412,9 @@ class LocationValidationConfiguration(BaseModel):
     validate_num_coordinates: bool = True
     """bool, optional: Whether or not the number of coordinates should be validated or not. This option is only relevant when `validate_coordinates` is True. Defaults to True."""
 
+    validate_location_type: bool = True
+    """bool, optional: Whether or not the location type should be validated. Defaults to True."""
+
     minimum_num_coordinates: int = 0
     """int, optional: The minimum required number of coordinates. This option is only relevant when `validate_coordinates` is True. Defaults to 0."""
 
