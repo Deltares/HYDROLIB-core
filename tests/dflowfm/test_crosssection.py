@@ -15,7 +15,6 @@ from hydrolib.core.dflowfm.crosssection.models import (
     ZWRiverCrsDef,
 )
 from hydrolib.core.dflowfm.friction.models import FrictionType
-
 from ..utils import (
     assert_files_equal,
     test_data_dir,
@@ -383,3 +382,22 @@ class TestCrossSectionModel:
         crossloc_model.save(filepath=output_file)
 
         assert_files_equal(output_file, reference_file, skip_lines=[0])
+
+    def test_locationtype_is_not_written_for_crosssection(self, tmp_path: Path):
+        model = CrossLocModel()
+        model.crosssection.append(
+            CrossSection(
+                id="testCrossSection",
+                branchid="branch1",
+                chainage=1,
+                definitionid="testDefinition",
+            )
+        )
+
+        crs_file = tmp_path / "crsloc.ini"
+        model.save(filepath=crs_file)
+
+        with open(crs_file, "r") as file:
+            content = file.read()
+
+        assert "locationtype" not in content
