@@ -566,14 +566,16 @@ def validate_location_specification(
 
     if config.validate_node:
         if is_valid_node_specification():
-            validate_location_type(LocationType.oned)
+            if config.validate_location_type:
+                validate_location_type(LocationType.oned)
             return values
 
         error_parts.append(fields.node_id)
 
     if config.validate_branch:
         if is_valid_branch_specification():
-            validate_location_type(LocationType.oned)
+            if config.validate_location_type:
+                validate_location_type(LocationType.oned)
             return values
 
         error_parts.append(f"{fields.branch_id} and {fields.chainage}")
