@@ -719,7 +719,7 @@ class CrossSection(INIBasedModel):
         return validate_location_specification(
             values,
             config=LocationValidationConfiguration(
-                validate_node=False, validate_num_coordinates=False
+                validate_node=False, validate_num_coordinates=False, validate_location_type=False
             ),
             fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
