@@ -138,6 +138,3 @@ tests/data/output
 
 # PyCharm
 .idea/
-
-# Put your own experiments here
-brew/*
