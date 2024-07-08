@@ -155,19 +155,23 @@ class TestObservationCrossSectionModel:
         assert isinstance(model.observationcrosssection, List)
         assert len(model.observationcrosssection) == 0
 
-    def test_model_can_be_saved_and_loaded(self, tmp_path: Path):
+    def test_locationtype_is_not_written_for_observationcrosssection(self, tmp_path: Path):
         model = ObservationCrossSectionModel()
-        obs_crosssection = ObservationCrossSection(
-            name="testName",
-            branchId="testbranch",
-            chainage=123,
+        model.observationcrosssection.append(
+            ObservationCrossSection(
+                name="testName",
+                branchId="testbranch",
+                chainage=123,
+            )
         )
-        model.observationcrosssection.append(obs_crosssection)
-        model.observationcrosssection.append(obs_crosssection)
 
-        obs_crs_file = tmp_path / "test_crs.ini"
+        obs_crs_file = tmp_path / "obs_crs.ini"
         model.save(filepath=obs_crs_file)
-        _ = ObservationCrossSectionModel(filepath=obs_crs_file)
+
+        with open(obs_crs_file, "r") as file:
+            content = file.read()
+
+        assert "locationtype" not in content
 
 
 def _create_observation_cross_section_values() -> dict:
