@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 
 import pytest
@@ -153,6 +154,20 @@ class TestObservationCrossSectionModel:
         assert isinstance(model.general, ObservationCrossSectionGeneral)
         assert isinstance(model.observationcrosssection, List)
         assert len(model.observationcrosssection) == 0
+
+    def test_model_can_be_saved_and_loaded(self, tmp_path: Path):
+        model = ObservationCrossSectionModel()
+        obs_crosssection = ObservationCrossSection(
+            name="testName",
+            branchId="testbranch",
+            chainage=123,
+        )
+        model.observationcrosssection.append(obs_crosssection)
+        model.observationcrosssection.append(obs_crosssection)
+
+        obs_crs_file = tmp_path / "test_crs.ini"
+        model.save(filepath=obs_crs_file)
+        _ = ObservationCrossSectionModel(filepath=obs_crs_file)
 
 
 def _create_observation_cross_section_values() -> dict:
