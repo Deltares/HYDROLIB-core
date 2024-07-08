@@ -78,7 +78,9 @@ class ObservationCrossSection(INIBasedModel):
         return validate_location_specification(
             values,
             config=LocationValidationConfiguration(
-                validate_node=False, minimum_num_coordinates=2, validate_location_type=False
+                validate_node=False,
+                minimum_num_coordinates=2,
+                validate_location_type=False,
             ),
         )
 

@@ -30,7 +30,6 @@ class TestLocationValidationConfiguration:
         assert config.minimum_num_coordinates == 0
 
 
-
 class TestLocationValidationFieldNames:
     def test_default(self):
         fields = LocationValidationFieldNames()
@@ -212,31 +211,44 @@ class TestLocationSpecificationValidator:
         )
         assert validated_values == expected_values
 
-    @pytest.mark.parametrize("values",
+    @pytest.mark.parametrize(
+        "values",
         [
             pytest.param({"nodeid": "some_nodeid"}, id="nodeId"),
-            pytest.param({"branchid": "some_branchid", "chainage": 123}, id="branch specification"),
-        ]
+            pytest.param(
+                {"branchid": "some_branchid", "chainage": 123},
+                id="branch specification",
+            ),
+        ],
     )
-    def test_validate_location_type_false_does_not_add_location_type(self, values: dict):
+    def test_validate_location_type_false_does_not_add_location_type(
+        self, values: dict
+    ):
         config = LocationValidationConfiguration(validate_location_type=False)
         validated_values = validate_location_specification(values, config)
 
         assert validated_values == values
 
-    @pytest.mark.parametrize("values",
-         [
-             pytest.param({"nodeid": "some_nodeid"}, id="nodeId"),
-             pytest.param({"branchid": "some_branchid", "chainage": 123}, id="branch specification"),
-         ]
-     )
-    def test_validate_location_type_false_does_not_validate_location_type(self, values: dict):
+    @pytest.mark.parametrize(
+        "values",
+        [
+            pytest.param({"nodeid": "some_nodeid"}, id="nodeId"),
+            pytest.param(
+                {"branchid": "some_branchid", "chainage": 123},
+                id="branch specification",
+            ),
+        ],
+    )
+    def test_validate_location_type_false_does_not_validate_location_type(
+        self, values: dict
+    ):
         config = LocationValidationConfiguration(validate_location_type=False)
         values["locationtype"] = "This is an invalid location type..."
 
         validated_values = validate_location_specification(values, config)
 
         assert validated_values == values
+
 
 class TestGetKeyRenamingRootValidator:
     class DummyModel(BaseModel):
