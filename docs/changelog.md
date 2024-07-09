@@ -15,6 +15,7 @@
 - Add support for python 3.12 (#640)
 - Use caching to prevent reading files multiple times (#641)
 - Add missing mdu keywords (#628)
+- properly writing number of processes in dimr_config.xml (#623)
 
 ### Fix
 
