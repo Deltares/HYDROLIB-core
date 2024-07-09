@@ -784,7 +784,7 @@ def check_ugrid_consistency(ds: xr.Dataset):
             if name in attrs:
                 candidates = [c for c in attrs[name].split(" ") if c in ds]
                 if len(candidates) == 0:
-                    KeyError(
+                    raise KeyError(
                         f"the following variables are specified for UGRID {name}: "
                         f'"{attrs[name]}", but they are not present in the dataset'
                     )
@@ -805,3 +805,23 @@ def test_network_netcdf_consistency(tmp_path):
     ds = xr.open_dataset(nc_file)
     check_ugrid_consistency(ds)
 
+
+def test_network_netcdf_consistency_corrupt_file(tmp_path):
+    # a network written with hydrolib-core<=0.7.0, before 
+    # https://github.com/Deltares/HYDROLIB-core/issues/682 was fixed
+    from hydrolib.core.dflowfm import NetworkModel
+    import xarray as xr
+
+    model = NetworkModel()
+    model.network.mesh2d_create_rectilinear_within_extent(
+        extent=(-2, -2, 2, 2), dx=1, dy=1
+    )
+
+    nc_file = "test.nc"
+    model.save(filepath=nc_file)
+
+    ds = xr.open_dataset(nc_file)
+    ds = ds.drop_vars(['mesh2d_edge_x','mesh2d_edge_y'])
+    with pytest.raises(KeyError) as e:
+        check_ugrid_consistency(ds)
+    assert "the following variables are specified for UGRID edge_coordinates" in str(e.value)
