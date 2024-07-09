@@ -88,6 +88,43 @@ class FMComponent(Component):
 
     library: Literal["dflowfm"] = "dflowfm"
 
+    @validator("process", pre=True)
+    def validate_process(cls, value, values: dict) -> Union[None, int]:
+        """
+        Validation for the process Attribute.
+
+        args:
+            value : The value which is to be validated for process.
+            values : FMComponent used to retrieve the name of the component.
+
+        Returns:
+            int : The process as int, when given value is None, None is returned.
+
+        Raises:
+            ValueError : When value is set to 0 or negative.
+            ValueError : When value is not int or None.
+        """
+        if value is None:
+            return value
+
+        if isinstance(value, int) and cls._is_valid_process_int(
+            value, values.get("name")
+        ):
+            return value
+
+        raise ValueError(
+            f"In component '{values.get('name')}', the keyword process '{value}', is incorrect."
+        )
+
+    @classmethod
+    def _is_valid_process_int(cls, value: int, name: str) -> bool:
+        if value > 0:
+            return True
+
+        raise ValueError(
+            f"In component '{name}', the keyword process can not be 0 or negative, please specify value of 1 or greater."
+        )
+
     @classmethod
     def get_model(cls):
         return FMModel
@@ -325,6 +362,65 @@ class DIMR(ParsableFileModel):
             except NotImplementedError:
                 pass
 
+    def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
+        dimr_as_dict = self._update_dimr_dictonary_with_adjusted_fmcomponent_values(
+            data
+        )
+        super()._serialize(dimr_as_dict, save_settings)
+
+    def _update_dimr_dictonary_with_adjusted_fmcomponent_values(
+        self, dimr_as_dict: Dict
+    ):
+        fmcomponents = [
+            item for item in self.component if isinstance(item, FMComponent)
+        ]
+
+        list_of_fmcomponents_as_dict = self._get_list_of_updated_fm_components(
+            fmcomponents
+        )
+        dimr_as_dict = self._update_dimr_dictionary(
+            dimr_as_dict, list_of_fmcomponents_as_dict
+        )
+        return dimr_as_dict
+
+    def _update_dimr_dictionary(
+        self, dimr_as_dict: Dict, list_of_fm_components_as_dict: List[Dict]
+    ) -> Dict:
+        if len(list_of_fm_components_as_dict) > 0:
+            dimr_as_dict.update({"component": list_of_fm_components_as_dict})
+
+        return dimr_as_dict
+
+    def _get_list_of_updated_fm_components(
+        self, fmcomponents: List[FMComponent]
+    ) -> List[Dict]:
+        list_of_fm_components_as_dict = []
+        for fmcomponent in fmcomponents:
+            if fmcomponent is None or fmcomponent.process is None:
+                continue
+
+            if fmcomponent.process == 1:
+                fmcomponent_as_dict = fmcomponent.dict()
+                fmcomponent_as_dict.pop("process", None)
+            else:
+                fmcomponent_process_value = " ".join(
+                    str(i) for i in range(fmcomponent.process)
+                )
+                fmcomponent_as_dict = self._update_component_dictonary(
+                    fmcomponent, fmcomponent_process_value
+                )
+
+            list_of_fm_components_as_dict.append(fmcomponent_as_dict)
+
+        return list_of_fm_components_as_dict
+
+    def _update_component_dictonary(
+        self, fmcomponent: FMComponent, fmcomponent_process_value: str
+    ) -> Dict:
+        fmcomponent_as_dict = fmcomponent.dict()
+        fmcomponent_as_dict.update({"process": fmcomponent_process_value})
+        return fmcomponent_as_dict
+
     @classmethod
     def _ext(cls) -> str:
         return ".xml"
@@ -342,3 +438,73 @@ class DIMR(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         return DIMRParser.parse
+
+    @classmethod
+    def _parse(cls, path: Path) -> Dict:
+        data = super()._parse(path)
+        return cls._update_component(data)
+
+    @classmethod
+    def _update_component(cls, data: Dict) -> Dict:
+        component = data.get("component", None)
+
+        if not isinstance(component, Dict):
+            return data
+
+        process_value = component.get("process", None)
+
+        if not isinstance(process_value, str):
+            return data
+
+        if cls._is_valid_process_string(process_value):
+            value_as_int = cls._parse_process(process_value)
+            component.update({"process": value_as_int})
+            data.update({"component": component})
+
+        return data
+
+    @classmethod
+    def _parse_process(cls, process_value: str) -> int:
+        if ":" in process_value:
+            semicolon_split_values = process_value.split(":")
+            start_value = int(semicolon_split_values[0])
+            end_value = int(semicolon_split_values[-1])
+            return end_value - start_value + 1
+
+        return len(process_value.split())
+
+    @classmethod
+    def _is_valid_process_string(cls, process_value: str) -> bool:
+        if ":" in process_value:
+            return cls._is_valid_process_with_semicolon_string(process_value)
+
+        return cls._is_valid_process_list_string(process_value)
+
+    @classmethod
+    def _is_valid_process_with_semicolon_string(cls, process_value: str) -> bool:
+        semicolon_split_values = process_value.split(":")
+
+        if len(semicolon_split_values) != 2:
+            return False
+
+        last_value: str = semicolon_split_values[-1]
+        if last_value.isdigit():
+            return True
+
+        return False
+
+    @classmethod
+    def _is_valid_process_list_string(cls, process_value: str) -> bool:
+        split_values = process_value.split()
+
+        if len(split_values) < 1:
+            return False
+
+        if split_values[0] != "0":
+            return False
+
+        for value in split_values:
+            if not value.isdigit():
+                return False
+
+        return True

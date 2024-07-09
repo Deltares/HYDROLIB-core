@@ -4,7 +4,7 @@ import pytest
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
-from hydrolib.core.dimr.models import DIMR
+from hydrolib.core.dimr.models import FMComponent
 from hydrolib.core.dimr.parser import DIMRParser
 from hydrolib.core.dimr.serializer import DIMRSerializer
 from tests.utils import (
@@ -145,3 +145,107 @@ def test_serialize_float_are_formatted():
 
     assert file_path.is_file()
     assert_files_equal(file_path, reference_file)
+
+
+class TestFmComponentProcess:
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param(None),
+            pytest.param(1),
+            pytest.param(2),
+            pytest.param(3),
+            pytest.param(4),
+            pytest.param(5),
+        ],
+    )
+    def test_fmcomponent_process_after_init(self, input_process: int):
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=input_process,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+        assert component.process == input_process
+
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param(None),
+            pytest.param(1),
+            pytest.param(2),
+            pytest.param(3),
+            pytest.param(4),
+            pytest.param(5),
+        ],
+    )
+    def test_fmcomponent_process_after_setting(self, input_process: int):
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+        component.process = input_process
+        assert component.process == input_process
+
+    def test_fmcomponent_without_process_after_init(self):
+        expected_process_format = None
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+        assert component.process == expected_process_format
+
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param("lalala"),
+            pytest.param("123"),
+            pytest.param(3.5),
+        ],
+    )
+    def test_fmcomponent_process_after_init_with_invalid_type_input_raises_value_error(
+        self,
+        input_process,
+    ):
+        with pytest.raises(ValueError) as error:
+            FMComponent(
+                name="test",
+                workingDir=".",
+                inputfile="test.mdu",
+                process=input_process,
+                mpiCommunicator="DFM_COMM_DFMWORLD",
+            )
+
+        expected_message = (
+            f"In component 'test', the keyword process '{input_process}', is incorrect."
+        )
+        assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param(0),
+            pytest.param(-1),
+            pytest.param(-3),
+        ],
+    )
+    def test_fmcomponent_process_after_init_with_input_process_zero_or_negative_raises_value_error(
+        self,
+        input_process: int,
+    ):
+        with pytest.raises(ValueError) as error:
+            FMComponent(
+                name="test",
+                workingDir=".",
+                inputfile="test.mdu",
+                process=input_process,
+                mpiCommunicator="DFM_COMM_DFMWORLD",
+            )
+
+        expected_message = "In component 'test', the keyword process can not be 0 or negative, please specify value of 1 or greater."
+        assert expected_message in str(error.value)

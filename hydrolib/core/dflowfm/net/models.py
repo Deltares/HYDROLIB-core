@@ -590,12 +590,29 @@ class Link1d2d(BaseModel):
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
-    link1d2d_id: np.ndarray = Field(default_factory=lambda: np.empty(0, object))
-    link1d2d_long_name: np.ndarray = Field(default_factory=lambda: np.empty(0, object))
-    link1d2d_contact_type: np.ndarray = Field(
-        default_factory=lambda: np.empty(0, np.int32)
-    )
-    link1d2d: np.ndarray = Field(default_factory=lambda: np.empty((0, 2), np.int32))
+    @property
+    def link1d2d(self) -> np.ndarray[np.int32]:
+        contacts = self.meshkernel.contacts_get()
+        link1d2d_arr = np.stack(
+            [contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1
+        )
+        return link1d2d_arr
+
+    @property
+    def link1d2d_contact_type(self) -> np.ndarray[np.int32]:
+        contacts = self.meshkernel.contacts_get()
+        link1d2d_contact_type_arr = np.full(contacts.mesh1d_indices.size, 3)
+        return link1d2d_contact_type_arr
+
+    @property
+    def link1d2d_id(self) -> np.ndarray[object]:
+        link1d2d_id_arr = np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d])
+        return link1d2d_id_arr
+
+    @property
+    def link1d2d_long_name(self) -> np.ndarray[object]:
+        link1d2d_id_arr = np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d])
+        return link1d2d_id_arr
 
     def is_empty(self) -> bool:
         """Whether this Link1d2d is currently empty.
@@ -626,29 +643,6 @@ class Link1d2d(BaseModel):
         self.meshkernel._allocate_state(self.meshkernel.get_projection())
         self.meshkernel.contacts_get()
 
-    def _process(self) -> None:
-        """
-        Get links from meshkernel and add to the array with link administration
-        """
-        contacts = self.meshkernel.contacts_get()
-
-        self.link1d2d = np.append(
-            self.link1d2d,
-            np.stack([contacts.mesh1d_indices, contacts.mesh2d_indices], axis=1),
-            axis=0,
-        )
-        self.link1d2d_contact_type = np.append(
-            self.link1d2d_contact_type, np.full(contacts.mesh1d_indices.size, 3)
-        )
-        self.link1d2d_id = np.append(
-            self.link1d2d_id,
-            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
-        )
-        self.link1d2d_long_name = np.append(
-            self.link1d2d_long_name,
-            np.array([f"{n1d:d}_{f2d:d}" for n1d, f2d in self.link1d2d]),
-        )
-
     def _link_from_1d_to_2d(
         self, node_mask: np.ndarray, polygon: mk.GeometryList = None
     ):
@@ -668,7 +662,6 @@ class Link1d2d(BaseModel):
         self.meshkernel.contacts_compute_single(
             node_mask=node_mask, polygons=polygon, projection_factor=1.0
         )
-        self._process()
 
         # Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account
         # a bounding polygon or the end points of the 1d mesh.
@@ -678,7 +671,6 @@ class Link1d2d(BaseModel):
     ):
         """"""
         self.meshkernel.contacts_compute_with_points(node_mask=node_mask, points=points)
-        self._process()
 
     def _link_from_2d_to_1d_lateral(
         self,
@@ -693,7 +685,6 @@ class Link1d2d(BaseModel):
         self.meshkernel.contacts_compute_boundary(
             node_mask=node_mask, polygons=polygon, search_radius=search_radius
         )
-        self._process()
 
 
 class Mesh1d(BaseModel):

@@ -7,7 +7,7 @@ fileType    = boundConds
 [Forcing]
 name              = boundary_timeseries
 function          = timeseries
-timeInterpolation = blockTo
+timeInterpolation = block-To
 offset            = 1.230
 factor            = 2.340
 quantity          = time

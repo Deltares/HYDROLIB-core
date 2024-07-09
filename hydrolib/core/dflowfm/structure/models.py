@@ -18,6 +18,7 @@ from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
+    UnknownKeywordErrorManager,
     get_enum_validator,
     get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
@@ -82,6 +83,13 @@ class Structure(INIBasedModel):
     _loc_coord_fields = {"numcoordinates", "xcoordinates", "ycoordinates"}
     _loc_branch_fields = {"branchid", "chainage"}
     _loc_all_fields = _loc_coord_fields | _loc_branch_fields
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The Structure does not currently support raising an error on unknown keywords.
+        """
+        return None
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
