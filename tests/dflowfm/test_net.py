@@ -6,6 +6,7 @@ import netCDF4 as nc
 import numpy as np
 import pytest
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
+import xarray as xr # dev dependency only
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
@@ -765,3 +766,40 @@ def test_network_is_geographic():
 
     network = Network(is_geographic=True)
     assert network.is_geographic == True
+
+
+def check_ugrid_consistency(ds: xr.Dataset):
+    _COORD_NAMES = {
+        1: ("node_coordinates", "edge_coordinates"),
+        2: ("node_coordinates", "face_coordinates", "edge_coordinates"),
+    }
+    topologies = [k for k in ds.data_vars if ds[k].attrs.get("cf_role") == "mesh_topology"]
+    
+    for topology in topologies:
+        attrs = ds[topology].attrs
+        topodim = attrs["topology_dimension"]
+        for name in _COORD_NAMES[topodim]:
+            if name in attrs:
+                candidates = [c for c in attrs[name].split(" ") if c in ds]
+                if len(candidates) == 0:
+                    KeyError(
+                        f"the following variables are specified for UGRID {name}: "
+                        f'"{attrs[name]}", but they are not present in the dataset'
+                    )
+
+
+def test_network_netcdf_consistency(tmp_path):
+    from hydrolib.core.dflowfm import NetworkModel
+    import xarray as xr
+
+    model = NetworkModel()
+    model.network.mesh2d_create_rectilinear_within_extent(
+        extent=(-2, -2, 2, 2), dx=1, dy=1
+    )
+
+    nc_file = tmp_path / "test.nc"
+    model.save(filepath=nc_file)
+
+    ds = xr.open_dataset(nc_file)
+    check_ugrid_consistency(ds)
+

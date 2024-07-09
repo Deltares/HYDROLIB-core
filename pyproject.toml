@@ -49,6 +49,7 @@ markupsafe = "<2.1"
 mkdocs-jupyter = "^0.21.0"
 jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
+xarray = ">=2023.0.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
