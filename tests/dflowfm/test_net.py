@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 import netCDF4 as nc
 import numpy as np
 import pytest
+import xarray as xr  # dev dependency only
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
 
 from hydrolib.core.basemodel import BaseModel
@@ -765,3 +766,61 @@ def test_network_is_geographic():
 
     network = Network(is_geographic=True)
     assert network.is_geographic == True
+
+
+def check_ugrid_consistency(ds: xr.Dataset):
+    # inspired by xugrid.ugrid.conventions._get_coordinates:
+    # https://github.com/Deltares/xugrid/blob/412d9ae0b01d97f3eadabc81a130f9d53f5a1dcb/xugrid/ugrid/conventions.py#L221-L247
+    _COORD_NAMES = {
+        1: ("node_coordinates", "edge_coordinates"),
+        2: ("node_coordinates", "face_coordinates", "edge_coordinates"),
+    }
+    topologies = [
+        k for k in ds.data_vars if ds[k].attrs.get("cf_role") == "mesh_topology"
+    ]
+
+    for topology in topologies:
+        attrs = ds[topology].attrs
+        topodim = attrs["topology_dimension"]
+        for name in _COORD_NAMES[topodim]:
+            if name in attrs:
+                candidates = [c for c in attrs[name].split(" ") if c in ds]
+                if len(candidates) == 0:
+                    raise KeyError(
+                        f"the following variables are specified for UGRID {name}: "
+                        f'"{attrs[name]}", but they are not present in the dataset'
+                    )
+
+
+def test_network_netcdf_consistency(tmp_path):
+    model = NetworkModel()
+    model.network.mesh2d_create_rectilinear_within_extent(
+        extent=(-2, -2, 2, 2), dx=1, dy=1
+    )
+
+    nc_file = tmp_path / "test.nc"
+    model.save(filepath=nc_file)
+
+    ds = xr.open_dataset(nc_file)
+    check_ugrid_consistency(ds)
+
+
+def test_network_netcdf_consistency_corrupt_file(tmp_path):
+    # a network written with hydrolib-core<=0.7.0, before
+    # https://github.com/Deltares/HYDROLIB-core/issues/682 was fixed
+
+    model = NetworkModel()
+    model.network.mesh2d_create_rectilinear_within_extent(
+        extent=(-2, -2, 2, 2), dx=1, dy=1
+    )
+
+    nc_file = "test.nc"
+    model.save(filepath=nc_file)
+
+    ds = xr.open_dataset(nc_file)
+    ds = ds.drop_vars(["mesh2d_edge_x", "mesh2d_edge_y"])
+    with pytest.raises(KeyError) as e:
+        check_ugrid_consistency(ds)
+    assert "the following variables are specified for UGRID edge_coordinates" in str(
+        e.value
+    )
