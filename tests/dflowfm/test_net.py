@@ -806,8 +806,6 @@ def test_network_netcdf_consistency(tmp_path):
 def test_network_netcdf_consistency_corrupt_file(tmp_path):
     # a network written with hydrolib-core<=0.7.0, before 
     # https://github.com/Deltares/HYDROLIB-core/issues/682 was fixed
-    from hydrolib.core.dflowfm import NetworkModel
-    import xarray as xr
 
     model = NetworkModel()
     model.network.mesh2d_create_rectilinear_within_extent(
