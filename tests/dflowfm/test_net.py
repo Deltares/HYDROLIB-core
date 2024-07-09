@@ -791,9 +791,6 @@ def check_ugrid_consistency(ds: xr.Dataset):
 
 
 def test_network_netcdf_consistency(tmp_path):
-    from hydrolib.core.dflowfm import NetworkModel
-    import xarray as xr
-
     model = NetworkModel()
     model.network.mesh2d_create_rectilinear_within_extent(
         extent=(-2, -2, 2, 2), dx=1, dy=1
