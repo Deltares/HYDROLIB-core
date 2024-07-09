@@ -98,9 +98,7 @@ def get_circle_gl(r, detail=100):
     return polygon
 
 
-@pytest.mark.plots
-def test_create_1d_2d_1d2d():
-
+def network_1d_2d_1d2dlinks():
     # Define line (spiral)
     theta = np.arange(0.1, 20, 0.01)
 
@@ -132,6 +130,12 @@ def test_create_1d_2d_1d2d():
 
     # Add links
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
+    return network
+
+
+@pytest.mark.plots
+def test_create_1d_2d_1d2d():
+    network = network_1d_2d_1d2dlinks()
 
     mesh2d_output = network._mesh2d.get_mesh2d()
     assert len(mesh2d_output.face_x) == 152
@@ -171,8 +175,25 @@ def test_create_1d_2d_1d2d():
     network2.plot(ax=ax2)
 
 
-def test_create_2d():
+def test_create_1d_2d_1d2d_call_link_generation_twice():
+    """
+    a second generation of links should overwrite the existing links,
+    this testcase checks whether that is the case.
+    Related issue: https://github.com/Deltares/HYDROLIB-core/issues/546
+    """
+    network = network_1d_2d_1d2dlinks()
 
+    # Add links again, do this twice to check if contacts are overwritten and not appended
+    network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
+
+    network1_link1d2d = network._link1d2d.link1d2d
+    assert network1_link1d2d.shape == (21, 2)
+    assert len(network._link1d2d.link1d2d_contact_type) == 21
+    assert len(network._link1d2d.link1d2d_id) == 21
+    assert len(network._link1d2d.link1d2d_long_name) == 21
+
+
+def test_create_2d():
     # Define polygon
     bbox = (1.0, -2.0, 3.0, 4.0)
 

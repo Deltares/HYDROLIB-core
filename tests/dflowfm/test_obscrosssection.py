@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 
 import pytest
@@ -153,6 +154,26 @@ class TestObservationCrossSectionModel:
         assert isinstance(model.general, ObservationCrossSectionGeneral)
         assert isinstance(model.observationcrosssection, List)
         assert len(model.observationcrosssection) == 0
+
+    def test_locationtype_is_not_written_for_observationcrosssection(
+        self, tmp_path: Path
+    ):
+        model = ObservationCrossSectionModel()
+        model.observationcrosssection.append(
+            ObservationCrossSection(
+                name="testName",
+                branchId="testbranch",
+                chainage=123,
+            )
+        )
+
+        obs_crs_file = tmp_path / "obs_crs.ini"
+        model.save(filepath=obs_crs_file)
+
+        with open(obs_crs_file, "r") as file:
+            content = file.read()
+
+        assert "locationtype" not in content
 
 
 def _create_observation_cross_section_values() -> dict:
