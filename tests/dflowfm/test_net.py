@@ -769,6 +769,8 @@ def test_network_is_geographic():
 
 
 def check_ugrid_consistency(ds: xr.Dataset):
+    # inspired by xugrid.ugrid.conventions._get_coordinates:
+    # https://github.com/Deltares/xugrid/blob/412d9ae0b01d97f3eadabc81a130f9d53f5a1dcb/xugrid/ugrid/conventions.py#L221-L247
     _COORD_NAMES = {
         1: ("node_coordinates", "edge_coordinates"),
         2: ("node_coordinates", "face_coordinates", "edge_coordinates"),
