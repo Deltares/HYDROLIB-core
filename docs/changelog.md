@@ -1,3 +1,26 @@
+## 0.8.0 (2024-07-09)
+
+### Feat
+
+- Prevent duplicate contacts/links in `Link1d2d` by replacing Link1d2d._process() with properties (#674)
+- Move jadelvappos to physics section. (#672)
+- Make research wave section optional again. (#671)
+- Fix remaining keywords (#670)
+- Add support for spaces polyline names (#652)
+- Add support for optional [sedtrails] research section. (#651)
+- Don't write keywords with None values (#663)
+- Add/move more mdu keywords (#654)
+- Raise error for unknown keywords (#632)
+- Added support for research keywords (#642)
+- Add support for python 3.12 (#640)
+- Use caching to prevent reading files multiple times (#641)
+- Add missing mdu keywords (#628)
+
+### Fix
+
+- Ensure mesh_2d_edge_x and mesh_2d_edge_y are written to nc file. (#645)
+- locationtype should not be written for CrossSections or ObservationCrossSections (#683)
+
 ## 0.7.0 (2024-03-11)
 
 ### Feat
