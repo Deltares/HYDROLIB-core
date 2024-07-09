@@ -412,6 +412,9 @@ class LocationValidationConfiguration(BaseModel):
     validate_num_coordinates: bool = True
     """bool, optional: Whether or not the number of coordinates should be validated or not. This option is only relevant when `validate_coordinates` is True. Defaults to True."""
 
+    validate_location_type: bool = True
+    """bool, optional: Whether or not the location type should be validated. Defaults to True."""
+
     minimum_num_coordinates: int = 0
     """int, optional: The minimum required number of coordinates. This option is only relevant when `validate_coordinates` is True. Defaults to 0."""
 
@@ -563,14 +566,16 @@ def validate_location_specification(
 
     if config.validate_node:
         if is_valid_node_specification():
-            validate_location_type(LocationType.oned)
+            if config.validate_location_type:
+                validate_location_type(LocationType.oned)
             return values
 
         error_parts.append(fields.node_id)
 
     if config.validate_branch:
         if is_valid_branch_specification():
-            validate_location_type(LocationType.oned)
+            if config.validate_location_type:
+                validate_location_type(LocationType.oned)
             return values
 
         error_parts.append(f"{fields.branch_id} and {fields.chainage}")
