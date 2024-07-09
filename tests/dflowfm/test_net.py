@@ -5,8 +5,8 @@ from typing import Dict, List, Optional
 import netCDF4 as nc
 import numpy as np
 import pytest
+import xarray as xr  # dev dependency only
 from meshkernel import DeleteMeshOption, GeometryList, MeshKernel
-import xarray as xr # dev dependency only
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
@@ -775,8 +775,10 @@ def check_ugrid_consistency(ds: xr.Dataset):
         1: ("node_coordinates", "edge_coordinates"),
         2: ("node_coordinates", "face_coordinates", "edge_coordinates"),
     }
-    topologies = [k for k in ds.data_vars if ds[k].attrs.get("cf_role") == "mesh_topology"]
-    
+    topologies = [
+        k for k in ds.data_vars if ds[k].attrs.get("cf_role") == "mesh_topology"
+    ]
+
     for topology in topologies:
         attrs = ds[topology].attrs
         topodim = attrs["topology_dimension"]
@@ -804,7 +806,7 @@ def test_network_netcdf_consistency(tmp_path):
 
 
 def test_network_netcdf_consistency_corrupt_file(tmp_path):
-    # a network written with hydrolib-core<=0.7.0, before 
+    # a network written with hydrolib-core<=0.7.0, before
     # https://github.com/Deltares/HYDROLIB-core/issues/682 was fixed
 
     model = NetworkModel()
@@ -816,7 +818,9 @@ def test_network_netcdf_consistency_corrupt_file(tmp_path):
     model.save(filepath=nc_file)
 
     ds = xr.open_dataset(nc_file)
-    ds = ds.drop_vars(['mesh2d_edge_x','mesh2d_edge_y'])
+    ds = ds.drop_vars(["mesh2d_edge_x", "mesh2d_edge_y"])
     with pytest.raises(KeyError) as e:
         check_ugrid_consistency(ds)
-    assert "the following variables are specified for UGRID edge_coordinates" in str(e.value)
+    assert "the following variables are specified for UGRID edge_coordinates" in str(
+        e.value
+    )
