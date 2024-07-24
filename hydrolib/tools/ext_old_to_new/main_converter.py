@@ -12,32 +12,34 @@ from hydrolib.core import __version__
 from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm import FMModel
 from hydrolib.core.dflowfm.ext.models import (
+    Boundary,
     ExtModel,
+    Lateral,
     Meteo,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
 )
 from hydrolib.core.dflowfm.extold.models import *
-from hydrolib.core.dflowfm.inifield.models import AveragingType, InterpolationMethod
+from hydrolib.core.dflowfm.inifield.models import (
+    AveragingType,
+    DataFileType,
+    IniFieldModel,
+    InitialField,
+    InterpolationMethod,
+    ParameterField,
+)
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.mdu.models import General
+from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 
-# from hydrolib.core.dflowfm.polyfile.models import PolyFile, PolyObject
-# from hydrolib.core.dflowfm.xyz.models import XYZModel
+from .converter_factory import ConverterFactory
+from .utils import construct_filemodel_new_or_existing
 
 _program: str = "ext_old_to_new"
 _verbose: bool = False
 
 
-def __contains__(cls, item):
-    try:
-        cls(item)
-    except ValueError:
-        return False
-    return True
-
-
-def read_extold_data(extoldfile: PathOrStr) -> ExtOldModel:
+def _read_ext_old_data(extoldfile: PathOrStr) -> ExtOldModel:
     """Read a legacy D-Flow FM external forcings file (.ext) into an
        ExtOldModel object.
 
@@ -56,93 +58,22 @@ def read_extold_data(extoldfile: PathOrStr) -> ExtOldModel:
     return extold_model
 
 
-def _oldfiletype_to_forcing_file_type(
-    oldfiletype: int,
-) -> Union[MeteoForcingFileType, str]:
-    """Convert old external forcing `FILETYPE` integer value to valid
-        `forcingFileType` string value.
-
-    Args:
-        oldfiletype (int): The FILETYPE value in an old external forcings file.
-
-    Returns:
-        Union[MeteoForcingFileType,str]: Corresponding value for `forcingFileType`,
-            or "unknown" for invalid input.
-    """
-
-    if oldfiletype == 1:
-        forcing_file_type = MeteoForcingFileType.uniform
-    elif oldfiletype == 2:
-        forcing_file_type = MeteoForcingFileType.unimagdir
-    elif oldfiletype == 4:
-        forcing_file_type = MeteoForcingFileType.meteogridequi
-    elif oldfiletype == 5:
-        forcing_file_type = MeteoForcingFileType.spiderweb
-    elif oldfiletype == 6:
-        forcing_file_type = MeteoForcingFileType.meteogridcurvi
-    elif oldfiletype == 9:
-        forcing_file_type = MeteoForcingFileType.meteogridcurvi
-    elif oldfiletype == 11:
-        forcing_file_type = MeteoForcingFileType.netcdf
-    else:
-        forcing_file_type = "unknown"
-
-    return forcing_file_type
-
-
-def _oldmethod_to_interpolation_method(
-    oldmethod: int,
-) -> Union[InterpolationMethod, MeteoInterpolationMethod, str]:
-    """Convert old external forcing `METHOD` integer value to valid
-        `interpolationMethod` string value.
-
-    Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
-
-    Returns:
-        Union[InterpolationMethod,str]: Corresponding value for `interpolationMethod`,
-            or "unknown" for invalid input.
-    """
-
-    if oldmethod in [1, 2, 3, 11]:
-        interpolation_method = MeteoInterpolationMethod.linearSpaceTime
-    elif oldmethod == 5:
-        interpolation_method = InterpolationMethod.triangulation
-    elif oldmethod == 4:
-        interpolation_method = InterpolationMethod.constant
-    elif oldmethod in range(6, 10):
-        interpolation_method = InterpolationMethod.averaging
-    else:
-        interpolation_method = "unknown"
-    return interpolation_method
-
-
-def _oldmethod_to_averaging_type(
-    oldmethod: int,
-) -> Union[AveragingType, str]:
-    """Convert old external forcing `METHOD` integer value to valid
-        `averagingType` string value.
-
-    Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
-
-    Returns:
-        Union[AveragingType,str]: Corresponding value for `averagingType`,
-            or "unknown" for invalid input.
-    """
-
-    if oldmethod == 6:
-        averaging_type = AveragingType.mean
-    else:
-        interpolation_method = "unknown"
-
-
 def ext_old_to_new(
     extoldfile: PathOrStr,
     extfile: PathOrStr = None,
     inifieldfile: PathOrStr = None,
     structurefile: PathOrStr = None,
 ):
+    """
+    Convert old external forcing file to new format files.
+    When the output files are existing, output will be appended to them.
+
+    Args:
+        extoldfile (PathOrStr): Path to the old external forcing file.
+        extfile (PathOrStr, optional): Path to the new external forcing file.
+        inifieldfile (PathOrStr, optional): Path to the initial field file.
+        structurefile (PathOrStr, optional): Path to the structure file.
+    """
 
     if _verbose:
         workdir = os.getcwd() + "\\"
@@ -155,45 +86,43 @@ def ext_old_to_new(
         print(f"* {inifieldfile}")
         print(f"* {structurefile}")
 
-    # TODO: isolate this in helper function
     try:
-        extold_model = ExtOldModel(extoldfile)
+        extold_model = _read_ext_old_data(extoldfile)
     except Exception as error:
-        print("The old external forcing file contained invalid input:", error)
+        print("The old external forcing file could not be read:", error)
         return
 
-    ext_model = ExtModel()
-    ext_model.filepath = extfile
+    ext_model = construct_filemodel_new_or_existing(ExtModel, extfile)
+    inifield_model = construct_filemodel_new_or_existing(IniFieldModel, inifieldfile)
+    structure_model = construct_filemodel_new_or_existing(StructureModel, structurefile)
 
     for forcing in extold_model.forcing:
-        if __contains__(ExtOldMeteoQuantity, forcing.quantity):
-            meteo_data = {}
-            meteo_data["quantity"] = forcing.quantity
-            meteo_data["forcingfile"] = forcing.filename
-            meteo_data["forcingfiletype"] = _oldfiletype_to_forcing_file_type(
-                forcing.filetype
-            )
-            meteo_data["forcingVariableName"] = forcing.varname
-            meteo_data["sourceMaskFile"] = forcing.sourcemask
-            meteo_data["interpolationmethod"] = _oldmethod_to_interpolation_method(
-                forcing.method
-            )
-            if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
-                meteo_data["averagingtype"] = _oldmethod_to_averaging_type(
-                    forcing.method
-                )
-                meteo_data["averagingrelsize"] = forcing.relativesearchcellsize
-                meteo_data["averagingnummin"] = forcing.nummin
-                meteo_data["averagingpercentile"] = forcing.percentileminmax
+        try:
+            converter_class = ConverterFactory.create_converter(forcing.quantity)
+            new_quantity_block = converter_class.convert(forcing)
+        except ValueError:
+            # While this tool is in progress, accept that we do not convert all quantities yet.
+            new_quantity_block = None
 
-            meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
-            meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
-            meteo_data["operand"] = forcing.operand
+        if isinstance(new_quantity_block, Boundary):
+            ext_model.boundary.append(new_quantity_block)
+        elif isinstance(new_quantity_block, Lateral):
+            ext_model.lateral.append(new_quantity_block)
+        elif isinstance(new_quantity_block, Meteo):
+            ext_model.meteo.append(new_quantity_block)
+        elif isinstance(new_quantity_block, InitialField):
+            inifield_model.initial.append(new_quantity_block)
+        elif isinstance(new_quantity_block, ParameterField):
+            inifield_model.parameter.append(new_quantity_block)
+        elif isinstance(new_quantity_block, Structure):
+            structure_model.structure.append(new_quantity_block)
+        else:
+            raise NotImplementedError(
+                f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in {extoldfile}."
+            )
 
-            meteo_block = Meteo(**meteo_data)
-            ext_model.meteo.append(meteo_block)
-            ext_model.save()
-            print(meteo_block)
+        print(new_quantity_block)
+    ext_model.save()
 
 
 def ext_old_to_new_from_mdu(

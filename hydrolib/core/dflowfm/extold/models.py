@@ -395,9 +395,9 @@ class ExtOldFileType(IntEnum):
     TriangulationMagnitudeAndDirection = 8
     """8. Triangulation magnitude and direction"""
     Polyline = 9
-    """9. Polyline (<*.pli>-file)"""
-    Polyfile = 10
-    """10. Polyfile (<*.pol/*.pli>-file). uniform value inside polygon for INITIAL fields"""
+    """9. Polyline (<*.pli>-file) with boundary signals on support points"""
+    InsidePolygon = 10
+    """10. Polyfile (<*.pol>-file). Uniform value inside polygon for INITIAL fields"""
     NetCDFGridData = 11
     """11. NetCDF grid data (e.g. meteo fields)"""
     NetCDFWaveData = 14
