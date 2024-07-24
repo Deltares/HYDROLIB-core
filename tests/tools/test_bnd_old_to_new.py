@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from hydrolib.tools.ext_bnd_items_old_to_new import ext_bnd_items_old_to_new
+from hydrolib.core.dflowfm.mdu.models import FMModel
+from hydrolib.tools.ext_bnd_items_old_to_new1 import ext_bnd_items_old_to_new
 
 
 class TestOldBndToNew:

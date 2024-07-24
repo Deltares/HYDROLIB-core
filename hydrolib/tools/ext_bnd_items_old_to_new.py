@@ -9,8 +9,11 @@ def ext_bnd_items_old_to_new(
     ext_force_old_filename: Path, ext_force_new_filename: Path, supported_quantities
 ):
     ext_old_force_model = ExtOldModel(ext_force_old_filename)
-    ext_force_new_model = ExtModel()
-    ext_force_new_model.filepath = ext_force_new_filename
+    if ext_force_new_filename.exists():
+        ext_force_new_model = ExtModel(ext_force_new_filename)
+    else:
+        ext_force_new_model = ExtModel()
+        ext_force_new_model.filepath = ext_force_new_filename
 
     forcingList = [
         item
