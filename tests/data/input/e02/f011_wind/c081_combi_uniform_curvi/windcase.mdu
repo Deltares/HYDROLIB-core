@@ -18,7 +18,7 @@ VertplizFile                         =                                       # *
 ProflocFile                          =                                       # *_proflocation.xyz)    x,y,z, z = profile refnumber
 ProfdefFile                          =                                       # *_profdefinition.def) definition for all profile nrs
 ProfdefxyzFile                       =                                       # *_profdefinition.def) definition for all profile nrs
-StructureFile                        = D:/absolute/test_structures.ini                                      # *.ini, Structure definitions file
+StructureFile                        =                                       # *.ini, Structure definitions file
 PartitionFile                        =                                       # *_part.pol, polyline(s) x,y
 Uniformwidth1D                       = 2.                                    # Uniform width for 1D profiles not specified bij profloc
 WaterLevIni                          = 0.0000000                             # Initial water level
