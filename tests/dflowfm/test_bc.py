@@ -73,8 +73,8 @@ class TestTimeSeries:
         assert isinstance(forcing, TimeSeries)
         assert isinstance(forcing, VectorForcingBase)
         assert forcing.name == "boundary_timeseries"
-        assert forcing.offset == 1.23
-        assert forcing.factor == 2.34
+        assert forcing.offset == pytest.approx(1.23)
+        assert forcing.factor == pytest.approx(2.34)
         assert forcing.timeinterpolation == TimeInterpolation.block_to
         assert len(forcing.quantityunitpair) == 2
         assert forcing.quantityunitpair[0].quantity == "time"
@@ -131,8 +131,8 @@ class TestTimeSeries:
         assert timeseries is not None
         assert timeseries.name == "boundary_timeseries"
         assert timeseries.timeinterpolation == TimeInterpolation.block_to
-        assert timeseries.offset == 1.23
-        assert timeseries.factor == 2.34
+        assert timeseries.offset == pytest.approx(1.23)
+        assert timeseries.factor == pytest.approx(2.34)
 
         quantityunitpairs = timeseries.quantityunitpair
         assert len(quantityunitpairs) == 2
@@ -525,14 +525,14 @@ class TestT3D:
         assert isinstance(t3d, VectorForcingBase)
         assert t3d.name == "boundary_t3d"
         assert t3d.function == "t3d"
-        assert t3d.offset == 1.23
-        assert t3d.factor == 2.34
+        assert t3d.offset == pytest.approx(1.23)
+        assert t3d.factor == pytest.approx(2.34)
         assert t3d.timeinterpolation == TimeInterpolation.linear
 
         assert len(t3d.vertpositions) == 3
-        assert t3d.vertpositions[0] == 3.45
-        assert t3d.vertpositions[1] == 4.56
-        assert t3d.vertpositions[2] == 5.67
+        assert t3d.vertpositions[0] == pytest.approx(3.45)
+        assert t3d.vertpositions[1] == pytest.approx(4.56)
+        assert t3d.vertpositions[2] == pytest.approx(5.67)
 
         assert t3d.vertinterpolation == VerticalInterpolation.log
         assert t3d.vertpositiontype == exp_vertical_position_type
@@ -845,8 +845,8 @@ class TestT3D:
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
         assert t3d is not None
         assert t3d.name == "boundary_t3d"
-        assert t3d.offset == 1.23
-        assert t3d.factor == 2.34
+        assert t3d.offset == pytest.approx(1.23)
+        assert t3d.factor == pytest.approx(2.34)
         assert t3d.vertpositions == [3.45, 4.56, 5.67]
         assert t3d.vertinterpolation == VerticalInterpolation.log
         assert t3d.vertpositiontype == VerticalPositionType.percentage_bed
@@ -880,8 +880,8 @@ class TestT3D:
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
         assert t3d is not None
         assert t3d.name == "boundary_t3d"
-        assert t3d.offset == 1.23
-        assert t3d.factor == 2.34
+        assert t3d.offset == pytest.approx(1.23)
+        assert t3d.factor == pytest.approx(2.34)
         assert t3d.vertpositions == [3.45, 4.56, 5.67]
         assert t3d.vertinterpolation == VerticalInterpolation.log
         assert t3d.vertpositiontype == VerticalPositionType.percentage_bed

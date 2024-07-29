@@ -19,6 +19,7 @@ from hydrolib.core.dflowfm.ini.models import (
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
+    UnknownKeywordErrorManager,
     get_enum_validator,
     get_split_string_on_delimiter_validator,
     make_list_validator,
@@ -278,6 +279,13 @@ class Meteo(INIBasedModel):
         )
 
     comments: Comments = Comments()
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The Meteo does not currently support raising an error on unknown keywords.
+        """
+        return None
 
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()

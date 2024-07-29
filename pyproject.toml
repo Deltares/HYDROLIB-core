@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.7.0"
+version = "0.8.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -15,8 +15,11 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-netCDF4 = "^1.5"
-numpy = "^1.21"
+netCDF4 = "^1.5,!=1.7.*"
+numpy = [
+    { version = "^1.21", python = "^3.8" },
+    { version = "^1.25", python = "^3.12" }
+]
 pydantic = "^2.5"
 lxml = "^4.6"
 meshkernel = "^4.1.0"
@@ -46,10 +49,11 @@ markupsafe = "<2.1"
 mkdocs-jupyter = "^0.21.0"
 jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
+xarray = ">=2023.0.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.7.0"
+version = "0.8.0"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",

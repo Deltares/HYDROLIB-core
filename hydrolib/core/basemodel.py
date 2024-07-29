@@ -33,6 +33,7 @@ from pydantic.v1.fields import ModelField, PrivateAttr
 
 from hydrolib.core.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import (
+    FileChecksumCalculator,
     FilePathStyleConverter,
     OperatingSystem,
     PathStyle,
@@ -403,6 +404,34 @@ class FilePathResolver:
             self._anchors.pop()
 
 
+class CachedFileModel:
+    """
+    CachedFileModel provides a simple structure to keep the Filemodel and checksum together.
+    """
+
+    _model: "FileModel"
+    _checksum: str
+
+    @property
+    def model(self) -> "FileModel":
+        """FileModel."""
+        return self._model
+
+    @property
+    def checksum(self) -> str:
+        """ "Checksum of the file the filemodel is based on."""
+        return self._checksum
+
+    def __init__(self, model: "FileModel", checksum: str) -> None:
+        """Create a new empty CachedFileModel.
+        Args:
+            model (FileModel): filemodel to cache.
+            checksum (str): checksum of the file.
+        """
+        self._model = model
+        self._checksum = checksum
+
+
 class FileModelCache:
     """
     FileModelCache provides a simple structure to register and retrieve FileModel
@@ -411,7 +440,7 @@ class FileModelCache:
 
     def __init__(self):
         """Create a new empty FileModelCache."""
-        self._cache_dict: Dict[Path, "FileModel"] = {}
+        self._cache_dict: Dict[Path, CachedFileModel] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
         """Retrieve the model associated with the (absolute) path if
@@ -422,7 +451,10 @@ class FileModelCache:
                 The FileModel associated with the Path if it has been registered
                 before, otherwise None.
         """
-        return self._cache_dict.get(path, None)
+        cached_file_model = self._cache_dict.get(path, None)
+        if cached_file_model is None:
+            return None
+        return cached_file_model.model
 
     def register_model(self, path: Path, model: "FileModel") -> None:
         """Register the model with the specified path in this FileModelCache.
@@ -431,7 +463,8 @@ class FileModelCache:
             path (Path): The path to associate the model with.
             model (FileModel): The model to be associated with the path.
         """
-        self._cache_dict[path] = model
+        checksum = self._get_checksum(path)
+        self._cache_dict[path] = CachedFileModel(model, checksum)
 
     def is_empty(self) -> bool:
         """Whether or not this file model cache is empty.
@@ -440,6 +473,38 @@ class FileModelCache:
             bool: Whether or not the cache is empty.
         """
         return not any(self._cache_dict)
+
+    def _exists(self, path: Path) -> bool:
+        """Whether or not the filepath is in the cache.
+
+        Args:
+            path (Path): The path to verify if it is already added in the cache.
+
+        Returns:
+            bool: Whether or not the path is in the cache.
+        """
+        return path in self._cache_dict
+
+    def has_changed(self, path: Path) -> bool:
+        """Whether or not the file in the filepath has changed from the cache.
+
+        Args:
+            path (Path): The path to verify verify against.
+
+        Returns:
+            bool: Whether or the file has changed.
+            True when the file has changed.
+            True when the file does not exist in caching reference.
+            False when the file has not changed.
+        """
+        if not self._exists(path):
+            return True
+
+        checksum = self._get_checksum(path)
+        return checksum != self._cache_dict.get(path).checksum
+
+    def _get_checksum(self, path: Path) -> Optional[str]:
+        return FileChecksumCalculator.calculate_checksum(path)
 
 
 class ModelSaveSettings:
@@ -670,6 +735,24 @@ class FileLoadContext:
         )
         return Path(converted_file_path)
 
+    def is_content_changed(self, path: Path) -> bool:
+        """Verify if the path is already known and if the content have changed.
+
+        Relative paths will be resolved based on the current state of the
+        FileLoadContext.
+
+        Args:
+            path (Path): The relative path from which the model was loaded.
+            model (FileModel): The loaded model.
+
+        Returns:
+            True when the content from the path on the location has been changed.
+            False when the content from the path is not priorly cached.
+            False when the content from the path on the location has not been changed.
+        """
+        absolute_path = self._path_resolver.resolve(path)
+        return self._cache.has_changed(absolute_path)
+
 
 @contextmanager
 def file_load_context():
@@ -755,9 +838,12 @@ class FileModel(BaseModel, ABC):
         filepath = FileModel._change_to_path(filepath)
         with file_load_context() as context:
             if (file_model := context.retrieve_model(filepath)) is not None:
-                return file_model
-            else:
-                return super().__new__(cls)
+                if not context.is_content_changed(filepath):
+                    cls._has_been_loaded_from_cache = True
+                    return file_model
+
+            cls._has_been_loaded_from_cache = False
+            return super().__new__(cls)
 
     def __init__(
         self,
@@ -783,6 +869,9 @@ class FileModel(BaseModel, ABC):
         Raises:
             ValueError: When an unsupported path style is passed.
         """
+        if self._has_been_loaded_from_cache:
+            return
+
         if not filepath:
             super().__init__(*args, **kwargs)
             return
@@ -812,8 +901,6 @@ class FileModel(BaseModel, ABC):
             context.register_model(filepath, self)
             data["filepath"] = filepath
             kwargs.update(data)
-
-            context.register_model(filepath, self)
 
             # Note: the relative mode needs to be obtained from the data directly
             # because self._relative_mode has not been resolved yet (this is done as

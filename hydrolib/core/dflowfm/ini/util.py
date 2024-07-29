@@ -3,9 +3,9 @@
 from datetime import datetime
 from enum import Enum
 from operator import eq
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic.v1.class_validators import root_validator, validator
+from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import ModelField
 from pydantic.v1.main import BaseModel
 
@@ -412,6 +412,9 @@ class LocationValidationConfiguration(BaseModel):
     validate_num_coordinates: bool = True
     """bool, optional: Whether or not the number of coordinates should be validated or not. This option is only relevant when `validate_coordinates` is True. Defaults to True."""
 
+    validate_location_type: bool = True
+    """bool, optional: Whether or not the location type should be validated. Defaults to True."""
+
     minimum_num_coordinates: int = 0
     """int, optional: The minimum required number of coordinates. This option is only relevant when `validate_coordinates` is True. Defaults to 0."""
 
@@ -563,14 +566,16 @@ def validate_location_specification(
 
     if config.validate_node:
         if is_valid_node_specification():
-            validate_location_type(LocationType.oned)
+            if config.validate_location_type:
+                validate_location_type(LocationType.oned)
             return values
 
         error_parts.append(fields.node_id)
 
     if config.validate_branch:
         if is_valid_branch_specification():
-            validate_location_type(LocationType.oned)
+            if config.validate_location_type:
+                validate_location_type(LocationType.oned)
             return values
 
         error_parts.append(f"{fields.branch_id} and {fields.chainage}")
@@ -622,3 +627,54 @@ def rename_keys_for_backwards_compatibility(
                 break
 
     return values
+
+
+class UnknownKeywordErrorManager:
+    """
+    Error manager for unknown keys.
+    Detects unknown keys and manages the Error to the user.
+    """
+
+    def raise_error_for_unknown_keywords(
+        self,
+        data: Dict[str, Any],
+        section_header: str,
+        fields: Dict[str, ModelField],
+        excluded_fields: Set[str],
+    ) -> None:
+        """
+        Notify the user of unknown keywords.
+
+        Args:
+            data (Dict[str, Any])           : Input data containing all properties which are checked on unknown keywords.
+            section_header (str)            : Header of the section in which unknown keys might be detected.
+            fields (Dict[str, ModelField])  : Known fields of the section.
+            excluded_fields (Set[str])      : Fields which should be excluded from the check for unknown keywords.
+        """
+        unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
+
+        if len(unknown_keywords) == 0:
+            return
+
+        raise ValueError(
+            f"Unknown keywords are detected in section: '{section_header}', '{unknown_keywords}'"
+        )
+
+    def _get_all_unknown_keywords(
+        self, data: Dict[str, Any], fields: Dict[str, ModelField], excluded_fields: Set
+    ) -> List[str]:
+        list_of_unknown_keywords = []
+        for name in data:
+            if self._is_unknown_keyword(name, fields, excluded_fields):
+                list_of_unknown_keywords.append(name)
+
+        return list_of_unknown_keywords
+
+    def _is_unknown_keyword(
+        self, name: str, fields: Dict[str, ModelField], excluded_fields: Set
+    ):
+        for model_field in fields.values():
+            if name == model_field.name or name == model_field.alias:
+                return False
+
+        return name not in excluded_fields

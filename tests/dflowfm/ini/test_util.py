@@ -1,14 +1,17 @@
 from typing import Dict, List, Literal, Optional
+from unittest.mock import Mock
 
 import pytest
 from pydantic.v1 import Extra
 from pydantic.v1.class_validators import root_validator
 from pydantic.v1.error_wrappers import ValidationError
+from pydantic.v1.fields import ModelField
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
+    UnknownKeywordErrorManager,
     get_from_subclass_defaults,
     get_type_based_on_subclass_default_value,
     rename_keys_for_backwards_compatibility,
@@ -23,6 +26,7 @@ class TestLocationValidationConfiguration:
         assert config.validate_coordinates == True
         assert config.validate_branch == True
         assert config.validate_num_coordinates == True
+        assert config.validate_location_type == True
         assert config.minimum_num_coordinates == 0
 
 
@@ -207,6 +211,44 @@ class TestLocationSpecificationValidator:
         )
         assert validated_values == expected_values
 
+    @pytest.mark.parametrize(
+        "values",
+        [
+            pytest.param({"nodeid": "some_nodeid"}, id="nodeId"),
+            pytest.param(
+                {"branchid": "some_branchid", "chainage": 123},
+                id="branch specification",
+            ),
+        ],
+    )
+    def test_validate_location_type_false_does_not_add_location_type(
+        self, values: dict
+    ):
+        config = LocationValidationConfiguration(validate_location_type=False)
+        validated_values = validate_location_specification(values, config)
+
+        assert validated_values == values
+
+    @pytest.mark.parametrize(
+        "values",
+        [
+            pytest.param({"nodeid": "some_nodeid"}, id="nodeId"),
+            pytest.param(
+                {"branchid": "some_branchid", "chainage": 123},
+                id="branch specification",
+            ),
+        ],
+    )
+    def test_validate_location_type_false_does_not_validate_location_type(
+        self, values: dict
+    ):
+        config = LocationValidationConfiguration(validate_location_type=False)
+        values["locationtype"] = "This is an invalid location type..."
+
+        validated_values = validate_location_specification(values, config)
+
+        assert validated_values == values
+
 
 class TestGetKeyRenamingRootValidator:
     class DummyModel(BaseModel):
@@ -356,3 +398,86 @@ class WithoutDefaultProperty(BaseClass):
 
 class GrandChildWithDefaultProperty(WithoutDefaultProperty):
     name: Literal["GrandChildWithDefaultProperty"] = "GrandChildWithDefaultProperty"
+
+
+class TestUnknownKeywordErrorManager:
+    def test_unknown_keywords_given_when_notify_unknown_keywords_gives_error_with_unknown_keywords(
+        self,
+    ):
+        section_header = "section header"
+        fields = {}
+        excluded_fields = set()
+        name = "keyname"
+        second_name = "second_other"
+
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1, second_name: 2}
+
+        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, second_name]}'"
+
+        with pytest.raises(ValueError) as exc_err:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+
+        assert expected_message in str(exc_err.value)
+
+    def test_keyword_given_known_as_alias_does_not_throw_exception(self):
+        section_header = "section header"
+        excluded_fields = set()
+        name = "keyname"
+
+        mocked_field = Mock(spec=ModelField)
+        mocked_field.name = "name"
+        mocked_field.alias = name
+
+        fields = {"name": mocked_field}
+
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1}
+
+        try:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+        except ValueError:
+            pytest.fail("Exception is thrown, no exception is expected for this test.")
+
+    def test_keyword_given_known_as_name_does_not_throw_exception(self):
+        section_header = "section header"
+        excluded_fields = set()
+        name = "keyname"
+
+        mocked_field = Mock(spec=ModelField)
+        mocked_field.name = "name"
+        mocked_field.alias = name
+
+        fields = {name: mocked_field}
+
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1}
+
+        try:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+        except ValueError:
+            pytest.fail("Exception is thrown, no exception is expected for this test.")
+
+    def test_keyword_given_known_as_excluded_field_does_not_throw_exception(self):
+        section_header = "section header"
+        excluded_fields = set()
+        name = "keyname"
+        excluded_fields.add(name)
+
+        fields = {}
+
+        ukem = UnknownKeywordErrorManager()
+        data = {name: 1}
+
+        try:
+            ukem.raise_error_for_unknown_keywords(
+                data, section_header, fields, excluded_fields
+            )
+        except ValueError:
+            pytest.fail("Exception is thrown, no exception is expected for this test.")

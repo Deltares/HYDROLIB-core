@@ -12,7 +12,6 @@ from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictGeneral
 from hydrolib.core.dflowfm.mdu.models import (
     Calibration,
-    ExternalForcing,
     FMModel,
     Geometry,
     Output,
@@ -21,7 +20,6 @@ from hydrolib.core.dflowfm.mdu.models import (
     Restart,
     Sediment,
 )
-from hydrolib.core.dflowfm.xyz.models import XYZModel
 from hydrolib.core.dimr.models import (
     DIMR,
     ComponentOrCouplerRef,
@@ -522,3 +520,312 @@ def test_model_diskonlyfilemodel_field_is_constructed_correctly(
         assert relevant_field == input
     else:
         assert relevant_field.filepath == input
+
+
+class TestFmComponentProcessIntegrationWithDimr:
+    def get_fm_dimr_config_data(self, input_data_process):
+        return f"""<?xml version="1.0" encoding="utf-8"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
+  <documentation>
+    <fileVersion>1.3</fileVersion>
+    <createdBy>hydrolib-core 0.7.0</createdBy>
+    <creationDate>2024-04-25T10:59:21.185365</creationDate>
+  </documentation>
+  <component name="test">
+    <library>dflowfm</library>
+    <workingDir>.</workingDir>
+    <inputFile>test.mdu</inputFile>
+    <process>{input_data_process}</process>
+    <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
+  </component>
+</dimrConfig>
+"""
+
+    def get_fm_dimr_config_data_without_process(self):
+        return """<?xml version="1.0" encoding="utf-8"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
+  <documentation>
+    <fileVersion>1.3</fileVersion>
+    <createdBy>hydrolib-core 0.7.0</createdBy>
+    <creationDate>2024-04-25T10:59:21.185365</creationDate>
+  </documentation>
+  <component name="test">
+    <library>dflowfm</library>
+    <workingDir>.</workingDir>
+    <inputFile>test.mdu</inputFile>
+    <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
+  </component>
+</dimrConfig>
+"""
+
+    def setup_temporary_files(self, tmp_path, dimr_config_data):
+        temporary_dimr_config_file = tmp_path / "dimr_config.xml"
+        temporary_dimr_config_file.write_text(dimr_config_data)
+
+        temp_mdu = tmp_path / "test.mdu"
+        temp_mdu.write_text("")
+        temporary_save_location = tmp_path / "saved_dimr_config.xml"
+        return temporary_dimr_config_file, temporary_save_location
+
+    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_without_process(
+        self, tmp_path
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data_without_process()
+
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert_files_equal(temporary_dimr_config_file, temporary_save_location)
+
+    @pytest.mark.parametrize(
+        "input_process, expected_process, expected_process_format",
+        [
+            pytest.param("0:1", 2, "0 1"),
+            pytest.param("0:2", 3, "0 1 2"),
+            pytest.param("0:3", 4, "0 1 2 3"),
+            pytest.param("0:4", 5, "0 1 2 3 4"),
+            pytest.param("2:4", 3, "0 1 2"),
+            pytest.param("9:12", 4, "0 1 2 3"),
+        ],
+    )
+    def test_dimr_with_fmcomponent_given_semicolon_style_for_setting_process(
+        self, tmp_path, input_process, expected_process, expected_process_format
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data(input_process)
+
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert dimr_config.component[0].process == expected_process
+
+        line_to_check = f"<process>{expected_process_format}</process>"
+
+        with open(temporary_save_location, "r") as file:
+            assert any(
+                line.strip() == line_to_check for line in file
+            ), f"File {temporary_save_location} does not contain the line: {line_to_check}"
+
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param("0 1"),
+            pytest.param("0 1 2"),
+            pytest.param("0 1 2 3"),
+            pytest.param("0 1 2 3 4"),
+        ],
+    )
+    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process(
+        self, tmp_path, input_process
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data(input_process)
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert_files_equal(temporary_dimr_config_file, temporary_save_location)
+
+    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_for_zero(
+        self, tmp_path
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data("0")
+
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config_data_expected = self.get_fm_dimr_config_data_without_process()
+        temporary_expected_dimr_config_file = tmp_path / "dimr_expected_config.xml"
+        temporary_expected_dimr_config_file.write_text(dimr_config_data_expected)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert_files_equal(temporary_expected_dimr_config_file, temporary_save_location)
+
+    @pytest.mark.parametrize(
+        "input_process, expected_process",
+        [
+            pytest.param("0", 1),
+            pytest.param("0 1", 2),
+            pytest.param("0 1 2", 3),
+            pytest.param("0 1 2 3", 4),
+            pytest.param("0 1 2 3 4", 5),
+            pytest.param("0:1", 2),
+            pytest.param("0:2", 3),
+            pytest.param("0:3", 4),
+            pytest.param("0:4", 5),
+            pytest.param("2:4", 3),
+        ],
+    )
+    def test_dimr_with_fmcomponent_process_component_set_correctly(
+        self, tmp_path, input_process, expected_process
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data(input_process)
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert dimr_config.component[0].process == expected_process
+
+    def test_dimr_with_fmcomponent_given_old_invalid_style_for_setting_process_raises_value_error(
+        self, tmp_path
+    ):
+        process_number_single_int: int = 4
+        dimr_config_data = self.get_fm_dimr_config_data(process_number_single_int)
+        temporary_dimr_config_file, _ = self.setup_temporary_files(
+            tmp_path, dimr_config_data
+        )
+
+        with pytest.raises(ValueError) as error:
+            DIMR(filepath=temporary_dimr_config_file)
+
+        expected_message = f"In component 'test', the keyword process '{process_number_single_int}', is incorrect."
+        errormessage = str(error.value)
+        assert expected_message in errormessage
+
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param("This is incorrect"),
+            pytest.param(1.4234),
+            pytest.param("1234556"),
+        ],
+    )
+    def test_dimr_with_fmcomponent_given_invalid_style_for_setting_process_raises_value_error(
+        self, tmp_path, input_process
+    ):
+        dimr_config_data = self.get_fm_dimr_config_data(input_process)
+        temporary_dimr_config_file, _ = self.setup_temporary_files(
+            tmp_path, dimr_config_data
+        )
+
+        with pytest.raises(ValueError) as error:
+            DIMR(filepath=temporary_dimr_config_file)
+
+        expected_message = (
+            f"In component 'test', the keyword process '{input_process}', is incorrect."
+        )
+        errormessage = str(error.value)
+        assert expected_message in errormessage
+
+    @pytest.mark.parametrize(
+        "input_process, expected_process_format",
+        [
+            pytest.param(2, "0 1"),
+            pytest.param(3, "0 1 2"),
+            pytest.param(4, "0 1 2 3"),
+            pytest.param(5, "0 1 2 3 4"),
+        ],
+    )
+    def test_dimr_with_fmcomponent_saving_process(
+        self, tmp_path, input_process: int, expected_process_format: str
+    ):
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=input_process,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+
+        dimr = DIMR(component=component)
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        line_to_check = f"<process>{expected_process_format}</process>"
+
+        with open(save_location, "r") as file:
+            assert any(
+                line.strip() == line_to_check for line in file
+            ), f"File {save_location} does not contain the line: {line_to_check}"
+
+    @pytest.mark.parametrize(
+        "input_process, expected_process_format",
+        [
+            pytest.param(2, "0 1"),
+            pytest.param(3, "0 1 2"),
+            pytest.param(4, "0 1 2 3"),
+            pytest.param(5, "0 1 2 3 4"),
+        ],
+    )
+    def test_dimr_with_multiple_fmcomponent_saving_process(
+        self, tmp_path, input_process: int, expected_process_format: str
+    ):
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=6,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+        line_to_check_first_component = "<process>0 1 2 3 4 5</process>"
+
+        component2 = FMComponent(
+            name="test2",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=input_process,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+
+        dimr = DIMR(component=[component, component2])
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        line_to_check = f"<process>{expected_process_format}</process>"
+
+        with open(save_location, "r") as file:
+            assert any(
+                line.strip() == line_to_check_first_component for line in file
+            ), f"File {save_location} does not contain the line: {line_to_check_first_component}"
+            assert any(
+                line.strip() == line_to_check for line in file
+            ), f"File {save_location} does not contain the line: {line_to_check}"
+
+    @pytest.mark.parametrize(
+        "input_process",
+        [
+            pytest.param(None),
+            pytest.param(1),
+        ],
+    )
+    def test_dimr_with_fmcomponent_saving_process_when_process_should_be_left_out(
+        self, tmp_path, input_process
+    ):
+        component = FMComponent(
+            name="test",
+            workingDir=".",
+            inputfile="test.mdu",
+            process=input_process,
+            mpiCommunicator="DFM_COMM_DFMWORLD",
+        )
+
+        dimr = DIMR(component=component)
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        process = "<process>"
+
+        with open(save_location, "r") as file:
+            assert (
+                process not in file
+            ), f"File {save_location} does contain the line: {process}"

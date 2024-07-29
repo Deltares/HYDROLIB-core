@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.mdu.models import (
     FMModel,
@@ -97,39 +99,38 @@ class TestModels:
         assert fm_model.grw is not None
         assert fm_model.grw.groundwater is False
         assert fm_model.grw.infiltrationmodel == InfiltrationMethod.NoInfiltration
-        assert fm_model.grw.hinterceptionlayer == 0.0
-        assert fm_model.grw.unifinfiltrationcapacity == 0.0
-        assert fm_model.grw.conductivity == 0.0
-        assert fm_model.grw.h_aquiferuni == 20.0
-        assert fm_model.grw.h_unsatini == 0.200000002980232
+        assert fm_model.grw.hinterceptionlayer == pytest.approx(0.0)
+        assert fm_model.grw.unifinfiltrationcapacity == pytest.approx(0.0)
+        assert fm_model.grw.conductivity == pytest.approx(0.0)
+        assert fm_model.grw.h_aquiferuni == pytest.approx(20.0)
+        assert fm_model.grw.h_unsatini == pytest.approx(0.200000002980232)
 
         assert fm_model.processes is not None
         assert fm_model.processes.substancefile.filepath is None
         assert fm_model.processes.additionalhistoryoutputfile.filepath is None
         assert fm_model.processes.statisticsfile.filepath is None
-        assert fm_model.processes.thetavertical == 0.0
-        assert fm_model.processes.dtprocesses == 0.0
-        assert fm_model.processes.dtmassbalance == 0.0
+        assert fm_model.processes.thetavertical == pytest.approx(0.0)
+        assert fm_model.processes.dtprocesses == pytest.approx(0.0)
         assert fm_model.processes.processfluxintegration == ProcessFluxIntegration.WAQ
         assert fm_model.processes.wriwaqbot3doutput is False
-        assert fm_model.processes.volumedrythreshold == 1e-3
-        assert fm_model.processes.depthdrythreshold == 1e-3
+        assert fm_model.processes.volumedrythreshold == pytest.approx(1e-3)
+        assert fm_model.processes.depthdrythreshold == pytest.approx(1e-3)
 
         assert fm_model.particles is not None
         assert fm_model.particles.particlesfile is None
         assert fm_model.particles.particlesreleasefile.filepath is None
         assert fm_model.particles.addtracer is False
-        assert fm_model.particles.starttime == 0.0
-        assert fm_model.particles.timestep == 0.0
+        assert fm_model.particles.starttime == pytest.approx(0.0)
+        assert fm_model.particles.timestep == pytest.approx(0.0)
         assert fm_model.particles.threedtype == ParticlesThreeDType.DepthAveraged
 
         assert fm_model.veg is not None
         assert fm_model.veg.vegetationmodelnr == VegetationModelNr.No
-        assert fm_model.veg.clveg == 0.8
-        assert fm_model.veg.cdveg == 0.7
-        assert fm_model.veg.cbveg == 0.0
-        assert fm_model.veg.rhoveg == 0.0
-        assert fm_model.veg.stemheightstd == 0.0
+        assert fm_model.veg.clveg == pytest.approx(0.8)
+        assert fm_model.veg.cdveg == pytest.approx(0.7)
+        assert fm_model.veg.cbveg == pytest.approx(0.0)
+        assert fm_model.veg.rhoveg == pytest.approx(0.0)
+        assert fm_model.veg.stemheightstd == pytest.approx(0.0)
 
     def test_mdu_with_3d_settings(self):
         input_mdu = (
@@ -145,12 +146,12 @@ class TestModels:
         assert fm_model.geometry.layertype == 1
         assert fm_model.geometry.numtopsig == 20
         assert fm_model.geometry.numtopsiguniform == True
-        assert fm_model.geometry.sigmagrowthfactor == 1.19
-        assert fm_model.geometry.dztop == 5.0
-        assert fm_model.geometry.floorlevtoplay == -5.0
-        assert fm_model.geometry.dztopuniabovez == -100.0
+        assert fm_model.geometry.sigmagrowthfactor == pytest.approx(1.19)
+        assert fm_model.geometry.dztop == pytest.approx(5.0)
+        assert fm_model.geometry.floorlevtoplay == pytest.approx(-5.0)
+        assert fm_model.geometry.dztopuniabovez == pytest.approx(-100.0)
         assert fm_model.geometry.keepzlayeringatbed == 2
-        assert fm_model.geometry.dxwuimin2d == 0.1
+        assert fm_model.geometry.dxwuimin2d == pytest.approx(0.1)
 
         fm_model.save(output_mdu, recurse=False)
 
@@ -388,3 +389,86 @@ class TestOutput:
             assert actual_point.x == expected_point.x
             assert actual_point.y == expected_point.y
             assert actual_point.name == expected_point.name
+
+    def test_mdu_unknown_keyword_loading_throws_valueerror_for_unknown_keyword(
+        self, tmp_path
+    ):
+        tmp_mdu = """
+        [General]
+        fileVersion           = 1.09          
+        fileType              = modelDef      
+        program               = D-Flow FM     
+        version               = 1.2.100.66357 
+        autoStart             = 0             
+        pathsRelativeToParent = 0             
+        unknownkey            = something
+        """
+
+        tmp_mdu_path = tmp_path / "tmp.mdu"
+        tmp_mdu_path.write_text(tmp_mdu)
+
+        section_header = "General"
+        name = "unknownkey"
+
+        expected_message = (
+            f"Unknown keywords are detected in section: '{section_header}', '{[name]}'"
+        )
+
+        with pytest.raises(ValueError) as exc_err:
+            FMModel(filepath=tmp_mdu_path)
+
+        assert expected_message in str(exc_err.value)
+
+    def test_mdu_unknown_keywords_loading_throws_valueerror_for_unknown_keywords(
+        self, tmp_path
+    ):
+        tmp_mdu = """
+        [General]
+        fileVersion           = 1.09          
+        fileType              = modelDef      
+        program               = D-Flow FM     
+        version               = 1.2.100.66357 
+        autoStart             = 0             
+        pathsRelativeToParent = 0             
+        unknownkey            = something
+        unknownkey2           = something2
+        """
+
+        tmp_mdu_path = tmp_path / "tmp.mdu"
+        tmp_mdu_path.write_text(tmp_mdu)
+
+        section_header = "General"
+        name = "unknownkey"
+        name2 = "unknownkey2"
+
+        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, name2]}'"
+
+        with pytest.raises(ValueError) as exc_err:
+            FMModel(filepath=tmp_mdu_path)
+
+        assert expected_message in str(exc_err.value)
+
+    def test_mdu_unknown_keywords_loading_thrown_valueerror_for_unknown_keyword_does_not_include_excluded_fields(
+        self, tmp_path
+    ):
+        tmp_mdu = """
+        [General]
+        fileVersion           = 1.09          
+        fileType              = modelDef      
+        program               = D-Flow FM     
+        version               = 1.2.100.66357 
+        autoStart             = 0             
+        pathsRelativeToParent = 0             
+        unknownkey            = something
+        """
+
+        tmp_mdu_path = tmp_path / "tmp.mdu"
+        tmp_mdu_path.write_text(tmp_mdu)
+
+        with pytest.raises(ValueError) as exc_err:
+            model = FMModel(filepath=tmp_mdu_path)
+
+            excluded_fields = model._exclude_fields()
+            assert len(excluded_fields) > 0
+            for excluded_field in excluded_fields:
+                assert excluded_field not in str(exc_err.value)

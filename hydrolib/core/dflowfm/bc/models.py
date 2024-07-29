@@ -78,10 +78,10 @@ class TimeInterpolation(StrEnum):
     linear = "linear"
     """str: Linear interpolation between times."""
 
-    block_from = "blockFrom"
+    block_from = "block-From"
     """str: Equal to that at the start of the time interval (latest specified time value)."""
 
-    block_to = "blockTo"
+    block_to = "block-To"
     """str: Equal to that at the end of the time interval (upcoming specified time value)."""
 
 

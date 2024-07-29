@@ -3,7 +3,18 @@ from abc import ABC
 from enum import Enum
 from math import isnan
 from re import compile
-from typing import Any, Callable, List, Literal, Optional, Set, Type, Union
+from typing import (
+    Any,
+    Callable,
+    List,
+    Literal,
+    Optional,
+    Set,
+    Type,
+    Union,
+    get_args,
+    get_origin,
+)
 
 from pydantic.v1 import Extra, Field, root_validator
 from pydantic.v1.class_validators import validator
@@ -25,7 +36,7 @@ from .serializer import (
     INISerializerConfig,
     write_ini,
 )
-from .util import make_list_validator
+from .util import UnknownKeywordErrorManager, make_list_validator
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +56,7 @@ class INIBasedModel(BaseModel, ABC):
             descriptions for all data fields.
     """
 
-    _header: str
+    _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
     _scientific_notation_regex = compile(
         r"([\d.]+)([dD])([+-]?\d{1,3})"
@@ -54,6 +65,10 @@ class INIBasedModel(BaseModel, ABC):
     class Config:
         extra = Extra.ignore
         arbitrary_types_allowed = False
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        return UnknownKeywordErrorManager()
 
     @classmethod
     def _supports_comments(cls):
@@ -102,6 +117,18 @@ class INIBasedModel(BaseModel, ABC):
             arbitrary_types_allowed = False
 
     comments: Optional[Comments] = Comments()
+
+    @root_validator(pre=True)
+    def _validate_unknown_keywords(cls, values):
+        unknown_keyword_error_manager = cls._get_unknown_keyword_error_manager()
+        if unknown_keyword_error_manager:
+            unknown_keyword_error_manager.raise_error_for_unknown_keywords(
+                values,
+                cls._header,
+                cls.__fields__,
+                cls._exclude_fields(),
+            )
+        return values
 
     @root_validator(pre=True)
     def _skip_nones_and_set_header(cls, values):
@@ -190,7 +217,7 @@ class INIBasedModel(BaseModel, ABC):
     ) -> Section:
         props = []
         for key, value in self:
-            if key in self._exclude_fields():
+            if not self._should_be_serialized(key, value):
                 continue
 
             field_key = key
@@ -204,6 +231,39 @@ class INIBasedModel(BaseModel, ABC):
             )
             props.append(prop)
         return Section(header=self._header, content=props)
+
+    def _should_be_serialized(self, key: str, value: Any) -> bool:
+        if key in self._exclude_fields():
+            return False
+
+        field = self.__fields__.get(key)
+        if not field:
+            return value is not None
+
+        field_type = field.type_
+        if self._is_union(field_type):
+            return value is not None or self._union_has_filemodel(field_type)
+
+        if self._is_list(field_type):
+            field_type = get_args(field_type)[0]
+
+        return self._value_is_not_none_or_type_is_filemodel(field_type, value)
+
+    @staticmethod
+    def _is_union(field_type: type) -> bool:
+        return get_origin(field_type) is Union
+
+    @staticmethod
+    def _union_has_filemodel(field_type: type) -> bool:
+        return any(issubclass(arg, FileModel) for arg in get_args(field_type))
+
+    @staticmethod
+    def _is_list(field_type: type) -> bool:
+        return get_origin(field_type) is List
+
+    @staticmethod
+    def _value_is_not_none_or_type_is_filemodel(field_type: type, value: Any) -> bool:
+        return value is not None or issubclass(field_type, FileModel)
 
 
 Datablock = List[List[Union[float, str]]]
@@ -219,6 +279,13 @@ class DataBlockINIBasedModel(INIBasedModel):
     datablock: Datablock = []
 
     _make_lists = make_list_validator("datablock")
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        The DataBlockINIBasedModel does not need to raise an error on unknown keywords.
+        """
+        return None
 
     def _to_section(
         self,
