@@ -69,7 +69,7 @@ slotw2D                        = 0.001             # Minimum slotwidth 2D [m].
 uniformHeight1DRoofGutterPipes = 0.1               # Uniform height for roof gutter pipes [m].
 dxmin1D                        = 0.001             # Minimum 1D link length [m].
 uniformTyp1DStreetInlets       = -2                # Uniform cross section type for street inlets (1: circle, 2: rectangle, -2: closed rectangle).
-stretchType                    = 1                 # Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.
+stretchType                    = -1                # Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.
 zlayBot                        = -999.0            # if specified, first z-layer starts from zlaybot [ ], if not, it starts from the lowest bed point.
 zlayTop                        = -999.0            # if specified, highest z-layer ends at zlaytop [ ], if not, it ends at the initial water level.
 uniformHeight1D                = 3.0               # Uniform height for 1D profiles and 1d2d internal links [m].

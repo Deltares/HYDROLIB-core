@@ -2079,7 +2079,7 @@ class Geometry(INIBasedModel):
     )
     dxmin1d: float = Field(0.001, alias="dxmin1D")
     uniformtyp1dstreetinlets: int = Field(-2, alias="uniformTyp1DStreetInlets")
-    stretchtype: int = Field(1, alias="stretchType")
+    stretchtype: int = Field(-1, alias="stretchType")
     zlaybot: float = Field(-999.0, alias="zlayBot")
     zlaytop: float = Field(-999.0, alias="zlayTop")
     uniformheight1d: float = Field(3.0, alias="uniformHeight1D")
