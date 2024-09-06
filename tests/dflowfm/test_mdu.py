@@ -234,7 +234,8 @@ class TestOutput:
         `tests/data/input/obscrsfile_cases/ObservationPoints_crs.ini`.
 
         Returns:
-            [ObservationCrossSection]: the objects contained in the fully loaded obs_crs.ini file."""
+            [ObservationCrossSection]: the objects contained in the fully loaded obs_crs.ini file.
+        """
 
         objects = [
             ObservationCrossSection(

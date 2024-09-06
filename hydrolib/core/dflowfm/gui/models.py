@@ -1,6 +1,7 @@
 """
 namespace for storing the branches as branches.gui file
 """
+
 # TODO reconsider the definition and/or filename of the branches.gui (from Prisca)
 
 import logging
@@ -13,6 +14,7 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import make_list_validator
 
 logger = logging.getLogger(__name__)
+
 
 # FIXME: GUI does not recongnize this section yet
 class BranchGeneral(INIGeneral):

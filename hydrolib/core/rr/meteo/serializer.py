@@ -42,15 +42,15 @@ class BuiEventSerializer:
             **event_data,
             **BuiEventSerializer.get_timedelta_fields(ts_duration),
         }
-        event_data[
-            "timeseries_length"
-        ] = BuiEventSerializer.serialize_timeseries_length(
-            event_data["timeseries_length"]
+        event_data["timeseries_length"] = (
+            BuiEventSerializer.serialize_timeseries_length(
+                event_data["timeseries_length"]
+            )
         )
-        event_data[
-            "precipitation_per_timestep"
-        ] = BuiEventSerializer.serialize_precipitation_per_timestep(
-            event_data["precipitation_per_timestep"], config
+        event_data["precipitation_per_timestep"] = (
+            BuiEventSerializer.serialize_precipitation_per_timestep(
+                event_data["precipitation_per_timestep"], config
+            )
         )
         if "event_idx" not in event_data.keys():
             event_data["event_idx"] = 1

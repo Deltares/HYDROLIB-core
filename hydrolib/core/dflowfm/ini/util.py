@@ -1,5 +1,6 @@
 """util.py provides additional utility methods related to handling ini files.
 """
+
 from datetime import datetime
 from enum import Enum
 from operator import eq

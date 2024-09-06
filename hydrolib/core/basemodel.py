@@ -4,6 +4,7 @@ as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
 
 """
+
 import logging
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod

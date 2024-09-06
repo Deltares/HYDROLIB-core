@@ -1882,7 +1882,7 @@ class TestPump:
         correctlist = list(range(correctlength))
         listargs = {key: correctlist for (key, _) in self._pumplists}
         listargs.pop(listname)  # Remove one list argument
-        for (_, _lengthname) in self._pumplists:
+        for _, _lengthname in self._pumplists:
             listargs[_lengthname] = correctlength
         listargs["controlside"] = "both"
 
