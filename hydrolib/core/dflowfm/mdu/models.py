@@ -1892,7 +1892,7 @@ class Geometry(INIBasedModel):
         )
         kmx: Optional[str] = Field("Number of vertical layers.", alias="kmx")
         layertype: Optional[str] = Field(
-            "Number of vertical layers.", alias="layerType"
+            "1= sigma-layers, 2 = z-layers, 3 = use VertplizFile.", alias="layerType"
         )
         numtopsig: Optional[str] = Field(
             "Number of sigma-layers on top of z-layers.", alias="numTopSig"
