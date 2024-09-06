@@ -1,0 +1,5 @@
+[meteo]
+Quantity     = rainfall_rate
+LocationType = global             # (one of: global, station, grid, polygon)
+ForcingFile  = rainschematic.tim      # (for LocationType=global, station or polygon. For LocationType=grid, use NetCDF or Delft3D-curvi type)
+ForcingFileType = uniform

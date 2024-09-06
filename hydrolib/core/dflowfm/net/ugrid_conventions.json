@@ -1,0 +1,189 @@
+{
+    "network1d": {
+        "network1d_node_id": {
+            "suffices": [
+                "_node_id",
+                "_node_ids"
+            ]
+        },
+        "network1d_node_long_name": {
+            "suffices": [
+                "_node_long_name",
+                "_node_long_names"
+            ]
+        },
+        "network1d_node_x": {
+            "suffices": [
+                "_node_x"
+            ]
+        },
+        "network1d_node_y": {
+            "suffices": [
+                "_node_y"
+            ]
+        },
+        "network1d_branch_id": {
+            "suffices": [
+                "_branch_id",
+                "_branch_ids"
+            ]
+        },
+        "network1d_branch_long_name": {
+            "suffices": [
+                "_branch_long_name",
+                "_branch_long_names"
+            ]
+        },
+        "network1d_branch_length": {
+            "suffices": [
+                "_edge_length",
+                "_branch_length",
+                "_branch_lengths"
+            ]
+        },
+        "network1d_branch_order": {
+            "suffices": [
+                "_branch_order"
+            ]
+        },
+        "network1d_edge_nodes": {
+            "suffices": [
+                "_edge_nodes"
+            ]
+        },
+        "network1d_geom_x": {
+            "suffices": [
+                "_geom_x"
+            ]
+        },
+        "network1d_geom_y": {
+            "suffices": [
+                "_geom_y"
+            ]
+        },
+        "network1d_part_node_count": {
+            "suffices": [
+                "_geom_node_count",
+                "_part_node_count"
+            ]
+        }
+    },
+    "mesh1d": {
+        "mesh1d_node_id": {
+            "suffices": [
+                "_node_id",
+                "_node_ids"
+            ]
+        },
+        "mesh1d_node_long_name": {
+            "suffices": [
+                "_node_long_name",
+                "_node_long_names"
+            ]
+        },
+        "mesh1d_edge_nodes": {
+            "suffices": [
+                "_edge_nodes"
+            ]
+        },
+        "mesh1d_node_branch_id": {
+            "suffices": [
+                "_node_branch",
+                "_nodes_branch_id",
+                "_node_branch_id"
+            ]
+        },
+        "mesh1d_node_branch_offset": {
+            "suffices": [
+                "_node_offset",
+                "_nodes_branch_offset",
+                "_node_branch_offset"
+            ]
+        },
+        "mesh1d_edge_branch_id": {
+            "suffices": [
+                "_edge_branch_id",
+                "_edge_branch"
+            ]
+        },
+        "mesh1d_edge_branch_offset": {
+            "suffices": [
+                "_edge_offset",
+                "_edge_branch_offset"
+            ]
+        }
+    },
+    "mesh2d": {
+        "mesh2d_node_x": {
+            "suffices": [
+                "_node_x"
+            ]
+        },
+        "mesh2d_node_y": {
+            "suffices": [
+                "_node_y"
+            ]
+        },
+        "mesh2d_node_z": {
+            "suffices": [
+                "_node_z"
+            ],
+            "is_optional": true
+        },
+        "mesh2d_edge_nodes": {
+            "suffices": [
+                "_edge_nodes"
+            ]
+        },
+        "mesh2d_face_x": {
+            "suffices": [
+                "_face_x"
+            ],
+            "is_optional": true
+        },
+        "mesh2d_face_y": {
+            "suffices": [
+                "_face_y"
+            ],
+            "is_optional": true
+        },
+        "mesh2d_face_z": {
+            "suffices": [
+                "_face_z"
+            ],
+            "is_optional": true
+        },
+        "mesh2d_face_nodes": {
+            "suffices": [
+                "_face_nodes"
+            ],
+            "is_optional": true
+        }
+    },
+    "link1d2d": {
+        "link1d2d_id": {
+            "suffices": [
+                "_id",
+                "_ids",
+                "_contact_id"
+            ]
+        },
+        "link1d2d_long_name": {
+            "suffices": [
+                "_long_name",
+                "_long_names",
+                "_contact_long_name"
+            ]
+        },
+        "link1d2d_contact_type": {
+            "suffices": [
+                "_contact_type"
+            ]
+        },
+        "link1d2d": {
+            "suffices": [
+                ""
+            ]
+        }
+    }
+}

@@ -1,10 +1,10 @@
 import filecmp
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Generic, Optional, TypeVar
+from tempfile import TemporaryDirectory
+from typing import Generator, Generic, List, Optional, TypeVar
 
-import pytest
-from numpy import array
-from pydantic.generics import GenericModel
+from pydantic.v1.generics import GenericModel
 
 TWrapper = TypeVar("TWrapper")
 
@@ -29,10 +29,10 @@ def assert_files_equal(file: Path, reference_file: Path, skip_lines: list = []) 
         skip_lines (list): Optional parameter; the line indices to skip for comparison. Default is an empty list.
     """
 
-    with file.open() as af:
+    with file.open(encoding="utf8") as af:
         actual_lines = af.readlines()
 
-    with reference_file.open() as rf:
+    with reference_file.open(encoding="utf8") as rf:
         reference_lines = rf.readlines()
 
     assert len(actual_lines) == len(
@@ -89,3 +89,123 @@ def assert_file_is_same_binary(
         assert filecmp.cmp(input_path, reference_path)
     else:
         assert not input_path.exists()
+
+
+def assert_objects_equal(
+    obj_cmp: object, obj_ref: object, exclude_fields: List[str] = []
+):
+    """Assert that two objects are equal with possibility to exclude
+    certain object fields.
+
+    If the input values are lists they will be checked element-wise for
+    equality.
+    If the input values are no objects, nor lists, this will fall back
+    to the standard equality operator.
+
+    Args:
+        obj_cmp (object): Object to be compared with reference object.
+        obj_ref (object): Reference object to compare with.
+        exclude_fields (List[str], optional): Optional list of key names
+            that should be excluded from the comparison of object fields.
+    Raises:
+        AssertionError: if objects are of different type, different list
+            lengths, or if objects have different field values.
+    """
+    assert type(obj_cmp) == type(obj_ref)
+
+    if isinstance(obj_cmp, list):
+        # Input is a list
+        assert len(obj_cmp) == len(obj_ref)
+
+        for a, b in zip(obj_cmp, obj_ref):
+            assert_objects_equal(a, b, exclude_fields)
+
+    elif isinstance(obj_cmp, object) and hasattr(obj_cmp, "__dict__"):
+        # Input is an object
+        check_keys = [
+            key for key in obj_cmp.__dict__.keys() if key not in exclude_fields
+        ]
+        assert all(
+            [getattr(obj_cmp, key) == getattr(obj_ref, key) for key in check_keys]
+        )
+    else:
+        # Input is more basic/something else
+        assert obj_cmp == obj_ref
+
+
+def error_occurs_only_once(error_message: str, full_error: str) -> bool:
+    """Check if the given error message occurs exactly once in the full error string.
+
+    Args:
+        error_message (str): The error to check for.
+        full_error (str): The full error as a string.
+
+    Returns:
+        bool: Return True if the error message occurs exactly once in the full error.
+            Returns False otherwise.
+    """
+    if error_message is None or full_error is None:
+        return False
+
+    return full_error.count(error_message) == 1
+
+
+@contextmanager
+def create_temp_file(content: str, filename: str) -> Generator[Path, None, None]:
+    """Create a file in a temporary directory with the specified file name and the provided content.
+
+    Args:
+        content (str): The content of the file as string.
+        filename (str): The file name.
+
+    Example:
+        >>>     with create_temp_file("some_file_content", "some_file_name") as temp_file:
+        >>>         print(f"Do something with {temp_file}")
+
+    Yields:
+        Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
+    """
+    with get_temp_file(filename) as file:
+        with open(file, "w", encoding="utf8") as f:
+            f.write(content)
+        yield file
+
+
+@contextmanager
+def create_temp_file_from_lines(
+    lines: List[str], filename: str
+) -> Generator[Path, None, None]:
+    """Create a file in a temporary directory with the specified file name and the provided content.
+
+    Args:
+        content (str): The content of the file as list of string (lines of the file).
+        filename (str): The file name.
+
+    Example:
+        >>>     with create_temp_file_from_lines(["some_file_content"], "some_file_name") as temp_file:
+        >>>         print(f"Do something with {temp_file}")
+
+    Yields:
+        Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
+    """
+    content = "\n".join(lines)
+    with create_temp_file(content, filename) as file:
+        yield file
+
+
+@contextmanager
+def get_temp_file(filename: str) -> Generator[Path, None, None]:
+    """Gets a path to a file in a temporary directory with the specified file name.
+
+    Args:
+        filename (str): The file name.
+
+    Example:
+        >>>     with get_temp_file("some_file_name") as temp_file:
+        >>>         print(f"Do something with {temp_file}")
+
+    Yields:
+        Generator[Path, None, None]: Generator with the path to the file in the temporary directory as yield type.
+    """
+    with TemporaryDirectory() as temp_dir:
+        yield Path(temp_dir, filename)

@@ -1,12 +1,10 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.3.1"
+version = "0.8.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
-packages = [
-    { include = "hydrolib"},
-]
+packages = [{ include = "hydrolib" }]
 readme = "README.md"
 repository = "https://github.com/deltares/hydrolib-core"
 documentation = "https://deltares.github.io/HYDROLIB-core"
@@ -17,15 +15,19 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-netCDF4 = "^1.5"
-numpy = "^1.21"
-pydantic = {extras = ["dotenv"], version = "~1.8"}
+netCDF4 = "^1.5,!=1.7.*"
+numpy = [
+    { version = "^1.21", python = "^3.8" },
+    { version = "^1.25", python = "^3.12" }
+]
+pydantic = "^2.5"
 lxml = "^4.6"
-meshkernel = "^1.0.0"
+meshkernel = "^4.2.0"
+strenum = "^0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
-black = "^22.1"
+black = "^24.3"
 isort = "^5.8"
 mkdocs = "^1.2"
 mkdocs-material = "^8.0"
@@ -42,27 +44,29 @@ matplotlib = "^3.4"
 mkdocs-table-reader-plugin = "^0.6.1"
 openpyxl = "^3.0.9"
 mike = "^1.1.2"
-jinja2 = "<3"
+jinja2 = "<4"
 markupsafe = "<2.1"
 mkdocs-jupyter = "^0.21.0"
 jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
+xarray = ">=2023.0.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.3.1"
+version = "0.8.0"
 tag_format = "$version"
 version_files = [
-    "hydrolib/core/__init__.py",
-    "pyproject.toml:version",
-    "tests/data/reference/dimr/test_serialize.xml:createdBy",
-    "tests/data/reference/model/test_dimr_model_save.xml:createdBy"
+  "hydrolib/core/__init__.py",
+  "pyproject.toml:version",
+  "tests/data/reference/dimr/test_serialize.xml:createdBy",
+  "tests/data/reference/model/test_dimr_model_save.xml:createdBy",
+  "tests/data/reference/crosssection/crsloc.ini:HYDROLIB-core",
 ]
 changelog_file = "docs/changelog.md"
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39']
+target-version = ['py38', 'py39', 'py310', 'py311']
 exclude = '''
 (
   /(
@@ -87,12 +91,7 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
-addopts = "-m \"not plots\""
-markers = [
-    "plots",
-    "docker"
-]
+markers = ["plots", "docker"]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-

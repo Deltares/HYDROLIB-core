@@ -4,26 +4,42 @@ as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
 
 """
+
 import logging
-import os
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
 from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type, TypeVar
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 from weakref import WeakValueDictionary
 
-from pydantic import BaseModel as PydanticBaseModel
-from pydantic import validator
-from pydantic.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.fields import ModelField, PrivateAttr
+from pydantic.v1 import BaseModel as PydanticBaseModel
+from pydantic.v1 import validator
+from pydantic.v1.error_wrappers import ErrorWrapper, ValidationError
+from pydantic.v1.fields import ModelField, PrivateAttr
 
-from hydrolib.core.io.dflowfm.xyz.base import DummmyParser, DummySerializer
+from hydrolib.core.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import (
+    FileChecksumCalculator,
+    FilePathStyleConverter,
     OperatingSystem,
+    PathStyle,
     get_operating_system,
+    get_path_style_for_current_operating_system,
     str_is_empty_or_none,
     to_key,
 )
@@ -253,24 +269,6 @@ class ResolveRelativeMode(IntEnum):
 class FileCasingResolver:
     """Class for resolving file path in a case-insensitive manner."""
 
-    def __init__(self) -> None:
-        """Initializes a new instance of the `FileCasingResolver` class."""
-
-        self._has_initialized = False
-        self._resolve_casing = False
-
-    def initialize_resolve_casing(self, resolve_casing: bool) -> None:
-        """Initialize the setting to resolve casing or not. Can only be set once.
-
-        Args:
-            resolve_casing (bool): Whether or not to resolve the file casing.
-        """
-        if self._has_initialized:
-            return
-
-        self._resolve_casing = resolve_casing
-        self._has_initialized = True
-
     def resolve(self, path: Path) -> Path:
         """Resolve the casing of a file path when the file does exist but not with the exact casing.
 
@@ -283,9 +281,6 @@ class FileCasingResolver:
         Raises:
             NotImplementedError: When this function is called with an operating system other than Windows, Linux or MacOS.
         """
-
-        if not self._resolve_casing:
-            return path
 
         operating_system = get_operating_system()
         if operating_system == OperatingSystem.WINDOWS:
@@ -410,6 +405,34 @@ class FilePathResolver:
             self._anchors.pop()
 
 
+class CachedFileModel:
+    """
+    CachedFileModel provides a simple structure to keep the Filemodel and checksum together.
+    """
+
+    _model: "FileModel"
+    _checksum: str
+
+    @property
+    def model(self) -> "FileModel":
+        """FileModel."""
+        return self._model
+
+    @property
+    def checksum(self) -> str:
+        """ "Checksum of the file the filemodel is based on."""
+        return self._checksum
+
+    def __init__(self, model: "FileModel", checksum: str) -> None:
+        """Create a new empty CachedFileModel.
+        Args:
+            model (FileModel): filemodel to cache.
+            checksum (str): checksum of the file.
+        """
+        self._model = model
+        self._checksum = checksum
+
+
 class FileModelCache:
     """
     FileModelCache provides a simple structure to register and retrieve FileModel
@@ -418,7 +441,7 @@ class FileModelCache:
 
     def __init__(self):
         """Create a new empty FileModelCache."""
-        self._cache_dict: Dict[Path, "FileModel"] = {}
+        self._cache_dict: Dict[Path, CachedFileModel] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
         """Retrieve the model associated with the (absolute) path if
@@ -429,7 +452,10 @@ class FileModelCache:
                 The FileModel associated with the Path if it has been registered
                 before, otherwise None.
         """
-        return self._cache_dict.get(path, None)
+        cached_file_model = self._cache_dict.get(path, None)
+        if cached_file_model is None:
+            return None
+        return cached_file_model.model
 
     def register_model(self, path: Path, model: "FileModel") -> None:
         """Register the model with the specified path in this FileModelCache.
@@ -438,7 +464,120 @@ class FileModelCache:
             path (Path): The path to associate the model with.
             model (FileModel): The model to be associated with the path.
         """
-        self._cache_dict[path] = model
+        checksum = self._get_checksum(path)
+        self._cache_dict[path] = CachedFileModel(model, checksum)
+
+    def is_empty(self) -> bool:
+        """Whether or not this file model cache is empty.
+
+        Returns:
+            bool: Whether or not the cache is empty.
+        """
+        return not any(self._cache_dict)
+
+    def _exists(self, path: Path) -> bool:
+        """Whether or not the filepath is in the cache.
+
+        Args:
+            path (Path): The path to verify if it is already added in the cache.
+
+        Returns:
+            bool: Whether or not the path is in the cache.
+        """
+        return path in self._cache_dict
+
+    def has_changed(self, path: Path) -> bool:
+        """Whether or not the file in the filepath has changed from the cache.
+
+        Args:
+            path (Path): The path to verify verify against.
+
+        Returns:
+            bool: Whether or the file has changed.
+            True when the file has changed.
+            True when the file does not exist in caching reference.
+            False when the file has not changed.
+        """
+        if not self._exists(path):
+            return True
+
+        checksum = self._get_checksum(path)
+        return checksum != self._cache_dict.get(path).checksum
+
+    def _get_checksum(self, path: Path) -> Optional[str]:
+        return FileChecksumCalculator.calculate_checksum(path)
+
+
+class ModelSaveSettings:
+    """A class that holds the global settings for model saving."""
+
+    _os_path_style = get_path_style_for_current_operating_system()
+
+    def __init__(self, path_style: Optional[PathStyle] = None) -> None:
+        """Initializes a new instance of the ModelSaveSettings class.
+
+        Args:
+            path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.
+        """
+
+        if path_style is None:
+            path_style = self._os_path_style
+
+        self._path_style = path_style
+
+    @property
+    def path_style(self) -> PathStyle:
+        """Gets the path style setting.
+
+        Returns:
+            PathStyle: Which path style is used to save the files.
+        """
+        return self._path_style
+
+
+class ModelLoadSettings:
+    """A class that holds the global settings for model loading."""
+
+    def __init__(
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+    ) -> None:
+        """Initializes a new instance of the ModelLoadSettings class.
+
+        Args:
+            recurse (bool): Whether or not to recursively load the whole model.
+            resolve_casing (bool): Whether or not to resolve the file casing.
+            path_style (PathStyle): Which path style is used in the loaded files.
+        """
+        self._recurse = recurse
+        self._resolve_casing = resolve_casing
+        self._path_style = path_style
+
+    @property
+    def recurse(self) -> bool:
+        """Gets the recurse setting.
+
+        Returns:
+            bool: Whether or not to recursively load the whole model.
+        """
+        return self._recurse
+
+    @property
+    def resolve_casing(self) -> bool:
+        """Gets the resolve casing setting.
+
+        Returns:
+            bool: Whether or not to resolve the file casing.
+        """
+        return self._resolve_casing
+
+    @property
+    def path_style(self) -> PathStyle:
+        """Gets the path style setting.
+
+        Returns:
+            PathStyle: Which path style is used in the loaded files.
+        """
+        return self._path_style
 
 
 class FileLoadContext:
@@ -452,6 +591,38 @@ class FileLoadContext:
         self._path_resolver = FilePathResolver()
         self._cache = FileModelCache()
         self._file_casing_resolver = FileCasingResolver()
+        self._file_path_style_converter = FilePathStyleConverter()
+        self._load_settings: Optional[ModelLoadSettings] = None
+
+    def initialize_load_settings(
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+    ):
+        """Initialize the global model load setting. Can only be set once.
+
+        Args:
+            recurse (bool): Whether or not to recursively load the whole model.
+            resolve_casing (bool): Whether or not to resolve the file casing.
+            path_style (PathStyle): Which path style is used in the loaded files.
+        """
+        if self._load_settings is None:
+            self._load_settings = ModelLoadSettings(recurse, resolve_casing, path_style)
+
+    @property
+    def load_settings(self) -> ModelLoadSettings:
+        """Gets the model load settings.
+
+        Raises:
+            ValueError: When the model load settings have not been initialized yet.
+        Returns:
+            ModelLoadSettings: The model load settings.
+
+        """
+        if self._load_settings is None:
+            raise ValueError(
+                f"The model load settings have not been initialized yet. Make sure to call `{self.initialize_load_settings.__name__}` first."
+            )
+
+        return self._load_settings
 
     def retrieve_model(self, path: Optional[Path]) -> Optional["FileModel"]:
         """Retrieve the model associated with the path.
@@ -483,6 +654,14 @@ class FileLoadContext:
         """
         absolute_path = self._path_resolver.resolve(path)
         self._cache.register_model(absolute_path, model)
+
+    def cache_is_empty(self) -> bool:
+        """Whether or not the file model cache is empty.
+
+        Returns:
+            bool: Whether or not the file model cache is empty.
+        """
+        return self._cache.is_empty()
 
     def get_current_parent(self) -> Path:
         """Get the current absolute path with which files are resolved.
@@ -526,14 +705,6 @@ class FileLoadContext:
         """Pop the last added parent off this FileLoadContext."""
         self._path_resolver.pop_last_parent()
 
-    def set_resolve_casing(self, resolve_casing: bool) -> None:
-        """Set the setting to resolve casing or not.
-
-        Args:
-            resolve_casing (bool): Whether or not to resolve the file casing.
-        """
-        self._file_casing_resolver.initialize_resolve_casing(resolve_casing)
-
     def resolve_casing(self, file_path: Path) -> Path:
         """Resolve the file casing for the provided file path.
 
@@ -543,7 +714,45 @@ class FileLoadContext:
         Returns:
             Path: The resolved file path.
         """
-        return self._file_casing_resolver.resolve(file_path)
+        if self.load_settings.resolve_casing:
+            return self._file_casing_resolver.resolve(file_path)
+        return file_path
+
+    def convert_path_style(self, file_path: Path) -> Path:
+        """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+
+        Args:
+            file_path (Path): The file path to convert to the OS path style.
+
+        Returns:
+            Path: The resolved file path.
+        """
+
+        if file_path.is_absolute():
+            return file_path
+
+        converted_file_path = self._file_path_style_converter.convert_to_os_style(
+            file_path, self.load_settings.path_style
+        )
+        return Path(converted_file_path)
+
+    def is_content_changed(self, path: Path) -> bool:
+        """Verify if the path is already known and if the content have changed.
+
+        Relative paths will be resolved based on the current state of the
+        FileLoadContext.
+
+        Args:
+            path (Path): The relative path from which the model was loaded.
+            model (FileModel): The loaded model.
+
+        Returns:
+            True when the content from the path on the location has been changed.
+            False when the content from the path is not priorly cached.
+            False when the content from the path on the location has not been changed.
+        """
+        absolute_path = self._path_resolver.resolve(path)
+        return self._cache.has_changed(absolute_path)
 
 
 @contextmanager
@@ -575,6 +784,9 @@ def _should_traverse(model: BaseModel, _: FileLoadContext) -> bool:
 
 def _should_execute(model: BaseModel, _: FileLoadContext) -> bool:
     return model.is_file_link()
+
+
+PathOrStr = Union[Path, str]
 
 
 class FileModel(BaseModel, ABC):
@@ -614,26 +826,32 @@ class FileModel(BaseModel, ABC):
     # Absolute anchor is used to resolve the save location when the filepath is relative.
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
 
-    def __new__(cls, filepath: Optional[Path] = None, *args, **kwargs):
+    def __new__(cls, filepath: Optional[PathOrStr] = None, *args, **kwargs):
         """Create a new model.
         If the file at the provided file path was already parsed, this instance is returned.
 
         Args:
-            filepath (Optional[Path], optional): The file path to the file. Defaults to None.
+            filepath (Optional[PathOrStr], optional): The file path to the file. Defaults to None.
 
         Returns:
             FileModel: A file model.
         """
+        filepath = FileModel._change_to_path(filepath)
         with file_load_context() as context:
             if (file_model := context.retrieve_model(filepath)) is not None:
-                return file_model
-            else:
-                return super().__new__(cls)
+                if not context.is_content_changed(filepath):
+                    cls._has_been_loaded_from_cache = True
+                    return file_model
+
+            cls._has_been_loaded_from_cache = False
+            return super().__new__(cls)
 
     def __init__(
         self,
-        filepath: Optional[Path] = None,
+        filepath: Optional[PathOrStr] = None,
         resolve_casing: bool = False,
+        recurse: bool = True,
+        path_style: Optional[str] = None,
         *args,
         **kwargs,
     ):
@@ -644,24 +862,44 @@ class FileModel(BaseModel, ABC):
         If the filepath is provided, it is read from disk.
 
         Args:
-            filepath (Optional[Path], optional): The file path. Defaults to None.
+            filepath (Optional[PathOrStr], optional): The file path. Defaults to None.
             resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
+            recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
+            path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
+
+        Raises:
+            ValueError: When an unsupported path style is passed.
         """
+        if self._has_been_loaded_from_cache:
+            return
+
         if not filepath:
             super().__init__(*args, **kwargs)
             return
 
+        filepath = FileModel._change_to_path(filepath)
+        path_style = path_style_validator.validate(path_style)
+
         with file_load_context() as context:
-            context.set_resolve_casing(resolve_casing)
+            context.initialize_load_settings(recurse, resolve_casing, path_style)
+
+            filepath = context.convert_path_style(filepath)
+
+            if not FileModel._should_load_model(context):
+                super().__init__(*args, **kwargs)
+                self.filepath = filepath
+                return
+
             self._absolute_anchor_path = context.get_current_parent()
             loading_path = context.resolve(filepath)
             loading_path = context.resolve_casing(loading_path)
-            filepath = self._get_updated_file_path(filepath, loading_path)
-            context.register_model(filepath, self)
+            if context.load_settings.resolve_casing:
+                filepath = self._get_updated_file_path(filepath, loading_path)
 
             logger.info(f"Loading data from {filepath}")
 
             data = self._load(loading_path)
+            context.register_model(filepath, self)
             data["filepath"] = filepath
             kwargs.update(data)
 
@@ -676,6 +914,17 @@ class FileModel(BaseModel, ABC):
             self._post_init_load()
 
             context.pop_last_parent()
+
+    @classmethod
+    def _should_load_model(cls, context: FileLoadContext) -> bool:
+        """Determines whether the file model should be loaded or not.
+        A file model should be loaded when either all models should be loaded recursively,
+        or when no file model has been loaded yet.
+
+        Returns:
+            bool: Whether or not the file model should be loaded or not.
+        """
+        return context.load_settings.recurse or context.cache_is_empty()
 
     def _post_init_load(self) -> None:
         """
@@ -752,7 +1001,12 @@ class FileModel(BaseModel, ABC):
             value = {"filepath": Path(value)}
         return super().validate(value)
 
-    def save(self, filepath: Optional[Path] = None, recurse: bool = False) -> None:
+    def save(
+        self,
+        filepath: Optional[Path] = None,
+        recurse: bool = False,
+        path_style: Optional[str] = None,
+    ) -> None:
         """Save the model to disk.
 
         If recurse is set to True, all of the child FileModels will be saved as well.
@@ -781,25 +1035,37 @@ class FileModel(BaseModel, ABC):
             recurse (bool, optional):
                 Whether to save all children of this FileModel (when set to True),
                 or only save this model (when set to False). Defaults to False.
+            path_style (Optional[str], optional):
+                With which file path style to save the model. File references will
+                be written with the specified path style. Defaults to the path style
+                used by the current operating system. Options: 'unix', 'windows'.
+
+        Raises:
+            ValueError: When an unsupported path style is passed.
         """
         if filepath is not None:
             self.filepath = filepath
+
+        path_style = path_style_validator.validate(path_style)
+        save_settings = ModelSaveSettings(path_style=path_style)
 
         # Handle save
         with file_load_context() as context:
             context.push_new_parent(self._absolute_anchor_path, self._relative_mode)
 
             if recurse:
-                self._save_tree(context)
+                self._save_tree(context, save_settings)
             else:
-                self._save_instance()
+                self._save_instance(save_settings)
 
-    def _save_instance(self) -> None:
+    def _save_instance(self, save_settings: ModelSaveSettings) -> None:
         if self.filepath is None:
             self.filepath = self._generate_name()
-        self._save()
+        self._save(save_settings)
 
-    def _save_tree(self, context: FileLoadContext) -> None:
+    def _save_tree(
+        self, context: FileLoadContext, save_settings: ModelSaveSettings
+    ) -> None:
         # Ensure all names are generated prior to saving
         def execute_generate_name(
             model: BaseModel, acc: FileLoadContext
@@ -825,7 +1091,7 @@ class FileModel(BaseModel, ABC):
             if isinstance(model, FileModel):
                 acc.pop_last_parent()
                 model._absolute_anchor_path = acc.get_current_parent()
-                model._save()
+                model._save(save_settings)
             return acc
 
         save_traverser = ModelTreeTraverser[FileLoadContext](
@@ -880,7 +1146,7 @@ class FileModel(BaseModel, ABC):
         the parent. In exceptional cases, the relative mode can be dependent on the
         data (i.e. the unvalidated/parsed dictionary fed into the pydantic basemodel).
         As such the data is provided for such classes where the relative mode is
-        dependent on the state (e.g. the [FMModel][hydrolib.core.io.dflowfm.mdu.models.FMModel]).
+        dependent on the state (e.g. the [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]).
 
         Args:
             data (Dict[str, Any]):
@@ -907,12 +1173,15 @@ class FileModel(BaseModel, ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def _save(self) -> None:
+    def _save(self, save_settings: ModelSaveSettings) -> None:
         """Save this instance to disk.
 
         This method needs to be implemented by any class deriving from
         FileModel, and is used in both the _save_instance and _save_tree
         methods.
+
+        Args:
+            save_settings (ModelSaveSettings): The model save settings.
         """
         raise NotImplementedError()
 
@@ -934,6 +1203,48 @@ class FileModel(BaseModel, ABC):
     def __str__(self) -> str:
         return str(self.filepath if self.filepath else "")
 
+    @staticmethod
+    def _change_to_path(filepath):
+        if filepath is None:
+            return filepath
+        elif isinstance(filepath, Path):
+            return filepath
+        else:
+            return Path(filepath)
+
+    @validator("filepath")
+    def _conform_filepath_to_pathlib(cls, value):
+        return FileModel._change_to_path(value)
+
+
+class SerializerConfig(BaseModel, ABC):
+    """Class that holds the configuration settings for serialization."""
+
+    float_format: str = ""
+    """str: The string format that will be used for float serialization. If empty, the original number will be serialized. Defaults to an empty string.
+        
+        Examples:
+            Input value = 123.456
+
+            Format    | Output          | Description
+            -------------------------------------------------------------------------------------------------------------------------------------
+            ".0f"     | 123             | Format float with 0 decimal places.
+            "f"       | 123.456000      | Format float with default (=6) decimal places.
+            ".2f"     | 123.46          | Format float with 2 decimal places.
+            "+.1f"    | +123.5          | Format float with 1 decimal place with a + or  sign.
+            "e"       | 1.234560e+02    | Format scientific notation with the letter 'e' with default (=6) decimal places.
+            "E"       | 1.234560E+02    | Format scientific notation with the letter 'E' with default (=6) decimal places.
+            ".3e"     | 1.235e+02       | Format scientific notation with the letter 'e' with 3 decimal places.
+            "<15"     | 123.456         | Left aligned in space with width 15
+            "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
+            ">15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
+            "*>15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
+            "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.     
+            ".3%"     | 12345.600%      | Format percentage with 3 decimal places.
+
+            More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
+        """
+
 
 class ParsableFileModel(FileModel):
     """ParsableFileModel defines a FileModel which can be parsed
@@ -953,6 +1264,8 @@ class ParsableFileModel(FileModel):
     to skip the _get_serializer and _get_parser methods respectively.
     """
 
+    serializer_config: SerializerConfig = SerializerConfig()
+
     def _load(self, filepath: Path) -> Dict:
         # TODO Make this lazy in some cases so it doesn't become slow
         if filepath.is_file():
@@ -960,23 +1273,39 @@ class ParsableFileModel(FileModel):
         else:
             raise ValueError(f"File: `{filepath}` not found, skipped parsing.")
 
-    def _save(self) -> None:
+    def _save(self, save_settings: ModelSaveSettings) -> None:
         """Save the data of this FileModel.
 
         _save provides a hook for child models to overwrite the save behaviour as
         called during the tree traversal.
-        """
-        self._serialize(self.dict())
 
-    def _serialize(self, data: dict) -> None:
-        """Serializes the data to file. Should not be called directly, only through `_save`."""
+        Args:
+            save_settings (ModelSaveSettings): The model save settings.
+        """
+        self._serialize(self.dict(), save_settings)
+
+    def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
+        """Serializes the data to file. Should not be called directly, only through `_save`.
+
+        Args:
+            save_settings (ModelSaveSettings): The model save settings.
+        """
         path = self._resolved_filepath
         if path is None:
             # TODO: Do we need to add a warning / exception here
             return
 
         path.parent.mkdir(parents=True, exist_ok=True)
-        self._get_serializer()(path, data)
+        self._get_serializer()(path, data, self.serializer_config, save_settings)
+
+    def dict(self, *args, **kwargs):
+        kwargs["exclude"] = self._exclude_fields()
+        return super().dict(*args, **kwargs)
+
+    @classmethod
+    def _exclude_fields(cls) -> Set[str]:
+        """A set containing the field names that should not be serialized."""
+        return {"filepath", "serializer_config"}
 
     @classmethod
     def _parse(cls, path: Path) -> Dict:
@@ -996,7 +1325,9 @@ class ParsableFileModel(FileModel):
         return ".test"
 
     @abstractclassmethod
-    def _get_serializer(cls) -> Callable[[Path, Dict], None]:
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return DummySerializer.serialize
 
     @abstractclassmethod
@@ -1038,7 +1369,7 @@ class DiskOnlyFileModel(FileModel):
         # We de not load any additional data, as such we return an empty dict.
         return dict()
 
-    def _save(self) -> None:
+    def _save(self, save_settings: ModelSaveSettings) -> None:
         # The target_file_path contains the new path to write to, while the
         # _source_file_path contains the original data. If these are not the
         # same we copy the file and update the underlying source path.
@@ -1083,3 +1414,37 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
         return v
 
     return validator("*", allow_reuse=True, pre=True)(adjust_none)
+
+
+class PathStyleValidator:
+    """Class to take care of path style validation."""
+
+    _os_path_style = get_path_style_for_current_operating_system()
+
+    def validate(self, path_style: Optional[str]) -> PathStyle:
+        """Validates the path style as string on whether it is a supported path style.
+        If it is a valid path style the path style enum value will be return as a result.
+
+        Args:
+            path_style (Optional[str]): The path style as string value.
+
+        Returns:
+            PathStyle: The converted PathStyle object.
+
+        Raises:
+            ValueError: When an unsupported path style is passed.
+        """
+        if path_style is None:
+            return self._os_path_style
+
+        supported_path_styles = list(PathStyle)
+        if path_style in supported_path_styles:
+            return PathStyle(path_style)
+
+        supported_path_style_str = ", ".join(([x.value for x in supported_path_styles]))
+        raise ValueError(
+            f"Path style '{path_style}' not supported. Supported path styles: {supported_path_style_str}"
+        )
+
+
+path_style_validator = PathStyleValidator()

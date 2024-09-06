@@ -34,7 +34,7 @@ When starting development on a branch, a pull request should be created for revi
 In the description text area on GitHub, use a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) such that this PR will be automatically linked to the issue.
 For example: `Fixes #160`.
 
-During continuous integration, the checks will be run with python 3.8 and 3.9 on Windows, Ubuntu and MacOS. The checks consist of running the tests, checking the code formatting and running SonarCloud. 
+During continuous integration, the checks will be run with python 3.8, 3.9 and 3.12 on Windows, Ubuntu and MacOS. The checks consist of running the tests, checking the code formatting and running SonarCloud. 
 We advise to use a draft pull request, to prevent the branch to be merged back before developement is finished. When the branch is ready for review, you can update the status of the pull request to "ready for review".
 
 ### Reviews
@@ -50,7 +50,7 @@ The merge commit message should adhere to the [conventional commit guidelines](h
 ### Coding guidelines
 * If there is code that needs to be tested, there should be tests written for it.
 * If there are any additions or changes to the public API, the documentation should be updated. 
-* Files should be added to the appropriate folder to keep modules and objects within the correct scope.  
+* Files should be added to the appropriate folder to keep modules and objects within the correct scope.
 
 ## Releasing
 ### Making a release on GitHub and PyPi
@@ -75,6 +75,8 @@ To prepare for releasing, please make sure you have a clean checkout of the late
 	 ```
 	 cz bump --dry-run --increment PATCH
 	 ```
+	 * In the updated `docs/changelog.md`, manually add links to GitHub PR numbers (or issue numbers) at the end of each line, if appropriate.
+         It is recommended to use the macros `{{gh_pr(123)}}`, resp. `{{gh_issue(345)}}` to get automatic hyperlinks (where 123 and 345 are GitHub's PR and issue numbers, respectively).
 	 * Use MAJOR, MINOR or PATCH to increment the version
 	 ```
 	 cz bump --increment {MAJOR,MINOR,PATCH}

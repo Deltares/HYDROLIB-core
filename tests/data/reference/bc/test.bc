@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.3.0
+# written by HYDROLIB-core 0.3.1
 
 [General]
 fileVersion = 1.01
@@ -7,29 +7,29 @@ fileType    = boundConds
 [Forcing]
 name              = boundary_timeseries
 function          = timeseries
-timeInterpolation = blockTo
-offset            = 1.23
-factor            = 2.34
+timeInterpolation = block-To
+offset            = 1.230
+factor            = 2.340
 quantity          = time
 unit              = minutes since 2015-01-01 00:00:00
 quantity          = dischargebnd
 unit              = m³/s
-0.0      1.23
-60.0     2.34
-120.0    3.45
+0.0000    1.2300
+60.0000   2.3400
+120.0000  3.4500
 
 [Forcing]
 name     = boundary_harmonic
 function = harmonic
-factor   = 1.0
+factor   = 1.000
 quantity = harmonic component
 unit     = minutes
 quantity = waterlevelbnd amplitude
 unit     = m
 quantity = waterlevelbnd phase
 unit     = deg
-0.0     1.23    2.34
-60.0    3.45    4.56
+0.0000   1.2300  2.3400
+60.0000  3.4500  4.5600
 
 [Forcing]
 name     = boundary_harmonic-correction
@@ -40,15 +40,15 @@ quantity = waterlevelbnd amplitude
 unit     = m
 quantity = waterlevelbnd phase
 unit     = deg
-0.0     1.23    2.34
-60.0    3.45    4.56
+0.0000   1.2300  2.3400
+60.0000  3.4500  4.5600
 
 [Forcing]
 name              = boundary_t3d
 function          = t3d
-offset            = 1.23
-factor            = 2.34
-vertPositions     = 3.45 4.56 5.67
+offset            = 1.230
+factor            = 2.340
+vertPositions     = 3.450 4.560 5.670
 vertInterpolation = log
 vertPositionType  = percBed
 timeInterpolation = linear
@@ -63,9 +63,9 @@ vertPositionIndex = 2
 quantity          = salinitybnd
 unit              = ppt
 vertPositionIndex = 3
-0.0      1.0    2.0    3.0
-60.0     4.0    5.0    6.0
-120.0    7.0    8.0    9.0
+0.0000    1.0000  2.0000  3.0000
+60.0000   4.0000  5.0000  6.0000
+120.0000  7.0000  8.0000  9.0000
 
 [Forcing]
 name     = boundary_qhtable
@@ -74,15 +74,15 @@ quantity = qhbnd discharge
 unit     = m3/s
 quantity = qhbnd waterlevel
 unit     = m
-1.23    2.34
-3.45    4.56
+1.2300  2.3400
+3.4500  4.5600
 
 [Forcing]
 name     = boundary_constant
 function = constant
-offset   = 1.23
-factor   = 2.34
+offset   = 1.230
+factor   = 2.340
 quantity = waterlevelbnd
 unit     = m
-3.45
+3.4500
 

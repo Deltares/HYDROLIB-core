@@ -1,3 +1,124 @@
+## 0.8.0 (2024-07-09)
+
+### Feat
+
+- Prevent duplicate contacts/links in `Link1d2d` by replacing Link1d2d._process() with properties (#674)
+- Move jadelvappos to physics section. (#672)
+- Make research wave section optional again. (#671)
+- Fix remaining keywords (#670)
+- Add support for spaces polyline names (#652)
+- Add support for optional [sedtrails] research section. (#651)
+- Don't write keywords with None values (#663)
+- Add/move more mdu keywords (#654)
+- Raise error for unknown keywords (#632)
+- Added support for research keywords (#642)
+- Add support for python 3.12 (#640)
+- Use caching to prevent reading files multiple times (#641)
+- Add missing mdu keywords (#628)
+- properly writing number of processes in dimr_config.xml (#623)
+
+### Fix
+
+- Ensure mesh_2d_edge_x and mesh_2d_edge_y are written to nc file. (#645)
+- locationtype should not be written for CrossSections or ObservationCrossSections (#683)
+
+## 0.7.0 (2024-03-11)
+
+### Feat
+
+- Use new `contacts_set` function from MeshKernel 4.0.2 (#575)
+- Bump MeshKernel version to ^4.0.2 (#594)
+- Add support for Python 3.10 (#586)
+
+### Fix
+
+- It is not possible to refine meshes with cell sizes smaller than 10 m (#611)
+- Fix show tree output for old external forcing file (ExtOldForcing class) (#581)
+
+## 0.6.1 (2024-01-12)
+
+## 0.6.0 (2023-11-16)
+
+### Feat
+
+- Add filetype 10 (polyfile) to class ExtOldFileType (#565)
+- Add missing oldext quantities (#557)
+
+### Fix
+
+- Rainfall Runoff .bui file with multiple stations gives parse error
+
+## 0.5.2 (2023-04-19)
+
+### Fix
+
+- failing unittest + SonarCloud security issue (#541)
+
+## 0.5.1 (2023-04-17)
+
+### Feat
+
+- Add the quantity `nudge_salinity_temperature` to ext old file header.
+- Support the old style external forcings file
+- Add support for several coastal MDU keywords
+- Add support for *.tim files and *.bc files in the structure file
+- Support meteo blocks in external forcings file (#477)
+- Remove indentation from MDU file
+- Add 4 missing 1D2D settings to FMModel
+- Support *.tim files
+- Add XYN classes to public API (#492)
+- Include old and new observation crossections into MDU FMModel.output class (#470)
+- Support observation crosssection .pli via existing PolyFile class (#464)
+- Add support for 3D Z-sigma settings in MDU
+- Support loading+saving models with configurable OS path style formats (#361)
+- Add support for observation point xyn files (#472)
+- Support filepath as str besides Path for all model classes under FileBasedModel (#469)
+- Add validation for NaN values in datablocks
+
+### Fix
+
+- Fixed issues with the new release script
+- Special characters should be parsed correctly from file
+- MDU keywords such as 1d2dLinkFile are written to file without comments (#528)
+- UGRID network files without faces should be accepted
+- correct handling of whitespace and comments in observation point .xyn files (#508)
+- Fix resolving of relative paths containing `..` when not using the `resolve_casing` option.
+- ignore trailing values or text on polyline data lines to better support boundary polyfiles (#482)
+- Reading invalid formatted plifile should raise error instead of warning
+- polyline serializer should print empty trailing comment lines
+
+### Refactor
+
+- Make sure of the new Pydantic 1.10 functionality
+
+## 0.4.1 (2023-01-26)
+
+### Fix
+- `_add_nodes_to_segments` fixed ({{gh_pr(440)}})
+
+## 0.4.0 (2023-01-23)
+
+### Feat
+
+- Remove io namespace and add convenient imports/API at several directory levels ({{gh_pr(438)}})
+- Added the option for all supported files to customize the float formatting when saving ({{gh_pr(406)}})
+- Suppress warning in polyfile parser that the white space at the start of the line is ignored ({{gh_pr(409)}})
+- Change data block default spacing from 4 to 2 ({{gh_pr(407)}})
+- Add support for non-recursively loading models ({{gh_pr(401)}})
+
+### Fix
+
+- Fixed polylinefile validation for Structure and its subclasses ({{gh_pr(416)}})
+- Rename variable in generate_nodes function ({{gh_pr(437)}})
+- Ensure that QuantityUnitPairs that are not part of a vector are correctly parsed ({{gh_pr(420)}})
+- Enum values are incorrectly written to files ({{gh_pr(403)}})
+
+### Refactor
+
+- Small refactoring of the VectorQuantityUnitPairs and VectorForcingBase ({{gh_pr(422)}})
+- Move the base module in XYZ back to IO ({{gh_pr(418)}})
+- Refactored support for vectors in .bc files ({{gh_pr(394)}})
+
 ## 0.3.1 (2022-10-25)
 
 ### Feat
@@ -60,7 +181,8 @@
 
 ### Fix
 
-- **parser**: correctly parse model input fields with leading digits, such as 1D2DLinkFile.- **parser**: allow empty friction specification in all crossdef types. ({{gh_pr(206)}}).
+- **parser**: correctly parse model input fields with leading digits, such as 1D2DLinkFile.
+- **parser**: allow empty friction specification in all crossdef types. ({{gh_pr(206)}}).
 
 ## 0.2.0 (2021-12-17)
 ### Added

@@ -18,6 +18,13 @@ model_path = Path("./dimr_config.xml")
 dimr_model = DIMR(filepath=model_path)
 ```
 
+It is also possible to not recursively load models:
+```python
+dimr_model = DIMR(filepath=model_path, recurse=False)
+```
+
+This will only load a DIMR model without its underlying child file models, such as the Flow FM model.
+
 ## Save the model in a new location
 
 If we want to store the full model in a different location we can use the `save` function:
@@ -89,7 +96,7 @@ The file on disk is actually called `network/FlowFM_net.nc`.
 To load the model and simultaneously repair the file references in the in-memory model:
 
 ```python
-from hydrolib.core.io.dflowfm.mdu.models import FMModel
+from hydrolib.core.dflowfm.mdu.models import FMModel
 model = FMModel("FlowFM.mdu", resolve_casing=True)
 
 # assert that file reference has been updated from Network/flowfm_net.nc to network/FlowFM_net.nc
@@ -97,6 +104,43 @@ assert model.geometry.netfile.filepath == Path("network/FlowFM_net.nc")
 ```
 
 The `resolve_casing` argument is by default `False`. Using the `resolve_casing` functionality might heavily influence the performance of model loading depending on the model size, the file tree structure and the operating system.
+
+## Saving and loading models between different operating systems
+In certain cases, it may be necessary to switch effortlessly between operating systems (OS) using the same model. This allows the model to be loaded seamlessly on both Unix and Windows systems. However, it is important to note that the file paths look different for both OSs. Absolute file paths on Unix have a leading slash, while on Windows systems they start with a drive letter. Additionally, Unix systems don't allow backward slashes, whereas Windows supports both forward and backward slashes in file paths. These unique differences may cause issues when attempting to interpret files references within the model on another OS.
+
+Fortunately, HYDROLIB-core features a functionality that allows the conversion of file paths from one OS path style to another. This resolves the issue and ensures that the model functions seamlessly on both Unix and Windows systems.
+
+### Examples
+**Loading a model with Unix file paths on Windows:**
+```python
+model = FMModel(filepath=Path("p:/model/FlowFM.mdu"), path_style="unix")
+```
+
+**Loading a model with Windows file paths on Linux/MacOS:**
+```python
+model = FMModel(filepath=Path("/p/model/FlowFM.mdu"), path_style="windows")
+```
+
+In the two examples mentioned above, the `path_style` option specifies the path style that is used in the model files to be loaded. This information allows HYDROLIB-core to accurately convert the file paths to match the path style of the running operating system and interpret them correctly.
+
+**Saving a model with Unix file paths on Windows:**
+```python
+model.save(filepath=Path("p:/model/FlowFM.mdu"), recurse=True, path_style="unix")
+```
+
+**Saving a model with Windows file paths on Linux/MacOS:**
+```python
+model.save(filepath=Path("/p/model/FlowFM.mdu"), recurse=True, path_style="windows")
+```
+
+In the two examples mentioned above, the `path_style` option specifies the preferred path style of the saved model files. However, if this option is not specified when initializing or saving the model, it will default to the path style of the current operating system.
+
+The `path_style` option supports these three values:
+* `None` (will default to either `"windows"` or `"unix"` depending on the running OS)
+* `"windows"`
+* `"unix"`
+
+Other values are not supported and an error will be raised.
 
 ## Caveats when saving models
 
