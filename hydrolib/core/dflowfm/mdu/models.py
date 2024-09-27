@@ -2015,7 +2015,7 @@ class Geometry(INIBasedModel):
     thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
     fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
     pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
-    usecaching: bool = Field(False, alias="useCaching")
+    usecaching: bool = Field(True, alias="useCaching")
     vertplizfile: Optional[PolyFile] = Field(None, alias="vertPlizFile")
     frictfile: Optional[List[FrictionModel]] = Field(
         None, alias="frictFile", delimiter=";"
