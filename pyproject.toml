@@ -24,6 +24,10 @@ pydantic = "^2.5"
 lxml = ">=4.6"
 meshkernel = "^4.2.0"
 strenum = "^0"
+# add minimal pandas version for python 3.13 to prevent 2.0.3 to be installed by poetry
+pandas = [
+    { version = "^2.2.3", python = "^3.13" }
+]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
