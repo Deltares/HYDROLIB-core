@@ -21,7 +21,7 @@ numpy = [
     { version = "^1.25", python = "^3.12" }
 ]
 pydantic = "^2.5"
-lxml = "^4.6"
+lxml = ">=4.6"
 meshkernel = "^4.2.0"
 strenum = "^0"
 
