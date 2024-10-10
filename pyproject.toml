@@ -14,7 +14,7 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 "issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 # exclude netcdf 1.7 to avoid issues with python 3.8 on windows
 netCDF4 = [
     { version = "^1.5,!=1.7.*", python = "3.8" },
