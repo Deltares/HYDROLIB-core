@@ -23,7 +23,7 @@ netCDF4 = [
 # for future python 3.13 support we need to allow numpy v2 and numpy v1 is also still widely uses. So no caret requirement here.
 numpy = [
     { version = ">=1.24", python = "3.8" },
-    { version = ">=1.25", python = "^3.9" }
+    { version = ">=2.0", python = "^3.9" }
 ]
 pydantic = "^2.5"
 lxml = "^4.6"
