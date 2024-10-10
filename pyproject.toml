@@ -16,6 +16,7 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 [tool.poetry.dependencies]
 python = "^3.8"
 netCDF4 = "^1.5"
+# for future python 3.13 support we need to allow numpy>=2
 numpy = [
     { version = ">=1.21", python = "^3.8" },
     { version = "^2", python = "^3.12" }
