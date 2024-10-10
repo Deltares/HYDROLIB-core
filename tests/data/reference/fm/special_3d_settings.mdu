@@ -31,7 +31,7 @@ profDefFile                    =                   # <*_profdefinition.def>) def
 profDefXyzFile                 =                   # <*_profdefinition.def>) definition for all profile nrs.
 manholeFile                    =                   # File containing manholes (e.g. <*.dat>).
 partitionFile                  =                   # <*_part.pol>, polyline(s) x, y.
-uniformWidth1D                 = 2.0
+uniformWidth1D                 = 2.0               # Uniform width for channel profiles not specified by profloc
 dxWuiMin2D                     = 0.1               # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu, Default = 0.1
 waterLevIni                    = 0.0               # Initial water level at missing s0 values
 bedLevUni                      = 5.0               # Uniform bed level used at missing z values if BedlevType > 2
@@ -69,7 +69,7 @@ slotw2D                        = 0.001             # Minimum slotwidth 2D [m].
 uniformHeight1DRoofGutterPipes = 0.1               # Uniform height for roof gutter pipes [m].
 dxmin1D                        = 0.001             # Minimum 1D link length [m].
 uniformTyp1DStreetInlets       = -2                # Uniform cross section type for street inlets (1: circle, 2: rectangle, -2: closed rectangle).
-stretchType                    = 1                 # Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.
+stretchType                    = -1                # Stretching type for non-uniform layers, 1=user defined, 2=exponential, otherwise=uniform.
 zlayBot                        = -999.0            # if specified, first z-layer starts from zlaybot [ ], if not, it starts from the lowest bed point.
 zlayTop                        = -999.0            # if specified, highest z-layer ends at zlaytop [ ], if not, it ends at the initial water level.
 uniformHeight1D                = 3.0               # Uniform height for 1D profiles and 1d2d internal links [m].
@@ -81,7 +81,7 @@ uniformTyp1DRoofGutterPipes    = -2                # Uniform cross section type 
 uniformWidth1DRoofGutterPipes  = 0.1               # Uniform width for roof gutter pipes [m].
 
 [VolumeTables]
-useVolumeTables    = 0   # Use volume tables for 1D grid cells (1: yes, 0 = no).
+useVolumeTables    = 0   # Use 1D volume tables (0: no, 1: yes).
 increment          = 0.2 # The height increment for the volume tables [m].
 useVolumeTableFile = 0   # Read and write the volume table from/to file (1: yes, 0= no).
 
@@ -145,6 +145,8 @@ checkerboardMonitor       = 0       # Flag for checkerboarding output on history
 velocityWarn              = 0.0     # Warning level [m/s] on normal velocity(<= 0: no check).
 advecCorrection1D2D       = 0       # Advection correction of 1D2D link volume (0: regular advection, 1: link volume au*dx, 2: advection on 1D2D switched off.)
 fixedWeirTalud            = 4.0     # Uniform talud slope of fixed weirs.
+lateral_fixedweir_umin    = 0.0     # Minimal velocity threshold for weir losses in iterative lateral 1d2d weir coupling.
+jasfer3D                  = 0       # Corrections for spherical coordinates (0: no, 1: yes).
 
 [Physics]
 unifFrictCoef              = 0.028   # Uniform friction coefficient (0: no friction)
@@ -194,9 +196,9 @@ secondaryFlow              = 0       # Secondary flow (0: no, 1: yes)
 betaSpiral                 = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).
 
 [Sediment]
-Sedimentmodelnr =  # Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).
-MorFile         =  # Morphology settings file (*.mor)
-SedFile         =  # Sediment characteristics file (*.sed)
+Sedimentmodelnr = 0 # Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).
+MorFile         =   # Morphology settings file (*.mor)
+SedFile         =   # Sediment characteristics file (*.sed)
 
 [Wind]
 iCdTyp               = 4         # Wind drag coefficient type (1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955, 5=Hwang 2005, 6=Wuest 2005, 7=Hersbach 2010 (2 pts)
@@ -226,6 +228,7 @@ tStop                   = 86400.0        # Stop time w.r.t. RefDate [TUnit].
 startDateTime           = 19980101000000 # Start date time (yyyymmddHHMMSS)
 stopDateTime            = 19980110000000 # Stop date time (yyyymmddHHMMSS)
 updateRoughnessInterval = 86400.0        # Update interval for time dependent roughness parameters [s].
+Dtfacmax                = 1.1            # Max timestep increase factor in successive time steps.
 
 [Restart]
 restartFile     =  # Restart netcdf-file, either *_rst.nc or *_map.nc
@@ -234,9 +237,6 @@ restartDateTime =  # Restart date and time (yyyymmddhhmmss) when restarting from
 [External Forcing]
 extForceFile    = SEA_3D_3km_spatial.ext # Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification
 extForceFileNew =                        # New format for external forcings file *.ext, link with bc-format boundary conditions specification
-rainfall        =                        # Include rainfall, (0=no, 1=yes).
-qExt            =                        # Include user Qin/out, externally provided, (0=no, 1=yes).
-evaporation     =                        # Include evaporation in water balance, (0=no, 1=yes).
 windExt         = 1                      # Include wind, externally provided, (0=no, 1=reserved for EC, 2=yes)
 
 [Hydrology]
@@ -337,6 +337,9 @@ wrimap_rain                       = 1                                           
 wrimap_wind                       = 1                                                                               # Write wind velocities to map file (1: yes, 0: no)
 wrimap_windstress                 = 0                                                                               # Write wind stress to map file (1: yes, 0: no)
 wrimap_airdensity                 = 0                                                                               # Write air density to map file, (1:yes, 0:no).
+wrimap_calibration                = 1                                                                               # Write roughness calibration factors to map file.
+wrimap_salinity                   = 1                                                                               # Write salinity to map file.
+wrimap_temperature                = 1                                                                               # Write temperature to map file.
 writek_CdWind                     = 0                                                                               # Write wind friction coeffs to tek file (1: yes, 0: no)
 wrimap_heat_fluxes                = 1                                                                               # Write heat fluxes to map file (1: yes, 0: no)
 wrimap_wet_waterDepth_threshold   = 2e-05                                                                           # Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.
@@ -362,7 +365,7 @@ waqInterval                       = 0.0                                         
 statsInterval                     = 3600.0                                                                          # Screen step output interval in seconds simulation time, if negative in seconds wall clock time
 timingsInterval                   = 0.0                                                                             # Timings statistics output interval
 richardsonOnOutput                = 0                                                                               # Write Richardson number, (1: yes, 0: no).
-wrimap_input_dt                   = 0                                                                               # Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).
+wrimap_every_dt                   = 0                                                                               # Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).
 wrimap_input_roughness            = 0                                                                               # Write chezy input roughness on flow links to map file, (1: yes, 0: no).
 wrimap_flowarea_au                = 1                                                                               # Write flow areas au to map file (1: yes, 0: no)
 wrimap_flow_flux_q1_main          = 1                                                                               # Write flow flux in main channel to map file (1: yes, 0: no)
@@ -379,6 +382,9 @@ wrimap_interception               = 1                                           
 wrimap_volume1                    = 1                                                                               # Write volumes to map file (1: yes, 0: no)
 wrimap_ancillary_variables        = 1                                                                               # Write ancillary_variables attributes to map file (1: yes, 0: no)
 wrimap_chezy_on_flow_links        = 0                                                                               # Write chezy roughness on flow links to map file, (1: yes, 0: no)
+writepart_domain                  = 1                                                                               # Write partition domain info. for postprocessing (0: no, 1: yes).
+VelocityDirectionClassesInterval  = 0.0                                                                             # Class map's step size of class values for velocity direction.
+VelocityMagnitudeClasses          = 0.0                                                                             # Class map's list of class values for velocity magnitudes.
 
 [Calibration]
 UseCalibration = 0 # Activate calibration factor friction multiplier (1 = yes, 0 = no)

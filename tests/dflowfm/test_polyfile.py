@@ -268,7 +268,8 @@ class TestParser:
             ("*", False),
             ("*         ", False),
             ("", False),
-            ("Not a comment but a regular string", False),
+            ("Not a comment but a regular string", True),
+            ("Name with spaces", True),
             ("      ", False),
         ],
     )
@@ -595,7 +596,7 @@ name
                     """
                     *description
                     name
-                    2  5   
+                    2  5
                     1.0 2.0 3.0 4.0 5.0"""
                 ),
                 [((0, 4), "EoF encountered before the block is finished.")],
@@ -605,43 +606,16 @@ name
                     """
                     *description
                     name
-                    1  5   
+                    1  5
                     1.0 2.0 3.0 4.0 5.0
                     2.0 3.0 4.0 5.0 6.0"""
                 ),
                 [
                     (
                         (4, 5),
-                        "Settings of block might be incorrect, expected a valid name or description at line 4.",
+                        "EoF encountered before the block is finished.",
                     )
                 ],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    name
-                    1  5
-                    1.0 2.0 3.0 4.0 5.0
-                    name
-                    1  5
-                    1.0 2.0 3.0 4.0 5.0
-                    2.0 3.0 4.0 5.0 6.0"""
-                ),
-                [
-                    (
-                        (7, 8),
-                        "Settings of block might be incorrect, expected a valid name or description at line 7.",
-                    )
-                ],
-            ),
-            (
-                inspect.cleandoc(
-                    """
-                    *description
-                    not a name"""
-                ),
-                [((0, 2), "Expected a valid name or description at line 1.")],
             ),
             (
                 inspect.cleandoc(
@@ -657,7 +631,7 @@ name
                     """
                     *description
                     name
-                    1  5   
+                    1  5
                     1.0 2.0 3.0"""
                 ),
                 [((0, 4), "Expected a valid next point at line 3.")],
@@ -667,7 +641,7 @@ name
                     """
                     *description
                     name
-                    1  5   
+                    1  5
                         1.0 2.0 3.0 4.0 5.0
                     another-name
                     1 3
@@ -680,9 +654,9 @@ name
                     """
                     *description
                     name
-                    1  5   
+                    1  5
                     1.0 2.0 3.0 4.0 5.0
-                    * 
+                    *
                     another-name
                     1 3
                     1.0 2.0
@@ -692,14 +666,14 @@ name
                     1 2
                     1.0 2.0"""
                 ),
-                [((4, 8), "Expected a valid next point at line 7.")],
+                [((4, 9), "Expected a valid next point at line 7.")],
             ),
             (
                 inspect.cleandoc(
                     """
                     *description
                     name
-                    1  5   
+                    1  5
                     another-name
                     1 3
                     1.0 2.0 3.0
@@ -716,7 +690,7 @@ name
                     """
                     *description
                     name
-                    1  5   
+                    1  5
                     # 1.0 2.0 3.0 4.0 5.0 Comment after the values is valid"""
                 ),
                 [((0, 4), "Expected a valid next point at line 3.")],

@@ -458,7 +458,7 @@ class Parser:
     @staticmethod
     def _is_name(line: str) -> bool:
         stripped = line.strip()
-        return len(stripped) >= 1 and line[0] != "*" and " " not in stripped
+        return len(stripped) >= 1 and line[0] != "*"
 
     @staticmethod
     def _convert_to_name(line: str) -> str:
@@ -529,7 +529,7 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
 
     - Optional description record consisting of one or more lines starting with '*'.
         These will be ignored.
-    - Name consisting of a non-blank character string
+    - Name consisting of a character string
     - Two integers, Nr and Nc, representing the numbers of rows and columns respectively
     - Nr number of data points, consisting of Nc floats separated by whitespace
 

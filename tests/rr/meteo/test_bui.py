@@ -12,9 +12,6 @@ from hydrolib.core.rr.meteo.serializer import (
     BuiSerializer,
     write_bui_file,
 )
-from tests.dflowfm.test_structure import (
-    test_weir_and_universal_weir_resolve_from_parsed_document,
-)
 from tests.utils import test_input_dir, test_output_dir
 
 
@@ -91,11 +88,11 @@ class TestModel:
             assert len(event_list) == 404
             station_events = model.get_station_events("De Bilt")
             first_event = station_events[datetime(1955, 1, 15, 16, 45)]
-            assert first_event[0] == 0.30
-            assert first_event[-1] == 0
+            assert first_event[0] == pytest.approx(0.30)
+            assert first_event[-1] == pytest.approx(0)
             last_event = station_events[datetime(1979, 12, 29, 7)]
-            assert last_event[0] == 0.14
-            assert last_event[-1] == 0.03
+            assert last_event[0] == pytest.approx(0.14)
+            assert last_event[-1] == pytest.approx(0.03)
 
         def test_given_t_sewer_file_loads_model(self):
             test_file = test_input_dir / "rr_bui_rks" / "T_SEWER.rks"
@@ -105,10 +102,10 @@ class TestModel:
             assert len(event_list) == 10
             station_events = model.get_station_events("De Bilt")
             first_event = station_events[datetime(2000, 1, 10)]
-            assert first_event[0] == 0.30
+            assert first_event[0] == pytest.approx(0.30)
             assert first_event[-1] == 0
             last_event = station_events[datetime(2000, 12, 9)]
-            assert last_event[0] == 0.15
+            assert last_event[0] == pytest.approx(0.15)
             assert last_event[-1] == 0
 
     class TestBuiModel:

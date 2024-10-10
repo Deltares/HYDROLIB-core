@@ -222,7 +222,6 @@ UnifFrictCoef1D                           = 2.3d-2              # Uniform fricti
 UnifFrictCoef1D2D                         = 2.3d-2              # Uniform friction coefficient in 1D links (0: no friction)
 UnifFrictCoefLin                          = 0.                  # Uniform linear friction coefficient (0: no friction)
 UnifFrictCoef1DgrLay                      = 5.d-2               # Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction)
-Umodlin                                   = 0.                  # Linear friction umod, for ifrctyp=4,5,6
 Vicouv                                    = 1.                  # Uniform horizontal eddy viscosity (m2/s)
 Dicouv                                    = 1.                  # Uniform horizontal eddy diffusivity (m2/s)
 Vicoww                                    = 5.d-5               # Uniform vertical eddy viscosity (m2/s)
@@ -350,7 +349,7 @@ AutoTimestepNoQout                        = 1                   # 0 = no, 1 = ye
 Tunit                                     = S                   # Time unit for start/stop times (D, H, M or S)
 TStart                                    = 410227200.          # Start time w.r.t. RefDate (in TUnit)
 TStop                                     = 410270400.          # Stop  time w.r.t. RefDate (in TUnit)
-TStartTlfsmo                              = 0.                  # Start time of smoothing of boundary conditions (Tlfsmo) w.r.t. RefDate (in TUnit)
+TStartTlfsmo                              = 1.1                 # Start time of smoothing of boundary conditions (Tlfsmo) w.r.t. RefDate (in TUnit)
 Startdatetime                             = 20140101000000      # Computation Startdatetime (yyyymmddhhmmss), when specified, overrides Tstart
 Stopdatetime                              = 20140101120000      # Computation Stopdatetime  (yyyymmddhhmmss), when specified, overrides Tstop
 UpdateRoughnessInterval                   = 86400.              # Update interval for time dependent roughness parameters (in s)
@@ -544,3 +543,9 @@ Wriwaqbot3Doutput                         = 0                   # Write 3D water
 VolumeDryThreshold                        = 1.d-3               # Volume below which segments are marked as dry. (m3)
 DepthDryThreshold                         = 1.d-3               # Water depth below which segments are marked as dry. (m)
 SubstanceDensityCoupling                  = 0                   # Substance density coupling (1: yes, 0: no). It only functions correctly when all substances are sediments.
+
+[sedtrails]
+SedtrailsGrid                             = c:\test.txt         # Grid file for sedtrails output locations on corners
+SedtrailsAnalysis                         = all                 # Sedtrails analysis. Should be all, transport, flowvelocity or soulsby.
+SedtrailsInterval                         = 3600. 1.1 2.2         # Sedtrails output times (s), interval, starttime, stoptime (s), if starttime, stoptime are left blank, use whole simulation period
+SedtrailsOutputFile                       = d:\test2.txt        # Sedtrails time-avgd output file

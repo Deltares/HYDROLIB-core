@@ -33,7 +33,7 @@ class TestCrossSectionDefinition:
         assert isinstance(m.definition[0], CircleCrsDef)
         assert m.definition[0].id == "Prof1"
         assert m.definition[0].thalweg == 0.0
-        assert m.definition[0].diameter == 2.0
+        assert m.definition[0].diameter == pytest.approx(2.0)
         assert m.definition[0].frictionid == "Brick"
 
     def test_crossdef_list_delimiters(self):
@@ -293,13 +293,13 @@ class TestCrossSectionLocation:
         assert isinstance(m.crosssection[0], CrossSection)
         assert m.crosssection[0].id == "Channel1_50.000"
         assert m.crosssection[0].branchid == "Channel1"
-        assert m.crosssection[0].shift == 1.0
+        assert m.crosssection[0].shift == pytest.approx(1.0)
         assert m.crosssection[0].definitionid == "Prof1"
 
         assert isinstance(m.crosssection[1], CrossSection)
         assert m.crosssection[1].id == "Channel2_300.000"
         assert m.crosssection[1].branchid == "Channel2"
-        assert m.crosssection[1].shift == 0.0
+        assert m.crosssection[1].shift == pytest.approx(0.0)
         assert m.crosssection[1].definitionid == "Prof2"
 
     @pytest.mark.parametrize(
@@ -383,3 +383,22 @@ class TestCrossSectionModel:
         crossloc_model.save(filepath=output_file)
 
         assert_files_equal(output_file, reference_file, skip_lines=[0])
+
+    def test_locationtype_is_not_written_for_crosssection(self, tmp_path: Path):
+        model = CrossLocModel()
+        model.crosssection.append(
+            CrossSection(
+                id="testCrossSection",
+                branchid="branch1",
+                chainage=1,
+                definitionid="testDefinition",
+            )
+        )
+
+        crs_file = tmp_path / "crsloc.ini"
+        model.save(filepath=crs_file)
+
+        with open(crs_file, "r") as file:
+            content = file.read()
+
+        assert "locationtype" not in content

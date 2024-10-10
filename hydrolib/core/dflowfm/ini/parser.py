@@ -171,7 +171,7 @@ class Parser:
             line (str): The line to parse
         """
         if not self._is_empty_line(line):
-            for (is_line_type, handle_line_type) in self._feed_line[self._state]:
+            for is_line_type, handle_line_type in self._feed_line[self._state]:
                 if is_line_type(line):
                     handle_line_type(line)
                     break
