@@ -42,6 +42,7 @@ jobs:
 
       - name: list env contents
         run: |
+          conda list
           pip list
 
       - name: Test with pytest
