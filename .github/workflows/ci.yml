@@ -42,7 +42,7 @@ jobs:
 
       - name: list env contents
         run: |
-          conda list
+          poetry show
           pip list
 
       - name: Test with pytest
