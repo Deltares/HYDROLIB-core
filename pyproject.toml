@@ -24,7 +24,6 @@ netCDF4 = [
 numpy = [
     { version = ">=1.24", python = "3.8" },
     { version = ">=1.25", python = "^3.9" },
-    { version = ">=2.1.2", python = "^3.12" },
 ]
 pydantic = "^2.5"
 lxml = ">=4.6"
