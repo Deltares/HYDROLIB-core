@@ -23,7 +23,8 @@ netCDF4 = [
 # for future python 3.13 support we need to allow numpy v2 and numpy v1 is also still widely uses. So no caret requirement here.
 numpy = [
     { version = ">=1.24", python = "3.8" },
-    { version = ">=1.25", python = "^3.9" }
+    { version = ">=1.25", python = "^3.9" },
+    { version = ">=2.0.0", python = "^3.12" }
 ]
 pydantic = "^2.5"
 lxml = ">=4.6"
@@ -55,7 +56,7 @@ mkdocs-jupyter = "^0.21.0"
 jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
 xarray = ">=2023.0.0"
-# pandas dependency comes from xarray, specify to avoid pandas 2.0.3 on python 3.12
+# pandas dependency comes from xarray, specify to avoid poetry installation of pandas 2.0.3 on python 3.12
 pandas = [
     { version = ">=1.3", python = "^3.8" },
     { version = "^2.2.0", python = "3.12" }
@@ -102,6 +103,7 @@ line_length = 88
 
 [tool.pytest.ini_options]
 markers = ["plots", "docker"]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
