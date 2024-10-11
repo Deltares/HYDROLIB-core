@@ -90,7 +90,7 @@ class UgridWriter:
         self, path: Path, dfm_version: str, dimr_version: str, suite_version: str
     ) -> nc.Dataset:  # type: ignore[import]
 
-        file_format = "NETCDF4_CLASSIC"  # "NETCDF4"
+        file_format = "NETCDF3_CLASSIC"  # "NETCDF4"
         ncfile = nc.Dataset(path, "w", format=file_format)  # type: ignore[import]
 
         UgridWriter._set_global_attributes(ncfile, path)
