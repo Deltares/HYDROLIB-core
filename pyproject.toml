@@ -35,6 +35,7 @@ pytest = ">=6.2"
 pytest-cov = ">=2.11"
 black = ">=24.3"
 isort = ">=5.8"
+devtools = ">=0.6.1"
 # specify to avoid poetry installation of matplotlib 3.7.5 on python 3.12 (which does not support numpy 2.0)
 matplotlib = [
     { version = "^3.4", python = "3.8" },
