@@ -31,7 +31,7 @@ meshkernel = "^4.2.0"
 strenum = "^0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2"
+pytest = ">=6.2"
 black = "^24.3"
 isort = "^5.8"
 mkdocs = "^1.2"
