@@ -53,7 +53,7 @@ class UgridReader:
             return
 
         # If the mesh is not given (default), use the networks one
-        ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
+        ds = nc.Dataset(self._ncfile_path, data_model="NETCDF4_CLASSIC")  # type: ignore[import]
 
         # Read mesh1d
         for meshkey, nckey in self._explorer.mesh1d_var_name_mapping.items():
@@ -83,7 +83,7 @@ class UgridReader:
             logging.debug("Mesh2d is not found in the dataset, reading is skipped.")
             return
 
-        ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
+        ds = nc.Dataset(self._ncfile_path, data_model="NETCDF4_CLASSIC")  # type: ignore[import]
 
         mapping = self._explorer.mesh2d_var_name_mapping
 
@@ -118,7 +118,7 @@ class UgridReader:
             logging.debug("Link1d2d is not found in the dataset, reading is skipped.")
             return
 
-        ds = nc.Dataset(self._ncfile_path)  # type: ignore[import]
+        ds = nc.Dataset(self._ncfile_path, data_model="NETCDF4_CLASSIC")  # type: ignore[import]
 
         # Read mesh1d
         link1d2d_contact_type_arr = self._read_nc_attribute(ds["link1d2d_contact_type"])
@@ -202,7 +202,7 @@ class NCExplorer(BaseModel):
             NCExplorer: A newly initialized NCExplorer.
         """
         conventions = NCExplorer._read_ugrid_conventions()
-        dataset = nc.Dataset(file_path)  # type: ignore[import]
+        dataset = nc.Dataset(file_path, data_model="NETCDF4_CLASSIC")  # type: ignore[import]
 
         keys = NCExplorer._determine_keys(dataset)
         network1d_mapping = NCExplorer._retrieve_variable_names_mapping(
