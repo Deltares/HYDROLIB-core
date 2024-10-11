@@ -40,6 +40,10 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
+      - name: list env contents
+        run: |
+          pip list
+
       - name: Test with pytest
         run: poetry run pytest --cov . --cov-report xml:coverage-reports/coverage-hydrolib-core.xml --junitxml=xunit-reports/xunit-result-hydrolib-core.xml
 
