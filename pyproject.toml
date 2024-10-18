@@ -22,7 +22,7 @@ numpy = [
 ]
 pydantic = "^2.5"
 lxml = "^4.6"
-meshkernel = "^4.2.0"
+meshkernel = "^5.0.1"
 strenum = "^0"
 
 [tool.poetry.dev-dependencies]

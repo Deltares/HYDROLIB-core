@@ -232,8 +232,10 @@ def test_create_2d_multiple_grids():
     [
         (DeleteMeshOption.INSIDE_NOT_INTERSECTED, False, 22, 68, 13),
         (DeleteMeshOption.INSIDE_AND_INTERSECTED, False, 30, 98, 20),
+        (DeleteMeshOption.FACES_WITH_INCLUDED_CIRCUMCENTERS, False, 28, 90, 18),
         (DeleteMeshOption.INSIDE_NOT_INTERSECTED, True, 33, 100, 19),
         (DeleteMeshOption.INSIDE_AND_INTERSECTED, True, 20, 62, 12),
+        (DeleteMeshOption.FACES_WITH_INCLUDED_CIRCUMCENTERS, True, 23, 72, 14),
     ],
 )
 def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
