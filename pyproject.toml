@@ -20,13 +20,13 @@ netCDF4 = [
     { version = "^1.5,!=1.7.*", python = "3.8" },
     { version = "^1.5", python = "^3.9" }
 ]
-# for future python 3.13 support we need to allow numpy v2 and numpy v1 is also still widely uses. So no caret requirement here.
+# for future python 3.13 support we need to allow numpy v2 and numpy v1 is also still widely used. So no caret requirement here.
 numpy = [
     { version = ">=1.24", python = "3.8" },
     { version = ">=1.25", python = "^3.9" },
 ]
 pydantic = "^2.5"
-lxml = "^4.6"
+lxml = ">=4.6"
 meshkernel = "^5.0.1"
 strenum = "^0"
 
