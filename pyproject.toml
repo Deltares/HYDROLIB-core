@@ -50,7 +50,7 @@ jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
 # matplotlib >=3.8 supports numpy 2.0
 matplotlib = "^3.8"
-# xarray >=2024.6.0 supports numpy 2.0
+# xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
 xarray = ">=2024.6.0"
 
 [tool.commitizen]
