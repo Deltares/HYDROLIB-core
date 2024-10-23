@@ -4607,30 +4607,6 @@ parallel = ["dask[complete]"]
 viz = ["matplotlib", "nc-time-axis", "seaborn"]
 
 [[package]]
-name = "xarray"
-version = "2024.7.0"
-description = "N-D labeled arrays and datasets in Python"
-optional = false
-python-versions = ">=3.9"
-files = [
-    {file = "xarray-2024.7.0-py3-none-any.whl", hash = "sha256:1b0fd51ec408474aa1f4a355d75c00cc1c02bd425d97b2c2e551fd21810e7f64"},
-    {file = "xarray-2024.7.0.tar.gz", hash = "sha256:4cae512d121a8522d41e66d942fb06c526bc1fd32c2c181d5fe62fe65b671638"},
-]
-
-[package.dependencies]
-numpy = ">=1.23"
-packaging = ">=23.1"
-pandas = ">=2.0"
-
-[package.extras]
-accel = ["bottleneck", "flox", "numbagg", "opt-einsum", "scipy"]
-complete = ["xarray[accel,dev,io,parallel,viz]"]
-dev = ["hypothesis", "mypy", "pre-commit", "pytest", "pytest-cov", "pytest-env", "pytest-timeout", "pytest-xdist", "ruff", "xarray[complete]"]
-io = ["cftime", "fsspec", "h5netcdf", "netCDF4", "pooch", "pydap", "scipy", "zarr"]
-parallel = ["dask[complete]"]
-viz = ["matplotlib", "nc-time-axis", "seaborn"]
-
-[[package]]
 name = "zipp"
 version = "3.20.2"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -4652,4 +4628,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6e85fb0e9dc64a5328997098ebf6d41cae674c85d9dc805031e8521b48d785ff"
+content-hash = "5c50393e1e30a4e94afab0a52d3fc5d0241c6e659eff1b2176437e7a993e0603"
