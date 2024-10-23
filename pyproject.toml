@@ -17,37 +17,41 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 python = "^3.9"
 # exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
 netCDF4 = "^1.5,!=1.7.0,!=1.7.1"
-numpy = "^1.25"
+# no caret here, since numpy v2 is required for future python 3.13 support, but this is not yet widely supported by packages numpy v1 support is also still required.
+numpy = ">=1.25,<3"
 pydantic = "^2.5"
-lxml = "^4.6"
+# lxml 5.0 is from December 2023
+lxml = "^5.0"
 meshkernel = "^5.0.1"
 strenum = "^0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2"
+pytest = "^8.0"
+pytest-cov = "^5.0"
 black = "^24.3"
 isort = "^5.8"
+devtools = "^0.6.1"
 mkdocs = "^1.2"
 mkdocs-material = "^8.0"
 mkdocstrings = "^0.16"
 mkdocs-autorefs = "^0.3, !=0.3.1"
 mkdocs-macros-plugin = "^0.6.3"
-pytest-cov = "^2.11"
+mkdocs-table-reader-plugin = "^0.6.1"
+mkdocs-jupyter = "^0.21.0"
 pymdown-extensions = "^9.1"
 commitizen = "^2.17"
 flake8 = "^3.9.2"
 mypy = "^0.910"
-devtools = "^0.6.1"
-matplotlib = "^3.4"
-mkdocs-table-reader-plugin = "^0.6.1"
 openpyxl = "^3.0.9"
 mike = "^1.1.2"
-jinja2 = "<4"
+jinja2 = "^3.0"
 markupsafe = "<2.1"
-mkdocs-jupyter = "^0.21.0"
 jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
-xarray = ">=2023.0.0"
+# matplotlib >=3.8 supports numpy 2.0
+matplotlib = "^3.8"
+# xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
+xarray = ">=2024.6.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -64,7 +68,7 @@ changelog_file = "docs/changelog.md"
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310', 'py311']
+target-version = ['py39', 'py310', 'py311', 'py312']
 exclude = '''
 (
   /(
@@ -90,6 +94,7 @@ line_length = 88
 
 [tool.pytest.ini_options]
 markers = ["plots", "docker"]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
