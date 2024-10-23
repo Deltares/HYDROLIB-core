@@ -16,7 +16,7 @@ pip install hydrolib-core
 
 If you want to create a fresh test environment for hydrolib-core, you could use the following command (only once):
 ``` bash
-conda create -n hydrolib python=3.8 -c conda-forge
+conda create -n hydrolib python=3.12 -c conda-forge
 ```
 Prior to the `pip install`, first activate the desired environment:
 ``` bash

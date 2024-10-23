@@ -29,26 +29,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.12
 
       - name: Run image
         uses: abatilo/actions-poetry@v2.3.0
         with:
-          poetry-version: 1.4.0
+          poetry-version: 1.8.3
 
       - name: Cache Poetry virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache
         with:
           path: ~/.virtualenvs
-          key: venv-ubuntu-latest-3.8-${{ hashFiles('**/poetry.lock') }}
+          key: venv-ubuntu-latest-${{ hashFiles('**/poetry.lock') }}
 
       - name: Set Poetry config
         run: |
