@@ -752,19 +752,17 @@ files = [
 
 [[package]]
 name = "devtools"
-version = "0.12.2"
-description = "Python's missing debug print command, and more."
+version = "0.6.1"
+description = "Python's missing debug print command and other development tools."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.6"
 files = [
-    {file = "devtools-0.12.2-py3-none-any.whl", hash = "sha256:c366e3de1df4cdd635f1ad8cbcd3af01a384d7abda71900e68d43b04eb6aaca7"},
-    {file = "devtools-0.12.2.tar.gz", hash = "sha256:efceab184cb35e3a11fa8e602cc4fadacaa2e859e920fc6f87bf130b69885507"},
+    {file = "devtools-0.6.1-py3-none-any.whl", hash = "sha256:7334183972a8d04e81d08b7f62126abca9b6f4de51d825c5fdcb9c88f252601a"},
+    {file = "devtools-0.6.1.tar.gz", hash = "sha256:a054307594d35d28fae8df7629967363e851ae0ac7b2152640a8a401c39d42d7"},
 ]
 
-[package.dependencies]
-asttokens = ">=2.0.0,<3.0.0"
-executing = ">=1.1.1"
-pygments = ">=2.15.0"
+[package.extras]
+pygments = ["Pygments (>=2.2.0)"]
 
 [[package]]
 name = "entrypoints"
@@ -4186,4 +4184,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "3cedb1a86f7a78d7c970cb95e4de9d4d4273df68e49c69e24d9ce76b607960f7"
+content-hash = "a9d2732cdddb3686f7e2b98d63d9e91cf23706cb19ffcdf637d9dc6c9483054b"
