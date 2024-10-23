@@ -454,8 +454,8 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">1.13.3", markers = "python_version < \"3.12.0.rc1\""},
     {version = ">=1.26.0b1", markers = "python_version >= \"3.12.0.rc1\""},
+    {version = ">1.13.3", markers = "python_version < \"3.12.0.rc1\""},
 ]
 
 [[package]]
@@ -2668,50 +2668,6 @@ files = [
 
 [[package]]
 name = "netcdf4"
-version = "1.6.5"
-description = "Provides an object-oriented python interface to the netCDF version 4 library"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "netCDF4-1.6.5-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d23b97cbde2bf413fadc4697c5c255a0436511c02f811e127e0fb12f5b882a4c"},
-    {file = "netCDF4-1.6.5-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9e5edfed673005f47f8d2fbea9c72c382b085dd358ac3c20ca743a563ed7b90e"},
-    {file = "netCDF4-1.6.5-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:10d2ac9ae1308ca837d86c6dc304ec455a85bdba0f2175e222844a54589168dc"},
-    {file = "netCDF4-1.6.5-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9a63a2be2f80977ac23bb0aa736c565011fd4639097ce0922e01b0dc38015df2"},
-    {file = "netCDF4-1.6.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3aaceea2097d292bad398d9f9b4fe403efa7b1568fcfa6faba9b67b1630027f9"},
-    {file = "netCDF4-1.6.5-cp310-cp310-win_amd64.whl", hash = "sha256:111357d9e12eb79e8d58bfd91bc6b230d35b17a0ebd8c546d17416e8ceebea49"},
-    {file = "netCDF4-1.6.5-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:1c5fede0b34c0a02a1b9e84116bfb3fcd2f80124a651d4836e72b785d10e2f15"},
-    {file = "netCDF4-1.6.5-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:3de5512b9270aa6472e4f3aa2bf895a7364c1d4f8667ce3b82e8232197d4fec8"},
-    {file = "netCDF4-1.6.5-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b20971a164431f6eca1d24df8aa153db15c2c1b9630e83ccc5cf004e8ac8151d"},
-    {file = "netCDF4-1.6.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ad1101d538077152b866782e44458356981526bf2ea9cc07930bf28b589c82a7"},
-    {file = "netCDF4-1.6.5-cp311-cp311-win_amd64.whl", hash = "sha256:de4dc973fae9e2bbdf42e094125e423a4c25393172a61958314969b055a38889"},
-    {file = "netCDF4-1.6.5-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:19e16c63cdd7c0dbffe284a4a65f226ba1026f476f35cbedd099b4792b395f69"},
-    {file = "netCDF4-1.6.5-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:b994afce2ca4073f6b757385a6c0ffec25ecaae2b8821535b303c7cdbf6de42b"},
-    {file = "netCDF4-1.6.5-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0187646e3348e7a8cd654617dda65517df138042c94c2fcc6682ff7c8c6654dc"},
-    {file = "netCDF4-1.6.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a1ab5dabac27d25fcc82c52dc29a74a6585e865208cce35f4e285df83d3df0b2"},
-    {file = "netCDF4-1.6.5-cp312-cp312-win_amd64.whl", hash = "sha256:081e9043ac6160989f60570928eabe803c88ce7df1d3f79f2345dc48f68ef752"},
-    {file = "netCDF4-1.6.5-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9b47b22dda5b25ba6291f97634d7ac67b0a843f8ae5c9d9d5813c15364f66d0a"},
-    {file = "netCDF4-1.6.5-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4609dd62d14798c9524327287091875449d68588c128abb768fc0c76c4a28165"},
-    {file = "netCDF4-1.6.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2455e9d35fde067e6a6bdc24aa9d44962235a071cec49904d1589e298c23dcd3"},
-    {file = "netCDF4-1.6.5-cp38-cp38-win_amd64.whl", hash = "sha256:2c210794d96431d92b5992e46ad8a9f97237bf6d6956f8816978a03dc0fa18c3"},
-    {file = "netCDF4-1.6.5-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:18255b8b283d32d3900092f29c67e53aa25bd8f0dfe7adde59fe782d865a381c"},
-    {file = "netCDF4-1.6.5-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:53050562bac84738bbd121fbbee9593d074579f5d6fdaafcb981abeb5c964225"},
-    {file = "netCDF4-1.6.5-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:938c062382406bca9198b16adddd87c09b00521766b138cdfd11c95546eefeb8"},
-    {file = "netCDF4-1.6.5-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4a8300451d7542d3c4ff1dcccf5fb1c7d44bdd1dc08ec77dab04416caf13cb1f"},
-    {file = "netCDF4-1.6.5-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a27db2701feef31201c9b20b04a9579196edc20dfc339ca423c7b81e462d6e14"},
-    {file = "netCDF4-1.6.5-cp39-cp39-win_amd64.whl", hash = "sha256:574d7742ab321e5f9f33b5b1296c4ad4e5c469152c17d4fc453d5070e413e596"},
-    {file = "netCDF4-1.6.5.tar.gz", hash = "sha256:824881d0aacfde5bd982d6adedd8574259c85553781e7b83e0ce82b890bfa0ef"},
-]
-
-[package.dependencies]
-certifi = "*"
-cftime = "*"
-numpy = "*"
-
-[package.extras]
-tests = ["Cython", "packaging", "pytest"]
-
-[[package]]
-name = "netcdf4"
 version = "1.7.2"
 description = "Provides an object-oriented python interface to the netCDF version 4 library"
 optional = false
@@ -3485,8 +3441,8 @@ files = [
 annotated-types = ">=0.6.0"
 pydantic-core = "2.23.4"
 typing-extensions = [
-    {version = ">=4.6.1", markers = "python_version < \"3.13\""},
     {version = ">=4.12.2", markers = "python_version >= \"3.13\""},
+    {version = ">=4.6.1", markers = "python_version < \"3.13\""},
 ]
 
 [package.extras]
@@ -4696,4 +4652,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "b3848b6e6bb22fe2c293b3b0124a2ce59e6788338802d0a8c8854b0b26cad1f8"
+content-hash = "6e85fb0e9dc64a5328997098ebf6d41cae674c85d9dc805031e8521b48d785ff"
