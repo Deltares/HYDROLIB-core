@@ -14,12 +14,10 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 "issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-netCDF4 = "^1.5,!=1.7.*"
-numpy = [
-    { version = "^1.21", python = "^3.8" },
-    { version = "^1.25", python = "^3.12" }
-]
+python = "^3.9"
+# exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
+netCDF4 = "^1.5,!=1.7.0,!=1.7.1"
+numpy = "^1.25"
 pydantic = "^2.5"
 lxml = "^4.6"
 meshkernel = "^5.0.1"
