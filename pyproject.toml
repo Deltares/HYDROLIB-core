@@ -50,12 +50,8 @@ jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
 # matplotlib >=3.8 supports numpy 2.0
 matplotlib = "^3.8"
-# contourpy >=1.2.1 supports numpy 2.0
-contourpy = ">=1.2.1"
 # xarray >=2024.6.0 supports numpy 2.0
 xarray = ">=2024.6.0"
-# pandas >=2.2.2 supports numpy 2.0
-pandas = "^2.2.2"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
