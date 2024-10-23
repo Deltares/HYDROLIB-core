@@ -15,9 +15,10 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-# exclude yanked netcdf versions 1.7.0 and 1.7.1 to avoid issues on windows
+# exclude yanked netcdf versions 1.7.0 and 1.7.1 to avoid issues on windows, 1.7.2 is the first netcdf4 with python 3.12 support
 netCDF4 = [
-    { version = "^1.5,!=1.7.0,!=1.7.1", python = "^3.8" },
+    { version = "^1.5", python = "3.8" },
+    { version = "^1.5", python = "^3.9" },
     { version = "^1.7.2", python = "^3.12" }
 ]
 # for future python 3.13 support we need to allow numpy v2 and numpy v1 is also still widely used. So no caret requirement here.
