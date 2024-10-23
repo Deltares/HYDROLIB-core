@@ -52,8 +52,6 @@ ipykernel = "^6.15.0"
 matplotlib = "^3.8"
 # xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
 xarray = ">=2024.6.0"
-# add minimal pandas version for python 3.13 to prevent 2.0.3 to be installed by poetry
-# if we do not combine it with the minimal version for py3.8 poetry tries to install 
 
 [tool.commitizen]
 name = "cz_conventional_commits"
