@@ -1,0 +1,51 @@
+# written by HYDROLIB-core 0.8.0
+
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name              = 521410.278872_1056811.761107
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2012-01-01 00:00:00
+quantity          = dischargebnd
+unit              = m³/s
+0.0      100.0
+360.0    200.0
+720.0    400.0
+1080.0   800.0
+1440.0   1600.0
+1800.0   6400.0
+2160.0   12800.0
+2520.0   15000.0
+2880.0   12800.0
+3240.0   6400.0
+3600.0   1600.0
+3960.0   800.0
+4320.0   400.0
+4680.0   200.0
+5040.0   100.0
+12960.0  100.0
+
+[Forcing]
+name     = 510370.485693_1228630.596516
+function = constant
+offset   = 0.0
+factor   = 1.0
+quantity = waterlevelbnd
+unit     = m
+0.0
+
+[Forcing]
+name     = 441306.810437_1140614.443396
+function = constant
+offset   = 0.0
+factor   = 1.0
+quantity = waterlevelbnd
+unit     = m
+0.0
+
