@@ -1,0 +1,51 @@
+# written by HYDROLIB-core 0.8.0
+
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name     = 10
+function = constant
+offset   = 0.0
+factor   = 1.0
+quantity = lateral_discharge
+unit     = mÂ³/s
+0.0
+
+[Forcing]
+name     = 632
+function = constant
+offset   = 0.0
+factor   = 1.0
+quantity = lateral_discharge
+unit     = mÂ³/s
+0.0
+
+[Forcing]
+name     = DV_360
+function = constant
+offset   = 0.0
+factor   = 1.0
+quantity = lateral_discharge
+unit     = mÂ³/s
+0.0
+
+[Forcing]
+name     = DV_1454
+function = constant
+offset   = 0.0
+factor   = 1.0
+quantity = lateral_discharge
+unit     = mÂ³/s
+0.0
+
+[Forcing]
+name     = DV_1455
+function = constant
+offset   = 0.0
+factor   = 1.0
+quantity = lateral_discharge
+unit     = mÂ³/s
+0.0
+
