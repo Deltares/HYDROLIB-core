@@ -146,18 +146,17 @@ and install it with the recommended settings.</li>
 <li>Open &quot;Miniforge Prompt&quot;. On Windows: Press &quot;Start&quot; and type &quot;Miniforge Prompt&quot;</li>
 <li>Run the following command in the Miniforge Prompt: <code>conda create -n hydrolib-core-dsd -y python=3.12</code></li>
 <li>When this has finished succesfully, run <code>conda activate hydrolib-core-dsd</code></li>
-<li>Once in the active enviroment we install all dependencies with pip <code>pip install hydrolib-core geopandas openpyxl notebook ipykernel</code></li>
+<li>Once in the active enviroment we install all dependencies with pip: <code>pip install hydrolib-core geopandas openpyxl notebook ipykernel</code></li>
 </ol>
 <h1 id="exercises-hydrolib-core">Exercises HYDROLIB-core</h1>
 <p>We have set up a Jupyter Notebook with exercises to get you started on how to use HYDROLIB-core for creating models.</p>
 <ol>
 <li>In the active environment install a jupyter kernel: <code>python -m ipykernel install --name=hydrolib-core-dsd</code></li>
-<li>And start the notebook: <code>jupyter notebook &lt;path to magdalena_workbook.ipynb&gt;</code></li>
-<li>Select the correct kernel once the notebook has started</li>
+<li>And start the notebook: <code>jupyter notebook &lt;path to magdalena_workbook_exercises.ipynb&gt;</code></li>
 </ol>
 <p>In this tutorial we will create a 1D2D fluvial flood model of the Magdalena river in Columbia.</p>
 <h2 id="worked-out-answers">Worked out answers</h2>
-<p>A worked out examples of the exercises can be found within our GitHub page: <a href="https://github.com/Deltares/HYDROLIB-core/blob/dsd_2024/docs/tutorials/dsd_2024/magdalena_workflow/magdalena_workedout.ipynb">magdalena_workedout.ipynb</a></p>
+<p>An example of the worked out exercises can be found within the other provided notebook: <code>magdalena_workbook_workedout.ipynb</code>.</p>
 <h2 id="cheat-sheet">Cheat sheet</h2>
 <p>In HYDROLIB-core, there is a class called FileModel, which is used to represent an individual kernel file. This class has multiple derived implementations, with each one corresponding to a specific kernel file. Every FileModel, except for the root model, is referenced within another FileModel, following the same hierarchy as the kernel files themselves.</p>
 <p>The table below contains the models relevant for today's exercises.</p>

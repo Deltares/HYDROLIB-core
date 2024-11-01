@@ -6,19 +6,18 @@ To install:
 2. Open "Miniforge Prompt". On Windows: Press "Start" and type "Miniforge Prompt"
 3. Run the following command in the Miniforge Prompt: ``conda create -n hydrolib-core-dsd -y python=3.12``
 4. When this has finished succesfully, run ``conda activate hydrolib-core-dsd``
-5. Once in the active enviroment we install all dependencies with pip ``pip install hydrolib-core geopandas openpyxl notebook ipykernel``
+5. Once in the active enviroment we install all dependencies with pip: ``pip install hydrolib-core geopandas openpyxl notebook ipykernel``
 
 # Exercises HYDROLIB-core
 We have set up a Jupyter Notebook with exercises to get you started on how to use HYDROLIB-core for creating models.
 
 1. In the active environment install a jupyter kernel: ``python -m ipykernel install --name=hydrolib-core-dsd``
-2. And start the notebook: ``jupyter notebook <path to magdalena_workbook.ipynb>``
-3. Select the correct kernel once the notebook has started
+2. And start the notebook: ``jupyter notebook <path to magdalena_workbook_exercises.ipynb>``
 
 In this tutorial we will create a 1D2D fluvial flood model of the Magdalena river in Columbia.
 
 ## Worked out answers
-A worked out examples of the exercises can be found within our GitHub page: [magdalena_workedout.ipynb](https://github.com/Deltares/HYDROLIB-core/blob/dsd_2024/docs/tutorials/dsd_2024/magdalena_workflow/magdalena_workedout.ipynb)
+An example of the worked out exercises can be found within the other provided notebook: ``magdalena_workbook_workedout.ipynb``.
 
 ## Cheat sheet
 
