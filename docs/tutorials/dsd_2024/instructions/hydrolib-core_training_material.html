@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Installation</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-dark">
+            <h1 id="installation">Installation</h1>
+<p>To install:</p>
+<ol>
+<li>Download Miniforge3 from <a href="https://github.com/conda-forge/miniforge?tab=readme-ov-file#miniforge3">the miniforge github</a>
+and install it with the recommended settings.</li>
+<li>Open &quot;Miniforge Prompt&quot;. On Windows: Press &quot;Start&quot; and type &quot;Miniforge Prompt&quot;</li>
+<li>Run the following command in the Miniforge Prompt: <code>conda create -n hydrolib-core-dsd -y python=3.12</code></li>
+<li>When this has finished succesfully, run <code>conda activate hydrolib-core-dsd</code></li>
+<li>Once in the active enviroment we install all dependencies with pip <code>pip install hydrolib-core geopandas openpyxl notebook ipykernel</code></li>
+</ol>
+<h1 id="exercises-hydrolib-core">Exercises HYDROLIB-core</h1>
+<p>We have set up a Jupyter Notebook with exercises to get you started on how to use HYDROLIB-core for creating models.</p>
+<ol>
+<li>In the active environment install a jupyter kernel: <code>python -m ipykernel install --name=hydrolib-core-dsd</code></li>
+<li>And start the notebook: <code>jupyter notebook &lt;path to magdalena_workbook.ipynb&gt;</code></li>
+<li>Select the correct kernel once the notebook has started</li>
+</ol>
+<p>In this tutorial we will create a 1D2D fluvial flood model of the Magdalena river in Columbia.</p>
+<h2 id="worked-out-answers">Worked out answers</h2>
+<p>A worked out examples of the exercises can be found within our GitHub page: <a href="https://github.com/Deltares/HYDROLIB-core/blob/dsd_2024/docs/tutorials/dsd_2024/magdalena_workflow/magdalena_workedout.ipynb">magdalena_workedout.ipynb</a></p>
+<h2 id="cheat-sheet">Cheat sheet</h2>
+<p>In HYDROLIB-core, there is a class called FileModel, which is used to represent an individual kernel file. This class has multiple derived implementations, with each one corresponding to a specific kernel file. Every FileModel, except for the root model, is referenced within another FileModel, following the same hierarchy as the kernel files themselves.</p>
+<p>The table below contains the models relevant for today's exercises.</p>
+<h3 id="kernel-files-vs-hydrolib-core-filemodels">Kernel files vs HYDROLIB-core FileModels</h3>
+<table>
+<thead>
+<tr>
+<th><strong>Kernel file</strong></th>
+<th><strong>FileModel</strong></th>
+<th><strong>File reference</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model definition file (*.mdu)</td>
+<td>FMModel</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Network file (*_net.nc)</td>
+<td>NetworkModel</td>
+<td>Model definition file &gt; geometry &gt; netFile</td>
+</tr>
+<tr>
+<td>Cross-section location file (crosloc.ini)</td>
+<td>CrossLocModel</td>
+<td>Model definition file &gt; geometry &gt; crossLocFile</td>
+</tr>
+<tr>
+<td>Cross-section definition file (crosdef.ini)</td>
+<td>CrossDefModel</td>
+<td>Model definition file &gt; geometry &gt; crossDefFile</td>
+</tr>
+<tr>
+<td>Roughness file (roughness-*.ini)</td>
+<td>FrictionModel</td>
+<td>Model definition file &gt; geometry &gt; frictFile</td>
+</tr>
+<tr>
+<td>New external forcing file (*_bnd.ext)</td>
+<td>ExtModel</td>
+<td>Model definition file &gt; external forcing &gt; extForceFileNew</td>
+</tr>
+<tr>
+<td>Boundary conditions file (*.bc)</td>
+<td>ForcingModel</td>
+<td>New external forcing file &gt; boundary &gt; forcingFile</td>
+</tr>
+<tr>
+<td>1D initial conditions field file (*.ini)</td>
+<td>OneDFieldModel</td>
+<td>Initial field file &gt; initial &gt; dataFile</td>
+</tr>
+<tr>
+<td>Initial field file (*.ini)</td>
+<td>IniFieldModel</td>
+<td>Model definition file &gt; geometry &gt; iniFieldFile</td>
+</tr>
+<tr>
+<td>Structures file (structures.ini)</td>
+<td>StructureModel</td>
+<td>Model definition file &gt; geometry &gt; structureFile</td>
+</tr>
+</tbody>
+</table>
+<h3 id="commonly-used-functions-of-a-filemodel">Commonly used functions of a FileModel</h3>
+<p>Each FileModel offers a set of commonly used functions.</p>
+<p><strong><strong>init</strong>()</strong>: Initialize a new file model instance</p>
+<p>Parameters (all optional):</p>
+<ul>
+<li><code>filepath (Path)</code>: The file path from which the file model should be loaded. Default to None.</li>
+<li><code>resolve_casing (bool)</code>: Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.</li>
+<li><code>recurse (bool)</code>: Whether or not to recursively load the model. Defaults to True.</li>
+<li><code>path_style (str)</code>: Which path style is used in the loaded files. Options: 'unix', 'windows'. Defaults to the path style that matches the current operating system.</li>
+</ul>
+<p><strong>save()</strong>: Export the file model data to a file</p>
+<p>Parameters (all optional):</p>
+<ul>
+<li><code>filepath (Path)</code>: The file path at which this model is saved. If None is specified it defaults to the filepath currently stored in the filemodel. Defaults to None.</li>
+<li><code>recurse (bool)</code>: Whether or not to recursively save all children of this file model, or only save this model. Defaults to False.</li>
+<li><code>path_style (str)</code>: With which file path style to save the model. File references will be written with the specified path style. Options: 'unix', 'windows'. Defaults to the path style used by the current operating system.</li>
+</ul>
+<p><strong>show_tree()</strong>: Print the file model tree</p>
+
+            
+            
+        </body>
+        </html>

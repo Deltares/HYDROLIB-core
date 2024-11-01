@@ -1,78 +1,24 @@
+# Installation
 
-# HYDROLIB-core guide for the Delft Software Days 2023
+To install:
+1. Download Miniforge3 from [the miniforge github](https://github.com/conda-forge/miniforge?tab=readme-ov-file#miniforge3)
+   and install it with the recommended settings.
+2. Open "Miniforge Prompt". On Windows: Press "Start" and type "Miniforge Prompt"
+3. Run the following command in the Miniforge Prompt: ``conda create -n hydrolib-core-dsd -y python=3.12``
+4. When this has finished succesfully, run ``conda activate hydrolib-core-dsd``
+5. Once in the active enviroment we install all dependencies with pip ``pip install hydrolib-core geopandas openpyxl notebook ipykernel``
 
-## Contents
+# Exercises HYDROLIB-core
+We have set up a Jupyter Notebook with exercises to get you started on how to use HYDROLIB-core for creating models.
 
-- [HYDROLIB-core guide for the Delft Software Days 2023](#hydrolib-core-guide-for-the-delft-software-days-2023)
-  - [Contents](#contents)
-  - [Introduction](#introduction)
-  - [User guide](#user-guide)
-    - [Requirements](#requirements)
-    - [Installation](#installation)
-    - [Run the demo notebook](#run-the-demo-notebook)
-  - [Cheat sheet](#cheat-sheet)
-    - [Kernel files vs HYDROLIB-core FileModels](#kernel-files-vs-hydrolib-core-filemodels)
-    - [Commonly used functions of a FileModel](#commonly-used-functions-of-a-filemodel)
+1. In the active environment install a jupyter kernel: ``python -m ipykernel install --name=hydrolib-core-dsd``
+2. And start the notebook: ``jupyter notebook <path to magdalena_workbook.ipynb>``
+3. Select the correct kernel once the notebook has started
 
+In this tutorial we will create a 1D2D fluvial flood model of the Magdalena river in Columbia.
 
-## Introduction
-This document contains instructions about the installation and usage of HYDROLIB-core during the Delft Software Days 2023.
-
-HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content. 
-HYDROLIB-core serves as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations in D-HYDRO.
-
-## User guide
-### Requirements
-Before getting started with HYDROLIB-core, make sure you have the following software and tools installed:
-
-- **Anaconda**: https://www.anaconda.com/download
-Anaconda is an open-source distribution for Python and contains the package manager "conda". 
-(!) Make sure to add Anaconda to your PATH environment variable during installation.
-
-### Installation
-Once you've installed the required software, you can create a Python 3.11 environment with HYDROLIB-core 0.5.2, the latest release. 
-Note that the environment that we are creating now contains not only HYDROLIB-core, but also the other packages that are needed today during the breakout sessions.
-
-Follow these steps:
-
-1. Open your command line interface
-2. Enter the following commands:
-
-```
-conda create --name dsd_env python=3.11 git -c conda-forge -y
-conda activate dsd_env
-pip install hydromt_delft3dfm[examples] dfm_tools pyogrio openpyxl
-conda deactivate
-```
-
-After executing these commands, an Anaconda environment with the latest HYDROLIB-core is created. After deactivation, you can reactivate this environment at any time by using the following command:
-```
-conda activate dsd_env
-```
-
-If you'd like to remove the environment entirely, call the following command:
-
-```
-conda remove -n dsd_env --all
-```
-
-This will remove all the packages in the environment and the environment folder itself.
-  
-
-### Run the demo notebook
-
-We'd like to be able to run the provided demo notebook. We can set it up with the following steps:
-
-1. Open a command line in the *HYDROLIB-core* folder
-2. Activate the conda environment:
-```
-conda activate dsd_env
-```
-3. And start Jupyter Notebook:
-```
-jupyter notebook
-```
-4. Open the *demo.ipynb* inside the *demo* folder
+## Worked out answers
+A worked out examples of the exercises can be found within our GitHub page: [magdalena_workedout.ipynb](https://github.com/Deltares/HYDROLIB-core/blob/dsd_2024/docs/tutorials/dsd_2024/magdalena_workflow/magdalena_workedout.ipynb)
 
 ## Cheat sheet
 
@@ -97,7 +43,7 @@ The table below contains the models relevant for today's exercises.
 ### Commonly used functions of a FileModel
 Each FileModel offers a set of commonly used functions. 
 
-**__init__()** --- Initialize a new file model instance
+**__init__()**: Initialize a new file model instance
 
 Parameters (all optional):
 * `filepath (Path)`: The file path from which the file model should be loaded. Default to None.
@@ -105,11 +51,11 @@ Parameters (all optional):
 * `recurse (bool)`: Whether or not to recursively load the model. Defaults to True.
 * `path_style (str)`: Which path style is used in the loaded files. Options: 'unix', 'windows'. Defaults to the path style that matches the current operating system. 
 
-**save()** --- Export the file model data to a file
+**save()**: Export the file model data to a file
 
 Parameters (all optional):
 * `filepath (Path)`: The file path at which this model is saved. If None is specified it defaults to the filepath currently stored in the filemodel. Defaults to None.
 * `recurse (bool)`: Whether or not to recursively save all children of this file model, or only save this model. Defaults to False.
 * `path_style (str)`: With which file path style to save the model. File references will be written with the specified path style. Options: 'unix', 'windows'. Defaults to the path style used by the current operating system.
 
-**show_tree()** --- Print the file model tree
+**show_tree()**: Print the file model tree
