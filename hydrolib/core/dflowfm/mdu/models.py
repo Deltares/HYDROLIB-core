@@ -1892,7 +1892,7 @@ class Geometry(INIBasedModel):
         )
         kmx: Optional[str] = Field("Number of vertical layers.", alias="kmx")
         layertype: Optional[str] = Field(
-            "Number of vertical layers.", alias="layerType"
+            "1= sigma-layers, 2 = z-layers, 3 = use VertplizFile.", alias="layerType"
         )
         numtopsig: Optional[str] = Field(
             "Number of sigma-layers on top of z-layers.", alias="numTopSig"
@@ -2015,7 +2015,7 @@ class Geometry(INIBasedModel):
     thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
     fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
     pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
-    usecaching: bool = Field(False, alias="useCaching")
+    usecaching: bool = Field(True, alias="useCaching")
     vertplizfile: Optional[PolyFile] = Field(None, alias="vertPlizFile")
     frictfile: Optional[List[FrictionModel]] = Field(
         None, alias="frictFile", delimiter=";"
@@ -2079,7 +2079,7 @@ class Geometry(INIBasedModel):
     )
     dxmin1d: float = Field(0.001, alias="dxmin1D")
     uniformtyp1dstreetinlets: int = Field(-2, alias="uniformTyp1DStreetInlets")
-    stretchtype: int = Field(1, alias="stretchType")
+    stretchtype: int = Field(-1, alias="stretchType")
     zlaybot: float = Field(-999.0, alias="zlayBot")
     zlaytop: float = Field(-999.0, alias="zlayTop")
     uniformheight1d: float = Field(3.0, alias="uniformHeight1D")

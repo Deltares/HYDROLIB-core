@@ -27,7 +27,9 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.dflowfm.ext.models.Lateral class"""
 
-        location_error: str = "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+        location_error: str = (
+            "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
+        )
 
         class TestValidateCoordinates:
             """

@@ -23,7 +23,6 @@ class Serializer:
         config: SerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> None:
-
         """
         Serialize the given data and write it to a file at the given path.
 

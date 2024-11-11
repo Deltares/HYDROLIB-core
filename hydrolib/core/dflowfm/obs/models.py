@@ -42,9 +42,9 @@ class ObservationPoint(INIBasedModel):
 
     class Comments(INIBasedModel.Comments):
         name: Optional[str] = "Name of the observation point (max. 255 characters)."
-        locationtype: Optional[
-            str
-        ] = "Only when x and y are also specified. 1d: snap to closest 1D grid point, 2d: snap to closest 2D grid cell centre, all: snap to closest 1D or 2D point."
+        locationtype: Optional[str] = (
+            "Only when x and y are also specified. 1d: snap to closest 1D grid point, 2d: snap to closest 2D grid cell centre, all: snap to closest 1D or 2D point."
+        )
         branchid: Optional[str] = Field(
             "Branch on which the observation point is located.", alias="branchId"
         )

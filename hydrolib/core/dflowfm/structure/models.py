@@ -1,6 +1,7 @@
 """
 structure namespace for storing the contents of an [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]'s structure file.
 """
+
 # TODO Implement the following structures
 # - Gate
 
@@ -34,6 +35,7 @@ from hydrolib.core.utils import str_is_empty_or_none
 logger = logging.getLogger(__name__)
 
 ForcingData = Union[float, TimModel, ForcingModel]
+
 
 # TODO: handle comment blocks
 # TODO: handle duplicate keys

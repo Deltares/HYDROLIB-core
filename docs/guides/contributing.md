@@ -34,7 +34,7 @@ When starting development on a branch, a pull request should be created for revi
 In the description text area on GitHub, use a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) such that this PR will be automatically linked to the issue.
 For example: `Fixes #160`.
 
-During continuous integration, the checks will be run with python 3.8, 3.9 and 3.12 on Windows, Ubuntu and MacOS. The checks consist of running the tests, checking the code formatting and running SonarCloud. 
+During continuous integration, the checks will be run with several Python versions on Windows, Ubuntu and MacOS. The checks consist of running the tests, checking the code formatting and running SonarCloud. 
 We advise to use a draft pull request, to prevent the branch to be merged back before developement is finished. When the branch is ready for review, you can update the status of the pull request to "ready for review".
 
 ### Reviews
