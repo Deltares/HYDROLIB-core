@@ -33,7 +33,7 @@ from hydrolib.core.dflowfm.mdu.models import General
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 
 from .converter_factory import ConverterFactory
-from .utils import construct_filemodel_new_or_existing
+from .utils import backup_file, construct_filemodel_new_or_existing, construct_filepath_with_postfix
 
 _program: str = "ext_old_to_new"
 _verbose: bool = False
@@ -63,7 +63,9 @@ def ext_old_to_new(
     extfile: PathOrStr = None,
     inifieldfile: PathOrStr = None,
     structurefile: PathOrStr = None,
-):
+    backup: bool = False,
+    postfix: str = "",
+) -> Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
     """
     Convert old external forcing file to new format files.
     When the output files are existing, output will be appended to them.
@@ -73,6 +75,14 @@ def ext_old_to_new(
         extfile (PathOrStr, optional): Path to the new external forcing file.
         inifieldfile (PathOrStr, optional): Path to the initial field file.
         structurefile (PathOrStr, optional): Path to the structure file.
+        backup (bool, optional): Create a backup of each file that will be
+            overwritten.
+        postfix (str, optional): Append POSTFIX to the output filenames. Defaults to "".
+
+    Returns:
+        Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
+            The updated models (already written to disk). Maybe used 
+            at call site to inspect the updated models.
     """
 
     if _verbose:
@@ -122,38 +132,58 @@ def ext_old_to_new(
             )
 
         print(new_quantity_block)
+
+    backup_file(ext_model.filepath, backup)
     ext_model.save()
 
+    backup_file(inifield_model.filepath, backup)
+    inifield_model.save()
+
+    backup_file(structure_model.filepath, backup)
+    structure_model.save()
+
+    return extold_model, ext_model, inifield_model, structure_model
 
 def ext_old_to_new_from_mdu(
     mdufile: PathOrStr,
     extfile: PathOrStr = "forcings.ext",
     inifieldfile: PathOrStr = "inifields.ini",
     structurefile: PathOrStr = "structures.ini",
+    backup: bool = True,
+    postfix: str = "_new",
 ):
     """Wrapper converter function for converting legacy external forcings
     files into cross section .ini files, for files listed in an MDU file.
 
     Args:
-        mdufile (PathOrStr): path to the D-Flow FM main input file (.mdu).
+        mdufile (PathOrStr): Path to the D-Flow FM main input file (.mdu).
             Must be parsable into a standard FMModel.
             When this contains a valid filename for ExtFile, conversion
             will be performed.
-        extfile (PathOrStr, optional): path to the output external forcings file.
-            Defaults to the given ExtForceFileNew in the MDU file, if present,
-            or forcings.ext otherwise.
-        inifieldfile (PathOrStr, optional): path to the output initial field file.
-            Defaults to the given IniFieldFile in the MDU file, if present,
-            or inifields.ini otherwise.
-        structurefile (PathOrStr, optional): path to the output structures.ini file.
-            Defaults to the given StructureFile in the MDU file, if present,
-            or structures.ini otherwise.
+        extfile (PathOrStr, optional): Path to the output external forcings
+            file. Defaults to the given ExtForceFileNew in the MDU file, if
+            present, or forcings.ext otherwise.
+        inifieldfile (PathOrStr, optional): Path to the output initial field
+            file. Defaults to the given IniFieldFile in the MDU file, if
+            present, or inifields.ini otherwise.
+        structurefile (PathOrStr, optional): Path to the output structures.ini
+            file. Defaults to the given StructureFile in the MDU file, if
+            present, or structures.ini otherwise.
+        backup (bool, optional): Create a backup of each file that will be
+            overwritten. Defaults to True.
+        postfix (str, optional): Append postfix to the output filenames
+            (before the file suffix). Defaults to "_new".
     """
     global _verbose
 
     # For flexibility, also accept legacy MDU file versions (which does not
-    # external forcings functionailty anyway):
-    fmmodel = LegacyFMModel(mdufile, recurse=False)
+    # affect external forcings functionality anyway):
+    try:
+        fmmodel = LegacyFMModel(mdufile, recurse=False)
+    except Exception as error:
+        print(f"Could not read {mdufile} as a valid FM model:", error)
+        return
+
     workdir = fmmodel._resolved_filepath.parent
     os.chdir(workdir)
     if fmmodel.external_forcing.extforcefile is None:
@@ -181,29 +211,39 @@ def ext_old_to_new_from_mdu(
         else workdir / structurefile
     )
 
-    ext_old_to_new(extoldfile, extfile, inifieldfile, structurefile)
+    # The actual conversion:
+    extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(extoldfile, extfile, inifieldfile, structurefile, backup, postfix)
     try:
-        ExtModel(extfile)
-        newmdufile: PathOrStr = fmmodel.filepath.stem + "_new" + ".mdu"
-        newmdufile = workdir / newmdufile
-        fmmodel.filepath = FilePath(newmdufile)
-        fmmodel.external_forcing.extforcefile = None
-        fmmodel.external_forcing.extforcefilenew = extfile
-        fmmodel.save()
+        # And include the new files in the FM model:
+        _ = ExtModel(extfile)
+        if len(extold_model.forcing) > 0:
+            fmmodel.external_forcing.extforcefile = extold_model
+        # Intentionally always include the new external forcings file, even if empty.
+        fmmodel.external_forcing.extforcefilenew = ext_model
+        if len(inifield_model.initial) > 0 or len(inifield_model.parameter) > 0:
+            fmmodel.geometry.inifieldfile = inifield_model
+        if len(structure_model.structure) > 0:
+            fmmodel.geometry.structurefile[0] = structure_model
+
+        # Save the updated FM model:
+        backup_file(fmmodel.filepath, backup)
+        converted_mdufile = construct_filepath_with_postfix(mdufile, postfix)
+        fmmodel.filepath = converted_mdufile
+        fmmodel.save(recurse=False, exclude_unset=True)
         if _verbose:
-            print(f"succesfully saved converted file {newmdufile} ")
+            print(f"succesfully saved converted file {mdufile} ")
+
     except Exception as error:
         print("The converter did not produce a valid ext file:", error)
         return
 
-
 def ext_old_to_new_dir_recursive(
-    dir: PathOrStr,
+    dir: PathOrStr, backup: bool = True
 ):
 
     for path in Path(dir).rglob("*.mdu"):
         if "_ext" not in path.name:
-            ext_old_to_new_from_mdu(path)
+            ext_old_to_new_from_mdu(path, backup)
 
 
 def _get_parser() -> argparse.ArgumentParser:
@@ -212,15 +252,15 @@ def _get_parser() -> argparse.ArgumentParser:
         description="Convert D-Flow FM legacy external forcings files to current external forcings file/initial fields file/structures file.",
     )
 
-    parser.add_argument("--version", "-v", action="version", version=__version__)
+    parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument(
-        "--verbose", action="store_true", help="also print diagnostic information"
+        "--verbose", "-v", action="store_true", help="Print diagnostic information"
     )
     parser.add_argument(
         "--mdufile",
         "-m",
         action="store",
-        help="automatically take input and output filenames from MDUFILE",
+        help="Automatically take input and output filenames from MDUFILE",
     )
     parser.add_argument(
         "--extoldfile",
@@ -232,7 +272,7 @@ def _get_parser() -> argparse.ArgumentParser:
         "--dir",
         "-d",
         action="store",
-        help="Folder to recursively convert .mdufiles in",
+        help="Directory to recursively find and convert .mdu files in",
     )
     parser.add_argument(
         "--outfiles",
@@ -240,7 +280,26 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store",
         nargs=3,
         metavar=("EXTFILE", "INIFIELDFILE", "STRUCTUREFILE"),
-        help="save forcings, initial fields and structures to specified filenames",
+        help="Save forcings, initial fields and structures to specified filenames",
+    )
+    parser.add_argument(
+        "--postfix",
+        "-p",
+        action="store",
+        help="Append POSTFIX to the output filenames (before the extension).",
+    )
+    parser.add_argument(
+        "--backup",
+        "-b",
+        action="store_true",
+        default=True,
+        help="Create a backup of each file that will be overwritten.",
+    )
+    parser.add_argument(
+        "--no-backup",
+        dest="backup",
+        action="store_false",
+        help="Do not create a backup of each file that will be overwritten.",
     )
     return parser
 
@@ -259,6 +318,8 @@ def main(args=None):
     args = parser.parse_args(args)
     _verbose = args.verbose
 
+    backup = args.backup is not None
+
     if args.mdufile is not None and args.extoldfile is not None:
         print("Error: use either input MDUFILE or EXTOLDFILE, not both.")
         sys.exit(1)
@@ -271,13 +332,13 @@ def main(args=None):
         outfiles["structurefile"] = args.outfiles[2]
 
     if args.mdufile is not None:
-        ext_old_to_new_from_mdu(args.mdufile, **outfiles)
+        ext_old_to_new_from_mdu(args.mdufile, **outfiles, backup=backup, postfix=args.postfix)
     elif args.extoldfile is not None:
-        ext_old_to_new(args.extoldfile, **outfiles)
+        ext_old_to_new(args.extoldfile, **outfiles, backup=backup, postfix=args.postfix)
     elif args.dir is not None:
-        ext_old_to_new_dir_recursive(args.dir)
+        ext_old_to_new_dir_recursive(args.dir, backup=backup, postfix=args.postfix)
     else:
-        ext_old_to_new_dir_recursive(os.getcwd())
+        print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 
     #     sys.exit(1)
 
