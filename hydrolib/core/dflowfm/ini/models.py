@@ -217,7 +217,7 @@ class INIBasedModel(BaseModel, ABC):
     ) -> Section:
         props = []
         for key, value in self:
-            if not self._should_be_serialized(key, value):
+            if not self._should_be_serialized(key, value, save_settings):
                 continue
 
             field_key = key
@@ -232,8 +232,11 @@ class INIBasedModel(BaseModel, ABC):
             props.append(prop)
         return Section(header=self._header, content=props)
 
-    def _should_be_serialized(self, key: str, value: Any) -> bool:
+    def _should_be_serialized(self, key: str, value: Any, save_settings: ModelSaveSettings) -> bool:
         if key in self._exclude_fields():
+            return False
+
+        if save_settings._exclude_unset and key not in self.__fields_set__:
             return False
 
         field = self.__fields__.get(key)
@@ -383,6 +386,8 @@ class INIModel(ParsableFileModel):
         sections = []
         for key, value in self:
             if key in self._exclude_fields() or value is None:
+                continue
+            if save_settings._exclude_unset and key not in self.__fields_set__:
                 continue
             if isinstance(value, list):
                 for v in value:
