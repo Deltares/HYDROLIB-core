@@ -2,10 +2,10 @@ from typing import Literal
 
 from pydantic import Field
 
-from .models import FMModel, General
+from hydrolib.core.dflowfm.research.models import ResearchFMModel, ResearchGeneral
 
 
-class LegacyGeneralAsModel(General):
+class LegacyGeneralAsModel(ResearchGeneral):
     """
     The `[Model]` section in a legacy MDU file.
 
@@ -18,7 +18,7 @@ class LegacyGeneralAsModel(General):
     mduformatversion: str = Field("1.06", alias="MDUFormatVersion")
 
 
-class LegacyFMModel(FMModel):
+class LegacyFMModel(ResearchFMModel):
     """
     Legacy version of an MDU file, specifically for: MDUFormatVersion <= 1.06.
 
