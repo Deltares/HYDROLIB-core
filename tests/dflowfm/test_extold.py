@@ -23,7 +23,7 @@ from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-from ..utils import (
+from tests.utils import (
     assert_files_equal,
     create_temp_file_from_lines,
     get_temp_file,
@@ -126,6 +126,32 @@ EXP_HEADER = """
 
 
 class TestExtForcing:
+    def test_initialize_with_old_external_forcing_file(self):
+        path = "tests/data/input/old-external-forcing.ext"
+        exising_quantity = ['windx',
+         'windy',
+         'initialwaterlevel',
+         'initialwaterlevel',
+         'initialsalinity',
+         'bedlevel',
+         'bedlevel',
+         'waterlevelbnd',
+         'horizontaleddyviscositycoefficient',
+         'horizontaleddyviscositycoefficient',
+         'horizontaleddyviscositycoefficient',
+         'horizontaleddyviscositycoefficient',
+         'salinitybnd']
+
+        model = ExtOldModel(path)
+        assert isinstance(model, ExtOldModel)
+        assert len(model.comment) == 63
+        assert len(model.forcing) == 13
+        forcing_1 = model.forcing[0]
+        assert isinstance(forcing_1, ExtOldForcing)
+        quantities = [forcing.quantity for forcing in model.forcing]
+        assert all([quantity in exising_quantity for quantity in quantities])
+
+
     def test_initialize_with_timfile_initializes_timmodel(self):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
