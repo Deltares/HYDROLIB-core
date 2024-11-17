@@ -713,14 +713,15 @@ class TestInitialConditions:
     def test_initial_conditions_interpolation_methods(self, initial_condition_interpolation_methods: List[str]):
         assert len(InitialCondInterpolationMethod) == 4
         assert all(
-            quantity in InitialCondInterpolationMethod.__members__.keys() for quantity in
-            initial_condition_interpolation_methods
+            quantity.value in initial_condition_interpolation_methods for quantity in
+            InitialCondInterpolationMethod.__members__.values()
         )
 
     def test_initial_condition_file_type(self, initial_condition_file_type: List[str]):
         assert len(InitialCondFileType) == 6
-        all(quantity in InitialCondFileType.__members__.keys() for quantity in initial_condition_file_type)
-        assert all(quantity in InitialCondFileType.__members__.keys() for quantity in initial_condition_file_type)
+        assert all(
+            quantity.value in initial_condition_file_type for quantity in InitialCondFileType.__members__.values()
+            )
 
 class TestMeteo:
 
