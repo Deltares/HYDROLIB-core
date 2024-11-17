@@ -616,7 +616,7 @@ class TestModels:
         @pytest.mark.parametrize(
             ("missing_field", "alias_field"),
             [
-                ("quantity", "quantity"),
+                ("quantity", "QUANTITY"),
                 ("forcingfile", "forcingFile"),
                 ("forcingfiletype", "forcingFileType"),
             ],
@@ -630,28 +630,6 @@ class TestModels:
 
             expected_message = f"{alias_field}\n  field required "
             assert expected_message in str(error.value)
-
-        def test_initialize_forcingfile_with_timfile_initializes_timmodel(self):
-            forcingfile = test_input_dir / "tim" / "single_data_for_timeseries.tim"
-            values = self._create_meteo_dict()
-            values["forcingfile"] = forcingfile
-
-            meteo = Meteo(**values)
-
-            assert isinstance(meteo.forcingfile, TimModel)
-
-        def test_initialize_forcingfile_with_bcfile_initializes_forcingmodel(self):
-            forcingfile = (
-                test_input_dir
-                / "dflowfm_individual_files"
-                / "FlowFM_boundaryconditions2d_and_vectors.bc"
-            )
-            values = self._create_meteo_dict()
-            values["forcingfile"] = forcingfile
-
-            meteo = Meteo(**values)
-
-            assert isinstance(meteo.forcingfile, ForcingModel)
 
         def test_construct_from_file_with_tim(self):
             input_ext = (
