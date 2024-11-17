@@ -598,65 +598,66 @@ class TestModels:
                     == expected_locationfile
                 )
 
-    class TestMeteo:
-        """Class to test all methods contained in the
-        hydrolib.core.dflowfm.ext.models.Meteo class"""
 
-        def test_construct_from_file_with_tim(self):
-            input_ext = (
-                test_input_dir
-                / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
-            )
+class TestExtModel:
+    """Class to test all methods contained in the
+    hydrolib.core.dflowfm.ext.models.ExtModel class"""
 
-            ext_model = ExtModel(input_ext)
+    def test_construct_from_file_with_tim(self):
+        input_ext = (
+            test_input_dir
+            / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+        )
 
-            assert isinstance(ext_model, ExtModel)
-            assert len(ext_model.meteo) == 1
-            assert ext_model.meteo[0].quantity == "rainfall_rate"
-            assert isinstance(ext_model.meteo[0].forcingfile, TimModel)
-            assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.uniform
+        ext_model = ExtModel(input_ext)
 
-            assert len(ext_model.meteo[0].forcingfile.timeseries) == 14
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
+        assert ext_model.meteo[0].quantity == "rainfall_rate"
+        assert isinstance(ext_model.meteo[0].forcingfile, TimModel)
+        assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.uniform
 
-        def test_construct_from_file_with_bc(self):
-            input_ext = (
-                test_input_dir
-                / "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
-            )
+        assert len(ext_model.meteo[0].forcingfile.timeseries) == 14
 
-            ext_model = ExtModel(input_ext)
+    def test_construct_from_file_with_bc(self):
+        input_ext = (
+            test_input_dir
+            / "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
+        )
 
-            assert isinstance(ext_model, ExtModel)
-            assert len(ext_model.meteo) == 1
-            assert ext_model.meteo[0].quantity == "rainfall_rate"
-            assert isinstance(ext_model.meteo[0].forcingfile, ForcingModel)
-            assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.bcascii
+        ext_model = ExtModel(input_ext)
 
-        def test_construct_from_file_with_netcdf(self):
-            input_ext = (
-                test_input_dir
-                / "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
-            )
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
+        assert ext_model.meteo[0].quantity == "rainfall_rate"
+        assert isinstance(ext_model.meteo[0].forcingfile, ForcingModel)
+        assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.bcascii
 
-            ext_model = ExtModel(input_ext)
+    def test_construct_from_file_with_netcdf(self):
+        input_ext = (
+            test_input_dir
+            / "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
+        )
 
-            assert isinstance(ext_model, ExtModel)
-            assert len(ext_model.meteo) == 1
-            assert ext_model.meteo[0].quantity == "rainfall"
-            assert isinstance(ext_model.meteo[0].forcingfile, DiskOnlyFileModel)
-            assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.netcdf
+        ext_model = ExtModel(input_ext)
 
-    class TestExtModel:
-        def test_ext_model_correct_default_serializer_config(self):
-            model = ExtModel()
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
+        assert ext_model.meteo[0].quantity == "rainfall"
+        assert isinstance(ext_model.meteo[0].forcingfile, DiskOnlyFileModel)
+        assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.netcdf
 
-            assert model.serializer_config.section_indent == 0
-            assert model.serializer_config.property_indent == 0
-            assert model.serializer_config.datablock_indent == 8
-            assert model.serializer_config.float_format == ""
-            assert model.serializer_config.datablock_spacing == 2
-            assert model.serializer_config.comment_delimiter == "#"
-            assert model.serializer_config.skip_empty_properties == True
+
+    def test_ext_model_correct_default_serializer_config(self):
+        model = ExtModel()
+
+        assert model.serializer_config.section_indent == 0
+        assert model.serializer_config.property_indent == 0
+        assert model.serializer_config.datablock_indent == 8
+        assert model.serializer_config.float_format == ""
+        assert model.serializer_config.datablock_spacing == 2
+        assert model.serializer_config.comment_delimiter == "#"
+        assert model.serializer_config.skip_empty_properties == True
 
 
 class TestInitialConditions:
