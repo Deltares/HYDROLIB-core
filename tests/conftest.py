@@ -36,6 +36,10 @@ def meteo_interpolation_methods() -> List[str]:
 
 
 @pytest.fixture
+def input_files_dir() -> Path:
+    return Path("tests/data/input")
+
+@pytest.fixture
 def time_series_file() -> Path:
     return Path("tests/data/inputs/tim/single_data_for_timeseries.tim")
 
@@ -43,3 +47,4 @@ def time_series_file() -> Path:
 @pytest.fixture
 def boundary_condition_file() -> Path:
     return Path("tests/data/inputs/dflowfm_individual_files/FlowFM_boundaryconditions2d_and_vectors.bc")
+
