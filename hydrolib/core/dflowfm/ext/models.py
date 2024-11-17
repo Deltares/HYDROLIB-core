@@ -376,3 +376,25 @@ class InitialCondInterpolationMethod(StrEnum):
     triangulation = "triangulation"
     averaging = "averaging"
     allowedvaluestext = "Possible values: const (only with dataFileType = polygon)."
+
+
+class InitialCondFileType(StrEnum):
+    """
+    Enum class containing the valid values for the forcingFileType
+    attribute in Meteo class.
+
+    args:
+        arcinfo: ESRI ArcInfo interchange file (E00) format (uses basic ascii representation)
+        geotiff: GeoTIFF format (.tif)
+        sample: Sample format
+        1dField: 1D field format (INI file)
+        polygon: Polygon format (.poli)
+
+    """
+    arcinfo = "arcinfo"
+    geotiff = "GeoTIFF"
+    sample = "sample"
+    d1fiels = "1dField"
+    polygon = "polygon"
+    allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
+

@@ -12,7 +12,8 @@ from hydrolib.core.dflowfm.ext.models import (
     Lateral,
     Meteo,
     MeteoForcingFileType,
-    InitialCondInterpolationMethod
+    InitialCondInterpolationMethod,
+    InitialCondFileType
 )
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -706,7 +707,13 @@ class TestModels:
             assert model.serializer_config.comment_delimiter == "#"
             assert model.serializer_config.skip_empty_properties == True
 
-def test_initial_conditions_interpolation_methods(initial_condition_interpolation_methods: List[str]):
-    assert len(InitialCondInterpolationMethod) == 4
-    all(quantity in InitialCondInterpolationMethod.__members__.keys() for quantity in initial_condition_interpolation_methods)
 
+class TestInitialConditions:
+
+    def test_initial_conditions_interpolation_methods(self, initial_condition_interpolation_methods: List[str]):
+        assert len(InitialCondInterpolationMethod) == 4
+        all(quantity in InitialCondInterpolationMethod.__members__.keys() for quantity in initial_condition_interpolation_methods)
+
+    def test_initial_condition_file_type(self, initial_condition_file_type: List[str]):
+        assert len(InitialCondFileType) == 6
+        all(quantity in InitialCondFileType.__members__.keys() for quantity in initial_condition_file_type)
