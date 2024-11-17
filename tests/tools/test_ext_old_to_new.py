@@ -1,20 +1,12 @@
-from pathlib import Path
-
-import pytest
-
-from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.tools.ext_old_to_new import main_converter
 
-from ..utils import (
-    assert_files_equal,
-    create_temp_file_from_lines,
-    get_temp_file,
+from tests.utils import (
     test_input_dir,
 )
 
 
 class TestExtOldToNew:
-    def test_wind_combi_uniform_curvi(self):
+    def test_wind_combi_uniform_curvi(self, capsys):
         main_converter._verbose = True
         mdu_filename = (
             test_input_dir
@@ -25,10 +17,10 @@ class TestExtOldToNew:
         )
 
         main_converter.ext_old_to_new_from_mdu(mdu_filename)
-        assert True
-        # assert isinstance(forcing.filename, TimModel)
+        captured = capsys.readouterr()
+        assert captured.out.startswith(f"Could not read {mdu_filename} as a valid FM model:")
 
-    def test_extrapolate_slr(self):
+    def test_extrapolate_slr(self, capsys):
         main_converter._verbose = True
         mdu_filename = (
             test_input_dir
@@ -38,9 +30,10 @@ class TestExtOldToNew:
             / "slrextrapol.mdu"
         )
         main_converter.ext_old_to_new_from_mdu(mdu_filename)
-        assert True
+        captured = capsys.readouterr()
+        assert captured.out.startswith(f"Could not read {mdu_filename} as a valid FM model:")
 
-    def test_basinsquares(self):
+    def test_basinsquares(self, capsys):
         main_converter._verbose = True
         mdu_filename = (
             test_input_dir
@@ -49,14 +42,12 @@ class TestExtOldToNew:
             / "c020_basinnofriction_squares"
             / "basinsquares.mdu"
         )
-        try:
-            main_converter.ext_old_to_new_from_mdu(mdu_filename)
-        except Exception as e:
-            pass
 
-        assert True
+        main_converter.ext_old_to_new_from_mdu(mdu_filename)
+        captured = capsys.readouterr()
+        assert captured.out.startswith(f"Could not read {mdu_filename} as a valid FM model:")
 
-    def test_recursive(self):
+    def test_recursive(self, capsys):
         main_converter._verbose = True
         dir = test_input_dir / "e02" / "f006_external_forcing"
         main_converter.ext_old_to_new_dir_recursive(dir)
