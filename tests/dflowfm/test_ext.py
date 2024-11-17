@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 import pytest
 from pydantic.v1 import ValidationError
-
+import numpy as np
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime
 from hydrolib.core.dflowfm.ext.models import (
@@ -430,7 +430,7 @@ class TestModels:
                 m = ExtModel(filepath)
                 assert len(m.lateral) == 72
                 assert m.lateral[0].discharge == RealTime.realtime
-                assert m.lateral[1].discharge == 1.23
+                assert np.isclose(m.lateral[1].discharge, 1.23)
                 assert isinstance(m.lateral[3].discharge, ForcingModel)
                 assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
                 assert m.lateral[3].discharge.forcing[0].name == "10637"
@@ -737,7 +737,7 @@ class TestMeteo:
         assert meteo.extrapolationAllowed is True
         assert meteo.extrapolationSearchRadius == 10
         assert meteo.averagingType == 1
-        assert meteo.averagingNumMin == 0.5
+        assert np.isclose(meteo.averagingNumMin, 0.5)
         assert meteo.averagingPercentile == 90
 
     def test_invalid_forcingfiletype(self):
