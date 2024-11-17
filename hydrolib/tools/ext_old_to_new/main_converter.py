@@ -1,35 +1,23 @@
 import argparse
-import math
 import os
-import re
 import sys
-from pathlib import Path
-from typing import Dict, List, Literal, Optional, Tuple
-
-from pydantic import Extra, FilePath
+from typing import Tuple
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import PathOrStr
-from hydrolib.core.dflowfm import FMModel
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
     Lateral,
     Meteo,
-    MeteoForcingFileType,
-    MeteoInterpolationMethod,
 )
 from hydrolib.core.dflowfm.extold.models import *
 from hydrolib.core.dflowfm.inifield.models import (
-    AveragingType,
-    DataFileType,
     IniFieldModel,
     InitialField,
-    InterpolationMethod,
     ParameterField,
 )
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
-from hydrolib.core.dflowfm.mdu.models import General
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 
 from .converter_factory import ConverterFactory
@@ -47,7 +35,8 @@ def _read_ext_old_data(extoldfile: PathOrStr) -> ExtOldModel:
         extoldfile (PathOrStr): path to the external forcings file (.ext)
 
     Returns:
-        ExtOldModel: object with all forcing blocks."""
+        ExtOldModel: object with all forcing blocks.
+    """
     global _verbose
 
     extold_model = ExtOldModel(extoldfile)
