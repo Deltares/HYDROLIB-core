@@ -20,3 +20,11 @@ def initial_condition_interpolation_methods() -> List[str]:
 def initial_condition_file_type() -> List[str]:
     return ["arcinfo", "GeoTIFF", "sample", "1dField", "polygon", "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."]
     return ["arcinfo", "geotiff", "sample", "d1fiels", "polygon", "allowedvaluestext"]
+
+
+@pytest.fixture
+def meteo_forcing_file_type() -> List[str]:
+    return [
+        "bcAscii", "uniform", "uniMagDir", "meteoGridEqui", "spiderweb", "meteoGridCurvi", "netcdf",
+        "Possible values: bcAscii, netcdf, uniform."
+    ]

@@ -722,3 +722,8 @@ class TestInitialConditions:
         all(quantity in InitialCondFileType.__members__.keys() for quantity in initial_condition_file_type)
         assert all(quantity in InitialCondFileType.__members__.keys() for quantity in initial_condition_file_type)
 
+class TestMeteo:
+
+    def test_meteo_forcing_file_type(self, meteo_forcing_file_type: List[str]):
+        assert len(MeteoForcingFileType) == 8
+        assert all(quantity.value in meteo_forcing_file_type for quantity in MeteoForcingFileType.__members__.values())
