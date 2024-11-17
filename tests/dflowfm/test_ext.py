@@ -602,35 +602,6 @@ class TestModels:
         """Class to test all methods contained in the
         hydrolib.core.dflowfm.ext.models.Meteo class"""
 
-        def _create_meteo_dict(self) -> Dict:
-            dict_values = {
-                "quantity": "rainfall",
-                "forcingfile": ForcingModel(),
-                "forcingfiletype": MeteoForcingFileType.bcascii,
-                "targetmaskfile": None,
-                "targetmaskinvert": False,
-                "interpolationmethod": None,
-            }
-            return dict_values
-
-        @pytest.mark.parametrize(
-            ("missing_field", "alias_field"),
-            [
-                ("quantity", "QUANTITY"),
-                ("forcingfile", "forcingFile"),
-                ("forcingfiletype", "forcingFileType"),
-            ],
-        )
-        def test_missing_required_fields(self, missing_field, alias_field):
-            dict_values = self._create_meteo_dict()
-            del dict_values[missing_field]
-
-            with pytest.raises(ValidationError) as error:
-                Meteo(**dict_values)
-
-            expected_message = f"{alias_field}\n  field required "
-            assert expected_message in str(error.value)
-
         def test_construct_from_file_with_tim(self):
             input_ext = (
                 test_input_dir
@@ -777,7 +748,7 @@ class TestMeteo:
                 forcingfiletype="invalidType",
             )
 
-    def test_invalid_interpolationmethod(self):
+    def test_invalid_interpolation_method(self):
         with pytest.raises(ValueError):
             Meteo(
                 quantity="rainfall",
@@ -785,6 +756,31 @@ class TestMeteo:
                 forcingfiletype=MeteoForcingFileType.uniform,
                 interpolationmethod="invalidMethod",
             )
+
+    @pytest.mark.parametrize(
+        ("missing_field", "alias_field"),
+        [
+            ("quantity", "QUANTITY"),
+            ("forcingfile", "forcingFile"),
+            ("forcingfiletype", "forcingFileType"),
+        ],
+    )
+    def test_missing_required_fields(self, missing_field, alias_field):
+        dict_values = {
+            "quantity": "rainfall",
+            "forcingfile": ForcingModel(),
+            "forcingfiletype": MeteoForcingFileType.bcascii,
+            "targetmaskfile": None,
+            "targetmaskinvert": False,
+            "interpolationmethod": None,
+        }
+        del dict_values[missing_field]
+
+        with pytest.raises(ValidationError) as error:
+            Meteo(**dict_values)
+
+        expected_message = f"{alias_field}\n  field required "
+        assert expected_message in str(error.value)
 
     def test_is_intermediate_link(self):
         meteo = Meteo(
