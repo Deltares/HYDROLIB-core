@@ -1,5 +1,6 @@
 import pytest
 from typing import List
+from pathlib import Path
 
 
 @pytest.fixture
@@ -32,3 +33,13 @@ def meteo_forcing_file_type() -> List[str]:
 @pytest.fixture
 def meteo_interpolation_methods() -> List[str]:
     return ["nearestNb", "linearSpaceTime", "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "]
+
+
+@pytest.fixture
+def time_series_file() -> Path:
+    return Path("tests/data/inputs/tim/single_data_for_timeseries.tim")
+
+
+@pytest.fixture
+def boundary_condition_file() -> Path:
+    return Path("tests/data/inputs/dflowfm_individual_files/FlowFM_boundaryconditions2d_and_vectors.bc")

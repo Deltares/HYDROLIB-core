@@ -28,6 +28,12 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
 
+QUANTITY: str = Field(alias="QUANTITY")
+AVERAGING_TYPE: Optional[int] = Field(alias="averagingType")
+AVERAGING_NUM_MIN: Optional[float] = Field(alias="averagingNumMin")
+AVERAGING_PERCENTILE: Optional[float] = Field(alias="averagingPercentile")
+OPERAND: Optional[Operand] = Field(Operand.override.value, alias="operand")
+
 
 class Boundary(INIBasedModel):
     """
@@ -43,7 +49,7 @@ class Boundary(INIBasedModel):
     )
 
     _header: Literal["Boundary"] = "Boundary"
-    quantity: str = Field(alias="quantity")
+    quantity: str = QUANTITY
     nodeid: Optional[str] = Field(alias="nodeId")
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
@@ -291,7 +297,7 @@ class Meteo(INIBasedModel):
     )
 
     _header: Literal["Meteo"] = "Meteo"
-    quantity: str = Field(alias="quantity")
+    quantity: str = QUANTITY
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
@@ -302,7 +308,7 @@ class Meteo(INIBasedModel):
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         alias="interpolationMethod"
     )
-    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
+    operand: Optional[Operand] = OPERAND
     extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
     extrapolationSearchRadius: Optional[float] = Field(
         alias="extrapolationSearchRadius"

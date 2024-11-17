@@ -20,7 +20,7 @@ from hydrolib.core.dflowfm.ext.models import (
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-from ..utils import test_data_dir, test_input_dir
+from tests.utils import test_data_dir, test_input_dir
 
 
 class TestModels:
@@ -725,12 +725,113 @@ class TestInitialConditions:
             quantity.value in initial_condition_file_type for quantity in InitialCondFileType.__members__.values()
             )
 
+
 class TestMeteo:
 
     def test_meteo_interpolation_methods(self, meteo_interpolation_methods: List[str]):
         assert len(MeteoInterpolationMethod) == 3
-        assert all(quantity.value in meteo_interpolation_methods for quantity in InitialCondInterpolationMethod.__members__.values())
+        assert all(quantity.value in meteo_interpolation_methods for quantity in MeteoInterpolationMethod.__members__.values())
 
     def test_meteo_forcing_file_type(self, meteo_forcing_file_type: List[str]):
         assert len(MeteoForcingFileType) == 8
         assert all(quantity.value in meteo_forcing_file_type for quantity in MeteoForcingFileType.__members__.values())
+
+    def test_meteo_initialization(self):
+        data = {
+            "quantity": "rainfall",
+            "forcingfile": ForcingModel(),
+            "forcingfiletype": MeteoForcingFileType.bcascii,
+            "targetmaskfile": None,
+            "targetmaskinvert": False,
+            "interpolationmethod": None,
+        }
+        meteo = Meteo(**data)
+        assert meteo.quantity == "rainfall"
+        assert isinstance(meteo.forcingfile, ForcingModel)
+        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
+
+    def test_default_values(self):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+        )
+        assert meteo.targetmaskfile is None
+        assert meteo.targetmaskinvert is None
+        assert meteo.interpolationmethod is None
+        assert meteo.operand == "O"
+        assert meteo.extrapolationAllowed is None
+        assert meteo.extrapolationSearchRadius is None
+        assert meteo.averagingType is None
+        assert meteo.averagingNumMin is None
+        assert meteo.averagingPercentile is None
+
+    def test_setting_optional_fields(self):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+            targetmaskfile=None,
+            targetmaskinvert=True,
+            interpolationmethod=MeteoInterpolationMethod.nearestnb,
+            operand="O",
+            extrapolationAllowed=True,
+            extrapolationSearchRadius=10,
+            averagingType=1,
+            averagingNumMin=0.5,
+            averagingPercentile=90,
+        )
+        assert meteo.targetmaskfile is None
+        assert meteo.targetmaskinvert is True
+        assert meteo.interpolationmethod == MeteoInterpolationMethod.nearestnb
+        assert meteo.operand == "O"
+        assert meteo.extrapolationAllowed is True
+        assert meteo.extrapolationSearchRadius == 10
+        assert meteo.averagingType == 1
+        assert meteo.averagingNumMin == 0.5
+        assert meteo.averagingPercentile == 90
+
+    def test_invalid_forcingfiletype(self):
+        with pytest.raises(ValueError):
+            Meteo(
+                quantity="rainfall",
+                forcingfile=ForcingModel(),
+                forcingfiletype="invalidType",
+            )
+
+    def test_invalid_interpolationmethod(self):
+        with pytest.raises(ValueError):
+            Meteo(
+                quantity="rainfall",
+                forcingfile=ForcingModel(),
+                forcingfiletype=MeteoForcingFileType.uniform,
+                interpolationmethod="invalidMethod",
+            )
+
+    def test_is_intermediate_link(self):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+        )
+        assert meteo.is_intermediate_link() is True
+
+    def test_initialize_with_boundary_condition_file(self, boundary_condition_file: Path):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=boundary_condition_file,
+            forcingfiletype=MeteoForcingFileType.bcascii,
+        )
+        assert isinstance(meteo.forcingfile, DiskOnlyFileModel)
+        assert meteo.forcingfile.filepath == boundary_condition_file
+        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
+
+    def test_initialize_with_time_series_file(self, time_series_file: Path):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=time_series_file,
+            forcingfiletype=MeteoForcingFileType.bcascii,
+        )
+        assert isinstance(meteo.forcingfile, DiskOnlyFileModel)
+        assert meteo.forcingfile.filepath == time_series_file
+        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
