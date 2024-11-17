@@ -52,6 +52,7 @@ ipykernel = "^6.15.0"
 matplotlib = "^3.8"
 # xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
 xarray = ">=2024.6.0"
+flake8-pyproject = "*"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -86,6 +87,14 @@ exclude = '''
   )/
 )
 '''
+
+[tool.flake8]
+ignore = ["E501", "W503"]
+per-file-ignores = [
+    '__init__.py:F401',
+]
+max-line-length = 120
+count = true
 
 [tool.isort]
 profile = "black"

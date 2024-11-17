@@ -17,6 +17,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldModel,
     ExtOldQuantity,
     ExtOldTracerQuantity,
+    ExtOldInitialConditionQuantity
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
@@ -1027,3 +1028,11 @@ class TestSerializer:
                 exp_file_content, "test_serialize_expected.ext"
             ) as exp_file:
                 assert_files_equal(file, exp_file)
+
+
+def test_ext_old_initial_condition_quantity(initial_condition_quantities):
+    """
+    Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
+    """
+    assert len(ExtOldInitialConditionQuantity) == 10
+    all(quantity in ExtOldInitialConditionQuantity.__members__.keys() for quantity in initial_condition_quantities)

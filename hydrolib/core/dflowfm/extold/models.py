@@ -223,6 +223,28 @@ class ExtOldMeteoQuantity(StrEnum):
     """Dewpoint temperature"""
 
 
+class ExtOldInitialConditionQuantity(StrEnum):
+    """
+    Initial Condition quantities:
+        initialwaterlevel, initialsalinity, initialsalinitytop, initialtemperature,
+        initialverticaltemperatureprofile, initialverticalsalinityprofile, initialvelocityx,
+        initialvelocityy, initialvelocity, initialsalinitytopuse
+    """
+
+    # Initial Condition fields
+    InitialWaterLevel = "initialwaterlevel"
+    InitialSalinity = "initialsalinity"
+    InitialSalinityTop = "initialsalinitytop"
+    InitialTemperature = "initialtemperature"
+    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
+    InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
+
+    InitialVelocityX = "initialvelocityx"
+    InitialVelocityY = "initialvelocityy"
+    InitialVelocity = "initialvelocity"
+    InitialSalinityTopUse = "initialsalinitytopuse"
+
+
 class ExtOldQuantity(StrEnum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
@@ -459,7 +481,7 @@ class ExtOldForcing(BaseModel):
 
     filetype: ExtOldFileType = Field(alias="FILETYPE")
     """FileType: Indication of the file type.
-    
+
     Options:
     1. Time series
     2. Time series magnitude and direction
@@ -476,7 +498,7 @@ class ExtOldForcing(BaseModel):
 
     method: ExtOldMethod = Field(alias="METHOD")
     """ExtOldMethod: The method of interpolation.
-    
+
     Options:
     1. Pass through (no interpolation)
     2. Interpolate time and space
@@ -502,8 +524,8 @@ class ExtOldForcing(BaseModel):
 
     operand: Operand = Field(alias="OPERAND")
     """Operand: The operand to use for adding the provided values.
-    
-    Options:    
+
+    Options:
     'O' Existing values are overwritten with the provided values.
     'A' Provided values are used where existing values are missing.
     '+' Existing values are summed with the provided values.
