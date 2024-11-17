@@ -49,6 +49,6 @@ class TestExtOldToNew:
 
     def test_recursive(self, capsys):
         main_converter._verbose = True
-        dir = test_input_dir / "e02" / "f006_external_forcing"
-        main_converter.ext_old_to_new_dir_recursive(dir)
-        assert True
+        main_converter.ext_old_to_new_dir_recursive(f"{test_input_dir}/e02/f006_external_forcing")
+
+
