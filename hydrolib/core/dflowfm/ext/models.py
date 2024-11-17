@@ -398,3 +398,32 @@ class InitialCondFileType(StrEnum):
     polygon = "polygon"
     allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
 
+
+class InitialConditions(INIBasedModel):
+    """
+    A `[Initial Condition]` block for use inside an external forcings file,
+    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+
+    All lowercased attributes match with the meteo input as described in
+    [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
+    """
+    _header: Literal["Initial"] = "Initial"
+    quantity: str = QUANTITY
+    dataFile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(alias="dataFile")
+    dataFileType: InitialCondFileType = Field(alias="dataFileType")
+    interpolationmethod: Optional[InitialCondInterpolationMethod] = Field(alias="interpolationMethod")
+    operand: Optional[Operand] = OPERAND
+    extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
+    extrapolationSearchRadius: Optional[float] = Field(
+        alias="extrapolationSearchRadius"
+    )
+    averagingType: Optional[int] = AVERAGING_TYPE
+    averagingNumMin: Optional[float] = AVERAGING_NUM_MIN
+    averagingPercentile: Optional[float] = AVERAGING_PERCENTILE
+
+    datafiletype_validator = get_enum_validator(
+        "dataFileType", enum=InitialCondFileType
+    )
+    interpolationmethod_validator = get_enum_validator(
+        "interpolationmethod", enum=InitialCondInterpolationMethod
+    )
