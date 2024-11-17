@@ -14,7 +14,6 @@ from hydrolib.core.dflowfm.ini.models import (
     INIBasedModel,
     INIGeneral,
     INIModel,
-    INISerializerConfig,
 )
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
@@ -360,3 +359,20 @@ class ExtModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "bnd"
+
+
+class InitialCondInterpolationMethod(StrEnum):
+    """
+    Enum class containing the valid values for the interpolationMethod
+    attribute in InitialCondition class.
+
+    args:
+        constant: only if the dataFileType is "polygon"
+        triangulation:
+        average: grid cell averaging
+
+    """
+    constant = "constant"
+    triangulation = "triangulation"
+    averaging = "averaging"
+    allowedvaluestext = "Possible values: const (only with dataFileType = polygon)."
