@@ -13,8 +13,10 @@ from hydrolib.core.dflowfm.ext.models import (
     Meteo,
     MeteoForcingFileType,
     InitialCondInterpolationMethod,
-    InitialCondFileType
+    InitialCondFileType,
+    MeteoInterpolationMethod
 )
+
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 
@@ -724,6 +726,10 @@ class TestInitialConditions:
             )
 
 class TestMeteo:
+
+    def test_meteo_interpolation_methods(self, meteo_interpolation_methods: List[str]):
+        assert len(MeteoInterpolationMethod) == 3
+        assert all(quantity.value in meteo_interpolation_methods for quantity in InitialCondInterpolationMethod.__members__.values())
 
     def test_meteo_forcing_file_type(self, meteo_forcing_file_type: List[str]):
         assert len(MeteoForcingFileType) == 8

@@ -27,3 +27,8 @@ def meteo_forcing_file_type() -> List[str]:
         "bcAscii", "uniform", "uniMagDir", "meteoGridEqui", "spiderweb", "meteoGridCurvi", "netcdf",
         "Possible values: bcAscii, netcdf, uniform."
     ]
+
+
+@pytest.fixture
+def meteo_interpolation_methods() -> List[str]:
+    return ["nearestNb", "linearSpaceTime", "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "]
