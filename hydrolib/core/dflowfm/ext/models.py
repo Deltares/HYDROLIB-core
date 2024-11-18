@@ -415,8 +415,8 @@ class InitialConditions(INIBasedModel):
     """
     _header: Literal["Initial"] = "Initial"
     quantity: str = QUANTITY
-    dataFile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(alias="dataFile")
-    dataFileType: InitialCondFileType = Field(alias="dataFileType")
+    datafile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(alias="dataFile")
+    datafiletype: InitialCondFileType = Field(alias="dataFileType")
     interpolationmethod: Optional[InitialCondInterpolationMethod] = Field(alias="interpolationMethod")
     operand: Optional[Operand] = OPERAND
     extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
@@ -428,7 +428,7 @@ class InitialConditions(INIBasedModel):
     averagingPercentile: Optional[float] = AVERAGING_PERCENTILE
 
     datafiletype_validator = get_enum_validator(
-        "dataFileType", enum=InitialCondFileType
+        "datafiletype", enum=InitialCondFileType
     )
     interpolationmethod_validator = get_enum_validator(
         "interpolationmethod", enum=InitialCondInterpolationMethod
