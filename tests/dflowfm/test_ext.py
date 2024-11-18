@@ -785,7 +785,7 @@ class TestMeteo:
             forcingfile=boundary_condition_file,
             forcingfiletype=MeteoForcingFileType.bcascii,
         )
-        assert isinstance(meteo.forcingfile, DiskOnlyFileModel)
+        assert isinstance(meteo.forcingfile, ForcingModel)
         assert meteo.forcingfile.filepath == boundary_condition_file
         assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
 
@@ -795,6 +795,6 @@ class TestMeteo:
             forcingfile=time_series_file,
             forcingfiletype=MeteoForcingFileType.bcascii,
         )
-        assert isinstance(meteo.forcingfile, DiskOnlyFileModel)
+        assert isinstance(meteo.forcingfile, TimModel)
         assert meteo.forcingfile.filepath == time_series_file
         assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
