@@ -344,9 +344,9 @@ class ExtModel(INIModel):
     """
 
     general: ExtGeneral = ExtGeneral()
-    boundary: List[Boundary] = []
-    lateral: List[Lateral] = []
-    meteo: List[Meteo] = []
+    boundary: List[Boundary] = Field(default_factory=list)
+    lateral: List[Lateral] = Field(default_factory=list)
+    meteo: List[Meteo] = Field(default_factory=list)
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )
