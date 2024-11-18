@@ -141,10 +141,10 @@ class TestExtForcing:
         assert all([quantity in old_forcing_file_quantities for quantity in quantities])
 
 
-    def test_initialize_with_timfile_initializes_timmodel(self):
+    def test_initialize_with_timfile_initializes_timmodel(self, input_files_dir: Path):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=test_input_dir / "tim" / "triple_data_for_timeseries.tim",
+            filename=input_files_dir.joinpath("tim/triple_data_for_timeseries.tim"),
             filetype=ExtOldFileType.TimeSeries,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
@@ -152,10 +152,10 @@ class TestExtForcing:
 
         assert isinstance(forcing.filename, TimModel)
 
-    def test_initialize_with_polyfile_initializes_polyfile(self):
+    def test_initialize_with_polyfile_initializes_polyfile(self, input_files_dir: Path):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=test_input_dir / "dflowfm_individual_files" / "test.pli",
+            filename=input_files_dir.joinpath("dflowfm_individual_files/test.pli"),
             filetype=ExtOldFileType.Polyline,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
@@ -163,10 +163,10 @@ class TestExtForcing:
 
         assert isinstance(forcing.filename, PolyFile)
 
-    def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(self):
+    def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(self, input_files_dir: Path):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=Path(test_input_dir / "file_load_test" / "FlowFM_net.nc"),
+            filename=input_files_dir.joinpath("file_load_test/FlowFM_net.nc"),
             filetype=ExtOldFileType.NetCDFGridData,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
