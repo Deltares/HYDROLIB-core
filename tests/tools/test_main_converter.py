@@ -36,4 +36,10 @@ class TestExtOldToNew:
         path = input_files_dir.joinpath("e02/f006_external_forcing")
         ext_old_to_new_dir_recursive(path)
 
-
+    def test_trial(self):
+        path = "tests/data/input/old-external-forcing.ext"
+        new_ext_file = "tests/data/new-external-forcing.ext"
+        new_initial_file = "tests/data/new-initial-conditions.ext"
+        new_structure_file = "tests/data/new-structure.ext"
+        result = ext_old_to_new(path, new_ext_file, new_initial_file, new_structure_file)
+        print(result)
