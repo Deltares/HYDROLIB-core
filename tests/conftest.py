@@ -56,3 +56,21 @@ def time_series_file(input_files_dir: Path) -> Path:    return input_files_dir.j
 def boundary_condition_file(input_files_dir: Path) -> Path:
     return input_files_dir.joinpath("dflowfm_individual_files/FlowFM_boundaryconditions2d_and_vectors.bc")
 
+
+@pytest.fixture
+def old_forcing_file() -> Path:
+    return Path("tests/data/input/old-external-forcing.ext")
+
+
+@pytest.fixture
+def old_forcing_file_quantities() -> List[str]:
+    return [
+        'windx', 'windy', 'initialwaterlevel', 'initialwaterlevel', 'initialsalinity', 'bedlevel', 'bedlevel',
+        'waterlevelbnd', 'horizontaleddyviscositycoefficient', 'horizontaleddyviscositycoefficient',
+        'horizontaleddyviscositycoefficient', 'horizontaleddyviscositycoefficient', 'salinitybnd'
+    ]
+
+
+@pytest.fixture
+def old_forcing_comment_len() -> int:
+    return 63

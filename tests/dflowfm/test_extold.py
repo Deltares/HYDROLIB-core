@@ -1,3 +1,4 @@
+from typing import List
 from pathlib import Path
 
 import pytest
@@ -127,30 +128,17 @@ EXP_HEADER = """
 
 
 class TestExtForcing:
-    def test_initialize_with_old_external_forcing_file(self):
-        path = "tests/data/input/old-external-forcing.ext"
-        exising_quantity = ['windx',
-         'windy',
-         'initialwaterlevel',
-         'initialwaterlevel',
-         'initialsalinity',
-         'bedlevel',
-         'bedlevel',
-         'waterlevelbnd',
-         'horizontaleddyviscositycoefficient',
-         'horizontaleddyviscositycoefficient',
-         'horizontaleddyviscositycoefficient',
-         'horizontaleddyviscositycoefficient',
-         'salinitybnd']
-
-        model = ExtOldModel(path)
+    def test_initialize_with_old_external_forcing_file(
+            self, old_forcing_file: Path, old_forcing_file_quantities: List[str], old_forcing_comment_len: int
+    ):
+        model = ExtOldModel(old_forcing_file)
         assert isinstance(model, ExtOldModel)
-        assert len(model.comment) == 63
-        assert len(model.forcing) == 13
+        assert len(model.comment) == old_forcing_comment_len
+        assert len(model.forcing) == len(old_forcing_file_quantities)
         forcing_1 = model.forcing[0]
         assert isinstance(forcing_1, ExtOldForcing)
         quantities = [forcing.quantity for forcing in model.forcing]
-        assert all([quantity in exising_quantity for quantity in quantities])
+        assert all([quantity in old_forcing_file_quantities for quantity in quantities])
 
 
     def test_initialize_with_timfile_initializes_timmodel(self):
