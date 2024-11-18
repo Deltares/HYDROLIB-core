@@ -36,12 +36,21 @@ def meteo_interpolation_methods() -> List[str]:
 
 
 @pytest.fixture
+def initial_cond_averaging_type() -> List[str]:
+    return [
+        "mean", "nearestNb", "max", "min", "invDist", "minAbs", "median",
+        "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
+    ]
+
+
+@pytest.fixture
 def input_files_dir() -> Path:
     return Path("tests/data/input")
 
 
 @pytest.fixture
 def time_series_file(input_files_dir: Path) -> Path:    return input_files_dir.joinpath("tim/single_data_for_timeseries.tim")
+
 
 @pytest.fixture
 def boundary_condition_file(input_files_dir: Path) -> Path:

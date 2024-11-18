@@ -28,12 +28,6 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
 
-QUANTITY: str = Field(alias="QUANTITY")
-AVERAGING_TYPE: Optional[int] = Field(alias="averagingType")
-AVERAGING_NUM_MIN: Optional[float] = Field(alias="averagingNumMin")
-AVERAGING_PERCENTILE: Optional[float] = Field(alias="averagingPercentile")
-OPERAND: Optional[Operand] = Field(Operand.override.value, alias="operand")
-
 
 class Boundary(INIBasedModel):
     """
@@ -49,7 +43,7 @@ class Boundary(INIBasedModel):
     )
 
     _header: Literal["Boundary"] = "Boundary"
-    quantity: str = QUANTITY
+    quantity: str = Field(alias="QUANTITY")
     nodeid: Optional[str] = Field(alias="nodeId")
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
@@ -297,7 +291,7 @@ class Meteo(INIBasedModel):
     )
 
     _header: Literal["Meteo"] = "Meteo"
-    quantity: str = QUANTITY
+    quantity: str = Field(alias="QUANTITY")
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
@@ -308,7 +302,7 @@ class Meteo(INIBasedModel):
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         alias="interpolationMethod"
     )
-    operand: Optional[Operand] = OPERAND
+    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
     extrapolationSearchRadius: Optional[float] = Field(
         alias="extrapolationSearchRadius"
@@ -405,6 +399,30 @@ class InitialCondFileType(StrEnum):
     allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
 
 
+class AveragingTypeMethod(StrEnum):
+    """
+    Enum class containing the valid values for the averaging type
+    attribute in InitialCondition class.
+
+    args:
+        mean: mean value
+        nearestNb: nearest neighbour
+        max: maximum value
+        min: minimum value
+        invDist: inverse distance weighting (1/distance)
+        minAbs: minimum absolute value
+        median: median value
+    """
+    mean = "mean"
+    nearestNB = "nearestNb"
+    max = "max"
+    min = "min"
+    invDist = "invDist"
+    minAbs = "minAbs"
+    median = "median"
+    allowedvaluestext = "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
+
+
 class InitialConditions(INIBasedModel):
     """
     A `[Initial Condition]` block for use inside an external forcings file,
@@ -414,18 +432,19 @@ class InitialConditions(INIBasedModel):
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
     _header: Literal["Initial"] = "Initial"
-    quantity: str = QUANTITY
+    quantity: str = Field(alias="QUANTITY")
     datafile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(alias="dataFile")
     datafiletype: InitialCondFileType = Field(alias="dataFileType")
     interpolationmethod: Optional[InitialCondInterpolationMethod] = Field(alias="interpolationMethod")
-    operand: Optional[Operand] = OPERAND
+    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
     extrapolationSearchRadius: Optional[float] = Field(
         alias="extrapolationSearchRadius"
     )
-    averagingType: Optional[int] = AVERAGING_TYPE
-    averagingNumMin: Optional[float] = AVERAGING_NUM_MIN
-    averagingPercentile: Optional[float] = AVERAGING_PERCENTILE
+    averagingtype: Optional[AveragingTypeMethod] = Field(alias="averagingType")
+    averagingnummin: Optional[int] = Field(default=1, alias="averagingNumMin")
+    averagingpercentile: Optional[float] = Field(default=0, alias="averagingPercentile")
+
 
     datafiletype_validator = get_enum_validator(
         "datafiletype", enum=InitialCondFileType
