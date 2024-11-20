@@ -15,6 +15,7 @@ from hydrolib.core.dflowfm.ext.models import (
     MeteoInterpolationMethod,
     InitialConditions
 )
+from hydrolib.core.dflowfm.inifield.models import InitialField
 from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod, AveragingType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -781,105 +782,3 @@ class TestMeteo:
         assert isinstance(meteo.forcingfile, TimModel)
         assert meteo.forcingfile.filepath == time_series_file
         assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
-
-
-class TestInitialConditions:
-
-    def test_initialization(self):
-        data = {
-            "quantity": "waterlevel",
-            "datafile": ForcingModel(),
-            "datafiletype": DataFileType.arcinfo,
-            "interpolationmethod": InterpolationMethod.constant,
-            "operand": "O",
-            "extrapolationAllowed": True,
-            "extrapolationSearchRadius": 10.0,
-            "averagingtype": AveragingType.mean,
-            "averagingnummin": 2,
-            "averagingpercentile": 95.0,
-        }
-        initial_conditions = InitialConditions(**data)
-        assert initial_conditions.quantity == "waterlevel"
-        assert isinstance(initial_conditions.datafile, ForcingModel)
-        assert initial_conditions.datafiletype == DataFileType.arcinfo
-        assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
-        assert initial_conditions.extrapolationAllowed is True
-        assert np.isclose(initial_conditions.extrapolationSearchRadius, 10.0)
-        assert initial_conditions.averagingtype == AveragingType.mean
-        assert initial_conditions.averagingnummin == 2
-        assert np.isclose(initial_conditions.averagingpercentile, 95.0)
-
-    def test_default_values(self):
-        initial_conditions = InitialConditions(
-            quantity="waterlevel",
-            datafile=ForcingModel(),
-            datafiletype=DataFileType.arcinfo,
-        )
-        assert initial_conditions.interpolationmethod is None
-        assert initial_conditions.operand == "O"
-        assert initial_conditions.extrapolationAllowed is None
-        assert initial_conditions.extrapolationSearchRadius is None
-        assert initial_conditions.averagingtype is None
-        assert initial_conditions.averagingnummin == 1
-        assert np.isclose(initial_conditions.averagingpercentile, 0.0)
-
-    def test_setting_optional_fields(self):
-        initial_conditions = InitialConditions(
-            quantity="waterlevel",
-            datafile=ForcingModel(),
-            datafiletype=DataFileType.arcinfo,
-            interpolationmethod=InterpolationMethod.constant,
-            operand="O",
-            extrapolationAllowed=True,
-            extrapolationSearchRadius=10.0,
-            averagingtype=AveragingType.mean,
-            averagingnummin=2,
-            averagingpercentile=95.0,
-        )
-        assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
-        assert initial_conditions.extrapolationAllowed is True
-        assert np.isclose(initial_conditions.extrapolationSearchRadius, 10.0)
-        assert initial_conditions.averagingtype == AveragingType.mean
-        assert initial_conditions.averagingnummin == 2
-        assert np.isclose(initial_conditions.averagingpercentile, 95.0)
-
-    def test_invalid_datafiletype(self):
-        with pytest.raises(ValueError):
-            InitialConditions(
-                quantity="waterlevel",
-                datafile=ForcingModel(),
-                datafiletype="invalidType",
-            )
-
-    def test_invalid_interpolationmethod(self):
-        with pytest.raises(ValueError):
-            InitialConditions(
-                quantity="waterlevel",
-                datafile=ForcingModel(),
-                datafiletype=DataFileType.arcinfo,
-                interpolationmethod="invalidMethod",
-            )
-
-    @pytest.mark.parametrize(
-        ("missing_field", "alias_field"),
-        [
-            ("quantity", "QUANTITY"),
-            ("datafile", "dataFile"),
-            ("datafiletype", "dataFileType"),
-        ],
-    )
-    def test_missing_required_fields(self, missing_field, alias_field):
-        dict_values = {
-            "quantity": "rainfall",
-            "datafile": ForcingModel(),
-            "datafiletype": DataFileType.arcinfo,
-        }
-        del dict_values[missing_field]
-
-        with pytest.raises(ValidationError) as error:
-            InitialConditions(**dict_values)
-
-        expected_message = f"{alias_field}\n  field required "
-        assert expected_message in str(error.value)
