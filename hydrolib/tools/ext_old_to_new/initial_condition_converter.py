@@ -1,5 +1,5 @@
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm.ext.models import InitialConditions
+from hydrolib.core.dflowfm.inifield.models import InitialField
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing
 from hydrolib.core.dflowfm.inifield.models import InterpolationMethod
 from hydrolib.tools.ext_old_to_new.enum_converters import (
@@ -15,7 +15,7 @@ class InitialConditionConverter(BaseConverter):
     def __init__(self):
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> InitialConditions:
+    def convert(self, forcing: ExtOldForcing) -> InitialField:
         """Convert an old external forcing block with meteo data to a Meteo
         forcing block suitable for inclusion in a new external forcings file.
 
@@ -47,8 +47,10 @@ class InitialConditionConverter(BaseConverter):
             "quantity": forcing.quantity,
             "datafile": forcing.filename,
             "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-            # "forcingVariableName": forcing.varname
         }
+        if block_data["datafiletype"] == "polygon":
+            block_data["value"] = forcing.value
+
         if forcing.sourcemask != DiskOnlyFileModel(None):
             raise ValueError(
                 f"Attribute 'SOURCEMASK' is no longer supported, cannot "
@@ -63,11 +65,13 @@ class InitialConditionConverter(BaseConverter):
             block_data["averagingrelsize"] = forcing.relativesearchcellsize
             block_data["averagingnummin"] = forcing.nummin
             block_data["averagingpercentile"] = forcing.percentileminmax
-
-        block_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
-        block_data["extrapolationSearchRadius"] = forcing.maxsearchradius
         block_data["operand"] = forcing.operand
 
-        new_block = InitialConditions(**block_data)
+        if hasattr(forcing, "extrapolation"):
+            block_data["extrapolationmethod"] = forcing.extrapolation
+        if hasattr(forcing, "locationtype"):
+            block_data["locationtype"] = forcing.locationtype
+
+        new_block = InitialField(**block_data)
 
         return new_block
