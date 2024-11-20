@@ -1,9 +1,11 @@
 import inspect
 from pathlib import Path
 from typing import List
+
 import numpy as np
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
+
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
@@ -93,7 +95,9 @@ class TestIniField:
         assert getattr(inifield, attribute.lower()) == expected
 
     def test_inifield_model(self, input_files_dir: Path):
-        filepath = input_files_dir.joinpath("dflowfm_individual_files/initialFields.ini")
+        filepath = input_files_dir.joinpath(
+            "dflowfm_individual_files/initialFields.ini"
+        )
         m = IniFieldModel(filepath)
 
         assert len(m.initial) == 2
@@ -128,7 +132,9 @@ class TestIniField:
         """Test whether a model loaded from file is serialized correctly.
         Particularly intended to test writing of default enum values."""
 
-        filepath = input_files_dir.joinpath("dflowfm_individual_files/initialFields.ini")
+        filepath = input_files_dir.joinpath(
+            "dflowfm_individual_files/initialFields.ini"
+        )
         m = IniFieldModel(filepath)
 
         output_file = Path(test_output_dir / "fm" / "serialize_initialFields.ini")
@@ -218,7 +224,6 @@ def test_averaging_type_file_type(initial_cond_averaging_type: List[str]):
         quantity.value in initial_cond_averaging_type
         for quantity in AveragingType.__members__.values()
     )
-
 
 
 class TestInitialConditions:
