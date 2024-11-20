@@ -13,10 +13,7 @@ from hydrolib.core.dflowfm.ext.models import (
     Meteo,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
-    InitialConditions
 )
-from hydrolib.core.dflowfm.inifield.models import InitialField
-from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod, AveragingType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 
