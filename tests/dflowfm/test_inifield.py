@@ -1,6 +1,6 @@
-from typing import List
 import inspect
 from pathlib import Path
+from typing import List
 import numpy as np
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
@@ -8,18 +8,17 @@ from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.inifield.models import (
+    AveragingType,
     DataFileType,
     IniFieldModel,
     InitialField,
     InterpolationMethod,
     LocationType,
     ParameterField,
-    AveragingType,
 )
 from tests.utils import (
     WrapperTest,
     assert_files_equal,
-    test_data_dir,
     test_output_dir,
     test_reference_dir,
 )
@@ -195,24 +194,30 @@ class TestIniField:
         assert expected_message in str(error.value)
 
 
-def test_initial_conditions_interpolation_methods(initial_condition_interpolation_methods: List[str]):
+def test_initial_conditions_interpolation_methods(
+    initial_condition_interpolation_methods: List[str],
+):
     assert len(InterpolationMethod) == 4
     assert all(
-        quantity.value in initial_condition_interpolation_methods for quantity in
-        InterpolationMethod.__members__.values()
+        quantity.value in initial_condition_interpolation_methods
+        for quantity in InterpolationMethod.__members__.values()
     )
+
 
 def test_initial_condition_file_type(initial_condition_file_type: List[str]):
     assert len(DataFileType) == 6
     assert all(
-        quantity.value in initial_condition_file_type for quantity in DataFileType.__members__.values()
-        )
+        quantity.value in initial_condition_file_type
+        for quantity in DataFileType.__members__.values()
+    )
+
 
 def test_averaging_type_file_type(initial_cond_averaging_type: List[str]):
     assert len(AveragingType) == 7
     assert all(
-        quantity.value in initial_cond_averaging_type for quantity in AveragingType.__members__.values()
-        )
+        quantity.value in initial_cond_averaging_type
+        for quantity in AveragingType.__members__.values()
+    )
 
 
 

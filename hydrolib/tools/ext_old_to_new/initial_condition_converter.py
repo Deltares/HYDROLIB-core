@@ -2,13 +2,12 @@ from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.inifield.models import InitialField
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing
 from hydrolib.core.dflowfm.inifield.models import InterpolationMethod
+from hydrolib.tools.ext_old_to_new.base_converter import BaseConverter
 from hydrolib.tools.ext_old_to_new.enum_converters import (
     oldfiletype_to_forcing_file_type,
     oldmethod_to_averaging_type,
     oldmethod_to_interpolation_method,
 )
-
-from hydrolib.tools.ext_old_to_new.base_converter import BaseConverter
 
 
 class InitialConditionConverter(BaseConverter):

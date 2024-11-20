@@ -5,12 +5,7 @@ from typing import Tuple
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import PathOrStr
-from hydrolib.core.dflowfm.ext.models import (
-    Boundary,
-    ExtModel,
-    Lateral,
-    Meteo,
-)
+from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
 from hydrolib.core.dflowfm.extold.models import *
 from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
@@ -21,7 +16,11 @@ from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 
 from .converter_factory import ConverterFactory
-from .utils import backup_file, construct_filemodel_new_or_existing, construct_filepath_with_postfix
+from .utils import (
+    backup_file,
+    construct_filemodel_new_or_existing,
+    construct_filepath_with_postfix,
+)
 
 _program: str = "ext_old_to_new"
 _verbose: bool = False
@@ -70,7 +69,7 @@ def ext_old_to_new(
 
     Returns:
         Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
-            The updated models (already written to disk). Maybe used 
+            The updated models (already written to disk). Maybe used
             at call site to inspect the updated models.
     """
 
@@ -132,6 +131,7 @@ def ext_old_to_new(
     structure_model.save()
 
     return extold_model, ext_model, inifield_model, structure_model
+
 
 def ext_old_to_new_from_mdu(
     mdufile: PathOrStr,
@@ -201,7 +201,9 @@ def ext_old_to_new_from_mdu(
     )
 
     # The actual conversion:
-    extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(extoldfile, extfile, inifieldfile, structurefile, backup, postfix)
+    extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(
+        extoldfile, extfile, inifieldfile, structurefile, backup, postfix
+    )
     try:
         # And include the new files in the FM model:
         _ = ExtModel(extfile)
@@ -226,9 +228,8 @@ def ext_old_to_new_from_mdu(
         print("The converter did not produce a valid ext file:", error)
         return
 
-def ext_old_to_new_dir_recursive(
-    dir: PathOrStr, backup: bool = True
-):
+
+def ext_old_to_new_dir_recursive(dir: PathOrStr, backup: bool = True):
 
     for path in Path(dir).rglob("*.mdu"):
         if "_ext" not in path.name:
@@ -321,7 +322,9 @@ def main(args=None):
         outfiles["structurefile"] = args.outfiles[2]
 
     if args.mdufile is not None:
-        ext_old_to_new_from_mdu(args.mdufile, **outfiles, backup=backup, postfix=args.postfix)
+        ext_old_to_new_from_mdu(
+            args.mdufile, **outfiles, backup=backup, postfix=args.postfix
+        )
     elif args.extoldfile is not None:
         ext_old_to_new(args.extoldfile, **outfiles, backup=backup, postfix=args.postfix)
     elif args.dir is not None:

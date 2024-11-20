@@ -1,45 +1,81 @@
-import pytest
-from typing import List
 from pathlib import Path
+from typing import List
+
+import pytest
 
 
 @pytest.fixture
 def initial_condition_quantities() -> List[str]:
     return [
-        "initialwaterlevel", "initialsalinity", "initialsalinitytop", "initialtemperature",
-        "initialverticaltemperatureprofile", "initialverticalsalinityprofile", "initialvelocityx",
-        "initialvelocityy", "initialvelocity", "initialsalinitytopuse"
+        "initialwaterlevel",
+        "initialsalinity",
+        "initialsalinitytop",
+        "initialtemperature",
+        "initialverticaltemperatureprofile",
+        "initialverticalsalinityprofile",
+        "initialvelocityx",
+        "initialvelocityy",
+        "initialvelocity",
+        "initialsalinitytopuse",
     ]
 
 
 @pytest.fixture
 def initial_condition_interpolation_methods() -> List[str]:
-    return ["constant", "averaging", "triangulation", "Possible values: constant, triangulation, averaging."]
+    return [
+        "constant",
+        "averaging",
+        "triangulation",
+        "Possible values: constant, triangulation, averaging.",
+    ]
 
 
 @pytest.fixture
 def initial_condition_file_type() -> List[str]:
-    return ["arcinfo", "GeoTIFF", "sample", "1dField", "polygon", "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."]
+    return [
+        "arcinfo",
+        "GeoTIFF",
+        "sample",
+        "1dField",
+        "polygon",
+        "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon.",
+    ]
 
 
 @pytest.fixture
 def meteo_forcing_file_type() -> List[str]:
     return [
-        "bcAscii", "uniform", "uniMagDir", "meteoGridEqui", "spiderweb", "meteoGridCurvi", "netcdf",
-        "Possible values: bcAscii, netcdf, uniform."
+        "bcAscii",
+        "uniform",
+        "uniMagDir",
+        "meteoGridEqui",
+        "spiderweb",
+        "meteoGridCurvi",
+        "netcdf",
+        "Possible values: bcAscii, netcdf, uniform.",
     ]
 
 
 @pytest.fixture
 def meteo_interpolation_methods() -> List[str]:
-    return ["nearestNb", "linearSpaceTime", "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "]
+    return [
+        "nearestNb",
+        "linearSpaceTime",
+        "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). ",
+    ]
 
 
 @pytest.fixture
 def initial_cond_averaging_type() -> List[str]:
     return [
-        "mean", "nearestNb", "max", "min", "invDist", "minAbs", "median",
-        "Possible values: mean, nearestNb, max, min, invDist, minAbs."
+        "mean",
+        "nearestNb",
+        "max",
+        "min",
+        "invDist",
+        "minAbs",
+        "median",
+        "Possible values: mean, nearestNb, max, min, invDist, minAbs.",
     ]
 
 
@@ -49,12 +85,15 @@ def input_files_dir() -> Path:
 
 
 @pytest.fixture
-def time_series_file(input_files_dir: Path) -> Path:    return input_files_dir.joinpath("tim/single_data_for_timeseries.tim")
+def time_series_file(input_files_dir: Path) -> Path:
+    return input_files_dir.joinpath("tim/single_data_for_timeseries.tim")
 
 
 @pytest.fixture
 def boundary_condition_file(input_files_dir: Path) -> Path:
-    return input_files_dir.joinpath("dflowfm_individual_files/FlowFM_boundaryconditions2d_and_vectors.bc")
+    return input_files_dir.joinpath(
+        "dflowfm_individual_files/FlowFM_boundaryconditions2d_and_vectors.bc"
+    )
 
 
 @pytest.fixture
@@ -65,9 +104,19 @@ def old_forcing_file() -> Path:
 @pytest.fixture
 def old_forcing_file_quantities() -> List[str]:
     return [
-        'windx', 'windy', 'initialwaterlevel', 'initialwaterlevel', 'initialsalinity', 'bedlevel', 'bedlevel',
-        'waterlevelbnd', 'horizontaleddyviscositycoefficient', 'horizontaleddyviscositycoefficient',
-        'horizontaleddyviscositycoefficient', 'horizontaleddyviscositycoefficient', 'salinitybnd'
+        "windx",
+        "windy",
+        "initialwaterlevel",
+        "initialwaterlevel",
+        "initialsalinity",
+        "bedlevel",
+        "bedlevel",
+        "waterlevelbnd",
+        "horizontaleddyviscositycoefficient",
+        "horizontaleddyviscositycoefficient",
+        "horizontaleddyviscositycoefficient",
+        "horizontaleddyviscositycoefficient",
+        "salinitybnd",
     ]
 
 

@@ -1,5 +1,5 @@
-from typing import List
 from pathlib import Path
+from typing import List
 
 import pytest
 
@@ -14,17 +14,16 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
+    ExtOldInitialConditionQuantity,
     ExtOldMethod,
     ExtOldModel,
     ExtOldQuantity,
     ExtOldTracerQuantity,
-    ExtOldInitialConditionQuantity
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
-
 from tests.utils import (
     assert_files_equal,
     create_temp_file_from_lines,
@@ -129,7 +128,10 @@ EXP_HEADER = """
 
 class TestExtForcing:
     def test_initialize_with_old_external_forcing_file(
-            self, old_forcing_file: Path, old_forcing_file_quantities: List[str], old_forcing_comment_len: int
+        self,
+        old_forcing_file: Path,
+        old_forcing_file_quantities: List[str],
+        old_forcing_comment_len: int,
     ):
         model = ExtOldModel(old_forcing_file)
         assert isinstance(model, ExtOldModel)
@@ -139,7 +141,6 @@ class TestExtForcing:
         assert isinstance(forcing_1, ExtOldForcing)
         quantities = [forcing.quantity for forcing in model.forcing]
         assert all([quantity in old_forcing_file_quantities for quantity in quantities])
-
 
     def test_initialize_with_timfile_initializes_timmodel(self, input_files_dir: Path):
         forcing = ExtOldForcing(
@@ -163,7 +164,9 @@ class TestExtForcing:
 
         assert isinstance(forcing.filename, PolyFile)
 
-    def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(self, input_files_dir: Path):
+    def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(
+        self, input_files_dir: Path
+    ):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename=input_files_dir.joinpath("file_load_test/FlowFM_net.nc"),
@@ -1023,4 +1026,7 @@ def test_ext_old_initial_condition_quantity(initial_condition_quantities):
     Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
     """
     assert len(ExtOldInitialConditionQuantity) == 10
-    all(quantity in ExtOldInitialConditionQuantity.__members__.keys() for quantity in initial_condition_quantities)
+    all(
+        quantity in ExtOldInitialConditionQuantity.__members__.keys()
+        for quantity in initial_condition_quantities
+    )
