@@ -1,27 +1,37 @@
-from typing import List
 from pathlib import Path
+from typing import List
+
 from hydrolib.tools.ext_old_to_new import main_converter
-from hydrolib.tools.ext_old_to_new.main_converter import \
-    ext_old_to_new_from_mdu, \
-    ext_old_to_new_dir_recursive, \
-    _read_ext_old_data,\
-    ext_old_to_new
+from hydrolib.tools.ext_old_to_new.main_converter import (
+    _read_ext_old_data,
+    ext_old_to_new,
+    ext_old_to_new_dir_recursive,
+    ext_old_to_new_from_mdu,
+)
 
 
 class TestExtOldToNew:
     def test_wind_combi_uniform_curvi(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
-        mdu_filename = input_files_dir.joinpath("e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu")
+        mdu_filename = input_files_dir.joinpath(
+            "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
+        )
         ext_old_to_new_from_mdu(mdu_filename)
         captured = capsys.readouterr()
-        assert captured.out.startswith(f"Could not read {mdu_filename} as a valid FM model:")
+        assert captured.out.startswith(
+            f"Could not read {mdu_filename} as a valid FM model:"
+        )
 
     def test_extrapolate_slr(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
-        mdu_filename = input_files_dir.joinpath("e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu")
+        mdu_filename = input_files_dir.joinpath(
+            "e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu"
+        )
         ext_old_to_new_from_mdu(mdu_filename)
         captured = capsys.readouterr()
-        assert captured.out.startswith(f"Could not read {mdu_filename} as a valid FM model:")
+        assert captured.out.startswith(
+            f"Could not read {mdu_filename} as a valid FM model:"
+        )
 
     def test_basinsquares(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
@@ -30,15 +40,21 @@ class TestExtOldToNew:
         )
         ext_old_to_new_from_mdu(mdu_filename)
         captured = capsys.readouterr()
-        assert captured.out.startswith(f"Could not read {mdu_filename} as a valid FM model:")
+        assert captured.out.startswith(
+            f"Could not read {mdu_filename} as a valid FM model:"
+        )
 
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
         path = input_files_dir.joinpath("e02/f006_external_forcing")
         ext_old_to_new_dir_recursive(path)
 
+
 def test__read_ext_old_data(
-        capsys, old_forcing_file: Path, old_forcing_file_quantities: List[str], old_forcing_comment_len: int
+    capsys,
+    old_forcing_file: Path,
+    old_forcing_file_quantities: List[str],
+    old_forcing_comment_len: int,
 ):
     model = _read_ext_old_data(old_forcing_file)
     assert len(model.forcing) == len(old_forcing_file_quantities)
@@ -50,4 +66,6 @@ def test__read_ext_old_data(
     _read_ext_old_data(old_forcing_file)
     captured = capsys.readouterr()
     print(captured.out)
-    assert captured.out.startswith(f"Read {(len(old_forcing_file_quantities))} forcing blocks from {old_forcing_file}.")
+    assert captured.out.startswith(
+        f"Read {(len(old_forcing_file_quantities))} forcing blocks from {old_forcing_file}."
+    )

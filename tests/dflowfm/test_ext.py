@@ -1,24 +1,28 @@
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import numpy as np
 import pytest
 from pydantic.v1 import ValidationError
-import numpy as np
+
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
+    InitialConditions,
     Lateral,
     Meteo,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
-    InitialConditions
 )
-from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod, AveragingType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
+from hydrolib.core.dflowfm.inifield.models import (
+    AveragingType,
+    DataFileType,
+    InterpolationMethod,
+)
 from hydrolib.core.dflowfm.tim.models import TimModel
-
 from tests.utils import test_data_dir
 
 
@@ -603,7 +607,9 @@ class TestExtModel:
     hydrolib.core.dflowfm.ext.models.ExtModel class"""
 
     def test_construct_from_file_with_tim(self, input_files_dir: Path):
-        input_ext = input_files_dir.joinpath("e02/f006_external_forcing/c063_rain_tim/rainschematic.ext")
+        input_ext = input_files_dir.joinpath(
+            "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+        )
 
         ext_model = ExtModel(input_ext)
 
@@ -616,7 +622,9 @@ class TestExtModel:
         assert len(ext_model.meteo[0].forcingfile.timeseries) == 14
 
     def test_construct_from_file_with_bc(self, input_files_dir: Path):
-        input_ext = input_files_dir.joinpath("e02/f006_external_forcing/c069_rain_bc/rainschematic.ext")
+        input_ext = input_files_dir.joinpath(
+            "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
+        )
         ext_model = ExtModel(input_ext)
 
         assert isinstance(ext_model, ExtModel)
@@ -626,7 +634,9 @@ class TestExtModel:
         assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.bcascii
 
     def test_construct_from_file_with_netcdf(self, input_files_dir: Path):
-        input_ext = input_files_dir.joinpath("e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext")
+        input_ext = input_files_dir.joinpath(
+            "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
+        )
         ext_model = ExtModel(input_ext)
 
         assert isinstance(ext_model, ExtModel)
@@ -651,11 +661,17 @@ class TestMeteo:
 
     def test_meteo_interpolation_methods(self, meteo_interpolation_methods: List[str]):
         assert len(MeteoInterpolationMethod) == 3
-        assert all(quantity.value in meteo_interpolation_methods for quantity in MeteoInterpolationMethod.__members__.values())
+        assert all(
+            quantity.value in meteo_interpolation_methods
+            for quantity in MeteoInterpolationMethod.__members__.values()
+        )
 
     def test_meteo_forcing_file_type(self, meteo_forcing_file_type: List[str]):
         assert len(MeteoForcingFileType) == 8
-        assert all(quantity.value in meteo_forcing_file_type for quantity in MeteoForcingFileType.__members__.values())
+        assert all(
+            quantity.value in meteo_forcing_file_type
+            for quantity in MeteoForcingFileType.__members__.values()
+        )
 
     def test_meteo_initialization(self):
         data = {
@@ -762,7 +778,9 @@ class TestMeteo:
         )
         assert meteo.is_intermediate_link() is True
 
-    def test_initialize_with_boundary_condition_file(self, boundary_condition_file: Path):
+    def test_initialize_with_boundary_condition_file(
+        self, boundary_condition_file: Path
+    ):
         meteo = Meteo(
             quantity="rainfall",
             forcingfile=boundary_condition_file,

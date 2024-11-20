@@ -61,4 +61,3 @@ def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:
     """
     file_as_path = Path(filepath)
     return file_as_path.with_stem(file_as_path.stem + postfix)
-

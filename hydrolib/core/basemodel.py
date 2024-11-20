@@ -513,7 +513,9 @@ class ModelSaveSettings:
 
     _os_path_style = get_path_style_for_current_operating_system()
 
-    def __init__(self, path_style: Optional[PathStyle] = None, exclude_unset: bool = False) -> None:
+    def __init__(
+        self, path_style: Optional[PathStyle] = None, exclude_unset: bool = False
+    ) -> None:
         """Initializes a new instance of the ModelSaveSettings class.
 
         Args:
@@ -1054,7 +1056,9 @@ class FileModel(BaseModel, ABC):
             self.filepath = filepath
 
         path_style = path_style_validator.validate(path_style)
-        save_settings = ModelSaveSettings(path_style=path_style, exclude_unset=exclude_unset)
+        save_settings = ModelSaveSettings(
+            path_style=path_style, exclude_unset=exclude_unset
+        )
 
         # Handle save
         with file_load_context() as context:
