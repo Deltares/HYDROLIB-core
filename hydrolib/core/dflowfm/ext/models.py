@@ -24,6 +24,7 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     validate_location_specification,
 )
+from hydrolib.core.dflowfm.inifield.models import InterpolationMethod, AveragingType, DataFileType
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
@@ -361,68 +362,6 @@ class ExtModel(INIModel):
         return "bnd"
 
 
-class InitialCondInterpolationMethod(StrEnum):
-    """
-    Enum class containing the valid values for the interpolationMethod
-    attribute in InitialCondition class.
-
-    args:
-        constant: only if the dataFileType is "polygon"
-        triangulation:
-        average: grid cell averaging
-
-    """
-    constant = "constant"
-    triangulation = "triangulation"
-    averaging = "averaging"
-    allowedvaluestext = "Possible values: const (only with dataFileType = polygon)."
-
-
-class InitialCondFileType(StrEnum):
-    """
-    Enum class containing the valid values for the forcingFileType
-    attribute in Meteo class.
-
-    args:
-        arcinfo: ESRI ArcInfo interchange file (E00) format (uses basic ascii representation)
-        geotiff: GeoTIFF format (.tif)
-        sample: Sample format
-        1dField: 1D field format (INI file)
-        polygon: Polygon format (.poli)
-
-    """
-    arcinfo = "arcinfo"
-    geotiff = "GeoTIFF"
-    sample = "sample"
-    d1fiels = "1dField"
-    polygon = "polygon"
-    allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
-
-
-class AveragingTypeMethod(StrEnum):
-    """
-    Enum class containing the valid values for the averaging type
-    attribute in InitialCondition class.
-
-    args:
-        mean: mean value
-        nearestNb: nearest neighbour
-        max: maximum value
-        min: minimum value
-        invDist: inverse distance weighting (1/distance)
-        minAbs: minimum absolute value
-        median: median value
-    """
-    mean = "mean"
-    nearestNB = "nearestNb"
-    max = "max"
-    min = "min"
-    invDist = "invDist"
-    minAbs = "minAbs"
-    median = "median"
-    allowedvaluestext = "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
-
-
 class InitialConditions(INIBasedModel):
     """
     A `[Initial Condition]` block for use inside an external forcings file,
@@ -434,21 +373,20 @@ class InitialConditions(INIBasedModel):
     _header: Literal["Initial"] = "Initial"
     quantity: str = Field(alias="QUANTITY")
     datafile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(alias="dataFile")
-    datafiletype: InitialCondFileType = Field(alias="dataFileType")
-    interpolationmethod: Optional[InitialCondInterpolationMethod] = Field(alias="interpolationMethod")
+    datafiletype: DataFileType = Field(alias="dataFileType")
+    interpolationmethod: Optional[InterpolationMethod] = Field(alias="interpolationMethod")
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
     extrapolationSearchRadius: Optional[float] = Field(
         alias="extrapolationSearchRadius"
     )
-    averagingtype: Optional[AveragingTypeMethod] = Field(alias="averagingType")
+    averagingtype: Optional[AveragingType] = Field(alias="averagingType")
     averagingnummin: Optional[int] = Field(default=1, alias="averagingNumMin")
     averagingpercentile: Optional[float] = Field(default=0, alias="averagingPercentile")
 
-
     datafiletype_validator = get_enum_validator(
-        "datafiletype", enum=InitialCondFileType
+        "datafiletype", enum=DataFileType
     )
     interpolationmethod_validator = get_enum_validator(
-        "interpolationmethod", enum=InitialCondInterpolationMethod
+        "interpolationmethod", enum=InterpolationMethod
     )
