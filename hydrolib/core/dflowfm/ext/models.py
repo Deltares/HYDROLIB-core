@@ -44,7 +44,7 @@ class Boundary(INIBasedModel):
     )
 
     _header: Literal["Boundary"] = "Boundary"
-    quantity: str = Field(alias="QUANTITY")
+    quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(alias="nodeId")
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"

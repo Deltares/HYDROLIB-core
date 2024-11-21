@@ -104,16 +104,13 @@ line_length = 88
 [tool.pytest.ini_options]
 markers = ["plots", "docker"]
 addopts = """
---ignore=tests/test_basemodel.py
---ignore=tests/rr/test_fnm.py
+ --ignore=tests/test_basemodel.py
+ --ignore=tests/rr/test_fnm.py
 --deselect=tests/test_model.py::test_dimr_model_save
 --deselect=tests/test_model.py::test_mdu_model
 --deselect=tests/test_model.py::test_dimr_model
 --deselect=tests/test_model.py::test_dimr_mode_save
---deselect=tests/test_model.py::test_read_ext_missing_boundary_field_raises_correct_error
---deselect=tests/tools/test_main_converter.py::TestExtOldToNew::test_wind_combi_uniform_curvi
 """
-
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
