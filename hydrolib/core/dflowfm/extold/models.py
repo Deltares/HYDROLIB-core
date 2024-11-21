@@ -230,7 +230,6 @@ class ExtOldInitialConditionQuantity(StrEnum):
         initialverticaltemperatureprofile, initialverticalsalinityprofile, initialvelocityx,
         initialvelocityy, initialvelocity, initialsalinitytopuse
     """
-
     # Initial Condition fields
     InitialWaterLevel = "initialwaterlevel"
     InitialSalinity = "initialsalinity"
