@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 import pytest
 
@@ -104,11 +104,12 @@ def old_forcing_file() -> Path:
 @pytest.fixture(scope="function")
 def old_forcing_file_initial_condition() -> Dict[str, Path]:
     return {
-        "path": Path("tests/data/input/old-external-forcing-initial-contitions-only.ext"),
-        "quantities": ["initialwaterlevel","initialwaterlevel", "initialsalinity"],
+        "path": Path(
+            "tests/data/input/old-external-forcing-initial-contitions-only.ext"
+        ),
+        "quantities": ["initialwaterlevel", "initialwaterlevel", "initialsalinity"],
         "file_type": ["polygon", "sample", "sample"],
         "file_path": ["iniwaterlevel1.pol", "iniwaterlevel.xyz", "inisalinity.xyz"],
-
     }
 
 

@@ -1,8 +1,13 @@
-from hydrolib.core.dflowfm.extold.models import ExtOldMeteoQuantity, ExtOldInitialConditionQuantity
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldInitialConditionQuantity,
+    ExtOldMeteoQuantity,
+)
+from hydrolib.tools.ext_old_to_new.initial_condition_converter import (
+    InitialConditionConverter,
+)
 
 from .base_converter import BaseConverter
 from .meteo_converter import MeteoConverter
-from hydrolib.tools.ext_old_to_new.initial_condition_converter import InitialConditionConverter
 
 
 def __contains__(cls, item):

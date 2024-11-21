@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
@@ -73,14 +73,17 @@ def test__read_ext_old_data(
 
 class TestExtOldToNew:
 
-    def test_ext_with_only_initial_contitions(self, old_forcing_file_initial_condition: Dict[str, str]):
+    def test_ext_with_only_initial_contitions(
+        self, old_forcing_file_initial_condition: Dict[str, str]
+    ):
         new_ext_file = Path("tests/data/input/new-external-forcing.ext")
         new_initial_file = Path("tests/data/input/new-initial-conditions.ext")
         new_structure_file = Path("tests/data/input/new-structure.ext")
 
         path = old_forcing_file_initial_condition["path"]
-        extold_model, ext_model, inifield_model, structure_model = \
-            ext_old_to_new(path, new_ext_file, new_initial_file, new_structure_file)
+        extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(
+            path, new_ext_file, new_initial_file, new_structure_file
+        )
 
         assert new_ext_file.exists()
         assert new_initial_file.exists()
@@ -94,10 +97,13 @@ class TestExtOldToNew:
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
-        assert ([inifield_model.initial[i].datafiletype  for i in range(num_quantities)] ==
-                old_forcing_file_initial_condition["file_type"])
-        assert ([str(inifield_model.initial[i].datafile.filepath) for i in range(num_quantities)] ==
-                old_forcing_file_initial_condition["file_path"])
+        assert [
+            inifield_model.initial[i].datafiletype for i in range(num_quantities)
+        ] == old_forcing_file_initial_condition["file_type"]
+        assert [
+            str(inifield_model.initial[i].datafile.filepath)
+            for i in range(num_quantities)
+        ] == old_forcing_file_initial_condition["file_path"]
         # clean up
         # try
         new_initial_file.unlink()

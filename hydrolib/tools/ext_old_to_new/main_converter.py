@@ -1,13 +1,13 @@
 import argparse
 import os
 import sys
-from typing import Tuple, Union
 from pathlib import Path
+from typing import Tuple, Union
+
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import PathOrStr
+from hydrolib.core.basemodel import FileModel, PathOrStr
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
-from hydrolib.core.basemodel import FileModel
 from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
