@@ -1,12 +1,13 @@
 import argparse
 import os
 import sys
-from typing import Tuple
-
+from typing import Tuple, Union
+from pathlib import Path
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
-from hydrolib.core.dflowfm.extold.models import *
+from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.basemodel import FileModel
 from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
@@ -53,7 +54,7 @@ def ext_old_to_new(
     structurefile: PathOrStr = None,
     backup: bool = False,
     postfix: str = "",
-) -> Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
+) -> Union[Tuple[ExtOldModel, FileModel, FileModel, FileModel], None]:
     """
     Convert old external forcing file to new format files.
     When the output files are existing, output will be appended to them.
@@ -118,8 +119,6 @@ def ext_old_to_new(
             raise NotImplementedError(
                 f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in {extoldfile}."
             )
-
-        print(new_quantity_block)
 
     backup_file(ext_model.filepath, backup)
     ext_model.save()

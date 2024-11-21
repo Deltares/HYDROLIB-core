@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 
 import pytest
 
@@ -99,6 +99,17 @@ def boundary_condition_file(input_files_dir: Path) -> Path:
 @pytest.fixture
 def old_forcing_file() -> Path:
     return Path("tests/data/input/old-external-forcing.ext")
+
+
+@pytest.fixture(scope="function")
+def old_forcing_file_initial_condition() -> Dict[str, Path]:
+    return {
+        "path": Path("tests/data/input/old-external-forcing-initial-contitions-only.ext"),
+        "quantities": ["initialwaterlevel","initialwaterlevel", "initialsalinity"],
+        "file_type": ["polygon", "sample", "sample"],
+        "file_path": ["iniwaterlevel1.pol", "iniwaterlevel.xyz", "inisalinity.xyz"],
+
+    }
 
 
 @pytest.fixture
