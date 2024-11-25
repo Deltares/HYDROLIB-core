@@ -85,6 +85,16 @@ def input_files_dir() -> Path:
 
 
 @pytest.fixture
+def output_files_dir() -> Path:
+    return Path("tests/data/output")
+
+
+@pytest.fixture
+def reference_files_dir() -> Path:
+    return Path("tests/data/reference")
+
+
+@pytest.fixture
 def time_series_file(input_files_dir: Path) -> Path:
     return input_files_dir.joinpath("tim/single_data_for_timeseries.tim")
 
