@@ -6,8 +6,8 @@ from hydrolib.tools.ext_old_to_new.initial_condition_converter import (
     InitialConditionConverter,
 )
 
-from .base_converter import BaseConverter
-from .meteo_converter import MeteoConverter
+from hydrolib.tools.ext_old_to_new.base_converter import BaseConverter
+from hydrolib.tools.ext_old_to_new.meteo_converter import MeteoConverter
 
 
 def __contains__(cls, item):
