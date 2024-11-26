@@ -161,7 +161,6 @@ class TestFileModel:
         if _external_path.exists():
             shutil.rmtree(_external_path)
 
-
         if output_dir.exists():
             shutil.rmtree(output_dir)
 
