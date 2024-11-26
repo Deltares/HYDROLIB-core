@@ -4,7 +4,6 @@ from typing import Dict, List
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
-    ext_old_to_new,
     ext_old_to_new_dir_recursive,
     ext_old_to_new_from_mdu,
 )
@@ -57,8 +56,9 @@ class TestExtOldToNew:
         new_structure_file = Path("tests/data/input/new-structure.ext")
 
         path = old_forcing_file_initial_condition["path"]
-        ext_model, inifield_model, structure_model = ext_old_to_new(
-            path, new_ext_file, new_initial_file, new_structure_file
+        converter = ExternalForcingConverter.read_old_file(path)
+        ext_model, inifield_model, structure_model = converter.update(
+            new_ext_file, new_initial_file, new_structure_file
         )
 
         assert new_ext_file.exists()

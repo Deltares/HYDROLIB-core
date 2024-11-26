@@ -57,89 +57,87 @@ class ExternalForcingConverter:
 
         return cls(extold_model)
 
+    def update(
+        self,
+        extfile: PathOrStr = None,
+        inifieldfile: PathOrStr = None,
+        structurefile: PathOrStr = None,
+        backup: bool = False,
+        postfix: str = "",
+    ) -> Union[Tuple[FileModel, FileModel, FileModel], None]:
+        """
+        Convert old external forcing file to new format files.
+        When the output files are existing, output will be appended to them.
 
-def ext_old_to_new(
-    extoldfile: PathOrStr,
-    extfile: PathOrStr = None,
-    inifieldfile: PathOrStr = None,
-    structurefile: PathOrStr = None,
-    backup: bool = False,
-    postfix: str = "",
-) -> Union[Tuple[ExtOldModel, FileModel, FileModel, FileModel], None]:
-    """
-    Convert old external forcing file to new format files.
-    When the output files are existing, output will be appended to them.
+        Args:
+            extoldfile (PathOrStr): Path to the old external forcing file.
+            extfile (PathOrStr, optional): Path to the new external forcing file.
+            inifieldfile (PathOrStr, optional): Path to the initial field file.
+            structurefile (PathOrStr, optional): Path to the structure file.
+            backup (bool, optional): Create a backup of each file that will be
+                overwritten.
+            postfix (str, optional): Append POSTFIX to the output filenames. Defaults to "".
 
-    Args:
-        extoldfile (PathOrStr): Path to the old external forcing file.
-        extfile (PathOrStr, optional): Path to the new external forcing file.
-        inifieldfile (PathOrStr, optional): Path to the initial field file.
-        structurefile (PathOrStr, optional): Path to the structure file.
-        backup (bool, optional): Create a backup of each file that will be
-            overwritten.
-        postfix (str, optional): Append POSTFIX to the output filenames. Defaults to "".
+        Returns:
+            Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
+                The updated models (already written to disk). Maybe used
+                at call site to inspect the updated models.
+        """
+        if _verbose:
+            workdir = os.getcwd() + "\\"
+            print(f"Work dir: {workdir}")
+            print("Using attribute files:")
+            print("Input:")
+            print(f"* {self.extold_model.filepath}")
+            print("Output:")
+            print(f"* {extfile}")
+            print(f"* {inifieldfile}")
+            print(f"* {structurefile}")
 
-    Returns:
-        Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
-            The updated models (already written to disk). Maybe used
-            at call site to inspect the updated models.
-    """
-    if _verbose:
-        workdir = os.getcwd() + "\\"
-        print(f"Work dir: {workdir}")
-        print("Using attribute files:")
-        print("Input:")
-        print(f"* {extoldfile}")
-        print("Output:")
-        print(f"* {extfile}")
-        print(f"* {inifieldfile}")
-        print(f"* {structurefile}")
+        ext_model = construct_filemodel_new_or_existing(ExtModel, extfile)
+        inifield_model = construct_filemodel_new_or_existing(
+            IniFieldModel, inifieldfile
+        )
+        structure_model = construct_filemodel_new_or_existing(
+            StructureModel, structurefile
+        )
 
-    try:
-        converter = ExternalForcingConverter.read_old_file(extoldfile)
-    except Exception as error:
-        print("The old external forcing file could not be read:", error)
-        return
+        for forcing in self.extold_model.forcing:
+            try:
+                converter_class = ConverterFactory.create_converter(forcing.quantity)
+                new_quantity_block = converter_class.convert(forcing)
+            except ValueError:
+                # While this tool is in progress, accept that we do not convert all quantities yet.
+                new_quantity_block = None
 
-    ext_model = construct_filemodel_new_or_existing(ExtModel, extfile)
-    inifield_model = construct_filemodel_new_or_existing(IniFieldModel, inifieldfile)
-    structure_model = construct_filemodel_new_or_existing(StructureModel, structurefile)
+            if isinstance(new_quantity_block, Boundary):
+                ext_model.boundary.append(new_quantity_block)
+            elif isinstance(new_quantity_block, Lateral):
+                ext_model.lateral.append(new_quantity_block)
+            elif isinstance(new_quantity_block, Meteo):
+                ext_model.meteo.append(new_quantity_block)
+            elif isinstance(new_quantity_block, InitialField):
+                inifield_model.initial.append(new_quantity_block)
+            elif isinstance(new_quantity_block, ParameterField):
+                inifield_model.parameter.append(new_quantity_block)
+            elif isinstance(new_quantity_block, Structure):
+                structure_model.structure.append(new_quantity_block)
+            else:
+                raise NotImplementedError(
+                    f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
+                    f"{self.extold_model.filepath}."
+                )
 
-    for forcing in converter.extold_model.forcing:
-        try:
-            converter_class = ConverterFactory.create_converter(forcing.quantity)
-            new_quantity_block = converter_class.convert(forcing)
-        except ValueError:
-            # While this tool is in progress, accept that we do not convert all quantities yet.
-            new_quantity_block = None
+        backup_file(ext_model.filepath, backup)
+        ext_model.save()
 
-        if isinstance(new_quantity_block, Boundary):
-            ext_model.boundary.append(new_quantity_block)
-        elif isinstance(new_quantity_block, Lateral):
-            ext_model.lateral.append(new_quantity_block)
-        elif isinstance(new_quantity_block, Meteo):
-            ext_model.meteo.append(new_quantity_block)
-        elif isinstance(new_quantity_block, InitialField):
-            inifield_model.initial.append(new_quantity_block)
-        elif isinstance(new_quantity_block, ParameterField):
-            inifield_model.parameter.append(new_quantity_block)
-        elif isinstance(new_quantity_block, Structure):
-            structure_model.structure.append(new_quantity_block)
-        else:
-            raise NotImplementedError(
-                f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in {extoldfile}."
-            )
+        backup_file(inifield_model.filepath, backup)
+        inifield_model.save()
 
-    backup_file(ext_model.filepath, backup)
-    ext_model.save()
+        backup_file(structure_model.filepath, backup)
+        structure_model.save()
 
-    backup_file(inifield_model.filepath, backup)
-    inifield_model.save()
-
-    backup_file(structure_model.filepath, backup)
-    structure_model.save()
-
-    return ext_model, inifield_model, structure_model
+        return ext_model, inifield_model, structure_model
 
 
 def ext_old_to_new_from_mdu(
@@ -209,9 +207,10 @@ def ext_old_to_new_from_mdu(
         else workdir / structurefile
     )
 
+    converter = ExternalForcingConverter.read_old_file(extoldfile)
     # The actual conversion:
-    extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(
-        extoldfile, extfile, inifieldfile, structurefile, backup, postfix
+    extold_model, ext_model, inifield_model, structure_model = converter.update(
+        extfile, inifieldfile, structurefile, backup, postfix
     )
     try:
         # And include the new files in the FM model:
@@ -335,7 +334,8 @@ def main(args=None):
             args.mdufile, **outfiles, backup=backup, postfix=args.postfix
         )
     elif args.extoldfile is not None:
-        ext_old_to_new(args.extoldfile, **outfiles, backup=backup, postfix=args.postfix)
+        converter = ExternalForcingConverter.read_old_file(args.extoldfile)
+        converter.update(**outfiles, backup=backup, postfix=args.postfix)
     elif args.dir is not None:
         ext_old_to_new_dir_recursive(args.dir, backup=backup, postfix=args.postfix)
     else:
