@@ -57,7 +57,7 @@ class TestExtOldToNew:
         new_structure_file = Path("tests/data/input/new-structure.ext")
 
         path = old_forcing_file_initial_condition["path"]
-        extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(
+        ext_model, inifield_model, structure_model = ext_old_to_new(
             path, new_ext_file, new_initial_file, new_structure_file
         )
 
@@ -96,11 +96,10 @@ class TestExternalFocingConverter:
         old_forcing_file_quantities: List[str],
         old_forcing_comment_len: int,
     ):
-        converter = ExternalForcingConverter()
-        model = converter.read_old_file(old_forcing_file)
-        assert len(model.forcing) == len(old_forcing_file_quantities)
-        assert len(model.comment) == old_forcing_comment_len
-        quantities = [forcing.quantity for forcing in model.forcing]
+        converter = ExternalForcingConverter.read_old_file(old_forcing_file)
+        assert len(converter.extold_model.forcing) == len(old_forcing_file_quantities)
+        assert len(converter.extold_model.comment) == old_forcing_comment_len
+        quantities = [forcing.quantity for forcing in converter.extold_model.forcing]
         assert all([quantity in old_forcing_file_quantities for quantity in quantities])
         # test verbose
         main_converter._verbose = True

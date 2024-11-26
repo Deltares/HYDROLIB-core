@@ -29,12 +29,16 @@ _verbose: bool = False
 
 class ExternalForcingConverter:
 
-    def __init__(self):
+    def __init__(self, extold_model: ExtOldModel = None):
         """Initialize the converter."""
-        pass
+        self._extold_model = extold_model
 
-    @staticmethod
-    def read_old_file(extoldfile: PathOrStr) -> ExtOldModel:
+    @property
+    def extold_model(self):
+        return self._extold_model
+
+    @classmethod
+    def read_old_file(cls, extoldfile: PathOrStr) -> "ExternalForcingConverter":
         """Read a legacy D-Flow FM external forcings file (.ext) into an
            ExtOldModel object.
 
@@ -51,7 +55,7 @@ class ExternalForcingConverter:
         if _verbose:
             print(f"Read {len(extold_model.forcing)} forcing blocks from {extoldfile}.")
 
-        return extold_model
+        return cls(extold_model)
 
 
 def ext_old_to_new(
@@ -80,7 +84,6 @@ def ext_old_to_new(
             The updated models (already written to disk). Maybe used
             at call site to inspect the updated models.
     """
-
     if _verbose:
         workdir = os.getcwd() + "\\"
         print(f"Work dir: {workdir}")
@@ -93,7 +96,7 @@ def ext_old_to_new(
         print(f"* {structurefile}")
 
     try:
-        extold_model = ExternalForcingConverter().read_old_file(extoldfile)
+        converter = ExternalForcingConverter.read_old_file(extoldfile)
     except Exception as error:
         print("The old external forcing file could not be read:", error)
         return
@@ -102,7 +105,7 @@ def ext_old_to_new(
     inifield_model = construct_filemodel_new_or_existing(IniFieldModel, inifieldfile)
     structure_model = construct_filemodel_new_or_existing(StructureModel, structurefile)
 
-    for forcing in extold_model.forcing:
+    for forcing in converter.extold_model.forcing:
         try:
             converter_class = ConverterFactory.create_converter(forcing.quantity)
             new_quantity_block = converter_class.convert(forcing)
@@ -136,7 +139,7 @@ def ext_old_to_new(
     backup_file(structure_model.filepath, backup)
     structure_model.save()
 
-    return extold_model, ext_model, inifield_model, structure_model
+    return ext_model, inifield_model, structure_model
 
 
 def ext_old_to_new_from_mdu(
