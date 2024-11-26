@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
-    _read_ext_old_data,
+    ExternalForcingConverter,
     ext_old_to_new,
     ext_old_to_new_dir_recursive,
     ext_old_to_new_from_mdu,
@@ -49,30 +49,6 @@ class TestExtOldToNew:
         path = input_files_dir.joinpath("e02/f006_external_forcing")
         ext_old_to_new_dir_recursive(path)
 
-
-def test__read_ext_old_data(
-    capsys,
-    old_forcing_file: Path,
-    old_forcing_file_quantities: List[str],
-    old_forcing_comment_len: int,
-):
-    model = _read_ext_old_data(old_forcing_file)
-    assert len(model.forcing) == len(old_forcing_file_quantities)
-    assert len(model.comment) == old_forcing_comment_len
-    quantities = [forcing.quantity for forcing in model.forcing]
-    assert all([quantity in old_forcing_file_quantities for quantity in quantities])
-    # test verbose
-    main_converter._verbose = True
-    _read_ext_old_data(old_forcing_file)
-    captured = capsys.readouterr()
-    print(captured.out)
-    assert captured.out.startswith(
-        f"Read {(len(old_forcing_file_quantities))} forcing blocks from {old_forcing_file}."
-    )
-
-
-class TestExtOldToNew:
-
     def test_ext_with_only_initial_contitions(
         self, old_forcing_file_initial_condition: Dict[str, str]
     ):
@@ -109,3 +85,28 @@ class TestExtOldToNew:
         new_initial_file.unlink()
         new_ext_file.unlink()
         new_structure_file.unlink()
+
+
+class TestExternalFocingConverter:
+
+    def test_read_ext_old_data(
+        self,
+        capsys,
+        old_forcing_file: Path,
+        old_forcing_file_quantities: List[str],
+        old_forcing_comment_len: int,
+    ):
+        converter = ExternalForcingConverter()
+        model = converter.read_old_file(old_forcing_file)
+        assert len(model.forcing) == len(old_forcing_file_quantities)
+        assert len(model.comment) == old_forcing_comment_len
+        quantities = [forcing.quantity for forcing in model.forcing]
+        assert all([quantity in old_forcing_file_quantities for quantity in quantities])
+        # test verbose
+        main_converter._verbose = True
+        converter.read_old_file(old_forcing_file)
+        captured = capsys.readouterr()
+        print(captured.out)
+        assert captured.out.startswith(
+            f"Read {(len(old_forcing_file_quantities))} forcing blocks from {old_forcing_file}."
+        )

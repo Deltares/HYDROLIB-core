@@ -27,24 +27,31 @@ _program: str = "ext_old_to_new"
 _verbose: bool = False
 
 
-def _read_ext_old_data(extoldfile: PathOrStr) -> ExtOldModel:
-    """Read a legacy D-Flow FM external forcings file (.ext) into an
-       ExtOldModel object.
+class ExternalForcingConverter:
 
-    Args:
-        extoldfile (PathOrStr): path to the external forcings file (.ext)
+    def __init__(self):
+        """Initialize the converter."""
+        pass
 
-    Returns:
-        ExtOldModel: object with all forcing blocks.
-    """
-    global _verbose
+    @staticmethod
+    def read_old_file(extoldfile: PathOrStr) -> ExtOldModel:
+        """Read a legacy D-Flow FM external forcings file (.ext) into an
+           ExtOldModel object.
 
-    extold_model = ExtOldModel(extoldfile)
+        Args:
+            extoldfile (PathOrStr): path to the external forcings file (.ext)
 
-    if _verbose:
-        print(f"Read {len(extold_model.forcing)} forcing blocks from {extoldfile}.")
+        Returns:
+            ExtOldModel: object with all forcing blocks.
+        """
+        global _verbose
 
-    return extold_model
+        extold_model = ExtOldModel(extoldfile)
+
+        if _verbose:
+            print(f"Read {len(extold_model.forcing)} forcing blocks from {extoldfile}.")
+
+        return extold_model
 
 
 def ext_old_to_new(
@@ -86,7 +93,7 @@ def ext_old_to_new(
         print(f"* {structurefile}")
 
     try:
-        extold_model = _read_ext_old_data(extoldfile)
+        extold_model = ExternalForcingConverter().read_old_file(extoldfile)
     except Exception as error:
         print("The old external forcing file could not be read:", error)
         return
