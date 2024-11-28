@@ -29,12 +29,17 @@ _verbose: bool = False
 
 class ExternalForcingConverter:
 
-    def __init__(self, extold_model: ExtOldModel = None):
-        """Initialize the converter."""
+    def __init__(self, extold_model: ExtOldModel):
+        """Initialize the converter.
+
+        Args:
+            extold_model (ExtOldModel): object with all forcing blocks.
+        """
         self._extold_model = extold_model
 
     @property
     def extold_model(self):
+        """ExtOldModel: object with all forcing blocks."""
         return self._extold_model
 
     @classmethod
@@ -57,6 +62,19 @@ class ExternalForcingConverter:
 
         return cls(extold_model)
 
+    @staticmethod
+    def create_new_models(model_type: str, path: PathOrStr) -> FileModel:
+        if model_type == "new_external_forcing":
+            model = construct_filemodel_new_or_existing(ExtModel, path)
+        elif model_type == "new_initial_field":
+            model = construct_filemodel_new_or_existing(IniFieldModel, path)
+        elif model_type == "new_structure":
+            model = construct_filemodel_new_or_existing(StructureModel, path)
+        else:
+            raise ValueError(f"Unknown model type: {model_type}")
+
+        return model
+
     def update(
         self,
         extfile: PathOrStr = None,
@@ -70,7 +88,6 @@ class ExternalForcingConverter:
         When the output files are existing, output will be appended to them.
 
         Args:
-            extoldfile (PathOrStr): Path to the old external forcing file.
             extfile (PathOrStr, optional): Path to the new external forcing file.
             inifieldfile (PathOrStr, optional): Path to the initial field file.
             structurefile (PathOrStr, optional): Path to the structure file.
@@ -94,13 +111,9 @@ class ExternalForcingConverter:
             print(f"* {inifieldfile}")
             print(f"* {structurefile}")
 
-        ext_model = construct_filemodel_new_or_existing(ExtModel, extfile)
-        inifield_model = construct_filemodel_new_or_existing(
-            IniFieldModel, inifieldfile
-        )
-        structure_model = construct_filemodel_new_or_existing(
-            StructureModel, structurefile
-        )
+        ext_model = self.create_new_models("new_external_forcing", extfile)
+        inifield_model = self.create_new_models("new_initial_field", inifieldfile)
+        structure_model = self.create_new_models("new_structure", structurefile)
 
         for forcing in self.extold_model.forcing:
             try:
