@@ -57,9 +57,13 @@ class TestExtOldToNew:
 
         path = old_forcing_file_initial_condition["path"]
         converter = ExternalForcingConverter.read_old_file(path)
-        ext_model, inifield_model, structure_model = converter.update(
-            new_ext_file, new_initial_file, new_structure_file
-        )
+
+        converter.inifield_model = new_initial_file
+        converter.structure_model = new_structure_file
+        converter.ext_model = new_ext_file
+
+        ext_model, inifield_model, structure_model = converter.update()
+        converter.save()
 
         assert new_ext_file.exists()
         assert new_initial_file.exists()

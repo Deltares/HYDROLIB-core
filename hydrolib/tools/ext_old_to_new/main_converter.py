@@ -29,11 +29,16 @@ _verbose: bool = False
 
 class ExternalForcingConverter:
 
-    def __init__(self, extold_model: ExtOldModel):
+    def __init__(
+        self,
+        extold_model: ExtOldModel,
+    ):
         """Initialize the converter.
 
         Args:
             extold_model (ExtOldModel): object with all forcing blocks.
+            # ini_cond_file (PathOrStr, optional): Path to the initial field file.
+            # structure_file (PathOrStr, optional): Path to the structure file.
         """
         self._extold_model = extold_model
 
@@ -41,6 +46,52 @@ class ExternalForcingConverter:
     def extold_model(self):
         """ExtOldModel: object with all forcing blocks."""
         return self._extold_model
+
+    @property
+    def ext_model(self) -> FileModel:
+        """ExtOldModel: object with all forcing blocks."""
+        if not hasattr(self, "_ext_model"):
+            raise ValueError(
+                "new_ext_model not set, please use the `new_ext_model` setter. to set it."
+            )
+        return self._ext_model
+
+    @ext_model.setter
+    def ext_model(self, path: PathOrStr):
+        """New external forcing model.
+
+        Args:
+            path (PathOrStr, optional): Path to the new external forcing file.
+        """
+        self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
+
+    @property
+    def inifield_model(self) -> FileModel:
+        """IniFieldModel: object with all initial fields blocks."""
+        if not hasattr(self, "_inifield_model"):
+            raise ValueError(
+                "inifield_model not set, please use the `inifield_model` setter. to set it."
+            )
+        return self._inifield_model
+
+    @inifield_model.setter
+    def inifield_model(self, path: PathOrStr):
+        self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path)
+
+    @property
+    def structure_model(self) -> FileModel:
+        """StructureModel: object with all structure blocks."""
+        if not hasattr(self, "_structure_model"):
+            raise ValueError(
+                "structure_model not set, please use the `structure_model` setter. to set it."
+            )
+        return self._structure_model
+
+    @structure_model.setter
+    def structure_model(self, path: PathOrStr):
+        self._structure_model = construct_filemodel_new_or_existing(
+            StructureModel, path
+        )
 
     @classmethod
     def read_old_file(cls, extoldfile: PathOrStr) -> "ExternalForcingConverter":
@@ -62,25 +113,8 @@ class ExternalForcingConverter:
 
         return cls(extold_model)
 
-    @staticmethod
-    def create_new_models(model_type: str, path: PathOrStr) -> FileModel:
-        if model_type == "new_external_forcing":
-            model = construct_filemodel_new_or_existing(ExtModel, path)
-        elif model_type == "new_initial_field":
-            model = construct_filemodel_new_or_existing(IniFieldModel, path)
-        elif model_type == "new_structure":
-            model = construct_filemodel_new_or_existing(StructureModel, path)
-        else:
-            raise ValueError(f"Unknown model type: {model_type}")
-
-        return model
-
     def update(
         self,
-        extfile: PathOrStr = None,
-        inifieldfile: PathOrStr = None,
-        structurefile: PathOrStr = None,
-        backup: bool = False,
         postfix: str = "",
     ) -> Union[Tuple[FileModel, FileModel, FileModel], None]:
         """
@@ -88,11 +122,6 @@ class ExternalForcingConverter:
         When the output files are existing, output will be appended to them.
 
         Args:
-            extfile (PathOrStr, optional): Path to the new external forcing file.
-            inifieldfile (PathOrStr, optional): Path to the initial field file.
-            structurefile (PathOrStr, optional): Path to the structure file.
-            backup (bool, optional): Create a backup of each file that will be
-                overwritten.
             postfix (str, optional): Append POSTFIX to the output filenames. Defaults to "".
 
         Returns:
@@ -107,13 +136,9 @@ class ExternalForcingConverter:
             print("Input:")
             print(f"* {self.extold_model.filepath}")
             print("Output:")
-            print(f"* {extfile}")
-            print(f"* {inifieldfile}")
-            print(f"* {structurefile}")
-
-        ext_model = self.create_new_models("new_external_forcing", extfile)
-        inifield_model = self.create_new_models("new_initial_field", inifieldfile)
-        structure_model = self.create_new_models("new_structure", structurefile)
+            print(f"* {self.ext_model.filepath}")
+            print(f"* {self.inifield_model.filepath}")
+            print(f"* {self.structure_model.filepath}")
 
         for forcing in self.extold_model.forcing:
             try:
@@ -124,33 +149,39 @@ class ExternalForcingConverter:
                 new_quantity_block = None
 
             if isinstance(new_quantity_block, Boundary):
-                ext_model.boundary.append(new_quantity_block)
+                self.new_ext_model.boundary.append(new_quantity_block)
             elif isinstance(new_quantity_block, Lateral):
-                ext_model.lateral.append(new_quantity_block)
+                self.new_ext_model.lateral.append(new_quantity_block)
             elif isinstance(new_quantity_block, Meteo):
-                ext_model.meteo.append(new_quantity_block)
+                self.new_ext_model.meteo.append(new_quantity_block)
             elif isinstance(new_quantity_block, InitialField):
-                inifield_model.initial.append(new_quantity_block)
+                self.inifield_model.initial.append(new_quantity_block)
             elif isinstance(new_quantity_block, ParameterField):
-                inifield_model.parameter.append(new_quantity_block)
+                self.inifield_model.parameter.append(new_quantity_block)
             elif isinstance(new_quantity_block, Structure):
-                structure_model.structure.append(new_quantity_block)
+                self.structure_model.structure.append(new_quantity_block)
             else:
                 raise NotImplementedError(
                     f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
                     f"{self.extold_model.filepath}."
                 )
 
-        backup_file(ext_model.filepath, backup)
-        ext_model.save()
+        return self.ext_model, self.inifield_model, self.structure_model
 
-        backup_file(inifield_model.filepath, backup)
-        inifield_model.save()
+    def save(self, backup: bool = True):
+        """Save the updated models to disk.
 
-        backup_file(structure_model.filepath, backup)
-        structure_model.save()
+        Args:
+            backup (bool, optional): Create a backup of each file that will be overwritten.
+        """
+        if backup:
+            backup_file(self.ext_model.filepath, backup)
+            backup_file(self.inifield_model.filepath, backup)
+            backup_file(self.structure_model.filepath, backup)
 
-        return ext_model, inifield_model, structure_model
+        self.ext_model.save()
+        self.inifield_model.save()
+        self.structure_model.save()
 
 
 def ext_old_to_new_from_mdu(
@@ -348,7 +379,11 @@ def main(args=None):
         )
     elif args.extoldfile is not None:
         converter = ExternalForcingConverter.read_old_file(args.extoldfile)
-        converter.update(**outfiles, backup=backup, postfix=args.postfix)
+        converter.ext_model = outfiles["extfile"]
+        converter.inifield_model = outfiles["inifieldfile"]
+        converter.structure_model = outfiles["structurefile"]
+        converter.update(postfix=args.postfix)
+        converter.save(backup=backup)
     elif args.dir is not None:
         ext_old_to_new_dir_recursive(args.dir, backup=backup, postfix=args.postfix)
     else:
