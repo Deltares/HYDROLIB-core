@@ -40,6 +40,10 @@ class ExternalForcingConverter:
             # ini_cond_file (PathOrStr, optional): Path to the initial field file.
             # structure_file (PathOrStr, optional): Path to the structure file.
         """
+        if not isinstance(extold_model, ExtOldModel):
+            raise ValueError(
+                f"Expected an ExtOldModel object, got {type(extold_model)} instead."
+            )
         self._extold_model = extold_model
 
     @property
@@ -52,7 +56,7 @@ class ExternalForcingConverter:
         """ExtOldModel: object with all forcing blocks."""
         if not hasattr(self, "_ext_model"):
             raise ValueError(
-                "new_ext_model not set, please use the `new_ext_model` setter. to set it."
+                "ext_model not set, please use the `ext_model` setter. to set it."
             )
         return self._ext_model
 

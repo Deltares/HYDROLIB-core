@@ -1,6 +1,9 @@
 from pathlib import Path
 from typing import Dict, List
 
+import pytest
+
+from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
@@ -48,7 +51,23 @@ class TestExtOldToNew:
         path = input_files_dir.joinpath("e02/f006_external_forcing")
         ext_old_to_new_dir_recursive(path)
 
-    def test_ext_with_only_initial_contitions(
+
+class TestExternalFocingConverter:
+
+    def test_constructor_default(
+        self, old_forcing_file_initial_condition: Dict[str, str]
+    ):
+        path = old_forcing_file_initial_condition["path"]
+        ext_old_model = ExtOldModel(path)
+        converter = ExternalForcingConverter(ext_old_model)
+        assert isinstance(converter.extold_model, ExtOldModel)
+
+    def test_wrong_extold_model(self):
+        ext_old_model = "wrong model"
+        with pytest.raises(ValueError):
+            ExternalForcingConverter(ext_old_model)
+
+    def test_update_ext_with_only_initial_contitions(
         self, old_forcing_file_initial_condition: Dict[str, str]
     ):
         new_ext_file = Path("tests/data/input/new-external-forcing.ext")
@@ -90,9 +109,6 @@ class TestExtOldToNew:
         new_ext_file.unlink()
         new_structure_file.unlink()
 
-
-class TestExternalFocingConverter:
-
     def test_read_ext_old_data(
         self,
         capsys,
@@ -109,7 +125,7 @@ class TestExternalFocingConverter:
         main_converter._verbose = True
         converter.read_old_file(old_forcing_file)
         captured = capsys.readouterr()
-        print(captured.out)
+
         assert captured.out.startswith(
             f"Read {(len(old_forcing_file_quantities))} forcing blocks from {old_forcing_file}."
         )
