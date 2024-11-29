@@ -1,9 +1,13 @@
 from pathlib import Path
 from typing import Dict, List
+from unittest.mock import MagicMock
 
 import pytest
 
+from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.inifield.models import IniFieldModel
+from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
@@ -55,38 +59,68 @@ class TestExtOldToNew:
 class TestExternalFocingConverter:
 
     def test_constructor_default(
-        self, old_forcing_file_initial_condition: Dict[str, str]
+        self, old_forcing_file_initial_condition: Dict[str, Path]
     ):
+        """
+        Test the constructor of the ExternalForcingConverter class. The default constructor should set the extold_model
+        attribute to the ExtOldModel instance created from the old external forcing file.
+
+        and create the new external forcing, initial conditions and structure models. The new external forcing file
+        should be named new-external-forcing.ext, the new initial conditions file should be named
+        new-initial-conditions.ext and the new structure file should be named new-structure.ext.
+        """
         path = old_forcing_file_initial_condition["path"]
         ext_old_model = ExtOldModel(path)
         converter = ExternalForcingConverter(ext_old_model)
         assert isinstance(converter.extold_model, ExtOldModel)
+        rdir = ext_old_model.filepath.parent
+
+        assert isinstance(converter.ext_model, ExtModel)
+        assert converter.ext_model.filepath == rdir.joinpath("new-external-forcing.ext")
+        assert isinstance(converter.inifield_model, IniFieldModel)
+        assert converter.inifield_model.filepath == rdir.joinpath(
+            "new-initial-conditions.ext"
+        )
+        assert isinstance(converter.structure_model, StructureModel)
+        assert converter.structure_model.filepath == rdir.joinpath("new-structure.ext")
 
     def test_wrong_extold_model(self):
+        """
+        Test the constructor of the ExternalForcingConverter class with a wrong extold_model.
+        """
         ext_old_model = "wrong model"
         with pytest.raises(ValueError):
             ExternalForcingConverter(ext_old_model)
 
-    def test_update_ext_with_only_initial_contitions(
+    def test_change_models_paths_using_setters(
         self, old_forcing_file_initial_condition: Dict[str, str]
     ):
+        """
+        Test the setter methods of the ExternalForcingConverter class.
+        """
+        path = old_forcing_file_initial_condition["path"]
+        converter = ExternalForcingConverter.read_old_file(path)
+
         new_ext_file = Path("tests/data/input/new-external-forcing.ext")
         new_initial_file = Path("tests/data/input/new-initial-conditions.ext")
         new_structure_file = Path("tests/data/input/new-structure.ext")
-
-        path = old_forcing_file_initial_condition["path"]
-        converter = ExternalForcingConverter.read_old_file(path)
 
         converter.inifield_model = new_initial_file
         converter.structure_model = new_structure_file
         converter.ext_model = new_ext_file
 
-        ext_model, inifield_model, structure_model = converter.update()
-        converter.save()
+        assert converter.ext_model.filepath == new_ext_file
+        assert converter.inifield_model.filepath == new_initial_file
+        assert converter.structure_model.filepath == new_structure_file
 
-        assert new_ext_file.exists()
-        assert new_initial_file.exists()
-        assert new_structure_file.exists()
+    def test_update_ext_with_only_initial_contitions(
+        self, old_forcing_file_initial_condition: Dict[str, str]
+    ):
+        path = old_forcing_file_initial_condition["path"]
+        converter = ExternalForcingConverter.read_old_file(path)
+
+        ext_model, inifield_model, structure_model = converter.update()
+
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = len(old_forcing_file_initial_condition["quantities"])
@@ -103,19 +137,39 @@ class TestExternalFocingConverter:
             str(inifield_model.initial[i].datafile.filepath)
             for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_path"]
-        # clean up
-        # try
-        new_initial_file.unlink()
-        new_ext_file.unlink()
-        new_structure_file.unlink()
 
-    def test_read_ext_old_data(
+    def test_save(self, old_forcing_file_initial_condition: Dict[str, str]):
+        """
+        Mock test to test only the save method of the ExternalForcingConverter class.
+
+        - The ExtOldModel instance is mocked.
+        - The new models are created using the default paths.
+        - The save method is called to save the new models.
+        """
+        mock_ext_old_model = MagicMock(spec=ExtOldModel)
+        mock_ext_old_model.filepath = old_forcing_file_initial_condition["path"]
+
+        converter = ExternalForcingConverter(mock_ext_old_model)
+        converter.save()
+
+        assert converter.ext_model.filepath.exists()
+        assert converter.inifield_model.filepath.exists()
+        assert converter.structure_model.filepath.exists()
+
+        converter.ext_model.filepath.unlink()
+        converter.inifield_model.filepath.unlink()
+        converter.structure_model.filepath.unlink()
+
+    def test_read_old_file(
         self,
         capsys,
         old_forcing_file: Path,
         old_forcing_file_quantities: List[str],
         old_forcing_comment_len: int,
     ):
+        """
+        Test instantiate the class using the read_old_file class method.
+        """
         converter = ExternalForcingConverter.read_old_file(old_forcing_file)
         assert len(converter.extold_model.forcing) == len(old_forcing_file_quantities)
         assert len(converter.extold_model.comment) == old_forcing_comment_len

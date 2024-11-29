@@ -32,28 +32,60 @@ class ExternalForcingConverter:
     def __init__(
         self,
         extold_model: ExtOldModel,
+        ext_model_path: PathOrStr = None,
+        inifield_model_path: PathOrStr = None,
+        structure_model_path: PathOrStr = None,
     ):
         """Initialize the converter.
 
+        The converter will create new external forcing, initial field and structure files in the same directory as the
+        old external forcing file, if no paths were given by the user for the new models.
+
         Args:
             extold_model (ExtOldModel): object with all forcing blocks.
-            # ini_cond_file (PathOrStr, optional): Path to the initial field file.
-            # structure_file (PathOrStr, optional): Path to the structure file.
+            ext_model_path (PathOrStr, optional): Path to the new external forcing file.
+            inifield_model_path (PathOrStr, optional): Path to the initial field file.
+            structure_model_path (PathOrStr, optional): Path to the structure file.
         """
         if not isinstance(extold_model, ExtOldModel):
             raise ValueError(
                 f"Expected an ExtOldModel object, got {type(extold_model)} instead."
             )
         self._extold_model = extold_model
+        rdir = extold_model.filepath.parent
+
+        # create the new models if not provided by the user in the same directory as the old external file
+        path = (
+            rdir.joinpath("new-external-forcing.ext")
+            if ext_model_path is None
+            else ext_model_path
+        )
+        self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
+
+        path = (
+            rdir.joinpath("new-initial-conditions.ext")
+            if inifield_model_path is None
+            else inifield_model_path
+        )
+        self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path)
+
+        path = (
+            rdir.joinpath("new-structure.ext")
+            if structure_model_path is None
+            else structure_model_path
+        )
+        self._structure_model = construct_filemodel_new_or_existing(
+            StructureModel, path
+        )
 
     @property
     def extold_model(self):
-        """ExtOldModel: object with all forcing blocks."""
+        """old external forcing model."""
         return self._extold_model
 
     @property
     def ext_model(self) -> FileModel:
-        """ExtOldModel: object with all forcing blocks."""
+        """New External forcing Model."""
         if not hasattr(self, "_ext_model"):
             raise ValueError(
                 "ext_model not set, please use the `ext_model` setter. to set it."
@@ -102,11 +134,20 @@ class ExternalForcingConverter:
         """Read a legacy D-Flow FM external forcings file (.ext) into an
            ExtOldModel object.
 
+        - The `read_old_file` method instantiates an ExternalForcingConverter object with an ExtOldModel object and
+        a default set of new external forcing, initial field and structure models.
+        - The new models will be created in the same directory as the old external forcing file.
+        - The new external forcing file will be named new-external-forcing.ext, the new initial conditions file will be
+            named new-initial-conditions.ext and the new structure file will be named new-structure.ext.
+        - However the user can change the paths to the new models by using the ``ext_model``, ``inifield_model`` and
+            ``structure_model`` setters. The new models will be created in the specified paths.
+        - the user can also set the paths to the new models using the `converter.ext_model.filepath= "mypath.ext"`.
+
         Args:
             extoldfile (PathOrStr): path to the external forcings file (.ext)
 
         Returns:
-            ExtOldModel: object with all forcing blocks.
+            ExternalForcingConverter: object with the old external forcing model and new external forcing, initial field
         """
         global _verbose
 
@@ -178,10 +219,12 @@ class ExternalForcingConverter:
         Args:
             backup (bool, optional): Create a backup of each file that will be overwritten.
         """
+        # FIXME: the backup is done is the file is already there, and here is baclup is done before saving the files,
+        #  so it is not successfuly done.
         if backup:
-            backup_file(self.ext_model.filepath, backup)
-            backup_file(self.inifield_model.filepath, backup)
-            backup_file(self.structure_model.filepath, backup)
+            backup_file(self.ext_model.filepath)
+            backup_file(self.inifield_model.filepath)
+            backup_file(self.structure_model.filepath)
 
         self.ext_model.save()
         self.inifield_model.save()
