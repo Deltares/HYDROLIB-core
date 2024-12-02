@@ -1,5 +1,6 @@
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm.ext.models import Meteo
+from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.ext.models import Boundary, Meteo
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing
 from hydrolib.core.dflowfm.inifield.models import InitialField, InterpolationMethod
 from hydrolib.tools.ext_old_to_new.enum_converters import (
@@ -43,13 +44,12 @@ class MeteoConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        meteo_data = {}
-        meteo_data["quantity"] = forcing.quantity
-        meteo_data["forcingfile"] = forcing.filename
-        meteo_data["forcingfiletype"] = oldfiletype_to_forcing_file_type(
-            forcing.filetype
-        )
-        meteo_data["forcingVariableName"] = forcing.varname
+        meteo_data = {
+            "quantity": forcing.quantity,
+            "forcingfile": forcing.filename,
+            "forcingfiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
+            "forcingVariableName": forcing.varname,
+        }
         if forcing.sourcemask != DiskOnlyFileModel(None):
             raise ValueError(
                 f"Attribute 'SOURCEMASK' is no longer supported, cannot "
@@ -79,13 +79,13 @@ class BoundaryConditionConverter(BaseConverter):
     def __init__(self):
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> Meteo:
-        """Convert an old external forcing block with meteo data to a Meteo
+    def convert(self, forcing: ExtOldForcing) -> Boundary:
+        """Convert an old external forcing block with meteo data to a boundary
         forcing block suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Meteo object is suitable for use in new
+        into a Meteo object. The Boundary object is suitable for use in new
         external forcings files, adhering to the updated format and
         specifications.
 
@@ -96,9 +96,9 @@ class BoundaryConditionConverter(BaseConverter):
             required for the conversion process.
 
         Returns:
-            Meteo: A Meteo object that represents the converted forcing
+            Boundary: A Boindary object that represents the converted forcing
             block, ready to be included in a new external forcings file. The
-            Meteo object conforms to the new format specifications, ensuring
+            Boundary object conforms to the new format specifications, ensuring
             compatibility with updated systems and models.
 
         Raises:
@@ -107,35 +107,23 @@ class BoundaryConditionConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        meteo_data = {}
-        meteo_data["quantity"] = forcing.quantity
-        meteo_data["forcingfile"] = forcing.filename
-        meteo_data["forcingfiletype"] = oldfiletype_to_forcing_file_type(
-            forcing.filetype
-        )
-        meteo_data["forcingVariableName"] = forcing.varname
-        if forcing.sourcemask != DiskOnlyFileModel(None):
-            raise ValueError(
-                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-                f"convert this input. Encountered for QUANTITY="
-                f"{forcing.quantity} and FILENAME={forcing.filename}."
-            )
-        meteo_data["interpolationmethod"] = oldmethod_to_interpolation_method(
-            forcing.method
-        )
-        if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
-            meteo_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-            meteo_data["averagingrelsize"] = forcing.relativesearchcellsize
-            meteo_data["averagingnummin"] = forcing.nummin
-            meteo_data["averagingpercentile"] = forcing.percentileminmax
+        data = {
+            "quantity": forcing.quantity,
+            "nodeid": "aNodeId",
+            "locationFile": forcing.filename,
+            "forcingfile": ForcingModel(),
+        }
+        # HINT: not sure if these keywords exists in the old external files or they are new so they are not expected
+        #  here and these following lines should be removed.
 
-        meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
-        meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
-        meteo_data["operand"] = forcing.operand
+        if "bndwidth1d" in forcing.__dict__:
+            data["bndwidth1d"] = forcing.bndwidth1d
+        if "bndbldepth" in forcing.__dict__:
+            data["bndbldepth"] = forcing.bndwidth2d
 
-        meteo_block = Meteo(**meteo_data)
+        new_block = Boundary(**data)
 
-        return meteo_block
+        return new_block
 
 
 class InitialConditionConverter(BaseConverter):
