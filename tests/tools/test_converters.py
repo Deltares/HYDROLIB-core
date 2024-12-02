@@ -1,8 +1,6 @@
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import InitialField
-from hydrolib.tools.ext_old_to_new.initial_condition_converter import (
-    InitialConditionConverter,
-)
+from hydrolib.tools.ext_old_to_new.converters import InitialConditionConverter
 
 
 class TestConvertInitialCondition:
