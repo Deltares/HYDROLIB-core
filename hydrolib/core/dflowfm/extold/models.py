@@ -707,9 +707,9 @@ class ExtOldModel(ParsableFileModel):
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefile`.
     """
 
-    comment: List[str] = HEADER.splitlines()[1:]
+    comment: List[str] = Field(default_factory=lambda: HEADER.splitlines()[1:])
     """List[str]: The comments in the header of the external forcing file."""
-    forcing: List[ExtOldForcing] = []
+    forcing: List[ExtOldForcing] = Field(default_factory=list)
     """List[ExtOldForcing]: The external forcing/QUANTITY blocks in the external forcing file."""
 
     @classmethod
