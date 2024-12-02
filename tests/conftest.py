@@ -123,6 +123,16 @@ def old_forcing_file_initial_condition() -> Dict[str, Path]:
     }
 
 
+@pytest.fixture(scope="function")
+def old_forcing_file_meteo() -> Dict[str, Path]:
+    return {
+        "path": Path("tests/data/input/old-external-meteo-only.ext"),
+        "quantities": ["windx", "windy"],
+        "file_type": ["meteoGridEqui", "meteoGridEqui"],
+        "file_path": ["windtest.amu", "windtest.amv"],
+    }
+
+
 @pytest.fixture
 def old_forcing_file_quantities() -> List[str]:
     return [

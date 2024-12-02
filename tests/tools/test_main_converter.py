@@ -11,6 +11,7 @@ from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
+    _get_parser,
     ext_old_to_new_dir_recursive,
     ext_old_to_new_from_mdu,
 )
@@ -113,31 +114,6 @@ class TestExternalFocingConverter:
         assert converter.inifield_model.filepath == new_initial_file
         assert converter.structure_model.filepath == new_structure_file
 
-    def test_update_ext_with_only_initial_contitions(
-        self, old_forcing_file_initial_condition: Dict[str, str]
-    ):
-        path = old_forcing_file_initial_condition["path"]
-        converter = ExternalForcingConverter.read_old_file(path)
-
-        ext_model, inifield_model, structure_model = converter.update()
-
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
-        num_quantities = len(old_forcing_file_initial_condition["quantities"])
-        assert len(inifield_model.initial) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
-        assert len(ext_model.lateral) == 0
-        assert len(ext_model.meteo) == 0
-        assert len(structure_model.structure) == 0
-        assert [
-            inifield_model.initial[i].datafiletype for i in range(num_quantities)
-        ] == old_forcing_file_initial_condition["file_type"]
-        assert [
-            str(inifield_model.initial[i].datafile.filepath)
-            for i in range(num_quantities)
-        ] == old_forcing_file_initial_condition["file_path"]
-
     def test_save(self, old_forcing_file_initial_condition: Dict[str, str]):
         """
         Mock test to test only the save method of the ExternalForcingConverter class.
@@ -183,3 +159,53 @@ class TestExternalFocingConverter:
         assert captured.out.startswith(
             f"Read {(len(old_forcing_file_quantities))} forcing blocks from {old_forcing_file}."
         )
+
+
+class TestUpdate:
+
+    def test_meteo_only(self, old_forcing_file_meteo: Dict[str, str]):
+        path = old_forcing_file_meteo["path"]
+        converter = ExternalForcingConverter.read_old_file(path)
+
+        ext_model, inifield_model, structure_model = converter.update()
+
+        # all the quantities in the old external file are initial conditions
+        # check that all the quantities (3) were converted to initial conditions
+        num_quantities = len(old_forcing_file_meteo["quantities"])
+        assert len(ext_model.meteo) == num_quantities
+        # no parameters or any other structures, lateral or meteo data
+        assert len(inifield_model.parameter) == 0
+        assert len(ext_model.lateral) == 0
+        assert len(inifield_model.initial) == 0
+        assert len(structure_model.structure) == 0
+        assert [
+            ext_model.meteo[i].forcingfiletype for i in range(num_quantities)
+        ] == old_forcing_file_meteo["file_type"]
+        assert [
+            str(ext_model.meteo[i].forcingfile.filepath) for i in range(num_quantities)
+        ] == old_forcing_file_meteo["file_path"]
+
+    def test_initial_contitions_only(
+        self, old_forcing_file_initial_condition: Dict[str, str]
+    ):
+        path = old_forcing_file_initial_condition["path"]
+        converter = ExternalForcingConverter.read_old_file(path)
+
+        ext_model, inifield_model, structure_model = converter.update()
+
+        # all the quantities in the old external file are initial conditions
+        # check that all the quantities (3) were converted to initial conditions
+        num_quantities = len(old_forcing_file_initial_condition["quantities"])
+        assert len(inifield_model.initial) == num_quantities
+        # no parameters or any other structures, lateral or meteo data
+        assert len(inifield_model.parameter) == 0
+        assert len(ext_model.lateral) == 0
+        assert len(ext_model.meteo) == 0
+        assert len(structure_model.structure) == 0
+        assert [
+            inifield_model.initial[i].datafiletype for i in range(num_quantities)
+        ] == old_forcing_file_initial_condition["file_type"]
+        assert [
+            str(inifield_model.initial[i].datafile.filepath)
+            for i in range(num_quantities)
+        ] == old_forcing_file_initial_condition["file_path"]

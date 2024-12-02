@@ -194,11 +194,11 @@ class ExternalForcingConverter:
                 new_quantity_block = None
 
             if isinstance(new_quantity_block, Boundary):
-                self.new_ext_model.boundary.append(new_quantity_block)
+                self.ext_model.boundary.append(new_quantity_block)
             elif isinstance(new_quantity_block, Lateral):
-                self.new_ext_model.lateral.append(new_quantity_block)
+                self.ext_model.lateral.append(new_quantity_block)
             elif isinstance(new_quantity_block, Meteo):
-                self.new_ext_model.meteo.append(new_quantity_block)
+                self.ext_model.meteo.append(new_quantity_block)
             elif isinstance(new_quantity_block, InitialField):
                 self.inifield_model.initial.append(new_quantity_block)
             elif isinstance(new_quantity_block, ParameterField):
