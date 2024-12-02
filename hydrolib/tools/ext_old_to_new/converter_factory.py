@@ -3,10 +3,11 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldMeteoQuantity,
 )
 from hydrolib.tools.ext_old_to_new.base_converter import BaseConverter
-from hydrolib.tools.ext_old_to_new.initial_condition_converter import (
+from hydrolib.tools.ext_old_to_new.converters import (
     InitialConditionConverter,
+    MeteoConverter,
 )
-from hydrolib.tools.ext_old_to_new.meteo_converter import MeteoConverter
+# BoundaryConditionConverter
 
 
 def __contains__(cls, item):
