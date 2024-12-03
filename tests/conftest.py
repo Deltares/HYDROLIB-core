@@ -85,6 +85,11 @@ def input_files_dir() -> Path:
 
 
 @pytest.fixture
+def polylines_dir() -> Path:
+    return Path("tests/data/input/dflowfm_individual_files/polylines")
+
+
+@pytest.fixture
 def output_files_dir() -> Path:
     return Path("tests/data/output")
 
