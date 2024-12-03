@@ -67,6 +67,6 @@ class TestBoundaryConverter:
         assert new_quantity_block.quantity == "waterlevelbnd"
         assert new_quantity_block.forcingfile == ForcingModel()
         assert new_quantity_block.locationfile == DiskOnlyFileModel(file_name)
-        assert new_quantity_block.nodeid == "aNodeId"
+        assert new_quantity_block.nodeid is None
         assert new_quantity_block.bndwidth1d is None
         assert new_quantity_block.bndbldepth is None

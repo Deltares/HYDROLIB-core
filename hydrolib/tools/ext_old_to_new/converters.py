@@ -109,17 +109,24 @@ class BoundaryConditionConverter(BaseConverter):
         """
         data = {
             "quantity": forcing.quantity,
-            "nodeid": "aNodeId",
-            "locationFile": forcing.filename,
+            "locationfile": forcing.filename,
             "forcingfile": ForcingModel(),
         }
         # HINT: not sure if these keywords exists in the old external files or they are new so they are not expected
         #  here and these following lines should be removed.
 
-        if "bndwidth1d" in forcing.__dict__:
-            data["bndwidth1d"] = forcing.bndwidth1d
-        if "bndbldepth" in forcing.__dict__:
-            data["bndbldepth"] = forcing.bndwidth2d
+        nodeid = getattr(forcing, "nodeid", None)
+        if nodeid:
+            data["nodeid"] = nodeid
+
+        bndwidth1d = getattr(forcing, "bndwidth1d", None)
+        bndbldepth = getattr(forcing, "bndbldepth", None)
+
+        if bndwidth1d:
+            data["bndwidth1d"] = bndwidth1d
+
+        if bndbldepth:
+            data["bndbldepth"] = bndbldepth
 
         new_block = Boundary(**data)
 
