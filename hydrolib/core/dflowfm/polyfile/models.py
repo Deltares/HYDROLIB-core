@@ -3,6 +3,8 @@
 
 from typing import Callable, List, Optional, Sequence
 
+from pydantic.v1 import Field
+
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 
 
@@ -81,7 +83,7 @@ class PolyFile(ParsableFileModel):
     """Poly-file (.pol/.pli/.pliz) representation."""
 
     has_z_values: bool = False
-    objects: Sequence[PolyObject] = []
+    objects: Sequence[PolyObject] = Field(default_factory=list)
 
     def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
         from .serializer import write_polyfile
