@@ -23,7 +23,7 @@ from hydrolib.core.dflowfm.polyfile.parser import (
 )
 from hydrolib.core.dflowfm.polyfile.serializer import Serializer, write_polyfile
 
-from ..utils import assert_files_equal, test_input_dir, test_output_dir
+from tests.utils import assert_files_equal, test_input_dir, test_output_dir
 
 
 class TestSerializer:
