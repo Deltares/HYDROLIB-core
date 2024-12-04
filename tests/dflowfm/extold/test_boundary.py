@@ -1,14 +1,33 @@
+"""
+Test all methods contained in the
+hydrolib.core.dflowfm.ext.models.Boundary class
+"""
+
 from pathlib import Path
 
 import pytest
 
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
 
 class TestBoundary:
-    """Class to test all methods contained in the
-    hydrolib.core.dflowfm.ext.models.Boundary class"""
+
+    def test_existing_file(self):
+        polyline = "tests/data/input/boundary-conditions/tfl_01.pli"
+        data = {
+            "quantity": "waterlevelbnd",
+            "locationfile": polyline,
+            "forcingfile": ForcingModel(),
+        }
+        boundary_block = Boundary(**data)
+        assert boundary_block.locationfile == DiskOnlyFileModel(Path(polyline))
+        assert boundary_block.quantity == "waterlevelbnd"
+        assert boundary_block.forcingfile == ForcingModel()
+        assert boundary_block.bndwidth1d is None
+        assert boundary_block.bndbldepth is None
 
     def test_given_args_expected_values(self):
         # 1. Explicit declaration of parameters (to validate keys as they are written)
