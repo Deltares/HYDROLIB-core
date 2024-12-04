@@ -1,3 +1,5 @@
+import numpy as np
+
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary
@@ -36,7 +38,7 @@ class TestConvertInitialCondition:
         new_quantity_block = InitialConditionConverter().convert(forcing)
         assert new_quantity_block.datafiletype == "polygon"
         assert new_quantity_block.interpolationmethod == "constant"
-        assert new_quantity_block.value == 0.0
+        assert np.isclose(new_quantity_block.value, 0.0)
 
 
 class TestBoundaryConverter:
