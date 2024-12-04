@@ -11,7 +11,6 @@ from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
-    _get_parser,
     ext_old_to_new_dir_recursive,
     ext_old_to_new_from_mdu,
 )
@@ -209,3 +208,27 @@ class TestUpdate:
             str(inifield_model.initial[i].datafile.filepath)
             for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_path"]
+
+    def test_boundary_only(self, old_forcing_file_boundary: Dict[str, str]):
+        """
+        The old external forcing file contains only 9 boundary condition quantities all with polyline location files
+        and no forcing files. The update method should convert all the quantities to boundary conditions.
+        """
+        path = old_forcing_file_boundary["path"]
+        converter = ExternalForcingConverter.read_old_file(path)
+
+        ext_model, inifield_model, structure_model = converter.update()
+
+        # all the quantities in the old external file are initial conditions
+        # check that all the quantities (3) were converted to initial conditions
+        num_quantities = len(old_forcing_file_boundary["quantities"])
+        assert len(ext_model.boundary) == num_quantities
+        # no parameters or any other structures, lateral or meteo data
+        assert len(inifield_model.parameter) == 0
+        assert len(ext_model.lateral) == 0
+        assert len(ext_model.meteo) == 0
+        assert len(structure_model.structure) == 0
+        quantities = ext_model.boundary
+        assert [
+            str(quantities[i].locationfile.filepath) for i in range(num_quantities)
+        ] == old_forcing_file_boundary["locationfile"]

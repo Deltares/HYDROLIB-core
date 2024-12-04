@@ -138,6 +138,37 @@ def old_forcing_file_meteo() -> Dict[str, Path]:
     }
 
 
+@pytest.fixture(scope="function")
+def old_forcing_file_boundary() -> Dict[str, Path]:
+    return {
+        "path": Path(
+            "tests/data/input/boundary-conditions/old-external-boundary_condition_only.ext"
+        ),
+        "quantities": [
+            "waterlevelbnd",
+            "dischargebnd",
+            "velocitybnd",
+            "tangentialvelocitybnd",
+            "neumannbnd",
+            "riemannbnd",
+            "outflowbnd",
+            "qhbnd",
+            "salinitybnd",
+        ],
+        "locationfile": [
+            "tfl_01.pli",
+            "left01.pli",
+            "vel01.pli",
+            "tanvelN.pli",
+            "right01.pli",
+            "left01.pli",
+            "right01.pli",
+            "right01.pli",
+            "tfl_02_sal.pli",
+        ],
+    }
+
+
 @pytest.fixture
 def old_forcing_file_quantities() -> List[str]:
     return [
