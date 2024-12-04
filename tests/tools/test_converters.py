@@ -53,7 +53,7 @@ class TestBoundaryConverter:
         OPERAND  =O
         ```
         """
-        file_name = "tests/data/inputs/tfl_01.pli"
+        file_name = "tests/data/input/boundary-conditions/tfl_01.pli"
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename=file_name,
