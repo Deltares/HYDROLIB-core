@@ -10,7 +10,6 @@ import pytest
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary
-from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
 
 class TestBoundary:
