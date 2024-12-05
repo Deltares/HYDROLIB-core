@@ -108,20 +108,19 @@ class Boundary(INIBasedModel):
         Returns:
             ForcingBase: The corresponding forcing data. None when this boundary does not have a forcing file or when the data cannot be found.
         """
+        result = None
+        if self.forcingfile is not None:
+            for forcing in self.forcingfile.forcing:
 
-        if self.forcingfile is None:
-            return None
+                if self.nodeid == forcing.name:
+                    if any(
+                        quantity.quantity.startswith(self.quantity)
+                        for quantity in forcing.quantityunitpair
+                    ):
+                        result = forcing
+                        break
 
-        for forcing in self.forcingfile.forcing:
-
-            if self.nodeid != forcing.name:
-                continue
-
-            for quantity in forcing.quantityunitpair:
-                if quantity.quantity.startswith(self.quantity):
-                    return forcing
-
-        return None
+        return result
 
 
 class Lateral(INIBasedModel):
