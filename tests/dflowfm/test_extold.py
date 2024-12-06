@@ -17,6 +17,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldInitialConditionQuantity,
     ExtOldMethod,
     ExtOldModel,
+    ExtOldParametersQuantity,
     ExtOldQuantity,
     ExtOldTracerQuantity,
 )
@@ -1029,4 +1030,15 @@ def test_ext_old_initial_condition_quantity(initial_condition_quantities):
     all(
         quantity in ExtOldInitialConditionQuantity.__members__.keys()
         for quantity in initial_condition_quantities
+    )
+
+
+def test_ext_old_parameter_quantity(parameter_quantities: List[str]):
+    """
+    Test the number of parameter quantities in the ExtOldParametersQuantity enum.
+    """
+    assert len(ExtOldParametersQuantity) == len(parameter_quantities)
+    assert all(
+        quantity.value in parameter_quantities
+        for quantity in ExtOldParametersQuantity.__members__.values()
     )

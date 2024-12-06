@@ -5,6 +5,21 @@ import pytest
 
 
 @pytest.fixture
+def input_files_dir() -> Path:
+    return Path("tests/data/input")
+
+
+@pytest.fixture
+def output_files_dir() -> Path:
+    return Path("tests/data/output")
+
+
+@pytest.fixture
+def reference_files_dir() -> Path:
+    return Path("tests/data/reference")
+
+
+@pytest.fixture
 def initial_condition_quantities() -> List[str]:
     return [
         "initialwaterlevel",
@@ -80,23 +95,8 @@ def initial_cond_averaging_type() -> List[str]:
 
 
 @pytest.fixture
-def input_files_dir() -> Path:
-    return Path("tests/data/input")
-
-
-@pytest.fixture
 def polylines_dir() -> Path:
     return Path("tests/data/input/dflowfm_individual_files/polylines")
-
-
-@pytest.fixture
-def output_files_dir() -> Path:
-    return Path("tests/data/output")
-
-
-@pytest.fixture
-def reference_files_dir() -> Path:
-    return Path("tests/data/reference")
 
 
 @pytest.fixture
@@ -191,3 +191,14 @@ def old_forcing_file_quantities() -> List[str]:
 @pytest.fixture
 def old_forcing_comment_len() -> int:
     return 63
+
+
+@pytest.fixture
+def parameter_quantities() -> List[str]:
+    return [
+        "frictioncoefficient",
+        "horizontaleddyviscositycoefficient",
+        "horizontaleddydiffusivitycoefficient",
+        "advectiontype",
+        "infiltrationcapacity",
+    ]
