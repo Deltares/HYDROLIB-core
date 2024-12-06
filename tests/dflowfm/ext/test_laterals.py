@@ -1,6 +1,6 @@
 """
-Test class to test all classes and methods contained in the
-hydrolib.core.dflowfm.ext.models.py module
+Class to test all methods contained in the
+hydrolib.core.dflowfm.ext.models.Lateral class
 """
 
 from typing import Dict, List, Optional
@@ -17,11 +17,6 @@ from tests.utils import test_data_dir
 LOCATION_ERROR: str = (
     "nodeId or branchId and chainage or xCoordinates, yCoordinates and numCoordinates should be provided"
 )
-
-"""
-Class to test all methods contained in the
-hydrolib.core.dflowfm.ext.models.Lateral class
-"""
 
 
 class TestValidateCoordinates:
