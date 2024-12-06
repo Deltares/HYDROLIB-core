@@ -1027,9 +1027,9 @@ def test_ext_old_initial_condition_quantity(initial_condition_quantities):
     Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
     """
     assert len(ExtOldInitialConditionQuantity) == 10
-    all(
-        quantity in ExtOldInitialConditionQuantity.__members__.keys()
-        for quantity in initial_condition_quantities
+    assert all(
+        quantity.value in initial_condition_quantities
+        for quantity in ExtOldInitialConditionQuantity.__members__.values()
     )
 
 
