@@ -188,6 +188,12 @@ class InitialField(AbstractSpatialField):
     Initial condition field definition, represents an `[Initial]` block in
     an inifield file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.initial[..]`
+
+    A `[Initial Condition]` block for use inside an external forcings file,
+    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+
+    All lowercased attributes match with the meteo input as described in
+    [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
     _header: Literal["Initial"] = "Initial"
