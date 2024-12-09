@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Dict
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -160,6 +160,39 @@ class BoundaryConditionConverter(BaseConverter):
         return new_block
 
 
+def create_convert_inputs(forcing: ExtOldForcing) -> Dict[str, str]:
+    block_data = {
+        "quantity": forcing.quantity,
+        "datafile": forcing.filename,
+        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
+    }
+    if block_data["datafiletype"] == "polygon":
+        block_data["value"] = forcing.value
+
+    if forcing.sourcemask != DiskOnlyFileModel(None):
+        raise ValueError(
+            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+            f"convert this input. Encountered for QUANTITY="
+            f"{forcing.quantity} and FILENAME={forcing.filename}."
+        )
+    block_data["interpolationmethod"] = oldmethod_to_interpolation_method(
+        forcing.method
+    )
+    if block_data["interpolationmethod"] == InterpolationMethod.averaging:
+        block_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
+        block_data["averagingrelsize"] = forcing.relativesearchcellsize
+        block_data["averagingnummin"] = forcing.nummin
+        block_data["averagingpercentile"] = forcing.percentileminmax
+    block_data["operand"] = forcing.operand
+
+    if hasattr(forcing, "extrapolation"):
+        block_data["extrapolationmethod"] = forcing.extrapolation
+    if hasattr(forcing, "locationtype"):
+        block_data["locationtype"] = forcing.locationtype
+
+    return block_data
+
+
 class InitialConditionConverter(BaseConverter):
 
     def __init__(self):
@@ -193,36 +226,8 @@ class InitialConditionConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        block_data = {
-            "quantity": forcing.quantity,
-            "datafile": forcing.filename,
-            "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-        }
-        if block_data["datafiletype"] == "polygon":
-            block_data["value"] = forcing.value
-
-        if forcing.sourcemask != DiskOnlyFileModel(None):
-            raise ValueError(
-                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-                f"convert this input. Encountered for QUANTITY="
-                f"{forcing.quantity} and FILENAME={forcing.filename}."
-            )
-        block_data["interpolationmethod"] = oldmethod_to_interpolation_method(
-            forcing.method
-        )
-        if block_data["interpolationmethod"] == InterpolationMethod.averaging:
-            block_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-            block_data["averagingrelsize"] = forcing.relativesearchcellsize
-            block_data["averagingnummin"] = forcing.nummin
-            block_data["averagingpercentile"] = forcing.percentileminmax
-        block_data["operand"] = forcing.operand
-
-        if hasattr(forcing, "extrapolation"):
-            block_data["extrapolationmethod"] = forcing.extrapolation
-        if hasattr(forcing, "locationtype"):
-            block_data["locationtype"] = forcing.locationtype
-
-        new_block = InitialField(**block_data)
+        data = create_convert_inputs(forcing)
+        new_block = InitialField(**data)
 
         return new_block
 
@@ -260,36 +265,8 @@ class ParametersConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        block_data = {
-            "quantity": forcing.quantity,
-            "datafile": forcing.filename,
-            "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-        }
-        if block_data["datafiletype"] == "polygon":
-            block_data["value"] = forcing.value
-
-        if forcing.sourcemask != DiskOnlyFileModel(None):
-            raise ValueError(
-                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-                f"convert this input. Encountered for QUANTITY="
-                f"{forcing.quantity} and FILENAME={forcing.filename}."
-            )
-        block_data["interpolationmethod"] = oldmethod_to_interpolation_method(
-            forcing.method
-        )
-        if block_data["interpolationmethod"] == InterpolationMethod.averaging:
-            block_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-            block_data["averagingrelsize"] = forcing.relativesearchcellsize
-            block_data["averagingnummin"] = forcing.nummin
-            block_data["averagingpercentile"] = forcing.percentileminmax
-        block_data["operand"] = forcing.operand
-
-        if hasattr(forcing, "extrapolation"):
-            block_data["extrapolationmethod"] = forcing.extrapolation
-        if hasattr(forcing, "locationtype"):
-            block_data["locationtype"] = forcing.locationtype
-
-        new_block = ParameterField(**block_data)
+        data = create_convert_inputs(forcing)
+        new_block = ParameterField(**data)
 
         return new_block
 
