@@ -1,9 +1,16 @@
-from typing import Any
 from abc import ABC, abstractmethod
+from typing import Any
+
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary, Meteo
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldBoundaryQuantity,
+    ExtOldForcing,
+    ExtOldInitialConditionQuantity,
+    ExtOldMeteoQuantity,
+    ExtOldParametersQuantity,
+)
 from hydrolib.core.dflowfm.inifield.models import (
     InitialField,
     InterpolationMethod,
@@ -285,3 +292,43 @@ class ParametersConverter(BaseConverter):
         new_block = ParameterField(**block_data)
 
         return new_block
+
+
+def __contains__(cls, item):
+    try:
+        cls(item)
+    except ValueError:
+        return False
+    return True
+
+
+class ConverterFactory:
+    """
+    A factory class for creating converters based on the given quantity.
+    """
+
+    @staticmethod
+    def create_converter(quantity) -> BaseConverter:
+        """
+        Create converter based on the given quantity.
+
+        Args:
+            quantity: The quantity for which the converter needs to be created.
+
+        Returns:
+            BaseConverter: An instance of a specific BaseConverter subclass
+                for the given quantity.
+
+        Raises:
+            ValueError: If no converter is available for the given quantity.
+        """
+        if __contains__(ExtOldMeteoQuantity, quantity):
+            return MeteoConverter()
+        elif __contains__(ExtOldInitialConditionQuantity, quantity):
+            return InitialConditionConverter()
+        elif __contains__(ExtOldBoundaryQuantity, quantity):
+            return BoundaryConditionConverter()
+        elif __contains__(ExtOldParametersQuantity, quantity):
+            return ParametersConverter()
+        else:
+            raise ValueError(f"No converter available for QUANTITY={quantity}.")

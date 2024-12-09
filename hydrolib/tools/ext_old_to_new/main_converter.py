@@ -15,9 +15,8 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-
-from .converter_factory import ConverterFactory
-from .utils import (
+from hydrolib.tools.ext_old_to_new.converters import ConverterFactory
+from hydrolib.tools.ext_old_to_new.utils import (
     backup_file,
     construct_filemodel_new_or_existing,
     construct_filepath_with_postfix,
