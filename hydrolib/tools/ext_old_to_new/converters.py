@@ -294,14 +294,6 @@ class ParametersConverter(BaseConverter):
         return new_block
 
 
-def __contains__(cls, item):
-    try:
-        cls(item)
-    except ValueError:
-        return False
-    return True
-
-
 class ConverterFactory:
     """
     A factory class for creating converters based on the given quantity.
@@ -322,13 +314,22 @@ class ConverterFactory:
         Raises:
             ValueError: If no converter is available for the given quantity.
         """
-        if __contains__(ExtOldMeteoQuantity, quantity):
+        if ConverterFactory.contains(ExtOldMeteoQuantity, quantity):
             return MeteoConverter()
-        elif __contains__(ExtOldInitialConditionQuantity, quantity):
+        elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
             return InitialConditionConverter()
-        elif __contains__(ExtOldBoundaryQuantity, quantity):
+        elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
             return BoundaryConditionConverter()
-        elif __contains__(ExtOldParametersQuantity, quantity):
+        elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
             return ParametersConverter()
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
+
+    @staticmethod
+    def contains(quantity_class, quantity) -> bool:
+        try:
+            quantity_class(quantity)
+        except ValueError:
+            return False
+
+        return True
