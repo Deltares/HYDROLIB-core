@@ -3,7 +3,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldInitialConditionQuantity,
     ExtOldMeteoQuantity,
 )
-from hydrolib.tools.ext_old_to_new.base_converter import BaseConverter
+from hydrolib.tools.ext_old_to_new.converters import BaseConverter
 from hydrolib.tools.ext_old_to_new.converters import (
     BoundaryConditionConverter,
     InitialConditionConverter,
