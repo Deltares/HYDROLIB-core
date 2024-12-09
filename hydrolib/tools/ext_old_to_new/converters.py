@@ -16,7 +16,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     InterpolationMethod,
     ParameterField,
 )
-from hydrolib.tools.ext_old_to_new.enum_converters import (
+from hydrolib.tools.ext_old_to_new.utils import (
     oldfiletype_to_forcing_file_type,
     oldmethod_to_averaging_type,
     oldmethod_to_interpolation_method,
