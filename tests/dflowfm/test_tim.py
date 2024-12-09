@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 
 import pytest
@@ -228,7 +229,7 @@ class TestTimModel:
         tim_model = TimModel(input_path)
         assert tim_model.timeseries[0].time == 0
         assert tim_model.timeseries[0].data == [1.0, 270.0]
-        assert tim_model.timeseries[1].time == 9e9
+        assert math.isclose(tim_model.timeseries[1].time, 9e9)
         assert tim_model.timeseries[1].data == [1.0, 270.0]
 
 
