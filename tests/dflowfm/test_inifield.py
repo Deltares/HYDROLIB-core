@@ -258,7 +258,7 @@ class TestInitialConditions:
         assert initial_conditions.interpolationmethod is None
         assert initial_conditions.operand == "O"
         assert initial_conditions.averagingtype is "mean"
-        assert initial_conditions.averagingrelsize == 1.01
+        assert np.isclose(initial_conditions.averagingrelsize, 1.01)
         assert initial_conditions.averagingnummin == 1
         assert initial_conditions.extrapolationmethod is False
         assert initial_conditions.locationtype is "all"
