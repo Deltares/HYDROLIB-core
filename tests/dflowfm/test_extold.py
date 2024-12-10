@@ -1044,6 +1044,6 @@ class TestOldInitialConditionQuantity:
         """
         Test the missing method in the ExtOldInitialConditionQuantity enum with a quantity that starts with tracer.
         """
-        qunatity_name = "tracerquanity"
+        qunatity_name = "initialtracerquanity"
         quantity = ExtOldInitialConditionQuantity(qunatity_name)
         assert quantity.value == qunatity_name

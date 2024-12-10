@@ -256,7 +256,7 @@ class ExtOldInitialConditionQuantity(StrEnum):
     @classmethod
     def _missing_(cls, value):
         # Allow strings starting with "tracer"
-        if isinstance(value, str) and value.startswith("tracer"):
+        if isinstance(value, str) and value.startswith("initialtracer"):
             new_member = str.__new__(cls, value)  # Create a new instance
             new_member._value_ = value  # Set the value
             return new_member
