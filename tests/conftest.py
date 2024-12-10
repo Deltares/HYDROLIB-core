@@ -23,6 +23,7 @@ def initial_condition_quantities() -> List[str]:
         "initialvelocityx",
         "initialvelocityy",
         "initialvelocity",
+        "initialwaqbot",
     ]
 
 

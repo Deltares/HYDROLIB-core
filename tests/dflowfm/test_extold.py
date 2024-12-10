@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 from typing import List
 
@@ -11,6 +12,7 @@ from hydrolib.core.basemodel import (
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
+    INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES,
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
@@ -24,13 +26,12 @@ from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
-from tests.utils import (
-    assert_files_equal,
-    create_temp_file_from_lines,
-    get_temp_file,
-    test_input_dir,
-)
+from tests.utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
 
+quantities_with_prefixes = copy.deepcopy(INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES)
+quantities_with_prefixes = [
+    f"{quantity}-suffix" for quantity in quantities_with_prefixes
+]
 EXP_HEADER = """
  QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
              : outflowbnd, neumannbnd, qhbnd, uxuyadvectionvelocitybnd                             filetype=9         method=2,3
@@ -1040,10 +1041,10 @@ class TestOldInitialConditionQuantity:
         with pytest.raises(ValueError):
             ExtOldInitialConditionQuantity("missing_method")
 
-    def test_the_missing_method_with_tracers(self):
+    @pytest.mark.parametrize("qunatity_name", quantities_with_prefixes)
+    def test_the_missing_method_with_tracers(self, qunatity_name):
         """
-        Test the missing method in the ExtOldInitialConditionQuantity enum with a quantity that starts with tracer.
+        Test the missing method in the ExtOldInitialConditionQuantity enum with a quantity that starts the quantities in the .
         """
-        qunatity_name = "initialtracerquanity"
         quantity = ExtOldInitialConditionQuantity(qunatity_name)
         assert quantity.value == qunatity_name

@@ -18,6 +18,14 @@ from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
+INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
+    "initialtracer",
+    "initialsedfrac",
+    "initialverticalsedfracprofile",
+    "initialverticalsigmasedfracprofile",
+)
+
+
 HEADER = """
  QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
              : outflowbnd, neumannbnd, qhbnd, uxuyadvectionvelocitybnd                             filetype=9         method=2,3
@@ -229,6 +237,11 @@ class ExtOldInitialConditionQuantity(StrEnum):
         initialwaterlevel, initialsalinity, initialsalinitytop, initialtemperature,
         initialverticaltemperatureprofile, initialverticalsalinityprofile, initialvelocityx,
         initialvelocityy, initialvelocity
+
+    If there is a missing quantity that is mentioned in the "Accepted quantity names" section of the user manual
+    [Sec.C.5.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.3).
+    and [Sec.D.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.3).
+    please open and issue in github.
     """
 
     # Initial Condition fields
@@ -252,13 +265,20 @@ class ExtOldInitialConditionQuantity(StrEnum):
     InitialVelocityX = "initialvelocityx"
     InitialVelocityY = "initialvelocityy"
     InitialVelocity = "initialvelocity"
+    InitialWaqBot = "initialwaqbot"
 
     @classmethod
     def _missing_(cls, value):
+        """Custom implementation for handling missing values.
+
+        the method parses any missing values and only allows the ones that start with "initialtracer".
+        """
         # Allow strings starting with "tracer"
-        if isinstance(value, str) and value.startswith("initialtracer"):
-            new_member = str.__new__(cls, value)  # Create a new instance
-            new_member._value_ = value  # Set the value
+        if isinstance(value, str) and value.startswith(
+            INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
+        ):
+            new_member = str.__new__(cls, value)
+            new_member._value_ = value
             return new_member
         else:
             raise ValueError(
