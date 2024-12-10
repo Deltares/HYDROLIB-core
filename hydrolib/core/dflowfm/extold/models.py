@@ -151,7 +151,7 @@ class ExtOldBoundaryQuantity(StrEnum):
     NormalVelocityBnd = "normalvelocitybnd"
     """Normal velocity"""
     TangentialVelocityBnd = "tangentialvelocitybnd"
-    """Tangentional velocity"""
+    """Tangential velocity"""
     QhBnd = "qhbnd"
     """Discharge-water level dependency"""
 
@@ -228,7 +228,7 @@ class ExtOldInitialConditionQuantity(StrEnum):
     Initial Condition quantities:
         initialwaterlevel, initialsalinity, initialsalinitytop, initialtemperature,
         initialverticaltemperatureprofile, initialverticalsalinityprofile, initialvelocityx,
-        initialvelocityy, initialvelocity, initialsalinitytopuse
+        initialvelocityy, initialvelocity
     """
 
     # Initial Condition fields
@@ -242,7 +242,6 @@ class ExtOldInitialConditionQuantity(StrEnum):
     InitialVelocityX = "initialvelocityx"
     InitialVelocityY = "initialvelocityy"
     InitialVelocity = "initialvelocity"
-    InitialSalinityTopUse = "initialsalinitytopuse"
 
 
 class ExtOldQuantity(StrEnum):
