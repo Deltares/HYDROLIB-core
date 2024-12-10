@@ -53,7 +53,6 @@ def ext_old_to_new(
     inifieldfile: PathOrStr = None,
     structurefile: PathOrStr = None,
     backup: bool = False,
-    postfix: str = "",
 ) -> Union[Tuple[ExtOldModel, FileModel, FileModel, FileModel], None]:
     """
     Convert old external forcing file to new format files.
@@ -66,7 +65,6 @@ def ext_old_to_new(
         structurefile (PathOrStr, optional): Path to the structure file.
         backup (bool, optional): Create a backup of each file that will be
             overwritten.
-        postfix (str, optional): Append POSTFIX to the output filenames. Defaults to "".
 
     Returns:
         Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
@@ -174,12 +172,9 @@ def ext_old_to_new_from_mdu(
 
     workdir = fmmodel._resolved_filepath.parent
     os.chdir(workdir)
-    if fmmodel.external_forcing.extforcefile is None:
-        if _verbose:
-            print(
-                f"mdufile: {mdufile} does not contain an old style external forcing file"
-            )
-            return
+    if fmmodel.external_forcing.extforcefile is None and _verbose:
+        print(f"mdufile: {mdufile} does not contain an old style external forcing file")
+        return
     # Input file:
     extoldfile = fmmodel.external_forcing.extforcefile._resolved_filepath
     # Output files:
@@ -201,7 +196,7 @@ def ext_old_to_new_from_mdu(
 
     # The actual conversion:
     extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(
-        extoldfile, extfile, inifieldfile, structurefile, backup, postfix
+        extoldfile, extfile, inifieldfile, structurefile, backup
     )
     try:
         # And include the new files in the FM model:
@@ -325,9 +320,9 @@ def main(args=None):
             args.mdufile, **outfiles, backup=backup, postfix=args.postfix
         )
     elif args.extoldfile is not None:
-        ext_old_to_new(args.extoldfile, **outfiles, backup=backup, postfix=args.postfix)
+        ext_old_to_new(args.extoldfile, **outfiles, backup=backup)
     elif args.dir is not None:
-        ext_old_to_new_dir_recursive(args.dir, backup=backup, postfix=args.postfix)
+        ext_old_to_new_dir_recursive(args.dir, backup=backup)
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 
