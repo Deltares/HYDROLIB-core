@@ -337,7 +337,9 @@ class DIMR(ParsableFileModel):
 
     documentation: Documentation = Documentation()
     control: List[Union[Start, Parallel]] = Field(default_factory=list)
-    component: List[Union[RRComponent, FMComponent, Component]] = Field(default_factory=list)
+    component: List[Union[RRComponent, FMComponent, Component]] = Field(
+        default_factory=list
+    )
     coupler: Optional[List[Coupler]] = Field(default_factory=list)
     waitFile: Optional[str]
     global_settings: Optional[GlobalSettings]
