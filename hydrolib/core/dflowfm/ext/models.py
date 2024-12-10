@@ -20,11 +20,6 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     validate_location_specification,
 )
-from hydrolib.core.dflowfm.inifield.models import (
-    AveragingType,
-    DataFileType,
-    InterpolationMethod,
-)
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
@@ -102,7 +97,7 @@ class Boundary(INIBasedModel):
         return data.get("nodeid")
 
     @property
-    def forcing(self) -> ForcingBase:
+    def forcing(self) -> Union[ForcingBase, None]:
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
@@ -292,7 +287,7 @@ class Meteo(INIBasedModel):
     )
 
     _header: Literal["Meteo"] = "Meteo"
-    quantity: str = Field(alias="QUANTITY")
+    quantity: str = Field(alias="quantity")
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
@@ -360,34 +355,3 @@ class ExtModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "bnd"
-
-
-class InitialConditions(INIBasedModel):
-    """
-    A `[Initial Condition]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
-
-    All lowercased attributes match with the meteo input as described in
-    [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
-    """
-
-    _header: Literal["Initial"] = "Initial"
-    quantity: str = Field(alias="QUANTITY")
-    datafile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(alias="dataFile")
-    datafiletype: DataFileType = Field(alias="dataFileType")
-    interpolationmethod: Optional[InterpolationMethod] = Field(
-        alias="interpolationMethod"
-    )
-    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
-    extrapolationSearchRadius: Optional[float] = Field(
-        alias="extrapolationSearchRadius"
-    )
-    averagingtype: Optional[AveragingType] = Field(alias="averagingType")
-    averagingnummin: Optional[int] = Field(default=1, alias="averagingNumMin")
-    averagingpercentile: Optional[float] = Field(default=0, alias="averagingPercentile")
-
-    datafiletype_validator = get_enum_validator("datafiletype", enum=DataFileType)
-    interpolationmethod_validator = get_enum_validator(
-        "interpolationmethod", enum=InterpolationMethod
-    )
