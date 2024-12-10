@@ -1021,12 +1021,29 @@ class TestSerializer:
                 assert_files_equal(file, exp_file)
 
 
-def test_ext_old_initial_condition_quantity(initial_condition_quantities):
-    """
-    Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
-    """
-    assert len(ExtOldInitialConditionQuantity) == len(initial_condition_quantities)
-    all(
-        quantity in ExtOldInitialConditionQuantity.__members__.keys()
-        for quantity in initial_condition_quantities
-    )
+class TestOldInitialConditionQuantity:
+
+    def test_ext_old_initial_condition_quantity(self, initial_condition_quantities):
+        """
+        Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
+        """
+        assert len(ExtOldInitialConditionQuantity) == len(initial_condition_quantities)
+        assert all(
+            quantity.value in initial_condition_quantities
+            for quantity in ExtOldInitialConditionQuantity.__members__.values()
+        )
+
+    def test_the_missing_method(self):
+        """
+        Test the missing method in the ExtOldInitialConditionQuantity enum with a ValueError.
+        """
+        with pytest.raises(ValueError):
+            ExtOldInitialConditionQuantity("missing_method")
+
+    def test_the_missing_method_with_tracers(self):
+        """
+        Test the missing method in the ExtOldInitialConditionQuantity enum with a quantity that starts with tracer.
+        """
+        qunatity_name = "tracerquanity"
+        quantity = ExtOldInitialConditionQuantity(qunatity_name)
+        assert quantity.value == qunatity_name

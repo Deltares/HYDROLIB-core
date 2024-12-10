@@ -7,12 +7,19 @@ import pytest
 @pytest.fixture
 def initial_condition_quantities() -> List[str]:
     return [
+        "bedlevel",
+        "bedlevel1D",
+        "bedlevel2D",
         "initialwaterlevel",
+        "initialwaterlevel1d",
+        "initialwaterlevel2d",
         "initialsalinity",
         "initialsalinitytop",
+        "initialsalinitybot",
+        "initialverticalsalinityprofile",
         "initialtemperature",
         "initialverticaltemperatureprofile",
-        "initialverticalsalinityprofile",
+        "initialunsaturatedzonethickness",
         "initialvelocityx",
         "initialvelocityy",
         "initialvelocity",

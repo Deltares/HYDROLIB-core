@@ -232,16 +232,39 @@ class ExtOldInitialConditionQuantity(StrEnum):
     """
 
     # Initial Condition fields
+    BedLevel = "bedlevel"
+    BedLevel1D = "bedlevel1D"
+    BedLevel2D = "bedlevel2D"
+
     InitialWaterLevel = "initialwaterlevel"
+    InitialWaterLevel1D = "initialwaterlevel1d"
+    InitialWaterLevel2D = "initialwaterlevel2d"
+
     InitialSalinity = "initialsalinity"
     InitialSalinityTop = "initialsalinitytop"
-    InitialTemperature = "initialtemperature"
-    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
+    InitialSalinityBot = "initialsalinitybot"
     InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
 
+    InitialTemperature = "initialtemperature"
+    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
+
+    initialUnsaturatedZoneThickness = "initialunsaturatedzonethickness"
     InitialVelocityX = "initialvelocityx"
     InitialVelocityY = "initialvelocityy"
     InitialVelocity = "initialvelocity"
+
+    @classmethod
+    def _missing_(cls, value):
+        # Allow strings starting with "tracer"
+        if isinstance(value, str) and value.startswith("tracer"):
+            new_member = str.__new__(cls, value)  # Create a new instance
+            new_member._value_ = value  # Set the value
+            return new_member
+        else:
+            raise ValueError(
+                f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
+                f"and quantities that start with 'tracer'"
+            )
 
 
 class ExtOldQuantity(StrEnum):
