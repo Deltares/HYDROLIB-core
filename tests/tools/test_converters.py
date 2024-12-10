@@ -32,4 +32,4 @@ class TestConvertInitialCondition:
         new_quantity_block = InitialConditionConverter().convert(forcing)
         assert new_quantity_block.datafiletype == "polygon"
         assert new_quantity_block.interpolationmethod == "constant"
-        assert new_quantity_block.value == 0.0
+        assert new_quantity_block.value == 0
