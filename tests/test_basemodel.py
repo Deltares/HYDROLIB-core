@@ -164,7 +164,6 @@ class TestFileModel:
             except PermissionError:
                 pass
 
-
         if output_dir.exists():
             try:
                 shutil.rmtree(output_dir)
