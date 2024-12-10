@@ -49,7 +49,7 @@ def _read_ext_old_data(extoldfile: PathOrStr) -> ExtOldModel:
     Returns:
         ExtOldModel: object with all forcing blocks."""
     global _verbose
-
+    
     extold_model = ExtOldModel(extoldfile)
 
     if _verbose:
@@ -106,7 +106,7 @@ def ext_old_to_new(
     inifield_model = construct_filemodel_new_or_existing(IniFieldModel, inifieldfile)
     structure_model = construct_filemodel_new_or_existing(StructureModel, structurefile)
 
-    for forcing in extold_model.forcing:
+    for index, forcing in enumerate(extold_model.forcing):
         try:
             converter_class = ConverterFactory.create_converter(forcing.quantity)
             new_quantity_block = converter_class.convert(forcing)
@@ -133,6 +133,7 @@ def ext_old_to_new(
 
         print(new_quantity_block)
 
+    extold_model.save()
     backup_file(ext_model.filepath, backup)
     ext_model.save()
 
@@ -195,16 +196,22 @@ def ext_old_to_new_from_mdu(
     # Input file:
     extoldfile = fmmodel.external_forcing.extforcefile._resolved_filepath
     # Output files:
+    if extfile is None or extfile == True:
+        extfile = "forcings.ext"
     extfile = (
         fmmodel.external_forcing.extforcefilenew._resolved_filepath
         if fmmodel.external_forcing.extforcefilenew
         else workdir / extfile
     )
+    if inifieldfile is None or inifieldfile == True:
+        inifieldfile = "inifields.ini"
     inifieldfile = (
         fmmodel.geometry.inifieldfile._resolved_filepath
         if fmmodel.geometry.inifieldfile
         else workdir / inifieldfile
     )
+    if structurefile is None or structurefile == True:
+        structurefile = "structures.ini"
     structurefile = (
         fmmodel.geometry.structurefile[0]._resolved_filepath
         if fmmodel.geometry.structurefile
