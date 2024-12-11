@@ -431,18 +431,18 @@ def main(args=None):
             args.mdufile, **outfiles, backup=backup, postfix=args.postfix
         )
     elif args.extoldfile is not None:
-        converter = ExternalForcingConverter.read_old_file(args.extoldfile)
-        converter.ext_model = outfiles["extfile"]
-        converter.inifield_model = outfiles["inifieldfile"]
-        converter.structure_model = outfiles["structurefile"]
+        converter = ExternalForcingConverter(
+            args.extoldfile,
+            outfiles["extfile"],
+            outfiles["inifieldfile"],
+            outfiles["structurefile"],
+        )
         converter.update(postfix=args.postfix)
         converter.save(backup=backup)
     elif args.dir is not None:
         ext_old_to_new_dir_recursive(args.dir, backup=backup)
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
-
-    #     sys.exit(1)
 
     print(_program + ": done")
 
