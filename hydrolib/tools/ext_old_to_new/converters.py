@@ -176,9 +176,9 @@ class InitialConditionConverter(BaseConverter):
         block_data["operand"] = forcing.operand
 
         if hasattr(forcing, "extrapolation"):
-            block_data["extrapolationmethod"] = forcing.extrapolation
-        if hasattr(forcing, "locationtype"):
-            block_data["locationtype"] = forcing.locationtype
+            block_data["extrapolationmethod"] = (
+                "yes" if forcing.extrapolation == 1 else "no"
+            )
 
         new_block = InitialField(**block_data)
 
