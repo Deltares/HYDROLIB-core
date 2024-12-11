@@ -42,7 +42,7 @@ matplotlib = "^3.8"
 # xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
 xarray = ">=2024.6.0"
 
-#[tool.poetry.group.docs.dependencies]
+[tool.poetry.group.docs.dependencies]
 mkdocs = "^1.2"
 mkdocs-material = "^9.5"
 mkdocstrings = "^0.27.0"
@@ -120,12 +120,9 @@ line_length = 88
 [tool.pytest.ini_options]
 markers = ["plots", "docker"]
 addopts = """
---ignore=tests/test_basemodel.py
 --ignore=tests/rr/test_fnm.py
---deselect=tests/test_model.py::test_mdu_model
 --deselect=tests/test_model.py::test_dimr_mode_save
 --deselect=tests/test_model.py::test_dimr_model
---deselect=tests/rr/test_rr_serializer.py::test_serialize
 --deselect=tests/tools/test_main_converter.py::TestExtOldToNew::test_wind_combi_uniform_curvi
 """
 

@@ -159,10 +159,16 @@ class TestFileModel:
         )
 
         if _external_path.exists():
-            shutil.rmtree(_external_path)
+            try:
+                shutil.rmtree(_external_path)
+            except PermissionError:
+                pass
 
         if output_dir.exists():
-            shutil.rmtree(output_dir)
+            try:
+                shutil.rmtree(output_dir)
+            except PermissionError:
+                pass
 
         model_path = output_dir / "fm.mdu"
 
@@ -403,7 +409,7 @@ class TestFileLoadContextReusingCachedFilesDuringInit:
 Name                = global
 Function            = timeseries
 Time-interpolation  = linear
-Quantity            = time 
+Quantity            = time
 Unit                = minutes since 2006-12-25 0:00:00
 Quantity            = rainfall_rate
 Unit                = mm day-1
@@ -431,7 +437,7 @@ Unit                = mm day-1
 Name                = little_change_to_the_file
 Function            = timeseries
 Time-interpolation  = linear
-Quantity            = time 
+Quantity            = time
 Unit                = minutes since 2006-12-25 0:00:00
 Quantity            = rainfall_rate
 Unit                = mm day-1

@@ -15,7 +15,7 @@ def test_with_label(polylines_dir: Path):
         0.00000000000000000	0.00000000000000000 #zee
         0.00000000000000000	2.00000000000000000 #zee
     """
-    path = polylines_dir.joinpath("polyline-no-z-with-label.pli")
+    path = polylines_dir.joinpath("boundary-polyline-no-z-with-label.pli")
     polyline = PolyFile(path)
     assert polyline.has_z_values is False
     assert polyline.filepath == path
@@ -30,7 +30,7 @@ def test_without_z(polylines_dir: Path):
      -80    -50
      -80    550
     """
-    path = polylines_dir.joinpath("polyline-no-z-no-label.pli")
+    path = polylines_dir.joinpath("boundary-polyline-no-z-no-label.pli")
     polyline = PolyFile(path)
     assert polyline.has_z_values is False
     assert polyline.filepath == path
@@ -49,7 +49,7 @@ def test_with_z_and_pli_extension(polylines_dir: Path):
         0.00000000000000000	0.00000000000000000 5
         0.00000000000000000	2.00000000000000000 5
     """
-    path = polylines_dir.joinpath("polyline-with-z-no-label.pli")
+    path = polylines_dir.joinpath("boundary-polyline-with-z-no-label.pli")
     polyline = PolyFile(path)
     assert polyline.has_z_values is False
     assert polyline.filepath == path
@@ -69,6 +69,6 @@ def test_with_z_and_pliz_extension(polylines_dir: Path):
         0.00000000000000000	0.00000000000000000 5
         0.00000000000000000	2.00000000000000000 5
     """
-    path = polylines_dir.joinpath("polyline-with-z-no-label.pliz")
+    path = polylines_dir.joinpath("boundary-polyline-with-z-no-label.pliz")
     with pytest.raises(ValueError):
         PolyFile(path)

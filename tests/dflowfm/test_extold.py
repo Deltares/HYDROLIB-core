@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 from typing import List
 
@@ -11,6 +12,7 @@ from hydrolib.core.basemodel import (
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
+    INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES,
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
@@ -25,13 +27,12 @@ from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
-from tests.utils import (
-    assert_files_equal,
-    create_temp_file_from_lines,
-    get_temp_file,
-    test_input_dir,
-)
+from tests.utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
 
+quantities_with_prefixes = copy.deepcopy(INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES)
+quantities_with_prefixes = [
+    f"{quantity}-suffix" for quantity in quantities_with_prefixes
+]
 EXP_HEADER = """
  QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
              : outflowbnd, neumannbnd, qhbnd, uxuyadvectionvelocitybnd                             filetype=9         method=2,3
@@ -1022,15 +1023,32 @@ class TestSerializer:
                 assert_files_equal(file, exp_file)
 
 
-def test_ext_old_initial_condition_quantity(initial_condition_quantities):
-    """
-    Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
-    """
-    assert len(ExtOldInitialConditionQuantity) == 10
-    assert all(
-        quantity.value in initial_condition_quantities
-        for quantity in ExtOldInitialConditionQuantity.__members__.values()
-    )
+class TestOldInitialConditionQuantity:
+
+    def test_ext_old_initial_condition_quantity(self, initial_condition_quantities):
+        """
+        Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
+        """
+        assert len(ExtOldInitialConditionQuantity) == len(initial_condition_quantities)
+        assert all(
+            quantity.value in initial_condition_quantities
+            for quantity in ExtOldInitialConditionQuantity.__members__.values()
+        )
+
+    def test_the_missing_method(self):
+        """
+        Test the missing method in the ExtOldInitialConditionQuantity enum with a ValueError.
+        """
+        with pytest.raises(ValueError):
+            ExtOldInitialConditionQuantity("missing_method")
+
+    @pytest.mark.parametrize("qunatity_name", quantities_with_prefixes)
+    def test_the_missing_method_with_tracers(self, qunatity_name):
+        """
+        Test the missing method in the ExtOldInitialConditionQuantity enum with a quantity that starts the quantities in the .
+        """
+        quantity = ExtOldInitialConditionQuantity(qunatity_name)
+        assert quantity.value == qunatity_name
 
 
 def test_ext_old_parameter_quantity(parameter_quantities: List[str]):

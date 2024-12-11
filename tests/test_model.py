@@ -192,7 +192,10 @@ def test_mdu_model():
     output_fn = output_dir / FMModel._generate_name()
 
     if output_dir.exists():
-        shutil.rmtree(output_dir)
+        try:
+            shutil.rmtree(output_dir)
+        except PermissionError:
+            pass
 
     model.save(filepath=output_fn, recurse=True)
 

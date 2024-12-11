@@ -186,9 +186,9 @@ def create_convert_inputs(forcing: ExtOldForcing) -> Dict[str, str]:
     block_data["operand"] = forcing.operand
 
     if hasattr(forcing, "extrapolation"):
-        block_data["extrapolationmethod"] = forcing.extrapolation
-    if hasattr(forcing, "locationtype"):
-        block_data["locationtype"] = forcing.locationtype
+        block_data["extrapolationmethod"] = (
+            "yes" if forcing.extrapolation == 1 else "no"
+        )
 
     return block_data
 
@@ -199,14 +199,14 @@ class InitialConditionConverter(BaseConverter):
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> InitialField:
-        """Convert an old external forcing block with meteo data to a Meteo
-        forcing block suitable for inclusion in a new external forcings file.
+        """Convert an old external forcing block with Initial condition data to a IinitialField
+        forcing block suitable for inclusion in a new inifieldfile file.
+
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Meteo object is suitable for use in new
-        external forcings files, adhering to the updated format and
-        specifications.
+        into a InitialField object. The InitialField object is suitable for use in new
+        iniFieldFile, adhering to the updated format and specifications.
 
         Args:
             forcing (ExtOldForcing): The contents of a single forcing block
@@ -215,16 +215,16 @@ class InitialConditionConverter(BaseConverter):
             required for the conversion process.
 
         Returns:
-            Meteo: A Meteo object that represents the converted forcing
-            block, ready to be included in a new external forcings file. The
-            Meteo object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            Initial condition field definition, represents an `[Initial]` block in an inifield file.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
             supported by the converter, a ValueError is raised. This ensures
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
+
+        References:
+            [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
         data = create_convert_inputs(forcing)
         new_block = InitialField(**data)
