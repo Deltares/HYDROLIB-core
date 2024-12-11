@@ -58,7 +58,7 @@ class TestExtOldToNew:
 
 class TestExternalFocingConverter:
 
-    def test_constructor_default(
+    def test_constructor_extold_model_path(
         self, old_forcing_file_initial_condition: Dict[str, Path]
     ):
         """
@@ -71,7 +71,7 @@ class TestExternalFocingConverter:
         """
         path = old_forcing_file_initial_condition["path"]
         ext_old_model = ExtOldModel(path)
-        converter = ExternalForcingConverter(ext_old_model)
+        converter = ExternalForcingConverter(path)
         assert isinstance(converter.extold_model, ExtOldModel)
         rdir = ext_old_model.filepath.parent
 
@@ -84,12 +84,12 @@ class TestExternalFocingConverter:
         assert isinstance(converter.structure_model, StructureModel)
         assert converter.structure_model.filepath == rdir.joinpath("new-structure.ext")
 
-    def test_wrong_extold_model(self):
+    def test_path_not_exist(self):
         """
         Test the constructor of the ExternalForcingConverter class with a wrong extold_model.
         """
         ext_old_model = "wrong model"
-        with pytest.raises(ValueError):
+        with pytest.raises(FileNotFoundError):
             ExternalForcingConverter(ext_old_model)
 
     def test_change_models_paths_using_setters(
@@ -99,15 +99,13 @@ class TestExternalFocingConverter:
         Test the setter methods of the ExternalForcingConverter class.
         """
         path = old_forcing_file_initial_condition["path"]
-        converter = ExternalForcingConverter.read_old_file(path)
-
         new_ext_file = Path("tests/data/input/new-external-forcing.ext")
         new_initial_file = Path("tests/data/input/new-initial-conditions.ext")
         new_structure_file = Path("tests/data/input/new-structure.ext")
 
-        converter.inifield_model = new_initial_file
-        converter.structure_model = new_structure_file
-        converter.ext_model = new_ext_file
+        converter = ExternalForcingConverter(
+            path, new_ext_file, new_initial_file, new_structure_file
+        )
 
         assert converter.ext_model.filepath == new_ext_file
         assert converter.inifield_model.filepath == new_initial_file
@@ -143,16 +141,18 @@ class TestExternalFocingConverter:
         old_forcing_comment_len: int,
     ):
         """
-        Test instantiate the class using the read_old_file class method.
+        Test instantiate the class with an external forcing file that has meteo, initial conditions, boundary,
+        and parameters.
+        test also check the verbose output.
         """
-        converter = ExternalForcingConverter.read_old_file(old_forcing_file)
+        converter = ExternalForcingConverter(old_forcing_file)
         assert len(converter.extold_model.forcing) == len(old_forcing_file_quantities)
         assert len(converter.extold_model.comment) == old_forcing_comment_len
         quantities = [forcing.quantity for forcing in converter.extold_model.forcing]
         assert all([quantity in old_forcing_file_quantities for quantity in quantities])
         # test verbose
         main_converter._verbose = True
-        converter.read_old_file(old_forcing_file)
+        ExternalForcingConverter._read_old_file(old_forcing_file)
         captured = capsys.readouterr()
 
         assert captured.out.startswith(
@@ -163,8 +163,7 @@ class TestExternalFocingConverter:
 class TestUpdate:
 
     def test_meteo_only(self, old_forcing_file_meteo: Dict[str, str]):
-        path = old_forcing_file_meteo["path"]
-        converter = ExternalForcingConverter.read_old_file(path)
+        converter = ExternalForcingConverter(old_forcing_file_meteo["path"])
 
         ext_model, inifield_model, structure_model = converter.update()
 
@@ -187,8 +186,7 @@ class TestUpdate:
     def test_initial_contitions_only(
         self, old_forcing_file_initial_condition: Dict[str, str]
     ):
-        path = old_forcing_file_initial_condition["path"]
-        converter = ExternalForcingConverter.read_old_file(path)
+        converter = ExternalForcingConverter(old_forcing_file_initial_condition["path"])
 
         ext_model, inifield_model, structure_model = converter.update()
 
@@ -214,8 +212,7 @@ class TestUpdate:
         The old external forcing file contains only 9 boundary condition quantities all with polyline location files
         and no forcing files. The update method should convert all the quantities to boundary conditions.
         """
-        path = old_forcing_file_boundary["path"]
-        converter = ExternalForcingConverter.read_old_file(path)
+        converter = ExternalForcingConverter(old_forcing_file_boundary["path"])
 
         ext_model, inifield_model, structure_model = converter.update()
 

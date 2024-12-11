@@ -31,7 +31,7 @@ class ExternalForcingConverter:
 
     def __init__(
         self,
-        extold_model: ExtOldModel,
+        extold_model: Union[PathOrStr, ExtOldModel],
         ext_model_path: PathOrStr = None,
         inifield_model_path: PathOrStr = None,
         structure_model_path: PathOrStr = None,
@@ -42,17 +42,16 @@ class ExternalForcingConverter:
         old external forcing file, if no paths were given by the user for the new models.
 
         Args:
-            extold_model (ExtOldModel): object with all forcing blocks.
+            extold_model (PathOrStr, ExtOldModel): ExtOldModel or path to the old external forcing file.
             ext_model_path (PathOrStr, optional): Path to the new external forcing file.
             inifield_model_path (PathOrStr, optional): Path to the initial field file.
             structure_model_path (PathOrStr, optional): Path to the structure file.
         """
-        if not isinstance(extold_model, ExtOldModel):
-            raise ValueError(
-                f"Expected an ExtOldModel object, got {type(extold_model)} instead."
-            )
+        if isinstance(extold_model, Path) or isinstance(extold_model, str):
+            extold_model = self._read_old_file(extold_model)
+
         self._extold_model = extold_model
-        rdir = extold_model.filepath.parent
+        rdir = self._extold_model.filepath.parent
 
         # create the new models if not provided by the user in the same directory as the old external file
         path = (
@@ -129,8 +128,8 @@ class ExternalForcingConverter:
             StructureModel, path
         )
 
-    @classmethod
-    def read_old_file(cls, extoldfile: PathOrStr) -> "ExternalForcingConverter":
+    @staticmethod
+    def _read_old_file(extoldfile: PathOrStr) -> ExtOldModel:
         """Read a legacy D-Flow FM external forcings file (.ext) into an
            ExtOldModel object.
 
@@ -161,7 +160,7 @@ class ExternalForcingConverter:
         if _verbose:
             print(f"Read {len(extold_model.forcing)} forcing blocks from {extoldfile}.")
 
-        return cls(extold_model)
+        return extold_model
 
     def update(
         self,
