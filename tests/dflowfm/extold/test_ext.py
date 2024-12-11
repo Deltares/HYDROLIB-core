@@ -578,7 +578,7 @@ class TestMeteo:
     @pytest.mark.parametrize(
         ("missing_field", "alias_field"),
         [
-            ("quantity", "QUANTITY"),
+            ("quantity", "quantity"),
             ("forcingfile", "forcingFile"),
             ("forcingfiletype", "forcingFileType"),
         ],

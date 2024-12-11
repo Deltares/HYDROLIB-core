@@ -150,6 +150,11 @@ class ExternalForcingConverter:
             ExternalForcingConverter: object with the old external forcing model and new external forcing, initial field
         """
         global _verbose
+        if not isinstance(extoldfile, Path):
+            extoldfile = Path(extoldfile)
+
+        if not extoldfile.exists():
+            raise FileNotFoundError(f"File not found: {extoldfile}")
 
         extold_model = ExtOldModel(extoldfile)
 
@@ -273,15 +278,12 @@ def ext_old_to_new_from_mdu(
 
     workdir = fmmodel._resolved_filepath.parent
     os.chdir(workdir)
-    if fmmodel.external_forcing.extforcefile is None:
-        if _verbose:
-            print(
-                f"mdufile: {mdufile} does not contain an old style external forcing file"
-            )
-            return
-    # Input file:
+    if fmmodel.external_forcing.extforcefile is None and _verbose:
+        print(f"mdufile: {mdufile} does not contain an old style external forcing file")
+        return
+
     extoldfile = fmmodel.external_forcing.extforcefile._resolved_filepath
-    # Output files:
+
     extfile = (
         fmmodel.external_forcing.extforcefilenew._resolved_filepath
         if fmmodel.external_forcing.extforcefilenew
@@ -299,10 +301,14 @@ def ext_old_to_new_from_mdu(
     )
 
     converter = ExternalForcingConverter.read_old_file(extoldfile)
+    converter.ext_model = extfile
+    converter.inifield_model = inifieldfile
+    converter.structure_model = structurefile
+
     # The actual conversion:
-    extold_model, ext_model, inifield_model, structure_model = converter.update(
-        extfile, inifieldfile, structurefile, backup, postfix
-    )
+    ext_model, inifield_model, structure_model = converter.update(postfix)
+    converter.save(backup)
+    extold_model = converter.extold_model
     try:
         # And include the new files in the FM model:
         _ = ExtModel(extfile)
@@ -316,7 +322,8 @@ def ext_old_to_new_from_mdu(
             fmmodel.geometry.structurefile[0] = structure_model
 
         # Save the updated FM model:
-        backup_file(fmmodel.filepath, backup)
+        if backup:
+            backup_file(fmmodel.filepath)
         converted_mdufile = construct_filepath_with_postfix(mdufile, postfix)
         fmmodel.filepath = converted_mdufile
         fmmodel.save(recurse=False, exclude_unset=True)
@@ -432,7 +439,7 @@ def main(args=None):
         converter.update(postfix=args.postfix)
         converter.save(backup=backup)
     elif args.dir is not None:
-        ext_old_to_new_dir_recursive(args.dir, backup=backup, postfix=args.postfix)
+        ext_old_to_new_dir_recursive(args.dir, backup=backup)
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 

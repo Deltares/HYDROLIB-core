@@ -7,16 +7,23 @@ import pytest
 @pytest.fixture
 def initial_condition_quantities() -> List[str]:
     return [
+        "bedlevel",
+        "bedlevel1D",
+        "bedlevel2D",
         "initialwaterlevel",
+        "initialwaterlevel1d",
+        "initialwaterlevel2d",
         "initialsalinity",
         "initialsalinitytop",
+        "initialsalinitybot",
+        "initialverticalsalinityprofile",
         "initialtemperature",
         "initialverticaltemperatureprofile",
-        "initialverticalsalinityprofile",
+        "initialunsaturatedzonethickness",
         "initialvelocityx",
         "initialvelocityy",
         "initialvelocity",
-        "initialsalinitytopuse",
+        "initialwaqbot",
     ]
 
 
@@ -52,7 +59,7 @@ def meteo_forcing_file_type() -> List[str]:
         "spiderweb",
         "meteoGridCurvi",
         "netcdf",
-        "Possible values: bcAscii, netcdf, uniform.",
+        "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf.",
     ]
 
 
@@ -61,7 +68,7 @@ def meteo_interpolation_methods() -> List[str]:
     return [
         "nearestNb",
         "linearSpaceTime",
-        "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). ",
+        "Possible values: nearestNb, linearSpaceTime.",
     ]
 
 
