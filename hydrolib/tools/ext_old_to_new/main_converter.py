@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import FileModel, PathOrStr
+from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import (
@@ -77,12 +77,12 @@ class ExternalForcingConverter:
         )
 
     @property
-    def extold_model(self):
+    def extold_model(self) -> ExtOldModel:
         """old external forcing model."""
         return self._extold_model
 
     @property
-    def ext_model(self) -> FileModel:
+    def ext_model(self) -> ExtModel:
         """New External forcing Model."""
         if not hasattr(self, "_ext_model"):
             raise ValueError(
@@ -100,7 +100,7 @@ class ExternalForcingConverter:
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
 
     @property
-    def inifield_model(self) -> FileModel:
+    def inifield_model(self) -> IniFieldModel:
         """IniFieldModel: object with all initial fields blocks."""
         if not hasattr(self, "_inifield_model"):
             raise ValueError(
@@ -113,7 +113,7 @@ class ExternalForcingConverter:
         self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path)
 
     @property
-    def structure_model(self) -> FileModel:
+    def structure_model(self) -> StructureModel:
         """StructureModel: object with all structure blocks."""
         if not hasattr(self, "_structure_model"):
             raise ValueError(
@@ -132,21 +132,11 @@ class ExternalForcingConverter:
         """Read a legacy D-Flow FM external forcings file (.ext) into an
            ExtOldModel object.
 
-        - The `read_old_file` method instantiates an ExternalForcingConverter object with an ExtOldModel object and
-        a default set of new external forcing, initial field and structure models.
-        - The new models will be created in the same directory as the old external forcing file.
-        - The new external forcing file will be named new-external-forcing.ext, the new initial conditions file will be
-            named new-initial-conditions.ext and the new structure file will be named new-structure.ext.
-        - However the user can change the paths to the new models by using the ``ext_model``, ``inifield_model`` and
-            ``structure_model`` setters. The new models will be created in the specified paths.
-        - the user can also set the paths to the new models using the `converter.ext_model.filepath= "mypath.ext"`.
-
         Args:
             extoldfile (PathOrStr): path to the external forcings file (.ext)
 
         Returns:
-            ExternalForcingConverter: object with the old external forcing model and new external forcing, initial field
-        """
+            ExtOldModel: object with all forcing blocks."""
         global _verbose
         if not isinstance(extoldfile, Path):
             extoldfile = Path(extoldfile)
@@ -164,7 +154,7 @@ class ExternalForcingConverter:
     def update(
         self,
         postfix: str = "",
-    ) -> Union[Tuple[FileModel, FileModel, FileModel], None]:
+    ) -> Union[Tuple[ExtModel, IniFieldModel, StructureModel], None]:
         """
         Convert old external forcing file to new format files.
         When the output files are existing, output will be appended to them.
