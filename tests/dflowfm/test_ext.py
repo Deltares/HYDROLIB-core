@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import numpy as np
 import pytest
 from pydantic.v1 import ValidationError
 
@@ -12,11 +13,11 @@ from hydrolib.core.dflowfm.ext.models import (
     Lateral,
     Meteo,
     MeteoForcingFileType,
+    MeteoInterpolationMethod,
 )
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.tim.models import TimModel
-
-from ..utils import test_data_dir, test_input_dir
+from tests.utils import test_data_dir
 
 
 class TestModels:
@@ -426,7 +427,7 @@ class TestModels:
                 m = ExtModel(filepath)
                 assert len(m.lateral) == 72
                 assert m.lateral[0].discharge == RealTime.realtime
-                assert m.lateral[1].discharge == 1.23
+                assert np.isclose(m.lateral[1].discharge, 1.23)
                 assert isinstance(m.lateral[3].discharge, ForcingModel)
                 assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
                 assert m.lateral[3].discharge.forcing[0].name == "10637"
@@ -594,113 +595,201 @@ class TestModels:
                     == expected_locationfile
                 )
 
-    class TestMeteo:
-        """Class to test all methods contained in the
-        hydrolib.core.dflowfm.ext.models.Meteo class"""
 
-        def _create_meteo_dict(self) -> Dict:
-            dict_values = {
-                "quantity": "rainfall",
-                "forcingfile": ForcingModel(),
-                "forcingfiletype": MeteoForcingFileType.bcascii,
-                "targetmaskfile": None,
-                "targetmaskinvert": False,
-                "interpolationmethod": None,
-            }
-            return dict_values
+class TestExtModel:
+    """Class to test all methods contained in the
+    hydrolib.core.dflowfm.ext.models.ExtModel class"""
 
-        @pytest.mark.parametrize(
-            ("missing_field", "alias_field"),
-            [
-                ("quantity", "quantity"),
-                ("forcingfile", "forcingFile"),
-                ("forcingfiletype", "forcingFileType"),
-            ],
+    def test_construct_from_file_with_tim(self, input_files_dir: Path):
+        input_ext = input_files_dir.joinpath(
+            "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
         )
-        def test_missing_required_fields(self, missing_field, alias_field):
-            dict_values = self._create_meteo_dict()
-            del dict_values[missing_field]
 
-            with pytest.raises(ValidationError) as error:
-                Meteo(**dict_values)
+        ext_model = ExtModel(input_ext)
 
-            expected_message = f"{alias_field}\n  field required "
-            assert expected_message in str(error.value)
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
+        assert ext_model.meteo[0].quantity == "rainfall_rate"
+        assert isinstance(ext_model.meteo[0].forcingfile, TimModel)
+        assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.uniform
 
-        def test_initialize_forcingfile_with_timfile_initializes_timmodel(self):
-            forcingfile = test_input_dir / "tim" / "single_data_for_timeseries.tim"
-            values = self._create_meteo_dict()
-            values["forcingfile"] = forcingfile
+        assert len(ext_model.meteo[0].forcingfile.timeseries) == 14
 
-            meteo = Meteo(**values)
+    def test_construct_from_file_with_bc(self, input_files_dir: Path):
+        input_ext = input_files_dir.joinpath(
+            "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
+        )
+        ext_model = ExtModel(input_ext)
 
-            assert isinstance(meteo.forcingfile, TimModel)
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
+        assert ext_model.meteo[0].quantity == "rainfall_rate"
+        assert isinstance(ext_model.meteo[0].forcingfile, ForcingModel)
+        assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.bcascii
 
-        def test_initialize_forcingfile_with_bcfile_initializes_forcingmodel(self):
-            forcingfile = (
-                test_input_dir
-                / "dflowfm_individual_files"
-                / "FlowFM_boundaryconditions2d_and_vectors.bc"
+    def test_construct_from_file_with_netcdf(self, input_files_dir: Path):
+        input_ext = input_files_dir.joinpath(
+            "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
+        )
+        ext_model = ExtModel(input_ext)
+
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
+        assert ext_model.meteo[0].quantity == "rainfall"
+        assert isinstance(ext_model.meteo[0].forcingfile, DiskOnlyFileModel)
+        assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.netcdf
+
+    def test_ext_model_correct_default_serializer_config(self):
+        model = ExtModel()
+
+        assert model.serializer_config.section_indent == 0
+        assert model.serializer_config.property_indent == 0
+        assert model.serializer_config.datablock_indent == 8
+        assert model.serializer_config.float_format == ""
+        assert model.serializer_config.datablock_spacing == 2
+        assert model.serializer_config.comment_delimiter == "#"
+        assert model.serializer_config.skip_empty_properties == True
+
+
+class TestMeteo:
+
+    def test_meteo_interpolation_methods(self, meteo_interpolation_methods: List[str]):
+        assert len(MeteoInterpolationMethod) == 3
+        assert all(
+            quantity.value in meteo_interpolation_methods
+            for quantity in MeteoInterpolationMethod.__members__.values()
+        )
+
+    def test_meteo_forcing_file_type(self, meteo_forcing_file_type: List[str]):
+        assert len(MeteoForcingFileType) == 8
+        assert all(
+            quantity.value in meteo_forcing_file_type
+            for quantity in MeteoForcingFileType.__members__.values()
+        )
+
+    def test_meteo_initialization(self):
+        data = {
+            "quantity": "rainfall",
+            "forcingfile": ForcingModel(),
+            "forcingfiletype": MeteoForcingFileType.bcascii,
+            "targetmaskfile": None,
+            "targetmaskinvert": False,
+            "interpolationmethod": None,
+        }
+        meteo = Meteo(**data)
+        assert meteo.quantity == "rainfall"
+        assert isinstance(meteo.forcingfile, ForcingModel)
+        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
+
+    def test_default_values(self):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+        )
+        assert meteo.targetmaskfile is None
+        assert meteo.targetmaskinvert is None
+        assert meteo.interpolationmethod is None
+        assert meteo.operand == "O"
+        assert meteo.extrapolationAllowed is None
+        assert meteo.extrapolationSearchRadius is None
+        assert meteo.averagingType is None
+        assert meteo.averagingNumMin is None
+        assert meteo.averagingPercentile is None
+
+    def test_setting_optional_fields(self):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+            targetmaskfile=None,
+            targetmaskinvert=True,
+            interpolationmethod=MeteoInterpolationMethod.nearestnb,
+            operand="O",
+            extrapolationAllowed=True,
+            extrapolationSearchRadius=10,
+            averagingType=1,
+            averagingNumMin=0.5,
+            averagingPercentile=90,
+        )
+        assert meteo.targetmaskfile is None
+        assert meteo.targetmaskinvert is True
+        assert meteo.interpolationmethod == MeteoInterpolationMethod.nearestnb
+        assert meteo.operand == "O"
+        assert meteo.extrapolationAllowed is True
+        assert meteo.extrapolationSearchRadius == 10
+        assert meteo.averagingType == 1
+        assert np.isclose(meteo.averagingNumMin, 0.5)
+        assert meteo.averagingPercentile == 90
+
+    def test_invalid_forcingfiletype(self):
+        with pytest.raises(ValueError):
+            Meteo(
+                quantity="rainfall",
+                forcingfile=ForcingModel(),
+                forcingfiletype="invalidType",
             )
-            values = self._create_meteo_dict()
-            values["forcingfile"] = forcingfile
 
-            meteo = Meteo(**values)
-
-            assert isinstance(meteo.forcingfile, ForcingModel)
-
-        def test_construct_from_file_with_tim(self):
-            input_ext = (
-                test_input_dir
-                / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+    def test_invalid_interpolation_method(self):
+        with pytest.raises(ValueError):
+            Meteo(
+                quantity="rainfall",
+                forcingfile=ForcingModel(),
+                forcingfiletype=MeteoForcingFileType.uniform,
+                interpolationmethod="invalidMethod",
             )
 
-            ext_model = ExtModel(input_ext)
+    @pytest.mark.parametrize(
+        ("missing_field", "alias_field"),
+        [
+            ("quantity", "quantity"),
+            ("forcingfile", "forcingFile"),
+            ("forcingfiletype", "forcingFileType"),
+        ],
+    )
+    def test_missing_required_fields(self, missing_field, alias_field):
+        dict_values = {
+            "quantity": "rainfall",
+            "forcingfile": ForcingModel(),
+            "forcingfiletype": MeteoForcingFileType.bcascii,
+            "targetmaskfile": None,
+            "targetmaskinvert": False,
+            "interpolationmethod": None,
+        }
+        del dict_values[missing_field]
 
-            assert isinstance(ext_model, ExtModel)
-            assert len(ext_model.meteo) == 1
-            assert ext_model.meteo[0].quantity == "rainfall_rate"
-            assert isinstance(ext_model.meteo[0].forcingfile, TimModel)
-            assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.uniform
+        with pytest.raises(ValidationError) as error:
+            Meteo(**dict_values)
 
-            assert len(ext_model.meteo[0].forcingfile.timeseries) == 14
+        expected_message = f"{alias_field}\n  field required "
+        assert expected_message in str(error.value)
 
-        def test_construct_from_file_with_bc(self):
-            input_ext = (
-                test_input_dir
-                / "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
-            )
+    def test_is_intermediate_link(self):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+        )
+        assert meteo.is_intermediate_link() is True
 
-            ext_model = ExtModel(input_ext)
+    def test_initialize_with_boundary_condition_file(
+        self, boundary_condition_file: Path
+    ):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=boundary_condition_file,
+            forcingfiletype=MeteoForcingFileType.bcascii,
+        )
+        assert isinstance(meteo.forcingfile, ForcingModel)
+        assert meteo.forcingfile.filepath == boundary_condition_file
+        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
 
-            assert isinstance(ext_model, ExtModel)
-            assert len(ext_model.meteo) == 1
-            assert ext_model.meteo[0].quantity == "rainfall_rate"
-            assert isinstance(ext_model.meteo[0].forcingfile, ForcingModel)
-            assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.bcascii
-
-        def test_construct_from_file_with_netcdf(self):
-            input_ext = (
-                test_input_dir
-                / "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
-            )
-
-            ext_model = ExtModel(input_ext)
-
-            assert isinstance(ext_model, ExtModel)
-            assert len(ext_model.meteo) == 1
-            assert ext_model.meteo[0].quantity == "rainfall"
-            assert isinstance(ext_model.meteo[0].forcingfile, DiskOnlyFileModel)
-            assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.netcdf
-
-    class TestExtModel:
-        def test_ext_model_correct_default_serializer_config(self):
-            model = ExtModel()
-
-            assert model.serializer_config.section_indent == 0
-            assert model.serializer_config.property_indent == 0
-            assert model.serializer_config.datablock_indent == 8
-            assert model.serializer_config.float_format == ""
-            assert model.serializer_config.datablock_spacing == 2
-            assert model.serializer_config.comment_delimiter == "#"
-            assert model.serializer_config.skip_empty_properties == True
+    def test_initialize_with_time_series_file(self, time_series_file: Path):
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=time_series_file,
+            forcingfiletype=MeteoForcingFileType.bcascii,
+        )
+        assert isinstance(meteo.forcingfile, TimModel)
+        assert meteo.forcingfile.filepath == time_series_file
+        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii

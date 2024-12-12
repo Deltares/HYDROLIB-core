@@ -111,9 +111,9 @@ def test_initialize_default_dimr_does_not_raise_exception():
     DIMR()
 
 
-def test_dimr_model_save():
-    file = Path(test_output_dir / "model" / "test_dimr_model_save.xml")
-    reference_file = Path(test_reference_dir / "model" / "test_dimr_model_save.xml")
+def test_dimr_model_save(output_files_dir: Path, reference_files_dir: Path):
+    file = output_files_dir.joinpath("model/test_dimr_model_save.xml")
+    reference_file = reference_files_dir.joinpath("model/test_dimr_model_save.xml")
 
     dimr = DIMR()
     dimr.documentation.creationDate = datetime(2021, 7, 29, 12, 45)
@@ -192,7 +192,10 @@ def test_mdu_model():
     output_fn = output_dir / FMModel._generate_name()
 
     if output_dir.exists():
-        shutil.rmtree(output_dir)
+        try:
+            shutil.rmtree(output_dir)
+        except PermissionError:
+            pass
 
     model.save(filepath=output_fn, recurse=True)
 

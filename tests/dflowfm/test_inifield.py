@@ -1,12 +1,16 @@
 import inspect
 from pathlib import Path
+from typing import List
 
+import numpy as np
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.inifield.models import (
+    AveragingType,
     DataFileType,
     IniFieldModel,
     InitialField,
@@ -14,11 +18,9 @@ from hydrolib.core.dflowfm.inifield.models import (
     LocationType,
     ParameterField,
 )
-
-from ..utils import (
+from tests.utils import (
     WrapperTest,
     assert_files_equal,
-    test_data_dir,
     test_output_dir,
     test_reference_dir,
 )
@@ -92,8 +94,10 @@ class TestIniField:
 
         assert getattr(inifield, attribute.lower()) == expected
 
-    def test_inifield_model(self):
-        filepath = test_data_dir / "input/dflowfm_individual_files/initialFields.ini"
+    def test_inifield_model(self, input_files_dir: Path):
+        filepath = input_files_dir.joinpath(
+            "dflowfm_individual_files/initialFields.ini"
+        )
         m = IniFieldModel(filepath)
 
         assert len(m.initial) == 2
@@ -124,11 +128,13 @@ class TestIniField:
         assert m.parameter[1].value == 0.03
         assert m.parameter[1].operand == Operand.mult
 
-    def test_load_and_save(self):
+    def test_load_and_save(self, input_files_dir: Path):
         """Test whether a model loaded from file is serialized correctly.
         Particularly intended to test writing of default enum values."""
 
-        filepath = test_data_dir / "input/dflowfm_individual_files/initialFields.ini"
+        filepath = input_files_dir.joinpath(
+            "dflowfm_individual_files/initialFields.ini"
+        )
         m = IniFieldModel(filepath)
 
         output_file = Path(test_output_dir / "fm" / "serialize_initialFields.ini")
@@ -191,4 +197,125 @@ class TestIniField:
             f"value should be provided when datafiletype is {DataFileType.polygon}"
         )
 
+        assert expected_message in str(error.value)
+
+
+def test_initial_conditions_interpolation_methods(
+    initial_condition_interpolation_methods: List[str],
+):
+    assert len(InterpolationMethod) == 4
+    assert all(
+        quantity.value in initial_condition_interpolation_methods
+        for quantity in InterpolationMethod.__members__.values()
+    )
+
+
+def test_initial_condition_file_type(initial_condition_file_type: List[str]):
+    assert len(DataFileType) == 6
+    assert all(
+        quantity.value in initial_condition_file_type
+        for quantity in DataFileType.__members__.values()
+    )
+
+
+def test_averaging_type_file_type(initial_cond_averaging_type: List[str]):
+    assert len(AveragingType) == 7
+    assert all(
+        quantity.value in initial_cond_averaging_type
+        for quantity in AveragingType.__members__.values()
+    )
+
+
+class TestInitialConditions:
+
+    def test_initialization(self):
+        data = {
+            "quantity": "waterlevel",
+            "datafile": Path("anyfile.pli"),
+            "datafiletype": DataFileType.arcinfo,
+            "interpolationmethod": InterpolationMethod.constant,
+            "operand": "O",
+            "averagingtype": AveragingType.mean,
+            "averagingnummin": 2,
+            "averagingpercentile": 95.0,
+        }
+        initial_conditions = InitialField(**data)
+        assert initial_conditions.quantity == "waterlevel"
+        assert isinstance(initial_conditions.datafile, DiskOnlyFileModel)
+        assert initial_conditions.datafiletype == DataFileType.arcinfo
+        assert initial_conditions.interpolationmethod == InterpolationMethod.constant
+        assert initial_conditions.operand == "O"
+        assert initial_conditions.averagingtype == AveragingType.mean
+        assert initial_conditions.averagingnummin == 2
+        assert np.isclose(initial_conditions.averagingpercentile, 95.0)
+
+    def test_default_values(self):
+        initial_conditions = InitialField(
+            quantity="waterlevel",
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.arcinfo,
+        )
+        assert initial_conditions.interpolationmethod is None
+        assert initial_conditions.operand == "O"
+        assert initial_conditions.averagingtype is "mean"
+        assert np.isclose(initial_conditions.averagingrelsize, 1.01)
+        assert initial_conditions.averagingnummin == 1
+        assert initial_conditions.extrapolationmethod is False
+        assert initial_conditions.locationtype is "all"
+        assert np.isclose(initial_conditions.averagingpercentile, 0.0)
+
+    def test_setting_optional_fields(self):
+        initial_conditions = InitialField(
+            quantity="waterlevel",
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.arcinfo,
+            interpolationmethod=InterpolationMethod.constant,
+            operand="O",
+            averagingtype=AveragingType.mean,
+            averagingnummin=2,
+            averagingpercentile=95.0,
+        )
+        assert initial_conditions.interpolationmethod == InterpolationMethod.constant
+        assert initial_conditions.operand == "O"
+        assert initial_conditions.averagingtype == AveragingType.mean
+        assert initial_conditions.averagingnummin == 2
+        assert np.isclose(initial_conditions.averagingpercentile, 95.0)
+
+    def test_invalid_datafiletype(self):
+        with pytest.raises(ValueError):
+            InitialField(
+                quantity="waterlevel",
+                datafile=DiskOnlyFileModel(),
+                datafiletype="invalidType",
+            )
+
+    def test_invalid_interpolationmethod(self):
+        with pytest.raises(ValueError):
+            InitialField(
+                quantity="waterlevel",
+                datafile=DiskOnlyFileModel(),
+                datafiletype=DataFileType.arcinfo,
+                interpolationmethod="invalidMethod",
+            )
+
+    @pytest.mark.parametrize(
+        ("missing_field", "alias_field"),
+        [
+            ("quantity", "quantity"),
+            ("datafile", "dataFile"),
+            ("datafiletype", "dataFileType"),
+        ],
+    )
+    def test_missing_required_fields(self, missing_field, alias_field):
+        dict_values = {
+            "quantity": "rainfall",
+            "datafile": DiskOnlyFileModel(),
+            "datafiletype": DataFileType.arcinfo,
+        }
+        del dict_values[missing_field]
+
+        with pytest.raises(ValidationError) as error:
+            InitialField(**dict_values)
+
+        expected_message = f"{alias_field}\n  field required "
         assert expected_message in str(error.value)

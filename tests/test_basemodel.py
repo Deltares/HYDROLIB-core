@@ -159,10 +159,16 @@ class TestFileModel:
         )
 
         if _external_path.exists():
-            shutil.rmtree(_external_path)
+            try:
+                shutil.rmtree(_external_path)
+            except PermissionError:
+                pass
 
         if output_dir.exists():
-            shutil.rmtree(output_dir)
+            try:
+                shutil.rmtree(output_dir)
+            except PermissionError:
+                pass
 
         model_path = output_dir / "fm.mdu"
 

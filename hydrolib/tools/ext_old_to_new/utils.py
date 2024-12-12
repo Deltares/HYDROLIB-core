@@ -5,7 +5,7 @@ from hydrolib.core.basemodel import FileModel, PathOrStr
 
 
 def construct_filemodel_new_or_existing(
-    ModelClass: Type[FileModel], filepath: PathOrStr, *args, **kwargs
+    model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
 ) -> FileModel:
     """Construct a new instance of a FileModel subclass, either loading an
     existing model file, or starting a blank one.
@@ -15,15 +15,15 @@ def construct_filemodel_new_or_existing(
     will only have its filepath attribute set, e.g., for future saving.
 
     Args:
-        ModelClass (type[FileModel]): The FileModel subclass to construct or update.
+        model_class (type[FileModel]): The FileModel subclass to construct or update.
         filepath (PathOrStr): The filepath to use for the new or existing model input.
         *args: Additional positional arguments to pass to the ModelClass constructor
         **kwargs: Additional keywords arguments to pass to the ModelClass constructor
     """
     if Path(filepath).is_file():
-        model = ModelClass(filepath=filepath, *args, **kwargs)
+        model = model_class(filepath=filepath, *args, **kwargs)
     else:
-        model = ModelClass(*args, **kwargs)
+        model = model_class(*args, **kwargs)
         model.filepath = filepath
 
     return model
@@ -61,4 +61,3 @@ def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:
     """
     file_as_path = Path(filepath)
     return file_as_path.with_stem(file_as_path.stem + postfix)
-

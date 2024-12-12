@@ -1,39 +1,27 @@
 import argparse
-import math
 import os
-import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Tuple
-
-from pydantic import Extra, FilePath
+from typing import Tuple, Union
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import PathOrStr
-from hydrolib.core.dflowfm import FMModel
-from hydrolib.core.dflowfm.ext.models import (
-    Boundary,
-    ExtModel,
-    Lateral,
-    Meteo,
-    MeteoForcingFileType,
-    MeteoInterpolationMethod,
-)
-from hydrolib.core.dflowfm.extold.models import *
+from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
+from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import (
-    AveragingType,
-    DataFileType,
     IniFieldModel,
     InitialField,
-    InterpolationMethod,
     ParameterField,
 )
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
-from hydrolib.core.dflowfm.mdu.models import General
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 
 from .converter_factory import ConverterFactory
-from .utils import backup_file, construct_filemodel_new_or_existing, construct_filepath_with_postfix
+from .utils import (
+    backup_file,
+    construct_filemodel_new_or_existing,
+    construct_filepath_with_postfix,
+)
 
 _program: str = "ext_old_to_new"
 _verbose: bool = False
@@ -47,7 +35,8 @@ def _read_ext_old_data(extoldfile: PathOrStr) -> ExtOldModel:
         extoldfile (PathOrStr): path to the external forcings file (.ext)
 
     Returns:
-        ExtOldModel: object with all forcing blocks."""
+        ExtOldModel: object with all forcing blocks.
+    """
     global _verbose
 
     extold_model = ExtOldModel(extoldfile)
@@ -64,8 +53,7 @@ def ext_old_to_new(
     inifieldfile: PathOrStr = None,
     structurefile: PathOrStr = None,
     backup: bool = False,
-    postfix: str = "",
-) -> Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
+) -> Union[Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel], None]:
     """
     Convert old external forcing file to new format files.
     When the output files are existing, output will be appended to them.
@@ -77,11 +65,10 @@ def ext_old_to_new(
         structurefile (PathOrStr, optional): Path to the structure file.
         backup (bool, optional): Create a backup of each file that will be
             overwritten.
-        postfix (str, optional): Append POSTFIX to the output filenames. Defaults to "".
 
     Returns:
         Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
-            The updated models (already written to disk). Maybe used 
+            The updated models (already written to disk). Maybe used
             at call site to inspect the updated models.
     """
 
@@ -131,8 +118,6 @@ def ext_old_to_new(
                 f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in {extoldfile}."
             )
 
-        print(new_quantity_block)
-
     backup_file(ext_model.filepath, backup)
     ext_model.save()
 
@@ -143,6 +128,7 @@ def ext_old_to_new(
     structure_model.save()
 
     return extold_model, ext_model, inifield_model, structure_model
+
 
 def ext_old_to_new_from_mdu(
     mdufile: PathOrStr,
@@ -186,12 +172,9 @@ def ext_old_to_new_from_mdu(
 
     workdir = fmmodel._resolved_filepath.parent
     os.chdir(workdir)
-    if fmmodel.external_forcing.extforcefile is None:
-        if _verbose:
-            print(
-                f"mdufile: {mdufile} does not contain an old style external forcing file"
-            )
-            return
+    if fmmodel.external_forcing.extforcefile is None and _verbose:
+        print(f"mdufile: {mdufile} does not contain an old style external forcing file")
+        return
     # Input file:
     extoldfile = fmmodel.external_forcing.extforcefile._resolved_filepath
     # Output files:
@@ -212,7 +195,9 @@ def ext_old_to_new_from_mdu(
     )
 
     # The actual conversion:
-    extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(extoldfile, extfile, inifieldfile, structurefile, backup, postfix)
+    extold_model, ext_model, inifield_model, structure_model = ext_old_to_new(
+        extoldfile, extfile, inifieldfile, structurefile, backup
+    )
     try:
         # And include the new files in the FM model:
         _ = ExtModel(extfile)
@@ -237,9 +222,8 @@ def ext_old_to_new_from_mdu(
         print("The converter did not produce a valid ext file:", error)
         return
 
-def ext_old_to_new_dir_recursive(
-    dir: PathOrStr, backup: bool = True
-):
+
+def ext_old_to_new_dir_recursive(dir: PathOrStr, backup: bool = True):
 
     for path in Path(dir).rglob("*.mdu"):
         if "_ext" not in path.name:
@@ -332,11 +316,13 @@ def main(args=None):
         outfiles["structurefile"] = args.outfiles[2]
 
     if args.mdufile is not None:
-        ext_old_to_new_from_mdu(args.mdufile, **outfiles, backup=backup, postfix=args.postfix)
+        ext_old_to_new_from_mdu(
+            args.mdufile, **outfiles, backup=backup, postfix=args.postfix
+        )
     elif args.extoldfile is not None:
-        ext_old_to_new(args.extoldfile, **outfiles, backup=backup, postfix=args.postfix)
+        ext_old_to_new(args.extoldfile, **outfiles, backup=backup)
     elif args.dir is not None:
-        ext_old_to_new_dir_recursive(args.dir, backup=backup, postfix=args.postfix)
+        ext_old_to_new_dir_recursive(args.dir, backup=backup)
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 

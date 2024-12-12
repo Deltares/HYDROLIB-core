@@ -232,7 +232,9 @@ class INIBasedModel(BaseModel, ABC):
             props.append(prop)
         return Section(header=self._header, content=props)
 
-    def _should_be_serialized(self, key: str, value: Any, save_settings: ModelSaveSettings) -> bool:
+    def _should_be_serialized(
+        self, key: str, value: Any, save_settings: ModelSaveSettings
+    ) -> bool:
         if key in self._exclude_fields():
             return False
 

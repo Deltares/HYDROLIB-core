@@ -18,6 +18,14 @@ from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
+INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
+    "initialtracer",
+    "initialsedfrac",
+    "initialverticalsedfracprofile",
+    "initialverticalsigmasedfracprofile",
+)
+
+
 HEADER = """
  QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
              : outflowbnd, neumannbnd, qhbnd, uxuyadvectionvelocitybnd                             filetype=9         method=2,3
@@ -151,7 +159,7 @@ class ExtOldBoundaryQuantity(StrEnum):
     NormalVelocityBnd = "normalvelocitybnd"
     """Normal velocity"""
     TangentialVelocityBnd = "tangentialvelocitybnd"
-    """Tangentional velocity"""
+    """Tangential velocity"""
     QhBnd = "qhbnd"
     """Discharge-water level dependency"""
 
@@ -221,6 +229,62 @@ class ExtOldMeteoQuantity(StrEnum):
     """Charnock coefficient"""
     Dewpoint = "dewpoint"
     """Dewpoint temperature"""
+
+
+class ExtOldInitialConditionQuantity(StrEnum):
+    """
+    Initial Condition quantities:
+        initialwaterlevel, initialsalinity, initialsalinitytop, initialtemperature,
+        initialverticaltemperatureprofile, initialverticalsalinityprofile, initialvelocityx,
+        initialvelocityy, initialvelocity
+
+    If there is a missing quantity that is mentioned in the "Accepted quantity names" section of the user manual
+    [Sec.C.5.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.3).
+    and [Sec.D.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.3).
+    please open and issue in github.
+    """
+
+    # Initial Condition fields
+    BedLevel = "bedlevel"
+    BedLevel1D = "bedlevel1D"
+    BedLevel2D = "bedlevel2D"
+
+    InitialWaterLevel = "initialwaterlevel"
+    InitialWaterLevel1D = "initialwaterlevel1d"
+    InitialWaterLevel2D = "initialwaterlevel2d"
+
+    InitialSalinity = "initialsalinity"
+    InitialSalinityTop = "initialsalinitytop"
+    InitialSalinityBot = "initialsalinitybot"
+    InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
+
+    InitialTemperature = "initialtemperature"
+    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
+
+    initialUnsaturatedZoneThickness = "initialunsaturatedzonethickness"
+    InitialVelocityX = "initialvelocityx"
+    InitialVelocityY = "initialvelocityy"
+    InitialVelocity = "initialvelocity"
+    InitialWaqBot = "initialwaqbot"
+
+    @classmethod
+    def _missing_(cls, value):
+        """Custom implementation for handling missing values.
+
+        the method parses any missing values and only allows the ones that start with "initialtracer".
+        """
+        # Allow strings starting with "tracer"
+        if isinstance(value, str) and value.startswith(
+            INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
+        ):
+            new_member = str.__new__(cls, value)
+            new_member._value_ = value
+            return new_member
+        else:
+            raise ValueError(
+                f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
+                f"and quantities that start with 'tracer'"
+            )
 
 
 class ExtOldQuantity(StrEnum):
@@ -459,7 +523,7 @@ class ExtOldForcing(BaseModel):
 
     filetype: ExtOldFileType = Field(alias="FILETYPE")
     """FileType: Indication of the file type.
-    
+
     Options:
     1. Time series
     2. Time series magnitude and direction
@@ -476,7 +540,7 @@ class ExtOldForcing(BaseModel):
 
     method: ExtOldMethod = Field(alias="METHOD")
     """ExtOldMethod: The method of interpolation.
-    
+
     Options:
     1. Pass through (no interpolation)
     2. Interpolate time and space
@@ -502,8 +566,8 @@ class ExtOldForcing(BaseModel):
 
     operand: Operand = Field(alias="OPERAND")
     """Operand: The operand to use for adding the provided values.
-    
-    Options:    
+
+    Options:
     'O' Existing values are overwritten with the provided values.
     'A' Provided values are used where existing values are missing.
     '+' Existing values are summed with the provided values.
@@ -685,9 +749,9 @@ class ExtOldModel(ParsableFileModel):
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefile`.
     """
 
-    comment: List[str] = HEADER.splitlines()[1:]
+    comment: List[str] = Field(default=HEADER.splitlines()[1:])
     """List[str]: The comments in the header of the external forcing file."""
-    forcing: List[ExtOldForcing] = []
+    forcing: List[ExtOldForcing] = Field(default_factory=list)
     """List[ExtOldForcing]: The external forcing/QUANTITY blocks in the external forcing file."""
 
     @classmethod

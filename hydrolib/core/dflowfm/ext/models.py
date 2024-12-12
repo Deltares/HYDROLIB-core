@@ -10,12 +10,7 @@ from hydrolib.core.basemodel import (
 )
 from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
 from hydrolib.core.dflowfm.common.models import Operand
-from hydrolib.core.dflowfm.ini.models import (
-    INIBasedModel,
-    INIGeneral,
-    INIModel,
-    INISerializerConfig,
-)
+from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -102,7 +97,7 @@ class Boundary(INIBasedModel):
         return data.get("nodeid")
 
     @property
-    def forcing(self) -> ForcingBase:
+    def forcing(self) -> Union[ForcingBase, None]:
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
@@ -214,7 +209,7 @@ class MeteoForcingFileType(StrEnum):
     netcdf = "netcdf"
     """str: NetCDF, either with gridded data, or multiple station time series."""
 
-    allowedvaluestext = "Possible values: bcAscii, netcdf, uniform."
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf."
 
 
 class MeteoInterpolationMethod(StrEnum):
@@ -224,10 +219,10 @@ class MeteoInterpolationMethod(StrEnum):
     """
 
     nearestnb = "nearestNb"
-    linearSpaceTime = "linearSpaceTime"
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
-
-    allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
+    linearSpaceTime = "linearSpaceTime"
+    """str: Linear interpolation in space and time."""
+    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime."
 
 
 class Meteo(INIBasedModel):
@@ -345,9 +340,9 @@ class ExtModel(INIModel):
     """
 
     general: ExtGeneral = ExtGeneral()
-    boundary: List[Boundary] = []
-    lateral: List[Lateral] = []
-    meteo: List[Meteo] = []
+    boundary: List[Boundary] = Field(default_factory=list)
+    lateral: List[Lateral] = Field(default_factory=list)
+    meteo: List[Meteo] = Field(default_factory=list)
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )

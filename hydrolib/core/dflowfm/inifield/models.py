@@ -216,8 +216,8 @@ class IniFieldModel(INIModel):
     """
 
     general: IniFieldGeneral = IniFieldGeneral()
-    initial: List[InitialField] = []
-    parameter: List[ParameterField] = []
+    initial: List[InitialField] = Field(default_factory=list)
+    parameter: List[ParameterField] = Field(default_factory=list)
 
     _split_to_list = make_list_validator("initial", "parameter")
 
