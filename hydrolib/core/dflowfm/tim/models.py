@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Callable, Dict, List
 
+from pydantic.v1 import Field
 from pydantic.v1.class_validators import validator
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
-
-from .parser import TimParser
-from .serializer import TimSerializer, TimSerializerConfig
+from hydrolib.core.dflowfm.tim.parser import TimParser
+from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
 
 
 class TimRecord(BaseModel):
@@ -15,7 +15,7 @@ class TimRecord(BaseModel):
     time: float
     """float: Time of the time record."""
 
-    data: List[float] = []
+    data: List[float] = Field(default_factory=list)
     """List[float]: Record of the time record."""
 
 
@@ -25,10 +25,10 @@ class TimModel(ParsableFileModel):
     serializer_config = TimSerializerConfig()
     """TimSerializerConfig: The serialization configuration for the tim file."""
 
-    comments: List[str] = []
+    comments: List[str] = Field(default_factory=list)
     """List[str]: A list with the header comment of the tim file."""
 
-    timeseries: List[TimRecord] = []
+    timeseries: List[TimRecord] = Field(default_factory=list)
     """List[TimRecord]: A list containing the timeseries."""
 
     @classmethod
