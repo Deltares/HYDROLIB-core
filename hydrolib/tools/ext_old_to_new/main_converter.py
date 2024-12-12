@@ -133,21 +133,11 @@ class ExternalForcingConverter:
         """Read a legacy D-Flow FM external forcings file (.ext) into an
            ExtOldModel object.
 
-        - The `read_old_file` method instantiates an ExternalForcingConverter object with an ExtOldModel object and
-        a default set of new external forcing, initial field and structure models.
-        - The new models will be created in the same directory as the old external forcing file.
-        - The new external forcing file will be named new-external-forcing.ext, the new initial conditions file will be
-            named new-initial-conditions.ext and the new structure file will be named new-structure.ext.
-        - However the user can change the paths to the new models by using the ``ext_model``, ``inifield_model`` and
-            ``structure_model`` setters. The new models will be created in the specified paths.
-        - the user can also set the paths to the new models using the `converter.ext_model.filepath= "mypath.ext"`.
-
         Args:
             extoldfile (PathOrStr): path to the external forcings file (.ext)
 
         Returns:
-            ExternalForcingConverter: object with the old external forcing model and new external forcing, initial field
-        """
+            ExtOldModel: object with all forcing blocks."""
         global _verbose
         if not isinstance(extoldfile, Path):
             extoldfile = Path(extoldfile)
@@ -299,10 +289,9 @@ def ext_old_to_new_from_mdu(
         else workdir / structurefile
     )
 
-    converter = ExternalForcingConverter.read_old_file(extoldfile)
-    converter.ext_model = extfile
-    converter.inifield_model = inifieldfile
-    converter.structure_model = structurefile
+    converter = ExternalForcingConverter(
+        extoldfile, extfile, inifieldfile, structurefile
+    )
 
     # The actual conversion:
     ext_model, inifield_model, structure_model = converter.update(postfix)
