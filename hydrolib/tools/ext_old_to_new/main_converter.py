@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import FileModel, PathOrStr
+from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import (
@@ -53,7 +53,7 @@ def ext_old_to_new(
     inifieldfile: PathOrStr = None,
     structurefile: PathOrStr = None,
     backup: bool = False,
-) -> Union[Tuple[ExtOldModel, FileModel, FileModel, FileModel], None]:
+) -> Union[Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel], None]:
     """
     Convert old external forcing file to new format files.
     When the output files are existing, output will be appended to them.
