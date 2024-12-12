@@ -29,21 +29,17 @@ def construct_filemodel_new_or_existing(
     return model
 
 
-def backup_file(filepath: PathOrStr, backup: bool = True) -> None:
+def backup_file(filepath: PathOrStr) -> None:
     """Create a backup of the given file by copying it to a new file with a
     '.bak' extension.
 
     Args:
         filepath (PathOrStr): The path to the file to back up.
-        backup (bool): Whether to create a backup of the file or not.
     """
-    if not backup:
-        return
-
-    source = Path(filepath)
-    if source.is_file():
-        backup = source.with_suffix(".bak")
-        source.replace(backup)
+    filepath = Path(filepath) if isinstance(filepath, str) else filepath
+    if filepath.is_file():
+        backup_path = filepath.with_suffix(".bak")
+        filepath.replace(backup_path)
 
 
 def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:

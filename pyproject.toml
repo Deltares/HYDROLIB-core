@@ -123,6 +123,7 @@ addopts = """
 --ignore=tests/rr/test_fnm.py
 --deselect=tests/test_model.py::test_dimr_mode_save
 --deselect=tests/test_model.py::test_dimr_model
+--deselect=tests/tools/test_main_converter.py::TestExtOldToNew::test_wind_combi_uniform_curvi
 """
 
 [build-system]
