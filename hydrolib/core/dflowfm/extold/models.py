@@ -305,7 +305,7 @@ class ExtOldInitialConditionQuantity(StrEnum):
 class ExtOldSourcesSinks(StrEnum):
     """Source and sink quantities"""
 
-    SourceSink = "discharge_salinity_temperature_sorsin"
+    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
 
 
 class ExtOldQuantity(StrEnum):

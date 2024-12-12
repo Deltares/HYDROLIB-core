@@ -21,6 +21,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldModel,
     ExtOldParametersQuantity,
     ExtOldQuantity,
+    ExtOldSourcesSinks,
     ExtOldTracerQuantity,
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
@@ -1059,4 +1060,15 @@ def test_ext_old_parameter_quantity(parameter_quantities: List[str]):
     assert all(
         quantity.value in parameter_quantities
         for quantity in ExtOldParametersQuantity.__members__.values()
+    )
+
+
+def test_ext_old_source_sinks():
+    """
+    Test the number of source/sinks in the ExtOldSourceSink enum.
+    """
+    assert len(ExtOldSourcesSinks) == 1
+    assert all(
+        quantity.value in ["discharge_salinity_temperature_sorsin"]
+        for quantity in ExtOldSourcesSinks.__members__.values()
     )
