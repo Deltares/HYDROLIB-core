@@ -1,4 +1,6 @@
+import copy
 from pathlib import Path
+from typing import List
 
 import pytest
 
@@ -10,9 +12,11 @@ from hydrolib.core.basemodel import (
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
+    INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES,
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
+    ExtOldInitialConditionQuantity,
     ExtOldMethod,
     ExtOldModel,
     ExtOldQuantity,
@@ -22,14 +26,12 @@ from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
+from tests.utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
 
-from ..utils import (
-    assert_files_equal,
-    create_temp_file_from_lines,
-    get_temp_file,
-    test_input_dir,
-)
-
+quantities_with_prefixes = copy.deepcopy(INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES)
+quantities_with_prefixes = [
+    f"{quantity}-suffix" for quantity in quantities_with_prefixes
+]
 EXP_HEADER = """
  QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
              : outflowbnd, neumannbnd, qhbnd, uxuyadvectionvelocitybnd                             filetype=9         method=2,3
@@ -126,10 +128,25 @@ EXP_HEADER = """
 
 
 class TestExtForcing:
-    def test_initialize_with_timfile_initializes_timmodel(self):
+    def test_initialize_with_old_external_forcing_file(
+        self,
+        old_forcing_file: Path,
+        old_forcing_file_quantities: List[str],
+        old_forcing_comment_len: int,
+    ):
+        model = ExtOldModel(old_forcing_file)
+        assert isinstance(model, ExtOldModel)
+        assert len(model.comment) == old_forcing_comment_len
+        assert len(model.forcing) == len(old_forcing_file_quantities)
+        forcing_1 = model.forcing[0]
+        assert isinstance(forcing_1, ExtOldForcing)
+        quantities = [forcing.quantity for forcing in model.forcing]
+        assert all([quantity in old_forcing_file_quantities for quantity in quantities])
+
+    def test_initialize_with_timfile_initializes_timmodel(self, input_files_dir: Path):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=test_input_dir / "tim" / "triple_data_for_timeseries.tim",
+            filename=input_files_dir.joinpath("tim/triple_data_for_timeseries.tim"),
             filetype=ExtOldFileType.TimeSeries,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
@@ -137,10 +154,10 @@ class TestExtForcing:
 
         assert isinstance(forcing.filename, TimModel)
 
-    def test_initialize_with_polyfile_initializes_polyfile(self):
+    def test_initialize_with_polyfile_initializes_polyfile(self, input_files_dir: Path):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=test_input_dir / "dflowfm_individual_files" / "test.pli",
+            filename=input_files_dir.joinpath("dflowfm_individual_files/test.pli"),
             filetype=ExtOldFileType.Polyline,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
@@ -148,10 +165,12 @@ class TestExtForcing:
 
         assert isinstance(forcing.filename, PolyFile)
 
-    def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(self):
+    def test_initialize_with_unrecognized_file_initializes_diskonlyfilemodel(
+        self, input_files_dir: Path
+    ):
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=Path(test_input_dir / "file_load_test" / "FlowFM_net.nc"),
+            filename=input_files_dir.joinpath("file_load_test/FlowFM_net.nc"),
             filetype=ExtOldFileType.NetCDFGridData,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
@@ -1001,3 +1020,31 @@ class TestSerializer:
                 exp_file_content, "test_serialize_expected.ext"
             ) as exp_file:
                 assert_files_equal(file, exp_file)
+
+
+class TestOldInitialConditionQuantity:
+
+    def test_ext_old_initial_condition_quantity(self, initial_condition_quantities):
+        """
+        Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
+        """
+        assert len(ExtOldInitialConditionQuantity) == len(initial_condition_quantities)
+        assert all(
+            quantity.value in initial_condition_quantities
+            for quantity in ExtOldInitialConditionQuantity.__members__.values()
+        )
+
+    def test_the_missing_method(self):
+        """
+        Test the missing method in the ExtOldInitialConditionQuantity enum with a ValueError.
+        """
+        with pytest.raises(ValueError):
+            ExtOldInitialConditionQuantity("missing_method")
+
+    @pytest.mark.parametrize("qunatity_name", quantities_with_prefixes)
+    def test_the_missing_method_with_tracers(self, qunatity_name):
+        """
+        Test the missing method in the ExtOldInitialConditionQuantity enum with a quantity that starts the quantities in the .
+        """
+        quantity = ExtOldInitialConditionQuantity(qunatity_name)
+        assert quantity.value == qunatity_name

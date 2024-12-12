@@ -9,12 +9,8 @@ from hydrolib.core.basemodel import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
-from hydrolib.core.dflowfm.ini.models import (
-    INIBasedModel,
-    INIGeneral,
-    INIModel,
-    INISerializerConfig,
-)
+from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -101,7 +97,7 @@ class Boundary(INIBasedModel):
         return data.get("nodeid")
 
     @property
-    def forcing(self) -> ForcingBase:
+    def forcing(self) -> Union[ForcingBase, None]:
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
@@ -195,13 +191,25 @@ class MeteoForcingFileType(StrEnum):
     bcascii = "bcAscii"
     """str: Space-uniform time series in <*.bc> file."""
 
-    netcdf = "netcdf"
-    """str: NetCDF, either with gridded data, or multiple station time series."""
-
     uniform = "uniform"
     """str: Space-uniform time series in <*.tim> file."""
 
-    allowedvaluestext = "Possible values: bcAscii, netcdf, uniform."
+    unimagdir = "uniMagDir"
+    """str: Space-uniform wind magnitude+direction in <*.tim> file."""
+
+    meteogridequi = "meteoGridEqui"
+    """str: Space- and time-varying wind and pressure on an equidistant grid in <*.amu/v/p> files."""
+
+    spiderweb = "spiderweb"
+    """str: Space- and time-varying cyclone wind and pressure in <*.spw> files."""
+
+    meteogridcurvi = "meteoGridCurvi"
+    """str: Space- and time-varying wind and pressure on a curvilinear grid in <*.grd+*.amu/v/p> files."""
+
+    netcdf = "netcdf"
+    """str: NetCDF, either with gridded data, or multiple station time series."""
+
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf."
 
 
 class MeteoInterpolationMethod(StrEnum):
@@ -212,8 +220,9 @@ class MeteoInterpolationMethod(StrEnum):
 
     nearestnb = "nearestNb"
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
-
-    allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
+    linearSpaceTime = "linearSpaceTime"
+    """str: Linear interpolation in space and time."""
+    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime."
 
 
 class Meteo(INIBasedModel):
@@ -236,6 +245,10 @@ class Meteo(INIBasedModel):
         forcingfiletype: Optional[str] = Field(
             "Type of forcingFile.", alias="forcingFileType"
         )
+        forcingVariableName: Optional[str] = Field(
+            "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
+            alias="forcingVariableName",
+        )
         targetmaskfile: Optional[str] = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
             alias="targetMaskFile",
@@ -246,6 +259,18 @@ class Meteo(INIBasedModel):
         )
         interpolationmethod: Optional[str] = Field(
             "Type of (spatial) interpolation.", alias="interpolationMethod"
+        )
+        operand: Optional[str] = Field(
+            "How this data is combined with previous data for the same quantity (if any).",
+            alias="operand",
+        )
+        extrapolationAllowed: Optional[str] = Field(
+            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
+            alias="extrapolationAllowed",
+        )
+        extrapolationSearchRadius: Optional[str] = Field(
+            "Maximum search radius for nearest neighbor extrapolation in space.",
+            alias="extrapolationSearchRadius",
         )
 
     comments: Comments = Comments()
@@ -266,12 +291,21 @@ class Meteo(INIBasedModel):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
+    forcingVariableName: Optional[str] = Field(alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         alias="interpolationMethod"
     )
+    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
+    extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
+    extrapolationSearchRadius: Optional[float] = Field(
+        alias="extrapolationSearchRadius"
+    )
+    averagingType: Optional[int] = Field(alias="averagingType")
+    averagingNumMin: Optional[float] = Field(alias="averagingNumMin")
+    averagingPercentile: Optional[float] = Field(alias="averagingPercentile")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -306,9 +340,9 @@ class ExtModel(INIModel):
     """
 
     general: ExtGeneral = ExtGeneral()
-    boundary: List[Boundary] = []
-    lateral: List[Lateral] = []
-    meteo: List[Meteo] = []
+    boundary: List[Boundary] = Field(default_factory=list)
+    lateral: List[Lateral] = Field(default_factory=list)
+    meteo: List[Meteo] = Field(default_factory=list)
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )

@@ -513,17 +513,22 @@ class ModelSaveSettings:
 
     _os_path_style = get_path_style_for_current_operating_system()
 
-    def __init__(self, path_style: Optional[PathStyle] = None) -> None:
+    def __init__(
+        self, path_style: Optional[PathStyle] = None, exclude_unset: bool = False
+    ) -> None:
         """Initializes a new instance of the ModelSaveSettings class.
 
         Args:
             path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.
+            exclude_unset (bool, optional): Whether or not to exclude unset values when saving the model. Defaults to False.
         """
 
         if path_style is None:
             path_style = self._os_path_style
 
         self._path_style = path_style
+
+        self._exclude_unset = exclude_unset
 
     @property
     def path_style(self) -> PathStyle:
@@ -1006,6 +1011,7 @@ class FileModel(BaseModel, ABC):
         filepath: Optional[Path] = None,
         recurse: bool = False,
         path_style: Optional[str] = None,
+        exclude_unset: bool = False,
     ) -> None:
         """Save the model to disk.
 
@@ -1039,6 +1045,9 @@ class FileModel(BaseModel, ABC):
                 With which file path style to save the model. File references will
                 be written with the specified path style. Defaults to the path style
                 used by the current operating system. Options: 'unix', 'windows'.
+            exclude_unset (bool, optional):
+                Whether or not to exclude unset values when saving the model.
+                Defaults to False.
 
         Raises:
             ValueError: When an unsupported path style is passed.
@@ -1047,7 +1056,9 @@ class FileModel(BaseModel, ABC):
             self.filepath = filepath
 
         path_style = path_style_validator.validate(path_style)
-        save_settings = ModelSaveSettings(path_style=path_style)
+        save_settings = ModelSaveSettings(
+            path_style=path_style, exclude_unset=exclude_unset
+        )
 
         # Handle save
         with file_load_context() as context:
@@ -1282,7 +1293,7 @@ class ParsableFileModel(FileModel):
         Args:
             save_settings (ModelSaveSettings): The model save settings.
         """
-        self._serialize(self.dict(), save_settings)
+        self._serialize(self.dict(exclude_unset=True), save_settings)
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
         """Serializes the data to file. Should not be called directly, only through `_save`.
