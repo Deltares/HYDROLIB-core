@@ -14,7 +14,7 @@ class InitialConditionConverter(BaseConverter):
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> InitialField:
-        """Convert an old external forcing block with Initial condition data to a IinitialField
+        """Convert an old external forcing block with Initial condition data to a InitialField
         forcing block suitable for inclusion in a new inifieldfile file.
 
 
