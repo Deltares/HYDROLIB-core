@@ -302,8 +302,14 @@ class ExtOldInitialConditionQuantity(StrEnum):
             )
 
 
+class ExtOldSourcesSinks(StrEnum):
+    """Source and sink quantities"""
+
+    SourceSink = "discharge_salinity_temperature_sorsin"
+
+
 class ExtOldQuantity(StrEnum):
-    """Enum class containing the valid values for the boundary conditions category
+    """Enum class containing th e valid values for the boundary conditions category
     of the external forcings.
     """
 
