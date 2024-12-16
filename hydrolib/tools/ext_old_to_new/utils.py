@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, Type, Union
 
-from hydrolib.core.basemodel import FileModel, PathOrStr
+from hydrolib.core.basemodel import DiskOnlyFileModel, FileModel, PathOrStr
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
@@ -188,3 +188,33 @@ def convert_interpolation_data(
         data["averagingpercentile"] = forcing.percentileminmax
 
     return data
+
+
+def convert_initial_cond_param_dict(forcing: ExtOldForcing) -> Dict[str, str]:
+    """Initial condition and Parameters data dictionary.
+
+    Initial condition and Parameters have the same structure for the conversion.
+    """
+    block_data = {
+        "quantity": forcing.quantity,
+        "datafile": forcing.filename,
+        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
+    }
+    if block_data["datafiletype"] == "polygon":
+        block_data["value"] = forcing.value
+
+    if forcing.sourcemask != DiskOnlyFileModel(None):
+        raise ValueError(
+            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+            f"convert this input. Encountered for QUANTITY="
+            f"{forcing.quantity} and FILENAME={forcing.filename}."
+        )
+    block_data = convert_interpolation_data(forcing, block_data)
+    block_data["operand"] = forcing.operand
+
+    if hasattr(forcing, "extrapolation"):
+        block_data["extrapolationmethod"] = (
+            "yes" if forcing.extrapolation == 1 else "no"
+        )
+
+    return block_data

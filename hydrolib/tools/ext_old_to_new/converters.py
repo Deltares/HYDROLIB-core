@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.tools.ext_old_to_new.utils import (
+    convert_initial_cond_param_dict,
     convert_interpolation_data,
     oldfiletype_to_forcing_file_type,
 )
@@ -147,36 +148,6 @@ class BoundaryConditionConverter(BaseConverter):
         return new_block
 
 
-def create_convert_inputs(forcing: ExtOldForcing) -> Dict[str, str]:
-    """Initial condition and Parameters data dictionary.
-
-    Initial condition and Parameters have the same structure for the conversion.
-    """
-    block_data = {
-        "quantity": forcing.quantity,
-        "datafile": forcing.filename,
-        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-    }
-    if block_data["datafiletype"] == "polygon":
-        block_data["value"] = forcing.value
-
-    if forcing.sourcemask != DiskOnlyFileModel(None):
-        raise ValueError(
-            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-            f"convert this input. Encountered for QUANTITY="
-            f"{forcing.quantity} and FILENAME={forcing.filename}."
-        )
-    block_data = convert_interpolation_data(forcing, block_data)
-    block_data["operand"] = forcing.operand
-
-    if hasattr(forcing, "extrapolation"):
-        block_data["extrapolationmethod"] = (
-            "yes" if forcing.extrapolation == 1 else "no"
-        )
-
-    return block_data
-
-
 class InitialConditionConverter(BaseConverter):
 
     def __init__(self):
@@ -210,7 +181,7 @@ class InitialConditionConverter(BaseConverter):
         References:
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
-        data = create_convert_inputs(forcing)
+        data = convert_initial_cond_param_dict(forcing)
         new_block = InitialField(**data)
 
         return new_block
@@ -249,7 +220,7 @@ class ParametersConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        data = create_convert_inputs(forcing)
+        data = convert_initial_cond_param_dict(forcing)
         new_block = ParameterField(**data)
 
         return new_block
