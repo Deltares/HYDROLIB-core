@@ -29,10 +29,6 @@ class TimParser:
             ValueError: If the file contains a comment that is not at the start of the file.
             ValueError: If the data of the timeseries is empty.
         """
-
-        comments: List[str] = []
-        timeseries: List[TimData] = []
-
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
             comments, start_timeseries_index = TimParser._read_header_comments(lines)
