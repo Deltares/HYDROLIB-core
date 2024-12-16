@@ -54,6 +54,20 @@ class BaseConverter(ABC):
         raise NotImplementedError("Subclasses must implement convert method")
 
 
+def convert_interpolation_data(
+    forcing: ExtOldForcing, data: Dict[str, Any]
+) -> Dict[str, str]:
+    """Convert interpolation data from old to new format."""
+    data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
+    if data["interpolationmethod"] == InterpolationMethod.averaging:
+        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
+        data["averagingrelsize"] = forcing.relativesearchcellsize
+        data["averagingnummin"] = forcing.nummin
+        data["averagingpercentile"] = forcing.percentileminmax
+
+    return data
+
+
 class MeteoConverter(BaseConverter):
     def __init__(self):
         super().__init__()
@@ -98,15 +112,7 @@ class MeteoConverter(BaseConverter):
                 f"convert this input. Encountered for QUANTITY="
                 f"{forcing.quantity} and FILENAME={forcing.filename}."
             )
-        meteo_data["interpolationmethod"] = oldmethod_to_interpolation_method(
-            forcing.method
-        )
-        if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
-            meteo_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-            meteo_data["averagingrelsize"] = forcing.relativesearchcellsize
-            meteo_data["averagingnummin"] = forcing.nummin
-            meteo_data["averagingpercentile"] = forcing.percentileminmax
-
+        meteo_data = convert_interpolation_data(forcing, meteo_data)
         meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
         meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
         meteo_data["operand"] = forcing.operand
@@ -161,6 +167,10 @@ class BoundaryConditionConverter(BaseConverter):
 
 
 def create_convert_inputs(forcing: ExtOldForcing) -> Dict[str, str]:
+    """Initial condition and Parameters data dictionary.
+
+    Initial condition and Parameters have the same structure for the conversion.
+    """
     block_data = {
         "quantity": forcing.quantity,
         "datafile": forcing.filename,
@@ -175,14 +185,7 @@ def create_convert_inputs(forcing: ExtOldForcing) -> Dict[str, str]:
             f"convert this input. Encountered for QUANTITY="
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
-    block_data["interpolationmethod"] = oldmethod_to_interpolation_method(
-        forcing.method
-    )
-    if block_data["interpolationmethod"] == InterpolationMethod.averaging:
-        block_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-        block_data["averagingrelsize"] = forcing.relativesearchcellsize
-        block_data["averagingnummin"] = forcing.nummin
-        block_data["averagingpercentile"] = forcing.percentileminmax
+    block_data = convert_interpolation_data(forcing, block_data)
     block_data["operand"] = forcing.operand
 
     if hasattr(forcing, "extrapolation"):
