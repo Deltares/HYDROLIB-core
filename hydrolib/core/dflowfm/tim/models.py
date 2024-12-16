@@ -20,7 +20,11 @@ class TimRecord(BaseModel):
 
 
 class TimModel(ParsableFileModel):
-    """Class representing a tim (*.tim) file."""
+    """Class representing a tim (*.tim) file.
+
+    References:
+        - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
+    """
 
     serializer_config = TimSerializerConfig()
     """TimSerializerConfig: The serialization configuration for the tim file."""
