@@ -11,15 +11,10 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldMeteoQuantity,
     ExtOldParametersQuantity,
 )
-from hydrolib.core.dflowfm.inifield.models import (
-    InitialField,
-    InterpolationMethod,
-    ParameterField,
-)
+from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.tools.ext_old_to_new.utils import (
+    convert_interpolation_data,
     oldfiletype_to_forcing_file_type,
-    oldmethod_to_averaging_type,
-    oldmethod_to_interpolation_method,
 )
 
 
@@ -52,31 +47,6 @@ class BaseConverter(ABC):
                 included into some FileModel object by the caller.
         """
         raise NotImplementedError("Subclasses must implement convert method")
-
-
-def convert_interpolation_data(
-    forcing: ExtOldForcing, data: Dict[str, Any]
-) -> Dict[str, str]:
-    """Convert interpolation data from old to new format.
-
-    Args:
-        forcing (ExtOldForcing): The old forcing block with interpolation data.
-        data (Dict[str, Any]): The dictionary to which the new data will be added.
-
-    Returns:
-        Dict[str, str]: The updated dictionary with the new interpolation data.
-        - The dictionary will contain the "interpolationmethod" key with the new interpolation method.
-        - if the interpolation method is "Averaging" (method = 6), the dictionary will also contain
-            the "averagingtype", "averagingrelsize", "averagingnummin", and "averagingpercentile" keys.
-    """
-    data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
-    if data["interpolationmethod"] == InterpolationMethod.averaging:
-        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-        data["averagingrelsize"] = forcing.relativesearchcellsize
-        data["averagingnummin"] = forcing.nummin
-        data["averagingpercentile"] = forcing.percentileminmax
-
-    return data
 
 
 class MeteoConverter(BaseConverter):

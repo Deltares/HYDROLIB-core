@@ -10,25 +10,7 @@ from hydrolib.tools.ext_old_to_new.converters import (
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
-    convert_interpolation_data,
 )
-
-
-def test_convert_interpolation_data():
-    data = {}
-    forcing = ExtOldForcing(
-        quantity=ExtOldQuantity.WindX,
-        filename="windtest.amu",
-        filetype=4,
-        method="6",
-        operand="O",
-    )
-    data = convert_interpolation_data(forcing, data)
-    assert data["interpolationmethod"] == "averaging"
-    assert data["averagingnummin"] is None
-    assert data["averagingtype"] == "mean"
-    assert data["averagingrelsize"] is None
-    assert data["averagingpercentile"] is None
 
 
 class TestConvertInitialCondition:
