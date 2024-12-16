@@ -57,7 +57,18 @@ class BaseConverter(ABC):
 def convert_interpolation_data(
     forcing: ExtOldForcing, data: Dict[str, Any]
 ) -> Dict[str, str]:
-    """Convert interpolation data from old to new format."""
+    """Convert interpolation data from old to new format.
+
+    Args:
+        forcing (ExtOldForcing): The old forcing block with interpolation data.
+        data (Dict[str, Any]): The dictionary to which the new data will be added.
+
+    Returns:
+        Dict[str, str]: The updated dictionary with the new interpolation data.
+        - The dictionary will contain the "interpolationmethod" key with the new interpolation method.
+        - if the interpolation method is "Averaging" (method = 6), the dictionary will also contain
+            the "averagingtype", "averagingrelsize", "averagingnummin", and "averagingpercentile" keys.
+    """
     data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
         data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
