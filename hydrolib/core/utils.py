@@ -343,14 +343,14 @@ class FortranUtils:
         r"([\d.]+)([dD])([+-]?\d{1,3})"
     )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
-    @classmethod
-    def replace_fortran_scientific_notation(cls, value):
+    @staticmethod
+    def replace_fortran_scientific_notation(value):
         """Replace Fortran scientific notation ("D" in exponent) with standard
         scientific notation ("e" in exponent).
         """
         if isinstance(value, str):
-            return cls._scientific_exp_d_notation_regex.sub(r"\1e\3", value)
+            return FortranUtils._scientific_exp_d_notation_regex.sub(r"\1e\3", value)
         elif isinstance(value, list):
-            return list(map(cls.replace_fortran_scientific_notation, value))
+            return list(map(FortranUtils.replace_fortran_scientific_notation, value))
 
         return value
