@@ -2,7 +2,6 @@ import logging
 from abc import ABC
 from enum import Enum
 from math import isnan
-from re import compile
 from typing import (
     Any,
     Callable,
@@ -29,6 +28,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
 )
 
+from ...utils import FortranUtils
 from ..ini.io_models import CommentBlock, Document, Property, Section
 from .parser import Parser
 from .serializer import (
@@ -58,9 +58,6 @@ class INIBasedModel(BaseModel, ABC):
 
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
-    _scientific_notation_regex = compile(
-        r"([\d.]+)([dD])([+-]?\d{1,3})"
-    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
     class Config:
         extra = Extra.ignore
@@ -159,18 +156,7 @@ class INIBasedModel(BaseModel, ABC):
         if field.type_ != float:
             return value
 
-        return cls._replace_fortran_scientific_notation(value)
-
-    @classmethod
-    def _replace_fortran_scientific_notation(cls, value):
-        if isinstance(value, str):
-            return cls._scientific_notation_regex.sub(r"\1e\3", value)
-        if isinstance(value, list):
-            for i, v in enumerate(value):
-                if isinstance(v, str):
-                    value[i] = cls._scientific_notation_regex.sub(r"\1e\3", v)
-
-        return value
+        return FortranUtils.replace_fortran_scientific_notation(value)
 
     @classmethod
     def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":

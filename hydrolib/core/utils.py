@@ -6,6 +6,8 @@ from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from typing import Any, Callable, List, Optional
 
+from pydantic import validator
+from pydantic.v1.fields import ModelField
 from strenum import StrEnum
 
 
@@ -332,3 +334,23 @@ class FileChecksumCalculator:
             for chunk in iter(lambda: file.read(4096), b""):
                 md5_hash.update(chunk)
         return md5_hash.hexdigest()
+
+
+class FortranUtils:
+    """Utility class for Fortran specific conventions."""
+
+    _scientific_exp_d_notation_regex = re.compile(
+        r"([\d.]+)([dD])([+-]?\d{1,3})"
+    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
+
+    @staticmethod
+    def replace_fortran_scientific_notation(value):
+        """Replace Fortran scientific notation ("D" in exponent) with standard
+        scientific notation ("e" in exponent).
+        """
+        if isinstance(value, str):
+            return FortranUtils._scientific_exp_d_notation_regex.sub(r"\1e\3", value)
+        elif isinstance(value, list):
+            return list(map(FortranUtils.replace_fortran_scientific_notation, value))
+
+        return value
