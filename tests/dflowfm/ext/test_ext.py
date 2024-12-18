@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 import numpy as np
 import pytest
@@ -217,10 +217,9 @@ class TestMeteo:
 
 
 class TestSourceSink:
-    def test_default(self):
-        """
-        Test construct the SourceSink class with all the attributes.
-        """
+
+    @pytest.fixture
+    def source_sink_data(self) -> Dict[str, Any]:
         data = {
             "id": "L1",
             "name": "discharge_salinity_temperature_sorsin",
@@ -237,36 +236,25 @@ class TestSourceSink:
             "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
             "area": 5,
         }
+        return data
 
-        source_sink = SourceSink(**data)
-
-        # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - data.keys() == {"comments"}
-
-    def test_extra_tracer(self):
+    def test_default(self, source_sink_data: Dict[str, Any]):
         """
         Test construct the SourceSink class with all the attributes.
         """
-        data = {
-            "id": "L1",
-            "name": "discharge_salinity_temperature_sorsin",
-            "locationfile": Path("tests/data/input/source-sink/leftsor.pliz"),
-            "numcoordinates": 2,
-            "xcoordinates": [63.350456, 45.200344],
-            "ycoordinates": [12.950216, 6.350155],
-            "zsource": -3.0,
-            "zsink": -4.2,
-            "interpolationmethod": "",
-            "operand": "O",
-            "discharge": 1.1234,
-            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
-            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
-            "area": 5,
-            "initialtracer_any_name": [1, 2, 3],
-        }
 
-        source_sink = SourceSink(**data)
+        source_sink = SourceSink(**source_sink_data)
 
         # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - data.keys() == {"comments"}
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+
+    def test_extra_tracer(self, source_sink_data: Dict[str, Any]):
+        """
+        Test construct the SourceSink class with all the attributes.
+        """
+        source_sink_data["initialtracer_any_name"] = [1, 2, 3]
+        source_sink = SourceSink(**source_sink_data)
+
+        # only the comments key is added by default here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
         assert source_sink.initialtracer_any_name == [1, 2, 3]
