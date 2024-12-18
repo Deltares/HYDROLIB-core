@@ -12,6 +12,7 @@ from hydrolib.core.dflowfm.ext.models import (
     Meteo,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
+    SourceSink,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
 
@@ -213,3 +214,59 @@ class TestMeteo:
         assert isinstance(meteo.forcingfile, TimModel)
         assert meteo.forcingfile.filepath == time_series_file
         assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
+
+
+class TestSourceSink:
+    def test_default(self):
+        """
+        Test construct the SourceSink class with all the attributes.
+        """
+        data = {
+            "id": "L1",
+            "name": "discharge_salinity_temperature_sorsin",
+            "locationfile": Path("tests/data/input/source-sink/leftsor.pliz"),
+            "numcoordinates": 2,
+            "xcoordinates": [63.350456, 45.200344],
+            "ycoordinates": [12.950216, 6.350155],
+            "zsource": -3.0,
+            "zsink": -4.2,
+            "interpolationmethod": "",
+            "operand": "O",
+            "discharge": 1.1234,  # [1.0, 1.0, 3.0, 5.0, 8.0],
+            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
+            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
+            "area": 5,
+        }
+
+        source_sink = SourceSink(**data)
+
+        # only the comments key is added by default here
+        assert source_sink.__dict__.keys() - data.keys() == {"comments"}
+
+    def test_extra_tracer(self):
+        """
+        Test construct the SourceSink class with all the attributes.
+        """
+        data = {
+            "id": "L1",
+            "name": "discharge_salinity_temperature_sorsin",
+            "locationfile": Path("tests/data/input/source-sink/leftsor.pliz"),
+            "numcoordinates": 2,
+            "xcoordinates": [63.350456, 45.200344],
+            "ycoordinates": [12.950216, 6.350155],
+            "zsource": -3.0,
+            "zsink": -4.2,
+            "interpolationmethod": "",
+            "operand": "O",
+            "discharge": 1.1234,
+            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
+            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
+            "area": 5,
+            "initialtracer_any_name": [1, 2, 3],
+        }
+
+        source_sink = SourceSink(**data)
+
+        # only the comments key is added by default here
+        assert source_sink.__dict__.keys() - data.keys() == {"comments"}
+        assert source_sink.initialtracer_any_name == [1, 2, 3]
