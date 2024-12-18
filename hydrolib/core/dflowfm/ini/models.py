@@ -128,12 +128,13 @@ class INIBasedModel(BaseModel, ABC):
     @root_validator(pre=True)
     def _validate_unknown_keywords(cls, values):
         unknown_keyword_error_manager = cls._get_unknown_keyword_error_manager()
+        do_not_validate = cls._exclude_from_validation(values)
         if unknown_keyword_error_manager:
             unknown_keyword_error_manager.raise_error_for_unknown_keywords(
                 values,
                 cls._header,
                 cls.__fields__,
-                cls._exclude_fields(),
+                cls._exclude_fields() | do_not_validate,
             )
         return values
 
@@ -187,6 +188,11 @@ class INIBasedModel(BaseModel, ABC):
             )
 
         return super().validate(value)
+
+    @classmethod
+    def _exclude_from_validation(cls, input_data: Optional = None) -> Set:
+        """Fields that should not be checked when validating existing fields as they will be dynamically added."""
+        return set()
 
     @classmethod
     def _exclude_fields(cls) -> Set:
