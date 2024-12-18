@@ -189,7 +189,7 @@ def validate_forbidden_fields(
         return values
 
     for field in field_names:
-        if values.get(field) != None:
+        if values.get(field) is not None:
             raise ValueError(
                 f"{field} is forbidden when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )
@@ -228,7 +228,7 @@ def validate_required_fields(
         return values
 
     for field in field_names:
-        if values.get(field) == None:
+        if values.get(field) is None:
             raise ValueError(
                 f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )
@@ -664,18 +664,46 @@ class UnknownKeywordErrorManager:
     def _get_all_unknown_keywords(
         self, data: Dict[str, Any], fields: Dict[str, ModelField], excluded_fields: Set
     ) -> List[str]:
+        """
+        Get all unknown keywords in the data.
+
+        Args:
+            data:
+            fields: Dict[str, ModelField]: Known fields of the Model.
+            excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
+
+        Returns:
+            List[str]: List of unknown keywords.
+        """
         list_of_unknown_keywords = []
-        for name in data:
-            if self._is_unknown_keyword(name, fields, excluded_fields):
-                list_of_unknown_keywords.append(name)
+        for keyword in data:
+            if self._is_unknown_keyword(keyword, fields, excluded_fields):
+                list_of_unknown_keywords.append(keyword)
 
         return list_of_unknown_keywords
 
+    @staticmethod
     def _is_unknown_keyword(
-        self, name: str, fields: Dict[str, ModelField], excluded_fields: Set
+        keyword: str, fields: Dict[str, ModelField], excluded_fields: Set
     ):
-        for model_field in fields.values():
-            if name == model_field.name or name == model_field.alias:
-                return False
+        """
+        Check if the given field name equals to any of the model field names or aliases, if not, the function checks if
+        the field is not in the excluded_fields parameter.
 
-        return name not in excluded_fields
+        Args:
+            keyword: str: Name of the field.
+            fields: Dict[str, ModelField]: Known fields of the Model.
+            excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
+
+        Returns:
+            bool: True if the field is unknown (not a field name or alias and and not in the exclude list),
+            False otherwise
+        """
+        exists = any(
+            keyword == model_field.name or keyword == model_field.alias
+            for model_field in fields.values()
+        )
+        # the field is not in the known fields, check if it should be excluded
+        unknown = not exists and keyword not in excluded_fields
+
+        return unknown
