@@ -209,9 +209,7 @@ class SourceSink(INIBasedModel):
 
     zsource: Optional[Union[float, float]] = Field(alias="zSource")
     zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
-
-    discharge: ForcingData = Field(alias="discharge")
-
+    discharge: Optional[Union[float, List[float]]] = Field(alias="discharge")
     area: Optional[float] = Field(alias="Area")
 
     salinitydelta: Optional[Union[List[float], float]] = Field(alias="SalinityDelta")
