@@ -654,12 +654,10 @@ class UnknownKeywordErrorManager:
         """
         unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
 
-        if len(unknown_keywords) == 0:
-            return
-
-        raise ValueError(
-            f"Unknown keywords are detected in section: '{section_header}', '{unknown_keywords}'"
-        )
+        if len(unknown_keywords) > 0:
+            raise ValueError(
+                f"Unknown keywords are detected in section: '{section_header}', '{unknown_keywords}'"
+            )
 
     def _get_all_unknown_keywords(
         self, data: Dict[str, Any], fields: Dict[str, ModelField], excluded_fields: Set
