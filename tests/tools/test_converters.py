@@ -10,6 +10,7 @@ from hydrolib.tools.ext_old_to_new.converters import (
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
+    SourceSinkConverter,
 )
 
 
@@ -109,3 +110,44 @@ class TestBoundaryConverter:
         assert new_quantity_block.nodeid is None
         assert new_quantity_block.bndwidth1d is None
         assert new_quantity_block.bndbldepth is None
+
+
+class TestSourceSinkConverter:
+
+    def test_default(self):
+        """
+        Old quantity block:
+
+        ```
+        QUANTITY =waterlevelbnd
+        FILENAME =tfl_01.pli
+        FILETYPE =9
+        METHOD   =3
+        OPERAND  =O
+        ```
+        """
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename="tests/data/input/source-sink/leftsor.pliz",
+            filetype=9,  # "Polyline"
+            method="1",  # "Interpolate space",
+            operand="O",
+            area=1.0,
+        )
+
+        # the list of quantites names comes from the external forcing file
+        ext_file_other_quantities = [
+            "temperaturedelta",
+            "salinitydelta",
+            "initialtracer_anyname",
+        ]
+
+        new_quantity_block = SourceSinkConverter().convert(
+            forcing, ext_file_other_quantities
+        )
+        assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
+        assert new_quantity_block.salinitydelta == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert new_quantity_block.temperaturedelta == [2.0, 2.0, 2.0, 2.0, 2.0]
+        assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert new_quantity_block.zsink == -4.2
+        assert new_quantity_block.zsource == -3

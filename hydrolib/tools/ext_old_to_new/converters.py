@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Dict, List
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.ext.models import Boundary, Meteo
+from hydrolib.core.dflowfm.ext.models import Boundary, Meteo, SourceSink
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
     ExtOldForcing,
@@ -12,6 +12,9 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.tim.models import TimModel
+from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.ext_old_to_new.utils import (
     convert_initial_cond_param_dict,
     convert_interpolation_data,
@@ -222,6 +225,133 @@ class ParametersConverter(BaseConverter):
         """
         data = convert_initial_cond_param_dict(forcing)
         new_block = ParameterField(**data)
+
+        return new_block
+
+
+def get_time_series_data(tim_model: TimModel) -> Dict[str, List[float]]:
+    """Extract time series data from a TIM model.
+
+    Extract the time series data (each column) from the TimModel object
+
+    Args:
+        tim_model (TimModel): The TimModel object containing the time series data.
+
+    Returns:
+        Dict[str, List[float]]: A dictionary containing the time series data form each column.
+        the keys of the dictionary will be index starting from 1 to the number of columns in the tim file
+        (excluding the first column(time)).
+
+    Examples:
+        >>> tim_file = Path("tests/data/external_forcings/initial_waterlevel.tim")
+        >>> time_file = TimParser.parse(tim_file)
+        >>> tim_model = TimModel(**time_file)
+        >>> time_series = get_time_series_data(tim_model)
+        >>> print(time_series)
+        {
+            1: [1.0, 1.0, 3.0, 5.0, 8.0],
+            2: [2.0, 2.0, 5.0, 8.0, 10.0],
+            3: [3.0, 5.0, 12.0, 9.0, 23.0],
+            4: [4.0, 4.0, 4.0, 4.0, 4.0]
+        }
+    """
+    num_locations = len(tim_model.timeseries[0].data)
+
+    # Initialize a dictionary to collect data for each location
+    data = {loc: [] for loc in range(1, num_locations + 1)}
+
+    # Extract time series data for each location
+    for record in tim_model.timeseries:
+        for loc_index, value in enumerate(record.data, start=1):
+            data[loc_index].append(value)
+
+    return data
+
+
+class SourceSinkConverter(BaseConverter):
+
+    def __init__(self):
+        super().__init__()
+
+    def convert(
+        self, forcing: ExtOldForcing, ext_file_quantity_list: List[str] = None
+    ) -> ParameterField:
+        """Convert an old external forcing block with Sources and sinks to a boundary
+        forcing block suitable for inclusion in a new external forcings file.
+
+        This function takes a forcing block from an old external forcings
+        file, represented by an instance of ExtOldForcing, and converts it
+        into a Meteo object. The Boundary object is suitable for use in new
+        external forcings files, adhering to the updated format and
+        specifications.
+
+        Args:
+            forcing (ExtOldForcing): The contents of a single forcing block
+            in an old external forcings file. This object contains all the
+            necessary information, such as quantity, values, and timestamps,
+            required for the conversion process.
+            ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
+            external forcings file .
+
+        Returns:
+            Boundary: A Boindary object that represents the converted forcing
+            block, ready to be included in a new external forcings file. The
+            Boundary object conforms to the new format specifications, ensuring
+            compatibility with updated systems and models.
+
+        Raises:
+            ValueError: If the forcing block contains a quantity that is not
+            supported by the converter, a ValueError is raised. This ensures
+            that only compatible forcing blocks are processed, maintaining
+            data integrity and preventing errors in the conversion process.
+
+        References:
+            - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C10>`_
+            - `Polyline <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C2>`
+             - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
+             - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#5.4.10>`_
+             - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
+
+        """
+        location_file = forcing.filename.filepath
+
+        # move this to a validator in the source and sink model
+        polyline = PolyFile(location_file)
+        x_coords = [point.x for point in polyline.objects[0].points]
+        y_coords = [point.y for point in polyline.objects[0].points]
+        z_coords = [point.z for point in polyline.objects[0].points]
+
+        # check the tim file
+        tim_file = forcing.filename.filepath.with_suffix(".tim")
+        if not tim_file.exists():
+            raise ValueError(
+                f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
+            )
+        time_file = TimParser.parse(tim_file)
+        tim_model = TimModel(**time_file)
+        time_series = get_time_series_data(tim_model)
+        ext_file_quantity_list = ["discharge"] + ext_file_quantity_list
+        time_series = {
+            ext_file_quantity_list[i]: time_series[i + 1]
+            for i in range(len(ext_file_quantity_list))
+        }
+
+        data = {
+            "id": "L1",
+            "name": forcing.quantity,
+            "locationfile": location_file,
+            "numcoordinates": len(x_coords),
+            "xcoordinates": x_coords,
+            "ycoordinates": y_coords,
+            "zsource": z_coords[-1],
+            "zsink": z_coords[0],
+        }
+        data = data | time_series
+
+        data = convert_interpolation_data(forcing, data)
+        data["operand"] = forcing.operand
+
+        new_block = SourceSink(**data)
 
         return new_block
 
