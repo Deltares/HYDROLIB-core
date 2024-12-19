@@ -15,9 +15,8 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-
-from .converter_factory import ConverterFactory
-from .utils import (
+from hydrolib.tools.ext_old_to_new.converters import ConverterFactory
+from hydrolib.tools.ext_old_to_new.utils import (
     backup_file,
     construct_filemodel_new_or_existing,
     construct_filepath_with_postfix,
@@ -51,7 +50,7 @@ class ExternalForcingConverter:
             extold_model = self._read_old_file(extold_model)
 
         self._extold_model = extold_model
-        rdir = self._extold_model.filepath.parent
+        rdir = extold_model.filepath.parent
 
         # create the new models if not provided by the user in the same directory as the old external file
         path = (

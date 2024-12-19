@@ -164,6 +164,21 @@ class ExtOldBoundaryQuantity(StrEnum):
     """Discharge-water level dependency"""
 
 
+class ExtOldParametersQuantity(StrEnum):
+    """Enum class containing the valid values for the Spatial parameter category
+    of the external forcings.
+
+    for more details check D-Flow FM User Manual 1D2D, Chapter D.3.1, Table D.2
+    https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D.pdf
+    """
+
+    FrictionCoefficient = "frictioncoefficient"
+    HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
+    HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
+    Advectiontype = "advectiontype"
+    InfiltrationCapacity = "infiltrationcapacity"
+
+
 class ExtOldMeteoQuantity(StrEnum):
 
     # Meteorological fields
@@ -287,8 +302,14 @@ class ExtOldInitialConditionQuantity(StrEnum):
             )
 
 
+class ExtOldSourcesSinks(StrEnum):
+    """Source and sink quantities"""
+
+    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
+
+
 class ExtOldQuantity(StrEnum):
-    """Enum class containing the valid values for the boundary conditions category
+    """Enum class containing th e valid values for the boundary conditions category
     of the external forcings.
     """
 
