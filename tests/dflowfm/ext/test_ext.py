@@ -231,7 +231,7 @@ class TestSourceSink:
             "zsink": -4.2,
             "interpolationmethod": "",
             "operand": "O",
-            "discharge": 1.1234,  # [1.0, 1.0, 3.0, 5.0, 8.0],
+            "discharge": 1.1234,
             "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
             "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
             "area": 5,
@@ -250,7 +250,7 @@ class TestSourceSink:
 
     def test_extra_tracer(self, source_sink_data: Dict[str, Any]):
         """
-        Test construct the SourceSink class with all the attributes.
+        Test construct the SourceSink class with an extra initialtracer-*** dynamically assigned field.
         """
         source_sink_data["initialtracer_any_name"] = [1, 2, 3]
         source_sink = SourceSink(**source_sink_data)
@@ -258,3 +258,43 @@ class TestSourceSink:
         # only the comments key is added by default here
         assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
         assert source_sink.initialtracer_any_name == [1, 2, 3]
+
+    def test_multiple_dynamic_fields(self, source_sink_data: Dict[str, Any]):
+        """
+        Test construct the SourceSink class with an extra initialtracer-*** dynamically assigned field.
+        """
+        source_sink_data["initialtracer_any_name"] = [1, 2, 3]
+        source_sink_data["tracerbndanyname"] = [1, 2, 3]
+        source_sink_data["sedfracbnd_any_name"] = [1, 2, 3]
+        source_sink = SourceSink(**source_sink_data)
+
+        # only the comments key is added by default here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+        assert source_sink.initialtracer_any_name == [1, 2, 3]
+        assert source_sink.tracerbndanyname == [1, 2, 3]
+        assert source_sink.sedfracbnd_any_name == [1, 2, 3]
+
+    def test_time_series_discharge_case(self):
+        """
+
+        Returns:
+
+        """
+        data = {
+            "id": "L1",
+            "name": "discharge_salinity_temperature_sorsin",
+            "locationfile": "tests/data/input/source-sink/leftsor.pliz",
+            "numcoordinates": 2,
+            "xcoordinates": [63.350456, 45.200344],
+            "ycoordinates": [12.950216, 6.350155],
+            "zsource": -3.0,
+            "zsink": -4.2,
+            "discharge": [1.0, 2.0, 3.0, 5.0, 8.0],
+            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
+            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
+            "interpolationmethod": "linearSpaceTime",
+            "operand": "O",
+        }
+
+        source_sink = SourceSink(**data)
+        print(source_sink)
