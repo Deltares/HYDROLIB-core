@@ -1,5 +1,6 @@
+from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Dict, Type, Union
+from typing import Any, Dict, List, Type, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel, FileModel, PathOrStr
 from hydrolib.core.dflowfm.ext.models import (
@@ -218,3 +219,43 @@ def convert_initial_cond_param_dict(forcing: ExtOldForcing) -> Dict[str, str]:
         )
 
     return block_data
+
+
+def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int]:
+    """
+    Searches for keywords "temperature" and "salinity" in a list of strings
+    and returns a dictionary with associated values.
+
+    Args:
+        strings (List[str]): A list of strings to search.
+
+    Returns:
+        Dict[str, int]: A dictionary with keys as "temperature" or "salinity"
+                        and values 3 and 4 respectively.
+
+     Examples:
+        >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
+        OrderedDict({"temperature": 3, "salinity": 4})
+
+        >>> find_temperature_salinity_in_quantities(["Temperature"])
+        OrderedDict({"temperature": 3})
+
+        >>> find_temperature_salinity_in_quantities(["Salinity"])
+        OrderedDict({"salinity": 3})
+
+        >>> find_temperature_salinity_in_quantities(["tracers"])
+        OrderedDict()
+
+        >>> find_temperature_salinity_in_quantities([])
+        OrderedDict()
+    """
+    result = OrderedDict()
+
+    if any("temperature" in string.lower() for string in strings):
+        result["temperature"] = 3
+    if any("salinity" in string.lower() for string in strings):
+        result["salinity"] = (
+            result.get("temperature", 2) + 1
+        )  # Default temperature value is 2
+
+    return result

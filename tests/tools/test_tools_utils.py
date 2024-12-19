@@ -1,3 +1,4 @@
+import unittest
 from pathlib import Path
 
 import pytest
@@ -9,6 +10,7 @@ from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.ext_old_to_new.utils import (
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
+    find_temperature_salinity_in_quantities,
 )
 
 
@@ -35,3 +37,19 @@ def test_convert_interpolation_data():
     assert data["averagingtype"] == "mean"
     assert data["averagingrelsize"] is None
     assert data["averagingpercentile"] is None
+
+
+@pytest.mark.parametrize(
+    "strings, expected",
+    [
+        (["temperature", "Salinity"], {"temperature": 3, "salinity": 4}),
+        (["Temperature"], {"temperature": 3}),
+        (["Salinity"], {"salinity": 3}),
+        (["tracers"], {}),
+        (["TEMPERATURE", "salInity"], {"temperature": 3, "salinity": 4}),
+        ([], {}),
+        (["No relevant data here.", "Nothing to match."], {}),
+    ],
+)
+def test_find_keywords_with_values(strings, expected):
+    assert find_temperature_salinity_in_quantities(strings) == expected
