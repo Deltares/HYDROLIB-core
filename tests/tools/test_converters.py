@@ -118,6 +118,26 @@ class TestBoundaryConverter:
 
 
 class TestParseTimFileForSourceSink:
+    def test_default(self):
+        """
+        The test case is based on the following assumptions:
+        - The tim file has 4 columns (plus the time column), but the list of ext quantities has only 4 quantities.
+        """
+        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+        ext_file_quantity_list = [
+            "discharge",
+            "temperature",
+            "salinity",
+            "initialtracer_anyname",
+        ]
+        converter = SourceSinkConverter()
+
+        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert time_series_data["temperaturedelta"] == [2.0, 2.0, 2.0, 2.0, 2.0]
+        assert time_series_data["salinitydelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
+
     def test_list_of_ext_quantities_tim_column_mismatch(self):
         """
         The test case is based on the following assumptions:
