@@ -42,11 +42,11 @@ def test_convert_interpolation_data():
 @pytest.mark.parametrize(
     "strings, expected",
     [
-        (["temperature", "Salinity"], {"temperature": 3, "salinity": 4}),
-        (["Temperature"], {"temperature": 3}),
-        (["Salinity"], {"salinity": 3}),
+        (["temperature", "Salinity"], {"temperaturedelta": 3, "salinitydelta": 4}),
+        (["Temperature"], {"temperaturedelta": 3}),
+        (["Salinity"], {"salinitydelta": 3}),
         (["tracers"], {}),
-        (["TEMPERATURE", "salInity"], {"temperature": 3, "salinity": 4}),
+        (["TEMPERATURE", "salInity"], {"temperaturedelta": 3, "salinitydelta": 4}),
         ([], {}),
         (["No relevant data here.", "Nothing to match."], {}),
     ],

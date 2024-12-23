@@ -235,13 +235,13 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
 
      Examples:
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({"temperature": 3, "salinity": 4})
+        OrderedDict({"temperaturedelta": 3, "salinitydelta": 4})
 
         >>> find_temperature_salinity_in_quantities(["Temperature"])
-        OrderedDict({"temperature": 3})
+        OrderedDict({"temperaturedelta": 3})
 
         >>> find_temperature_salinity_in_quantities(["Salinity"])
-        OrderedDict({"salinity": 3})
+        OrderedDict({"salinitydelta": 3})
 
         >>> find_temperature_salinity_in_quantities(["tracers"])
         OrderedDict()
@@ -252,10 +252,10 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
     result = OrderedDict()
 
     if any("temperature" in string.lower() for string in strings):
-        result["temperature"] = 3
+        result["temperaturedelta"] = 3
     if any("salinity" in string.lower() for string in strings):
-        result["salinity"] = (
-            result.get("temperature", 2) + 1
+        result["salinitydelta"] = (
+            result.get("temperaturedelta", 2) + 1
         )  # Default temperature value is 2
 
     return result
