@@ -103,3 +103,25 @@ class TestPLIZExtension:
         assert len(polyfile.objects[0].points) == 2
         assert points[0] == Point(x=0, y=0, z=5, data=[])
         assert points[1] == Point(x=0, y=2, z=5, data=[])
+
+    def test_with_z_and_pliz_extension_2by5(self, polylines_dir: Path):
+        """
+        The test check a 2*5 polyline file with z values in the third and fourth columns, the extension is correct,
+        but the dimensions are 2*5.
+
+        ```
+        L1
+             2     5
+              63.35      12.95      -4.20   -5.35  0
+              45.20       6.35      -3.00   -2.90  0
+        ```
+
+        - The first three columns are the x, y, and z values.
+        The rest of the columns are the data values.
+        """
+        path = polylines_dir / "leftsor-5-columns.pliz"
+        polyfile = PolyFile(path)
+        points = polyfile.objects[0].points
+        assert len(polyfile.objects[0].points) == 2
+        assert points[0] == Point(x=63.35, y=12.95, z=-4.2, data=[-5.35, 0])
+        assert points[1] == Point(x=45.2, y=6.35, z=-3, data=[-2.90, 0])

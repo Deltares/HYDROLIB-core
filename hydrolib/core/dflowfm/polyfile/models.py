@@ -80,7 +80,30 @@ class PolyObject(BaseModel):
 
 
 class PolyFile(ParsableFileModel):
-    """Poly-file (.pol/.pli/.pliz) representation."""
+    """
+    Poly-file (.pol/.pli/.pliz) representation.
+
+    Notes:
+        - The `has_z_values` attribute is used to determine if the PolyFile contains z-values.
+        - The `has_z_values` is false by default and should be set to true if the PolyFile path ends with `.pliz`.
+        - The `***.pliz` file should have a 2*3 structure, where the third column contains the z-values, otherwise
+        (the parser will give an error).
+        - If there is a label in the file, the parser will ignore the label and read the file as a normal polyline file.
+        ```
+        tfl_01
+            2 2
+            0.00 1.00 #zee
+            0.00 2.00 #zee
+        ```
+        - if the file is .pliz, and the dimensions are 2*5 the first three columns will be considered as x, y, z values
+        and the last two columns will be considered as data values.
+        ```
+        L1
+            2 5
+            63.35 12.95 -4.20 -5.35 0
+            45.20 6.35 -3.00 -2.90 0
+        ```
+    """
 
     has_z_values: bool = False
     objects: Sequence[PolyObject] = Field(default_factory=list)
@@ -106,7 +129,7 @@ class PolyFile(ParsableFileModel):
 
     @classmethod
     def _get_parser(cls) -> Callable:
-        # TODO Prevent circular dependency in Parser
+        # Prevent circular dependency in Parser
         from .parser import read_polyfile
 
         return read_polyfile
