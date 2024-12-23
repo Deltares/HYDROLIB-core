@@ -1,3 +1,6 @@
+from pathlib import Path
+from unittest.mock import patch
+
 import numpy as np
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
@@ -5,6 +8,7 @@ from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary, Meteo
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.tools.ext_old_to_new.converters import (
     BoundaryConditionConverter,
     InitialConditionConverter,
@@ -113,6 +117,66 @@ class TestBoundaryConverter:
 
 
 class TestSourceSinkConverter:
+
+    def test_get_z_sources_sinks_single_value(self):
+        """
+        The test case is based on the following assumptions:
+        - The polyline has only 3 columns, so the zsink and zsource will have only one value which is in the third column.
+        ```
+        zsink = -4.2
+        zsource = -3
+        ```
+
+        - The polyline file has the following structure:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20
+              45.20 6.35 -3.00
+        ```
+        """
+        polyfile = PolyFile("tests/data/input/source-sink/leftsor.pliz")
+
+        z_source, z_sink = SourceSinkConverter().get_z_sources_sinks(polyfile)
+        assert z_source == [-3]
+        assert z_sink == [-4.2]
+
+    def test_get_z_sources_sinks_multiple_values(self):
+        """
+        The test case is based on the following assumptions:
+        - The polyline has only four or five columns, so the zsink and zsource will have two values which is in the
+        third and forth columns' values, and if there is a fifth column it will be ignored.
+        ```
+        zsink = [-4.2, -5.35]
+        zsource = [-3, -2.90]
+        ```
+
+        - The polyline file has the following structure:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20 -5.35
+              ...
+
+              ...
+              45.20 6.35 -3.00 -2.90
+        ```
+        when there is a fifth column:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20 -5.35 0
+              ...
+
+              ...
+              45.20 6.35 -3.00 -2.90 0
+        ```
+        """
+        polyfile = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz")
+
+        z_source, z_sink = SourceSinkConverter().get_z_sources_sinks(polyfile)
+        assert z_source == [-3, -2.90]
+        assert z_sink == [-4.2, -5.35]
 
     def test_default(self):
         """
