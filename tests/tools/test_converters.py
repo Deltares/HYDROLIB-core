@@ -116,29 +116,74 @@ class TestSourceSinkConverter:
 
     def test_default(self):
         """
-        Old quantity block:
+        The test case is based on the following assumptions:
+        - temperature, salinity, and initialtracer_anyname are other quantities in the ext file.
+        - The ext file has the following structure:
+        ```
+        QUANTITY=initialtemperature
+        FILENAME=right.pol
+        FILETYPE=10
+        METHOD=4
+        OPERAND=O
+        VALUE=11.
 
+        QUANTITY=initialsalinity
+        FILENAME=right.pol
+        FILETYPE=10
+        METHOD=4
+        OPERAND=O
+        VALUE=11.
+
+        QUANTITY=initialtracer_anyname
+        FILENAME=leftsor.pliz
+        FILETYPE=9
+        METHOD=1
+        OPERAND=O
+
+        QUANTITY=discharge_salinity_temperature_sorsin
+        FILENAME=leftsor.pliz
+        FILETYPE=9
+        METHOD=1
+        OPERAND=O
+        AREA=1.0
         ```
-        QUANTITY =waterlevelbnd
-        FILENAME =tfl_01.pli
-        FILETYPE =9
-        METHOD   =3
-        OPERAND  =O
+
+        - The time file has the following structure:
         ```
+        0.0 1.0 2.0 3.0 4.0
+        100 1.0 2.0 3.0 4.0
+        200 1.0 2.0 3.0 4.0
+        300 1.0 2.0 3.0 4.0
+        400 1.0 2.0 3.0 4.0
+        ```
+
+        - The polyline has only 3 columns, so the zsink and zsource will have only one value which is in the third column.
+        ```
+        zsink = -4.2
+        zsource = -3
+        ```
+
+        - The polyline file has the following structure:
+        ```
+        L1
+             2 3
+              63.350456 12.950216 -4.200000
+              45.200344 6.350155 -3.000
+        ```
+
         """
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
             filename="tests/data/input/source-sink/leftsor.pliz",
-            filetype=9,  # "Polyline"
-            method="1",  # "Interpolate space",
+            filetype=9,
+            method="1",
             operand="O",
             area=1.0,
         )
 
-        # the list of quantites names comes from the external forcing file
         ext_file_other_quantities = [
-            "temperaturedelta",
-            "salinitydelta",
+            "salinity",
+            "temperature",
             "initialtracer_anyname",
         ]
 

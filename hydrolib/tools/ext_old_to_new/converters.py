@@ -3,7 +3,12 @@ from typing import Any, Dict, List
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.ext.models import Boundary, Meteo, SourceSink
+from hydrolib.core.dflowfm.ext.models import (
+    SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
+    Boundary,
+    Meteo,
+    SourceSink,
+)
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
     ExtOldForcing,
@@ -18,6 +23,7 @@ from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.ext_old_to_new.utils import (
     convert_initial_cond_param_dict,
     convert_interpolation_data,
+    find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
 )
 
@@ -291,7 +297,7 @@ class SourceSinkConverter(BaseConverter):
             necessary information, such as quantity, values, and timestamps,
             required for the conversion process.
             ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
-            external forcings file .
+            external forcings file.
 
         Returns:
             Boundary: A Boindary object that represents the converted forcing
@@ -330,7 +336,23 @@ class SourceSinkConverter(BaseConverter):
         time_file = TimParser.parse(tim_file)
         tim_model = TimModel(**time_file)
         time_series = get_time_series_data(tim_model)
-        ext_file_quantity_list = ["discharge"] + ext_file_quantity_list
+        # get the required quantities from the external file
+        required_quantities_from_ext = [
+            key
+            for key in ext_file_quantity_list
+            if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+        ]
+        # check if the temperature and salinity are present in the external file
+        temp_salinity_dict = find_temperature_salinity_in_quantities(
+            ext_file_quantity_list
+        )
+
+        ext_file_quantity_list = (
+            ["discharge"]
+            + list(temp_salinity_dict.keys())
+            + required_quantities_from_ext
+        )
+
         time_series = {
             ext_file_quantity_list[i]: time_series[i + 1]
             for i in range(len(ext_file_quantity_list))
