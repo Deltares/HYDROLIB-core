@@ -40,6 +40,58 @@ class TestParseTimFileForSourceSink:
         with pytest.raises(ValueError):
             converter.parse_tim_model(tim_file, ext_file_quantity_list)
 
+    def test_no_temperature(self):
+        """
+        The test case is based on the following assumptions:
+        - The tim file has 3 columns (plus the time column), but the list of ext quantities has only 3 quantities.
+        """
+        tim_file = Path("tests/data/input/source-sink/no_temperature_or_salinity.tim")
+        ext_file_quantity_list = [
+            "discharge",
+            "salinity",
+            "initialtracer_anyname",
+        ]
+        converter = SourceSinkConverter()
+
+        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert time_series_data["salinitydelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
+
+    def test_no_salinity(self):
+        """
+        The test case is based on the following assumptions:
+        - The tim file has 3 columns (plus the time column), and the list of ext quantities has only 3 quantities.
+        """
+        tim_file = Path("tests/data/input/source-sink/no_temperature_or_salinity.tim")
+        ext_file_quantity_list = [
+            "discharge",
+            "temperature",
+            "initialtracer_anyname",
+        ]
+        converter = SourceSinkConverter()
+
+        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert time_series_data["temperaturedelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
+
+    def test_no_salinity_no_temperature(self):
+        """
+        The test case is based on the following assumptions:
+        - The tim file has 2 columns (plus the time column), and the list of ext quantities has only 2 quantities.
+        """
+        tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
+        ext_file_quantity_list = [
+            "discharge",
+            "initialtracer_anyname",
+        ]
+        converter = SourceSinkConverter()
+
+        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
+
 
 class TestSourceSinkConverter:
 
