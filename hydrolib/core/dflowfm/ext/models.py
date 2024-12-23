@@ -28,6 +28,7 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
     "tracerbnd",
     "sedfracbnd",
+    "initialsedfrac",
 )
 
 
