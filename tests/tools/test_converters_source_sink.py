@@ -296,3 +296,43 @@ class TestSourceSinkConverter:
         assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
         assert new_quantity_block.zsink == [-4.2, -5.35]
         assert new_quantity_block.zsource == [-3, -2.90]
+
+    def test_no_temperature_no_salinity(self):
+        """
+        The test case is based on the assumptions of the default test plus the following changes:
+
+        - The timfile has only two columns (plus the time column), and the list of ext quantities has only two quantities.
+        ```
+
+
+        - The tim file file has the following structure:
+        ```
+        0.0 1.0 4.0
+        100 1.0 4.0
+        200 1.0 4.0
+        300 1.0 4.0
+        400 1.0 4.0
+        ```
+
+        """
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename="tests/data/input/source-sink/leftsor.pliz",
+            filetype=9,
+            method="1",
+            operand="O",
+            area=1.0,
+        )
+
+        ext_file_other_quantities = [
+            "initialtracer_anyname",
+        ]
+        tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
+        with patch("pathlib.Path.with_suffix", return_value=tim_file):
+            new_quantity_block = SourceSinkConverter().convert(
+                forcing, ext_file_other_quantities
+            )
+        assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
+        assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert new_quantity_block.zsink == [-4.2]
+        assert new_quantity_block.zsource == [-3]
