@@ -65,18 +65,41 @@ def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
     assert points[1] == Point(x=0, y=2, z=None, data=[])
 
 
-def test_with_z_and_pliz_extension_2by2(polylines_dir: Path):
-    """
-    The test check a 2*2 polyline file with z values, the extension is correct but the dimensions are 2*2.
-    not 2*3
-    the parser only reads the length of the dimensions in the second line and ignores the z values.
-    tfl_01
-        2 2
-        0.00000000000000000	0.00000000000000000 5
-        0.00000000000000000	2.00000000000000000 5
+class TestPLIZExtension:
 
-    - To read the z values correctly, the dimensions should be 2*3 and the extension should be pliz.
-    """
-    path = polylines_dir / "boundary-polyline-with-z-no-label.pliz"
-    with pytest.raises(ValueError):
-        PolyFile(path)
+    def test_with_z_and_pliz_extension_2by2(self, polylines_dir: Path):
+        """
+        The test check a 2*2 polyline file with z values, the extension is correct, but the dimensions are 2*2.
+        not 2*3
+        the parser only reads the length of the dimensions in the second line and ignores the z values.
+        ```
+        tfl_01
+            2 2
+            0.00000000000000000	0.00000000000000000 5
+            0.00000000000000000	2.00000000000000000 5
+        ```
+
+        - To read the z values correctly, the dimensions should be 2*3, and the extension should be pliz.
+        """
+        path = polylines_dir / "boundary-polyline-with-z-no-label.pliz"
+        with pytest.raises(ValueError):
+            PolyFile(path)
+
+    def test_with_z_and_pliz_extension_2by3(self, polylines_dir: Path):
+        """
+        The test check a 2*3, polyline file with z values, the extension is correct, and the dimensions are correct.
+        the parser only reads the length of the dimensions in the second line and ignores the z values.
+        ```
+        tfl_01
+            2 3
+            0.00000000000000000	0.00000000000000000 5
+            0.00000000000000000	2.00000000000000000 5
+        ```
+        - To read the z values correctly, the dimensions should be 2*3 and the extension should be pliz.
+        """
+        path = polylines_dir / "boundary-polyline-with-z-no-label-2by3.pliz"
+        polyfile = PolyFile(path)
+        points = polyfile.objects[0].points
+        assert len(polyfile.objects[0].points) == 2
+        assert points[0] == Point(x=0, y=0, z=5, data=[])
+        assert points[1] == Point(x=0, y=2, z=5, data=[])
