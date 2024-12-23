@@ -1,3 +1,9 @@
+"""
+- To read the z values correctly, the dimensions should be 2*3 and the extension should be pliz.
+- If the file is .pliz and the dimensions are 2*2, the parser will give an error.
+- If the file is .pli and the dimensions are 2*3, the parser will ignore the z values.
+"""
+
 from pathlib import Path
 
 import pytest
@@ -15,7 +21,7 @@ def test_with_label(polylines_dir: Path):
         0.00000000000000000	0.00000000000000000 #zee
         0.00000000000000000	2.00000000000000000 #zee
     """
-    path = polylines_dir.joinpath("boundary-polyline-no-z-with-label.pli")
+    path = polylines_dir / "boundary-polyline-no-z-with-label.pli"
     polyline = PolyFile(path)
     assert polyline.has_z_values is False
     assert polyline.filepath == path
@@ -30,7 +36,7 @@ def test_without_z(polylines_dir: Path):
      -80    -50
      -80    550
     """
-    path = polylines_dir.joinpath("boundary-polyline-no-z-no-label.pli")
+    path = polylines_dir / "boundary-polyline-no-z-no-label.pli"
     polyline = PolyFile(path)
     assert polyline.has_z_values is False
     assert polyline.filepath == path
@@ -40,16 +46,16 @@ def test_without_z(polylines_dir: Path):
     assert points[1] == Point(x=-80, y=550, z=None, data=[])
 
 
-def test_with_z_and_pli_extension(polylines_dir: Path):
+def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
     """
-    The test check a 2*2 polyline file with z values but the extension is pli not pliz.
+    The test check a 2*2 polyline file with z values, but the extension is pli not pliz.
     the parser will ignore the z values and read the file as a normal polyline file.
     tfl_01
-        2      2
+        2 2
         0.00000000000000000	0.00000000000000000 5
         0.00000000000000000	2.00000000000000000 5
     """
-    path = polylines_dir.joinpath("boundary-polyline-with-z-no-label.pli")
+    path = polylines_dir / "boundary-polyline-with-z-no-label.pli"
     polyline = PolyFile(path)
     assert polyline.has_z_values is False
     assert polyline.filepath == path
@@ -59,16 +65,18 @@ def test_with_z_and_pli_extension(polylines_dir: Path):
     assert points[1] == Point(x=0, y=2, z=None, data=[])
 
 
-def test_with_z_and_pliz_extension(polylines_dir: Path):
+def test_with_z_and_pliz_extension_2by2(polylines_dir: Path):
     """
     The test check a 2*2 polyline file with z values, the extension is correct but the dimensions are 2*2.
     not 2*3
     the parser only reads the length of the dimensions in the second line and ignores the z values.
     tfl_01
-        2      2
+        2 2
         0.00000000000000000	0.00000000000000000 5
         0.00000000000000000	2.00000000000000000 5
+
+    - To read the z values correctly, the dimensions should be 2*3 and the extension should be pliz.
     """
-    path = polylines_dir.joinpath("boundary-polyline-with-z-no-label.pliz")
+    path = polylines_dir / "boundary-polyline-with-z-no-label.pliz"
     with pytest.raises(ValueError):
         PolyFile(path)
