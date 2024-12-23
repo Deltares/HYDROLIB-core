@@ -258,5 +258,64 @@ class TestSourceSinkConverter:
         assert new_quantity_block.salinitydelta == [3.0, 3.0, 3.0, 3.0, 3.0]
         assert new_quantity_block.temperaturedelta == [2.0, 2.0, 2.0, 2.0, 2.0]
         assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
-        assert new_quantity_block.zsink == -4.2
-        assert new_quantity_block.zsource == -3
+        assert new_quantity_block.zsink == [-4.2]
+        assert new_quantity_block.zsource == [-3]
+
+    def test_4_5_columns_polyline(self):
+        """
+        The test case is based on the assumptions of the default test plus the following changes:
+
+        - The polyline has only four or five columns, so the zsink and zsource will have two values which is in the
+        third and forth columns' values, and if there is a fifth column it will be ignored.
+        ```
+        zsink = [-4.2, -5.35]
+        zsource = [-3, -2.90]
+        ```
+
+        - The polyline file has the following structure:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20 -5.35
+              ...
+
+              ...
+              45.20 6.35 -3.00 -2.90
+        ```
+        when there is a fifth column:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20 -5.35 0
+              ...
+
+              ...
+              45.20 6.35 -3.00 -2.90 0
+        ```
+
+        """
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename="tests/data/input/source-sink/leftsor-5-columns.pliz",
+            filetype=9,
+            method="1",
+            operand="O",
+            area=1.0,
+        )
+
+        ext_file_other_quantities = [
+            "salinity",
+            "temperature",
+            "initialtracer_anyname",
+        ]
+        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+        with patch("pathlib.Path.with_suffix", return_value=tim_file):
+            new_quantity_block = SourceSinkConverter().convert(
+                forcing, ext_file_other_quantities
+            )
+        assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
+        assert new_quantity_block.salinitydelta == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert new_quantity_block.temperaturedelta == [2.0, 2.0, 2.0, 2.0, 2.0]
+        assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert new_quantity_block.zsink == [-4.2, -5.35]
+        assert new_quantity_block.zsource == [-3, -2.90]

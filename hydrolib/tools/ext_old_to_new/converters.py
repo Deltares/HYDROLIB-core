@@ -235,49 +235,49 @@ class ParametersConverter(BaseConverter):
         return new_block
 
 
-def get_time_series_data(tim_model: TimModel) -> Dict[str, List[float]]:
-    """Extract time series data from a TIM model.
-
-    Extract the time series data (each column) from the TimModel object
-
-    Args:
-        tim_model (TimModel): The TimModel object containing the time series data.
-
-    Returns:
-        Dict[str, List[float]]: A dictionary containing the time series data form each column.
-        the keys of the dictionary will be index starting from 1 to the number of columns in the tim file
-        (excluding the first column(time)).
-
-    Examples:
-        >>> tim_file = Path("tests/data/external_forcings/initial_waterlevel.tim")
-        >>> time_file = TimParser.parse(tim_file)
-        >>> tim_model = TimModel(**time_file)
-        >>> time_series = get_time_series_data(tim_model)
-        >>> print(time_series)
-        {
-            1: [1.0, 1.0, 3.0, 5.0, 8.0],
-            2: [2.0, 2.0, 5.0, 8.0, 10.0],
-            3: [3.0, 5.0, 12.0, 9.0, 23.0],
-            4: [4.0, 4.0, 4.0, 4.0, 4.0]
-        }
-    """
-    num_locations = len(tim_model.timeseries[0].data)
-
-    # Initialize a dictionary to collect data for each location
-    data = {loc: [] for loc in range(1, num_locations + 1)}
-
-    # Extract time series data for each location
-    for record in tim_model.timeseries:
-        for loc_index, value in enumerate(record.data, start=1):
-            data[loc_index].append(value)
-
-    return data
-
-
 class SourceSinkConverter(BaseConverter):
 
     def __init__(self):
         super().__init__()
+
+    @staticmethod
+    def get_time_series_data(tim_model: TimModel) -> Dict[str, List[float]]:
+        """Extract time series data from a TIM model.
+
+        Extract the time series data (each column) from the TimModel object
+
+        Args:
+            tim_model (TimModel): The TimModel object containing the time series data.
+
+        Returns:
+            Dict[str, List[float]]: A dictionary containing the time series data form each column.
+            the keys of the dictionary will be index starting from 1 to the number of columns in the tim file
+            (excluding the first column(time)).
+
+        Examples:
+            >>> tim_file = Path("tests/data/external_forcings/initial_waterlevel.tim")
+            >>> time_file = TimParser.parse(tim_file)
+            >>> tim_model = TimModel(**time_file)
+            >>> time_series = SourceSinkConverter().get_time_series_data(tim_model)
+            >>> print(time_series)
+            {
+                1: [1.0, 1.0, 3.0, 5.0, 8.0],
+                2: [2.0, 2.0, 5.0, 8.0, 10.0],
+                3: [3.0, 5.0, 12.0, 9.0, 23.0],
+                4: [4.0, 4.0, 4.0, 4.0, 4.0]
+            }
+        """
+        num_locations = len(tim_model.timeseries[0].data)
+
+        # Initialize a dictionary to collect data for each location
+        data = {loc: [] for loc in range(1, num_locations + 1)}
+
+        # Extract time series data for each location
+        for record in tim_model.timeseries:
+            for loc_index, value in enumerate(record.data, start=1):
+                data[loc_index].append(value)
+
+        return data
 
     @staticmethod
     def get_z_sources_sinks(polyline: PolyFile) -> Tuple[float, List[float]]:
@@ -365,7 +365,7 @@ class SourceSinkConverter(BaseConverter):
         polyline = PolyFile(location_file)
         x_coords = [point.x for point in polyline.objects[0].points]
         y_coords = [point.y for point in polyline.objects[0].points]
-        z_coords = [point.z for point in polyline.objects[0].points]
+        z_source, z_sink = self.get_z_sources_sinks(polyline)
 
         # check the tim file
         tim_file = forcing.filename.filepath.with_suffix(".tim")
@@ -375,7 +375,7 @@ class SourceSinkConverter(BaseConverter):
             )
         time_file = TimParser.parse(tim_file)
         tim_model = TimModel(**time_file)
-        time_series = get_time_series_data(tim_model)
+        time_series = self.get_time_series_data(tim_model)
         # get the required quantities from the external file
         required_quantities_from_ext = [
             key
@@ -405,8 +405,8 @@ class SourceSinkConverter(BaseConverter):
             "numcoordinates": len(x_coords),
             "xcoordinates": x_coords,
             "ycoordinates": y_coords,
-            "zsource": z_coords[-1],
-            "zsink": z_coords[0],
+            "zsource": z_source,
+            "zsink": z_sink,
         }
         data = data | time_series
 

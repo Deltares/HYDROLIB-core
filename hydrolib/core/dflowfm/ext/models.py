@@ -208,7 +208,7 @@ class SourceSink(INIBasedModel):
     xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
 
-    zsource: Optional[Union[float, float]] = Field(alias="zSource")
+    zsource: Optional[Union[float, List[float]]] = Field(alias="zSource")
     zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
     discharge: Optional[Union[float, List[float]]] = Field(alias="discharge")
     area: Optional[float] = Field(alias="Area")
