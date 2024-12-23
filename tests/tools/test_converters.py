@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
+import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -114,6 +115,19 @@ class TestBoundaryConverter:
         assert new_quantity_block.nodeid is None
         assert new_quantity_block.bndwidth1d is None
         assert new_quantity_block.bndbldepth is None
+
+
+class TestParseTimFileForSourceSink:
+    def test_list_of_ext_quantities_tim_column_mismatch(self):
+        """
+        The test case is based on the following assumptions:
+        - The tim file has 4 columns (plus the time column), but the list of ext quantities has only 3 quantities.
+        """
+        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+        ext_file_quantity_list = ["discharge", "temperature", "salinity"]
+        converter = SourceSinkConverter()
+        with pytest.raises(ValueError):
+            converter.parse_tim_model(tim_file, ext_file_quantity_list)
 
 
 class TestSourceSinkConverter:

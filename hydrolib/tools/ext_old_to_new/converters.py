@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
@@ -319,6 +320,92 @@ class SourceSinkConverter(BaseConverter):
         z_source = z_source_sink[1]
         return z_source, z_sink
 
+    def parse_tim_model(
+        self, tim_file: Path, ext_file_quantity_list: List[str]
+    ) -> Dict[str, List[float]]:
+        """Parse the source and sinks related time series from the tim file.
+
+        - Parse the TIM file and extract the time series data for each column.
+        - assign the time series data to the corresponding quantity name.
+
+        Args:
+            tim_file (Path): The path to the TIM file.
+            ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
+
+        Returns:
+            Dict[str, List[float]]: A dictionary containing the time series data form each column in the tim_file.
+            the keys of the dictionary will be the quantity names, and the values will be the time series data.
+
+        Raises:
+            ValueError: If the number of columns in the TIM file does not match the number of quantities in the external
+            forcings file that has one of the following prefixes `initialtracer`,`tracerbnd`,
+            `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+
+        Examples:
+        if the tim file contains 5 columns (the first column is the time):
+            ```
+            0.0 1.0 2.0 3.0 4.0
+            1.0 1.0 2.0 3.0 4.0
+            2.0 1.0 2.0 3.0 4.0
+            3.0 1.0 2.0 3.0 4.0
+            4.0 1.0 2.0 3.0 4.0
+            ```
+        and the external file contains the following quantities:
+            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracer-anyname",
+            ... "anyother-quantities"]
+
+        - the function will filter the quantities that have one of the following prefixes `initialtracer`,`tracerbnd`,
+        `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+        and then compare the number of columns in the TIM file with the number of filtered quantities from the
+        external forcings file, if they don't match a `Value Error` will be raised.
+        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracer-anyname"] and the
+        tim file contains 4 columns (excluding the time column).
+
+            >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+
+            >>> converter = SourceSinkConverter()
+            >>> time_series = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            >>> print(time_series)
+            {
+                "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
+                "temperaturedelta": [2.0, 2.0, 2.0, 2.0, 2.0],
+                "salinitydelta": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "initialtracer-anyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+            }
+        """
+        time_file = TimParser.parse(tim_file)
+        tim_model = TimModel(**time_file)
+        time_series = self.get_time_series_data(tim_model)
+        # get the required quantities from the external file
+        required_quantities_from_ext = [
+            key
+            for key in ext_file_quantity_list
+            if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+        ]
+
+        # check if the temperature and salinity are present in the external file
+        temp_salinity_dict = find_temperature_salinity_in_quantities(
+            ext_file_quantity_list
+        )
+
+        ext_file_quantity_list = (
+            ["discharge"]
+            + list(temp_salinity_dict.keys())
+            + required_quantities_from_ext
+        )
+
+        if len(time_series) != len(ext_file_quantity_list):
+            raise ValueError(
+                f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match the number of "
+                f"quantities in the external forcings file: {ext_file_quantity_list}."
+            )
+
+        time_series = {
+            ext_file_quantity_list[i]: time_series[i + 1]
+            for i in range(len(ext_file_quantity_list))
+        }
+        return time_series
+
     def convert(
         self, forcing: ExtOldForcing, ext_file_quantity_list: List[str] = None
     ) -> ParameterField:
@@ -373,30 +460,8 @@ class SourceSinkConverter(BaseConverter):
             raise ValueError(
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
             )
-        time_file = TimParser.parse(tim_file)
-        tim_model = TimModel(**time_file)
-        time_series = self.get_time_series_data(tim_model)
-        # get the required quantities from the external file
-        required_quantities_from_ext = [
-            key
-            for key in ext_file_quantity_list
-            if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-        ]
-        # check if the temperature and salinity are present in the external file
-        temp_salinity_dict = find_temperature_salinity_in_quantities(
-            ext_file_quantity_list
-        )
 
-        ext_file_quantity_list = (
-            ["discharge"]
-            + list(temp_salinity_dict.keys())
-            + required_quantities_from_ext
-        )
-
-        time_series = {
-            ext_file_quantity_list[i]: time_series[i + 1]
-            for i in range(len(ext_file_quantity_list))
-        }
+        time_series = self.parse_tim_model(tim_file, ext_file_quantity_list)
 
         data = {
             "id": "L1",
