@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -229,3 +229,25 @@ class TestUpdate:
         assert [
             str(quantities[i].locationfile.filepath) for i in range(num_quantities)
         ] == old_forcing_file_boundary["locationfile"]
+
+    def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
+        """ """
+        path = "tests/data/input/source-sink/source-sink.ext"
+        converter = ExternalForcingConverter(path)
+
+        tim_file = Path("tim-3-columns.tim")
+        with patch("pathlib.Path.with_suffix", return_value=tim_file):
+            ext_model, inifield_model, structure_model = converter.update()
+
+        # all the quantities in the old external file are initial conditions
+        # check that all the quantities (3) were converted to initial conditions
+        num_quantities = 1
+        assert len(ext_model.source_sink) == num_quantities
+        # no parameters or any other structures, lateral or meteo data
+        assert len(inifield_model.parameter) == 0
+        assert len(ext_model.lateral) == 0
+        assert len(ext_model.meteo) == 0
+        assert len(structure_model.structure) == 0
+        assert len(inifield_model.initial) == 2
+        quantities = ext_model.source_sink
+        quantities[0].name = "discharge_salinity_temperature_sorsin"

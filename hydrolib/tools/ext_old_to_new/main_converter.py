@@ -6,7 +6,13 @@ from typing import Tuple, Union
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import PathOrStr
-from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
+from hydrolib.core.dflowfm.ext.models import (
+    Boundary,
+    ExtModel,
+    Lateral,
+    Meteo,
+    SourceSink,
+)
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
@@ -45,36 +51,48 @@ class ExternalForcingConverter:
             ext_model_path (PathOrStr, optional): Path to the new external forcing file.
             inifield_model_path (PathOrStr, optional): Path to the initial field file.
             structure_model_path (PathOrStr, optional): Path to the structure file.
+
+        Raises:
+            FileNotFoundError: If the old external forcing file does not exist.
+
+        Examples:
+            >>> converter = ExternalForcingConverter("old-external-forcing.ext")
+            >>> converter.update()
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
             extold_model = self._read_old_file(extold_model)
 
         self._extold_model = extold_model
         rdir = extold_model.filepath.parent
-
+        self._root_dir = rdir
         # create the new models if not provided by the user in the same directory as the old external file
         path = (
-            rdir.joinpath("new-external-forcing.ext")
+            rdir / "new-external-forcing.ext"
             if ext_model_path is None
             else ext_model_path
         )
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
 
         path = (
-            rdir.joinpath("new-initial-conditions.ext")
+            rdir / "new-initial-conditions.ext"
             if inifield_model_path is None
             else inifield_model_path
         )
         self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path)
 
         path = (
-            rdir.joinpath("new-structure.ext")
+            rdir / "new-structure.ext"
             if structure_model_path is None
             else structure_model_path
         )
         self._structure_model = construct_filemodel_new_or_existing(
             StructureModel, path
         )
+
+    @property
+    def root_dir(self) -> Path:
+        """Root directory of the external forcing file."""
+        return self._root_dir
 
     @property
     def extold_model(self) -> ExtOldModel:
@@ -136,7 +154,11 @@ class ExternalForcingConverter:
             extoldfile (PathOrStr): path to the external forcings file (.ext)
 
         Returns:
-            ExtOldModel: object with all forcing blocks."""
+            ExtOldModel: object with all forcing blocks.
+
+        Raises:
+            FileNotFoundError: If the old external forcing file does not exist.
+        """
         global _verbose
         if not isinstance(extoldfile, Path):
             extoldfile = Path(extoldfile)
@@ -156,7 +178,7 @@ class ExternalForcingConverter:
         postfix: str = "",
     ) -> Union[Tuple[ExtModel, IniFieldModel, StructureModel], None]:
         """
-        Convert old external forcing file to new format files.
+        Convert the old external forcing file to a new format files.
         When the output files are existing, output will be appended to them.
 
         Args:
@@ -181,7 +203,13 @@ class ExternalForcingConverter:
         for forcing in self.extold_model.forcing:
             try:
                 converter_class = ConverterFactory.create_converter(forcing.quantity)
-                new_quantity_block = converter_class.convert(forcing)
+                # only the SourceSink converter needs the quantities' list
+                if converter_class.__class__.__name__ == "SourceSinkConverter":
+                    quantities = self.extold_model.quantities
+                    converter_class.root_dir = self.root_dir
+                    new_quantity_block = converter_class.convert(forcing, quantities)
+                else:
+                    new_quantity_block = converter_class.convert(forcing)
             except ValueError:
                 # While this tool is in progress, accept that we do not convert all quantities yet.
                 new_quantity_block = None
@@ -190,6 +218,8 @@ class ExternalForcingConverter:
                 self.ext_model.boundary.append(new_quantity_block)
             elif isinstance(new_quantity_block, Lateral):
                 self.ext_model.lateral.append(new_quantity_block)
+            elif isinstance(new_quantity_block, SourceSink):
+                self.ext_model.source_sink.append(new_quantity_block)
             elif isinstance(new_quantity_block, Meteo):
                 self.ext_model.meteo.append(new_quantity_block)
             elif isinstance(new_quantity_block, InitialField):
