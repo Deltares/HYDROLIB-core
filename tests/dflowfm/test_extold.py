@@ -812,38 +812,38 @@ class TestExtOldModel:
         forcing_1 = model.forcing[0]
         assert forcing_1.quantity == ExtOldQuantity.InternalTidesFrictionCoefficient
         assert forcing_1.filename.filepath == Path("surroundingDomain.pol")
-        assert forcing_1.varname == None
-        assert forcing_1.sourcemask.filepath == None
+        assert forcing_1.varname is None
+        assert forcing_1.sourcemask.filepath is None
         assert forcing_1.filetype == ExtOldFileType.NetCDFGridData
         assert forcing_1.method == ExtOldMethod.InterpolateSpace
         assert forcing_1.operand == Operand.add
         assert forcing_1.value == pytest.approx(0.0125)
-        assert forcing_1.factor == None
-        assert forcing_1.ifrctyp == None
-        assert forcing_1.averagingtype == None
-        assert forcing_1.relativesearchcellsize == None
-        assert forcing_1.extrapoltol == None
-        assert forcing_1.percentileminmax == None
-        assert forcing_1.area == None
-        assert forcing_1.nummin == None
+        assert forcing_1.factor is None
+        assert forcing_1.ifrctyp is None
+        assert forcing_1.averagingtype is None
+        assert forcing_1.relativesearchcellsize is None
+        assert forcing_1.extrapoltol is None
+        assert forcing_1.percentileminmax is None
+        assert forcing_1.area is None
+        assert forcing_1.nummin is None
 
         forcing_2 = model.forcing[1]
         assert forcing_2.quantity == ExtOldQuantity.WaterLevelBnd
         assert forcing_2.filename.filepath == Path("OB_001_orgsize.pli")
-        assert forcing_2.varname == None
-        assert forcing_2.sourcemask.filepath == None
+        assert forcing_2.varname is None
+        assert forcing_2.sourcemask.filepath is None
         assert forcing_2.filetype == ExtOldFileType.Polyline
         assert forcing_2.method == ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
         assert forcing_2.operand == Operand.override
-        assert forcing_2.value == None
-        assert forcing_2.factor == None
-        assert forcing_2.ifrctyp == None
-        assert forcing_2.averagingtype == None
-        assert forcing_2.relativesearchcellsize == None
-        assert forcing_2.extrapoltol == None
-        assert forcing_2.percentileminmax == None
-        assert forcing_2.area == None
-        assert forcing_2.nummin == None
+        assert forcing_2.value is None
+        assert forcing_2.factor is None
+        assert forcing_2.ifrctyp is None
+        assert forcing_2.averagingtype is None
+        assert forcing_2.relativesearchcellsize is None
+        assert forcing_2.extrapoltol is None
+        assert forcing_2.percentileminmax is None
+        assert forcing_2.area is None
+        assert forcing_2.nummin is None
 
     def test_save_model(self):
 
