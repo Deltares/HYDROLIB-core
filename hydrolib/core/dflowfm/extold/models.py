@@ -795,3 +795,8 @@ class ExtOldModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return Parser.parse
+
+    @property
+    def quantities(self) -> List[str]:
+        """List all the quantities in the external forcings file."""
+        return [forcing.quantity for forcing in self.forcing]

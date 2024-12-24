@@ -168,6 +168,8 @@ class TestExtOldModel:
         exp_comments = [" This is a comment", " This is a comment", ""]
         assert model.comment == exp_comments
 
+        assert model.quantities == ["internaltidesfrictioncoefficient", "waterlevelbnd"]
+
         # Assert correct forcings
         assert len(model.forcing) == 2
 
