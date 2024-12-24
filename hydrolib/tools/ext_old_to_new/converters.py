@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -16,6 +16,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldInitialConditionQuantity,
     ExtOldMeteoQuantity,
     ExtOldParametersQuantity,
+    ExtOldSourcesSinks,
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -365,6 +366,16 @@ class SourceSinkConverter(BaseConverter):
         }
         return time_series
 
+    @property
+    def root_dir(self) -> Path:
+        return self._root_dir
+
+    @root_dir.setter
+    def root_dir(self, value: Union[Path, str]):
+        if isinstance(value, str):
+            value = Path(value)
+        self._root_dir = value
+
     def convert(
         self, forcing: ExtOldForcing, ext_file_quantity_list: List[str] = None
     ) -> SourceSink:
@@ -408,12 +419,10 @@ class SourceSinkConverter(BaseConverter):
         location_file = forcing.filename.filepath
         polyline = forcing.filename
         # move this to a validator in the source and sink model
-        x_coords = polyline.x
-        y_coords = polyline.y
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
-        tim_file = forcing.filename.filepath.with_suffix(".tim")
+        tim_file = self.root_dir / polyline.filepath.with_suffix(".tim").name
         if not tim_file.exists():
             raise ValueError(
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
@@ -425,9 +434,9 @@ class SourceSinkConverter(BaseConverter):
             "id": "L1",
             "name": forcing.quantity,
             "locationfile": location_file,
-            "numcoordinates": len(x_coords),
-            "xcoordinates": x_coords,
-            "ycoordinates": y_coords,
+            "numcoordinates": len(polyline.x),
+            "xcoordinates": polyline.x,
+            "ycoordinates": polyline.y,
             "zsource": z_source,
             "zsink": z_sink,
         }
@@ -469,6 +478,8 @@ class ConverterFactory:
             return BoundaryConditionConverter()
         elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
             return ParametersConverter()
+        elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
+            return SourceSinkConverter()
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
 

@@ -167,10 +167,9 @@ class TestSourceSinkConverter:
             "temperature",
             "initialtracer_anyname",
         ]
-
-        new_quantity_block = SourceSinkConverter().convert(
-            forcing, ext_file_other_quantities
-        )
+        converter = SourceSinkConverter()
+        converter.root_dir = "tests/data/input/source-sink"
+        new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
         assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
         assert new_quantity_block.salinitydelta == [3.0, 3.0, 3.0, 3.0, 3.0]
         assert new_quantity_block.temperaturedelta == [2.0, 2.0, 2.0, 2.0, 2.0]
@@ -225,11 +224,11 @@ class TestSourceSinkConverter:
             "temperature",
             "initialtracer_anyname",
         ]
-        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+        converter = SourceSinkConverter()
+        converter.root_dir = "tests/data/input/source-sink"
+        tim_file = Path("leftsor.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = SourceSinkConverter().convert(
-                forcing, ext_file_other_quantities
-            )
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
         assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
         assert new_quantity_block.salinitydelta == [3.0, 3.0, 3.0, 3.0, 3.0]
         assert new_quantity_block.temperaturedelta == [2.0, 2.0, 2.0, 2.0, 2.0]
@@ -267,11 +266,13 @@ class TestSourceSinkConverter:
         ext_file_other_quantities = [
             "initialtracer_anyname",
         ]
-        tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
+
+        converter = SourceSinkConverter()
+        converter.root_dir = "tests/data/input/source-sink"
+
+        tim_file = Path("no_temperature_no_salinity.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = SourceSinkConverter().convert(
-                forcing, ext_file_other_quantities
-            )
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
         assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
         assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
         assert new_quantity_block.zsink == [-4.2]
