@@ -386,7 +386,7 @@ class Meteo(INIBasedModel):
 
 
 class ExtGeneral(INIGeneral):
-    """The external forcing file's `[General]` section with file meta data."""
+    """The external forcing file's `[General]` section with file meta-data."""
 
     _header: Literal["General"] = "General"
     fileversion: str = Field("2.01", alias="fileVersion")
@@ -403,12 +403,14 @@ class ExtModel(INIModel):
         general (ExtGeneral): `[General]` block with file metadata.
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
+        source_sink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
         meteo (List[Meteo]): List of `[Meteo]` blocks for all meteorological forcings.
     """
 
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = Field(default_factory=list)
     lateral: List[Lateral] = Field(default_factory=list)
+    source_sink: List[SourceSink] = Field(default_factory=list)
     meteo: List[Meteo] = Field(default_factory=list)
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
