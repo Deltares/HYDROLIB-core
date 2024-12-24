@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -18,7 +18,6 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
-from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.ext_old_to_new.utils import (
@@ -280,46 +279,6 @@ class SourceSinkConverter(BaseConverter):
 
         return data
 
-    @staticmethod
-    def get_z_sources_sinks(polyline: PolyFile) -> Tuple[float, List[float]]:
-        """
-        Get the z values of the source and sink points from the polyline file.
-
-        Args:
-            polyline: The polyline object containing the source and sink points.
-
-        Returns:
-            z_source, z_sinkA: Tuple[float, List[float]]:
-            If the polyline has data (more than 3 columns), then both the z_source and z_sink will be a list of two values.
-            Otherwise, the z_source and the z_sink will be a single value each.
-
-        Examples:
-        in case the polyline has 3 columns:
-            >>> polyline = PolyFile("tests/data/input/source-sink/leftsor.pliz")
-            >>> z_source, z_sink = SourceSinkConverter().get_z_sources_sinks(polyline)
-            >>> print(z_source, z_sink)
-            [-3] [-4.2]
-
-        in case the polyline has more than 3 columns:
-            >>> polyline = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz") #Doctest: +SKIP
-            >>> z_source, z_sink = SourceSinkConverter().get_z_sources_sinks(polyline)
-            >>> print(z_source, z_sink)
-            [-3, -2.9] [-4.2, -5.35]
-        """
-        has_data = True if polyline.objects[0].points[0].data else False
-
-        z_source_sink = []
-        for elem in [0, -1]:
-            point = polyline.objects[0].points[elem]
-            if has_data:
-                z_source_sink.append([point.z, point.data[0]])
-            else:
-                z_source_sink.append([point.z])
-
-        z_sink = z_source_sink[0]
-        z_source = z_source_sink[1]
-        return z_source, z_sink
-
     def parse_tim_model(
         self, tim_file: Path, ext_file_quantity_list: List[str]
     ) -> Dict[str, List[float]]:
@@ -408,7 +367,7 @@ class SourceSinkConverter(BaseConverter):
 
     def convert(
         self, forcing: ExtOldForcing, ext_file_quantity_list: List[str] = None
-    ) -> ParameterField:
+    ) -> SourceSink:
         """Convert an old external forcing block with Sources and sinks to a boundary
         forcing block suitable for inclusion in a new external forcings file.
 
@@ -441,18 +400,17 @@ class SourceSinkConverter(BaseConverter):
         References:
             - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C10>`_
             - `Polyline <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C2>`
-             - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
-             - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#5.4.10>`_
-             - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
+            - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
+            - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#5.4.10>`_
+            - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
 
         """
         location_file = forcing.filename.filepath
-
+        polyline = forcing.filename
         # move this to a validator in the source and sink model
-        polyline = PolyFile(location_file)
-        x_coords = [point.x for point in polyline.objects[0].points]
-        y_coords = [point.y for point in polyline.objects[0].points]
-        z_source, z_sink = self.get_z_sources_sinks(polyline)
+        x_coords = polyline.x
+        y_coords = polyline.y
+        z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
         tim_file = forcing.filename.filepath.with_suffix(".tim")

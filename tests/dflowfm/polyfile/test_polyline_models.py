@@ -71,6 +71,68 @@ def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
     assert polyline.y == [0, 2]
 
 
+class TestGetZSourcesSinks:
+    def test_get_z_sources_sinks_single_value(self):
+        """
+        The test case is based on the following assumptions:
+        - The polyline has only 3 columns, so the zsink and zsource will have only one value which is in the third column.
+        ```
+        zsink = -4.2
+        zsource = -3
+        ```
+
+        - The polyline file has the following structure:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20
+              45.20 6.35 -3.00
+        ```
+        """
+        polyfile = PolyFile("tests/data/input/source-sink/leftsor.pliz")
+
+        z_source, z_sink = polyfile.get_z_sources_sinks()
+        assert z_source == [-3]
+        assert z_sink == [-4.2]
+
+    def test_get_z_sources_sinks_multiple_values(self):
+        """
+        The test case is based on the following assumptions:
+        - The polyline has only four or five columns, so the zsink and zsource will have two values which is in the
+        third and forth columns' values, and if there is a fifth column it will be ignored.
+        ```
+        zsink = [-4.2, -5.35]
+        zsource = [-3, -2.90]
+        ```
+
+        - The polyline file has the following structure:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20 -5.35
+              ...
+
+              ...
+              45.20 6.35 -3.00 -2.90
+        ```
+        when there is a fifth column:
+        ```
+        L1
+             2 3
+              63.35 12.95 -4.20 -5.35 0
+              ...
+
+              ...
+              45.20 6.35 -3.00 -2.90 0
+        ```
+        """
+        polyfile = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz")
+
+        z_source, z_sink = polyfile.get_z_sources_sinks()
+        assert z_source == [-3, -2.90]
+        assert z_sink == [-4.2, -5.35]
+
+
 class TestPLIZExtension:
 
     def test_with_z_and_pliz_extension_2by2(self, polylines_dir: Path):

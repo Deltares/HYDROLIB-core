@@ -1,7 +1,7 @@
 """models.py defines all classes and functions related to representing pol/pli(z) files.
 """
 
-from typing import Callable, List, Optional, Sequence
+from typing import Callable, List, Optional, Sequence, Tuple
 
 from pydantic.v1 import Field
 
@@ -136,8 +136,46 @@ class PolyFile(ParsableFileModel):
 
     @property
     def x(self) -> List[float]:
+        """X-coordinates of all points in the PolyFile."""
         return [point.x for obj in self.objects for point in obj.points]
 
     @property
     def y(self) -> List[float]:
+        """Y-coordinates of all points in the PolyFile."""
         return [point.y for obj in self.objects for point in obj.points]
+
+    def get_z_sources_sinks(self) -> Tuple[float, List[float]]:
+        """
+        Get the z values of the source and sink points from the polyline file.
+
+        Returns:
+            z_source, z_sinkA: Tuple[float, List[float]]:
+            If the polyline has data (more than 3 columns), then both the z_source and z_sink will be a list of two values.
+            Otherwise, the z_source and the z_sink will be a single value each.
+
+        Examples:
+        in case the polyline has 3 columns:
+            >>> polyline = PolyFile("tests/data/input/source-sink/leftsor.pliz")
+            >>> z_source, z_sink = polyline.get_z_sources_sinks()
+            >>> print(z_source, z_sink)
+            [-3] [-4.2]
+
+        in case the polyline has more than 3 columns:
+            >>> polyline = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz") #Doctest: +SKIP
+            >>> z_source, z_sink = polyline.get_z_sources_sinks()
+            >>> print(z_source, z_sink)
+            [-3, -2.9] [-4.2, -5.35]
+        """
+        has_data = True if self.objects[0].points[0].data else False
+
+        z_source_sink = []
+        for elem in [0, -1]:
+            point = self.objects[0].points[elem]
+            if has_data:
+                z_source_sink.append([point.z, point.data[0]])
+            else:
+                z_source_sink.append([point.z])
+
+        z_sink = z_source_sink[0]
+        z_source = z_source_sink[1]
+        return z_source, z_sink
