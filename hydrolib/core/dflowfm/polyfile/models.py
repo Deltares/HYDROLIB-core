@@ -133,3 +133,11 @@ class PolyFile(ParsableFileModel):
         from .parser import read_polyfile
 
         return read_polyfile
+
+    @property
+    def x(self) -> List[float]:
+        return [point.x for obj in self.objects for point in obj.points]
+
+    @property
+    def y(self) -> List[float]:
+        return [point.y for obj in self.objects for point in obj.points]

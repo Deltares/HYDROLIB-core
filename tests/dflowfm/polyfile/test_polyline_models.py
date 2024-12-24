@@ -26,6 +26,8 @@ def test_with_label(polylines_dir: Path):
     assert polyline.has_z_values is False
     assert polyline.filepath == path
     assert polyline.save_location == path.absolute()
+    assert polyline.x == [0, 0]
+    assert polyline.y == [0, 2]
 
 
 def test_without_z(polylines_dir: Path):
@@ -44,6 +46,8 @@ def test_without_z(polylines_dir: Path):
     points = polyline.objects[0].points
     assert points[0] == Point(x=-80, y=-50, z=None, data=[])
     assert points[1] == Point(x=-80, y=550, z=None, data=[])
+    assert polyline.x == [-80, -80]
+    assert polyline.y == [-50, 550]
 
 
 def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
@@ -63,6 +67,8 @@ def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
     points = polyline.objects[0].points
     assert points[0] == Point(x=0, y=0, z=None, data=[])
     assert points[1] == Point(x=0, y=2, z=None, data=[])
+    assert polyline.x == [0, 0]
+    assert polyline.y == [0, 2]
 
 
 class TestPLIZExtension:
@@ -103,6 +109,8 @@ class TestPLIZExtension:
         assert len(polyfile.objects[0].points) == 2
         assert points[0] == Point(x=0, y=0, z=5, data=[])
         assert points[1] == Point(x=0, y=2, z=5, data=[])
+        assert polyfile.x == [0, 0]
+        assert polyfile.y == [0, 2]
 
     def test_with_z_and_pliz_extension_2by5(self, polylines_dir: Path):
         """
@@ -125,3 +133,5 @@ class TestPLIZExtension:
         assert len(polyfile.objects[0].points) == 2
         assert points[0] == Point(x=63.35, y=12.95, z=-4.2, data=[-5.35, 0])
         assert points[1] == Point(x=45.2, y=6.35, z=-3, data=[-2.90, 0])
+        assert polyfile.x == [63.35, 45.2]
+        assert polyfile.y == [12.95, 6.35]
