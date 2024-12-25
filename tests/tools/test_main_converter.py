@@ -3,16 +3,17 @@ from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
 import pytest
+from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
+from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.ext_old_to_new import main_converter
 from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
     ext_old_to_new_dir_recursive,
-    ext_old_to_new_from_mdu,
 )
 
 
@@ -22,12 +23,12 @@ class TestExtOldToNewFromMDU:
         mdu_filename = (
             input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
         )
-
-        ext_old_to_new_from_mdu(mdu_filename)
-        captured = capsys.readouterr()
-        assert captured.out.startswith(
-            f"Could not read {mdu_filename} as a valid FM model:"
-        )
+        converter = ExternalForcingConverter.from_mdu(mdu_filename)
+        _, _, _ = converter.update()
+        fm_model = converter.fm_model
+        assert isinstance(fm_model, LegacyFMModel)
+        assert len(converter.extold_model.forcing) == 5
+        assert isinstance(fm_model.external_forcing.extforcefilenew, ExtModel)
 
     def test_extrapolate_slr(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
@@ -36,20 +37,11 @@ class TestExtOldToNewFromMDU:
             / "e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu"
         )
 
-        ext_old_to_new_from_mdu(mdu_filename)
-        captured = capsys.readouterr()
-        assert captured.out.startswith(
-            f"Could not read {mdu_filename} as a valid FM model:"
-        )
+        # test with error
+        with pytest.raises(ValidationError):
+            ExternalForcingConverter.from_mdu(mdu_filename)
 
-    def test_basinsquares(self, capsys, input_files_dir: Path):
-        main_converter._verbose = True
-        mdu_filename = (
-            input_files_dir
-            / "e02/f006_external_forcing/c020_basinnofriction_squares/basinsquares.mdu"
-        )
-
-        ext_old_to_new_from_mdu(mdu_filename)
+        ExternalForcingConverter.from_mdu(mdu_filename, suppress_errors=True)
         captured = capsys.readouterr()
         assert captured.out.startswith(
             f"Could not read {mdu_filename} as a valid FM model:"
@@ -58,7 +50,7 @@ class TestExtOldToNewFromMDU:
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
         path = input_files_dir / "e02/f006_external_forcing"
-        ext_old_to_new_dir_recursive(path)
+        ext_old_to_new_dir_recursive(path, suppress_errors=True)
 
 
 class TestExternalFocingConverter:
