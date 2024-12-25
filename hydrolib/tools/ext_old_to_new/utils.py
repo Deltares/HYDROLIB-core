@@ -49,7 +49,7 @@ def backup_file(filepath: PathOrStr) -> None:
     """
     filepath = Path(filepath) if isinstance(filepath, str) else filepath
     if filepath.is_file():
-        backup_path = filepath.with_suffix(".bak")
+        backup_path = filepath.with_suffix(filepath.suffix + ".bak")
         filepath.replace(backup_path)
 
 
