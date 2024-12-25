@@ -288,6 +288,14 @@ class SourceSinkConverter(BaseConverter):
         - Parse the TIM file and extract the time series data for each column.
         - assign the time series data to the corresponding quantity name.
 
+        The order of the quantities in the tim file should be as follows:
+        - time
+        - discharge
+        - temperaturedelta (optional)
+        - salinitydelta (optional)
+        - initialtracer-anyname (optional)
+        - any other quantities from the external forcings file.
+
         Args:
             tim_file (Path): The path to the TIM file.
             ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
