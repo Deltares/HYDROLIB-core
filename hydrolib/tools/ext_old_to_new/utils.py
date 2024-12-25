@@ -65,6 +65,9 @@ def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:
     Returns:
         Path: The new filepath with the postfix included.
 
+    Examples:
+        >>> construct_filepath_with_postfix("file.txt", "_new")
+        Path("file_new.txt")
     """
     file_as_path = Path(filepath)
     return file_as_path.with_stem(file_as_path.stem + postfix)
