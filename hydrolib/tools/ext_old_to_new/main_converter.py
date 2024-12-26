@@ -29,19 +29,17 @@ from hydrolib.tools.ext_old_to_new.utils import (
     construct_filemodel_new_or_existing,
 )
 
-_program: str = "ext_old_to_new"
-_verbose: bool = False
-
 
 class ExternalForcingConverter:
 
     def __init__(
         self,
         extold_model: Union[PathOrStr, ExtOldModel],
-        ext_file: PathOrStr = None,
-        inifield_file: PathOrStr = None,
-        structure_file: PathOrStr = None,
+        ext_file: Optional[PathOrStr] = None,
+        inifield_file: Optional[PathOrStr] = None,
+        structure_file: Optional[PathOrStr] = None,
         fm_model: Optional[LegacyFMModel] = None,
+        verbose: bool = False,
     ):
         """Initialize the converter.
 
@@ -53,6 +51,7 @@ class ExternalForcingConverter:
             ext_file (PathOrStr, optional): Path to the new external forcing file.
             inifield_file (PathOrStr, optional): Path to the initial field file.
             structure_file (PathOrStr, optional): Path to the structure file.
+            verbose (bool, optional): Enable verbose output. Defaults to False.
 
         Raises:
             FileNotFoundError: If the old external forcing file does not exist.
@@ -65,8 +64,10 @@ class ExternalForcingConverter:
             extold_model = self._read_old_file(extold_model)
 
         self._extold_model = extold_model
+        self._verbose = verbose
         rdir = extold_model.filepath.parent
         self._root_dir = rdir
+
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
@@ -85,6 +86,15 @@ class ExternalForcingConverter:
 
         if fm_model is not None:
             self._fm_model = fm_model
+
+    @property
+    def verbose(self) -> bool:
+        """bool: Enable verbose output."""
+        return self._verbose
+
+    @verbose.setter
+    def verbose(self, value: bool):
+        self._verbose = value
 
     @property
     def fm_model(self) -> LegacyFMModel:
@@ -165,7 +175,6 @@ class ExternalForcingConverter:
         Raises:
             FileNotFoundError: If the old external forcing file does not exist.
         """
-        global _verbose
         if not isinstance(extoldfile, Path):
             extoldfile = Path(extoldfile)
 
@@ -173,9 +182,6 @@ class ExternalForcingConverter:
             raise FileNotFoundError(f"File not found: {extoldfile}")
 
         extold_model = ExtOldModel(extoldfile)
-
-        if _verbose:
-            print(f"Read {len(extold_model.forcing)} forcing blocks from {extoldfile}.")
 
         return extold_model
 
@@ -191,7 +197,7 @@ class ExternalForcingConverter:
                 The updated models (already written to disk). Maybe used
                 at call site to inspect the updated models.
         """
-        if _verbose:
+        if self.verbose:
             workdir = os.getcwd() + "\\"
             print(f"Work dir: {workdir}")
             print("Using attribute files:")
@@ -339,7 +345,7 @@ class ExternalForcingConverter:
         if len(self.structure_model.structure) > 0:
             self.fm_model.geometry.structurefile[0] = self.structure_model
 
-        if _verbose:
+        if self.verbose:
             print(f"succesfully saved converted file {self.fm_model.filepath} ")
 
 
@@ -376,7 +382,7 @@ def ext_old_to_new_dir_recursive(
 
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog=_program,
+        prog="ext_old_to_new",
         description="Convert D-Flow FM legacy external forcings files to current external forcings file/initial fields file/structures file.",
     )
 
@@ -440,12 +446,8 @@ def main(args=None):
             A of arguments as if they were input in the command line. Leave it
             None to use sys.argv.
     """
-    global _verbose
-
     parser = _get_parser()
     args = parser.parse_args(args)
-    _verbose = args.verbose
-
     backup = args.backup is not None
 
     if args.mdufile is not None and args.extoldfile is not None:
@@ -463,6 +465,7 @@ def main(args=None):
         converter = ExternalForcingConverter.from_mdu(
             args.mdufile, **outfiles, suppress_errors=True
         )
+        converter.verbose = args.verbose
         converter.update()
         converter.save(backup=backup)
     elif args.extoldfile is not None:
@@ -478,8 +481,6 @@ def main(args=None):
         ext_old_to_new_dir_recursive(args.dir, backup=backup)
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
-
-    print(_program + ": done")
 
 
 if __name__ == "__main__":

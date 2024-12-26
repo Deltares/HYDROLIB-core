@@ -147,14 +147,6 @@ class TestExternalFocingConverter:
         assert len(converter.extold_model.comment) == old_forcing_comment_len
         quantities = [forcing.quantity for forcing in converter.extold_model.forcing]
         assert all([quantity in old_forcing_file_quantities for quantity in quantities])
-        # test verbose
-        main_converter._verbose = True
-        ExternalForcingConverter._read_old_file(old_forcing_file)
-        captured = capsys.readouterr()
-
-        assert captured.out.startswith(
-            f"Read {(len(old_forcing_file_quantities))} forcing blocks from {old_forcing_file}."
-        )
 
 
 class TestUpdate:
