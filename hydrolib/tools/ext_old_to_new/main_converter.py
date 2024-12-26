@@ -200,18 +200,8 @@ class ExternalForcingConverter:
         self._log_conversion_details()
 
         for forcing in self.extold_model.forcing:
-            try:
-                converter_class = ConverterFactory.create_converter(forcing.quantity)
-                # only the SourceSink converter needs the quantities' list
-                if converter_class.__class__.__name__ == "SourceSinkConverter":
-                    quantities = self.extold_model.quantities
-                    converter_class.root_dir = self.root_dir
-                    new_quantity_block = converter_class.convert(forcing, quantities)
-                else:
-                    new_quantity_block = converter_class.convert(forcing)
-            except ValueError:
-                # While this tool is in progress, accept that we do not convert all quantities yet.
-                new_quantity_block = None
+
+            new_quantity_block = self._convert_forcing(forcing)
 
             if isinstance(new_quantity_block, Boundary):
                 self.ext_model.boundary.append(new_quantity_block)
@@ -237,6 +227,25 @@ class ExternalForcingConverter:
             self._update_fm_model()
 
         return self.ext_model, self.inifield_model, self.structure_model
+
+    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink]:
+        """Convert a single forcing block to the appropriate new format."""
+
+        try:
+            converter_class = ConverterFactory.create_converter(forcing.quantity)
+
+            # only the SourceSink converter needs the quantities' list
+            if converter_class.__class__.__name__ == "SourceSinkConverter":
+                quantities = self.extold_model.quantities
+                converter_class.root_dir = self.root_dir
+                new_quantity_block = converter_class.convert(forcing, quantities)
+            else:
+                new_quantity_block = converter_class.convert(forcing)
+        except ValueError:
+            # While this tool is in progress, accept that we do not convert all quantities yet.
+            new_quantity_block = None
+
+        return new_quantity_block
 
     def save(self, backup: bool = True):
         """Save the updated models to disk.
