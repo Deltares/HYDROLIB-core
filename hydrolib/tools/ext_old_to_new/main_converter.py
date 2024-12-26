@@ -197,16 +197,7 @@ class ExternalForcingConverter:
                 The updated models (already written to disk). Maybe used
                 at call site to inspect the updated models.
         """
-        if self.verbose:
-            workdir = os.getcwd() + "\\"
-            print(f"Work dir: {workdir}")
-            print("Using attribute files:")
-            print("Input:")
-            print(f"* {self.extold_model.filepath}")
-            print("Output:")
-            print(f"* {self.ext_model.filepath}")
-            print(f"* {self.inifield_model.filepath}")
-            print(f"* {self.structure_model.filepath}")
+        self._log_conversion_details()
 
         for forcing in self.extold_model.forcing:
             try:
@@ -347,6 +338,19 @@ class ExternalForcingConverter:
 
         if self.verbose:
             print(f"succesfully saved converted file {self.fm_model.filepath} ")
+
+    def _log_conversion_details(self):
+        """Log details about the conversion process if verbosity is enabled."""
+        if self.verbose:
+            workdir = os.getcwd() + "\\"
+            print(f"Work dir: {workdir}")
+            print("Using attribute files:")
+            print("Input:")
+            print(f"* {self.extold_model.filepath}")
+            print("Output:")
+            print(f"* {self.ext_model.filepath}")
+            print(f"* {self.inifield_model.filepath}")
+            print(f"* {self.structure_model.filepath}")
 
 
 def ext_old_to_new_dir_recursive(
