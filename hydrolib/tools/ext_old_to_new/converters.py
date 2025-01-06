@@ -160,7 +160,19 @@ class BoundaryConditionConverter(BaseConverter):
         return new_block
 
 
-def create_convert_inputs(forcing: ExtOldForcing) -> Dict[str, str]:
+def create_initial_cond_and_parameter_input_dict(
+    forcing: ExtOldForcing,
+) -> Dict[str, str]:
+    """Create the input dictionary for the `InitialField` or `ParameterField`
+
+    Args:
+        forcing: [ExtOldForcing]
+            Exteranl forcing block from the old external forcings file.
+
+    Returns:
+        Dict[str, str]:
+            the input dictionary to the `InitialField` or `ParameterField` constructor
+    """
     block_data = {
         "quantity": forcing.quantity,
         "datafile": forcing.filename,
@@ -226,7 +238,7 @@ class InitialConditionConverter(BaseConverter):
         References:
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
-        data = create_convert_inputs(forcing)
+        data = create_initial_cond_and_parameter_input_dict(forcing)
         new_block = InitialField(**data)
 
         return new_block
@@ -265,7 +277,7 @@ class ParametersConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        data = create_convert_inputs(forcing)
+        data = create_initial_cond_and_parameter_input_dict(forcing)
         new_block = ParameterField(**data)
 
         return new_block
