@@ -250,14 +250,13 @@ class ParametersConverter(BaseConverter):
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> ParameterField:
-        """Convert an old external forcing block with meteo data to a boundary
-        forcing block suitable for inclusion in a new external forcings file.
+        """Convert an old external forcing block to a parameter forcing block
+        suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Boundary object is suitable for use in new
-        external forcings files, adhering to the updated format and
-        specifications.
+        into a ParameterField object. The ParameterField object is suitable for use in new
+        external forcings files, adhering to the updated format and specifications.
 
         Args:
             forcing (ExtOldForcing): The contents of a single forcing block
@@ -266,10 +265,11 @@ class ParametersConverter(BaseConverter):
             required for the conversion process.
 
         Returns:
-            Boundary: A Boindary object that represents the converted forcing
-            block, ready to be included in a new external forcings file. The
-            Boundary object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            ParameterField:
+                A Parameterfiels object that represents the converted forcing
+                block, ready to be included in a new external forcings file. The
+                ParameterField object conforms to the new format specifications, ensuring
+                compatibility with updated systems and models.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
