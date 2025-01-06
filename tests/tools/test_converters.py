@@ -2,7 +2,7 @@ import numpy as np
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.ext.models import Boundary, Meteo
+from hydrolib.core.dflowfm.ext.models import Boundary, Meteo, MeteoInterpolationMethod
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.tools.ext_old_to_new.converters import (
@@ -75,7 +75,10 @@ class TestConvertMeteo:
         assert new_quantity_block.operand == "O"
         assert new_quantity_block.forcingfile == DiskOnlyFileModel("windtest.amu")
         assert new_quantity_block.forcingfiletype == "meteoGridEqui"
-        assert new_quantity_block.interpolationmethod == "linearSpaceTime"
+        assert (
+            new_quantity_block.interpolationmethod
+            == MeteoInterpolationMethod.linearSpaceTime
+        )
 
 
 class TestBoundaryConverter:
