@@ -175,7 +175,7 @@ class ExtOldParametersQuantity(StrEnum):
     FrictionCoefficient = "frictioncoefficient"
     HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
     HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
-    Advectiontype = "advectiontype"
+    AdvectionType = "advectiontype"
     InfiltrationCapacity = "infiltrationcapacity"
 
 
