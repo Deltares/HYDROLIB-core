@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
@@ -19,11 +19,11 @@ from hydrolib.tools.ext_old_to_new.main_converter import (
 
 class TestExtOldToNewFromMDU:
     def test_wind_combi_uniform_curvi(self, capsys, input_files_dir: Path):
-        main_converter._verbose = True
         mdu_filename = (
             input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
         )
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
+        converter.verbose = True
         _, _, _ = converter.update()
         fm_model = converter.fm_model
         assert isinstance(fm_model, LegacyFMModel)
@@ -234,6 +234,42 @@ class TestUpdateSourcesSinks:
         """
         path = "tests/data/input/source-sink/source-sink.ext"
         converter = ExternalForcingConverter(path)
+
+        tim_file = Path("tim-3-columns.tim")
+        with patch("pathlib.Path.with_suffix", return_value=tim_file):
+            ext_model, inifield_model, structure_model = converter.update()
+
+        # all the quantities in the old external file are initial conditions
+        # check that all the quantities (3) were converted to initial conditions
+        num_quantities = 1
+        assert len(ext_model.source_sink) == num_quantities
+        # no parameters or any other structures, lateral or meteo data
+        assert len(inifield_model.parameter) == 0
+        assert len(ext_model.lateral) == 0
+        assert len(ext_model.meteo) == 0
+        assert len(structure_model.structure) == 0
+        assert len(inifield_model.initial) == 2
+        quantities = ext_model.source_sink
+        quantities[0].name = "discharge_salinity_temperature_sorsin"
+
+    def test_sources_sinks_with_fm(self, old_forcing_file_boundary: Dict[str, str]):
+        """
+        The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
+        `initialsalinity`, and `initialtemperature`.
+
+        - polyline 2*3 file `leftsor.pliz` is used to read the source and sink points.
+        - tim file `tim-3-columns.tim` with 3 columns (plus the time column) the name should be the same as the
+        polyline but the `tim-3-columns.tim` is mocked in the test.
+
+        """
+        path = "tests/data/input/source-sink/source-sink.ext"
+        converter = ExternalForcingConverter(path)
+
+        # Mock the fm_model
+        mock_fm_model = Mock()
+        mock_fm_model.physics.salinity = False
+        mock_fm_model.physics.temperature = False
+        converter._fm_model = mock_fm_model
 
         tim_file = Path("tim-3-columns.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):

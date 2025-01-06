@@ -236,9 +236,20 @@ class ExternalForcingConverter:
 
             # only the SourceSink converter needs the quantities' list
             if converter_class.__class__.__name__ == "SourceSinkConverter":
+                temp_salinity_mdu = {}
+                if self.fm_model is not None:
+                    salinity = self.fm_model.physics.salinity
+                    temperature = self.fm_model.physics.temperature
+                    temp_salinity_mdu = {
+                        "salinity": salinity,
+                        "temperature": temperature,
+                    }
+
                 quantities = self.extold_model.quantities
                 converter_class.root_dir = self.root_dir
-                new_quantity_block = converter_class.convert(forcing, quantities)
+                new_quantity_block = converter_class.convert(
+                    forcing, quantities, **temp_salinity_mdu
+                )
             else:
                 new_quantity_block = converter_class.convert(forcing)
         except ValueError:
@@ -298,27 +309,27 @@ class ExternalForcingConverter:
             ExternalForcingConverter: The converter object.
         """
         try:
-            fmmodel = LegacyFMModel(mdu_file, recurse=False)
-            root_dir = fmmodel._resolved_filepath.parent
+            fm_model = LegacyFMModel(mdu_file, recurse=False)
+            root_dir = fm_model._resolved_filepath.parent
 
-            extoldfile = root_dir / fmmodel.external_forcing.extforcefile.filepath
+            extoldfile = root_dir / fm_model.external_forcing.extforcefile.filepath
 
             ext_file = (
-                fmmodel.external_forcing.extforcefilenew._resolved_filepath
-                if fmmodel.external_forcing.extforcefilenew
+                fm_model.external_forcing.extforcefilenew._resolved_filepath
+                if fm_model.external_forcing.extforcefilenew
                 else root_dir / ext_file
             )
             inifield_file = (
-                fmmodel.geometry.inifieldfile._resolved_filepath
-                if fmmodel.geometry.inifieldfile
+                fm_model.geometry.inifieldfile._resolved_filepath
+                if fm_model.geometry.inifieldfile
                 else root_dir / inifield_file
             )
             structure_file = (
-                fmmodel.geometry.structurefile[0]._resolved_filepath
-                if fmmodel.geometry.structurefile
+                fm_model.geometry.structurefile[0]._resolved_filepath
+                if fm_model.geometry.structurefile
                 else root_dir / structure_file
             )
-            return cls(extoldfile, ext_file, inifield_file, structure_file, fmmodel)
+            return cls(extoldfile, ext_file, inifield_file, structure_file, fm_model)
 
         except Exception as error:
             if suppress_errors:

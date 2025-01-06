@@ -281,7 +281,7 @@ class SourceSinkConverter(BaseConverter):
         return data
 
     def parse_tim_model(
-        self, tim_file: Path, ext_file_quantity_list: List[str]
+        self, tim_file: Path, ext_file_quantity_list: List[str], **kwargs
     ) -> Dict[str, List[float]]:
         """Parse the source and sinks related time series from the tim file.
 
@@ -352,15 +352,17 @@ class SourceSinkConverter(BaseConverter):
         ]
 
         # check if the temperature and salinity are present in the external file
-        temp_salinity_dict = find_temperature_salinity_in_quantities(
+        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
             ext_file_quantity_list
         )
 
         ext_file_quantity_list = (
             ["discharge"]
-            + list(temp_salinity_dict.keys())
+            + list(temp_salinity_from_ext.keys())
             + required_quantities_from_ext
         )
+        # here process the temperature and salinity coming from the mdu (in the kwargs) with the
+        print(kwargs)
 
         if len(time_series) != len(ext_file_quantity_list):
             raise ValueError(
@@ -385,7 +387,10 @@ class SourceSinkConverter(BaseConverter):
         self._root_dir = value
 
     def convert(
-        self, forcing: ExtOldForcing, ext_file_quantity_list: List[str] = None
+        self,
+        forcing: ExtOldForcing,
+        ext_file_quantity_list: List[str] = None,
+        **temp_salinity_mdu,
     ) -> SourceSink:
         """Convert an old external forcing block with Sources and sinks to a boundary
         forcing block suitable for inclusion in a new external forcings file.
@@ -426,7 +431,7 @@ class SourceSinkConverter(BaseConverter):
         """
         location_file = forcing.filename.filepath
         polyline = forcing.filename
-        # move this to a validator in the source and sink model
+
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
@@ -436,7 +441,9 @@ class SourceSinkConverter(BaseConverter):
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
             )
 
-        time_series = self.parse_tim_model(tim_file, ext_file_quantity_list)
+        time_series = self.parse_tim_model(
+            tim_file, ext_file_quantity_list, **temp_salinity_mdu
+        )
 
         data = {
             "id": "L1",
