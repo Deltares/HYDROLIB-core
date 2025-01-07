@@ -167,7 +167,7 @@ def create_initial_cond_and_parameter_input_dict(
 
     Args:
         forcing: [ExtOldForcing]
-            Exteranl forcing block from the old external forcings file.
+            External forcing block from the old external forcings file.
 
     Returns:
         Dict[str, str]:
