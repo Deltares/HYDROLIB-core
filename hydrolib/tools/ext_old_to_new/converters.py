@@ -299,6 +299,9 @@ class SourceSinkConverter(BaseConverter):
         Args:
             tim_file (Path): The path to the TIM file.
             ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
+            **kwargs: keyword argumens that will be provided if you want to provide the temperature and salinity
+            details from the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are
+            only bool. (i.e. {"temperature", False, "salinity": True})
 
         Returns:
             Dict[str, List[float]]: A dictionary containing the time series data form each column in the tim_file.
@@ -340,6 +343,28 @@ class SourceSinkConverter(BaseConverter):
                 "salinitydelta": [3.0, 3.0, 3.0, 3.0, 3.0],
                 "initialtracer-anyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
+
+        - the function will raise a `ValueError` if the temperature and salinity are present in the MDU file (value
+        is 1) file but not in the external forcings file.
+
+        mdu file:
+        ```
+        [physics]
+        ...
+        Salinity             = 1        # Include salinity, (0=no, 1=yes)
+        ...
+        Temperature          = 1        # Include temperature, (0=no, 1=only transport, 3=excess model of D3D,5=heat flux model (5) of D3D)
+        ```
+        external forcings file:
+        ```
+        QUANTITY=initialtemperature
+        FILENAME=right.pol
+        ...
+
+        QUANTITY=initialsalinity
+        FILENAME=right.pol
+        ...
+        ```
         """
         time_file = TimParser.parse(tim_file)
         tim_model = TimModel(**time_file)
@@ -355,6 +380,23 @@ class SourceSinkConverter(BaseConverter):
         temp_salinity_from_ext = find_temperature_salinity_in_quantities(
             ext_file_quantity_list
         )
+
+        # test if the temperature and salinity in the ext file conforms with the mdu file
+        # compare the temperature and salinity from mdu with the temperature and salinity from the external file
+        if kwargs:
+            # the kwargs will be provided only from the source and sinks converter
+            if (
+                kwargs["temperature"]
+                and "temperaturedelta" not in temp_salinity_from_ext
+            ):
+                raise ValueError(
+                    "Temperature is present in the MDU file but not in the external forcings file."
+                )
+
+            if kwargs["salinity"] and "salinitydelta" not in temp_salinity_from_ext:
+                raise ValueError(
+                    "Salinity is present in the MDU file but not in the external forcings file."
+                )
 
         ext_file_quantity_list = (
             ["discharge"]

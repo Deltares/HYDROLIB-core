@@ -267,8 +267,8 @@ class TestUpdateSourcesSinks:
 
         # Mock the fm_model
         mock_fm_model = Mock()
-        mock_fm_model.physics.salinity = False
-        mock_fm_model.physics.temperature = False
+        mock_fm_model.physics.salinity = True
+        mock_fm_model.physics.temperature = True
         converter._fm_model = mock_fm_model
 
         tim_file = Path("tim-3-columns.tim")
