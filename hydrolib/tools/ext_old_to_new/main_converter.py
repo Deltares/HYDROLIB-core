@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import FileModel, PathOrStr
+from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel, Lateral, Meteo
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import (
@@ -82,7 +82,7 @@ class ExternalForcingConverter:
         return self._extold_model
 
     @property
-    def ext_model(self) -> FileModel:
+    def ext_model(self) -> ExtModel:
         """New External forcing Model."""
         if not hasattr(self, "_ext_model"):
             raise ValueError(
@@ -100,7 +100,7 @@ class ExternalForcingConverter:
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
 
     @property
-    def inifield_model(self) -> FileModel:
+    def inifield_model(self) -> IniFieldModel:
         """IniFieldModel: object with all initial fields blocks."""
         if not hasattr(self, "_inifield_model"):
             raise ValueError(
@@ -113,7 +113,7 @@ class ExternalForcingConverter:
         self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path)
 
     @property
-    def structure_model(self) -> FileModel:
+    def structure_model(self) -> StructureModel:
         """StructureModel: object with all structure blocks."""
         if not hasattr(self, "_structure_model"):
             raise ValueError(
@@ -145,7 +145,7 @@ class ExternalForcingConverter:
             extoldfile (PathOrStr): path to the external forcings file (.ext)
 
         Returns:
-            ExternalForcingConverter: object with the old external forcing model and new external forcing, initial field
+            ExtOldModel: object with all forcing blocks.
         """
         global _verbose
         if not isinstance(extoldfile, Path):
@@ -164,7 +164,7 @@ class ExternalForcingConverter:
     def update(
         self,
         postfix: str = "",
-    ) -> Union[Tuple[FileModel, FileModel, FileModel], None]:
+    ) -> Union[Tuple[ExtModel, IniFieldModel, StructureModel], None]:
         """
         Convert old external forcing file to new format files.
         When the output files are existing, output will be appended to them.
