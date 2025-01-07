@@ -251,12 +251,13 @@ class ParametersConverter(BaseConverter):
 
     def convert(self, forcing: ExtOldForcing) -> ParameterField:
         """Convert an old external forcing block to a parameter forcing block
-        suitable for inclusion in a new external forcings file.
+        suitable for inclusion in an initial field and parameter file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a ParameterField object. The ParameterField object is suitable for use in new
-        external forcings files, adhering to the updated format and specifications.
+        into a ParameterField object. The ParameterField object is suitable for use in
+        an IniFieldModel, representing an initial field and parameter file, adhering
+        to the updated format and specifications.
 
         Args:
             forcing (ExtOldForcing): The contents of a single forcing block
@@ -266,8 +267,8 @@ class ParametersConverter(BaseConverter):
 
         Returns:
             ParameterField:
-                A Parameterfiels object that represents the converted forcing
-                block, ready to be included in a new external forcings file. The
+                A ParameterField object that represents the converted forcing
+                block, ready to be included in an initial field and parameter file. The
                 ParameterField object conforms to the new format specifications, ensuring
                 compatibility with updated systems and models.
 
