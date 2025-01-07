@@ -281,7 +281,7 @@ class DataBlockINIBasedModel(INIBasedModel):
         datablock (Datablock): (class attribute) the actual data columns.
     """
 
-    datablock: Datablock = []
+    datablock: Datablock = Field(default_factory=list)
 
     _make_lists = make_list_validator("datablock")
 

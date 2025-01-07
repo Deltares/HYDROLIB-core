@@ -1,13 +1,14 @@
 from hydrolib.core.dflowfm.extold.models import (
+    ExtOldBoundaryQuantity,
     ExtOldInitialConditionQuantity,
     ExtOldMeteoQuantity,
 )
-from hydrolib.tools.ext_old_to_new.initial_condition_converter import (
+from hydrolib.tools.ext_old_to_new.base_converter import BaseConverter
+from hydrolib.tools.ext_old_to_new.converters import (
+    BoundaryConditionConverter,
     InitialConditionConverter,
+    MeteoConverter,
 )
-
-from .base_converter import BaseConverter
-from .meteo_converter import MeteoConverter
 
 
 def __contains__(cls, item):
@@ -40,7 +41,9 @@ class ConverterFactory:
         """
         if __contains__(ExtOldMeteoQuantity, quantity):
             return MeteoConverter()
-        if __contains__(ExtOldInitialConditionQuantity, quantity):
+        elif __contains__(ExtOldInitialConditionQuantity, quantity):
             return InitialConditionConverter()
+        elif __contains__(ExtOldBoundaryQuantity, quantity):
+            return BoundaryConditionConverter()
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")

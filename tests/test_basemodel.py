@@ -409,7 +409,7 @@ class TestFileLoadContextReusingCachedFilesDuringInit:
 Name                = global
 Function            = timeseries
 Time-interpolation  = linear
-Quantity            = time 
+Quantity            = time
 Unit                = minutes since 2006-12-25 0:00:00
 Quantity            = rainfall_rate
 Unit                = mm day-1
@@ -437,7 +437,7 @@ Unit                = mm day-1
 Name                = little_change_to_the_file
 Function            = timeseries
 Time-interpolation  = linear
-Quantity            = time 
+Quantity            = time
 Unit                = minutes since 2006-12-25 0:00:00
 Quantity            = rainfall_rate
 Unit                = mm day-1
