@@ -15,9 +15,8 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-
-from .converter_factory import ConverterFactory
-from .utils import (
+from hydrolib.tools.ext_old_to_new.converters import ConverterFactory
+from hydrolib.tools.ext_old_to_new.utils import (
     backup_file,
     construct_filemodel_new_or_existing,
     construct_filepath_with_postfix,
@@ -51,7 +50,7 @@ class ExternalForcingConverter:
             extold_model = self._read_old_file(extold_model)
 
         self._extold_model = extold_model
-        rdir = self._extold_model.filepath.parent
+        rdir = extold_model.filepath.parent
 
         # create the new models if not provided by the user in the same directory as the old external file
         path = (
@@ -78,7 +77,7 @@ class ExternalForcingConverter:
         )
 
     @property
-    def extold_model(self) -> ExtOldModel:
+    def extold_model(self):
         """old external forcing model."""
         return self._extold_model
 
@@ -133,11 +132,21 @@ class ExternalForcingConverter:
         """Read a legacy D-Flow FM external forcings file (.ext) into an
            ExtOldModel object.
 
+        - The `read_old_file` method instantiates an ExternalForcingConverter object with an ExtOldModel object and
+        a default set of new external forcing, initial field and structure models.
+        - The new models will be created in the same directory as the old external forcing file.
+        - The new external forcing file will be named new-external-forcing.ext, the new initial conditions file will be
+            named new-initial-conditions.ext and the new structure file will be named new-structure.ext.
+        - However the user can change the paths to the new models by using the ``ext_model``, ``inifield_model`` and
+            ``structure_model`` setters. The new models will be created in the specified paths.
+        - the user can also set the paths to the new models using the `converter.ext_model.filepath= "mypath.ext"`.
+
         Args:
             extoldfile (PathOrStr): path to the external forcings file (.ext)
 
         Returns:
-            ExtOldModel: object with all forcing blocks."""
+            ExtOldModel: object with all forcing blocks.
+        """
         global _verbose
         if not isinstance(extoldfile, Path):
             extoldfile = Path(extoldfile)

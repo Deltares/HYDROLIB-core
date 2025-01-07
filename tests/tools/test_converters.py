@@ -2,12 +2,20 @@ import numpy as np
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.ext.models import Boundary
+from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.ext.models import (
+    Boundary,
+    Meteo,
+    MeteoForcingFileType,
+    MeteoInterpolationMethod,
+)
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
-from hydrolib.core.dflowfm.inifield.models import InitialField
+from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.tools.ext_old_to_new.converters import (
     BoundaryConditionConverter,
     InitialConditionConverter,
+    MeteoConverter,
+    ParametersConverter,
 )
 
 
@@ -39,6 +47,44 @@ class TestConvertInitialCondition:
         assert new_quantity_block.datafiletype == "polygon"
         assert new_quantity_block.interpolationmethod == "constant"
         assert np.isclose(new_quantity_block.value, 0.0)
+
+
+class TestConvertParameters:
+    def test_sample_data_file(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.FrictionCoefficient,
+            filename="iniwaterlevel.xyz",
+            filetype=7,  # "Polyline"
+            method="5",  # "Interpolate space",
+            operand="O",
+        )
+
+        new_quantity_block = ParametersConverter().convert(forcing)
+        assert isinstance(new_quantity_block, ParameterField)
+        assert new_quantity_block.datafiletype == "sample"
+        assert new_quantity_block.interpolationmethod == "triangulation"
+
+
+class TestConvertMeteo:
+    def test_default(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="windtest.amu",
+            filetype=4,
+            method="2",
+            operand="O",
+        )
+
+        new_quantity_block = MeteoConverter().convert(forcing)
+        assert isinstance(new_quantity_block, Meteo)
+        assert new_quantity_block.quantity == "windx"
+        assert new_quantity_block.operand == Operand.override
+        assert new_quantity_block.forcingfile == DiskOnlyFileModel("windtest.amu")
+        assert new_quantity_block.forcingfiletype == MeteoForcingFileType.meteogridequi
+        assert (
+            new_quantity_block.interpolationmethod
+            == MeteoInterpolationMethod.linearSpaceTime
+        )
 
 
 class TestBoundaryConverter:
