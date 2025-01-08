@@ -175,7 +175,7 @@ class ExtOldParametersQuantity(StrEnum):
     FrictionCoefficient = "frictioncoefficient"
     HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
     HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
-    Advectiontype = "advectiontype"
+    AdvectionType = "advectiontype"
     InfiltrationCapacity = "infiltrationcapacity"
 
 
@@ -307,7 +307,7 @@ class ExtOldSourcesSinks(StrEnum):
 
 
 class ExtOldQuantity(StrEnum):
-    """Enum class containing th e valid values for the boundary conditions category
+    """Enum class containing the valid values for the boundary conditions category
     of the external forcings.
     """
 

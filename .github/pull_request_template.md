@@ -25,6 +25,11 @@ Check relevant points.
 - [ ] Test B
 
 # Checklist:
+Prepare items below using:
+\[ :x: \] (markdown: `[ :x: ]`) for TODO items
+\[ :white_check_mark: \] (markdown: `[ :white_check_mark: ]`) for DONE items
+\[ N/A \] for items that are not applicable for this PR.
+
 
 - [ ] updated version number in setup.py/pyproject.toml/environment.yml.
 - [ ] updated the lock file.

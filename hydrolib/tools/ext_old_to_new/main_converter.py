@@ -164,16 +164,16 @@ class ExternalForcingConverter:
     @staticmethod
     def _read_old_file(extoldfile: PathOrStr) -> ExtOldModel:
         """Read a legacy D-Flow FM external forcings file (.ext) into an
-           ExtOldModel object.
+               ExtOldModel object.
 
         Args:
             extoldfile (PathOrStr): path to the external forcings file (.ext)
 
-        Returns:
-            ExtOldModel: object with all forcing blocks.
+            Returns:
+                ExtOldModel: object with all forcing blocks.
 
-        Raises:
-            FileNotFoundError: If the old external forcing file does not exist.
+            Raises:
+                FileNotFoundError: If the old external forcing file does not exist.
         """
         if not isinstance(extoldfile, Path):
             extoldfile = Path(extoldfile)

@@ -22,8 +22,8 @@ from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.ext_old_to_new.utils import (
-    convert_initial_cond_param_dict,
     convert_interpolation_data,
+    create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
 )
@@ -120,12 +120,12 @@ class BoundaryConditionConverter(BaseConverter):
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> Boundary:
-        """Convert an old external forcing block with meteo data to a boundary
-        forcing block suitable for inclusion in a new external forcings file.
+        """Convert an old external forcing block to a boundary forcing block
+        suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Boundary object is suitable for use in new
+        into a boundary object. The Boundary object is suitable for use in new
         external forcings files, adhering to the updated format and
         specifications.
 
@@ -136,7 +136,7 @@ class BoundaryConditionConverter(BaseConverter):
             required for the conversion process.
 
         Returns:
-            Boundary: A Boindary object that represents the converted forcing
+            Boundary: A Boundary object that represents the converted forcing
             block, ready to be included in a new external forcings file. The
             Boundary object conforms to the new format specifications, ensuring
             compatibility with updated systems and models.
@@ -191,7 +191,7 @@ class InitialConditionConverter(BaseConverter):
         References:
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
-        data = convert_initial_cond_param_dict(forcing)
+        data = create_initial_cond_and_parameter_input_dict(forcing)
         new_block = InitialField(**data)
 
         return new_block
@@ -203,14 +203,14 @@ class ParametersConverter(BaseConverter):
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> ParameterField:
-        """Convert an old external forcing block with meteo data to a boundary
-        forcing block suitable for inclusion in a new external forcings file.
+        """Convert an old external forcing block to a parameter forcing block
+        suitable for inclusion in an initial field and parameter file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Boundary object is suitable for use in new
-        external forcings files, adhering to the updated format and
-        specifications.
+        into a ParameterField object. The ParameterField object is suitable for use in
+        an IniFieldModel, representing an initial field and parameter file, adhering
+        to the updated format and specifications.
 
         Args:
             forcing (ExtOldForcing): The contents of a single forcing block
@@ -219,10 +219,11 @@ class ParametersConverter(BaseConverter):
             required for the conversion process.
 
         Returns:
-            Boundary: A Boindary object that represents the converted forcing
-            block, ready to be included in a new external forcings file. The
-            Boundary object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            ParameterField:
+                A ParameterField object that represents the converted forcing
+                block, ready to be included in an initial field and parameter file. The
+                ParameterField object conforms to the new format specifications, ensuring
+                compatibility with updated systems and models.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
@@ -230,7 +231,7 @@ class ParametersConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        data = convert_initial_cond_param_dict(forcing)
+        data = create_initial_cond_and_parameter_input_dict(forcing)
         new_block = ParameterField(**data)
 
         return new_block

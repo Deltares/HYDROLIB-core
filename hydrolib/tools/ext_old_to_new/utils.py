@@ -194,10 +194,18 @@ def convert_interpolation_data(
     return data
 
 
-def convert_initial_cond_param_dict(forcing: ExtOldForcing) -> Dict[str, str]:
-    """Initial condition and Parameters data dictionary.
+def create_initial_cond_and_parameter_input_dict(
+    forcing: ExtOldForcing,
+) -> Dict[str, str]:
+    """Create the input dictionary for the `InitialField` or `ParameterField`
 
-    Initial condition and Parameters have the same structure for the conversion.
+    Args:
+        forcing: [ExtOldForcing]
+            External forcing block from the old external forcings file.
+
+    Returns:
+        Dict[str, str]:
+            the input dictionary to the `InitialField` or `ParameterField` constructor
     """
     block_data = {
         "quantity": forcing.quantity,
