@@ -132,6 +132,30 @@ class TestGetZSourcesSinks:
         assert z_source == [-3, -2.90]
         assert z_sink == [-4.2, -5.35]
 
+    def test_get_z_sources_sinks_no_z_values(self, polylines_dir: Path):
+        """
+        The test case is based on the following assumptions:
+        - The polyline has only two columns, so the zsink and zsource will have no values.
+        ```
+        zsink = []
+        zsource = []
+        ```
+
+        - The polyline file has the following structure:
+        ```
+        L1
+             2 2
+              63.35 12.95
+              45.20 6.35
+        ```
+        """
+        path = polylines_dir / "boundary-polyline-no-z-no-label.pli"
+        polyfile = PolyFile(path)
+
+        z_source, z_sink = polyfile.get_z_sources_sinks()
+        assert z_source == [None]
+        assert z_sink == [None]
+
 
 class TestPLIZExtension:
 

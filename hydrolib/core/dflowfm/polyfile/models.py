@@ -153,6 +153,9 @@ class PolyFile(ParsableFileModel):
             If the polyline has data (more than 3 columns), then both the z_source and z_sink will be a list of two values.
             Otherwise, the z_source and the z_sink will be a single value each.
 
+        Note:
+             - calling this method on a polyline file that does not have z-values will return a list of None.
+
         Examples:
         in case the polyline has 3 columns:
             >>> polyline = PolyFile("tests/data/input/source-sink/leftsor.pliz")
@@ -165,6 +168,13 @@ class PolyFile(ParsableFileModel):
             >>> z_source, z_sink = polyline.get_z_sources_sinks()
             >>> print(z_source, z_sink)
             [-3, -2.9] [-4.2, -5.35]
+
+        in case the polyline does not have z-values:
+            >>> root_dir = "tests/data/input/dflowfm_individual_files/polylines"
+            >>> polyline = PolyFile(f"{root_dir}/boundary-polyline-no-z-no-label.pli")
+            >>> z_source, z_sink = polyline.get_z_sources_sinks()
+            >>> print(z_source, z_sink)
+            [None] [None]
         """
         has_data = True if self.objects[0].points[0].data else False
 
