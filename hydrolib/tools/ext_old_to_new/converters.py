@@ -269,10 +269,10 @@ class SourceSinkConverter(BaseConverter):
                 4: [4.0, 4.0, 4.0, 4.0, 4.0]
             }
         """
-        num_locations = len(tim_model.timeseries[0].data)
+        num_columns = len(tim_model.timeseries[0].data)
 
         # Initialize a dictionary to collect data for each location
-        data = {loc: [] for loc in range(1, num_locations + 1)}
+        data = {loc: [] for loc in range(1, num_columns + 1)}
 
         # Extract time series data for each location
         for record in tim_model.timeseries:
