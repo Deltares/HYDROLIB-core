@@ -229,8 +229,6 @@ class TestSourceSink:
             "ycoordinates": [12.950216, 6.350155],
             "zsource": -3.0,
             "zsink": -4.2,
-            "interpolationmethod": "",
-            "operand": "O",
             "discharge": 1.1234,
             "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
             "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
@@ -292,8 +290,6 @@ class TestSourceSink:
             "discharge": [1.0, 2.0, 3.0, 5.0, 8.0],
             "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
             "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
-            "interpolationmethod": "linearSpaceTime",
-            "operand": "O",
         }
 
         source_sink = SourceSink(**data)

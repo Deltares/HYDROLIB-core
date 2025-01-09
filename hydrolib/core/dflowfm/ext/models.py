@@ -215,8 +215,6 @@ class SourceSink(INIBasedModel):
 
     salinitydelta: Optional[ForcingData] = Field(alias="SalinityDelta")
     temperaturedelta: Optional[ForcingData] = Field(alias="TemperatureDelta")
-    interpolationmethod: Optional[str] = Field(alias="interpolationMethod")
-    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:

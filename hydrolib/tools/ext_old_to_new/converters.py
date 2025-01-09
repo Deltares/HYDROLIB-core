@@ -499,10 +499,6 @@ class SourceSinkConverter(BaseConverter):
             "zsink": z_sink,
         }
         data = data | time_series
-
-        data = convert_interpolation_data(forcing, data)
-        data["operand"] = forcing.operand
-
         new_block = SourceSink(**data)
 
         return new_block
