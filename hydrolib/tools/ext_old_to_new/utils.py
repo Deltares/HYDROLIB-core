@@ -241,12 +241,12 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
         strings (List[str]): A list of strings to search.
 
     Returns:
-        Dict[str, int]: A dictionary with keys as "temperature" or "salinity"
+        Dict[str, int]: A dictionary with keys as "salinity" or "temperature"
                         and values 3 and 4 respectively.
 
      Examples:
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({"temperaturedelta": 3, "salinitydelta": 4})
+        OrderedDict({"salinitydelta": 3, "temperaturedelta": 4})
 
         >>> find_temperature_salinity_in_quantities(["Temperature"])
         OrderedDict({"temperaturedelta": 3})
@@ -262,11 +262,11 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
     """
     result = OrderedDict()
 
-    if any("temperature" in string.lower() for string in strings):
-        result["temperaturedelta"] = 3
     if any("salinity" in string.lower() for string in strings):
-        result["salinitydelta"] = (
-            result.get("temperaturedelta", 2) + 1
+        result["salinitydelta"] = 3
+    if any("temperature" in string.lower() for string in strings):
+        result["temperaturedelta"] = (
+            result.get("salinitydelta", 2) + 1
         )  # Default temperature value is 2
 
     return result

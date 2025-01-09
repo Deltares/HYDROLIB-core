@@ -292,8 +292,8 @@ class SourceSinkConverter(BaseConverter):
         The order of the quantities in the tim file should be as follows:
         - time
         - discharge
-        - temperaturedelta (optional)
         - salinitydelta (optional)
+        - temperaturedelta (optional)
         - initialtracer-anyname (optional)
         - any other quantities from the external forcings file.
 
@@ -340,8 +340,8 @@ class SourceSinkConverter(BaseConverter):
             >>> print(time_series)
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
-                "temperaturedelta": [2.0, 2.0, 2.0, 2.0, 2.0],
-                "salinitydelta": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
+                "temperaturedelta": [3.0, 3.0, 3.0, 3.0, 3.0],
                 "initialtracer-anyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 

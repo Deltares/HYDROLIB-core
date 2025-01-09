@@ -25,8 +25,8 @@ class TestParseTimFileForSourceSink:
 
         time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
         assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
-        assert time_series_data["temperaturedelta"] == [2.0, 2.0, 2.0, 2.0, 2.0]
-        assert time_series_data["salinitydelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert time_series_data["salinitydelta"] == [2.0, 2.0, 2.0, 2.0, 2.0]
+        assert time_series_data["temperaturedelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
         assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
 
     def test_list_of_ext_quantities_tim_column_mismatch(self):
@@ -171,8 +171,8 @@ class TestSourceSinkConverter:
         converter.root_dir = "tests/data/input/source-sink"
         new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
         assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
-        assert new_quantity_block.salinitydelta == [3.0, 3.0, 3.0, 3.0, 3.0]
-        assert new_quantity_block.temperaturedelta == [2.0, 2.0, 2.0, 2.0, 2.0]
+        assert new_quantity_block.temperaturedelta == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert new_quantity_block.salinitydelta == [2.0, 2.0, 2.0, 2.0, 2.0]
         assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -230,8 +230,8 @@ class TestSourceSinkConverter:
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
         assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
-        assert new_quantity_block.salinitydelta == [3.0, 3.0, 3.0, 3.0, 3.0]
-        assert new_quantity_block.temperaturedelta == [2.0, 2.0, 2.0, 2.0, 2.0]
+        assert new_quantity_block.temperaturedelta == [3.0, 3.0, 3.0, 3.0, 3.0]
+        assert new_quantity_block.salinitydelta == [2.0, 2.0, 2.0, 2.0, 2.0]
         assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
         assert new_quantity_block.zsink == [-4.2, -5.35]
         assert new_quantity_block.zsource == [-3, -2.90]
