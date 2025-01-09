@@ -18,7 +18,10 @@ python = "^3.9"
 # exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
 netCDF4 = "^1.5,!=1.7.0,!=1.7.1"
 # no caret here, since numpy v2 is required for future python 3.13 support, but this is not yet widely supported by packages numpy v1 support is also still required.
-numpy = ">=1.25,<3"
+numpy = [
+    { version = ">=1.25,<3", python = "^3.9" },
+    { version = "^2.1", python = "^3.13" }
+]
 pydantic = "^2.5"
 # lxml 5.0 is from December 2023
 lxml = "^5.0"
