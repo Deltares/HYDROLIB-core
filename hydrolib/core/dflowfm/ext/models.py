@@ -193,7 +193,7 @@ class SourceSink(INIBasedModel):
     A `[SourceSink]` block for use inside an external forcings file,
     i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].
 
-    All lowercased attributes match with the lateral input as described in
+    All lowercased attributes match with the source-sink input as described in
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
     """
 
@@ -210,13 +210,11 @@ class SourceSink(INIBasedModel):
 
     zsource: Optional[Union[float, List[float]]] = Field(alias="zSource")
     zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
-    discharge: Union[float, List[float]] = Field(alias="discharge")
+    discharge: ForcingData = Field(alias="discharge")
     area: Optional[float] = Field(alias="Area")
 
-    salinitydelta: Optional[Union[List[float], float]] = Field(alias="SalinityDelta")
-    temperaturedelta: Optional[Union[List[float], float]] = Field(
-        alias="TemperatureDelta"
-    )
+    salinitydelta: Optional[ForcingData] = Field(alias="SalinityDelta")
+    temperaturedelta: Optional[ForcingData] = Field(alias="TemperatureDelta")
     interpolationmethod: Optional[str] = Field(alias="interpolationMethod")
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
 

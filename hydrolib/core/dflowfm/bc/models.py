@@ -845,7 +845,7 @@ class RealTime(StrEnum):
     """str: Realtime data source, externally provided"""
 
 
-ForcingData = Union[float, RealTime, ForcingModel]
+ForcingData = Union[float, List[float], RealTime, ForcingModel]
 """Data type that selects from three different types of forcing data:
 *   a scalar float constant
 *   "realtime" keyword, indicating externally controlled.
