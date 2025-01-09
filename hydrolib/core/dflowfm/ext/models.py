@@ -197,7 +197,7 @@ class SourceSink(INIBasedModel):
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
     """
 
-    _header: Literal["Lateral"] = "SourceSink"
+    _header: Literal["SourceSink"] = "SourceSink"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
     locationfile: DiskOnlyFileModel = Field(
@@ -221,7 +221,7 @@ class SourceSink(INIBasedModel):
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: Optional = None) -> Set:
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.__fields__
         unknown_keywords = [
             key

@@ -144,12 +144,12 @@ class PolyFile(ParsableFileModel):
         """Y-coordinates of all points in the PolyFile."""
         return [point.y for obj in self.objects for point in obj.points]
 
-    def get_z_sources_sinks(self) -> Tuple[float, List[float]]:
+    def get_z_sources_sinks(self) -> Tuple[List[float]]:
         """
         Get the z values of the source and sink points from the polyline file.
 
         Returns:
-            z_source, z_sinkA: Tuple[float, List[float]]:
+            z_source, z_sinkA: Tuple[List[float]]:
             If the polyline has data (more than 3 columns), then both the z_source and z_sink will be a list of two values.
             Otherwise, the z_source and the z_sink will be a single value each.
 
