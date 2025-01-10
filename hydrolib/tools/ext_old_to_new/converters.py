@@ -345,6 +345,11 @@ class SourceSinkConverter(BaseConverter):
             forcings file that has one of the following prefixes `initialtracer`,`tracerbnd`,
             `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
 
+        Notes:
+            - The function will combine the temperature and salinity from the MDU file (value is 1) file with the
+                quantities mentioned in the external forcing file, and will get the list of quantities that are in the tim file.
+            - The function will return a dictionary with the quantities as keys and the time series data as values.
+
         Examples:
         if the tim file contains 5 columns (the first column is the time):
             ```
@@ -358,10 +363,12 @@ class SourceSinkConverter(BaseConverter):
             >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracer-anyname",
             ... "anyother-quantities"]
 
-        - the function will filter the quantities that have one of the following prefixes `initialtracer`,`tracerbnd`,
-        `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
-        and then compare the number of columns in the TIM file with the number of filtered quantities from the
-        external forcings file, if they don't match a `Value Error` will be raised.
+        - The function will filter the external forcing quantities that have one of the following prefixes
+        `initialtracer`,`tracerbnd`, `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+        - If the mdu_quantities are provided, the function will merge the temperature and salinity from the mdu file
+        with the filtered quantities mentioned in the external forcing file.
+        - The merged list of quantities from both the ext and mdu files will then be compared with the number of
+        columns in the TIM file, if they don't match a `Value Error` will be raised.
         - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracer-anyname"] and the
         tim file contains 4 columns (excluding the time column).
 
@@ -377,8 +384,6 @@ class SourceSinkConverter(BaseConverter):
                 "initialtracer-anyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 
-        - the function will raise a `ValueError` if the temperature and salinity are present in the MDU file (value
-        is 1) file but not in the external forcings file.
 
         mdu file:
         ```
