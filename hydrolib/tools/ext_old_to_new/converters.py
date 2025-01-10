@@ -281,6 +281,38 @@ class SourceSinkConverter(BaseConverter):
 
         return data
 
+    @staticmethod
+    def merge_mdu_and_ext_file_quantities(
+        mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
+    ) -> List[str]:
+        """Merge the temperature and salinity from the mdu file with the temperature and salinity from the external file.
+
+        Args:
+            mdu_quantities (Dict[str, bool]): A dictionary containing the temperature and salinity details from the
+                mdu file, with bool values indecating if the temperature/salinity is activated in the mdu file.
+            temp_salinity_from_ext (Dict[str,int]): A dictionary containing the temperature and salinity details from
+                the external file.
+
+        Returns:
+            List[str]: A list of quantities that will be used in the tim file.
+        """
+        if mdu_quantities:
+            mdu_file_quantity_list = [key for key, val in mdu_quantities.items() if val]
+            temp_salinity_from_mdu = find_temperature_salinity_in_quantities(
+                mdu_file_quantity_list
+            )
+            final_temp_salinity = temp_salinity_from_ext | temp_salinity_from_mdu
+            # the kwargs will be provided only from the source and sink converter
+            # Ensure 'temperature' comes before 'salinity'
+            keys = list(final_temp_salinity.keys())
+            if "temperaturedelta" in keys and "salinitydelta" in keys:
+                keys.remove("salinitydelta")
+                keys.insert(keys.index("temperaturedelta"), "salinitydelta")
+        else:
+            keys = list(temp_salinity_from_ext.keys())
+
+        return keys
+
     def parse_tim_model(
         self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
     ) -> Dict[str, List[float]]:
@@ -382,24 +414,12 @@ class SourceSinkConverter(BaseConverter):
             ext_file_quantity_list
         )
 
-        # test if the temperature and salinity in the ext file conforms with the mdu file
-        # compare the temperature and salinity from mdu with the temperature and salinity from the external file
-        if mdu_quantities:
-            mdu_file_quantity_list = [key for key, val in mdu_quantities.items() if val]
-            temp_salinity_from_mdu = find_temperature_salinity_in_quantities(
-                mdu_file_quantity_list
-            )
-            final_temp_salinity = temp_salinity_from_ext | temp_salinity_from_mdu
-            # the kwargs will be provided only from the source and sink converter
-            # Ensure 'temperature' comes before 'salinity'
-            keys = list(final_temp_salinity.keys())
-            if "temperaturedelta" in keys and "salinitydelta" in keys:
-                keys.remove("salinitydelta")
-                keys.insert(keys.index("temperaturedelta"), "salinitydelta")
-        else:
-            keys = list(temp_salinity_from_ext.keys())
-
-        final_quantities_list = ["discharge"] + keys + required_quantities_from_ext
+        final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
+            mdu_quantities, temp_salinity_from_ext
+        )
+        final_quantities_list = (
+            ["discharge"] + final_temp_salinity + required_quantities_from_ext
+        )
 
         if len(time_series) != len(final_quantities_list):
             raise ValueError(
