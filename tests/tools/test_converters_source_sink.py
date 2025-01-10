@@ -4,93 +4,154 @@ from unittest.mock import patch
 import pytest
 
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
-from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.tools.ext_old_to_new.converters import SourceSinkConverter
 
 
 class TestParseTimFileForSourceSink:
-    def test_default(self):
-        """
-        The test case is based on the following assumptions:
-        - The tim file has 4 columns (plus the time column), but the list of ext quantities has only 4 quantities.
-        """
-        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-        ext_file_quantity_list = [
-            "discharge",
-            "temperature",
-            "salinity",
-            "initialtracer_anyname",
-        ]
+    time_file_full = Path("tests/data/input/source-sink/leftsor.tim")
+
+    @pytest.mark.parametrize(
+        "tim_file, ext_file_quantity_list, expected_data",
+        [
+            # The tim file has 4 columns (plus the time column), and the list of ext quantities has 4 quantities.
+            pytest.param(
+                time_file_full,
+                ["discharge", "temperature", "salinity", "initialtracer_anyname"],
+                {
+                    "discharge": [1.0] * 5,
+                    "salinitydelta": [2.0] * 5,
+                    "temperaturedelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="test_default_all_quantities_comes_from_ext",
+            ),
+            # The tim file has 4 columns (plus the time column), but the list of ext quantities has only 3 quantities.
+            pytest.param(
+                time_file_full,
+                ["discharge", "temperature", "salinity"],
+                None,
+                id="test_list_of_ext_quantities_tim_column_mismatch",
+            ),
+            # The tim file has 3 columns (plus the time column), but the list of ext quantities has only 3 quantities.
+            pytest.param(
+                Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
+                ["discharge", "salinity", "initialtracer_anyname"],
+                {
+                    "discharge": [1.0] * 5,
+                    "salinitydelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="no_temperature",
+            ),
+            # The tim file has 3 columns (plus the time column), and the list of ext quantities has only 3 quantities.
+            pytest.param(
+                Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
+                ["discharge", "temperature", "initialtracer_anyname"],
+                {
+                    "discharge": [1.0] * 5,
+                    "temperaturedelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="no_salinity",
+            ),
+            # The tim file has 2 columns (plus the time column), and the list of ext quantities has only 2 quantities.
+            pytest.param(
+                Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
+                ["discharge", "initialtracer_anyname"],
+                {
+                    "discharge": [1.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="no_temperature_no_salinity",
+            ),
+        ],
+    )
+    def test_parse_tim_model(self, tim_file, ext_file_quantity_list, expected_data):
         converter = SourceSinkConverter()
 
-        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
-        assert time_series_data["salinitydelta"] == [2.0, 2.0, 2.0, 2.0, 2.0]
-        assert time_series_data["temperaturedelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
-        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        if expected_data is None:
+            with pytest.raises(ValueError):
+                converter.parse_tim_model(tim_file, ext_file_quantity_list)
+        else:
+            time_series_data = converter.parse_tim_model(
+                tim_file, ext_file_quantity_list
+            )
+            assert time_series_data == expected_data
 
-    def test_list_of_ext_quantities_tim_column_mismatch(self):
-        """
-        The test case is based on the following assumptions:
-        - The tim file has 4 columns (plus the time column), but the list of ext quantities has only 3 quantities.
-        """
-        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-        ext_file_quantity_list = ["discharge", "temperature", "salinity"]
+    @pytest.mark.parametrize(
+        "tim_file, ext_file_quantity_list, mdu_quantities, expected_data",
+        [
+            pytest.param(
+                time_file_full,
+                ["discharge", "initialtracer_anyname"],
+                {"salinity": True, "temperature": True},
+                {
+                    "discharge": [1.0] * 5,
+                    "salinitydelta": [2.0] * 5,
+                    "temperaturedelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="all_quantities_from_mdu",
+            ),
+            pytest.param(
+                time_file_full,
+                ["discharge", "temperature", "initialtracer_anyname"],
+                {"salinity": True, "temperature": False},
+                {
+                    "discharge": [1.0] * 5,
+                    "salinitydelta": [2.0] * 5,
+                    "temperaturedelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="temp_from_ext_salinity_from_mdu",
+            ),
+            pytest.param(
+                time_file_full,
+                ["discharge", "salinity", "initialtracer_anyname"],
+                {"salinity": False, "temperature": True},
+                {
+                    "discharge": [1.0] * 5,
+                    "salinitydelta": [2.0] * 5,
+                    "temperaturedelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="temp_from_mdu_salinity_from_ext",
+            ),
+            pytest.param(
+                time_file_full,
+                ["discharge", "salinity", "initialtracer_anyname"],
+                {"salinity": True, "temperature": True},
+                {
+                    "discharge": [1.0] * 5,
+                    "salinitydelta": [2.0] * 5,
+                    "temperaturedelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="temp_salinity_from_mdu",
+            ),
+            pytest.param(
+                time_file_full,
+                ["discharge", "salinity", "temperature", "initialtracer_anyname"],
+                {"salinity": False, "temperature": True},
+                {
+                    "discharge": [1.0] * 5,
+                    "salinitydelta": [2.0] * 5,
+                    "temperaturedelta": [3.0] * 5,
+                    "initialtracer_anyname": [4.0] * 5,
+                },
+                id="temp_from_mdu_temp_salinity_from_ext",
+            ),
+        ],
+    )
+    def test_parse_tim_model_with_mdu(
+        self, tim_file, ext_file_quantity_list, mdu_quantities, expected_data
+    ):
         converter = SourceSinkConverter()
-        with pytest.raises(ValueError):
-            converter.parse_tim_model(tim_file, ext_file_quantity_list)
 
-    def test_no_temperature(self):
-        """
-        The test case is based on the following assumptions:
-        - The tim file has 3 columns (plus the time column), but the list of ext quantities has only 3 quantities.
-        """
-        tim_file = Path("tests/data/input/source-sink/no_temperature_or_salinity.tim")
-        ext_file_quantity_list = [
-            "discharge",
-            "salinity",
-            "initialtracer_anyname",
-        ]
-        converter = SourceSinkConverter()
-
-        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
-        assert time_series_data["salinitydelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
-        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
-
-    def test_no_salinity(self):
-        """
-        The test case is based on the following assumptions:
-        - The tim file has 3 columns (plus the time column), and the list of ext quantities has only 3 quantities.
-        """
-        tim_file = Path("tests/data/input/source-sink/no_temperature_or_salinity.tim")
-        ext_file_quantity_list = [
-            "discharge",
-            "temperature",
-            "initialtracer_anyname",
-        ]
-        converter = SourceSinkConverter()
-
-        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
-        assert time_series_data["temperaturedelta"] == [3.0, 3.0, 3.0, 3.0, 3.0]
-        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
-
-    def test_no_salinity_no_temperature(self):
-        """
-        The test case is based on the following assumptions:
-        - The tim file has 2 columns (plus the time column), and the list of ext quantities has only 2 quantities.
-        """
-        tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
-        ext_file_quantity_list = [
-            "discharge",
-            "initialtracer_anyname",
-        ]
-        converter = SourceSinkConverter()
-
-        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-        assert time_series_data["discharge"] == [1.0, 1.0, 1.0, 1.0, 1.0]
-        assert time_series_data["initialtracer_anyname"] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        time_series_data = converter.parse_tim_model(
+            tim_file, ext_file_quantity_list, **mdu_quantities
+        )
+        assert time_series_data == expected_data
 
 
 class TestSourceSinkConverter:
