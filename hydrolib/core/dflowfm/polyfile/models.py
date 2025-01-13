@@ -144,7 +144,7 @@ class PolyFile(ParsableFileModel):
         """Y-coordinates of all points in the PolyFile."""
         return [point.y for obj in self.objects for point in obj.points]
 
-    def get_z_sources_sinks(self) -> Tuple[List[float]]:
+    def get_z_sources_sinks(self) -> Tuple[List[float], List[float]]:
         """
         Get the z values of the source and sink points from the polyline file.
 
@@ -186,6 +186,6 @@ class PolyFile(ParsableFileModel):
             else:
                 z_source_sink.append([point.z])
 
-        z_sink = z_source_sink[0]
-        z_source = z_source_sink[1]
+        z_sink: list[float | None] = z_source_sink[0]
+        z_source: list[float | None] = z_source_sink[1]
         return z_source, z_sink
