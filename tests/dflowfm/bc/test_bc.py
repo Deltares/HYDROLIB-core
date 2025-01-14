@@ -2,20 +2,12 @@ import inspect
 from pathlib import Path
 from typing import Dict, List, Literal
 
-import numpy as np
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
-    Astronomic,
-    AstronomicCorrection,
-    Constant,
-    ForcingBase,
     ForcingModel,
-    Harmonic,
-    HarmonicCorrection,
-    QHTable,
     QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
@@ -27,10 +19,8 @@ from hydrolib.core.dflowfm.bc.models import (
 from hydrolib.core.dflowfm.ini.models import BaseModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 
-from ..utils import (
+from tests.utils import (
     assert_files_equal,
-    invalid_test_data_dir,
-    test_data_dir,
     test_input_dir,
     test_output_dir,
     test_reference_dir,
@@ -67,8 +57,8 @@ class TestQuantityUnitPair:
 
 
 class TestTimeSeries:
-    def test_create_a_forcing_from_scratch(self):
-        forcing = TimeSeries(**_create_time_series_values())
+    def test_create_a_forcing_from_scratch(self, time_series_values):
+        forcing = TimeSeries(**time_series_values)
 
         assert isinstance(forcing, TimeSeries)
         assert isinstance(forcing, VectorForcingBase)
@@ -185,198 +175,7 @@ class TestTimeSeries:
         assert expected_error_mssg in str(error.value)
 
 
-class TestForcingBase:
-    @pytest.mark.parametrize(
-        "input,expected",
-        [
-            ("TimeSeries", "timeseries"),
-            ("haRmoniC", "harmonic"),
-            ("ASTRONOMIC", "astronomic"),
-            ("harmonic-Correction", "harmonic-correction"),
-            ("Astronomic-Correction", "astronomic-correction"),
-            ("t3D", "t3d"),
-            ("QHtable", "qhtable"),
-            ("Constant", "constant"),
-            ("DOESNOTEXIST", "DOESNOTEXIST"),
-            ("doesnotexist", "doesnotexist"),
-        ],
-    )
-    def test_parses_function_case_insensitive(self, input, expected):
-        forcing = ForcingBase(function=input, name="somename", quantityunitpair=[])
 
-        assert forcing.function == expected
-
-    @pytest.mark.parametrize(
-        "missing_field",
-        [
-            "quantity",
-            "unit",
-        ],
-    )
-    def test_create_forcingbase_missing_field_raises_correct_error(
-        self, missing_field: str
-    ):
-        values = dict(
-            name="Boundary2",
-            function="constant",
-            quantity="dischargebnd",
-            unit="m³/s",
-            datablock=[["100"]],
-        )
-
-        del values[missing_field]
-
-        with pytest.raises(ValidationError) as error:
-            ForcingBase(**values)
-
-        expected_message = f"{missing_field} is not provided"
-        assert expected_message in str(error.value)
-
-    @pytest.mark.parametrize(
-        "quantities,units",
-        [
-            (["time", "dischargebnd"], "m³/s"),
-            (
-                ["time", "dischargebnd", "extra"],
-                ["minutes since 2021-01-01 00:00:00", "m³/s"],
-            ),
-        ],
-    )
-    def test_create_forcingbase_mismatch_number_of_quantities_units_raises_correct_error(
-        self, quantities, units
-    ):
-        values = dict(
-            name="Boundary2",
-            function="constant",
-            quantity=quantities,
-            unit=units,
-            datablock=[["100"]],
-        )
-
-        with pytest.raises(ValidationError) as error:
-            ForcingBase(**values)
-
-        expected_message = "Number of quantities should be equal to number of units"
-        assert expected_message in str(error.value)
-
-
-class TestForcingModel:
-    """
-    Wrapper class to test the logic of the ForcingModel class in hydrolib.core.dflowfm.bc.models.py.
-    """
-
-    def test_forcing_model(self):
-        filepath = (
-            test_data_dir
-            / "input/e02/f101_1D-boundaries/c01_steady-state-flow/BoundaryConditions.bc"
-        )
-        m = ForcingModel(filepath)
-        assert len(m.forcing) == 13
-        assert isinstance(m.forcing[-1], TimeSeries)
-
-    def test_read_bc_missing_field_raises_correct_error(self):
-        bc_file = "missing_field.bc"
-        identifier = "Boundary2"
-
-        filepath = invalid_test_data_dir / bc_file
-
-        with pytest.raises(ValidationError) as error:
-            ForcingModel(filepath)
-
-        expected_message1 = f"{bc_file} -> forcing -> 1 -> {identifier}"
-        expected_message2 = "quantity is not provided"
-        assert expected_message1 in str(error.value)
-        assert expected_message2 in str(error.value)
-
-    def test_save_forcing_model(self):
-        bc_file = Path(test_output_dir / TEST_BC_FILE)
-        reference_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
-        forcingmodel = ForcingModel()
-        forcingmodel.filepath = bc_file
-
-        timeseries = TimeSeries(**_create_time_series_values())
-        harmonic = Harmonic(**_create_harmonic_values(False))
-        harmoniccorrection = HarmonicCorrection(**_create_harmonic_values(True))
-        t3d = T3D(**_create_t3d_values())
-        qhtable = QHTable(**_create_qhtable_values())
-        constant = Constant(**_create_constant_values())
-
-        forcingmodel.forcing.append(timeseries)
-        forcingmodel.forcing.append(harmonic)
-        forcingmodel.forcing.append(harmoniccorrection)
-        forcingmodel.forcing.append(t3d)
-        forcingmodel.forcing.append(qhtable)
-        forcingmodel.forcing.append(constant)
-
-        forcingmodel.serializer_config.float_format = ".3f"
-        forcingmodel.serializer_config.float_format_datablock = ".4f"
-        forcingmodel.save()
-
-        assert bc_file.is_file() == True
-        assert_files_equal(bc_file, reference_file, skip_lines=[0, 3])
-
-    @pytest.mark.parametrize("cls", [Astronomic, AstronomicCorrection])
-    def test_astronomic_values_with_strings_in_datablock_are_parsed_correctly(
-        self, cls
-    ):
-        try:
-            is_correction = cls == AstronomicCorrection
-            _ = cls(**_create_astronomic_values(is_correction))
-        except ValidationError:
-            pytest.fail(
-                f"No validation error should be raised when creating an {cls.__name__}"
-            )
-
-    def test_representation_is_correct(self):
-        forcing = ForcingBase(
-            name="some_name",
-            function="some_function",
-            quantityunitpair=[
-                QuantityUnitPair(quantity="some_quantity", unit="some_unit")
-            ],
-            datablock=[[1.2, 2.3]],
-        )
-
-        str_representation_as_single = str(forcing)
-        str_representation_in_list = str([forcing])
-
-        # datablock should be omitted when a `ForcingBase` is represented from within a list
-        expected_result = "comments=Comments() datablock={0} name='some_name' function='some_function' quantityunitpair=[QuantityUnitPair(quantity='some_quantity', unit='some_unit', vertpositionindex=None)]"
-        assert str_representation_as_single == expected_result.format("[[1.2, 2.3]]")
-        assert str_representation_in_list == "[{0}]".format(
-            expected_result.format("'<omitted>'")
-        )
-
-    def test_forcing_model_correct_default_serializer_config(self):
-        model = ForcingModel()
-
-        assert model.serializer_config.section_indent == 0
-        assert model.serializer_config.property_indent == 0
-        assert model.serializer_config.datablock_indent == 0
-        assert model.serializer_config.float_format == ""
-        assert model.serializer_config.datablock_spacing == 2
-        assert model.serializer_config.comment_delimiter == "#"
-        assert model.serializer_config.skip_empty_properties == True
-
-    def test_forcing_model_with_datablock_that_has_nan_values_should_raise_error(self):
-        datablock = np.random.uniform(low=-40, high=130.3, size=(4, 2)) * np.nan
-        datablock_list = datablock.tolist()
-
-        with pytest.raises(ValidationError) as error:
-            TimeSeries(
-                name="east2_0001",
-                quantityunitpair=[
-                    QuantityUnitPair(
-                        quantity="time", unit="seconds since 2022-01-01 00:00:00 +00:00"
-                    ),
-                    QuantityUnitPair(quantity="waterlevel", unit="m"),
-                ],
-                timeInterpolation=TimeInterpolation.linear,
-                datablock=datablock_list,
-            )
-
-        expected_message = "NaN is not supported in datablocks."
-        assert expected_message in str(error.value)
 
 
 class TestVectorForcingBase:
@@ -516,11 +315,11 @@ class TestT3D:
         self,
         vertical_position_type: str,
         exp_vertical_position_type: VerticalPositionType,
+        t3d_values
     ):
-        values = _create_t3d_values()
-        values["vertpositiontype"] = vertical_position_type
+        t3d_values["vertpositiontype"] = vertical_position_type
 
-        t3d = T3D(**values)
+        t3d = T3D(**t3d_values)
 
         assert isinstance(t3d, VectorForcingBase)
         assert t3d.name == "boundary_t3d"
@@ -556,47 +355,44 @@ class TestT3D:
         assert t3d.datablock[1] == [60, 4, 5, 6]
         assert t3d.datablock[2] == [120, 7, 8, 9]
 
-    def test_create_t3d_first_quantity_not_time_raises_error(self):
-        values = _create_t3d_values()
+    def test_create_t3d_first_quantity_not_time_raises_error(self, t3d_values):
 
-        values["quantityunitpair"] = [
+        t3d_values["quantityunitpair"] = [
             _create_quantityunitpair("salinitybnd", "ppt"),
             _create_quantityunitpair("time", TEST_TIME_UNIT),
         ]
 
         with pytest.raises(ValidationError) as error:
-            T3D(**values)
+            T3D(**t3d_values)
 
         expected_message = "First quantity should be `time`"
         assert expected_message in str(error.value)
 
-    def test_create_t3d_time_quantity_with_verticalpositionindex_raises_error(self):
-        values = _create_t3d_values()
+    def test_create_t3d_time_quantity_with_verticalpositionindex_raises_error(self, t3d_values):
 
-        values["quantityunitpair"] = [
+        t3d_values["quantityunitpair"] = [
             _create_quantityunitpair("time", TEST_TIME_UNIT, 1),
         ]
 
         with pytest.raises(ValidationError) as error:
-            T3D(**values)
+            T3D(**t3d_values)
 
         expected_message = "`time` quantity cannot have vertical position index"
         assert expected_message in str(error.value)
 
     def test_create_t3d_verticalpositionindex_missing_for_non_time_unit_raises_error(
-        self,
+        self, t3d_values
     ):
-        values = _create_t3d_values()
 
-        values["quantityunitpair"] = [
+        t3d_values["quantityunitpair"] = [
             _create_quantityunitpair("time", TEST_TIME_UNIT),
             _create_quantityunitpair("salinitybnd", "ppt", None),
         ]
 
         with pytest.raises(ValidationError) as error:
-            T3D(**values)
+            T3D(**t3d_values)
 
-        expected_maximum_index = len(values["vertpositions"].split())
+        expected_maximum_index = len(t3d_values["vertpositions"].split())
         expected_message = (
             f"Vertical position index should be between 1 and {expected_maximum_index}"
         )
@@ -619,9 +415,8 @@ class TestT3D:
         self,
         vertpositions: List[float],
         verticalpositionindexes: List[int],
+        t3d_values
     ):
-        values = _create_t3d_values()
-
         time_quantityunitpair = [_create_quantityunitpair("time", TEST_TIME_UNIT)]
         other_quantutyunitpairs = []
         for i in range(len(verticalpositionindexes)):
@@ -631,11 +426,11 @@ class TestT3D:
                 )
             )
 
-        values["quantityunitpair"] = time_quantityunitpair + other_quantutyunitpairs
-        values["vertpositions"] = vertpositions
+        t3d_values["quantityunitpair"] = time_quantityunitpair + other_quantutyunitpairs
+        t3d_values["vertpositions"] = vertpositions
 
         with pytest.raises(ValidationError) as error:
-            T3D(**values)
+            T3D(**t3d_values)
 
         maximum_verticalpositionindex = len(vertpositions)
         expected_message = f"Vertical position index should be between 1 and {maximum_verticalpositionindex}"
@@ -652,28 +447,27 @@ class TestT3D:
         self,
         number_of_quantities_and_units: int,
         number_of_verticalpositionindexes: int,
+        t3d_values
     ):
-        values = _create_t3d_values()
-
-        del values["quantityunitpair"]
+        del t3d_values["quantityunitpair"]
 
         onebased_index_offset = 1
 
-        values["quantity"] = ["time"] + [
+        t3d_values["quantity"] = ["time"] + [
             str(i + onebased_index_offset)
             for i in range(number_of_quantities_and_units)
         ]
-        values["unit"] = [TEST_TIME_UNIT] + [
+        t3d_values["unit"] = [TEST_TIME_UNIT] + [
             str(i + onebased_index_offset)
             for i in range(number_of_quantities_and_units)
         ]
-        values["vertpositionindex"] = [
+        t3d_values["vertpositionindex"] = [
             str(i + onebased_index_offset)
             for i in range(number_of_verticalpositionindexes)
         ]
 
         with pytest.raises(ValidationError) as error:
-            T3D(**values)
+            T3D(**t3d_values)
 
         expected_message = "Number of vertical position indexes should be equal to the number of quantities/units - 1"
         assert expected_message in str(error.value)
@@ -690,53 +484,48 @@ class TestT3D:
         ],
     )
     def test_create_t3d_verticalpositionindex_has_invalid_value_raises_error(
-        self, verticalpositionindexes: List[int]
+        self, verticalpositionindexes: List[int], t3d_values
     ):
-        values = _create_t3d_values()
+        del t3d_values["quantityunitpair"]
 
-        del values["quantityunitpair"]
-
-        values["quantity"] = ["time", "randomQuantity"]
-        values["unit"] = ["randomUnit", "randomUnit"]
-        values["vertpositionindex"] = verticalpositionindexes
+        t3d_values["quantity"] = ["time", "randomQuantity"]
+        t3d_values["unit"] = ["randomUnit", "randomUnit"]
+        t3d_values["vertpositionindex"] = verticalpositionindexes
 
         with pytest.raises(ValidationError) as error:
-            T3D(**values)
+            T3D(**t3d_values)
 
-        number_of_vertical_positions = len(values["vertpositions"].split())
+        number_of_vertical_positions = len(t3d_values["vertpositions"].split())
         expected_message = f"Vertical position index should be between 1 and {number_of_vertical_positions}"
         assert expected_message in str(error.value)
 
-    def test_create_t3d_creates_correct_quantityunitpairs(self):
-        values = _create_t3d_values()
+    def test_create_t3d_creates_correct_quantityunitpairs(self, t3d_values):
 
-        t3d = T3D(**values)
+        t3d = T3D(**t3d_values)
 
         quantityunitpairs = t3d.quantityunitpair
-        expected_quantityunitpairs = values["quantityunitpair"]
+        expected_quantityunitpairs = t3d_values["quantityunitpair"]
 
         TestT3D._validate_that_correct_quantityunitpairs_are_created(
             quantityunitpairs, expected_quantityunitpairs
         )
 
     def test_create_t3d_creates_correct_quantityunitpairs_using_verticalpositionindexes(
-        self,
+        self, t3d_values
     ):
-        values = _create_t3d_values()
+        del t3d_values["quantityunitpair"]
 
-        del values["quantityunitpair"]
+        t3d_values["quantity"] = ["time", "randomQuantity1", "randomQuantity2"]
+        t3d_values["unit"] = ["randomUnit", "randomUnit", "randomUnit"]
+        t3d_values["vertpositionindex"] = [2, 3]
 
-        values["quantity"] = ["time", "randomQuantity1", "randomQuantity2"]
-        values["unit"] = ["randomUnit", "randomUnit", "randomUnit"]
-        values["vertpositionindex"] = [2, 3]
-
-        t3d = T3D(**values)
+        t3d = T3D(**t3d_values)
 
         quantityunitpairs = t3d.quantityunitpair
         expected_quantityunitpairs = []
 
         for quantity, unit, verticalpositionindex in zip(
-            values["quantity"], values["unit"], [None] + values["vertpositionindex"]
+            t3d_values["quantity"], t3d_values["unit"], [None] + t3d_values["vertpositionindex"]
         ):
             expected_quantityunitpairs.append(
                 _create_quantityunitpair(quantity, unit, verticalpositionindex)
@@ -746,31 +535,28 @@ class TestT3D:
             quantityunitpairs, expected_quantityunitpairs
         )
 
-    def test_create_t3d_timeinterpolation_defaults_to_linear(self):
-        values = _create_t3d_values()
+    def test_create_t3d_timeinterpolation_defaults_to_linear(self, t3d_values):
 
-        del values["timeinterpolation"]
+        del t3d_values["timeinterpolation"]
 
-        t3d = T3D(**values)
+        t3d = T3D(**t3d_values)
 
         assert t3d.timeinterpolation == TimeInterpolation.linear
 
-    def test_create_t3d_verticalinterpolation_defaults_to_linear(self):
-        values = _create_t3d_values()
+    def test_create_t3d_verticalinterpolation_defaults_to_linear(self, t3d_values):
 
-        del values["vertinterpolation"]
+        del t3d_values["vertinterpolation"]
 
-        t3d = T3D(**values)
+        t3d = T3D(**t3d_values)
 
         assert t3d.vertinterpolation == VerticalInterpolation.linear
 
-    def test_create_t3d_without_specifying_vertpositions_raises_error(self):
-        values = _create_t3d_values()
+    def test_create_t3d_without_specifying_vertpositions_raises_error(self, t3d_values):
 
-        del values["vertpositions"]
+        del t3d_values["vertpositions"]
 
         with pytest.raises(ValidationError) as error:
-            T3D(**values)
+            T3D(**t3d_values)
 
         expected_message = "vertPositions is not provided"
         assert expected_message in str(error.value)
@@ -968,12 +754,12 @@ class TestVectorQuantityUnitPairs:
     ):
         numlayers = 3
         values = _create_vectorvalues(numlayers)
-        vQUP = VectorQuantityUnitPairs(**values)
-        assert len(vQUP.quantityunitpair) == numlayers * 2
+        v_qup = VectorQuantityUnitPairs(**values)
+        assert len(v_qup.quantityunitpair) == numlayers * 2
 
         with pytest.raises(ValueError) as error:
             # Now re-assign these qups such that last element has a wrong quantity name:
-            vQUP.quantityunitpair = vQUP.quantityunitpair[:-1] + [
+            v_qup.quantityunitpair = v_qup.quantityunitpair[:-1] + [
                 _create_quantityunitpair(
                     quantity="wrongname", unit="-", verticalpositionindex=numlayers
                 )
@@ -995,80 +781,6 @@ def _create_vectorqup(
         vectorname=vectorname,
         elementname=elementname,
         quantityunitpair=quantityunitpair,
-    )
-
-
-def _create_time_series_values():
-    return dict(
-        name="boundary_timeseries",
-        function="timeseries",
-        timeinterpolation=TimeInterpolation.block_to,
-        offset="1.23",
-        factor="2.34",
-        quantityunitpair=[
-            _create_quantityunitpair("time", TEST_TIME_UNIT),
-            _create_quantityunitpair("dischargebnd", "m³/s"),
-        ],
-        datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
-    )
-
-
-def _create_harmonic_values(iscorrection: bool):
-    function = "harmonic-correction" if iscorrection else "harmonic"
-    return dict(
-        name=f"boundary_{function}",
-        function=function,
-        quantityunitpair=[
-            _create_quantityunitpair("harmonic component", "minutes"),
-            _create_quantityunitpair("waterlevelbnd amplitude", "m"),
-            _create_quantityunitpair("waterlevelbnd phase", "deg"),
-        ],
-        datablock=[
-            ["0", "1.23", "2.34"],
-            ["60", "3.45", "4.56"],
-        ],
-    )
-
-
-def _create_astronomic_values(iscorrection: bool):
-    function = "astronomic-correction" if iscorrection else "astronomic"
-    return dict(
-        name=f"boundary_{function}",
-        function=function,
-        quantityunitpair=[
-            _create_quantityunitpair("astronomic component", "-"),
-            _create_quantityunitpair("waterlevelbnd amplitude", "m"),
-            _create_quantityunitpair("waterlevelbnd phase", "deg"),
-        ],
-        datablock=[
-            ["A0", "1.23", "2.34"],
-            ["M4", "3.45", "4.56"],
-            ["N2", "5.67", "6.78"],
-        ],
-    )
-
-
-def _create_t3d_values():
-    return dict(
-        name="boundary_t3d",
-        function="t3d",
-        offset="1.23",
-        factor="2.34",
-        vertpositions="3.45 4.56 5.67",
-        vertinterpolation=VerticalInterpolation.log,
-        vertpositiontype=VerticalPositionType.percentage_bed,
-        timeinterpolation=TimeInterpolation.linear,
-        quantityunitpair=[
-            _create_quantityunitpair("time", TEST_TIME_UNIT),
-            _create_quantityunitpair("salinitybnd", "ppt", 1),
-            _create_quantityunitpair("salinitybnd", "ppt", 2),
-            _create_quantityunitpair("salinitybnd", "ppt", 3),
-        ],
-        datablock=[
-            ["0", "1", "2", "3"],
-            ["60", "4", "5", "6"],
-            ["120", "7", "8", "9"],
-        ],
     )
 
 
@@ -1128,37 +840,6 @@ def _create_time_series_vectorvalues():
             ["0", "1.23", "12.3"],
             ["60", "2.34", "23.4"],
             ["120", "3.45", "34.5"],
-        ],
-    )
-
-
-def _create_qhtable_values():
-    return dict(
-        name="boundary_qhtable",
-        function="qhtable",
-        quantityunitpair=[
-            _create_quantityunitpair("qhbnd discharge", "m3/s"),
-            _create_quantityunitpair("qhbnd waterlevel", "m"),
-        ],
-        datablock=[
-            ["1.23", "2.34"],
-            ["3.45", "4.56"],
-        ],
-    )
-
-
-def _create_constant_values():
-    return dict(
-        name="boundary_constant",
-        function="constant",
-        offset="1.23",
-        factor="2.34",
-        timeinterpolation=TimeInterpolation.linear,
-        quantityunitpair=[
-            _create_quantityunitpair("waterlevelbnd", "m"),
-        ],
-        datablock=[
-            ["3.45"],
         ],
     )
 
