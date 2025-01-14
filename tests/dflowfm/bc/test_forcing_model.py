@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import numpy as np
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
@@ -15,7 +16,7 @@ from hydrolib.core.dflowfm.bc.models import (
     QHTable,
     QuantityUnitPair,
     TimeInterpolation,
-    TimeSeries
+    TimeSeries,
 )
 from tests.utils import assert_files_equal
 
@@ -26,6 +27,7 @@ def quantityunitpair(quantity, unit, verticalpositionindex=None):
     return QuantityUnitPair(
         quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
     )
+
 
 def harmonic_values(iscorrection: bool):
     function = "harmonic-correction" if iscorrection else "harmonic"
@@ -42,6 +44,7 @@ def harmonic_values(iscorrection: bool):
             ["60", "3.45", "4.56"],
         ],
     )
+
 
 def qhtable_values():
     return dict(
@@ -72,6 +75,7 @@ def constant_values():
             ["3.45"],
         ],
     )
+
 
 def astronomic_values(iscorrection: bool, quantityunitpair):
     function = "astronomic-correction" if iscorrection else "astronomic"
@@ -120,7 +124,7 @@ class TestForcingBase:
         ],
     )
     def test_create_forcingbase_missing_field_raises_correct_error(
-            self, missing_field: str
+        self, missing_field: str
     ):
         values = dict(
             name="Boundary2",
@@ -143,13 +147,13 @@ class TestForcingBase:
         [
             (["time", "dischargebnd"], "m³/s"),
             (
-                    ["time", "dischargebnd", "extra"],
-                    ["minutes since 2021-01-01 00:00:00", "m³/s"],
+                ["time", "dischargebnd", "extra"],
+                ["minutes since 2021-01-01 00:00:00", "m³/s"],
             ),
         ],
     )
     def test_create_forcingbase_mismatch_number_of_quantities_units_raises_correct_error(
-            self, quantities, units
+        self, quantities, units
     ):
         values = dict(
             name="Boundary2",
@@ -172,7 +176,10 @@ class TestForcingModel:
     """
 
     def test_forcing_model(self, input_files_dir):
-        filepath = input_files_dir / "e02/f101_1D-boundaries/c01_steady-state-flow/BoundaryConditions.bc"
+        filepath = (
+            input_files_dir
+            / "e02/f101_1D-boundaries/c01_steady-state-flow/BoundaryConditions.bc"
+        )
 
         m = ForcingModel(filepath)
         assert len(m.forcing) == 13
@@ -192,7 +199,9 @@ class TestForcingModel:
         assert expected_message1 in str(error.value)
         assert expected_message2 in str(error.value)
 
-    def test_save_forcing_model(self, time_series_values, t3d_values, output_files_dir, reference_files_dir):
+    def test_save_forcing_model(
+        self, time_series_values, t3d_values, output_files_dir, reference_files_dir
+    ):
         bc_file = output_files_dir / TEST_BC_FILE
         reference_file = reference_files_dir / "bc" / TEST_BC_FILE
         forcingmodel = ForcingModel()
@@ -221,7 +230,7 @@ class TestForcingModel:
 
     @pytest.mark.parametrize("cls", [Astronomic, AstronomicCorrection])
     def test_astronomic_values_with_strings_in_datablock_are_parsed_correctly(
-            self, cls
+        self, cls
     ):
         try:
             is_correction = cls == AstronomicCorrection
