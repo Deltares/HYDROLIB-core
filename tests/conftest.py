@@ -25,9 +25,11 @@ def output_files_dir() -> Path:
 def reference_files_dir() -> Path:
     return Path("tests/data/reference")
 
+
 @pytest.fixture
 def invalid_data_dir() -> Path:
     return Path("tests/data/input/invalid_files")
+
 
 @pytest.fixture
 def initial_condition_quantities() -> List[str]:
