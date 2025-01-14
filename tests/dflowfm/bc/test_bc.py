@@ -18,7 +18,6 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.ini.models import BaseModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
-
 from tests.utils import (
     assert_files_equal,
     test_input_dir,
@@ -175,9 +174,6 @@ class TestTimeSeries:
         assert expected_error_mssg in str(error.value)
 
 
-
-
-
 class TestVectorForcingBase:
     class VectorForcingTest(VectorForcingBase):
         function: Literal["testfunction"] = "testfunction"
@@ -315,7 +311,7 @@ class TestT3D:
         self,
         vertical_position_type: str,
         exp_vertical_position_type: VerticalPositionType,
-        t3d_values
+        t3d_values,
     ):
         t3d_values["vertpositiontype"] = vertical_position_type
 
@@ -368,7 +364,9 @@ class TestT3D:
         expected_message = "First quantity should be `time`"
         assert expected_message in str(error.value)
 
-    def test_create_t3d_time_quantity_with_verticalpositionindex_raises_error(self, t3d_values):
+    def test_create_t3d_time_quantity_with_verticalpositionindex_raises_error(
+        self, t3d_values
+    ):
 
         t3d_values["quantityunitpair"] = [
             _create_quantityunitpair("time", TEST_TIME_UNIT, 1),
@@ -412,10 +410,7 @@ class TestT3D:
         ],
     )
     def test_create_t3d_verticalposition_in_quantityunitpair_has_invalid_value_raises_error(
-        self,
-        vertpositions: List[float],
-        verticalpositionindexes: List[int],
-        t3d_values
+        self, vertpositions: List[float], verticalpositionindexes: List[int], t3d_values
     ):
         time_quantityunitpair = [_create_quantityunitpair("time", TEST_TIME_UNIT)]
         other_quantutyunitpairs = []
@@ -447,7 +442,7 @@ class TestT3D:
         self,
         number_of_quantities_and_units: int,
         number_of_verticalpositionindexes: int,
-        t3d_values
+        t3d_values,
     ):
         del t3d_values["quantityunitpair"]
 
@@ -525,7 +520,9 @@ class TestT3D:
         expected_quantityunitpairs = []
 
         for quantity, unit, verticalpositionindex in zip(
-            t3d_values["quantity"], t3d_values["unit"], [None] + t3d_values["vertpositionindex"]
+            t3d_values["quantity"],
+            t3d_values["unit"],
+            [None] + t3d_values["vertpositionindex"],
         ):
             expected_quantityunitpairs.append(
                 _create_quantityunitpair(quantity, unit, verticalpositionindex)

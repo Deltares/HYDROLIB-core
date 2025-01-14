@@ -1,9 +1,15 @@
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 import pytest
-from hydrolib.core.dflowfm.bc.models import \
-    TimeInterpolation, QuantityUnitPair, VerticalInterpolation,VerticalPositionType
+
+from hydrolib.core.dflowfm.bc.models import (
+    QuantityUnitPair,
+    TimeInterpolation,
+    VerticalInterpolation,
+    VerticalPositionType,
+)
+
 
 @pytest.fixture
 def input_files_dir() -> Path:
@@ -217,6 +223,7 @@ def quantityunitpair(quantity, unit, verticalpositionindex=None):
         quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
     )
 
+
 @pytest.fixture
 def time_series_values() -> Dict[str, Any]:
     return dict(
@@ -231,6 +238,7 @@ def time_series_values() -> Dict[str, Any]:
         ],
         datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
     )
+
 
 @pytest.fixture
 def t3d_values():
