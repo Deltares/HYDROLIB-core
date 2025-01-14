@@ -17,15 +17,10 @@ from hydrolib.core.dflowfm.bc.models import (
     TimeInterpolation,
     TimeSeries
 )
-from tests.utils import (
-    assert_files_equal,
-    invalid_test_data_dir,
-    test_data_dir,
-    test_output_dir,
-    test_reference_dir,
-)
+from tests.utils import assert_files_equal
 
 TEST_BC_FILE = "test.bc"
+
 
 def quantityunitpair(quantity, unit, verticalpositionindex=None):
     return QuantityUnitPair(
@@ -176,20 +171,18 @@ class TestForcingModel:
     Wrapper class to test the logic of the ForcingModel class in hydrolib.core.dflowfm.bc.models.py.
     """
 
-    def test_forcing_model(self):
-        filepath = (
-                test_data_dir
-                / "input/e02/f101_1D-boundaries/c01_steady-state-flow/BoundaryConditions.bc"
-        )
+    def test_forcing_model(self, input_files_dir):
+        filepath = input_files_dir / "e02/f101_1D-boundaries/c01_steady-state-flow/BoundaryConditions.bc"
+
         m = ForcingModel(filepath)
         assert len(m.forcing) == 13
         assert isinstance(m.forcing[-1], TimeSeries)
 
-    def test_read_bc_missing_field_raises_correct_error(self):
+    def test_read_bc_missing_field_raises_correct_error(self, invalid_data_dir):
         bc_file = "missing_field.bc"
         identifier = "Boundary2"
 
-        filepath = invalid_test_data_dir / bc_file
+        filepath = invalid_data_dir / bc_file
 
         with pytest.raises(ValidationError) as error:
             ForcingModel(filepath)
@@ -199,9 +192,9 @@ class TestForcingModel:
         assert expected_message1 in str(error.value)
         assert expected_message2 in str(error.value)
 
-    def test_save_forcing_model(self, time_series_values, t3d_values):
-        bc_file = Path(test_output_dir / TEST_BC_FILE)
-        reference_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
+    def test_save_forcing_model(self, time_series_values, t3d_values, output_files_dir, reference_files_dir):
+        bc_file = output_files_dir / TEST_BC_FILE
+        reference_file = reference_files_dir / "bc" / TEST_BC_FILE
         forcingmodel = ForcingModel()
         forcingmodel.filepath = bc_file
 
