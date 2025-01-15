@@ -210,8 +210,6 @@ class ExtOldMeteoQuantity(StrEnum):
     """Long wave radiation"""
     SolarRadiation = "solarradiation"
     """Solar radiation"""
-    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
-    """Discharge, salinity temperature source-sinks"""
     NudgeSalinityTemperature = "nudge_salinity_temperature"
     """Nudging salinity and temperature"""
     AirPressure = "airpressure"
@@ -300,6 +298,12 @@ class ExtOldInitialConditionQuantity(StrEnum):
                 f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
                 f"and quantities that start with 'tracer'"
             )
+
+
+class ExtOldSourcesSinks(StrEnum):
+    """Source and sink quantities"""
+
+    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
 
 
 class ExtOldQuantity(StrEnum):
@@ -789,3 +793,8 @@ class ExtOldModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return Parser.parse
+
+    @property
+    def quantities(self) -> List[str]:
+        """List all the quantities in the external forcings file."""
+        return [forcing.quantity for forcing in self.forcing]

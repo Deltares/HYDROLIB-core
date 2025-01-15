@@ -1,25 +1,31 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.ext.models import Boundary, Meteo
+from hydrolib.core.dflowfm.ext.models import (
+    SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
+    Boundary,
+    Meteo,
+    SourceSink,
+)
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
     ExtOldMeteoQuantity,
     ExtOldParametersQuantity,
+    ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import (
-    InitialField,
-    InterpolationMethod,
-    ParameterField,
-)
+from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.tim.models import TimModel
+from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.ext_old_to_new.utils import (
+    convert_interpolation_data,
+    create_initial_cond_and_parameter_input_dict,
+    find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
-    oldmethod_to_averaging_type,
-    oldmethod_to_interpolation_method,
 )
 
 
@@ -98,15 +104,7 @@ class MeteoConverter(BaseConverter):
                 f"convert this input. Encountered for QUANTITY="
                 f"{forcing.quantity} and FILENAME={forcing.filename}."
             )
-        meteo_data["interpolationmethod"] = oldmethod_to_interpolation_method(
-            forcing.method
-        )
-        if meteo_data["interpolationmethod"] == InterpolationMethod.averaging:
-            meteo_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-            meteo_data["averagingrelsize"] = forcing.relativesearchcellsize
-            meteo_data["averagingnummin"] = forcing.nummin
-            meteo_data["averagingpercentile"] = forcing.percentileminmax
-
+        meteo_data = convert_interpolation_data(forcing, meteo_data)
         meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
         meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
         meteo_data["operand"] = forcing.operand
@@ -158,51 +156,6 @@ class BoundaryConditionConverter(BaseConverter):
         new_block = Boundary(**data)
 
         return new_block
-
-
-def create_initial_cond_and_parameter_input_dict(
-    forcing: ExtOldForcing,
-) -> Dict[str, str]:
-    """Create the input dictionary for the `InitialField` or `ParameterField`
-
-    Args:
-        forcing: [ExtOldForcing]
-            External forcing block from the old external forcings file.
-
-    Returns:
-        Dict[str, str]:
-            the input dictionary to the `InitialField` or `ParameterField` constructor
-    """
-    block_data = {
-        "quantity": forcing.quantity,
-        "datafile": forcing.filename,
-        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-    }
-    if block_data["datafiletype"] == "polygon":
-        block_data["value"] = forcing.value
-
-    if forcing.sourcemask != DiskOnlyFileModel(None):
-        raise ValueError(
-            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-            f"convert this input. Encountered for QUANTITY="
-            f"{forcing.quantity} and FILENAME={forcing.filename}."
-        )
-    block_data["interpolationmethod"] = oldmethod_to_interpolation_method(
-        forcing.method
-    )
-    if block_data["interpolationmethod"] == InterpolationMethod.averaging:
-        block_data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
-        block_data["averagingrelsize"] = forcing.relativesearchcellsize
-        block_data["averagingnummin"] = forcing.nummin
-        block_data["averagingpercentile"] = forcing.percentileminmax
-    block_data["operand"] = forcing.operand
-
-    if hasattr(forcing, "extrapolation"):
-        block_data["extrapolationmethod"] = (
-            "yes" if forcing.extrapolation == 1 else "no"
-        )
-
-    return block_data
 
 
 class InitialConditionConverter(BaseConverter):
@@ -284,6 +237,289 @@ class ParametersConverter(BaseConverter):
         return new_block
 
 
+class SourceSinkConverter(BaseConverter):
+
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def get_time_series_data(tim_model: TimModel) -> Dict[str, List[float]]:
+        """Extract time series data from a TIM model.
+
+        Extract the time series data (each column) from the TimModel object
+
+        Args:
+            tim_model (TimModel): The TimModel object containing the time series data.
+
+        Returns:
+            Dict[str, List[float]]: A dictionary containing the time series data form each column.
+            the keys of the dictionary will be index starting from 1 to the number of columns in the tim file
+            (excluding the first column(time)).
+
+        Examples:
+            >>> tim_file = Path("tests/data/external_forcings/initial_waterlevel.tim")
+            >>> time_file = TimParser.parse(tim_file)
+            >>> tim_model = TimModel(**time_file)
+            >>> time_series = SourceSinkConverter().get_time_series_data(tim_model)
+            >>> print(time_series)
+            {
+                1: [1.0, 1.0, 3.0, 5.0, 8.0],
+                2: [2.0, 2.0, 5.0, 8.0, 10.0],
+                3: [3.0, 5.0, 12.0, 9.0, 23.0],
+                4: [4.0, 4.0, 4.0, 4.0, 4.0]
+            }
+        """
+        num_columns = len(tim_model.timeseries[0].data)
+
+        # Initialize a dictionary to collect data for each location
+        data = {loc: [] for loc in range(1, num_columns + 1)}
+
+        # Extract time series data for each location
+        for record in tim_model.timeseries:
+            for loc_index, value in enumerate(record.data, start=1):
+                data[loc_index].append(value)
+
+        return data
+
+    @staticmethod
+    def merge_mdu_and_ext_file_quantities(
+        mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
+    ) -> List[str]:
+        """Merge the temperature and salinity from the mdu file with the temperature and salinity from the external file.
+
+        Args:
+            mdu_quantities (Dict[str, bool]): A dictionary containing the temperature and salinity details from the
+                mdu file, with bool values indecating if the temperature/salinity is activated in the mdu file.
+            temp_salinity_from_ext (Dict[str,int]): A dictionary containing the temperature and salinity details from
+                the external file.
+
+        Returns:
+            List[str]: A list of quantities that will be used in the tim file.
+        """
+        if mdu_quantities:
+            mdu_file_quantity_list = [key for key, val in mdu_quantities.items() if val]
+            temp_salinity_from_mdu = find_temperature_salinity_in_quantities(
+                mdu_file_quantity_list
+            )
+            final_temp_salinity = temp_salinity_from_ext | temp_salinity_from_mdu
+            # the kwargs will be provided only from the source and sink converter
+            # Ensure 'temperature' comes before 'salinity'
+            keys = list(final_temp_salinity.keys())
+            if "temperaturedelta" in keys and "salinitydelta" in keys:
+                keys.remove("salinitydelta")
+                keys.insert(keys.index("temperaturedelta"), "salinitydelta")
+        else:
+            keys = list(temp_salinity_from_ext.keys())
+
+        return keys
+
+    def parse_tim_model(
+        self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
+    ) -> Dict[str, List[float]]:
+        """Parse the source and sinks related time series from the tim file.
+
+        - Parse the TIM file and extract the time series data for each column.
+        - assign the time series data to the corresponding quantity name.
+
+        The order of the quantities in the tim file should be as follows:
+        - time
+        - discharge
+        - salinitydelta (optional)
+        - temperaturedelta (optional)
+        - initialtracer-anyname (optional)
+        - any other quantities from the external forcings file.
+
+        Args:
+            tim_file (Path): The path to the TIM file.
+            ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
+            **mdu_quantities: keyword argumens that will be provided if you want to provide the temperature and salinity
+                details from the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are
+                only bool. (i.e. {"temperature", False, "salinity": True})
+
+        Returns:
+            Dict[str, List[float]]: A dictionary containing the time series data form each column in the tim_file.
+            the keys of the dictionary will be the quantity names, and the values will be the time series data.
+
+        Raises:
+            ValueError: If the number of columns in the TIM file does not match the number of quantities in the external
+            forcings file that has one of the following prefixes `initialtracer`,`tracerbnd`,
+            `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+
+        Notes:
+            - The function will combine the temperature and salinity from the MDU file (value is 1) file with the
+                quantities mentioned in the external forcing file, and will get the list of quantities that are in the tim file.
+            - The function will return a dictionary with the quantities as keys and the time series data as values.
+
+        Examples:
+        if the tim file contains 5 columns (the first column is the time):
+            ```
+            0.0 1.0 2.0 3.0 4.0
+            1.0 1.0 2.0 3.0 4.0
+            2.0 1.0 2.0 3.0 4.0
+            3.0 1.0 2.0 3.0 4.0
+            4.0 1.0 2.0 3.0 4.0
+            ```
+        and the external file contains the following quantities:
+            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracer-anyname",
+            ... "anyother-quantities"]
+
+        - The function will filter the external forcing quantities that have one of the following prefixes
+        `initialtracer`,`tracerbnd`, `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+        - If the mdu_quantities are provided, the function will merge the temperature and salinity from the mdu file
+        with the filtered quantities mentioned in the external forcing file.
+        - The merged list of quantities from both the ext and mdu files will then be compared with the number of
+        columns in the TIM file, if they don't match a `Value Error` will be raised.
+        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracer-anyname"] and the
+        tim file contains 4 columns (excluding the time column).
+
+            >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+
+            >>> converter = SourceSinkConverter()
+            >>> time_series = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            >>> print(time_series)
+            {
+                "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
+                "salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
+                "temperaturedelta": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "initialtracer-anyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+            }
+
+
+        mdu file:
+        ```
+        [physics]
+        ...
+        Salinity             = 1        # Include salinity, (0=no, 1=yes)
+        ...
+        Temperature          = 1        # Include temperature, (0=no, 1=only transport, 3=excess model of D3D,5=heat flux model (5) of D3D)
+        ```
+        external forcings file:
+        ```
+        QUANTITY=initialtemperature
+        FILENAME=right.pol
+        ...
+
+        QUANTITY=initialsalinity
+        FILENAME=right.pol
+        ...
+        ```
+        """
+        time_file = TimParser.parse(tim_file)
+        tim_model = TimModel(**time_file)
+        time_series = self.get_time_series_data(tim_model)
+        # get the required quantities from the external file
+        required_quantities_from_ext = [
+            key
+            for key in ext_file_quantity_list
+            if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+        ]
+
+        # check if the temperature and salinity are present in the external file
+        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
+            ext_file_quantity_list
+        )
+
+        final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
+            mdu_quantities, temp_salinity_from_ext
+        )
+        final_quantities_list = (
+            ["discharge"] + final_temp_salinity + required_quantities_from_ext
+        )
+
+        if len(time_series) != len(final_quantities_list):
+            raise ValueError(
+                f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match the number of "
+                f"quantities in the external forcing file: {final_quantities_list}."
+            )
+
+        time_series = {
+            final_quantities_list[i]: time_series[i + 1]
+            for i in range(len(final_quantities_list))
+        }
+        return time_series
+
+    @property
+    def root_dir(self) -> Path:
+        return self._root_dir
+
+    @root_dir.setter
+    def root_dir(self, value: Union[Path, str]):
+        if isinstance(value, str):
+            value = Path(value)
+        self._root_dir = value
+
+    def convert(
+        self,
+        forcing: ExtOldForcing,
+        ext_file_quantity_list: List[str] = None,
+        **temp_salinity_mdu,
+    ) -> SourceSink:
+        """Convert an old external forcing block with Sources and sinks to a SourceSink
+        forcing block suitable for inclusion in a new external forcings file.
+
+        Args:
+            forcing (ExtOldForcing): The contents of a single forcing block in an old external forcings file. This
+                object contains all the necessary information, such as quantity, values, and timestamps, required for the
+                conversion process.
+            ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
+                external forcings file.
+            **temp_salinity_mdu:
+                keyword arguments that will be provided if you want to provide the temperature and salinity details from
+                the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
+                >>> {'salinity': True, 'temperature': True}
+
+        Returns:
+            SourceSink: A SourceSink object that represents the converted forcing
+            block, ready to be included in a new external forcings file. The
+            SourceSink object conforms to the new format specifications, ensuring
+            compatibility with updated systems and models.
+
+        Raises:
+            ValueError: If the forcing block contains a quantity that is not
+            supported by the converter, a ValueError is raised. This ensures
+            that only compatible forcing blocks are processed, maintaining
+            data integrity and preventing errors in the conversion process.
+
+        References:
+            - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C10>`_
+            - `Polyline <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C2>`
+            - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
+            - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#5.4.10>`_
+            - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
+
+        """
+        location_file = forcing.filename.filepath
+        polyline = forcing.filename
+
+        z_source, z_sink = polyline.get_z_sources_sinks()
+
+        # check the tim file
+        tim_file = self.root_dir / polyline.filepath.with_suffix(".tim").name
+        if not tim_file.exists():
+            raise ValueError(
+                f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
+            )
+
+        time_series = self.parse_tim_model(
+            tim_file, ext_file_quantity_list, **temp_salinity_mdu
+        )
+
+        data = {
+            "id": "L1",
+            "name": forcing.quantity,
+            "locationfile": location_file,
+            "numcoordinates": len(polyline.x),
+            "xcoordinates": polyline.x,
+            "ycoordinates": polyline.y,
+            "zsource": z_source,
+            "zsink": z_sink,
+        }
+        data = data | time_series
+        new_block = SourceSink(**data)
+
+        return new_block
+
+
 class ConverterFactory:
     """
     A factory class for creating converters based on the given quantity.
@@ -312,6 +548,8 @@ class ConverterFactory:
             return BoundaryConditionConverter()
         elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
             return ParametersConverter()
+        elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
+            return SourceSinkConverter()
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
 

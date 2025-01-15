@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Set, Union
 
 from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
@@ -23,6 +23,13 @@ from hydrolib.core.dflowfm.ini.util import (
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
+
+SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
+    "initialtracer",
+    "tracerbnd",
+    "sedfracbnd",
+    "initialsedfrac",
+)
 
 
 class Boundary(INIBasedModel):
@@ -181,6 +188,65 @@ class Lateral(INIBasedModel):
         return v
 
 
+class SourceSink(INIBasedModel):
+    """
+    A `[SourceSink]` block for use inside an external forcings file,
+    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].
+
+    All lowercased attributes match with the source-sink input as described in
+    [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
+    """
+
+    _header: Literal["SourceSink"] = "SourceSink"
+    id: str = Field(alias="id")
+    name: str = Field("", alias="name")
+    locationfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
+    )
+
+    numcoordinates: Optional[int] = Field(alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
+
+    zsource: Optional[Union[float, List[float]]] = Field(alias="zSource")
+    zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
+    discharge: Union[float, List[float]] = Field(alias="discharge")
+    area: Optional[float] = Field(alias="Area")
+
+    salinitydelta: Optional[Union[List[float], float]] = Field(alias="SalinityDelta")
+    temperaturedelta: Optional[Union[List[float], float]] = Field(
+        alias="TemperatureDelta"
+    )
+
+    @classmethod
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+        fields = cls.__fields__
+        unknown_keywords = [
+            key
+            for key in input_data.keys()
+            if key not in fields
+            and key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+        ]
+        return set(unknown_keywords)
+
+    class Config:
+        """
+        Config class to tell Pydantic to accept fields not explicitly declared in the model.
+        """
+
+        # Allow dynamic fields
+        extra = "allow"
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Add dynamic attributes for fields starting with 'tracer'
+        for key, value in data.items():
+            if isinstance(key, str) and key.startswith(
+                SOURCE_SINKS_QUANTITIES_VALID_PREFIXES
+            ):
+                setattr(self, key, value)
+
+
 class MeteoForcingFileType(StrEnum):
     """
     Enum class containing the valid values for the forcingFileType
@@ -318,7 +384,7 @@ class Meteo(INIBasedModel):
 
 
 class ExtGeneral(INIGeneral):
-    """The external forcing file's `[General]` section with file meta data."""
+    """The external forcing file's `[General]` section with file meta-data."""
 
     _header: Literal["General"] = "General"
     fileversion: str = Field("2.01", alias="fileVersion")
@@ -335,12 +401,14 @@ class ExtModel(INIModel):
         general (ExtGeneral): `[General]` block with file metadata.
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
+        source_sink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
         meteo (List[Meteo]): List of `[Meteo]` blocks for all meteorological forcings.
     """
 
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = Field(default_factory=list)
     lateral: List[Lateral] = Field(default_factory=list)
+    source_sink: List[SourceSink] = Field(default_factory=list)
     meteo: List[Meteo] = Field(default_factory=list)
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0

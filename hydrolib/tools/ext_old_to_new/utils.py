@@ -1,12 +1,13 @@
+from collections import OrderedDict
 from pathlib import Path
-from typing import Type, Union
+from typing import Any, Dict, List, Type, Union
 
-from hydrolib.core.basemodel import FileModel, PathOrStr
+from hydrolib.core.basemodel import DiskOnlyFileModel, FileModel, PathOrStr
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldFileType
+from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
     DataFileType,
@@ -48,7 +49,7 @@ def backup_file(filepath: PathOrStr) -> None:
     """
     filepath = Path(filepath) if isinstance(filepath, str) else filepath
     if filepath.is_file():
-        backup_path = filepath.with_suffix(".bak")
+        backup_path = filepath.with_suffix(filepath.suffix + ".bak")
         filepath.replace(backup_path)
 
 
@@ -64,6 +65,9 @@ def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:
     Returns:
         Path: The new filepath with the postfix included.
 
+    Examples:
+        >>> construct_filepath_with_postfix("file.txt", "_new")
+        Path("file_new.txt")
     """
     file_as_path = Path(filepath)
     return file_as_path.with_stem(file_as_path.stem + postfix)
@@ -163,3 +167,106 @@ def oldmethod_to_averaging_type(
         averaging_type = "unknown"
 
     return averaging_type
+
+
+def convert_interpolation_data(
+    forcing: ExtOldForcing, data: Dict[str, Any]
+) -> Dict[str, str]:
+    """Convert interpolation data from old to new format.
+
+    Args:
+        forcing (ExtOldForcing): The old forcing block with interpolation data.
+        data (Dict[str, Any]): The dictionary to which the new data will be added.
+
+    Returns:
+        Dict[str, str]: The updated dictionary with the new interpolation data.
+        - The dictionary will contain the "interpolationmethod" key with the new interpolation method.
+        - if the interpolation method is "Averaging" (method = 6), the dictionary will also contain
+            the "averagingtype", "averagingrelsize", "averagingnummin", and "averagingpercentile" keys.
+    """
+    data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
+    if data["interpolationmethod"] == InterpolationMethod.averaging:
+        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
+        data["averagingrelsize"] = forcing.relativesearchcellsize
+        data["averagingnummin"] = forcing.nummin
+        data["averagingpercentile"] = forcing.percentileminmax
+
+    return data
+
+
+def create_initial_cond_and_parameter_input_dict(
+    forcing: ExtOldForcing,
+) -> Dict[str, str]:
+    """Create the input dictionary for the `InitialField` or `ParameterField`
+
+    Args:
+        forcing: [ExtOldForcing]
+            External forcing block from the old external forcings file.
+
+    Returns:
+        Dict[str, str]:
+            the input dictionary to the `InitialField` or `ParameterField` constructor
+    """
+    block_data = {
+        "quantity": forcing.quantity,
+        "datafile": forcing.filename,
+        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
+    }
+    if block_data["datafiletype"] == "polygon":
+        block_data["value"] = forcing.value
+
+    if forcing.sourcemask != DiskOnlyFileModel(None):
+        raise ValueError(
+            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+            f"convert this input. Encountered for QUANTITY="
+            f"{forcing.quantity} and FILENAME={forcing.filename}."
+        )
+    block_data = convert_interpolation_data(forcing, block_data)
+    block_data["operand"] = forcing.operand
+
+    if hasattr(forcing, "extrapolation"):
+        block_data["extrapolationmethod"] = (
+            "yes" if forcing.extrapolation == 1 else "no"
+        )
+
+    return block_data
+
+
+def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int]:
+    """
+    Searches for keywords "temperature" and "salinity" in a list of strings
+    and returns a dictionary with associated values.
+
+    Args:
+        strings (List[str]): A list of strings to search.
+
+    Returns:
+        Dict[str, int]: A dictionary with keys as "salinity" or "temperature"
+                        and values 3 and 4 respectively.
+
+     Examples:
+        >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
+        OrderedDict({"salinitydelta": 3, "temperaturedelta": 4})
+
+        >>> find_temperature_salinity_in_quantities(["Temperature"])
+        OrderedDict({"temperaturedelta": 3})
+
+        >>> find_temperature_salinity_in_quantities(["Salinity"])
+        OrderedDict({"salinitydelta": 3})
+
+        >>> find_temperature_salinity_in_quantities(["tracers"])
+        OrderedDict()
+
+        >>> find_temperature_salinity_in_quantities([])
+        OrderedDict()
+    """
+    result = OrderedDict()
+
+    if any("salinity" in string.lower() for string in strings):
+        result["salinitydelta"] = 3
+    if any("temperature" in string.lower() for string in strings):
+        result["temperaturedelta"] = (
+            result.get("salinitydelta", 2) + 1
+        )  # Default temperature value is 2
+
+    return result
