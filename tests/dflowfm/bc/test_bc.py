@@ -1,5 +1,4 @@
 import inspect
-from pathlib import Path
 from typing import Dict, List, Literal
 
 import pytest
@@ -20,7 +19,6 @@ from hydrolib.core.dflowfm.ini.models import BaseModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from tests.utils import assert_files_equal
 
-TEST_BC_FILE = "test.bc"
 TEST_BC_FILE_KEYWORDS_WITH_SPACES = "t3d_backwards_compatibility.bc"
 
 TEST_TIME_UNIT = "minutes since 2015-01-01 00:00:00"
@@ -621,7 +619,7 @@ class TestT3D:
         )
 
     def test_load_forcing_model(self, reference_files_dir):
-        bc_file = reference_files_dir / "bc" / TEST_BC_FILE
+        bc_file = reference_files_dir / "bc/test.bc"
         forcingmodel = ForcingModel(bc_file)
 
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
