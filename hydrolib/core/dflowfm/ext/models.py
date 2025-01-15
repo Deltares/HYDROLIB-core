@@ -210,11 +210,13 @@ class SourceSink(INIBasedModel):
 
     zsource: Optional[Union[float, List[float]]] = Field(alias="zSource")
     zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
-    discharge: ForcingData = Field(alias="discharge")
+    discharge: Union[float, List[float]] = Field(alias="discharge")
     area: Optional[float] = Field(alias="Area")
 
-    salinitydelta: Optional[ForcingData] = Field(alias="SalinityDelta")
-    temperaturedelta: Optional[ForcingData] = Field(alias="TemperatureDelta")
+    salinitydelta: Optional[Union[List[float], float]] = Field(alias="SalinityDelta")
+    temperaturedelta: Optional[Union[List[float], float]] = Field(
+        alias="TemperatureDelta"
+    )
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
