@@ -162,9 +162,80 @@ class ForcingBase(DataBlockINIBasedModel):
     """
     The base class of a single [Forcing] block in a .bc forcings file.
 
-    Typically subclassed, for the specific types of forcing data, e.g, Harmonic.
+    The `ForcingBase` class is used as the foundational model for various types
+    of forcing data blocks, such as TimeSeries, Harmonic, Astronomic, and others.
+    It includes functionality for handling structured data, validating input,
+    and serializing the forcing data.
+
     This model is for example referenced under a
     [ForcingModel][hydrolib.core.dflowfm.bc.models.ForcingModel]`.forcing[..]`.
+
+    Attributes:
+        name (str):
+            Unique identifier that specifies the location for this forcing data.
+        function (str):
+            Specifies the function type of the data in the associated data block.
+        quantityunitpair (List[ScalarOrVectorQUP]):
+            List of header lines for one or more quantities and their units.
+            These describe the columns in the associated data block.
+
+    Args:
+        name (str):
+            The unique name identifying this forcing block.
+        function (str):
+            The function type specifying the behavior of the forcing block.
+            Possible values are timeseries, harmonic, astronomic, harmonic-correction, astronomic-correction, t3d,
+            constant, qhtable.
+        quantityunitpair (List[ScalarOrVectorQUP]):
+            The quantities and units associated with the data block.
+
+    Returns:
+        None
+
+    Raises:
+        ValueError: If `quantity` or `unit` fields are missing or mismatched.
+        ValueError: If the `function` field contains an unrecognized type.
+
+    See Also:
+        DataBlockINIBasedModel: Parent class for handling data blocks in INI files.
+        QuantityUnitPair: Represents a single quantity and its unit.
+        VectorQuantityUnitPairs: Handles vector quantities in the data block.
+
+    Examples:
+        Create a simple forcing block:
+            >>> from hydrolib.core.dflowfm.bc.models import ForcingBase, QuantityUnitPair
+            >>> forcing = ForcingBase(
+            ...     name="Location1",
+            ...     function="timeseries",
+            ...     quantityunitpair=[QuantityUnitPair(quantity="waterlevel", unit="m")]
+            ... )
+            >>> print(forcing.name)
+            Location1
+            >>> print(forcing.function)
+            timeseries
+
+        Handle vector quantities:
+            >>> from hydrolib.core.dflowfm.bc.models import VectorQuantityUnitPairs
+            >>> forcing = ForcingBase(
+            ...     name="Location2",
+            ...     function="vector",
+            ...     quantityunitpair=[
+            ...         VectorQuantityUnitPairs(
+            ...             vectorname="velocity",
+            ...             elementname=["u", "v"],
+            ...             quantityunitpair=[
+            ...                 QuantityUnitPair(quantity="u", unit="m/s"),
+            ...                 QuantityUnitPair(quantity="v", unit="m/s")
+            ...             ]
+            ...         )
+            ...     ]
+            ... )
+            >>> print(forcing.quantityunitpair[0].vectorname)
+            velocity
+
+    Notes:
+        - The `ForcingBase` class is typically subclassed to provide specific behavior for different forcing types.
+        - It includes robust validation mechanisms to ensure consistency between quantities and units.
     """
 
     _header: Literal["Forcing"] = "Forcing"
