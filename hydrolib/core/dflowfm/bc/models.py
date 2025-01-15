@@ -12,7 +12,7 @@
 import logging
 import re
 from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union
+from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, Set, Union
 
 from pydantic.v1 import Extra
 from pydantic.v1.class_validators import root_validator, validator
@@ -167,8 +167,7 @@ class ForcingBase(DataBlockINIBasedModel):
     It includes functionality for handling structured data, validating input,
     and serializing the forcing data.
 
-    This model is for example referenced under a
-    [ForcingModel][hydrolib.core.dflowfm.bc.models.ForcingModel]`.forcing[..]`.
+    This model is referenced under a [ForcingModel][hydrolib.core.dflowfm.bc.models.ForcingModel]`.forcing[..]`.
 
     Attributes:
         name (str):
@@ -856,8 +855,110 @@ class ForcingModel(INIModel):
     """
     The overall model that contains the contents of one .bc forcings file.
 
-    This model is for example referenced under a
-    [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel]`.boundary[..].forcingfile[..]`.
+    The `ForcingModel` class is the top-level model that aggregates metadata
+    and multiple `[Forcing]` blocks. It provides functionality for parsing,
+    serializing, and managing data within a boundary conditions (.bc) file.
+
+    Attributes:
+        general (ForcingGeneral):
+            The `[General]` block containing metadata such as file version and type.
+        forcing (List[ForcingBase]):
+            A list of `[Forcing]` blocks representing the different forcings defined
+            in the file.
+        serializer_config (DataBlockINIBasedSerializerConfig):
+            Configuration for serialization of the .bc file.
+
+    Args:
+        general (ForcingGeneral, optional):
+            Metadata for the file. Defaults to an instance of `ForcingGeneral`.
+        forcing (List[ForcingBase], optional):
+            A list of forcing definitions. Defaults to an empty list.
+        serializer_config (DataBlockINIBasedSerializerConfig, optional):
+            Serialization settings. Defaults to a predefined configuration.
+
+    Returns:
+        None
+
+    Raises:
+        ValueError: If invalid data is provided during initialization or parsing.
+
+    See Also:
+        ForcingBase: Represents individual forcing blocks within the file.
+        ForcingGeneral: Metadata model for the `[General]` section.
+
+    Examples:
+        Create a simple ForcingModel:
+
+            >>> from hydrolib.core.dflowfm.bc.models import ForcingModel, ForcingBase, ForcingGeneral, QuantityUnitPair
+            >>> forcing_block = ForcingBase(
+            ...     name="Location1",
+            ...     function="timeseries",
+            ...     quantityunitpair=[
+            ...         QuantityUnitPair(quantity="waterlevel", unit="m")
+            ...     ]
+            ... )
+            >>> model = ForcingModel(
+            ...     general=ForcingGeneral(fileversion="1.01", filetype="boundConds"),
+            ...     forcing=[forcing_block]
+            ... )
+            >>> print(model.general.fileversion)
+            1.01
+
+        Parse a .bc file:
+            >>> from pathlib import Path
+            >>> filepath = Path("tests/data/reference/bc/test.bc")
+            >>> parsed_model = ForcingModel.parse(filepath)
+            >>> print(parsed_model.keys())
+            dict_keys(['general', 'forcing'])
+            >>> print(len(parsed_model["forcing"]))
+            6
+            >>> print(parsed_model["forcing"][0]) # doctest: +NORMALIZE_WHITESPACE
+            {'_header': 'Forcing',
+             'datablock': [['0.0000', '1.2300'],
+              ['60.0000', '2.3400'],
+              ['120.0000', '3.4500']],
+             'name': 'boundary_timeseries',
+             'function': 'timeseries',
+             'timeinterpolation': 'block-To',
+             'offset': '1.230',
+             'factor': '2.340',
+             'quantity': ['time', 'dischargebnd'],
+             'unit': ['minutes since 2015-01-01 00:00:00', 'm³/s']}
+
+        Serialize a ForcingModel:
+            >>> save_path = Path("output.bc")
+            >>> model.save(filepath=save_path) # doctest: +SKIP
+            >>> print(save_path.exists()) # doctest: +SKIP
+            True
+
+    Notes:
+        - The `ForcingModel` is typically instantiated when working with
+          boundary condition files in hydrodynamic modeling.
+        - It supports parsing and saving in the INI format with extensions for
+          structured data blocks.
+
+    Example .bc file content:
+        ```.bc
+        # written by HYDROLIB-core 0.3.0
+
+        [General]
+        fileVersion = 1.01
+        fileType    = boundConds
+
+        [Forcing]
+        name               = boundary_timeseries
+        function           = timeseries
+        Time Interpolation = block-To
+        offset             = 1.23
+        factor             = 2.34
+        quantity           = time
+        unit               = minutes since 2015-01-01 00:00:00
+        quantity           = dischargebnd
+        unit               = m³/s
+        0.0      1.23
+        60.0     2.34
+        120.0    3.45
+        ```
     """
 
     general: ForcingGeneral = ForcingGeneral()
@@ -878,18 +979,45 @@ class ForcingModel(INIModel):
 
     @classmethod
     def _ext(cls) -> str:
+        """
+        Get the file extension for .bc files.
+
+        Returns:
+            str: The file extension, ".bc".
+        """
         return ".bc"
 
     @classmethod
     def _filename(cls) -> str:
+        """
+        Get the default filename for .bc files.
+
+        Returns:
+            str: The default filename, "boundaryconditions".
+        """
         return "boundaryconditions"
 
     @classmethod
     def _get_parser(cls) -> Callable:
+        """
+        Retrieve the parser for .bc files.
+
+        Returns:
+            Callable: The parser function.
+        """
         return cls.parse
 
     @classmethod
-    def parse(cls, filepath: Path):
+    def parse(cls, filepath: Path) -> Dict[str, Any]:
+        """
+        Parse a .bc file and create an instance of `ForcingModel`.
+
+        Args:
+            filepath (Path): The path to the .bc file.
+
+        Returns:
+            ForcingModel: The parsed model instance.
+        """
         # It's odd to have to disable parsing something as comments
         # but also need to pass it to the *flattener*.
         # This method now only supports per model settings, not per section.
