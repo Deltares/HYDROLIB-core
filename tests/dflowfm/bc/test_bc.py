@@ -18,12 +18,7 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.ini.models import BaseModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
-from tests.utils import (
-    assert_files_equal,
-    test_input_dir,
-    test_output_dir,
-    test_reference_dir,
-)
+from tests.utils import assert_files_equal
 
 TEST_BC_FILE = "test.bc"
 TEST_BC_FILE_KEYWORDS_WITH_SPACES = "t3d_backwards_compatibility.bc"
@@ -110,8 +105,10 @@ class TestTimeSeries:
         assert forcing.quantityunitpair[1].unit == "m"
         assert forcing.datablock[1] == [1440.0, 2.5]
 
-    def test_load_timeseries_model_with_old_keyword_that_contain_spaces(self):
-        bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE_KEYWORDS_WITH_SPACES)
+    def test_load_timeseries_model_with_old_keyword_that_contain_spaces(
+        self, reference_files_dir
+    ):
+        bc_file = reference_files_dir / "bc" / TEST_BC_FILE_KEYWORDS_WITH_SPACES
         forcingmodel = ForcingModel(bc_file)
 
         timeseries = next(
@@ -271,10 +268,12 @@ class TestVectorForcingBase:
             "FlowFM_boundaryconditions3d_and_vectors.bc",
         ],
     )
-    def test_load_and_save_model_with_vector_quantities(self, bc_file_name: str):
-        bc_file = test_input_dir / "dflowfm_individual_files" / bc_file_name
-        output_file = test_output_dir / "fm" / ("serialize_" + bc_file_name)
-        reference_file = test_reference_dir / "bc" / bc_file_name
+    def test_load_and_save_model_with_vector_quantities(
+        self, bc_file_name: str, reference_files_dir, output_files_dir, input_files_dir
+    ):
+        bc_file = input_files_dir / "dflowfm_individual_files" / bc_file_name
+        output_file = output_files_dir / "fm" / ("serialize_" + bc_file_name)
+        reference_file = reference_files_dir / "bc" / bc_file_name
 
         forcingmodel = ForcingModel(bc_file)
 
@@ -621,8 +620,8 @@ class TestT3D:
             error.value
         )
 
-    def test_load_forcing_model(self):
-        bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE)
+    def test_load_forcing_model(self, reference_files_dir):
+        bc_file = reference_files_dir / "bc" / TEST_BC_FILE
         forcingmodel = ForcingModel(bc_file)
 
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
@@ -656,8 +655,10 @@ class TestT3D:
             [120.0, 7.0, 8.0, 9.0],
         ]
 
-    def test_load_t3d_model_with_old_keyword_that_contains_spaces(self):
-        bc_file = Path(test_reference_dir / "bc" / TEST_BC_FILE_KEYWORDS_WITH_SPACES)
+    def test_load_t3d_model_with_old_keyword_that_contains_spaces(
+        self, reference_files_dir
+    ):
+        bc_file = reference_files_dir / "bc" / TEST_BC_FILE_KEYWORDS_WITH_SPACES
         forcingmodel = ForcingModel(bc_file)
 
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
@@ -708,12 +709,13 @@ class TestT3D:
                 == expected_quantityunitpair.vertpositionindex
             )
 
-    def test_load_t3d_model_with_vector_quantities(self):
+    def test_load_t3d_model_with_vector_quantities(self, input_files_dir):
         bc_file = (
-            test_input_dir
+            input_files_dir
             / "dflowfm_individual_files"
             / "FlowFM_boundaryconditions3d_and_vectors.bc"
         )
+
         forcingmodel = ForcingModel(bc_file)
 
         t3d = next((x for x in forcingmodel.forcing if x.function == "t3d"), None)
