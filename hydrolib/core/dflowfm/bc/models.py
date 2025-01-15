@@ -931,11 +931,36 @@ class ForcingModel(INIModel):
             >>> print(save_path.exists()) # doctest: +SKIP
             True
 
-    Notes:
-        - The `ForcingModel` is typically instantiated when working with
-          boundary condition files in hydrodynamic modeling.
-        - It supports parsing and saving in the INI format with extensions for
-          structured data blocks.
+        Create a ForcingModel from a dictionary:
+            >>> from hydrolib.core.dflowfm.bc.models import ForcingModel
+            >>> forcing_blocks_list = [
+            ...     {
+            ...         '_header': 'Forcing',
+            ...         'datablock': [
+            ...             ['0.0000', '1.2300'],
+            ...             ['60.0000', '2.3400'],
+            ...             ['120.0000', '3.4500']
+            ...         ],
+            ...         'name': 'boundary_timeseries',
+            ...         'function': 'timeseries',
+            ...         'timeinterpolation': 'block-To',
+            ...         'offset': '1.230',
+            ...         'factor': '2.340',
+            ...         'quantity': ['time', 'dischargebnd'],
+            ...         'unit': ['minutes since 2015-01-01 00:00:00', 'm³/s']
+            ...     }
+            ... ]
+            >>> model_dict = {
+            ...     "forcing": forcing_blocks_list,
+            ...     "general": {"fileVersion": "1.01", "fileType": "boundConds"}
+            ... }
+            >>> model = ForcingModel(**model_dict)
+            >>> print(len(model.forcing))
+            1
+            >>> type(model.forcing[0])
+            <class 'hydrolib.core.dflowfm.bc.models.TimeSeries'>
+            >>> print(model.general.fileversion)
+            1.01
 
     Example .bc file content:
         ```.bc
