@@ -20,8 +20,6 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from tests.utils import assert_files_equal
 
-TEST_BC_FILE = "test.bc"
-
 
 def quantityunitpair(quantity, unit, verticalpositionindex=None):
     return QuantityUnitPair(
@@ -202,8 +200,8 @@ class TestForcingModel:
     def test_save_forcing_model(
         self, time_series_values, t3d_values, output_files_dir, reference_files_dir
     ):
-        bc_file = output_files_dir / TEST_BC_FILE
-        reference_file = reference_files_dir / "bc" / TEST_BC_FILE
+        bc_file = output_files_dir / "test.bc"
+        reference_file = reference_files_dir / "bc/test.bc"
         forcingmodel = ForcingModel()
         forcingmodel.filepath = bc_file
 
