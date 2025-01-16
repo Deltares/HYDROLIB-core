@@ -104,6 +104,28 @@ class TestTimModel:
         model = TimModel()
         assert len(model.comments) == 0
         assert len(model.timeseries) == 0
+        assert model.as_dataframe().empty
+
+    def test_as_dataframe(self):
+        model = TimModel(
+            timeseries=self.single_data_for_timeseries_floats,
+            comments=["this file", "contains", "stuff"],
+        )
+        df = model.as_dataframe()
+        assert all(
+            df.index
+            == [
+                self.single_data_for_timeseries_floats[i].time
+                for i in range(len(self.single_data_for_timeseries_floats))
+            ]
+        )
+        assert df.shape == (13, 1)
+        assert df.columns.to_list() == [0]
+        vals = [
+            self.single_data_for_timeseries_floats[i].data[0]
+            for i in range(len(self.single_data_for_timeseries_floats))
+        ]
+        assert df.loc[:, 0].to_list() == vals
 
     @pytest.mark.parametrize(
         "input_data, reference_path",

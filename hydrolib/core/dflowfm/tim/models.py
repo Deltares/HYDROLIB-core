@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List
 
+from pandas import DataFrame
 from pydantic.v1 import Field
 from pydantic.v1.class_validators import validator
 
@@ -169,3 +170,24 @@ class TimModel(ParsableFileModel):
                     f"Timeseries cannot contain duplicate times. Time: {timrecord.time} is duplicate."
                 )
             seen_times.add(timrecord.time)
+
+    def as_dataframe(self) -> DataFrame:
+        """Return the timeseries as a pandas DataFrame.
+
+        Returns:
+            DataFrame: The timeseries as a pandas DataFrame.
+
+        Examples:
+        ---------
+        >>> from hydrolib.core.dflowfm.tim.models import TimModel
+        >>> tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")
+        >>> df = tim_model.as_dataframe()
+        >>> print(df)
+                  0      1      2
+        10.0  1.232  2.343  3.454
+        20.0  4.565  5.676  6.787
+        30.0  1.500  2.600  3.700
+        """
+        time_series = [record.data for record in self.timeseries]
+        index = [record.time for record in self.timeseries]
+        return DataFrame(time_series, index=index)
