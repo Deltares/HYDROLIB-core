@@ -22,6 +22,76 @@ class TimRecord(BaseModel):
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
 
+    Attributes:
+    -----------
+    serializer_config : TimSerializerConfig
+        Configuration for serialization of the .tim file.
+    comments : List[str]
+        Header comments from the .tim file.
+    timeseries : List[TimRecord]
+        A list of TimRecord objects, each containing a time value and associated data.
+
+    Methods:
+    --------
+    _ext() -> str
+        Returns the file extension for .tim files.
+    _filename() -> str
+        Returns the default filename for .tim files.
+    _get_serializer() -> Callable
+        Returns the serializer callable for .tim files.
+    _get_parser() -> Callable
+        Returns the parser callable for .tim files.
+    _validate_timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]
+        Validates the timeseries data.
+
+    Args:
+    -----
+    filepath : Path
+        Path to the .tim file.
+    data : Dict
+        Parsed data containing comments and timeseries.
+    serializer_config : TimSerializerConfig
+        Configuration for serializing the .tim file.
+
+    Returns:
+    --------
+    List[TimRecord]
+        Validated list of TimRecord objects.
+
+    Raises:
+    -------
+    ValueError
+        If the timeseries has inconsistent column counts or duplicate time values.
+
+    Examples:
+    ---------
+    Create a TimModel object from a .tim file:
+        >>> from hydrolib.core.dflowfm.tim.models import TimModel, TimRecord
+        >>> tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")
+        >>> print(tim_model.timeseries)
+        [TimRecord(time=10.0, data=[1.232, 2.343, 3.454]), TimRecord(time=20.0, data=[4.565, 5.676, 6.787]), TimRecord(time=30.0, data=[1.5, 2.6, 3.7])]
+
+    Create `TimModel` from `TimRecord` objects:
+        >>> new_tim = TimModel()
+        >>> new_tim.comments = ["# Example comment"]
+        >>> new_tim.timeseries = [TimRecord(time=0.0, data=[1.0, 2.0])]
+
+    Serialize the `TimModel` to a .tim file:
+        >>> new_tim.save(filepath="output.tim") # doctest: +SKIP
+
+    See Also:
+    ---------
+    TimParser
+        Used for parsing .tim files.
+    TimSerializer
+        Used for serializing .tim files.
+    TimRecord
+        Represents individual time and data entries in the timeseries.
+
+    Notes:
+    ------
+    This class ensures the integrity of the timeseries by validating data consistency and detecting duplicate time entries.
+
     References:
         - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
     """
