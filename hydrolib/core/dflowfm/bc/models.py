@@ -871,10 +871,10 @@ class ForcingModel(INIModel):
     Args:
         general (ForcingGeneral, optional):
             Metadata for the file. Defaults to an instance of `ForcingGeneral`.
-        forcing (List[ForcingBase], optional):
-            A list of forcing definitions. Defaults to an empty list.
+        forcing (List[ForcingBase], optional, Defaults is []):
+            A list of forcing definitions.
         serializer_config (DataBlockINIBasedSerializerConfig, optional):
-            Serialization settings. Defaults to a predefined configuration.
+            Serialization settings. Default to a predefined configuration.
 
     Returns:
         None
