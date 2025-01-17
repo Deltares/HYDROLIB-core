@@ -107,6 +107,12 @@ class TestTimModel:
         assert model.as_dataframe().empty
 
     def test_initialize_with_quantities_names(self, input_files_dir: Path):
+        """
+        Test Initializing the `TimModel` from a file and provide the name of the quantities in the files.
+
+        The initialization should initizline the super class `BaseModel` with the file path.
+        The `quantities_names` is used to initialize the `quantities_names` attribute.
+        """
         path = input_files_dir / "tim/single_data_for_timeseries.tim"
         model = TimModel(path, quantities_names=["a"])
         assert model.quantities_names == ["a"]
