@@ -106,6 +106,12 @@ class TestTimModel:
         assert len(model.timeseries) == 0
         assert model.as_dataframe().empty
 
+    def test_initialize_with_quantities_names(self, input_files_dir: Path):
+        path = input_files_dir / "tim/single_data_for_timeseries.tim"
+        model = TimModel(path, quantities_names=["a"])
+        assert model.quantities_names == ["a"]
+        assert len(model.timeseries) == 13
+
     def test_as_dataframe(self):
         model = TimModel(
             timeseries=self.single_data_for_timeseries_floats,

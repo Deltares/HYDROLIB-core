@@ -114,6 +114,17 @@ class TimModel(ParsableFileModel):
 
     quantities_names: Optional[List[str]] = Field(default=None)
 
+    def __init__(self, *args, quantities_names: Optional[List[str]] = None, **kwargs):
+        """
+        Custom initializer to handle extra parameters specific to TimModel.
+
+        Args:
+            quantities_names (Optional[List[str]]): Names for the quantities in the timeseries.
+            *args, **kwargs: Other arguments for the superclass.
+        """
+        super().__init__(*args, **kwargs)
+        self.quantities_names = quantities_names
+
     @classmethod
     def _ext(cls) -> str:
         return ".tim"
