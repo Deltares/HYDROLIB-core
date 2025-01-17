@@ -127,6 +127,20 @@ class TestTimModel:
         ]
         assert df.loc[:, 0].to_list() == vals
 
+        df = model.as_dataframe(columns=["data"])
+        assert df.columns.to_list() == ["data"]
+
+    def test_with_quantities_names(self):
+        model = TimModel(
+            timeseries=self.single_data_for_timeseries_floats, quantities_names=["a"]
+        )
+        assert model.quantities_names == ["a"]
+        with pytest.raises(ValueError):
+            TimModel(
+                timeseries=self.single_data_for_timeseries_floats,
+                quantities_names=["a", "b"],
+            )
+
     @pytest.mark.parametrize(
         "input_data, reference_path",
         [
