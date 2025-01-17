@@ -126,7 +126,12 @@ class TimModel(ParsableFileModel):
 
     quantities_names: Optional[List[str]] = Field(default=None)
 
-    def __init__(self, *args, quantities_names: Optional[List[str]] = None, **kwargs):
+    def __init__(
+        self,
+        filepath: Optional[str] = None,
+        quantities_names: Optional[List[str]] = None,
+        **parsable_file_kwargs,
+    ):
         """
         Custom initializer to handle extra parameters specific to TimModel.
 
@@ -134,7 +139,7 @@ class TimModel(ParsableFileModel):
             quantities_names (Optional[List[str]]): Names for the quantities in the timeseries.
             *args, **kwargs: Other arguments for the superclass.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(filepath=filepath, **parsable_file_kwargs)
         self.quantities_names = quantities_names
 
     @classmethod

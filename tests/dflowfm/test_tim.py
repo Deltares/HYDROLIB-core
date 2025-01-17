@@ -153,6 +153,14 @@ class TestTimModel:
                 quantities_names=["a", "b"],
             )
 
+    def test_with_extra_un_needed_parameters(self):
+        with pytest.raises(ValueError):
+            TimModel(
+                timeseries=self.single_data_for_timeseries_floats,
+                extra_param="extra",
+            )
+            print("Extra parameters are not allowed")
+
     @pytest.mark.parametrize(
         "input_data, reference_path",
         [
