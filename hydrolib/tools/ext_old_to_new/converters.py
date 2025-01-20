@@ -465,12 +465,14 @@ class SourceSinkConverter(BaseConverter):
         time_model = self.parse_tim_model(
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
+        # TODO: check the units of the initialtracers
         units = time_model.get_units()
+        # ToDO: check how to get the user_defined_names
         user_defined_names = [
             f"user-defines-{i}" for i in range(len(time_model.quantities_names))
         ]
 
-        # get from the mdu file
+        # TODO: get the start name from the mdu file
         start_time = "minutes since 2015-01-01 00:00:00"
         forcing_model = TimToForcingConverter().convert(
             time_model, start_time, units=units, user_defined_names=user_defined_names
