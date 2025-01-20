@@ -335,10 +335,11 @@ class SourceSinkConverter(BaseConverter):
         tim file contains 4 columns (excluding the time column).
 
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-
             >>> converter = SourceSinkConverter()
-            >>> time_series = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-            >>> print(time_series) # doctest: +SKIP
+            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            >>> print(tim_model.quantities_names)
+            ['discharge', 'salinitydelta', 'temperaturedelta', 'initialtracer-anyname']
+            >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
                 "salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
