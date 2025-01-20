@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from hydrolib.core.dflowfm.ext.models import SourceSink
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.ext_old_to_new.converters import SourceSinkConverter
 
@@ -156,6 +157,33 @@ class TestParseTimFileForSourceSink:
         assert data == expected_data
 
 
+def compare_data(new_quantity_block: SourceSink):
+    # check the converted bc_forcing
+    bc_forcing = new_quantity_block.bc_forcing
+    forcing_bases = bc_forcing.forcing
+    assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(4)] == [
+        "discharge",
+        "salinitydelta",
+        "temperaturedelta",
+        "initialtracer_anyname",
+    ]
+    assert [forcing_bases[i].quantityunitpair[1].unit for i in range(4)] == [
+        "m3/s",
+        "ppt",
+        "C",
+        "Unknown",
+    ]
+    # check the values of the data block
+    # initialtracer_anyname
+    assert forcing_bases[3].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+    # temperature
+    assert forcing_bases[2].datablock[1] == [3.0, 3.0, 3.0, 3.0, 3.0]
+    # salinity
+    assert forcing_bases[1].datablock[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
+    # discharge
+    assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
+
+
 class TestSourceSinkConverter:
 
     def test_default(self):
@@ -238,29 +266,7 @@ class TestSourceSinkConverter:
         assert new_quantity_block.zsource == [-3]
 
         # check the converted bc_forcing
-        bc_forcing = new_quantity_block.bc_forcing
-        forcing_bases = bc_forcing.forcing
-        assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(4)] == [
-            "discharge",
-            "salinitydelta",
-            "temperaturedelta",
-            "initialtracer_anyname",
-        ]
-        assert [forcing_bases[i].quantityunitpair[1].unit for i in range(4)] == [
-            "m3/s",
-            "ppt",
-            "C",
-            "Unknown",
-        ]
-        # check the values of the data block
-        # initialtracer_anyname
-        assert forcing_bases[3].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
-        # temperature
-        assert forcing_bases[2].datablock[1] == [3.0, 3.0, 3.0, 3.0, 3.0]
-        # salinity
-        assert forcing_bases[1].datablock[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
-        # discharge
-        assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        compare_data(new_quantity_block)
 
     def test_4_5_columns_polyline(self):
         """
@@ -319,29 +325,7 @@ class TestSourceSinkConverter:
         assert new_quantity_block.zsource == [-3, -2.90]
 
         # check the converted bc_forcing
-        bc_forcing = new_quantity_block.bc_forcing
-        forcing_bases = bc_forcing.forcing
-        assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(4)] == [
-            "discharge",
-            "salinitydelta",
-            "temperaturedelta",
-            "initialtracer_anyname",
-        ]
-        assert [forcing_bases[i].quantityunitpair[1].unit for i in range(4)] == [
-            "m3/s",
-            "ppt",
-            "C",
-            "Unknown",
-        ]
-        # check the values of the data block
-        # initialtracer_anyname
-        assert forcing_bases[3].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
-        # temperature
-        assert forcing_bases[2].datablock[1] == [3.0, 3.0, 3.0, 3.0, 3.0]
-        # salinity
-        assert forcing_bases[1].datablock[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
-        # discharge
-        assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        compare_data(new_quantity_block)
 
     def test_no_temperature_no_salinity(self):
         """
