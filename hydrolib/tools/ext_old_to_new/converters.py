@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeSeries
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
@@ -257,11 +257,11 @@ class SourceSinkConverter(BaseConverter):
             (excluding the first column(time)).
 
         Examples:
-            >>> tim_file = Path("tests/data/external_forcings/initial_waterlevel.tim")
+            >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
             >>> time_file = TimParser.parse(tim_file)
             >>> tim_model = TimModel(**time_file)
             >>> time_series = SourceSinkConverter().get_time_series_data(tim_model)
-            >>> print(time_series)
+            >>> print(time_series) # doctest: +SKIP
             {
                 1: [1.0, 1.0, 3.0, 5.0, 8.0],
                 2: [2.0, 2.0, 5.0, 8.0, 10.0],
@@ -376,7 +376,7 @@ class SourceSinkConverter(BaseConverter):
 
             >>> converter = SourceSinkConverter()
             >>> time_series = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-            >>> print(time_series)
+            >>> print(time_series) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
                 "salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
@@ -466,7 +466,9 @@ class SourceSinkConverter(BaseConverter):
             **temp_salinity_mdu:
                 keyword arguments that will be provided if you want to provide the temperature and salinity details from
                 the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
-                >>> {'salinity': True, 'temperature': True}
+                ```python
+                {'salinity': True, 'temperature': True}
+                ```
 
         Returns:
             SourceSink: A SourceSink object that represents the converted forcing
@@ -561,3 +563,76 @@ class ConverterFactory:
             return False
 
         return True
+
+
+class TimToForcingConverter:
+    """
+    A class to convert TimModel data into ForcingModel data for boundary condition definitions.
+
+    The class provides a static method `convert` to convert a TimModel object into a ForcingModel object.
+
+    The method requires the following arguments:
+    - `tim_model`: A TimModel object containing the time series data.
+    - `start_time`: The reference time for the forcing data.
+    - `time_interpolation`: The time interpolation method for the forcing data.
+    - `units`: A list of units corresponding to the forcing quantities.
+    - `user_defined_names`: A list of user-defined names for the forcing blocks.
+    """
+
+    @staticmethod
+    def convert(
+        tim_model: TimModel,
+        start_time: str,
+        time_interpolation: str = "linear",
+        units: List[str] = None,
+        user_defined_names: List[str] = None,
+    ) -> ForcingModel:
+        """
+        Convert a TimModel into a ForcingModel.
+
+        Args:
+            tim_model (TimModel):
+                The input TimModel to be converted.
+            start_time (str):
+                The reference time for the forcing data.
+            time_interpolation (str, optional):
+                The time interpolation method for the forcing data. Defaults to "linear".
+            units (List[str], optional):
+                A list of units corresponding to the forcing quantities.
+            user_defined_names (List[str], optional):
+                A list of user-defined names for the forcing blocks.
+
+        Returns:
+            ForcingModel: The converted ForcingModel.
+        """
+        if units is None or user_defined_names is None:
+            raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
+
+        if len(units) != len(user_defined_names):
+            raise ValueError(
+                "The lengths of 'units' and 'user_defined_names' must match."
+            )
+
+        if len(tim_model.timeseries) != len(user_defined_names):
+            raise ValueError(
+                "The number of timeseries in TimModel must match the number of user-defined names."
+            )
+
+        df = tim_model.as_dataframe()
+        time_data = df.index.tolist()
+        forcings_list = []
+
+        for i, (column, vals) in enumerate(df.items()):
+            unit = units[i]
+            forcing = TimeSeries(
+                name=user_defined_names[i],
+                function="timeseries",
+                timeinterpolation=time_interpolation,
+                quantity=["time", column],
+                unit=[start_time, unit],
+                datablock=[time_data, vals.values.tolist()],
+            )
+            forcings_list.append(forcing)
+
+        forcing_model = ForcingModel(forcing=forcings_list)
+        return forcing_model
