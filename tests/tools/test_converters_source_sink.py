@@ -76,7 +76,8 @@ class TestParseTimFileForSourceSink:
             time_series_data = converter.parse_tim_model(
                 tim_file, ext_file_quantity_list
             )
-            assert time_series_data == expected_data
+            data = time_series_data.as_dataframe().to_dict(orient="list")
+            assert data == expected_data
 
     @pytest.mark.parametrize(
         "tim_file, ext_file_quantity_list, mdu_quantities, expected_data",
@@ -151,7 +152,8 @@ class TestParseTimFileForSourceSink:
         time_series_data = converter.parse_tim_model(
             tim_file, ext_file_quantity_list, **mdu_quantities
         )
-        assert time_series_data == expected_data
+        data = time_series_data.as_dataframe().to_dict(orient="list")
+        assert data == expected_data
 
 
 class TestSourceSinkConverter:
@@ -231,12 +233,34 @@ class TestSourceSinkConverter:
         converter = SourceSinkConverter()
         converter.root_dir = "tests/data/input/source-sink"
         new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
-        assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
-        assert new_quantity_block.temperaturedelta == [3.0, 3.0, 3.0, 3.0, 3.0]
-        assert new_quantity_block.salinitydelta == [2.0, 2.0, 2.0, 2.0, 2.0]
-        assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
+
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
+
+        # check the converted bc_forcing
+        bc_forcing = new_quantity_block.bc_forcing
+        forcing_bases = bc_forcing.forcing
+        assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(4)] == [
+            "discharge",
+            "salinitydelta",
+            "temperaturedelta",
+            "initialtracer_anyname",
+        ]
+        assert [forcing_bases[i].quantityunitpair[1].unit for i in range(4)] == [
+            "m3/s",
+            "ppt",
+            "C",
+            "Unknown",
+        ]
+        # check the values of the data block
+        # initialtracer_anyname
+        assert forcing_bases[3].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        # temperature
+        assert forcing_bases[2].datablock[1] == [3.0, 3.0, 3.0, 3.0, 3.0]
+        # salinity
+        assert forcing_bases[1].datablock[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
+        # discharge
+        assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
 
     def test_4_5_columns_polyline(self):
         """
@@ -290,12 +314,34 @@ class TestSourceSinkConverter:
         tim_file = Path("leftsor.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
-        assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
-        assert new_quantity_block.temperaturedelta == [3.0, 3.0, 3.0, 3.0, 3.0]
-        assert new_quantity_block.salinitydelta == [2.0, 2.0, 2.0, 2.0, 2.0]
-        assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
+
         assert new_quantity_block.zsink == [-4.2, -5.35]
         assert new_quantity_block.zsource == [-3, -2.90]
+
+        # check the converted bc_forcing
+        bc_forcing = new_quantity_block.bc_forcing
+        forcing_bases = bc_forcing.forcing
+        assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(4)] == [
+            "discharge",
+            "salinitydelta",
+            "temperaturedelta",
+            "initialtracer_anyname",
+        ]
+        assert [forcing_bases[i].quantityunitpair[1].unit for i in range(4)] == [
+            "m3/s",
+            "ppt",
+            "C",
+            "Unknown",
+        ]
+        # check the values of the data block
+        # initialtracer_anyname
+        assert forcing_bases[3].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        # temperature
+        assert forcing_bases[2].datablock[1] == [3.0, 3.0, 3.0, 3.0, 3.0]
+        # salinity
+        assert forcing_bases[1].datablock[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
+        # discharge
+        assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
 
     def test_no_temperature_no_salinity(self):
         """
@@ -334,7 +380,22 @@ class TestSourceSinkConverter:
         tim_file = Path("no_temperature_no_salinity.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
-        assert new_quantity_block.initialtracer_anyname == [4.0, 4.0, 4.0, 4.0, 4.0]
-        assert new_quantity_block.discharge == [1.0, 1.0, 1.0, 1.0, 1.0]
+
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
+        # check the converted bc_forcing
+        bc_forcing = new_quantity_block.bc_forcing
+        forcing_bases = bc_forcing.forcing
+        assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(2)] == [
+            "discharge",
+            "initialtracer_anyname",
+        ]
+        assert [forcing_bases[i].quantityunitpair[1].unit for i in range(2)] == [
+            "m3/s",
+            "Unknown",
+        ]
+        # check the values of the data block
+        # initialtracer_anyname
+        assert forcing_bases[1].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        # discharge
+        assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]

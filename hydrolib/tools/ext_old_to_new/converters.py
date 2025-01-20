@@ -315,7 +315,7 @@ class SourceSinkConverter(BaseConverter):
 
     def parse_tim_model(
         self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
-    ) -> Dict[str, List[float]]:
+    ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
 
         - Parse the TIM file and extract the time series data for each column.
@@ -337,7 +337,8 @@ class SourceSinkConverter(BaseConverter):
                 only bool. (i.e. {"temperature", False, "salinity": True})
 
         Returns:
-            Dict[str, List[float]]: A dictionary containing the time series data form each column in the tim_file.
+            TimeModel: The same `TimModel after assigning the quantity names,  the time series data form each column in
+            the tim_file.
             the keys of the dictionary will be the quantity names, and the values will be the time series data.
 
         Raises:
@@ -431,12 +432,8 @@ class SourceSinkConverter(BaseConverter):
                 f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match the number of "
                 f"quantities in the external forcing file: {final_quantities_list}."
             )
-
-        time_series = {
-            final_quantities_list[i]: time_series[i + 1]
-            for i in range(len(final_quantities_list))
-        }
-        return time_series
+        tim_model.quantities_names = final_quantities_list
+        return tim_model
 
     @property
     def root_dir(self) -> Path:
@@ -502,10 +499,19 @@ class SourceSinkConverter(BaseConverter):
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
             )
 
-        time_series = self.parse_tim_model(
+        time_model = self.parse_tim_model(
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
+        units = time_model.get_units()
+        user_defined_names = [
+            f"user-defines-{i}" for i in range(len(time_model.quantities_names))
+        ]
 
+        # get from the mdu file
+        start_time = "minutes since 2015-01-01 00:00:00"
+        forcing_model = TimToForcingConverter().convert(
+            time_model, start_time, units=units, user_defined_names=user_defined_names
+        )
         data = {
             "id": "L1",
             "name": forcing.quantity,
@@ -515,8 +521,8 @@ class SourceSinkConverter(BaseConverter):
             "ycoordinates": polyline.y,
             "zsource": z_source,
             "zsink": z_sink,
+            "bc_forcing": forcing_model,
         }
-        data = data | time_series
         new_block = SourceSink(**data)
 
         return new_block
