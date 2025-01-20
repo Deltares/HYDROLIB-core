@@ -608,14 +608,10 @@ class TimToForcingConverter:
         if units is None or user_defined_names is None:
             raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
 
-        if len(units) != len(user_defined_names):
+        first_record = tim_model.timeseries[0].data
+        if len(units) != len(user_defined_names) != len(first_record):
             raise ValueError(
-                "The lengths of 'units' and 'user_defined_names' must match."
-            )
-
-        if len(tim_model.timeseries) != len(user_defined_names):
-            raise ValueError(
-                "The number of timeseries in TimModel must match the number of user-defined names."
+                "The lengths of 'units', 'user_defined_names' and length of the columns in the first row must match."
             )
 
         df = tim_model.as_dataframe()
