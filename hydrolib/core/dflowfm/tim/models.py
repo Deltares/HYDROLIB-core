@@ -270,3 +270,59 @@ class TimModel(ParsableFileModel):
         if not columns:
             columns = self.quantities_names
         return DataFrame(time_series, index=index, columns=columns)
+
+    def get_units(self):
+        """Return the units for each quantity in the timeseries.
+
+        Returns:
+            List[str]: A list of units for each quantity in the timeseries.
+
+        Examples:
+            Create a `TimModel` object from a .tim file:
+                >>> from hydrolib.core.dflowfm.tim.models import TimModel
+                >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")
+                >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]
+                >>> print(tim_model.get_units())
+                ['m3/s', 'm', 'C', 'ppt', 'Unknown']
+        """
+        if self.quantities_names is None:
+            return None
+        return self.map_to_units(self.quantities_names)
+
+    @staticmethod
+    def map_to_units(quantities_names: List[str]) -> List[str]:
+        """
+        Maps each quantity in the input list to a specific unit based on its content.
+
+        Args:
+            quantities_names (list of str): A list of strings to be checked for specific keywords.
+
+        Returns:
+            list of str: A list of corresponding units for each input string.
+
+        Examples:
+            >>> from hydrolib.core.dflowfm.tim.models import TimModel
+            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
+            >>> TimModel.map_to_units(quantities_names)
+            ['m3/s', 'm', 'ppt', 'C']
+        """
+        # Define the mapping of keywords to units
+        unit_mapping = {
+            "discharge": "m3/s",
+            "waterlevel": "m",
+            "salinity": "ppt",
+            "temperature": "C",
+        }
+
+        # Generate the list of units based on the mapping
+        units = []
+        for string in quantities_names:
+            for keyword, unit in unit_mapping.items():
+                if keyword in string.lower():
+                    units.append(unit)
+                    break
+            else:
+                # Append "Unknown" if no keywords match
+                units.append("Unknown")
+
+        return units

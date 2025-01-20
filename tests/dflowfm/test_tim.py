@@ -118,6 +118,22 @@ class TestTimModel:
         assert model.quantities_names == ["a"]
         assert len(model.timeseries) == 13
 
+    def test_get_units(self, input_files_dir: Path):
+        """
+        Test the `get_units` method. The method should return the units of the quantities in the timeseries.
+        """
+        path = input_files_dir / "tim/single_data_for_timeseries.tim"
+        model = TimModel(path, quantities_names=["discharge"])
+        assert model.get_units() == ["m3/s"]
+        model.quantities_names = ["waterlevel"]
+        assert model.get_units() == ["m"]
+        model.quantities_names = ["temperature"]
+        assert model.get_units() == ["C"]
+        model.quantities_names = ["salinity"]
+        assert model.get_units() == ["ppt"]
+        model.quantities_names = ["initialtracer-anyname"]
+        assert model.get_units() == ["Unknown"]
+
     def test_as_dataframe(self):
         model = TimModel(
             timeseries=self.single_data_for_timeseries_floats,
