@@ -243,45 +243,6 @@ class SourceSinkConverter(BaseConverter):
         super().__init__()
 
     @staticmethod
-    def get_time_series_data(tim_model: TimModel) -> Dict[str, List[float]]:
-        """Extract time series data from a TIM model.
-
-        Extract the time series data (each column) from the TimModel object
-
-        Args:
-            tim_model (TimModel): The TimModel object containing the time series data.
-
-        Returns:
-            Dict[str, List[float]]: A dictionary containing the time series data form each column.
-            the keys of the dictionary will be index starting from 1 to the number of columns in the tim file
-            (excluding the first column(time)).
-
-        Examples:
-            >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-            >>> time_file = TimParser.parse(tim_file)
-            >>> tim_model = TimModel(**time_file)
-            >>> time_series = SourceSinkConverter().get_time_series_data(tim_model)
-            >>> print(time_series) # doctest: +SKIP
-            {
-                1: [1.0, 1.0, 3.0, 5.0, 8.0],
-                2: [2.0, 2.0, 5.0, 8.0, 10.0],
-                3: [3.0, 5.0, 12.0, 9.0, 23.0],
-                4: [4.0, 4.0, 4.0, 4.0, 4.0]
-            }
-        """
-        num_columns = len(tim_model.timeseries[0].data)
-
-        # Initialize a dictionary to collect data for each location
-        data = {loc: [] for loc in range(1, num_columns + 1)}
-
-        # Extract time series data for each location
-        for record in tim_model.timeseries:
-            for loc_index, value in enumerate(record.data, start=1):
-                data[loc_index].append(value)
-
-        return data
-
-    @staticmethod
     def merge_mdu_and_ext_file_quantities(
         mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
     ) -> List[str]:
@@ -407,7 +368,7 @@ class SourceSinkConverter(BaseConverter):
         """
         time_file = TimParser.parse(tim_file)
         tim_model = TimModel(**time_file)
-        time_series = self.get_time_series_data(tim_model)
+        time_series = tim_model.as_dict()
         # get the required quantities from the external file
         required_quantities_from_ext = [
             key

@@ -271,6 +271,32 @@ class TimModel(ParsableFileModel):
             columns = self.quantities_names
         return DataFrame(time_series, index=index, columns=columns)
 
+    def as_dict(self) -> Dict[str, List[float]]:
+        """Extract time series data from a TIM model.
+
+        Extract the time series data (each column) from the TimModel object
+
+        Returns:
+            Dict[str, List[float]]: A dictionary containing the time series data form each column.
+            the keys of the dictionary will be index starting from 1 to the number of columns in the tim file
+            (excluding the first column(time)).
+
+        Examples:
+            >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+            >>> time_file = TimParser.parse(tim_file)
+            >>> tim_model = TimModel(**time_file)
+            >>> time_series = tim_model.as_dict()
+            >>> print(time_series) # doctest: +SKIP
+            {
+                1: [1.0, 1.0, 3.0, 5.0, 8.0],
+                2: [2.0, 2.0, 5.0, 8.0, 10.0],
+                3: [3.0, 5.0, 12.0, 9.0, 23.0],
+                4: [4.0, 4.0, 4.0, 4.0, 4.0]
+            }
+        """
+        data = self.as_dataframe().to_dict(orient="list")
+        return data
+
     def get_units(self):
         """Return the units for each quantity in the timeseries.
 
