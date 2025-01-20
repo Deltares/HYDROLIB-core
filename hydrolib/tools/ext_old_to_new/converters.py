@@ -393,6 +393,7 @@ class SourceSinkConverter(BaseConverter):
                 f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match the number of "
                 f"quantities in the external forcing file: {final_quantities_list}."
             )
+        # assign the quantity names to the tim model
         tim_model.quantities_names = final_quantities_list
         return tim_model
 
