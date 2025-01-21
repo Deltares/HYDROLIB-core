@@ -2701,8 +2701,22 @@ You're not viewing the latest release version.
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/models.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
 <span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
@@ -2755,21 +2769,7 @@ You're not viewing the latest release version.
 <span class="normal">322</span>
 <span class="normal">323</span>
 <span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataBlockINIBasedModel</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataBlockINIBasedModel</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DataBlockINIBasedModel defines the base model for ini models with datablocks.</span>
 
 <span class="sd">    Attributes:</span>
@@ -2915,7 +2915,7 @@ descriptions for all data fields.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\models.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/models.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
@@ -3124,21 +3124,7 @@ descriptions for all data fields.</p>
 <span class="normal">249</span>
 <span class="normal">250</span>
 <span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INIBasedModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INIBasedModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;INIBasedModel defines the base model for blocks/chapters</span>
 <span class="sd">    inside an INIModel (*.ini file).</span>
 
@@ -3155,9 +3141,6 @@ descriptions for all data fields.</p>
 
     <span class="n">_header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">_file_path_style_converter</span> <span class="o">=</span> <span class="n">FilePathStyleConverter</span><span class="p">()</span>
-    <span class="n">_scientific_notation_regex</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s2">&quot;([\d.]+)([dD])([+-]?\d{1,3})&quot;</span>
-    <span class="p">)</span>  <span class="c1"># matches a float: 1d9, 1D-3, 1.D+4, etc.</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
         <span class="n">extra</span> <span class="o">=</span> <span class="n">Extra</span><span class="o">.</span><span class="n">ignore</span>
@@ -3256,18 +3239,7 @@ descriptions for all data fields.</p>
         <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type_</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_replace_fortran_scientific_notation</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_replace_fortran_scientific_notation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_scientific_notation_regex</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1e\3&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_scientific_notation_regex</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1e\3&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">FortranUtils</span><span class="o">.</span><span class="n">replace_fortran_scientific_notation</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;INIBasedModel&quot;</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;INIBasedModel&quot;</span><span class="p">:</span>
@@ -3399,13 +3371,13 @@ descriptions for all data fields.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/models.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments defines the comments of an INIBasedModel&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
@@ -3457,17 +3429,17 @@ no custom list delimiter.</p>
 filetype that needs a specific/different list separator.</p>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">81</span>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_list_delimiter</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List delimiter string that will be used for serializing</span>
 <span class="sd">    list field values for any IniBasedModel, **if** that field has</span>
@@ -3537,8 +3509,11 @@ to.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
 <span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
@@ -3553,10 +3528,7 @@ to.</p>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_list_field_delimiter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List delimiter string that will be used for serializing</span>
 <span class="sd">    the given field&#39;s value.</span>
@@ -3617,8 +3589,22 @@ ini file will be (sub)class of INIBasedModel.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">352</span>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/models.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
 <span class="normal">355</span>
@@ -3655,21 +3641,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INIModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INIModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;INI Model representation of a *.ini file.</span>
 
 <span class="sd">    Typically subclasses will implement the various sorts of ini files,</span>
@@ -3800,7 +3772,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\parser.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/parser.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
@@ -4386,7 +4358,7 @@ ini file will be (sub)class of INIBasedModel.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\parser.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/parser.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
@@ -4515,7 +4487,7 @@ ini file will be (sub)class of INIBasedModel.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\parser.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/parser.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
@@ -4594,7 +4566,7 @@ ini file will be (sub)class of INIBasedModel.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\parser.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/parser.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span>
@@ -4710,7 +4682,7 @@ ini file will be (sub)class of INIBasedModel.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\parser.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/parser.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">358</span>
 <span class="normal">359</span>
 <span class="normal">360</span>
@@ -4846,7 +4818,7 @@ ini file will be (sub)class of INIBasedModel.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\parser.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/parser.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span>
@@ -4975,7 +4947,7 @@ Defaults to '#'.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\parser.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/parser.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -5141,7 +5113,7 @@ Defaults to '#'.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
@@ -5369,7 +5341,7 @@ additional offset to ensure . is lined out. Defaults to 2.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -5589,7 +5561,7 @@ If no datablock is present it defaults to None.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
@@ -5786,7 +5758,7 @@ If no datablock is present it defaults to None.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
@@ -5872,7 +5844,7 @@ an actual instance and serializes the Section with it.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
@@ -6198,7 +6170,7 @@ an actual instance and serializes the Section with it.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -6310,7 +6282,7 @@ an actual instance and serializes the Section with it.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
@@ -6372,7 +6344,7 @@ an actual instance and serializes the Section with it.</p>
 
 
               <details class="quote">
-                <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+                <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
@@ -6522,7 +6494,7 @@ an actual instance and serializes the Section with it.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
 <span class="normal">273</span>
 <span class="normal">274</span>
@@ -6610,7 +6582,7 @@ an actual instance and serializes the Section with it.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">280</span>
 <span class="normal">281</span>
 <span class="normal">282</span>
@@ -6738,7 +6710,7 @@ do not exist, they will be created.</p>
     </table>
 
             <details class="quote">
-              <summary>Source code in <code>hydrolib\core\dflowfm\ini\serializer.py</code></summary>
+              <summary>Source code in <code>hydrolib/core/dflowfm/ini/serializer.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
