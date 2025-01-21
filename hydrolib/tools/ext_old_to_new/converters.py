@@ -44,6 +44,16 @@ class BaseConverter(ABC):
         """Initializes the BaseConverter object."""
         pass
 
+    @property
+    def root_dir(self) -> Path:
+        return self._root_dir
+
+    @root_dir.setter
+    def root_dir(self, value: Union[Path, str]):
+        if isinstance(value, str):
+            value = Path(value)
+        self._root_dir = value
+
     @abstractmethod
     def convert(self, data: ExtOldForcing) -> Any:
         """Converts the data from the old external forcings format to
@@ -398,16 +408,6 @@ class SourceSinkConverter(BaseConverter):
         tim_model.quantities_names = final_quantities_list
         return tim_model
 
-    @property
-    def root_dir(self) -> Path:
-        return self._root_dir
-
-    @root_dir.setter
-    def root_dir(self, value: Union[Path, str]):
-        if isinstance(value, str):
-            value = Path(value)
-        self._root_dir = value
-
     def convert(
         self,
         forcing: ExtOldForcing,
@@ -596,6 +596,7 @@ class TimToForcingConverter:
             discharge
             >>> print(forcing_model.forcing[0].datablock)
             [[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0], [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]]
+
             ```
         """
         if units is None or user_defined_names is None:
