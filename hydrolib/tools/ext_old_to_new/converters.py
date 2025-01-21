@@ -575,6 +575,28 @@ class TimToForcingConverter:
 
         Returns:
             ForcingModel: The converted ForcingModel.
+
+        Raises:
+            ValueError: If `units` and `user_defined_names` are not provided.
+            ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
+                do not match.
+
+        Examples:
+            ```python
+            >>> file_path = "tests/data/input/tim/single_data_for_timeseries.tim"
+            >>> user_defined_names = ["discharge"]
+            >>> tim_model = TimModel(file_path, user_defined_names)
+            >>> print(tim_model.as_dict())
+            {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
+            >>> converter = TimToForcingConverter()
+            >>> forcing_model = converter.convert(
+            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m³/s"], ["discharge"]
+            ... )
+            >>> print(forcing_model.forcing[0].name)
+            discharge
+            >>> print(forcing_model.forcing[0].datablock)
+            [[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0], [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]]
+            ```
         """
         if units is None or user_defined_names is None:
             raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
