@@ -28,6 +28,7 @@ def test_with_label(polylines_dir: Path):
     assert polyline.save_location == path.absolute()
     assert polyline.x == [0, 0]
     assert polyline.y == [0, 2]
+    assert polyline.number_of_points == 2
 
 
 def test_without_z(polylines_dir: Path):
@@ -48,6 +49,7 @@ def test_without_z(polylines_dir: Path):
     assert points[1] == Point(x=-80, y=550, z=None, data=[])
     assert polyline.x == [-80, -80]
     assert polyline.y == [-50, 550]
+    assert polyline.number_of_points == 2
 
 
 def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
