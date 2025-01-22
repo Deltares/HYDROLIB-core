@@ -295,6 +295,23 @@ class TestTimModel:
 
         assert expected_error_msg in str(error.value)
 
+    def test_add_location_values(self):
+        model = TimModel(
+            timeseries=[
+                TimRecord(time=0.0, data=[1.0, 2.0]),
+                TimRecord(time=1.0, data=[3.0, 4.0]),
+            ]
+        )
+
+        model.add_column([5.0, 6.0])
+
+        assert model.timeseries[0].data == [1.0, 2.0, 5.0]
+        assert model.timeseries[1].data == [3.0, 4.0, 6.0]
+
+        # Test with mismatched lengths
+        with pytest.raises(ValueError):
+            model.add_column([7.0])
+
 
 class TestTimRecord:
     def test_initialization(self):
