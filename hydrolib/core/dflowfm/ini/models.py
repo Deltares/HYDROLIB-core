@@ -535,15 +535,25 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     Examples:
         Create a model and validate its data block:
+            ```python
             >>> from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel
             >>> model = DataBlockINIBasedModel(datablock=[[1.0, 2.0], [3.0, 4.0]])
             >>> print(model.datablock)
             [[1.0, 2.0], [3.0, 4.0]]
 
-        Attempt to create a model with invalid data:
+            ```
 
-        >>> model = DataBlockINIBasedModel(datablock=[[1.0, None]])
-        ValueError: NaN is not supported in datablocks.
+        Attempt to create a model with invalid data:
+            ```python
+            >>> try:
+            ...     model = DataBlockINIBasedModel(datablock=[[1.0, None]])
+            ... except Exception as e:
+            ...     print(e)
+            1 validation error for DataBlockINIBasedModel
+            datablock -> 0 -> 1
+              none is not an allowed value (type=type_error.none.not_allowed)
+
+            ```
 
     Notes:
         - The class includes a validator to ensure that no NaN values are present in the data block.

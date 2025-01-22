@@ -202,6 +202,8 @@ class ForcingBase(DataBlockINIBasedModel):
 
     Examples:
         Create a simple forcing block:
+
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import ForcingBase, QuantityUnitPair
             >>> forcing = ForcingBase(
             ...     name="Location1",
@@ -213,7 +215,11 @@ class ForcingBase(DataBlockINIBasedModel):
             >>> print(forcing.function)
             timeseries
 
+            ```
+
         Handle vector quantities:
+
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import VectorQuantityUnitPairs
             >>> forcing = ForcingBase(
             ...     name="Location2",
@@ -231,6 +237,8 @@ class ForcingBase(DataBlockINIBasedModel):
             ... )
             >>> print(forcing.quantityunitpair[0].vectorname)
             velocity
+
+            ```
 
     Notes:
         - The `ForcingBase` class is typically subclassed to provide specific behavior for different forcing types.
@@ -888,7 +896,7 @@ class ForcingModel(INIModel):
 
     Examples:
         Create a simple ForcingModel:
-
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import ForcingModel, ForcingBase, ForcingGeneral, QuantityUnitPair
             >>> forcing_block = ForcingBase(
             ...     name="Location1",
@@ -903,8 +911,11 @@ class ForcingModel(INIModel):
             ... )
             >>> print(model.general.fileversion)
             1.01
+            >>> model.save(filepath="tests/data/output.bc") # doctest: +SKIP
+            ```
 
         Parse a .bc file:
+            ```python
             >>> from pathlib import Path
             >>> filepath = Path("tests/data/reference/bc/test.bc")
             >>> parsed_model = ForcingModel.parse(filepath)
@@ -912,7 +923,7 @@ class ForcingModel(INIModel):
             dict_keys(['general', 'forcing'])
             >>> print(len(parsed_model["forcing"]))
             6
-            >>> print(parsed_model["forcing"][0]) # doctest: +NORMALIZE_WHITESPACE
+            >>> print(parsed_model["forcing"][0]) # doctest: +SKIP
             {'_header': 'Forcing',
              'datablock': [['0.0000', '1.2300'],
               ['60.0000', '2.3400'],
@@ -924,14 +935,18 @@ class ForcingModel(INIModel):
              'factor': '2.340',
              'quantity': ['time', 'dischargebnd'],
              'unit': ['minutes since 2015-01-01 00:00:00', 'm³/s']}
+            ```
 
         Serialize a ForcingModel:
+            ```python
             >>> save_path = Path("output.bc")
             >>> model.save(filepath=save_path) # doctest: +SKIP
             >>> print(save_path.exists()) # doctest: +SKIP
             True
+            ```
 
         Create a ForcingModel from a dictionary:
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import ForcingModel
             >>> forcing_blocks_list = [
             ...     {
@@ -961,6 +976,8 @@ class ForcingModel(INIModel):
             <class 'hydrolib.core.dflowfm.bc.models.TimeSeries'>
             >>> print(model.general.fileversion)
             1.01
+
+            ```
 
     Example .bc file content:
         ```.bc

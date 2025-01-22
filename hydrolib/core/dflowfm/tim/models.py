@@ -23,96 +23,112 @@ class TimRecord(BaseModel):
 class TimModel(ParsableFileModel):
     """Class representing a tim (*.tim) file.
 
-    Attributes:
-        serializer_config (TimSerializerConfig):
-            Configuration for serialization of the .tim file.
-        comments (List[str]):
-            Header comments from the .tim file.
-        timeseries (List[TimRecord]):
-            A list of TimRecord objects, each containing a time value and associated data.
-        quantities_names (Optional[List[str]]):
-            List of names for the quantities in the timeseries.
+        Attributes:
+            serializer_config (TimSerializerConfig):
+                Configuration for serialization of the .tim file.
+            comments (List[str]):
+                Header comments from the .tim file.
+            timeseries (List[TimRecord]):
+                A list of TimRecord objects, each containing a time value and associated data.
+            quantities_names (Optional[List[str]]):
+                List of names for the quantities in the timeseries.
 
 
-    Methods:
-        _ext() -> str:
-            Returns the file extension for .tim files.
-        _filename() -> str:
-            Returns the default filename for .tim files.
-        _get_serializer() -> Callable:
-            Returns the serializer callable for .tim files.
-        _get_parser() -> Callable:
-            Returns the parser callable for .tim files.
-        _validate_timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
-            Validates the timeseries data.
-        as_dataframe(columns: List[Any] = None) -> DataFrame:
-            Returns the timeseries as a pandas DataFrame.
-        _validate_quantities_names(cls, v, values) -> List[str]:
-            Validates that quantities_names match the values or each record.
+        Methods:
+            _ext() -> str:
+                Returns the file extension for .tim files.
+            _filename() -> str:
+                Returns the default filename for .tim files.
+            _get_serializer() -> Callable:
+                Returns the serializer callable for .tim files.
+            _get_parser() -> Callable:
+                Returns the parser callable for .tim files.
+            _validate_timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
+                Validates the timeseries data.
+            as_dataframe(columns: List[Any] = None) -> DataFrame:
+                Returns the timeseries as a pandas DataFrame.
+            _validate_quantities_names(cls, v, values) -> List[str]:
+                Validates that quantities_names match the values or each record.
 
-    Args:
-        filepath (Path):
-            Path to the .tim file.
-        data (Dict):
-            Parsed data containing comments and timeseries.
-        serializer_config (TimSerializerConfig):
-            Configuration for serializing the .tim file.
+        Args:
+            filepath (Path):
+                Path to the .tim file.
+            data (Dict):
+                Parsed data containing comments and timeseries.
+            serializer_config (TimSerializerConfig):
+                Configuration for serializing the .tim file.
 
-    Returns:
-        List[TimRecord]:
-            Validated list of TimRecord objects.
+        Returns:
+            List[TimRecord]:
+                Validated list of TimRecord objects.
 
-    Raises:
-        ValueError:
-            If the timeseries has inconsistent column counts or duplicate time values.
+        Raises:
+            ValueError:
+                If the timeseries has inconsistent column counts or duplicate time values.
 
-    Examples:
-        Create a TimModel object from a .tim file:
-            >>> from hydrolib.core.dflowfm.tim.models import TimModel, TimRecord
-            >>> tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")
-            >>> print(tim_model.timeseries)
-            [TimRecord(time=10.0, data=[1.232, 2.343, 3.454]), TimRecord(time=20.0, data=[4.565, 5.676, 6.787]), TimRecord(time=30.0, data=[1.5, 2.6, 3.7])]
+        Examples:
+            Create a TimModel object from a .tim file:
+    /
+                ```python
+                >>> from hydrolib.core.dflowfm.tim.models import TimModel, TimRecord
+                >>> tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")
+                >>> print(tim_model.timeseries)
+                [TimRecord(time=10.0, data=[1.232, 2.343, 3.454]), TimRecord(time=20.0, data=[4.565, 5.676, 6.787]), TimRecord(time=30.0, data=[1.5, 2.6, 3.7])]
 
-        Provide names for the quantities in the timeseries:
-            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature", "initialtracer"]
-            >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim", quantities_names=quantities_names)
-            >>> print(tim_model.quantities_names)
-            ['discharge', 'waterlevel', 'salinity', 'temperature', 'initialtracer']
-            >>> print(tim_model.as_dataframe())
-                   discharge  waterlevel  salinity  temperature  initialtracer
-            0.0          1.0         2.0       3.0          4.0            5.0
-            100.0        1.0         2.0       3.0          4.0            5.0
-            200.0        1.0         2.0       3.0          4.0            5.0
-            300.0        1.0         2.0       3.0          4.0            5.0
-            400.0        1.0         2.0       3.0          4.0            5.0
+                ```
 
-        Create a `TimModel` object from a dictionary:
-            >>> data = {
-            ...     "comments": ["# Example comment"],
-            ...     "timeseries": [TimRecord(time=0.0, data=[1.0, 2.0])]
-            ... }
-            >>> tim_model = TimModel(**data)
-            >>> print(tim_model.timeseries)
-            [TimRecord(time=0.0, data=[1.0, 2.0])]
+            Provide names for the quantities in the timeseries:
+                ```python
+                >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature", "initialtracer"]
+                >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim", quantities_names=quantities_names)
+                >>> print(tim_model.quantities_names)
+                ['discharge', 'waterlevel', 'salinity', 'temperature', 'initialtracer']
+                >>> print(tim_model.as_dataframe())
+                       discharge  waterlevel  salinity  temperature  initialtracer
+                0.0          1.0         2.0       3.0          4.0            5.0
+                100.0        1.0         2.0       3.0          4.0            5.0
+                200.0        1.0         2.0       3.0          4.0            5.0
+                300.0        1.0         2.0       3.0          4.0            5.0
+                400.0        1.0         2.0       3.0          4.0            5.0
 
-        Create `TimModel` from `TimRecord` objects:
-            >>> new_tim = TimModel()
-            >>> new_tim.comments = ["# Example comment"]
-            >>> new_tim.timeseries = [TimRecord(time=0.0, data=[1.0, 2.0])]
+                ```
 
-        Serialize the `TimModel` to a .tim file:
-            >>> new_tim.save(filepath=Path("output.tim")) # doctest: +SKIP
+            Create a `TimModel` object from a dictionary:
+                ```python
+                >>> data = {
+                ...     "comments": ["# Example comment"],
+                ...     "timeseries": [TimRecord(time=0.0, data=[1.0, 2.0])]
+                ... }
+                >>> tim_model = TimModel(**data)
+                >>> print(tim_model.timeseries)
+                [TimRecord(time=0.0, data=[1.0, 2.0])]
 
-    See Also:
-        TimParser: Used for parsing .tim files.
-        TimSerializer: Used for serializing .tim files.
-        TimRecord: Represents individual time and data entries in the timeseries.
+                ```
 
-    Notes:
-        This class ensures the integrity of the timeseries by validating data consistency and detecting duplicate time entries.
+            Create `TimModel` from `TimRecord` objects:
+                ```python
+                >>> new_tim = TimModel()
+                >>> new_tim.comments = ["# Example comment"]
+                >>> new_tim.timeseries = [TimRecord(time=0.0, data=[1.0, 2.0])]
 
-    References:
-        - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
+                ```
+
+            Serialize the `TimModel` to a .tim file:
+                ```python
+                >>> new_tim.save(filepath=Path("output.tim")) # doctest: +SKIP
+
+                ```
+
+        See Also:
+            TimParser: Used for parsing .tim files.
+            TimSerializer: Used for serializing .tim files.
+            TimRecord: Represents individual time and data entries in the timeseries.
+
+        Notes:
+            This class ensures the integrity of the timeseries by validating data consistency and detecting duplicate time entries.
+
+        References:
+            - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
     """
 
     serializer_config = TimSerializerConfig()
@@ -321,6 +337,7 @@ class TimModel(ParsableFileModel):
             (excluding the first column(time)).
 
         Examples:
+            ```python
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
             >>> time_file = TimParser.parse(tim_file)
             >>> tim_model = TimModel(**time_file)
@@ -332,6 +349,7 @@ class TimModel(ParsableFileModel):
                 3: [3.0, 5.0, 12.0, 9.0, 23.0],
                 4: [4.0, 4.0, 4.0, 4.0, 4.0]
             }
+            ```
         """
         data = self.as_dataframe().to_dict(orient="list")
         return data
@@ -344,11 +362,14 @@ class TimModel(ParsableFileModel):
 
         Examples:
             Create a `TimModel` object from a .tim file:
+                ```python
                 >>> from hydrolib.core.dflowfm.tim.models import TimModel
                 >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")
                 >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]
                 >>> print(tim_model.get_units())
                 ['m3/s', 'm', 'C', 'ppt', 'Unknown']
+
+                ```
         """
         if self.quantities_names is None:
             return None
