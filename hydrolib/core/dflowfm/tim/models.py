@@ -222,12 +222,14 @@ class TimModel(ParsableFileModel):
                 )
         return v
 
-    def add_column(self, new_values: List[float]) -> None:
+    def add_column(self, new_values: List[float], column_name: str = None) -> None:
         """
         Add new values to each TimRecord in the timeseries, representing a new location.
 
         Args:
             new_values (List[float]): A list of new values to add, one for each TimRecord.
+            column_name (str, optional): The name of the new column. Defaults to None.
+                if None the column will be named as "quantity-{len(quantities_names) + 1}".
 
         Raises:
             ValueError: If the number of new values does not match the number of TimRecords.
@@ -253,6 +255,11 @@ class TimModel(ParsableFileModel):
 
         for record, value in zip(self.timeseries, new_values):
             record.data.append(value)
+
+        if self.quantities_names:
+            if column_name is None:
+                column_name = f"quantity-{len(self.quantities_names) + 1}"
+            self.quantities_names.append(column_name)
 
     def as_dataframe(self, columns: List[Any] = None) -> DataFrame:
         """Return the timeseries as a pandas DataFrame.
