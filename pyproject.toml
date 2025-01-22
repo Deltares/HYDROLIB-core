@@ -58,6 +58,7 @@ mike = "^1.1.2"
 jupyter = "^1.0.0"
 notebook = "^7.3.2"
 mkdocstrings-python = "^1.13.0"
+mkdocs-mermaid2-plugin = "^1.2.1"
 
 [tool.poetry.group.pre-commit.dependencies]
 coverage = {extras = ["toml"], version = "^7.6.1"}
