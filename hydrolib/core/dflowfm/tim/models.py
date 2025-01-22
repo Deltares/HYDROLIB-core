@@ -367,7 +367,7 @@ class TimModel(ParsableFileModel):
                 >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")
                 >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]
                 >>> print(tim_model.get_units())
-                ['m3/s', 'm', 'C', 'ppt', 'Unknown']
+                ['m3/s', 'm', 'C', 'ppt', '-']
 
                 ```
         """
@@ -409,6 +409,6 @@ class TimModel(ParsableFileModel):
                     break
             else:
                 # Append "Unknown" if no keywords match
-                units.append("Unknown")
+                units.append("-")
 
         return units

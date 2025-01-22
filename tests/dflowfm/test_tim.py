@@ -132,7 +132,7 @@ class TestTimModel:
         model.quantities_names = ["salinity"]
         assert model.get_units() == ["ppt"]
         model.quantities_names = ["initialtracer-anyname"]
-        assert model.get_units() == ["Unknown"]
+        assert model.get_units() == ["-"]
 
     def test_as_dataframe(self):
         model = TimModel(

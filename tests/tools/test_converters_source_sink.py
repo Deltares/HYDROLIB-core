@@ -171,7 +171,7 @@ def compare_data(new_quantity_block: SourceSink):
         "m3/s",
         "ppt",
         "C",
-        "Unknown",
+        "-",
     ]
     # check the values of the data block
     # initialtracer_anyname
@@ -376,7 +376,7 @@ class TestSourceSinkConverter:
         ]
         assert [forcing_bases[i].quantityunitpair[1].unit for i in range(2)] == [
             "m3/s",
-            "Unknown",
+            "-",
         ]
         # check the values of the data block
         # initialtracer_anyname
