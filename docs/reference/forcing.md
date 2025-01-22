@@ -144,7 +144,7 @@ classDiagram
     VerticalInterpolation --> ForcingBase
     VerticalPositionType --> T3D
     TimeInterpolation --> ForcingBase
-    ForcingBase --> TimeSeries
+    VectorForcingBase --> TimeSeries
     ForcingBase --> Harmonic
     ForcingBase --> HarmonicCorrection
     ForcingBase --> Astronomic
