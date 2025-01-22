@@ -22,11 +22,11 @@ theme:
     - navigation.top
 plugins:
   - search
-  - mkdocs-jupyter
   - autorefs
-  - table-reader
+
   - macros:
       module_name: docs/include/mkdocs-macros/main
+  - table-reader
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -41,9 +41,6 @@ plugins:
           selection:
             inherited_members: false
 
-      custom_templates: templates
-      watch:
-        - hydrolib/core
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
@@ -51,8 +48,8 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 repo_url: https://github.com/Deltares/hydrolib-core
 repo_name: deltares/hydrolib-core
 edit_uri: edit/main/docs/
