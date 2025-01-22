@@ -101,7 +101,7 @@ class TimModel(ParsableFileModel):
             >>> new_tim.timeseries = [TimRecord(time=0.0, data=[1.0, 2.0])]
 
         Serialize the `TimModel` to a .tim file:
-            >>> new_tim.save(filepath="output.tim") # doctest: +SKIP
+            >>> new_tim.save(filepath=Path("output.tim")) # doctest: +SKIP
 
     See Also:
         TimParser: Used for parsing .tim files.
@@ -163,14 +163,14 @@ class TimModel(ParsableFileModel):
     @validator("timeseries")
     @classmethod
     def _validate_timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
-        """Validate if the amount of columns per timeseries match and if the timeseries have no duplicate times.
+        """Validate if the number of columns per timeseries matches and if the timeseries have no duplicate times.
 
         Args:
             v (List[TimRecord]): Timeseries to validate.
 
         Raises:
-            ValueError: When the amount of columns for timeseries is zero.
-            ValueError: When the amount of columns differs per timeseries.
+            ValueError: When the number of columns for timeseries is zero.
+            ValueError: When the number of columns differs per timeseries.
             ValueError: When the timeseries has a duplicate time.
 
         Returns:
@@ -209,9 +209,9 @@ class TimModel(ParsableFileModel):
 
     @validator("quantities_names")
     def _validate_quantities_names(cls, v, values):
-        """Validate if the amount of quantities_names match the amount of columns in the timeseries.
+        """Validate if the number of quantities_names matches the number of columns in the timeseries.
 
-        The validator compared the amount of quantities_names with the amount of columns in the first record of
+        The validator compared the amount of quantities_names with the number of columns in the first record of
         the timeseries.
         """
         if v is not None:
@@ -229,7 +229,7 @@ class TimModel(ParsableFileModel):
         Args:
             new_values (List[float]): A list of new values to add, one for each TimRecord.
             column_name (str, optional): The name of the new column. Defaults to None.
-                if None the column will be named as "quantity-{len(quantities_names) + 1}".
+                if None, the column is named as "quantity-{len(quantities_names) + 1}".
 
         Raises:
             ValueError: If the number of new values does not match the number of TimRecords.
