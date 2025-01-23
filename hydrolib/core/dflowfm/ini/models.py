@@ -16,6 +16,7 @@ from typing import (
     get_origin,
 )
 
+from pandas import DataFrame
 from pydantic.v1 import Extra, Field, root_validator
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import ModelField
@@ -573,6 +574,28 @@ class DataBlockINIBasedModel(INIBasedModel):
             Optional[UnknownKeywordErrorManager]: Returns None as unknown keywords are ignored.
         """
         return None
+
+    def as_dataframe(self) -> DataFrame:
+        """Convert the datablock as a pandas DataFrame
+
+        - The first number from each list in the block as an index for that row.
+
+        Returns:
+            DataFrame: The datablock as a pandas DataFrame.
+
+        Examples:
+                >>> from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel
+                >>> model = DataBlockINIBasedModel(datablock=[[0, 10, 100], [1, 20, 200]])
+                >>> df = model.as_dataframe()
+                >>> print(df)
+                        0      1
+                0.0  10.0  100.0
+                1.0  20.0  200.0
+        """
+        df = DataFrame(self.datablock).set_index(0)
+        df.index.name = None
+        df.columns = range(len(df.columns))
+        return df
 
     def _to_section(
         self,
