@@ -569,7 +569,92 @@ class VectorForcingBase(ForcingBase):
 
 
 class TimeSeries(VectorForcingBase):
-    """Subclass for a .bc file [Forcing] block with timeseries data."""
+    """Subclass for a .bc file [Forcing] block with timeseries data.
+
+    Attributes:
+        function (Literal["timeseries"]):
+            Specifies that this is a timeseries forcing block. Defaults to "timeseries".
+        timeinterpolation (TimeInterpolation):
+            The type of time interpolation, such as "linear", "block-From", or "block-To".
+        offset (float):
+            All values in the table are increased by the offset (after multiplication by factor).
+            Defaults to 0.0.
+        factor (float):
+            All values in the table are multiplied by the factor. Defaults to 1.0.
+
+     Methods:
+        rename_keys(cls, values: Dict) -> Dict:
+            Renames old keywords to currently supported keywords for backward compatibility.
+
+    Examples:
+        One quantity:
+        ```python
+        >>> from hydrolib.core.dflowfm.bc.models import TimeSeries
+        >>> timeseries = TimeSeries(
+        ...     name="Boundary1",
+        ...     function="timeseries",
+        ...     timeinterpolation="block-From",
+        ...     offset=1.23,
+        ...     factor=2.34,
+        ...     quantityunitpair=[
+        ...         QuantityUnitPair(quantity="time", unit="minutes since 2015-01-01 00:00:00"),
+        ...         QuantityUnitPair(quantity="waterlevel", unit="m")
+        ...    ],
+        ...     datablock=[["0", "10"], ["1.0", "20"], ["2.0", "30"]]
+        ... )
+
+        ```
+        the forcing will look as follows:
+        ```
+        [Forcing]
+            name              = Boundary1
+            timeinterpolation = block-From
+            function          = timeseries
+            quantity          = time
+            unit              = minutes since 2001-01-01
+            quantity          = waterlevel
+            unit              = m
+            offset            = 1.23
+            factor            = 2.34
+            0 10
+            1 20
+            2 30
+        ```
+        Two quantities:
+        >>> timeseries = TimeSeries(
+        ...     name="Boundary1",
+        ...     function="timeseries",
+        ...     timeinterpolation="block-From",
+        ...     offset=1.23,
+        ...     factor=2.34,
+        ...     quantityunitpair=[
+        ...         QuantityUnitPair(quantity="time", unit="minutes since 2015-01-01 00:00:00"),
+        ...         QuantityUnitPair(quantity="dischargebnd", unit="m³/s"),
+        ...         QuantityUnitPair(quantity="waterlevelbnd", unit="m")
+        ...     ],
+        ...    datablock=[["0", "50", "4.0"], ["1", "60", "5.0"], ["2", "70", "6.0"]]
+        ... )
+
+        ```
+        the forcing will look as follows:
+        ```
+        [Forcing]
+            name              = Boundary1
+            timeinterpolation = block-From
+            function          = timeseries
+            quantity          = time
+            unit              = minutes since 2015-01-01 00:00:00
+            quantity          = dischargebnd
+            unit              = m³/s
+            quantity          = waterlevelbnd
+            unit              = m
+            offset            = 1.23
+            factor            = 2.34
+            0 50 4.0
+            1 60 5.0
+            2 70 6.0
+        ```
+    """
 
     function: Literal["timeseries"] = "timeseries"
 
