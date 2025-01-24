@@ -32,5 +32,6 @@ def test_tim_to_bc_converter(input_files_dir: Path):
         forcing_model.forcing[i].quantityunitpair[1].unit for i in range(5)
     ] == units
     forcing = forcing_model.forcing[0]
-    assert forcing.datablock[0] == df.index.tolist()
-    assert forcing.datablock[1] == df.iloc[:, 0].tolist()
+    forcing_df = forcing.as_dataframe()
+    assert forcing_df.index.to_list() == df.index.tolist()
+    assert forcing_df.loc[:, 0].to_list() == df.iloc[:, 0].tolist()
