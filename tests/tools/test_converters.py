@@ -125,5 +125,8 @@ class TestBoundaryConverter:
         names = ["tfl_01_0001", "tfl_01_0002"]
         assert all(forcing_model.forcing[i].name == names[i] for i in range(len(names)))
         assert all(forcings[i].quantityunitpair[0].quantity == "time" for i in range(2))
-        assert all(forcings[i].quantityunitpair[1].quantity == "waterlevelbnd" for i in range(2))
+        assert all(
+            forcings[i].quantityunitpair[1].quantity == "waterlevelbnd"
+            for i in range(2)
+        )
         assert forcings[0].datablock == [[0, 0.01], [120, 0.01]]
