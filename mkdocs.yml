@@ -23,7 +23,7 @@ theme:
 plugins:
   - search
   - autorefs
-
+  - mermaid2
   - macros:
       module_name: docs/include/mkdocs-macros/main
   - table-reader
@@ -43,7 +43,11 @@ plugins:
 
 markdown_extensions:
   - pymdownx.highlight
-  - pymdownx.superfences
+  - pymdownx.superfences:
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
   - admonition
   - toc:
       permalink: true
