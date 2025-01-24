@@ -57,8 +57,8 @@ class ExternalForcingConverter:
             FileNotFoundError: If the old external forcing file does not exist.
 
         Examples:
-            >>> converter = ExternalForcingConverter("old-external-forcing.ext")
-            >>> converter.update()
+            >>> converter = ExternalForcingConverter("old-external-forcing.ext") #doctest: +SKIP
+            >>> converter.update() #doctest: +SKIP
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
             extold_model = self._read_old_file(extold_model)
@@ -251,6 +251,7 @@ class ExternalForcingConverter:
                     forcing, quantities, **temp_salinity_mdu
                 )
             else:
+                converter_class.root_dir = self.root_dir
                 new_quantity_block = converter_class.convert(forcing)
         except ValueError:
             # While this tool is in progress, accept that we do not convert all quantities yet.

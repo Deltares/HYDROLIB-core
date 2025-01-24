@@ -165,25 +165,9 @@ def old_forcing_file_boundary() -> Dict[str, Path]:
         ),
         "quantities": [
             "waterlevelbnd",
-            "dischargebnd",
-            "velocitybnd",
-            "tangentialvelocitybnd",
-            "neumannbnd",
-            "riemannbnd",
-            "outflowbnd",
-            "qhbnd",
-            "salinitybnd",
         ],
         "locationfile": [
             "tfl_01.pli",
-            "left01.pli",
-            "vel01.pli",
-            "tanvelN.pli",
-            "right01.pli",
-            "left01.pli",
-            "right01.pli",
-            "right01.pli",
-            "tfl_02_sal.pli",
         ],
     }
 

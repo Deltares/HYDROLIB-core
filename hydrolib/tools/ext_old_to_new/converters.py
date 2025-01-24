@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeSeries
+from hydrolib.core.dflowfm.bc.models import ForcingModel, QuantityUnitPair, TimeSeries
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
@@ -129,6 +129,51 @@ class BoundaryConditionConverter(BaseConverter):
     def __init__(self):
         super().__init__()
 
+    @staticmethod
+    def parse_tim_model(tim_files: List[TimModel], forcing: ExtOldForcing) -> TimModel:
+        """Parse the boundary condition related time series from the tim files.
+
+        Args:
+            tim_files (List[TimModel]): List of TIM models.
+            forcing (ExtOldForcing):
+
+        Returns:
+            TimModel: A TimModel object containing the time series data from the TIM files.
+        """
+        time_files_exist = all([tim_file.exists() for tim_file in tim_files])
+        if not time_files_exist:
+            raise ValueError(
+                f"TIM files '{tim_files}' not found for QUANTITY={forcing.quantity}"
+            )
+
+        tim_models = [
+            TimModel(file, quantities_names=[file.stem]) for file in tim_files
+        ]
+        # merge all the tim files into one tim model
+        for tim_model in tim_models[1:]:
+            data = tim_model.as_dict()
+            if len(data.keys()) != 1:
+                raise ValueError(
+                    f"Number of columns in the TIM file '{tim_model.filepath}' should be 1 column."
+                )
+            tim_models[0].add_column(
+                list(data.values())[0], column_name=list(data.keys())[0]
+            )
+        return tim_models[0]
+
+    @staticmethod
+    def convert_tim_to_bc(
+        tim_model: TimModel,
+        start_time: str,
+        time_interpolation: str = "linear",
+        units: List[str] = None,
+        user_defined_names: List[str] = None,
+    ) -> ForcingModel:
+        forcing_model = TimToForcingConverter.convert(
+            tim_model, start_time, time_interpolation, units, user_defined_names
+        )
+        return forcing_model
+
     def convert(self, forcing: ExtOldForcing) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
@@ -156,11 +201,51 @@ class BoundaryConditionConverter(BaseConverter):
             supported by the converter, a ValueError is raised. This ensures
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
+
+        Notes:
+            - The `root_dir` property must be set before calling this method.
         """
+        from hydrolib.core.dflowfm.polyfile.models import PolyFile
+
+        location_file = forcing.filename.filepath
+        poly_line = forcing.filename
+        if not isinstance(poly_line, PolyFile):
+            # path = self.root_dir / location_file
+            # path.exists()
+            poly_line = PolyFile(location_file)
+
+        num_files = poly_line.number_of_points
+        if self.root_dir is None:
+            raise ValueError(
+                "The 'root_dir' property must be set before calling this method."
+            )
+
+        tim_files = [
+            self.root_dir
+            / poly_line.filepath.with_name(
+                f"{poly_line.filepath.stem}_000{i + 1}.tim"
+            ).name
+            for i in range(num_files)
+        ]
+
+        tim_model = self.parse_tim_model(tim_files, forcing)
+        # switch the quantity names from the Tim model (loction names) to quantity names.
+        user_defined_names = tim_model.quantities_names
+        tim_model.quantities_names = [forcing.quantity] * len(tim_model.get_units())
+
+        # TODO: check the units of the initialtracers
+        units = tim_model.get_units()
+
+        # TODO: get the start name from the mdu file
+        start_time = "minutes since 2015-01-01 00:00:00"
+        forcing_model = self.convert_tim_to_bc(
+            tim_model, start_time, units=units, user_defined_names=user_defined_names
+        )
+
         data = {
             "quantity": forcing.quantity,
-            "locationfile": forcing.filename.filepath,
-            "forcingfile": ForcingModel(),
+            "locationfile": location_file,
+            "forcingfile": forcing_model,
         }
 
         new_block = Boundary(**data)
@@ -590,12 +675,12 @@ class TimToForcingConverter:
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
             >>> converter = TimToForcingConverter()
             >>> forcing_model = converter.convert(
-            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m³/s"], ["discharge"]
+            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
             ... )
             >>> print(forcing_model.forcing[0].name)
             discharge
             >>> print(forcing_model.forcing[0].datablock)
-            [[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0], [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]]
+            [[0.0, 0.0], [10.0, 0.01], [20.0, 0.0], [30.0, -0.01], [40.0, 0.0], [50.0, 0.01], [60.0, 0.0], [70.0, -0.01], [80.0, 0.0], [90.0, 0.01], [100.0, 0.0], [110.0, -0.01], [120.0, 0.0]]
 
             ```
         """
@@ -618,9 +703,11 @@ class TimToForcingConverter:
                 name=user_defined_names[i],
                 function="timeseries",
                 timeinterpolation=time_interpolation,
-                quantity=["time", column],
-                unit=[start_time, unit],
-                datablock=[time_data, vals.values.tolist()],
+                quantityunitpair=[
+                    QuantityUnitPair(quantity="time", unit=start_time),
+                    QuantityUnitPair(quantity=column, unit=unit),
+                ],
+                datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
             )
             forcings_list.append(forcing)
 

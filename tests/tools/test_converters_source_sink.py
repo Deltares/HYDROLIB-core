@@ -175,13 +175,13 @@ def compare_data(new_quantity_block: SourceSink):
     ]
     # check the values of the data block
     # initialtracer_anyname
-    assert forcing_bases[3].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+    assert forcing_bases[3].as_dataframe().loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
     # temperature
-    assert forcing_bases[2].datablock[1] == [3.0, 3.0, 3.0, 3.0, 3.0]
+    assert forcing_bases[2].as_dataframe().loc[:, 0].to_list() == [3.0, 3.0, 3.0, 3.0, 3.0]
     # salinity
-    assert forcing_bases[1].datablock[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
+    assert forcing_bases[1].as_dataframe().loc[:, 0].to_list() == [2.0, 2.0, 2.0, 2.0, 2.0]
     # discharge
-    assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
+    assert forcing_bases[0].as_dataframe().loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]
 
 
 class TestSourceSinkConverter:
@@ -335,7 +335,7 @@ class TestSourceSinkConverter:
         ```
 
 
-        - The tim file file has the following structure:
+        - The tim file has the following structure:
         ```
         0.0 1.0 4.0
         100 1.0 4.0
@@ -380,6 +380,6 @@ class TestSourceSinkConverter:
         ]
         # check the values of the data block
         # initialtracer_anyname
-        assert forcing_bases[1].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        assert forcing_bases[1].as_dataframe().loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
         # discharge
-        assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert forcing_bases[0].as_dataframe().loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]

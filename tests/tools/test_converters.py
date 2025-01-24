@@ -89,7 +89,7 @@ class TestConvertMeteo:
 
 class TestBoundaryConverter:
 
-    def test_default(self):
+    def test_with_pli(self, input_files_dir):
         """
         Old quantity block:
 
@@ -101,7 +101,7 @@ class TestBoundaryConverter:
         OPERAND  =O
         ```
         """
-        file_name = "tests/data/input/boundary-conditions/tfl_01.pli"
+        file_name = input_files_dir / "boundary-conditions/tfl_01.pli"
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename=file_name,
@@ -110,11 +110,20 @@ class TestBoundaryConverter:
             operand="O",
         )
 
-        new_quantity_block = BoundaryConditionConverter().convert(forcing)
+        converter = BoundaryConditionConverter()
+        converter.root_dir = input_files_dir / "boundary-conditions"
+        new_quantity_block = converter.convert(forcing)
         assert isinstance(new_quantity_block, Boundary)
         assert new_quantity_block.quantity == "waterlevelbnd"
-        assert new_quantity_block.forcingfile == ForcingModel()
+        forcing_model = new_quantity_block.forcingfile
         assert new_quantity_block.locationfile == DiskOnlyFileModel(file_name)
         assert new_quantity_block.nodeid is None
         assert new_quantity_block.bndwidth1d is None
         assert new_quantity_block.bndbldepth is None
+        forcings = forcing_model.forcing
+        assert len(forcing_model.forcing) == 2
+        names = ["tfl_01_0001", "tfl_01_0002"]
+        assert all(forcing_model.forcing[i].name == names[i] for i in range(len(names)))
+        assert all(forcings[i].quantityunitpair[0].quantity == "time" for i in range(2))
+        assert all(forcings[i].quantityunitpair[1].quantity == "waterlevelbnd" for i in range(2))
+        assert forcings[0].datablock == [[0, 0.01], [120, 0.01]]
