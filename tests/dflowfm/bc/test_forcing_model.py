@@ -65,7 +65,6 @@ def constant_values():
         function="constant",
         offset="1.23",
         factor="2.34",
-        timeinterpolation=TimeInterpolation.linear,
         quantityunitpair=[
             quantityunitpair("waterlevelbnd", "m"),
         ],

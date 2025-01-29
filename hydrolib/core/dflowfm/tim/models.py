@@ -74,17 +74,18 @@ class TimModel(ParsableFileModel):
             [TimRecord(time=10.0, data=[1.232, 2.343, 3.454]), TimRecord(time=20.0, data=[4.565, 5.676, 6.787]), TimRecord(time=30.0, data=[1.5, 2.6, 3.7])]
 
         Provide names for the quantities in the timeseries:
-            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature", "initialtracer"]
+            ```python
+            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature", "tracerA"]
             >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim", quantities_names=quantities_names)
             >>> print(tim_model.quantities_names)
-            ['discharge', 'waterlevel', 'salinity', 'temperature', 'initialtracer']
+            ['discharge', 'waterlevel', 'salinity', 'temperature', 'tracerA']
             >>> print(tim_model.as_dataframe())
-                   discharge  waterlevel  salinity  temperature  initialtracer
-            0.0          1.0         2.0       3.0          4.0            5.0
-            100.0        1.0         2.0       3.0          4.0            5.0
-            200.0        1.0         2.0       3.0          4.0            5.0
-            300.0        1.0         2.0       3.0          4.0            5.0
-            400.0        1.0         2.0       3.0          4.0            5.0
+                   discharge  waterlevel  salinity  temperature  tracerA
+            0.0          1.0         2.0       3.0          4.0      5.0
+            100.0        1.0         2.0       3.0          4.0      5.0
+            200.0        1.0         2.0       3.0          4.0      5.0
+            300.0        1.0         2.0       3.0          4.0      5.0
+            400.0        1.0         2.0       3.0          4.0      5.0
 
         Create a `TimModel` object from a dictionary:
             >>> data = {
@@ -307,9 +308,11 @@ class TimModel(ParsableFileModel):
             Create a `TimModel` object from a .tim file:
                 >>> from hydrolib.core.dflowfm.tim.models import TimModel
                 >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")
-                >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]
+                >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "tracerA"]
                 >>> print(tim_model.get_units())
-                ['m3/s', 'm', 'C', 'ppt', 'Unknown']
+                ['m3/s', 'm', 'degC', '1e-3', '-']
+
+                ```
         """
         if self.quantities_names is None:
             return None
@@ -330,14 +333,14 @@ class TimModel(ParsableFileModel):
             >>> from hydrolib.core.dflowfm.tim.models import TimModel
             >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
             >>> TimModel.map_to_units(quantities_names)
-            ['m3/s', 'm', 'ppt', 'C']
+            ['m3/s', 'm', '1e-3', 'degC']
         """
         # Define the mapping of keywords to units
         unit_mapping = {
             "discharge": "m3/s",
             "waterlevel": "m",
-            "salinity": "ppt",
-            "temperature": "C",
+            "salinity": "1e-3",
+            "temperature": "degC",
         }
 
         # Generate the list of units based on the mapping
