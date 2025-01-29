@@ -323,12 +323,12 @@ class INIBasedModel(BaseModel, ABC):
         return super().validate(value)
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: Optional = None) -> Set:
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         """
         Fields that should not be checked when validating existing fields as they will be dynamically added.
 
         Args:
-            input_data (Optional): Input data to process.
+            input_data (Optional[dict]): Input data to process.
 
         Returns:
             Set: Set of field names to exclude from validation.
