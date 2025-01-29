@@ -287,7 +287,7 @@ class SourceSinkConverter(BaseConverter):
         - discharge
         - salinitydelta (optional)
         - temperaturedelta (optional)
-        - initialtracer-anyname (optional)
+        - tracer<anyname>delta (optional)
         - any other quantities from the external forcings file.
 
         Args:
@@ -322,7 +322,7 @@ class SourceSinkConverter(BaseConverter):
             4.0 1.0 2.0 3.0 4.0
             ```
         and the external file contains the following quantities:
-            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracer-anyname",
+            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracerAnyname",
             ... "anyother-quantities"]
 
         - The function will filter the external forcing quantities that have one of the following prefixes
@@ -331,20 +331,20 @@ class SourceSinkConverter(BaseConverter):
         with the filtered quantities mentioned in the external forcing file.
         - The merged list of quantities from both the ext and mdu files will then be compared with the number of
         columns in the TIM file, if they don't match a `Value Error` will be raised.
-        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracer-anyname"] and the
+        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracerAnyname"] and the
         tim file contains 4 columns (excluding the time column).
 
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
             >>> converter = SourceSinkConverter()
             >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
             >>> print(tim_model.quantities_names)
-            ['discharge', 'salinitydelta', 'temperaturedelta', 'initialtracer-anyname']
+            ['discharge', 'salinitydelta', 'temperaturedelta', 'initialtracerAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
                 "salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
                 "temperaturedelta": [3.0, 3.0, 3.0, 3.0, 3.0],
-                "initialtracer-anyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+                "initialtracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 
 
