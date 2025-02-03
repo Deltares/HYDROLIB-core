@@ -98,11 +98,11 @@ def oldfiletype_to_forcing_file_type(
             "FILETYPE = 3 (spatially verying wind and pressure) is no longer supported."
         )
     elif oldfiletype == ExtOldFileType.ArcInfo:  # 4
-        forcing_file_type = MeteoForcingFileType.meteogridequi
+        forcing_file_type = MeteoForcingFileType.arcinfo
     elif oldfiletype == ExtOldFileType.SpiderWebData:  # 5
         forcing_file_type = MeteoForcingFileType.spiderweb
     elif oldfiletype == ExtOldFileType.CurvilinearData:  # 6
-        forcing_file_type = MeteoForcingFileType.meteogridcurvi
+        forcing_file_type = MeteoForcingFileType.curvigrid
     elif oldfiletype == ExtOldFileType.Samples:  # 7
         forcing_file_type = DataFileType.sample
     elif oldfiletype == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
