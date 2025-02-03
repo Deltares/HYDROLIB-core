@@ -351,7 +351,7 @@ class TimModel(ParsableFileModel):
                     units.append(unit)
                     break
             else:
-                # Append "Unknown" if no keywords match
-                units.append("Unknown")
+                # Append "-" if no keywords match
+                units.append("-")
 
         return units

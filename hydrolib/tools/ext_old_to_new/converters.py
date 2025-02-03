@@ -474,7 +474,7 @@ class SourceSinkConverter(BaseConverter):
 
         # TODO: get the start name from the mdu file
         start_time = "minutes since 2015-01-01 00:00:00"
-        forcing_model = TimToForcingConverter().convert(
+        forcing_model_list = TimToForcingConverter().convert(
             time_model, start_time, units=units, user_defined_names=user_defined_names
         )
         data = {
@@ -486,8 +486,12 @@ class SourceSinkConverter(BaseConverter):
             "ycoordinates": polyline.y,
             "zsource": z_source,
             "zsink": z_sink,
-            "bc_forcing": forcing_model,
         }
+        forcings = {
+            key: value
+            for key, value in zip(time_model.quantities_names, forcing_model_list)
+        }
+        data = data | forcings
         new_block = SourceSink(**data)
 
         return new_block
@@ -557,7 +561,7 @@ class TimToForcingConverter:
         time_interpolation: str = "linear",
         units: List[str] = None,
         user_defined_names: List[str] = None,
-    ) -> ForcingModel:
+    ) -> List[ForcingModel]:
         """
         Convert a TimModel into a ForcingModel.
 
@@ -592,10 +596,11 @@ class TimToForcingConverter:
             >>> forcing_model = converter.convert(
             ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m³/s"], ["discharge"]
             ... )
-            >>> print(forcing_model.forcing[0].name)
+            >>> print(forcing_model[0].forcing[0].name)
             discharge
-            >>> print(forcing_model.forcing[0].datablock)
+            >>> print(forcing_model[0].forcing[0].datablock)
             [[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0], [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]]
+
             ```
         """
         if units is None or user_defined_names is None:
@@ -609,19 +614,22 @@ class TimToForcingConverter:
 
         df = tim_model.as_dataframe()
         time_data = df.index.tolist()
-        forcings_list = []
+        forcings_model_list = []
 
         for i, (column, vals) in enumerate(df.items()):
             unit = units[i]
-            forcing = TimeSeries(
-                name=user_defined_names[i],
-                function="timeseries",
-                timeinterpolation=time_interpolation,
-                quantity=["time", column],
-                unit=[start_time, unit],
-                datablock=[time_data, vals.values.tolist()],
+            model = ForcingModel(
+                forcing=[
+                    TimeSeries(
+                        name=user_defined_names[i],
+                        function="timeseries",
+                        timeinterpolation=time_interpolation,
+                        quantity=["time", column],
+                        unit=[start_time, unit],
+                        datablock=[time_data, vals.values.tolist()],
+                    )
+                ]
             )
-            forcings_list.append(forcing)
+            forcings_model_list.append(model)
 
-        forcing_model = ForcingModel(forcing=forcings_list)
-        return forcing_model
+        return forcings_model_list

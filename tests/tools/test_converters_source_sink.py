@@ -159,29 +159,32 @@ class TestParseTimFileForSourceSink:
 
 def compare_data(new_quantity_block: SourceSink):
     # check the converted bc_forcing
-    bc_forcing = new_quantity_block.bc_forcing
-    forcing_bases = bc_forcing.forcing
-    assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(4)] == [
+    quantity_list = [
         "discharge",
         "salinitydelta",
         "temperaturedelta",
         "initialtracer_anyname",
     ]
-    assert [forcing_bases[i].quantityunitpair[1].unit for i in range(4)] == [
-        "m3/s",
-        "1e-3",
-        "degC",
-        "-",
+
+    assert all(quantity in new_quantity_block.__dict__ for quantity in quantity_list)
+    units = [
+        getattr(new_quantity_block, quantity).forcing[0].quantityunitpair[1].unit
+        for quantity in quantity_list
     ]
+    assert units == ["m3/s", "1e-3", "degC", "-"]
     # check the values of the data block
+    data = [
+        getattr(new_quantity_block, quantity).forcing[0].datablock[1]
+        for quantity in quantity_list
+    ]
     # initialtracer_anyname
-    assert forcing_bases[3].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+    assert data[3] == [4.0, 4.0, 4.0, 4.0, 4.0]
     # temperature
-    assert forcing_bases[2].datablock[1] == [3.0, 3.0, 3.0, 3.0, 3.0]
+    assert data[2] == [3.0, 3.0, 3.0, 3.0, 3.0]
     # salinity
-    assert forcing_bases[1].datablock[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
+    assert data[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
     # discharge
-    assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
+    assert data[0] == [1.0, 1.0, 1.0, 1.0, 1.0]
 
 
 class TestSourceSinkConverter:
@@ -367,19 +370,29 @@ class TestSourceSinkConverter:
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
+        validation_list = ["discharge", "initialtracer_anyname"]
         # check the converted bc_forcing
-        bc_forcing = new_quantity_block.bc_forcing
-        forcing_bases = bc_forcing.forcing
-        assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(2)] == [
-            "discharge",
-            "initialtracer_anyname",
+
+        quantities_names = [
+            getattr(new_quantity_block, quantity)
+            .forcing[0]
+            .quantityunitpair[1]
+            .quantity
+            for quantity in validation_list
         ]
-        assert [forcing_bases[i].quantityunitpair[1].unit for i in range(2)] == [
-            "m3/s",
-            "Unknown",
+        units = [
+            getattr(new_quantity_block, quantity).forcing[0].quantityunitpair[1].unit
+            for quantity in validation_list
+        ]
+        assert quantities_names == validation_list
+
+        assert units == ["m3/s", "-"]
+        data = [
+            getattr(new_quantity_block, quantity).forcing[0].datablock[1]
+            for quantity in validation_list
         ]
         # check the values of the data block
         # initialtracer_anyname
-        assert forcing_bases[1].datablock[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        assert data[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
         # discharge
-        assert forcing_bases[0].datablock[1] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert data[0] == [1.0, 1.0, 1.0, 1.0, 1.0]
