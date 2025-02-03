@@ -112,7 +112,8 @@ class TestBoundaryConverter:
 
         converter = BoundaryConditionConverter()
         converter.root_dir = input_files_dir / "boundary-conditions"
-        new_quantity_block = converter.convert(forcing)
+        start_date = "minutes since 2015-01-01 00:00:00"
+        new_quantity_block = converter.convert(forcing, start_date)
         assert isinstance(new_quantity_block, Boundary)
         assert new_quantity_block.quantity == "waterlevelbnd"
         forcing_model = new_quantity_block.forcingfile

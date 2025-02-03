@@ -203,6 +203,10 @@ class TestUpdate:
         """
         converter = ExternalForcingConverter(old_forcing_file_boundary["path"])
 
+        # Mock the fm_model
+        mock_fm_model = Mock()
+        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
+        converter._fm_model = mock_fm_model
         ext_model, inifield_model, structure_model = converter.update()
 
         # all the quantities in the old external file are initial conditions

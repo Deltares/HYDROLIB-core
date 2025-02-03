@@ -233,6 +233,7 @@ class ExternalForcingConverter:
 
         try:
             converter_class = ConverterFactory.create_converter(forcing.quantity)
+            converter_class.root_dir = self.root_dir
 
             # only the SourceSink converter needs the quantities' list
             if converter_class.__class__.__name__ == "SourceSinkConverter":
@@ -246,13 +247,20 @@ class ExternalForcingConverter:
                     }
 
                 quantities = self.extold_model.quantities
-                converter_class.root_dir = self.root_dir
                 new_quantity_block = converter_class.convert(
                     forcing, quantities, **temp_salinity_mdu
                 )
+            elif converter_class.__class__.__name__ == "BoundaryConditionConverter":
+                if self.fm_model is None:
+                    raise ValueError(
+                        "FM model is required to convert Boundary conditions."
+                    )
+                else:
+                    start_time = self.fm_model.time.refdate
+                    new_quantity_block = converter_class.convert(forcing, start_time)
             else:
-                converter_class.root_dir = self.root_dir
                 new_quantity_block = converter_class.convert(forcing)
+
         except ValueError:
             # While this tool is in progress, accept that we do not convert all quantities yet.
             new_quantity_block = None

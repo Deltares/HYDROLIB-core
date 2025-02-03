@@ -174,7 +174,7 @@ class BoundaryConditionConverter(BaseConverter):
         )
         return forcing_model
 
-    def convert(self, forcing: ExtOldForcing) -> Boundary:
+    def convert(self, forcing: ExtOldForcing, start_time: str) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
 
@@ -186,9 +186,11 @@ class BoundaryConditionConverter(BaseConverter):
 
         Args:
             forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            start_time:
+                The start date of the time series data.
 
         Returns:
             Boundary: A Boundary object that represents the converted forcing
@@ -204,14 +206,15 @@ class BoundaryConditionConverter(BaseConverter):
 
         Notes:
             - The `root_dir` property must be set before calling this method.
+            - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
+            boundary Condition can be only converted by reading the mdu file and the external forcing file is not
+            enough.
         """
         from hydrolib.core.dflowfm.polyfile.models import PolyFile
 
         location_file = forcing.filename.filepath
         poly_line = forcing.filename
         if not isinstance(poly_line, PolyFile):
-            # path = self.root_dir / location_file
-            # path.exists()
             poly_line = PolyFile(location_file)
 
         num_files = poly_line.number_of_points
@@ -236,8 +239,6 @@ class BoundaryConditionConverter(BaseConverter):
         # TODO: check the units of the initialtracers
         units = tim_model.get_units()
 
-        # TODO: get the start name from the mdu file
-        start_time = "minutes since 2015-01-01 00:00:00"
         forcing_model = self.convert_tim_to_bc(
             tim_model, start_time, units=units, user_defined_names=user_defined_names
         )
