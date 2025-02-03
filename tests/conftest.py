@@ -82,11 +82,11 @@ def meteo_forcing_file_type() -> List[str]:
         "bcAscii",
         "uniform",
         "uniMagDir",
-        "meteoGridEqui",
+        "arcInfo",
         "spiderweb",
-        "meteoGridCurvi",
+        "curviGrid",
         "netcdf",
-        "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf.",
+        "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf.",
     ]
 
 
@@ -152,7 +152,7 @@ def old_forcing_file_meteo() -> Dict[str, Path]:
     return {
         "path": Path("tests/data/input/old-external-meteo-only.ext"),
         "quantities": ["windx", "windy"],
-        "file_type": ["meteoGridEqui", "meteoGridEqui"],
+        "file_type": ["arcInfo", "arcInfo"],
         "file_path": ["windtest.amu", "windtest.amv"],
     }
 

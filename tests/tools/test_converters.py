@@ -83,7 +83,7 @@ class TestConvertMeteo:
         assert new_quantity_block.quantity == "windx"
         assert new_quantity_block.operand == Operand.override
         assert new_quantity_block.forcingfile == DiskOnlyFileModel("windtest.amu")
-        assert new_quantity_block.forcingfiletype == MeteoForcingFileType.meteogridequi
+        assert new_quantity_block.forcingfiletype == MeteoForcingFileType.arcinfo
         assert (
             new_quantity_block.interpolationmethod
             == MeteoInterpolationMethod.linearSpaceTime
