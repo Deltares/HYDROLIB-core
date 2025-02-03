@@ -242,14 +242,14 @@ class TestUpdateSourcesSinks:
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = 1
-        assert len(ext_model.source_sink) == num_quantities
+        assert len(ext_model.sourcesink) == num_quantities
         # no parameters or any other structures, lateral or meteo data
         assert len(inifield_model.parameter) == 0
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
         assert len(inifield_model.initial) == 2
-        quantities = ext_model.source_sink
+        quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
 
     def test_sources_sinks_with_fm(self, old_forcing_file_boundary: Dict[str, str]):
@@ -278,12 +278,12 @@ class TestUpdateSourcesSinks:
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = 1
-        assert len(ext_model.source_sink) == num_quantities
+        assert len(ext_model.sourcesink) == num_quantities
         # no parameters or any other structures, lateral or meteo data
         assert len(inifield_model.parameter) == 0
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
         assert len(inifield_model.initial) == 2
-        quantities = ext_model.source_sink
+        quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"

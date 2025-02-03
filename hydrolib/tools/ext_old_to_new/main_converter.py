@@ -208,7 +208,7 @@ class ExternalForcingConverter:
             elif isinstance(new_quantity_block, Lateral):
                 self.ext_model.lateral.append(new_quantity_block)
             elif isinstance(new_quantity_block, SourceSink):
-                self.ext_model.source_sink.append(new_quantity_block)
+                self.ext_model.sourcesink.append(new_quantity_block)
             elif isinstance(new_quantity_block, Meteo):
                 self.ext_model.meteo.append(new_quantity_block)
             elif isinstance(new_quantity_block, InitialField):
