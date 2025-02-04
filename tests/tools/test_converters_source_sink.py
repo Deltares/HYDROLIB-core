@@ -263,7 +263,8 @@ class TestSourceSinkConverter:
         ]
         converter = SourceSinkConverter()
         converter.root_dir = "tests/data/input/source-sink"
-        new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
+        start_time = "minutes since 2015-01-01 00:00:00"
+        new_quantity_block = converter.convert(forcing, ext_file_other_quantities, start_time)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -321,8 +322,9 @@ class TestSourceSinkConverter:
         converter = SourceSinkConverter()
         converter.root_dir = "tests/data/input/source-sink"
         tim_file = Path("leftsor.tim")
+        start_time = "minutes since 2015-01-01 00:00:00"
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities, start_time)
 
         assert new_quantity_block.zsink == [-4.2, -5.35]
         assert new_quantity_block.zsource == [-3, -2.90]
@@ -365,8 +367,9 @@ class TestSourceSinkConverter:
         converter.root_dir = "tests/data/input/source-sink"
 
         tim_file = Path("no_temperature_no_salinity.tim")
+        start_time = "minutes since 2015-01-01 00:00:00"
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities, start_time)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]

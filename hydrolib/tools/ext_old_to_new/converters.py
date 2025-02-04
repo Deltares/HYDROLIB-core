@@ -445,6 +445,7 @@ class SourceSinkConverter(BaseConverter):
         self,
         forcing: ExtOldForcing,
         ext_file_quantity_list: List[str] = None,
+        start_time: str = None,
         **temp_salinity_mdu,
     ) -> SourceSink:
         """Convert an old external forcing block with Sources and sinks to a SourceSink
@@ -456,6 +457,8 @@ class SourceSinkConverter(BaseConverter):
                 conversion process.
             ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
                 external forcings file.
+            start_time (str, default is None):
+                The start date of the time series data.
             **temp_salinity_mdu:
                 keyword arguments that will be provided if you want to provide the temperature and salinity details from
                 the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
@@ -474,6 +477,11 @@ class SourceSinkConverter(BaseConverter):
             supported by the converter, a ValueError is raised. This ensures
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
+
+        Notes:
+            - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
+            SourceSink can be only converted by reading the mdu file and the external forcing file is not
+            enough.
 
         References:
             - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C10>`_
@@ -498,15 +506,11 @@ class SourceSinkConverter(BaseConverter):
         time_model = self.parse_tim_model(
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
-        # TODO: check the units of the initialtracers
         units = time_model.get_units()
-        # ToDO: check how to get the user_defined_names
         user_defined_names = [
             f"user-defines-{i}" for i in range(len(time_model.quantities_names))
         ]
 
-        # TODO: get the start name from the mdu file
-        start_time = "minutes since 2015-01-01 00:00:00"
         forcing_model_list = self.convert_tim_to_bc(
             time_model, start_time, units=units, user_defined_names=user_defined_names
         )
@@ -638,6 +642,9 @@ class TimToForcingConverter:
         """
         if units is None or user_defined_names is None:
             raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
+
+        if start_time is None:
+            raise ValueError("The 'start_time' must be provided.")
 
         first_record = tim_model.timeseries[0].data
         if len(units) != len(user_defined_names) != len(first_record):

@@ -234,7 +234,10 @@ class TestUpdateSourcesSinks:
         """
         path = "tests/data/input/source-sink/source-sink.ext"
         converter = ExternalForcingConverter(path)
-
+        # Mock the fm_model
+        mock_fm_model = Mock()
+        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
+        converter._fm_model = mock_fm_model
         tim_file = Path("tim-3-columns.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             ext_model, inifield_model, structure_model = converter.update()
@@ -269,6 +272,7 @@ class TestUpdateSourcesSinks:
         mock_fm_model = Mock()
         mock_fm_model.physics.salinity = True
         mock_fm_model.physics.temperature = True
+        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
         converter._fm_model = mock_fm_model
 
         tim_file = Path("tim-3-columns.tim")
