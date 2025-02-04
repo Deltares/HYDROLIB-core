@@ -5,8 +5,7 @@ import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
-
-from ...utils import error_occurs_only_once
+from tests.utils import error_occurs_only_once
 
 
 class TestDataBlockINIBasedModel:

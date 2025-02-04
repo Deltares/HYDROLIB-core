@@ -25,8 +25,7 @@ from hydrolib.core.dflowfm.polyfile.models import (
     PolyObject,
 )
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
-
-from ..utils import (
+from tests.utils import (
     assert_files_equal,
     assert_objects_equal,
     test_input_dir,
@@ -396,12 +395,12 @@ class TestOutput:
     ):
         tmp_mdu = """
         [General]
-        fileVersion           = 1.09          
-        fileType              = modelDef      
-        program               = D-Flow FM     
-        version               = 1.2.100.66357 
-        autoStart             = 0             
-        pathsRelativeToParent = 0             
+        fileVersion           = 1.09
+        fileType              = modelDef
+        program               = D-Flow FM
+        version               = 1.2.100.66357
+        autoStart             = 0
+        pathsRelativeToParent = 0
         unknownkey            = something
         """
 
@@ -425,12 +424,12 @@ class TestOutput:
     ):
         tmp_mdu = """
         [General]
-        fileVersion           = 1.09          
-        fileType              = modelDef      
-        program               = D-Flow FM     
-        version               = 1.2.100.66357 
-        autoStart             = 0             
-        pathsRelativeToParent = 0             
+        fileVersion           = 1.09
+        fileType              = modelDef
+        program               = D-Flow FM
+        version               = 1.2.100.66357
+        autoStart             = 0
+        pathsRelativeToParent = 0
         unknownkey            = something
         unknownkey2           = something2
         """
@@ -454,12 +453,12 @@ class TestOutput:
     ):
         tmp_mdu = """
         [General]
-        fileVersion           = 1.09          
-        fileType              = modelDef      
-        program               = D-Flow FM     
-        version               = 1.2.100.66357 
-        autoStart             = 0             
-        pathsRelativeToParent = 0             
+        fileVersion           = 1.09
+        fileType              = modelDef
+        program               = D-Flow FM
+        version               = 1.2.100.66357
+        autoStart             = 0
+        pathsRelativeToParent = 0
         unknownkey            = something
         """
 

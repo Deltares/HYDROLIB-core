@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Set, Union
 
 from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
@@ -9,12 +9,8 @@ from hydrolib.core.basemodel import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
-from hydrolib.core.dflowfm.ini.models import (
-    INIBasedModel,
-    INIGeneral,
-    INIModel,
-    INISerializerConfig,
-)
+from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -27,6 +23,13 @@ from hydrolib.core.dflowfm.ini.util import (
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.utils import str_is_empty_or_none
+
+SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
+    "initialtracer",
+    "tracerbnd",
+    "sedfracbnd",
+    "initialsedfrac",
+)
 
 
 class Boundary(INIBasedModel):
@@ -101,26 +104,25 @@ class Boundary(INIBasedModel):
         return data.get("nodeid")
 
     @property
-    def forcing(self) -> ForcingBase:
+    def forcing(self) -> Union[ForcingBase, None]:
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
             ForcingBase: The corresponding forcing data. None when this boundary does not have a forcing file or when the data cannot be found.
         """
+        result = None
+        if self.forcingfile is not None:
+            for forcing in self.forcingfile.forcing:
 
-        if self.forcingfile is None:
-            return None
+                if self.nodeid == forcing.name:
+                    if any(
+                        quantity.quantity.startswith(self.quantity)
+                        for quantity in forcing.quantityunitpair
+                    ):
+                        result = forcing
+                        break
 
-        for forcing in self.forcingfile.forcing:
-
-            if self.nodeid != forcing.name:
-                continue
-
-            for quantity in forcing.quantityunitpair:
-                if quantity.quantity.startswith(self.quantity):
-                    return forcing
-
-        return None
+        return result
 
 
 class Lateral(INIBasedModel):
@@ -186,6 +188,63 @@ class Lateral(INIBasedModel):
         return v
 
 
+class SourceSink(INIBasedModel):
+    """
+    A `[SourceSink]` block for use inside an external forcings file,
+    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].
+
+    All lowercased attributes match with the source-sink input as described in
+    [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
+    """
+
+    _header: Literal["SourceSink"] = "SourceSink"
+    id: str = Field(alias="id")
+    name: str = Field("", alias="name")
+    locationfile: DiskOnlyFileModel = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
+    )
+
+    numcoordinates: Optional[int] = Field(alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
+
+    zsource: Optional[Union[float, List[float]]] = Field(alias="zSource")
+    zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
+    area: Optional[float] = Field(alias="Area")
+
+    discharge: ForcingData = Field(alias="discharge")
+    salinitydelta: Optional[ForcingData] = Field(alias="salinityDelta")
+    temperaturedelta: Optional[ForcingData] = Field(alias="temperatureDelta")
+
+    @classmethod
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+        fields = cls.__fields__
+        unknown_keywords = [
+            key
+            for key in input_data.keys()
+            if key not in fields
+            and key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+        ]
+        return set(unknown_keywords)
+
+    class Config:
+        """
+        Config class to tell Pydantic to accept fields not explicitly declared in the model.
+        """
+
+        # Allow dynamic fields
+        extra = "allow"
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Add dynamic attributes for fields starting with 'tracer'
+        for key, value in data.items():
+            if isinstance(key, str) and key.startswith(
+                SOURCE_SINKS_QUANTITIES_VALID_PREFIXES
+            ):
+                setattr(self, key, value)
+
+
 class MeteoForcingFileType(StrEnum):
     """
     Enum class containing the valid values for the forcingFileType
@@ -195,13 +254,25 @@ class MeteoForcingFileType(StrEnum):
     bcascii = "bcAscii"
     """str: Space-uniform time series in <*.bc> file."""
 
-    netcdf = "netcdf"
-    """str: NetCDF, either with gridded data, or multiple station time series."""
-
     uniform = "uniform"
     """str: Space-uniform time series in <*.tim> file."""
 
-    allowedvaluestext = "Possible values: bcAscii, netcdf, uniform."
+    unimagdir = "uniMagDir"
+    """str: Space-uniform wind magnitude+direction in <*.tim> file."""
+
+    meteogridequi = "meteoGridEqui"
+    """str: Space- and time-varying wind and pressure on an equidistant grid in <*.amu/v/p> files."""
+
+    spiderweb = "spiderweb"
+    """str: Space- and time-varying cyclone wind and pressure in <*.spw> files."""
+
+    meteogridcurvi = "meteoGridCurvi"
+    """str: Space- and time-varying wind and pressure on a curvilinear grid in <*.grd+*.amu/v/p> files."""
+
+    netcdf = "netcdf"
+    """str: NetCDF, either with gridded data, or multiple station time series."""
+
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf."
 
 
 class MeteoInterpolationMethod(StrEnum):
@@ -212,8 +283,9 @@ class MeteoInterpolationMethod(StrEnum):
 
     nearestnb = "nearestNb"
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
-
-    allowedvaluestext = "Possible values: nearestNb (only with station data in forcingFileType=netcdf ). "
+    linearSpaceTime = "linearSpaceTime"
+    """str: Linear interpolation in space and time."""
+    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime."
 
 
 class Meteo(INIBasedModel):
@@ -236,6 +308,10 @@ class Meteo(INIBasedModel):
         forcingfiletype: Optional[str] = Field(
             "Type of forcingFile.", alias="forcingFileType"
         )
+        forcingVariableName: Optional[str] = Field(
+            "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
+            alias="forcingVariableName",
+        )
         targetmaskfile: Optional[str] = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
             alias="targetMaskFile",
@@ -246,6 +322,18 @@ class Meteo(INIBasedModel):
         )
         interpolationmethod: Optional[str] = Field(
             "Type of (spatial) interpolation.", alias="interpolationMethod"
+        )
+        operand: Optional[str] = Field(
+            "How this data is combined with previous data for the same quantity (if any).",
+            alias="operand",
+        )
+        extrapolationAllowed: Optional[str] = Field(
+            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
+            alias="extrapolationAllowed",
+        )
+        extrapolationSearchRadius: Optional[str] = Field(
+            "Maximum search radius for nearest neighbor extrapolation in space.",
+            alias="extrapolationSearchRadius",
         )
 
     comments: Comments = Comments()
@@ -266,12 +354,21 @@ class Meteo(INIBasedModel):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
+    forcingVariableName: Optional[str] = Field(alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         alias="interpolationMethod"
     )
+    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
+    extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
+    extrapolationSearchRadius: Optional[float] = Field(
+        alias="extrapolationSearchRadius"
+    )
+    averagingType: Optional[int] = Field(alias="averagingType")
+    averagingNumMin: Optional[float] = Field(alias="averagingNumMin")
+    averagingPercentile: Optional[float] = Field(alias="averagingPercentile")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -302,17 +399,19 @@ class ExtModel(INIModel):
         general (ExtGeneral): `[General]` block with file metadata.
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
+        sourcesink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
         meteo (List[Meteo]): List of `[Meteo]` blocks for all meteorological forcings.
     """
 
     general: ExtGeneral = ExtGeneral()
-    boundary: List[Boundary] = []
-    lateral: List[Lateral] = []
-    meteo: List[Meteo] = []
+    boundary: List[Boundary] = Field(default_factory=list)
+    lateral: List[Lateral] = Field(default_factory=list)
+    sourcesink: List[SourceSink] = Field(default_factory=list)
+    meteo: List[Meteo] = Field(default_factory=list)
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )
-    _split_to_list = make_list_validator("boundary", "lateral", "meteo")
+    _split_to_list = make_list_validator("boundary", "lateral", "meteo", "sourcesink")
 
     @classmethod
     def _ext(cls) -> str:
