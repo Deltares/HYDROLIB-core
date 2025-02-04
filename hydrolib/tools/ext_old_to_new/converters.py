@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeSeries
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
@@ -139,7 +139,7 @@ class BoundaryConditionConverter(BaseConverter):
             Boundary: A Boundary object that represents the converted forcing
             block, ready to be included in a new external forcings file. The
             Boundary object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            compatibility with updated systems anbd models.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
@@ -243,45 +243,6 @@ class SourceSinkConverter(BaseConverter):
         super().__init__()
 
     @staticmethod
-    def get_time_series_data(tim_model: TimModel) -> Dict[str, List[float]]:
-        """Extract time series data from a TIM model.
-
-        Extract the time series data (each column) from the TimModel object
-
-        Args:
-            tim_model (TimModel): The TimModel object containing the time series data.
-
-        Returns:
-            Dict[str, List[float]]: A dictionary containing the time series data form each column.
-            the keys of the dictionary will be index starting from 1 to the number of columns in the tim file
-            (excluding the first column(time)).
-
-        Examples:
-            >>> tim_file = Path("tests/data/external_forcings/initial_waterlevel.tim")
-            >>> time_file = TimParser.parse(tim_file)
-            >>> tim_model = TimModel(**time_file)
-            >>> time_series = SourceSinkConverter().get_time_series_data(tim_model)
-            >>> print(time_series)
-            {
-                1: [1.0, 1.0, 3.0, 5.0, 8.0],
-                2: [2.0, 2.0, 5.0, 8.0, 10.0],
-                3: [3.0, 5.0, 12.0, 9.0, 23.0],
-                4: [4.0, 4.0, 4.0, 4.0, 4.0]
-            }
-        """
-        num_columns = len(tim_model.timeseries[0].data)
-
-        # Initialize a dictionary to collect data for each location
-        data = {loc: [] for loc in range(1, num_columns + 1)}
-
-        # Extract time series data for each location
-        for record in tim_model.timeseries:
-            for loc_index, value in enumerate(record.data, start=1):
-                data[loc_index].append(value)
-
-        return data
-
-    @staticmethod
     def merge_mdu_and_ext_file_quantities(
         mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
     ) -> List[str]:
@@ -315,7 +276,7 @@ class SourceSinkConverter(BaseConverter):
 
     def parse_tim_model(
         self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
-    ) -> Dict[str, List[float]]:
+    ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
 
         - Parse the TIM file and extract the time series data for each column.
@@ -326,7 +287,7 @@ class SourceSinkConverter(BaseConverter):
         - discharge
         - salinitydelta (optional)
         - temperaturedelta (optional)
-        - initialtracer-anyname (optional)
+        - tracer<anyname>delta (optional)
         - any other quantities from the external forcings file.
 
         Args:
@@ -337,7 +298,8 @@ class SourceSinkConverter(BaseConverter):
                 only bool. (i.e. {"temperature", False, "salinity": True})
 
         Returns:
-            Dict[str, List[float]]: A dictionary containing the time series data form each column in the tim_file.
+            TimeModel: The same `TimModel after assigning the quantity names,  the time series data form each column in
+            the tim_file.
             the keys of the dictionary will be the quantity names, and the values will be the time series data.
 
         Raises:
@@ -360,7 +322,7 @@ class SourceSinkConverter(BaseConverter):
             4.0 1.0 2.0 3.0 4.0
             ```
         and the external file contains the following quantities:
-            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracer-anyname",
+            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracerAnyname",
             ... "anyother-quantities"]
 
         - The function will filter the external forcing quantities that have one of the following prefixes
@@ -369,19 +331,20 @@ class SourceSinkConverter(BaseConverter):
         with the filtered quantities mentioned in the external forcing file.
         - The merged list of quantities from both the ext and mdu files will then be compared with the number of
         columns in the TIM file, if they don't match a `Value Error` will be raised.
-        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracer-anyname"] and the
+        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracerAnyname"] and the
         tim file contains 4 columns (excluding the time column).
 
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-
             >>> converter = SourceSinkConverter()
-            >>> time_series = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-            >>> print(time_series)
+            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            >>> print(tim_model.quantities_names)
+            ['discharge', 'salinitydelta', 'temperaturedelta', 'initialtracerAnyname']
+            >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
                 "salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
                 "temperaturedelta": [3.0, 3.0, 3.0, 3.0, 3.0],
-                "initialtracer-anyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+                "initialtracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 
 
@@ -406,7 +369,7 @@ class SourceSinkConverter(BaseConverter):
         """
         time_file = TimParser.parse(tim_file)
         tim_model = TimModel(**time_file)
-        time_series = self.get_time_series_data(tim_model)
+        time_series = tim_model.as_dict()
         # get the required quantities from the external file
         required_quantities_from_ext = [
             key
@@ -431,12 +394,9 @@ class SourceSinkConverter(BaseConverter):
                 f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match the number of "
                 f"quantities in the external forcing file: {final_quantities_list}."
             )
-
-        time_series = {
-            final_quantities_list[i]: time_series[i + 1]
-            for i in range(len(final_quantities_list))
-        }
-        return time_series
+        # assign the quantity names to the tim model
+        tim_model.quantities_names = final_quantities_list
+        return tim_model
 
     @property
     def root_dir(self) -> Path:
@@ -448,10 +408,44 @@ class SourceSinkConverter(BaseConverter):
             value = Path(value)
         self._root_dir = value
 
+    @staticmethod
+    def convert_tim_to_bc(
+        tim_model: TimModel,
+        start_time: str,
+        units: List[str] = None,
+        user_defined_names: List[str] = None,
+    ) -> ForcingModel:
+        """Convert a TimModel into a ForcingModel.
+
+            wrapper in top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
+
+        Args:
+            tim_model (TimModel):
+                The input TimModel to be converted.
+            start_time (str):
+                The reference time for the forcing data.
+            units (List[str], optional):
+                A list of units corresponding to the forcing quantities.
+            user_defined_names (List[str], optional):
+                A list of user-defined names for the forcing blocks.
+
+        Returns:
+            ForcingModel: The converted ForcingModel.
+
+        Raises:
+            ValueError: If `units` and `user_defined_names` are not provided.
+            ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
+        """
+        forcing_model = TimToForcingConverter.convert(
+            tim_model, start_time, units=units, user_defined_names=user_defined_names
+        )
+        return forcing_model
+
     def convert(
         self,
         forcing: ExtOldForcing,
         ext_file_quantity_list: List[str] = None,
+        start_time: str = None,
         **temp_salinity_mdu,
     ) -> SourceSink:
         """Convert an old external forcing block with Sources and sinks to a SourceSink
@@ -463,10 +457,14 @@ class SourceSinkConverter(BaseConverter):
                 conversion process.
             ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
                 external forcings file.
+            start_time (str, default is None):
+                The start date of the time series data.
             **temp_salinity_mdu:
                 keyword arguments that will be provided if you want to provide the temperature and salinity details from
                 the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
-                >>> {'salinity': True, 'temperature': True}
+                ```python
+                {'salinity': True, 'temperature': True}
+                ```
 
         Returns:
             SourceSink: A SourceSink object that represents the converted forcing
@@ -479,6 +477,11 @@ class SourceSinkConverter(BaseConverter):
             supported by the converter, a ValueError is raised. This ensures
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
+
+        Notes:
+            - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
+            SourceSink can be only converted by reading the mdu file and the external forcing file is not
+            enough.
 
         References:
             - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C10>`_
@@ -500,10 +503,17 @@ class SourceSinkConverter(BaseConverter):
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
             )
 
-        time_series = self.parse_tim_model(
+        time_model = self.parse_tim_model(
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
+        units = time_model.get_units()
+        user_defined_names = [
+            f"user-defines-{i}" for i in range(len(time_model.quantities_names))
+        ]
 
+        forcing_model_list = self.convert_tim_to_bc(
+            time_model, start_time, units=units, user_defined_names=user_defined_names
+        )
         data = {
             "id": "L1",
             "name": forcing.quantity,
@@ -514,7 +524,11 @@ class SourceSinkConverter(BaseConverter):
             "zsource": z_source,
             "zsink": z_sink,
         }
-        data = data | time_series
+        forcings = {
+            key: value
+            for key, value in zip(time_model.quantities_names, forcing_model_list)
+        }
+        data = data | forcings
         new_block = SourceSink(**data)
 
         return new_block
@@ -561,3 +575,101 @@ class ConverterFactory:
             return False
 
         return True
+
+
+class TimToForcingConverter:
+    """
+    A class to convert TimModel data into ForcingModel data for boundary condition definitions.
+
+    The class provides a static method `convert` to convert a TimModel object into a ForcingModel object.
+
+    The method requires the following arguments:
+    - `tim_model`: A TimModel object containing the time series data.
+    - `start_time`: The reference time for the forcing data.
+    - `time_interpolation`: The time interpolation method for the forcing data.
+    - `units`: A list of units corresponding to the forcing quantities.
+    - `user_defined_names`: A list of user-defined names for the forcing blocks.
+    """
+
+    @staticmethod
+    def convert(
+        tim_model: TimModel,
+        start_time: str,
+        time_interpolation: str = "linear",
+        units: List[str] = None,
+        user_defined_names: List[str] = None,
+    ) -> List[ForcingModel]:
+        """
+        Convert a TimModel into a ForcingModel.
+
+        Args:
+            tim_model (TimModel):
+                The input TimModel to be converted.
+            start_time (str):
+                The reference time for the forcing data.
+            time_interpolation (str, optional):
+                The time interpolation method for the forcing data. Defaults to "linear".
+            units (List[str], optional):
+                A list of units corresponding to the forcing quantities.
+            user_defined_names (List[str], optional):
+                A list of user-defined names for the forcing blocks.
+
+        Returns:
+            ForcingModel: The converted ForcingModel.
+
+        Raises:
+            ValueError: If `units` and `user_defined_names` are not provided.
+            ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
+                do not match.
+
+        Examples:
+            ```python
+            >>> file_path = "tests/data/input/tim/single_data_for_timeseries.tim"
+            >>> user_defined_names = ["discharge"]
+            >>> tim_model = TimModel(file_path, user_defined_names)
+            >>> print(tim_model.as_dict())
+            {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
+            >>> converter = TimToForcingConverter()
+            >>> forcing_model = converter.convert(
+            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m³/s"], ["discharge"]
+            ... )
+            >>> print(forcing_model[0].forcing[0].name)
+            discharge
+            >>> print(forcing_model[0].forcing[0].datablock)
+            [[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0], [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]]
+
+            ```
+        """
+        if units is None or user_defined_names is None:
+            raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
+
+        if start_time is None:
+            raise ValueError("The 'start_time' must be provided.")
+
+        first_record = tim_model.timeseries[0].data
+        if len(units) != len(user_defined_names) != len(first_record):
+            raise ValueError(
+                "The lengths of 'units', 'user_defined_names' and length of the columns in the first row must match."
+            )
+
+        df = tim_model.as_dataframe()
+        time_data = df.index.tolist()
+        forcings_model_list = []
+
+        for i, (column, vals) in enumerate(df.items()):
+            unit = units[i]
+            model = ForcingModel(
+                forcing=[
+                    TimeSeries(
+                        name=user_defined_names[i],
+                        function="timeseries",
+                        timeinterpolation=time_interpolation,
+                        quantity=["time", column],
+                        unit=[start_time, unit],
+                        datablock=[time_data, vals.values.tolist()],
+                    )
+                ]
+            )
+            forcings_model_list.append(model)
+
+        return forcings_model_list

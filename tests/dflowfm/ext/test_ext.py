@@ -216,10 +216,45 @@ class TestMeteo:
         assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
 
 
+forcing_base_list = [
+    {
+        "name": "user_defined_name_1",
+        "function": "timeseries",
+        "timeinterpolation": "linear",
+        "quantity": ["time", "discharge"],
+        "unit": ["minutes since 2015-01-01 00:00:00", "m3/s"],
+        "datablock": [[1], [1.1234]],
+    },
+    {
+        "name": "user_defined_name_1",
+        "function": "timeseries",
+        "timeinterpolation": "linear",
+        "quantity": ["time", "salinitydelta"],
+        "unit": ["minutes since 2015-01-01 00:00:00", "ppt"],
+        "datablock": [[1, 2, 3, 4, 5], [3.0, 5.0, 12.0, 9.0, 23.0]],
+    },
+    {
+        "name": "user_defined_name_2",
+        "function": "timeseries",
+        "timeinterpolation": "linear",
+        "quantity": ["time", "temperaturedelta"],
+        "unit": ["minutes since 2015-01-01 00:00:00", "C"],
+        "datablock": [[1, 2, 3, 4, 5], [2.0, 2.0, 5.0, 8.0, 10.0]],
+    },
+]
+
+
 class TestSourceSink:
 
     @pytest.fixture
     def source_sink_data(self) -> Dict[str, Any]:
+        forcing_model_list = [
+            ForcingModel(**{"forcing": [force]}) for force in forcing_base_list
+        ]
+        forcing = {
+            key["quantity"][1]: value
+            for key, value in zip(forcing_base_list, forcing_model_list)
+        }
         data = {
             "id": "L1",
             "name": "discharge_salinity_temperature_sorsin",
@@ -229,11 +264,9 @@ class TestSourceSink:
             "ycoordinates": [12.950216, 6.350155],
             "zsource": -3.0,
             "zsink": -4.2,
-            "discharge": 1.1234,
-            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
-            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
             "area": 5,
         }
+        data = data | forcing
         return data
 
     def test_default(self, source_sink_data: Dict[str, Any]):
@@ -278,6 +311,13 @@ class TestSourceSink:
         Returns:
 
         """
+        forcing_model_list = [
+            ForcingModel(**{"forcing": [force]}) for force in forcing_base_list
+        ]
+        forcing = {
+            key["quantity"][1]: value
+            for key, value in zip(forcing_base_list, forcing_model_list)
+        }
         data = {
             "id": "L1",
             "name": "discharge_salinity_temperature_sorsin",
@@ -287,10 +327,7 @@ class TestSourceSink:
             "ycoordinates": [12.950216, 6.350155],
             "zsource": -3.0,
             "zsink": -4.2,
-            "discharge": [1.0, 2.0, 3.0, 5.0, 8.0],
-            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
-            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
         }
+        data = data | forcing
 
-        source_sink = SourceSink(**data)
-        print(source_sink)
+        assert SourceSink(**data)

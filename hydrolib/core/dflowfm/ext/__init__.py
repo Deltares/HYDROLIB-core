@@ -1,4 +1,4 @@
-from .models import Boundary, ExtGeneral, ExtModel, Lateral, Meteo
+from .models import Boundary, ExtGeneral, ExtModel, Lateral, Meteo, SourceSink
 
 __all__ = [
     "Boundary",
@@ -6,4 +6,5 @@ __all__ = [
     "Meteo",
     "ExtGeneral",
     "ExtModel",
+    "SourceSink",
 ]

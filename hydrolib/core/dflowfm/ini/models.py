@@ -52,15 +52,57 @@ class INIBasedModel(BaseModel, ABC):
     """INIBasedModel defines the base model for blocks/chapters
     inside an INIModel (*.ini file).
 
-    INIBasedModel instances can be created from Section instances
-    obtained through parsing ini documents. It further supports
-    adding arbitrary fields to it, which will be written to file.
-    Lastly, no arbitrary types are allowed for the defined fields.
+    - Abstract base class for representing INI-style configuration file blocks or chapters.
+    - This class serves as the foundational model for handling blocks within INI configuration files.
+    It supports creating instances from parsed INI sections, adding arbitrary fields, and ensuring
+    well-defined serialization and deserialization behavior. Subclasses are expected to define
+    specific behavior and headers for their respective INI blocks.
 
     Attributes:
         comments (Optional[Comments]):
-            Optional Comments if defined by the user, containing
-            descriptions for all data fields.
+            Optional Comments if defined by the user, containing descriptions for all data fields.
+
+    Args:
+        comments (Optional[Comments], optional):
+            Comments for the model fields. Defaults to None.
+
+    Returns:
+        None
+
+    Raises:
+        ValueError: If unknown fields are encountered during validation.
+
+    See Also:
+        BaseModel: The Pydantic base model extended by this class.
+        INISerializerConfig: Provides configuration for INI serialization.
+
+
+    Examples:
+        Define a custom INI block subclass:
+
+            >>> class MyModel(INIBasedModel):
+            ...     _header = "MyHeader"
+            ...     field_a: str = "default_value"
+
+        Parse an INI section:
+
+        >>> from hydrolib.core.dflowfm.ini.io_models import Section
+        >>> section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])
+        >>> model = MyModel.parse_obj(section.flatten())
+        >>> print(model.field_a)
+        value
+
+        Serialize a model to an INI format:
+        >>> from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
+        >>> from hydrolib.core.basemodel import ModelSaveSettings
+        >>> config = INISerializerConfig()
+        >>> section = model._to_section(config, save_settings=ModelSaveSettings())
+        >>> print(section.header)
+        MyHeader
+
+    Notes:
+        - Subclasses can override the `_header` attribute to define the INI block header.
+        - Arbitrary fields can be added dynamically and are included during serialization.
     """
 
     _header: str = ""
@@ -75,14 +117,33 @@ class INIBasedModel(BaseModel, ABC):
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """
+        Retrieves the error manager for handling unknown keywords in INI files.
+
+        Returns:
+            Optional[UnknownKeywordErrorManager]:
+                An instance of the error manager or None if unknown keywords are allowed.
+        """
         return UnknownKeywordErrorManager()
 
     @classmethod
     def _supports_comments(cls):
+        """
+        Indicates whether the model supports comments for its fields.
+
+        Returns:
+            bool: True if comments are supported; otherwise, False.
+        """
         return True
 
     @classmethod
     def _duplicate_keys_as_list(cls):
+        """
+        Indicates whether duplicate keys in INI sections should be treated as lists.
+
+        Returns:
+            bool: True if duplicate keys should be treated as lists; otherwise, False.
+        """
         return False
 
     @classmethod
@@ -107,6 +168,9 @@ class INIBasedModel(BaseModel, ABC):
 
         Args:
             field_key (str): the original field key (not its alias).
+
+        Returns:
+            str: the delimiter string to be used for serializing the given field.
         """
         delimiter = None
         if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
@@ -117,7 +181,18 @@ class INIBasedModel(BaseModel, ABC):
         return delimiter
 
     class Comments(BaseModel, ABC):
-        """Comments defines the comments of an INIBasedModel"""
+        """
+        Represents the comments associated with fields in an INIBasedModel.
+
+        Attributes:
+            Arbitrary fields can be added dynamically to store comments.
+
+        Config:
+            extra: Extra.allow
+                Allows dynamic fields for comments.
+            arbitrary_types_allowed: bool
+                Indicates that only known types are allowed.
+        """
 
         class Config:
             extra = Extra.allow
@@ -127,6 +202,18 @@ class INIBasedModel(BaseModel, ABC):
 
     @root_validator(pre=True)
     def _validate_unknown_keywords(cls, values):
+        """
+        Validates fields and raises errors for unknown keywords.
+
+        Args:
+            values (dict): Dictionary of field values to validate.
+
+        Returns:
+            dict: Validated field values.
+
+        Raises:
+            ValueError: If unknown keywords are found.
+        """
         unknown_keyword_error_manager = cls._get_unknown_keyword_error_manager()
         do_not_validate = cls._exclude_from_validation(values)
         if unknown_keyword_error_manager:
@@ -140,7 +227,16 @@ class INIBasedModel(BaseModel, ABC):
 
     @root_validator(pre=True)
     def _skip_nones_and_set_header(cls, values):
-        """Drop None fields for known fields."""
+        """Drop None fields for known fields.
+
+        Filters out None values and sets the model header.
+
+        Args:
+            values (dict): Dictionary of field values.
+
+        Returns:
+            dict: Updated field values with None values removed.
+        """
         dropkeys = []
         for k, v in values.items():
             if v is None and k in cls.__fields__.keys():
@@ -157,6 +253,15 @@ class INIBasedModel(BaseModel, ABC):
 
     @validator("comments", always=True, allow_reuse=True)
     def comments_matches_has_comments(cls, v):
+        """
+        Validates the presence of comments if supported by the model.
+
+        Args:
+            v (Any): The comments field value.
+
+        Returns:
+            Any: Validated comments field value.
+        """
         if not cls._supports_comments() and v is not None:
             logging.warning(f"Dropped unsupported comments from {cls.__name__} init.")
             v = None
@@ -164,6 +269,16 @@ class INIBasedModel(BaseModel, ABC):
 
     @validator("*", pre=True, allow_reuse=True)
     def replace_fortran_scientific_notation_for_floats(cls, value, field):
+        """
+        Converts FORTRAN-style scientific notation to standard notation for float fields.
+
+        Args:
+            value (Any): The field value to process.
+            field (Field): The field being processed.
+
+        Returns:
+            Any: The processed field value.
+        """
         if field.type_ != float:
             return value
 
@@ -171,6 +286,15 @@ class INIBasedModel(BaseModel, ABC):
 
     @classmethod
     def _replace_fortran_scientific_notation(cls, value):
+        """
+        Replaces FORTRAN-style scientific notation in a value.
+
+        Args:
+            value (Any): The value to process.
+
+        Returns:
+            Any: The processed value.
+        """
         if isinstance(value, str):
             return cls._scientific_notation_regex.sub(r"\1e\3", value)
         if isinstance(value, list):
@@ -182,6 +306,15 @@ class INIBasedModel(BaseModel, ABC):
 
     @classmethod
     def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
+        """
+        Validates a value as an instance of INIBasedModel.
+
+        Args:
+            value (Any): The value to validate.
+
+        Returns:
+            INIBasedModel: The validated instance.
+        """
         if isinstance(value, Section):
             value = value.flatten(
                 cls._duplicate_keys_as_list(), cls._supports_comments()
@@ -190,12 +323,26 @@ class INIBasedModel(BaseModel, ABC):
         return super().validate(value)
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: Optional = None) -> Set:
-        """Fields that should not be checked when validating existing fields as they will be dynamically added."""
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+        """
+        Fields that should not be checked when validating existing fields as they will be dynamically added.
+
+        Args:
+            input_data (Optional[dict]): Input data to process.
+
+        Returns:
+            Set: Set of field names to exclude from validation.
+        """
         return set()
 
     @classmethod
     def _exclude_fields(cls) -> Set:
+        """
+        Defines fields to exclude from serialization.
+
+        Returns:
+            Set: Set of field names to exclude.
+        """
         return {"comments", "datablock", "_header"}
 
     def _convert_value(
@@ -205,6 +352,18 @@ class INIBasedModel(BaseModel, ABC):
         config: INISerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> str:
+        """
+        Converts a field value to its serialized string representation.
+
+        Args:
+            key (str): The field key.
+            v (Any): The field value.
+            config (INISerializerConfig): Configuration for serialization.
+            save_settings (ModelSaveSettings): Settings for saving the model.
+
+        Returns:
+            str: The serialized value.
+        """
         if isinstance(v, bool):
             return str(int(v))
         elif isinstance(v, list):
@@ -228,6 +387,16 @@ class INIBasedModel(BaseModel, ABC):
     def _to_section(
         self, config: INISerializerConfig, save_settings: ModelSaveSettings
     ) -> Section:
+        """
+        Converts the model to an INI section.
+
+        Args:
+            config (INISerializerConfig): Configuration for serialization.
+            save_settings (ModelSaveSettings): Settings for saving the model.
+
+        Returns:
+            Section: The INI section representation of the model.
+        """
         props = []
         for key, value in self:
             if not self._should_be_serialized(key, value, save_settings):
@@ -248,6 +417,17 @@ class INIBasedModel(BaseModel, ABC):
     def _should_be_serialized(
         self, key: str, value: Any, save_settings: ModelSaveSettings
     ) -> bool:
+        """
+        Determines if a field should be serialized.
+
+        Args:
+            key (str): The field key.
+            value (Any): The field value.
+            save_settings (ModelSaveSettings): Settings for saving the model.
+
+        Returns:
+            bool: True if the field should be serialized; otherwise, False.
+        """
         if key in self._exclude_fields():
             return False
 
@@ -269,18 +449,55 @@ class INIBasedModel(BaseModel, ABC):
 
     @staticmethod
     def _is_union(field_type: type) -> bool:
+        """
+        Checks if a type is a Union.
+
+        Args:
+            field_type (type): The type to check.
+
+        Returns:
+            bool: True if the type is a Union; otherwise, False.
+        """
         return get_origin(field_type) is Union
 
     @staticmethod
     def _union_has_filemodel(field_type: type) -> bool:
+        """
+        Checks if a Union type includes a FileModel subtype.
+
+        Args:
+            field_type (type): The type to check.
+
+        Returns:
+            bool: True if the Union includes a FileModel; otherwise, False.
+        """
         return any(issubclass(arg, FileModel) for arg in get_args(field_type))
 
     @staticmethod
     def _is_list(field_type: type) -> bool:
+        """
+        Checks if a type is a list.
+
+        Args:
+            field_type (type): The type to check.
+
+        Returns:
+            bool: True if the type is a list; otherwise, False.
+        """
         return get_origin(field_type) is List
 
     @staticmethod
     def _value_is_not_none_or_type_is_filemodel(field_type: type, value: Any) -> bool:
+        """
+        Checks if a value is not None or if its type is FileModel.
+
+        Args:
+        field_type (type): The expected type of the field.
+        value (Any): The value to check.
+
+        Returns:
+            bool: True if the value is valid; otherwise, False.
+        """
         return value is not None or issubclass(field_type, FileModel)
 
 
@@ -290,8 +507,47 @@ Datablock = List[List[Union[float, str]]]
 class DataBlockINIBasedModel(INIBasedModel):
     """DataBlockINIBasedModel defines the base model for ini models with datablocks.
 
+    This class extends the functionality of INIBasedModel to handle structured data blocks
+    commonly found in INI files. It provides validation, serialization, and conversion methods
+    for working with these data blocks.
+
     Attributes:
         datablock (Datablock): (class attribute) the actual data columns.
+
+    Attributes:
+    datablock (List[List[Union[float, str]]]):
+        A two-dimensional list representing the data block. Each sub-list corresponds to
+        a row in the data block, and the values can be either floats or strings.
+
+    Args:
+        datablock (List[List[Union[float, str]]], optional):
+            The initial data block for the model. Defaults to an empty list.
+
+    Returns:
+        None
+
+    Raises:
+        ValueError: If a NaN value is found within the data block.
+
+    See Also:
+        INIBasedModel: The parent class for models representing INI-based configurations.
+        INISerializerConfig: Provides configuration for INI serialization.
+
+    Examples:
+        Create a model and validate its data block:
+            >>> from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel
+            >>> model = DataBlockINIBasedModel(datablock=[[1.0, 2.0], [3.0, 4.0]])
+            >>> print(model.datablock)
+            [[1.0, 2.0], [3.0, 4.0]]
+
+        Attempt to create a model with invalid data:
+
+        >>> model = DataBlockINIBasedModel(datablock=[[1.0, None]])
+        ValueError: NaN is not supported in datablocks.
+
+    Notes:
+        - The class includes a validator to ensure that no NaN values are present in the data block.
+        - Data blocks are converted to a serialized format for writing to INI files.
     """
 
     datablock: Datablock = Field(default_factory=list)
@@ -302,6 +558,9 @@ class DataBlockINIBasedModel(INIBasedModel):
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """
         The DataBlockINIBasedModel does not need to raise an error on unknown keywords.
+
+        Returns:
+            Optional[UnknownKeywordErrorManager]: Returns None as unknown keywords are ignored.
         """
         return None
 
@@ -310,11 +569,30 @@ class DataBlockINIBasedModel(INIBasedModel):
         config: DataBlockINIBasedSerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> Section:
+        """
+        Converts the current model to an INI Section representation.
+
+        Args:
+            config (DataBlockINIBasedSerializerConfig): Configuration for serializing the data block.
+            save_settings (ModelSaveSettings): Settings for saving the model.
+
+        Returns:
+            Section: The INI Section containing serialized data and the data block.
+        """
         section = super()._to_section(config, save_settings)
         section.datablock = self._to_datablock(config)
         return section
 
     def _to_datablock(self, config: DataBlockINIBasedSerializerConfig) -> List[List]:
+        """
+        Converts the data block to a serialized format based on the configuration.
+
+        Args:
+            config (DataBlockINIBasedSerializerConfig): Configuration for serializing the data block.
+
+        Returns:
+            List[List]: A serialized representation of the data block.
+        """
         converted_datablock = []
 
         for row in self.datablock:
@@ -329,6 +607,16 @@ class DataBlockINIBasedModel(INIBasedModel):
     def convert_value(
         cls, value: Union[float, str], config: DataBlockINIBasedSerializerConfig
     ) -> str:
+        """
+        Converts a value in the data block to its serialized string representation.
+
+        Args:
+            value (Union[float, str]): The value to be converted.
+            config (DataBlockINIBasedSerializerConfig): Configuration for the conversion.
+
+        Returns:
+            str: The serialized string representation of the value.
+        """
         if isinstance(value, float):
             return f"{value:{config.float_format_datablock}}"
 
@@ -339,7 +627,7 @@ class DataBlockINIBasedModel(INIBasedModel):
         """Validate that the datablock does not have any NaN values.
 
         Args:
-            datablock (Datablock): The datablock to verify.
+            datablock (Datablock): The datablock to validate.
 
         Raises:
             ValueError: When a NaN is present in the datablock.
@@ -347,13 +635,22 @@ class DataBlockINIBasedModel(INIBasedModel):
         Returns:
             Datablock: The validated datablock.
         """
-        if any(cls._is_float_and_nan(value) for list in datablock for value in list):
+        if any(cls._is_float_and_nan(value) for row in datablock for value in row):
             raise ValueError("NaN is not supported in datablocks.")
 
         return datablock
 
     @staticmethod
     def _is_float_and_nan(value: float) -> bool:
+        """
+        Determines whether a value is a float and is NaN.
+
+        Args:
+            value (float): The value to check.
+
+        Returns:
+            bool: True if the value is a NaN float; otherwise, False.
+        """
         return isinstance(value, float) and isnan(value)
 
 

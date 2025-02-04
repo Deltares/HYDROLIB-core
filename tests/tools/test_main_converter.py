@@ -234,7 +234,10 @@ class TestUpdateSourcesSinks:
         """
         path = "tests/data/input/source-sink/source-sink.ext"
         converter = ExternalForcingConverter(path)
-
+        # Mock the fm_model
+        mock_fm_model = Mock()
+        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
+        converter._fm_model = mock_fm_model
         tim_file = Path("tim-3-columns.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             ext_model, inifield_model, structure_model = converter.update()
@@ -242,14 +245,14 @@ class TestUpdateSourcesSinks:
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = 1
-        assert len(ext_model.source_sink) == num_quantities
+        assert len(ext_model.sourcesink) == num_quantities
         # no parameters or any other structures, lateral or meteo data
         assert len(inifield_model.parameter) == 0
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
         assert len(inifield_model.initial) == 2
-        quantities = ext_model.source_sink
+        quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
 
     def test_sources_sinks_with_fm(self, old_forcing_file_boundary: Dict[str, str]):
@@ -269,6 +272,7 @@ class TestUpdateSourcesSinks:
         mock_fm_model = Mock()
         mock_fm_model.physics.salinity = True
         mock_fm_model.physics.temperature = True
+        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
         converter._fm_model = mock_fm_model
 
         tim_file = Path("tim-3-columns.tim")
@@ -278,12 +282,12 @@ class TestUpdateSourcesSinks:
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = 1
-        assert len(ext_model.source_sink) == num_quantities
+        assert len(ext_model.sourcesink) == num_quantities
         # no parameters or any other structures, lateral or meteo data
         assert len(inifield_model.parameter) == 0
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
         assert len(inifield_model.initial) == 2
-        quantities = ext_model.source_sink
+        quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
