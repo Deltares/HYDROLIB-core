@@ -8,6 +8,7 @@ from pydantic.v1.class_validators import validator
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
+from hydrolib.core.utils import FortranUtils
 
 
 class TimRecord(BaseModel):
@@ -160,6 +161,26 @@ class TimModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return TimParser.parse
+
+    @validator("timeseries", pre=True, check_fields=True, allow_reuse=True)
+    def replace_fortran_scientific_notation_for_floats(cls, value, field):
+        for record in value:
+            if isinstance(record, dict):
+                record["time"] = FortranUtils.replace_fortran_scientific_notation(
+                    record["time"]
+                )
+                record["data"] = FortranUtils.replace_fortran_scientific_notation(
+                    record["data"]
+                )
+            elif isinstance(record, TimRecord):
+                record.time = FortranUtils.replace_fortran_scientific_notation(
+                    record.time
+                )
+                record.data = FortranUtils.replace_fortran_scientific_notation(
+                    record.data
+                )
+
+        return value
 
     @validator("timeseries")
     @classmethod

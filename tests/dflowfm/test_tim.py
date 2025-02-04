@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 
 import pytest
@@ -294,6 +295,14 @@ class TestTimModel:
             )
 
         assert expected_error_msg in str(error.value)
+
+    def test_test_fortran_d_exponent_supported(self):
+        input_path = Path(test_input_dir / "tim" / "unimagdir.wnd")
+        tim_model = TimModel(input_path)
+        assert tim_model.timeseries[0].time == 0
+        assert tim_model.timeseries[0].data == [1.0, 270.0]
+        assert math.isclose(tim_model.timeseries[1].time, 9e9)
+        assert tim_model.timeseries[1].data == [1.0, 270.0]
 
 
 class TestTimRecord:

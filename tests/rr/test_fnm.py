@@ -227,7 +227,7 @@ def test_parse_serialize_should_return_same_result():
     '___res.res'               *  41. Restart file input                                                   I
     'RSRR_OUT'                 *  42. Restart file output                                                  O
     '3b_input.bin'             *  43. Binary file input                                                    I
-    'sacrmnto.3b'              *  44. Sacramento input I        
+    'sacrmnto.3b'              *  44. Sacramento input I
     'aanvoer.abr'              *  45. Uitvoer ASCII file met debieten van/naar randknopen                  O
     'saltbnd.out'              *  46. Uitvoer ASCII file met zoutconcentratie op rand                      O
     'salt.out'                 *  47. Zout uitvoer in ASCII file                                           O
@@ -263,7 +263,7 @@ def test_parse_serialize_should_return_same_result():
     'industry.tbl'             *  77. Industry tabellen                                                    I
     'rtc_3b.his'               *  78. Maalstop                                                             I
     'default.tmp'              *  79. Temperature time series                                              I
-    'rnff.#'                   *  80. Runoff time series              
+    'rnff.#'                   *  80. Runoff time series
     'bndfltot.his'             *  81. Totalen/lozingen op randknopen                                       O
     'sobek_3b.lng'             *  82. Language file                                                        I
     'ow_vol.his'               *  83. OW-volume                                                            O
@@ -271,8 +271,8 @@ def test_parse_serialize_should_return_same_result():
     '3b_bal.out'               *  85. Balans file                                                          O
     '3bareas.his'              *  86. 3B-arealen in HIS file                                               O
     '3bstrdim.his'             *  87. 3B-structure data in HIS file                                        O
-    'rrrunoff.his'             *  88. RR Runoff his file              
-    'sacrmnto.his'             *  89. Sacramento HIS file              
+    'rrrunoff.his'             *  88. RR Runoff his file
+    'sacrmnto.his'             *  89. Sacramento HIS file
     'wwtpdt.his'               *  90. rwzi HIS file                                                        O
     'industdt.his'             *  91. Industry HIS file                                                    O
     'ctrl.ini'                 *  92. CTRL.INI                                                             I
@@ -287,8 +287,8 @@ def test_parse_serialize_should_return_same_result():
     '3blinks.his'              * 101. Link flows                                                           O
     'modflow_rr.His'           * 102. Modflow-RR                                                           O
     'rr_modflow.His'           * 103. RR-Modflow                                                           O
-    'rr_wlmbal.His'            * 104. RR-balance for WLM              
-    'sacrmnto.out'             * 105. Sacramento ASCII output              
+    'rr_wlmbal.His'            * 104. RR-balance for WLM
+    'sacrmnto.out'             * 105. Sacramento ASCII output
     'pluvius.tbl'              * 106. Additional NWRW input file with DWA table                            I
     'rrbalans.his'             * 107. RR balans
     'KasKlasData.dat'          * 108. Kasklasse, new format                                                I
@@ -332,9 +332,9 @@ def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
     if target_path.exists() and target_path.is_dir():
         try:
             shutil.rmtree(target_path)
-            target_path.mkdir()
         except PermissionError:
             pass
+    target_path.mkdir(exist_ok=True)
 
     with file_load_context() as context:
         context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
@@ -364,9 +364,10 @@ def test_fnm_save_without_recurse_only_copies_fnm_file():
     if target_path.exists() and target_path.is_dir():
         try:
             shutil.rmtree(target_path)
-            target_path.mkdir()
         except PermissionError:
             pass
+
+    target_path.mkdir(exist_ok=True)
 
     with file_load_context() as context:
         context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
@@ -395,9 +396,9 @@ def test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files():
     if target_path.exists() and target_path.is_dir():
         try:
             shutil.rmtree(target_path)
-            target_path.mkdir()
         except PermissionError:
             pass
+    target_path.mkdir(exist_ok=True)
 
     with file_load_context() as context:
         context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
