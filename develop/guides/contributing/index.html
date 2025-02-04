@@ -2207,31 +2207,22 @@ To prepare for releasing, please make sure you have a clean checkout of the late
 <li>Go to the root level your hydrolib-core checkout location</li>
 <li>Open your command line in this location</li>
 <li>Perform the following commands:<ul>
-<li>If commitizen is not installed yet:
- <div class="highlight"><pre><span></span><code>pip install commitizen
+<li>Ensure that you are using the poetry environment (this contains commitizen), optionally run this command in a fresh environment:
+ <div class="highlight"><pre><span></span><code>poetry install
 </code></pre></div></li>
-<li>Prepare the Changelog before bumping the release version:
+<li>Update the Changelog before bumping the release version (use the version tag instead of the raw version number (so without "v" in our case)):
  <div class="highlight"><pre><span></span><code>cz changelog --unreleased-version=&quot;0.3.1&quot; --incremental
-</code></pre></div>
- In the above command, use the version tag instead of the raw version number (so without "v" in our case).
- If you don't know the version tag yet, you can do a dry-run of the next step, for example via:
- <div class="highlight"><pre><span></span><code>cz bump --dry-run --increment PATCH
 </code></pre></div></li>
-<li>In the updated <code>docs/changelog.md</code>, manually add links to GitHub PR numbers (or issue numbers) at the end of each line, if appropriate.
-     It is recommended to use the macros <code>[#123](https://github.com/Deltares/HYDROLIB-core/pull/123)</code>, resp. <code>[#345](https://github.com/Deltares/HYDROLIB-core/issues/345)</code> to get automatic hyperlinks (where 123 and 345 are GitHub's PR and issue numbers, respectively).</li>
 <li>Use MAJOR, MINOR or PATCH to increment the version
  <div class="highlight"><pre><span></span><code>cz bump --increment {MAJOR,MINOR,PATCH}
-</code></pre></div></li>
-<li>Or let commitizen detect the increment automatically
- <div class="highlight"><pre><span></span><code>cz bump
 </code></pre></div></li>
 <li>Push the tags and changes to git
  <div class="highlight"><pre><span></span><code>git push --tags
 git push
 </code></pre></div></li>
-<li>Build the wheels and publish the package to PyPi
+<li>Build the wheels and publish the package to PyPi (get an API token in your PyPI account)
  <div class="highlight"><pre><span></span><code>poetry build
-poetry publish
+poetry publish --username __token__ --password [PYPI_API_TOKEN]
 </code></pre></div>
  You will need a PyPI account and permissions for this publish step. Ask a maintainer for help if you need this.</li>
 </ul>
