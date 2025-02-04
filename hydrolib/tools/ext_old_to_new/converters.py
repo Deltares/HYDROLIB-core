@@ -139,7 +139,7 @@ class BoundaryConditionConverter(BaseConverter):
             Boundary: A Boundary object that represents the converted forcing
             block, ready to be included in a new external forcings file. The
             Boundary object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            compatibility with updated systems anbd models.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
@@ -408,6 +408,39 @@ class SourceSinkConverter(BaseConverter):
             value = Path(value)
         self._root_dir = value
 
+    @staticmethod
+    def convert_tim_to_bc(
+        tim_model: TimModel,
+        start_time: str,
+        units: List[str] = None,
+        user_defined_names: List[str] = None,
+    ) -> ForcingModel:
+        """Convert a TimModel into a ForcingModel.
+
+            wrapper in top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
+
+        Args:
+            tim_model (TimModel):
+                The input TimModel to be converted.
+            start_time (str):
+                The reference time for the forcing data.
+            units (List[str], optional):
+                A list of units corresponding to the forcing quantities.
+            user_defined_names (List[str], optional):
+                A list of user-defined names for the forcing blocks.
+
+        Returns:
+            ForcingModel: The converted ForcingModel.
+
+        Raises:
+            ValueError: If `units` and `user_defined_names` are not provided.
+            ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
+        """
+        forcing_model = TimToForcingConverter.convert(
+            tim_model, start_time, units=units, user_defined_names=user_defined_names
+        )
+        return forcing_model
+
     def convert(
         self,
         forcing: ExtOldForcing,
@@ -474,7 +507,7 @@ class SourceSinkConverter(BaseConverter):
 
         # TODO: get the start name from the mdu file
         start_time = "minutes since 2015-01-01 00:00:00"
-        forcing_model_list = TimToForcingConverter().convert(
+        forcing_model_list = self.convert_tim_to_bc(
             time_model, start_time, units=units, user_defined_names=user_defined_names
         )
         data = {
