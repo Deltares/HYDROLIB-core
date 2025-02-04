@@ -62,38 +62,27 @@ To prepare for releasing, please make sure you have a clean checkout of the late
  * Go to the root level your hydrolib-core checkout location
  * Open your command line in this location
  * Perform the following commands:
-	 * If commitizen is not installed yet:
+	 * Ensure that you are using the poetry environment (this contains commitizen), optionally run this command in a fresh environment:
 	 ```
-	 pip install commitizen
+	 poetry install
 	 ```
-	 * Prepare the Changelog before bumping the release version:
+	 * Update the Changelog before bumping the release version (use the version tag instead of the raw version number (so without "v" in our case)):
 	 ```
 	 cz changelog --unreleased-version="0.3.1" --incremental
 	 ```
-	 In the above command, use the version tag instead of the raw version number (so without "v" in our case).
-	 If you don't know the version tag yet, you can do a dry-run of the next step, for example via:
-	 ```
-	 cz bump --dry-run --increment PATCH
-	 ```
-	 * In the updated `docs/changelog.md`, manually add links to GitHub PR numbers (or issue numbers) at the end of each line, if appropriate.
-         It is recommended to use the macros `{{gh_pr(123)}}`, resp. `{{gh_issue(345)}}` to get automatic hyperlinks (where 123 and 345 are GitHub's PR and issue numbers, respectively).
 	 * Use MAJOR, MINOR or PATCH to increment the version
 	 ```
 	 cz bump --increment {MAJOR,MINOR,PATCH}
-	 ```
-	 * Or let commitizen detect the increment automatically
-	 ```
-	 cz bump
 	 ```
 	 * Push the tags and changes to git
 	 ```
 	 git push --tags
 	 git push
 	 ```
-	 * Build the wheels and publish the package to PyPi
+	 * Build the wheels and publish the package to PyPi (get an API token in your PyPI account)
 	 ```
 	 poetry build
-	 poetry publish
+	 poetry publish --username __token__ --password [PYPI_API_TOKEN]
 	 ```
 	 You will need a PyPI account and permissions for this publish step. Ask a maintainer for help if you need this.
 * Go to the hydrolib-core GitHub page.
