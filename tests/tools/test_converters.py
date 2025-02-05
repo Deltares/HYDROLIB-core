@@ -123,7 +123,20 @@ class TestBoundaryConverter:
         assert new_quantity_block.bndbldepth is None
         assert len(forcing_model) == 2
         names = ["tfl_01_0001", "tfl_01_0002"]
-        assert all(forcing_model[i].forcing[0].name == names[i] for i in range(len(names)))
-        assert all([forcing_model[i].forcing[0].quantityunitpair[0].quantity == "time" for i in range(2)])
-        assert all([forcing_model[i].forcing[0].quantityunitpair[1].quantity == "waterlevelbnd" for i in range(2)])
+        assert all(
+            forcing_model[i].forcing[0].name == names[i] for i in range(len(names))
+        )
+        assert all(
+            [
+                forcing_model[i].forcing[0].quantityunitpair[0].quantity == "time"
+                for i in range(2)
+            ]
+        )
+        assert all(
+            [
+                forcing_model[i].forcing[0].quantityunitpair[1].quantity
+                == "waterlevelbnd"
+                for i in range(2)
+            ]
+        )
         assert forcing_model[0].forcing[0].datablock == [[0, 0.01], [120, 0.01]]

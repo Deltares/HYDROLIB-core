@@ -763,7 +763,9 @@ class TimToForcingConverter:
                             QuantityUnitPair(quantity="time", unit=start_time),
                             QuantityUnitPair(quantity=column, unit=unit),
                         ],
-                        datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
+                        datablock=[
+                            [i, j] for i, j in zip(time_data, vals.values.tolist())
+                        ],
                     )
                 ]
             )
