@@ -51,7 +51,7 @@ class Boundary(INIBasedModel):
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
-    forcingfile: ForcingModel = Field(alias="forcingFile")
+    forcingfile: Union[ForcingModel, List[ForcingModel]] = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 
@@ -212,7 +212,9 @@ class SourceSink(INIBasedModel):
     zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
     area: Optional[float] = Field(alias="Area")
 
-    bc_forcing: ForcingModel = Field(alias="bcForcing")
+    discharge: ForcingData = Field(alias="discharge")
+    salinitydelta: Optional[ForcingData] = Field(alias="salinityDelta")
+    temperaturedelta: Optional[ForcingData] = Field(alias="temperatureDelta")
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
@@ -380,7 +382,7 @@ class Meteo(INIBasedModel):
 
 
 class ExtGeneral(INIGeneral):
-    """The external forcing file's `[General]` section with file meta data."""
+    """The external forcing file's `[General]` section with file meta-data."""
 
     _header: Literal["General"] = "General"
     fileversion: str = Field("2.01", alias="fileVersion")
@@ -397,19 +399,19 @@ class ExtModel(INIModel):
         general (ExtGeneral): `[General]` block with file metadata.
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
-        source_sink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
+        sourcesink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
         meteo (List[Meteo]): List of `[Meteo]` blocks for all meteorological forcings.
     """
 
     general: ExtGeneral = ExtGeneral()
     boundary: List[Boundary] = Field(default_factory=list)
     lateral: List[Lateral] = Field(default_factory=list)
-    source_sink: List[SourceSink] = Field(default_factory=list)
+    sourcesink: List[SourceSink] = Field(default_factory=list)
     meteo: List[Meteo] = Field(default_factory=list)
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )
-    _split_to_list = make_list_validator("boundary", "lateral", "meteo")
+    _split_to_list = make_list_validator("boundary", "lateral", "meteo", "sourcesink")
 
     @classmethod
     def _ext(cls) -> str:

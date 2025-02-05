@@ -8,6 +8,7 @@ from pydantic.v1.class_validators import validator
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
+from hydrolib.core.utils import FortranUtils
 
 
 class TimRecord(BaseModel):
@@ -175,6 +176,26 @@ class TimModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return TimParser.parse
+
+    @validator("timeseries", pre=True, check_fields=True, allow_reuse=True)
+    def replace_fortran_scientific_notation_for_floats(cls, value, field):
+        for record in value:
+            if isinstance(record, dict):
+                record["time"] = FortranUtils.replace_fortran_scientific_notation(
+                    record["time"]
+                )
+                record["data"] = FortranUtils.replace_fortran_scientific_notation(
+                    record["data"]
+                )
+            elif isinstance(record, TimRecord):
+                record.time = FortranUtils.replace_fortran_scientific_notation(
+                    record.time
+                )
+                record.data = FortranUtils.replace_fortran_scientific_notation(
+                    record.data
+                )
+
+        return value
 
     @validator("timeseries")
     @classmethod
@@ -367,7 +388,7 @@ class TimModel(ParsableFileModel):
                 >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")
                 >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]
                 >>> print(tim_model.get_units())
-                ['m3/s', 'm', 'C', 'ppt', '-']
+                ['m3/s', 'm', 'degC', '1e-3', '-']
 
                 ```
         """
@@ -390,14 +411,14 @@ class TimModel(ParsableFileModel):
             >>> from hydrolib.core.dflowfm.tim.models import TimModel
             >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
             >>> TimModel.map_to_units(quantities_names)
-            ['m3/s', 'm', 'ppt', 'C']
+            ['m3/s', 'm', '1e-3', 'degC']
         """
         # Define the mapping of keywords to units
         unit_mapping = {
             "discharge": "m3/s",
             "waterlevel": "m",
-            "salinity": "ppt",
-            "temperature": "C",
+            "salinity": "1e-3",
+            "temperature": "degC",
         }
 
         # Generate the list of units based on the mapping
@@ -408,7 +429,7 @@ class TimModel(ParsableFileModel):
                     units.append(unit)
                     break
             else:
-                # Append "Unknown" if no keywords match
+                # Append "-" if no keywords match
                 units.append("-")
 
         return units

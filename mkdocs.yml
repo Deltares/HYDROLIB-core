@@ -23,7 +23,7 @@ theme:
 plugins:
   - search
   - autorefs
-  - mermaid2
+
   - macros:
       module_name: docs/include/mkdocs-macros/main
   - table-reader

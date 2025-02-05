@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.8.0"
+version = "0.8.1"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -38,6 +38,7 @@ mypy = "^1.13"
 openpyxl = "^3.0.9"
 jinja2 = "^3.0"
 markupsafe = "<2.1"
+jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
 # matplotlib >=3.8 supports numpy 2.0
 matplotlib = "^3.8"
@@ -80,7 +81,7 @@ pre-commit-commit-msg-hooks = "^0.1.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.8.0"
+version = "0.8.1"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",

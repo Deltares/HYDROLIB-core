@@ -158,54 +158,33 @@ class TestParseTimFileForSourceSink:
 
 
 def compare_data(new_quantity_block: SourceSink):
-    # check the converted bc_forcing
-    bc_forcing = new_quantity_block.bc_forcing
-    forcing_bases = bc_forcing.forcing
-    assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(4)] == [
+    # check the converted forcings
+    quantity_list = [
         "discharge",
         "salinitydelta",
         "temperaturedelta",
         "initialtracer_anyname",
     ]
-    assert [forcing_bases[i].quantityunitpair[1].unit for i in range(4)] == [
-        "m3/s",
-        "ppt",
-        "C",
-        "-",
+
+    assert all(quantity in new_quantity_block.__dict__ for quantity in quantity_list)
+    units = [
+        getattr(new_quantity_block, quantity).forcing[0].quantityunitpair[1].unit
+        for quantity in quantity_list
     ]
+    assert units == ["m3/s", "1e-3", "degC", "-"]
     # check the values of the data block
+    data = [
+        getattr(new_quantity_block, quantity).forcing[0].as_dataframe()
+        for quantity in quantity_list
+    ]
     # initialtracer_anyname
-    assert forcing_bases[3].as_dataframe().loc[:, 0].to_list() == [
-        4.0,
-        4.0,
-        4.0,
-        4.0,
-        4.0,
-    ]
+    assert data[3].loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
     # temperature
-    assert forcing_bases[2].as_dataframe().loc[:, 0].to_list() == [
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-    ]
+    assert data[2].loc[:, 0].to_list() == [3.0, 3.0, 3.0, 3.0, 3.0]
     # salinity
-    assert forcing_bases[1].as_dataframe().loc[:, 0].to_list() == [
-        2.0,
-        2.0,
-        2.0,
-        2.0,
-        2.0,
-    ]
+    assert data[1].loc[:, 0].to_list() == [2.0, 2.0, 2.0, 2.0, 2.0]
     # discharge
-    assert forcing_bases[0].as_dataframe().loc[:, 0].to_list() == [
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-    ]
+    assert data[0].loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]
 
 
 class TestSourceSinkConverter:
@@ -284,7 +263,10 @@ class TestSourceSinkConverter:
         ]
         converter = SourceSinkConverter()
         converter.root_dir = "tests/data/input/source-sink"
-        new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
+        start_time = "minutes since 2015-01-01 00:00:00"
+        new_quantity_block = converter.convert(
+            forcing, ext_file_other_quantities, start_time
+        )
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -342,8 +324,11 @@ class TestSourceSinkConverter:
         converter = SourceSinkConverter()
         converter.root_dir = "tests/data/input/source-sink"
         tim_file = Path("leftsor.tim")
+        start_time = "minutes since 2015-01-01 00:00:00"
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
+            new_quantity_block = converter.convert(
+                forcing, ext_file_other_quantities, start_time
+            )
 
         assert new_quantity_block.zsink == [-4.2, -5.35]
         assert new_quantity_block.zsource == [-3, -2.90]
@@ -386,36 +371,37 @@ class TestSourceSinkConverter:
         converter.root_dir = "tests/data/input/source-sink"
 
         tim_file = Path("no_temperature_no_salinity.tim")
+        start_time = "minutes since 2015-01-01 00:00:00"
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
+            new_quantity_block = converter.convert(
+                forcing, ext_file_other_quantities, start_time
+            )
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
+        validation_list = ["discharge", "initialtracer_anyname"]
         # check the converted bc_forcing
-        bc_forcing = new_quantity_block.bc_forcing
-        forcing_bases = bc_forcing.forcing
-        assert [forcing_bases[i].quantityunitpair[1].quantity for i in range(2)] == [
-            "discharge",
-            "initialtracer_anyname",
+
+        quantities_names = [
+            getattr(new_quantity_block, quantity)
+            .forcing[0]
+            .quantityunitpair[1]
+            .quantity
+            for quantity in validation_list
         ]
-        assert [forcing_bases[i].quantityunitpair[1].unit for i in range(2)] == [
-            "m3/s",
-            "-",
+        units = [
+            getattr(new_quantity_block, quantity).forcing[0].quantityunitpair[1].unit
+            for quantity in validation_list
+        ]
+        assert quantities_names == validation_list
+
+        assert units == ["m3/s", "-"]
+        data = [
+            getattr(new_quantity_block, quantity).forcing[0].as_dataframe()
+            for quantity in validation_list
         ]
         # check the values of the data block
         # initialtracer_anyname
-        assert forcing_bases[1].as_dataframe().loc[:, 0].to_list() == [
-            4.0,
-            4.0,
-            4.0,
-            4.0,
-            4.0,
-        ]
+        assert data[1].loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
         # discharge
-        assert forcing_bases[0].as_dataframe().loc[:, 0].to_list() == [
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-        ]
+        assert data[0].loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]

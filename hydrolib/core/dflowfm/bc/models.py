@@ -950,7 +950,7 @@ class ForcingModel(INIModel):
 
     The `ForcingModel` class is the top-level model that aggregates metadata
     and multiple `[Forcing]` blocks. It provides functionality for parsing,
-    serializing, and managing data within a boundary conditions (.bc) file.
+    serializing, and managing data within a .bc file.
 
     Attributes:
         general (ForcingGeneral):
@@ -968,12 +968,6 @@ class ForcingModel(INIModel):
             A list of forcing definitions.
         serializer_config (DataBlockINIBasedSerializerConfig, optional):
             Serialization settings. Default to a predefined configuration.
-
-    Returns:
-        None
-
-    Raises:
-        ValueError: If invalid data is provided during initialization or parsing.
 
     See Also:
         ForcingBase: Represents individual forcing blocks within the file.

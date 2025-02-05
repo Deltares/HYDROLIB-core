@@ -208,7 +208,7 @@ class ExternalForcingConverter:
             elif isinstance(new_quantity_block, Lateral):
                 self.ext_model.lateral.append(new_quantity_block)
             elif isinstance(new_quantity_block, SourceSink):
-                self.ext_model.source_sink.append(new_quantity_block)
+                self.ext_model.sourcesink.append(new_quantity_block)
             elif isinstance(new_quantity_block, Meteo):
                 self.ext_model.meteo.append(new_quantity_block)
             elif isinstance(new_quantity_block, InitialField):
@@ -237,18 +237,23 @@ class ExternalForcingConverter:
 
             # only the SourceSink converter needs the quantities' list
             if converter_class.__class__.__name__ == "SourceSinkConverter":
-                temp_salinity_mdu = {}
-                if self.fm_model is not None:
+
+                if self.fm_model is None:
+                    raise ValueError(
+                        "FM model is required to convert SourcesSink quantities."
+                    )
+                else:
                     salinity = self.fm_model.physics.salinity
                     temperature = self.fm_model.physics.temperature
                     temp_salinity_mdu = {
                         "salinity": salinity,
                         "temperature": temperature,
                     }
+                    start_time = self.fm_model.time.refdate
 
                 quantities = self.extold_model.quantities
                 new_quantity_block = converter_class.convert(
-                    forcing, quantities, **temp_salinity_mdu
+                    forcing, quantities, start_time=start_time, **temp_salinity_mdu
                 )
             elif converter_class.__class__.__name__ == "BoundaryConditionConverter":
                 if self.fm_model is None:

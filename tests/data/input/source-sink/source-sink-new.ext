@@ -1,0 +1,18 @@
+[General]
+fileType = extForce
+fileVersion = 2.02
+[boundary]
+quantity    = waterlevelbnd
+nodeId      = T1_Dwn_Bnd
+forcingfile = BoundaryConditions.bc
+
+[SourceSink]
+id               = L1
+name             = L1
+locationFile     = leftsor-2-columns.pli
+discharge        = 10
+[SourceSink]
+id               = L2
+name             = L2
+locationFile     = leftsor-2-columns.pli
+discharge        = 20

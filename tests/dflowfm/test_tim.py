@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 
 import pytest
@@ -128,10 +129,10 @@ class TestTimModel:
         model.quantities_names = ["waterlevel"]
         assert model.get_units() == ["m"]
         model.quantities_names = ["temperature"]
-        assert model.get_units() == ["C"]
+        assert model.get_units() == ["degC"]
         model.quantities_names = ["salinity"]
-        assert model.get_units() == ["ppt"]
-        model.quantities_names = ["initialtracer-anyname"]
+        assert model.get_units() == ["1e-3"]
+        model.quantities_names = ["initialtracerAnyname"]
         assert model.get_units() == ["-"]
 
     def test_as_dataframe(self):
@@ -294,6 +295,14 @@ class TestTimModel:
             )
 
         assert expected_error_msg in str(error.value)
+
+    def test_test_fortran_d_exponent_supported(self):
+        input_path = Path(test_input_dir / "tim" / "unimagdir.wnd")
+        tim_model = TimModel(input_path)
+        assert tim_model.timeseries[0].time == 0
+        assert tim_model.timeseries[0].data == [1.0, 270.0]
+        assert math.isclose(tim_model.timeseries[1].time, 9e9)
+        assert tim_model.timeseries[1].data == [1.0, 270.0]
 
     def test_add_location_values(self):
         model = TimModel(
