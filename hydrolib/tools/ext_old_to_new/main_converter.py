@@ -312,6 +312,36 @@ class ExternalForcingConverter:
             backup_file(self.fm_model.filepath)
             self.fm_model.save(recurse=False, exclude_unset=True)
 
+    @staticmethod
+    def get_mdu_info(mdu_file: str) -> Tuple[Dict, Dict]:
+        """Get the info needed from the mdu to process and convert the old external forcing files.
+
+        Args:
+            mdu_file (str):
+                path to the mdu file
+        Returns:
+            data (Dict[str, str]):
+                all the data inside the mdu file, with each section in the file as a key and the data of that section is
+                the value of that key.
+            mdu_info (Dict[str, str]):
+                dictionary with the information needed for the conversion tool to convert the `SourceSink` and
+                `Boundary` quantities. The dictionary will have three keys `temperature`, `salinity`, and `refdate`.
+        """
+        data = FMModel._load(FMModel, mdu_file)
+        # read sections of the mdu file.
+        time_data = data.get("time")
+        physics_data = data.get("physics")
+        mdu_time = Time(**time_data)
+        mdu_physics = MyPhysics(**physics_data)
+
+        ref_time = get_ref_time(mdu_time.refdate)
+        mdu_info = {
+            "refdate": ref_time,
+            "temperature": False if mdu_physics.temperature == 0 else True,
+            "salinity": mdu_physics.salinity,
+        }
+        return data, mdu_info
+
     @classmethod
     def from_mdu(
         cls,
@@ -356,18 +386,8 @@ class ExternalForcingConverter:
                     "salinity": fm_model.physics.salinity,
                 }
             except ValidationError:
-                data = FMModel._load(FMModel, mdu_file)
-                # read sections of the mdu file.
-                time_data = data.get("time")
-                physics_data = data.get("physics")
-                mdu_time = Time(**time_data)
-                mdu_physics = MyPhysics(**physics_data)
+                data, mdu_info = ExternalForcingConverter.get_mdu_info(mdu_file)
 
-                mdu_info = {
-                    "refdate": mdu_time.refdate,
-                    "temperature": mdu_physics.temperature,
-                    "salinity": mdu_physics.salinity,
-                }
                 external_forcing_data = data.get("external_forcing")
                 geometry = data.get("geometry")
 
