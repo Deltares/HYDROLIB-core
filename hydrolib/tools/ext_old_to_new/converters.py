@@ -616,15 +616,27 @@ class SourceSinkConverter(BaseConverter):
             "numcoordinates": len(polyline.x),
             "xcoordinates": polyline.x,
             "ycoordinates": polyline.y,
-            "zsource": z_source,
-            "zsink": z_sink,
         }
         forcings = {
             key: value
             for key, value in zip(time_model.quantities_names, forcing_model_list)
         }
         data = data | forcings
-        new_block = SourceSink(**data)
+
+        if None not in z_source:
+            # if the z_source and z_sink are not None, then add them to the data
+            z_source_sink_data = {
+                "zsource": z_source,
+                "zsink": z_sink,
+            }
+            data = data | z_source_sink_data
+
+        try:
+            new_block = SourceSink(**data)
+        except Exception as e:  # pragma: no cover
+            raise SourceSinkError(
+                f"Failed to create the SourceSink object. for the following Errors: {e}"
+            )
 
         return new_block
 
@@ -772,3 +784,11 @@ class TimToForcingConverter:
             forcings_model_list.append(model)
 
         return forcings_model_list
+
+
+class SourceSinkError(Exception):
+    """SourceSinkError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
