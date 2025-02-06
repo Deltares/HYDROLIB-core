@@ -1,9 +1,10 @@
 import argparse
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
-from datetime import datetime
+
 from pydantic.v1 import Extra
 from pydantic.v1.error_wrappers import ValidationError
 from tqdm import tqdm
@@ -561,9 +562,11 @@ def _get_parser() -> argparse.ArgumentParser:
     )
     return parser
 
-def get_ref_time(input_date : str, date_format: str = "%Y%m%d"):
+
+def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     date_object = datetime.strptime(f"{input_date}", date_format)
     return f"MINUTES SINCE {date_object}"
+
 
 def main(args=None):
     """
