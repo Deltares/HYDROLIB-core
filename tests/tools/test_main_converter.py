@@ -48,7 +48,10 @@ class TestExtOldToNewFromMDU:
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
         path = input_files_dir / "e02/f006_external_forcing"
-        with patch("hydrolib.tools.ext_old_to_new.main_converter.ExternalForcingConverter.save", return_value = None):
+        with patch(
+            "hydrolib.tools.ext_old_to_new.main_converter.ExternalForcingConverter.save",
+            return_value=None,
+        ):
             ext_old_to_new_dir_recursive(path, suppress_errors=True)
 
 
