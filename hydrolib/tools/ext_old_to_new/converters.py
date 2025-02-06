@@ -807,12 +807,14 @@ class SourceSinkError(Exception):
         """__init__."""
         print(error_message)
 
+
 class InitialFieldError(Exception):
     """SourceSinkError."""
 
     def __init__(self, error_message: str):
         """__init__."""
         print(error_message)
+
 
 class MeteoError(Exception):
     """SourceSinkError."""
@@ -828,6 +830,7 @@ class BoundaryError(Exception):
     def __init__(self, error_message: str):
         """__init__."""
         print(error_message)
+
 
 class ParameterFieldError(Exception):
     """SourceSinkError."""
