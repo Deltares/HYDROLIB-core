@@ -38,14 +38,12 @@ class TestExtOldToNewFromMDU:
         )
 
         # test with error
-        with pytest.raises(ValidationError):
-            ExternalForcingConverter.from_mdu(mdu_filename)
-
-        ExternalForcingConverter.from_mdu(mdu_filename, suppress_errors=True)
-        captured = capsys.readouterr()
-        assert captured.out.startswith(
-            f"Could not read {mdu_filename} as a valid FM model:"
+        converter = ExternalForcingConverter.from_mdu(
+            mdu_filename, suppress_errors=True
         )
+        ext_model, _, _ = converter.update()
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
 
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
@@ -201,11 +199,15 @@ class TestUpdate:
         The old external forcing file contains only 9 boundary condition quantities all with polyline location files
         and no forcing files. The update method should convert all the quantities to boundary conditions.
         """
-        converter = ExternalForcingConverter(old_forcing_file_boundary["path"])
+        mdu_info = {
+            "refdate": "minutes since 2015-01-01 00:00:00",
+        }
+        converter = ExternalForcingConverter(
+            old_forcing_file_boundary["path"], mdu_info=mdu_info
+        )
 
         # Mock the fm_model
         mock_fm_model = Mock()
-        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
         converter._fm_model = mock_fm_model
         ext_model, inifield_model, structure_model = converter.update()
 
@@ -237,11 +239,14 @@ class TestUpdateSourcesSinks:
 
         """
         path = "tests/data/input/source-sink/source-sink.ext"
-        converter = ExternalForcingConverter(path)
+        mdu_info = {
+            "refdate": "minutes since 2015-01-01 00:00:00",
+        }
+        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
         # Mock the fm_model
         mock_fm_model = Mock()
-        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
         converter._fm_model = mock_fm_model
+
         tim_file = Path("tim-3-columns.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             ext_model, inifield_model, structure_model = converter.update()
@@ -270,13 +275,15 @@ class TestUpdateSourcesSinks:
 
         """
         path = "tests/data/input/source-sink/source-sink.ext"
-        converter = ExternalForcingConverter(path)
+        mdu_info = {
+            "refdate": "minutes since 2015-01-01 00:00:00",
+            "salinity": True,
+            "temperature": True,
+        }
+        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
 
         # Mock the fm_model
         mock_fm_model = Mock()
-        mock_fm_model.physics.salinity = True
-        mock_fm_model.physics.temperature = True
-        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
         converter._fm_model = mock_fm_model
 
         tim_file = Path("tim-3-columns.tim")
