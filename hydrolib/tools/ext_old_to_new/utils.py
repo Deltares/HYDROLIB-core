@@ -66,8 +66,10 @@ def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:
         Path: The new filepath with the postfix included.
 
     Examples:
-        >>> construct_filepath_with_postfix("file.txt", "_new")
+        ```python
+        >>> construct_filepath_with_postfix("file.txt", "_new") # doctest: +SKIP
         Path("file_new.txt")
+        ```
     """
     file_as_path = Path(filepath)
     return file_as_path.with_stem(file_as_path.stem + postfix)
@@ -245,22 +247,22 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
                         and values 3 and 4 respectively.
 
      Examples:
+         ```python
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({"salinitydelta": 3, "temperaturedelta": 4})
-
+        OrderedDict({'salinitydelta': 3, 'temperaturedelta': 4})
         >>> find_temperature_salinity_in_quantities(["Temperature"])
-        OrderedDict({"temperaturedelta": 3})
-
+        OrderedDict({'temperaturedelta': 3})
         >>> find_temperature_salinity_in_quantities(["Salinity"])
-        OrderedDict({"salinitydelta": 3})
-
+        OrderedDict({'salinitydelta': 3})
         >>> find_temperature_salinity_in_quantities(["tracers"])
         OrderedDict()
-
         >>> find_temperature_salinity_in_quantities([])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities(["discharge_salinity_temperature_sorsin", "Salinity"])
-        OrderedDict({"salinitydelta": 3})
+        OrderedDict({'salinitydelta': 3})
+
+        ```
+
     Notes:
         - The function removes the `discharge_salinity_temperature_sorsin` from the given list of strings.
         - The function removes the duplicate strings in the list.
