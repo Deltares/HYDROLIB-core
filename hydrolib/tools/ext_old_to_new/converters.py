@@ -118,8 +118,12 @@ class MeteoConverter(BaseConverter):
         meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
         meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
         meteo_data["operand"] = forcing.operand
-
-        meteo_block = Meteo(**meteo_data)
+        try:
+            meteo_block = Meteo(**meteo_data)
+        except Exception as e:
+            raise MeteoError(
+                f"Failed to create the Meteo object. for the following Errors: {e}"
+            )
 
         return meteo_block
 
@@ -248,7 +252,12 @@ class BoundaryConditionConverter(BaseConverter):
             "forcingfile": forcing_model,
         }
 
-        new_block = Boundary(**data)
+        try:
+            new_block = Boundary(**data)
+        except Exception as e:
+            raise BoundaryError(
+                f"Failed to create the Boundary object. for the following Errors: {e}"
+            )
 
         return new_block
 
@@ -287,7 +296,12 @@ class InitialConditionConverter(BaseConverter):
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
         data = create_initial_cond_and_parameter_input_dict(forcing)
-        new_block = InitialField(**data)
+        try:
+            new_block = InitialField(**data)
+        except Exception as e:
+            raise InitialFieldError(
+                f"Failed to create the InitialField object. for the following Errors: {e}"
+            )
 
         return new_block
 
@@ -787,6 +801,35 @@ class TimToForcingConverter:
 
 
 class SourceSinkError(Exception):
+    """SourceSinkError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+class InitialFieldError(Exception):
+    """SourceSinkError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+class MeteoError(Exception):
+    """SourceSinkError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+
+class BoundaryError(Exception):
+    """SourceSinkError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+class ParameterFieldError(Exception):
     """SourceSinkError."""
 
     def __init__(self, error_message: str):
