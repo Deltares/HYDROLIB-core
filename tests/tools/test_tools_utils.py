@@ -41,6 +41,7 @@ def test_convert_interpolation_data():
 @pytest.mark.parametrize(
     "strings, expected",
     [
+        (["discharge_salinity_temperature_sorsin"], {}),
         (["temperature", "Salinity"], {"temperaturedelta": 4, "salinitydelta": 3}),
         (["Temperature"], {"temperaturedelta": 3}),
         (["Salinity"], {"salinitydelta": 3}),

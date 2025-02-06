@@ -259,8 +259,17 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
 
         >>> find_temperature_salinity_in_quantities([])
         OrderedDict()
+        >>> find_temperature_salinity_in_quantities(["discharge_salinity_temperature_sorsin", "Salinity"])
+        OrderedDict({"salinitydelta": 3})
+    Notes:
+        - The function removes the `discharge_salinity_temperature_sorsin` from the given list of strings.
+        - The function removes the duplicate strings in the list.
     """
     result = OrderedDict()
+    strings = list(set(strings))
+    # remove the `discharge_salinity_temperature_sorsin` quantity from the list
+    if "discharge_salinity_temperature_sorsin" in strings:
+        strings.remove("discharge_salinity_temperature_sorsin")
 
     if any("salinity" in string.lower() for string in strings):
         result["salinitydelta"] = 3
