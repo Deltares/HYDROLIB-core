@@ -132,6 +132,13 @@ class TestBoundaryConverter:
                 for i in range(2)
             ]
         )
+        # check forcing model file path
+        assert all(
+            [
+                forcing_model[i].filepath == file_name.parent / f"{names[i]}.bc"
+                for i in range(2)
+            ]
+        )
         assert all(
             [
                 forcing_model[i].forcing[0].quantityunitpair[1].quantity

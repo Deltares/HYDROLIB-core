@@ -42,7 +42,7 @@ class BaseConverter(ABC):
 
     def __init__(self):
         """Initializes the BaseConverter object."""
-        pass
+        self._root_dir = None
 
     @property
     def root_dir(self) -> Path:
@@ -65,7 +65,7 @@ class BaseConverter(ABC):
 
         Returns:
             Any: The converted data in the new format. Should be
-                included into some FileModel object by the caller.
+                included in some FileModel object by the caller.
         """
         raise NotImplementedError("Subclasses must implement convert method")
 
@@ -245,6 +245,9 @@ class BoundaryConditionConverter(BaseConverter):
         forcing_model = self.convert_tim_to_bc(
             tim_model, start_time, units=units, user_defined_names=user_defined_names
         )
+        # set the bc file names to the same names as the tim files.
+        for i, file in enumerate(forcing_model):
+            file.filepath = tim_files[i].with_suffix(".bc")
 
         data = {
             "quantity": forcing.quantity,
@@ -752,12 +755,12 @@ class TimToForcingConverter:
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
             >>> converter = TimToForcingConverter()
             >>> forcing_model = converter.convert(
-            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m³/s"], ["discharge"]
+            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
             ... )
             >>> print(forcing_model[0].forcing[0].name)
             discharge
             >>> print(forcing_model[0].forcing[0].datablock)
-            [[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0], [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]]
+            [[0.0, 0.0], [10.0, 0.01], [20.0, 0.0], [30.0, -0.01], [40.0, 0.0], [50.0, 0.01], [60.0, 0.0], [70.0, -0.01], [80.0, 0.0], [90.0, 0.01], [100.0, 0.0], [110.0, -0.01], [120.0, 0.0]]
 
             ```
         """
@@ -807,12 +810,14 @@ class SourceSinkError(Exception):
         """__init__."""
         print(error_message)
 
+
 class InitialFieldError(Exception):
     """SourceSinkError."""
 
     def __init__(self, error_message: str):
         """__init__."""
         print(error_message)
+
 
 class MeteoError(Exception):
     """SourceSinkError."""
@@ -828,6 +833,7 @@ class BoundaryError(Exception):
     def __init__(self, error_message: str):
         """__init__."""
         print(error_message)
+
 
 class ParameterFieldError(Exception):
     """SourceSinkError."""
