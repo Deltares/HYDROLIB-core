@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
@@ -134,10 +136,7 @@ class TestBoundaryConverter:
         )
         # check forcing model file path
         assert all(
-            [
-                forcing_model[i].filepath == file_name.parent / f"{names[i]}.bc"
-                for i in range(2)
-            ]
+            [forcing_model[i].filepath == Path(f"{names[i]}.bc") for i in range(2)]
         )
         assert all(
             [

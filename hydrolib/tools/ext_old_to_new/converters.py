@@ -247,7 +247,7 @@ class BoundaryConditionConverter(BaseConverter):
         )
         # set the bc file names to the same names as the tim files.
         for i, file in enumerate(forcing_model):
-            file.filepath = tim_files[i].with_suffix(".bc")
+            file.filepath = tim_files[i].with_suffix(".bc").name
 
         data = {
             "quantity": forcing.quantity,
@@ -626,6 +626,14 @@ class SourceSinkConverter(BaseConverter):
         forcing_model_list = self.convert_tim_to_bc(
             time_model, start_time, units=units, user_defined_names=user_defined_names
         )
+        # set the bc file names to the same names as the tim files.
+        for i, file in enumerate(forcing_model_list):
+            file.filepath = (
+                tim_file.with_stem(f"{tim_file.stem}-{time_model.quantities_names[i]}")
+                .with_suffix(".bc")
+                .name
+            )
+
         data = {
             "id": "L1",
             "name": forcing.quantity,
