@@ -257,39 +257,32 @@ class ExternalForcingConverter:
     def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink]:
         """Convert a single forcing block to the appropriate new format."""
 
-        try:
-            converter_class = ConverterFactory.create_converter(forcing.quantity)
-            converter_class.root_dir = self.root_dir
+        converter_class = ConverterFactory.create_converter(forcing.quantity)
+        converter_class.root_dir = self.root_dir
 
-            # only the SourceSink converter needs the quantities' list
-            if converter_class.__class__.__name__ == "SourceSinkConverter":
+        # only the SourceSink converter needs the quantities' list
+        if converter_class.__class__.__name__ == "SourceSinkConverter":
 
-                if self.mdu_info is None:
-                    raise ValueError(
-                        "FM model is required to convert SourcesSink quantities."
-                    )
-                else:
-                    temp_salinity_mdu = self.mdu_info
-                    start_time = self.mdu_info.get("refdate")
-
-                quantities = self.extold_model.quantities
-                new_quantity_block = converter_class.convert(
-                    forcing, quantities, start_time=start_time, **temp_salinity_mdu
+            if self.mdu_info is None:
+                raise ValueError(
+                    "FM model is required to convert SourcesSink quantities."
                 )
-            elif converter_class.__class__.__name__ == "BoundaryConditionConverter":
-                if self.mdu_info is None:
-                    raise ValueError(
-                        "FM model is required to convert Boundary conditions."
-                    )
-                else:
-                    start_time = self.mdu_info.get("refdate")
-                    new_quantity_block = converter_class.convert(forcing, start_time)
             else:
-                new_quantity_block = converter_class.convert(forcing)
+                temp_salinity_mdu = self.mdu_info
+                start_time = self.mdu_info.get("refdate")
 
-        except ValueError:
-            # While this tool is in progress, accept that we do not convert all quantities yet.
-            new_quantity_block = None
+            quantities = self.extold_model.quantities
+            new_quantity_block = converter_class.convert(
+                forcing, quantities, start_time=start_time, **temp_salinity_mdu
+            )
+        elif converter_class.__class__.__name__ == "BoundaryConditionConverter":
+            if self.mdu_info is None:
+                raise ValueError("FM model is required to convert Boundary conditions.")
+            else:
+                start_time = self.mdu_info.get("refdate")
+                new_quantity_block = converter_class.convert(forcing, start_time)
+        else:
+            new_quantity_block = converter_class.convert(forcing)
 
         return new_quantity_block
 
