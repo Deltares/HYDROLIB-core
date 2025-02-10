@@ -16,12 +16,12 @@ def test_tim_to_bc_converter(input_files_dir: Path):
     tim_model = TimModel(filepath, user_defined_names)
 
     units = ["m³/s", "m", "C", "ppt", "-"]
-    start_time = "minutes since 2015-01-01 00:00:00"
+    time_unit = "minutes since 2015-01-01 00:00:00"
     df = tim_model.as_dataframe()
     converter = TimToForcingConverter()
     forcing_model = converter.convert(
         tim_model=tim_model,
-        start_time=start_time,
+        time_unit=time_unit,
         units=units,
         user_defined_names=user_defined_names,
     )

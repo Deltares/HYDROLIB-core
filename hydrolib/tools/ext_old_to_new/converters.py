@@ -173,17 +173,17 @@ class BoundaryConditionConverter(BaseConverter):
     @staticmethod
     def convert_tim_to_bc(
         tim_model: TimModel,
-        start_time: str,
+        time_unit: str,
         time_interpolation: str = "linear",
         units: List[str] = None,
         user_defined_names: List[str] = None,
     ) -> ForcingModel:
         forcing_model = TimToForcingConverter.convert(
-            tim_model, start_time, time_interpolation, units, user_defined_names
+            tim_model, time_unit, time_interpolation, units, user_defined_names
         )
         return forcing_model
 
-    def convert(self, forcing: ExtOldForcing, start_time: str) -> Boundary:
+    def convert(self, forcing: ExtOldForcing, time_unit: str) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
 
@@ -198,7 +198,7 @@ class BoundaryConditionConverter(BaseConverter):
                 in an old external forcings file. This object contains all the
                 necessary information, such as quantity, values, and timestamps,
                 required for the conversion process.
-            start_time:
+            time_unit:
                 The start date of the time series data.
 
         Returns:
@@ -248,7 +248,7 @@ class BoundaryConditionConverter(BaseConverter):
         units = tim_model.get_units()
 
         forcing_model = self.convert_tim_to_bc(
-            tim_model, start_time, units=units, user_defined_names=user_defined_names
+            tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
         # set the bc file names to the same names as the tim files.
         for i, file in enumerate(forcing_model):
@@ -731,7 +731,7 @@ class TimToForcingConverter:
     @staticmethod
     def convert(
         tim_model: TimModel,
-        start_time: str,
+        time_unit: str,
         time_interpolation: str = "linear",
         units: List[str] = None,
         user_defined_names: List[str] = None,
@@ -742,7 +742,7 @@ class TimToForcingConverter:
         Args:
             tim_model (TimModel):
                 The input TimModel to be converted.
-            start_time (str):
+            time_unit (str):
                 The reference time for the forcing data.
             time_interpolation (str, optional):
                 The time interpolation method for the forcing data. Defaults to "linear".
@@ -780,7 +780,7 @@ class TimToForcingConverter:
         if units is None or user_defined_names is None:
             raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
 
-        if start_time is None:
+        if time_unit is None:
             raise ValueError("The 'start_time' must be provided.")
 
         first_record = tim_model.timeseries[0].data
@@ -802,7 +802,7 @@ class TimToForcingConverter:
                         function="timeseries",
                         timeinterpolation=time_interpolation,
                         quantityunitpair=[
-                            QuantityUnitPair(quantity="time", unit=start_time),
+                            QuantityUnitPair(quantity="time", unit=time_unit),
                             QuantityUnitPair(quantity=column, unit=unit),
                         ],
                         datablock=[
