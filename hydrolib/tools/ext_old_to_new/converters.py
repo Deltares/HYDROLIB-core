@@ -178,6 +178,30 @@ class BoundaryConditionConverter(BaseConverter):
         units: List[str] = None,
         user_defined_names: List[str] = None,
     ) -> ForcingModel:
+        """Convert a TimModel into a ForcingModel.
+
+        wrapper on top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
+
+        Args:
+            tim_model (TimModel):
+                The input TimModel to be converted.
+            time_unit (str):
+                Formatted string containing the units of time, including absolute datetime reference information
+                (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
+            time_interpolation (str, default is linear):
+                The interpolation method to be used for the time series data.
+            units (List[str], optional):
+                A list of units corresponding to the forcing quantities.
+            user_defined_names (List[str], optional):
+                A list of user-defined names for the forcing blocks.
+
+        Returns:
+            ForcingModel: The converted ForcingModel.
+
+        Raises:
+            ValueError: If `units` and `user_defined_names` are not provided.
+            ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
+        """
         forcing_model = TimToForcingConverter.convert(
             tim_model, time_unit, time_interpolation, units, user_defined_names
         )
@@ -528,7 +552,7 @@ class SourceSinkConverter(BaseConverter):
     @staticmethod
     def convert_tim_to_bc(
         tim_model: TimModel,
-        start_time: str,
+        time_unit: str,
         units: List[str] = None,
         user_defined_names: List[str] = None,
     ) -> ForcingModel:
@@ -539,8 +563,9 @@ class SourceSinkConverter(BaseConverter):
         Args:
             tim_model (TimModel):
                 The input TimModel to be converted.
-            start_time (str):
-                The reference time for the forcing data.
+            time_unit (str):
+                Formatted string containing the units of time, including absolute datetime reference information
+                (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             units (List[str], optional):
                 A list of units corresponding to the forcing quantities.
             user_defined_names (List[str], optional):
@@ -554,7 +579,7 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
         forcing_model = TimToForcingConverter.convert(
-            tim_model, start_time, units=units, user_defined_names=user_defined_names
+            tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
         return forcing_model
 
@@ -743,7 +768,8 @@ class TimToForcingConverter:
             tim_model (TimModel):
                 The input TimModel to be converted.
             time_unit (str):
-                The reference time for the forcing data.
+                Formatted string containing the units of time, including absolute datetime reference information
+                (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             time_interpolation (str, optional):
                 The time interpolation method for the forcing data. Defaults to "linear".
             units (List[str], optional):
