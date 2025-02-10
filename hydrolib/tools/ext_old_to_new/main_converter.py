@@ -286,11 +286,14 @@ class ExternalForcingConverter:
 
         return new_quantity_block
 
-    def save(self, backup: bool = True):
+    def save(self, backup: bool = True, recursive: bool = True):
         """Save the updated models to disk.
 
         Args:
-            backup (bool, optional): Create a backup of each file that will be overwritten.
+            backup (bool, optional):
+                Create a backup of each file that will be overwritten.
+            recursive (bool, optional): Defaults to True.
+                Save the models recursively.
         """
         # FIXME: the backup is done is the file is already there, and here is backup is done before saving the files,
         #  so it is not successfuly done.
@@ -299,9 +302,9 @@ class ExternalForcingConverter:
             backup_file(self.inifield_model.filepath)
             backup_file(self.structure_model.filepath)
 
-        self.ext_model.save()
-        self.inifield_model.save()
-        self.structure_model.save()
+        self.ext_model.save(recurse=recursive)
+        self.inifield_model.save(recurse=recursive)
+        self.structure_model.save(recurse=recursive)
         if self.fm_model is not None:
             backup_file(self.fm_model.filepath)
             self.fm_model.save(recurse=False, exclude_unset=True)
@@ -340,7 +343,7 @@ class ExternalForcingConverter:
     def from_mdu(
         cls,
         mdu_file: PathOrStr,
-        ext_file: Optional[PathOrStr] = "forcings.ext",
+        ext_file: Optional[PathOrStr] = None,
         inifield_file: Optional[PathOrStr] = "inifields.ini",
         structure_file: Optional[PathOrStr] = "structures.ini",
         suppress_errors: Optional[bool] = False,
@@ -369,8 +372,8 @@ class ExternalForcingConverter:
         try:
             try:
                 fm_model = LegacyFMModel(mdu_file, recurse=False)
-                extforcefile_path = fm_model.external_forcing.extforcefile.filepath
-                extforcefile_new = fm_model.external_forcing.extforcefilenew
+                old_ext_force_file = fm_model.external_forcing.extforcefile.filepath
+                new_ext_force_file = fm_model.external_forcing.extforcefilenew
                 inifieldfile = fm_model.geometry.inifieldfile
                 structurefile = fm_model.geometry.structurefile
                 mdu_info = {
@@ -387,17 +390,33 @@ class ExternalForcingConverter:
 
                 inifieldfile = geometry.get("inifieldfile")
                 structurefile = geometry.get("structurefile")
-                extforcefile_path = external_forcing_data["extforcefile"]
-                extforcefile_new = external_forcing_data["extforcefilenew"]
+                old_ext_force_file = external_forcing_data["extforcefile"]
+                new_ext_force_file = external_forcing_data["extforcefilenew"]
+                old_ext_force_file = (
+                    Path(old_ext_force_file)
+                    if old_ext_force_file is not None
+                    else old_ext_force_file
+                )
+                new_ext_force_file = (
+                    Path(new_ext_force_file)
+                    if new_ext_force_file is not None
+                    else new_ext_force_file
+                )
 
             root_dir = mdu_file.parent
-            extoldfile = root_dir / extforcefile_path
+            extoldfile = root_dir / old_ext_force_file
 
-            ext_file = (
-                extforcefile_new._resolved_filepath
-                if extforcefile_new
-                else root_dir / ext_file
-            )
+            if new_ext_force_file:
+                ext_file = new_ext_force_file._resolved_filepath
+            else:
+                if ext_file is None:
+                    old_ext = old_ext_force_file.with_stem(
+                        old_ext_force_file.stem + "-new"
+                    )
+                    ext_file = root_dir / old_ext
+                else:
+                    ext_file = root_dir / ext_file
+
             inifield_file = (
                 inifieldfile._resolved_filepath
                 if inifieldfile
