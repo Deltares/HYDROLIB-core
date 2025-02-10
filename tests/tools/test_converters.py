@@ -91,6 +91,29 @@ class TestConvertMeteo:
 
 class TestBoundaryConverter:
 
+    def test_merge_tim_files(self, input_files_dir: Path):
+        """
+        Test merging multiple tim files into a single tim model.
+        """
+        file_name = input_files_dir / "boundary-conditions/tfl_01.pli"
+        path_list = [
+            input_files_dir / "boundary-conditions/tfl_01_0001.tim",
+            input_files_dir / "boundary-conditions/tfl_01_0002.tim",
+        ]
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename=file_name,
+            filetype=9,
+            method="3",
+            operand="O",
+        )
+        tim_model = BoundaryConditionConverter.merge_tim_files(path_list, forcing)
+        assert tim_model.quantities_names == ["tfl_01_0001", "tfl_01_0002"]
+        df = tim_model.as_dataframe()
+        assert df.index.tolist() == [0, 120]
+        assert df.columns.tolist() == ["tfl_01_0001", "tfl_01_0002"]
+        assert df.values.tolist() == [[0.01, 0.01], [0.01, 0.01]]
+
     def test_with_pli(self, input_files_dir):
         """
         Old quantity block:

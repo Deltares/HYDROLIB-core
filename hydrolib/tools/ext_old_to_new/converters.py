@@ -134,19 +134,23 @@ class BoundaryConditionConverter(BaseConverter):
         super().__init__()
 
     @staticmethod
-    def parse_tim_model(tim_files: List[TimModel], forcing: ExtOldForcing) -> TimModel:
+    def merge_tim_files(tim_files: List[Path], forcing: ExtOldForcing) -> TimModel:
         """Parse the boundary condition related time series from the tim files.
 
-        Args:
-            tim_files (List[TimModel]): List of TIM models.
-            forcing (ExtOldForcing):
+        The function will merge all the tim files into one tim model and assign the quantity names to the tim model.
 
+        Args:
+            tim_files (List[Path]):
+                List of TIM models paths.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps, required for the conversion process.
         Returns:
-            TimModel: A TimModel object containing the time series data from the TIM files.
+            TimModel: A TimModel object containing the time series data from all given TIM files.
         """
         time_files_exist = all([tim_file.exists() for tim_file in tim_files])
         if not time_files_exist:
-            raise ValueError(
+            raise FileNotFoundError(
                 f"TIM files '{tim_files}' not found for QUANTITY={forcing.quantity}"
             )
 
@@ -158,7 +162,8 @@ class BoundaryConditionConverter(BaseConverter):
             data = tim_model.as_dict()
             if len(data.keys()) != 1:
                 raise ValueError(
-                    f"Number of columns in the TIM file '{tim_model.filepath}' should be 1 column."
+                    f"Number of columns in the TIM file '{tim_model.filepath}' should be 1 column. in addition to the "
+                    "time column."
                 )
             tim_models[0].add_column(
                 list(data.values())[0], column_name=list(data.keys())[0]
@@ -235,7 +240,7 @@ class BoundaryConditionConverter(BaseConverter):
             for i in range(num_files)
         ]
 
-        tim_model = self.parse_tim_model(tim_files, forcing)
+        tim_model = self.merge_tim_files(tim_files, forcing)
         # switch the quantity names from the Tim model (loction names) to quantity names.
         user_defined_names = tim_model.quantities_names
         tim_model.quantities_names = [forcing.quantity] * len(tim_model.get_units())
