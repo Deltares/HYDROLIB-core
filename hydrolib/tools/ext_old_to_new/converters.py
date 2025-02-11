@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
@@ -275,8 +276,7 @@ class BoundaryConditionConverter(BaseConverter):
             tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
         # set the bc file names to the same names as the tim files.
-        for i, file in enumerate(forcing_model):
-            file.filepath = tim_files[i].with_suffix(".bc").name
+        forcing_model.filepath = location_file.with_suffix(".bc")
 
         data = {
             "quantity": forcing.quantity,
@@ -583,6 +583,24 @@ class SourceSinkConverter(BaseConverter):
         )
         return forcing_model
 
+    @staticmethod
+    def separate_forcing_model(forcing_model: ForcingModel) -> Dict[str, ForcingModel]:
+        """Separate the forcing model into a list of forcing models.
+        each forcing model will contain only one forcing quantity.
+        """
+        forcing_list = [deepcopy(forcing) for forcing in forcing_model.forcing]
+
+        forcing_model_list = []
+        forcings = {}
+        for forcing in forcing_list:
+            model = deepcopy(forcing_model)
+            model.forcing = [forcing]
+            forcing_model_list.append(model)
+            name = forcing.quantityunitpair[1].quantity
+            forcings[name] = model
+
+        return forcings
+
     def convert(
         self,
         forcing: ExtOldForcing,
@@ -653,16 +671,11 @@ class SourceSinkConverter(BaseConverter):
             f"user-defines-{i}" for i in range(len(time_model.quantities_names))
         ]
 
-        forcing_model_list = self.convert_tim_to_bc(
+        forcing_model = self.convert_tim_to_bc(
             time_model, start_time, units=units, user_defined_names=user_defined_names
         )
         # set the bc file names to the same names as the tim files.
-        for i, file in enumerate(forcing_model_list):
-            file.filepath = (
-                tim_file.with_stem(f"{tim_file.stem}-{time_model.quantities_names[i]}")
-                .with_suffix(".bc")
-                .name
-            )
+        forcing_model.filepath = location_file.with_suffix(".bc").name
 
         data = {
             "id": "L1",
@@ -672,10 +685,8 @@ class SourceSinkConverter(BaseConverter):
             "xcoordinates": polyline.x,
             "ycoordinates": polyline.y,
         }
-        forcings = {
-            key: value
-            for key, value in zip(time_model.quantities_names, forcing_model_list)
-        }
+        forcings = self.separate_forcing_model(forcing_model)
+
         data = data | forcings
 
         if None not in z_source:
@@ -760,7 +771,7 @@ class TimToForcingConverter:
         time_interpolation: str = "linear",
         units: List[str] = None,
         user_defined_names: List[str] = None,
-    ) -> List[ForcingModel]:
+    ) -> ForcingModel:
         """
         Convert a TimModel into a ForcingModel.
 
@@ -778,7 +789,7 @@ class TimToForcingConverter:
                 A list of user-defined names for the forcing blocks.
 
         Returns:
-            ForcingModel: The converted ForcingModel.
+            ForcingModel: The converted ForcingModel, with all the quantities inside it.
 
         Raises:
             ValueError: If `units` and `user_defined_names` are not provided.
@@ -787,6 +798,8 @@ class TimToForcingConverter:
 
         Examples:
             ```python
+            >>> from hydrolib.core.dflowfm.tim.models import TimModel
+            >>> from hydrolib.tools.ext_old_to_new.converters import TimToForcingConverter
             >>> file_path = "tests/data/input/tim/single_data_for_timeseries.tim"
             >>> user_defined_names = ["discharge"]
             >>> tim_model = TimModel(file_path, user_defined_names)
@@ -796,9 +809,9 @@ class TimToForcingConverter:
             >>> forcing_model = converter.convert(
             ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
             ... )
-            >>> print(forcing_model[0].forcing[0].name)
+            >>> print(forcing_model.forcing[0].name)
             discharge
-            >>> print(forcing_model[0].forcing[0].datablock)
+            >>> print(forcing_model.forcing[0].datablock)
             [[0.0, 0.0], [10.0, 0.01], [20.0, 0.0], [30.0, -0.01], [40.0, 0.0], [50.0, 0.01], [60.0, 0.0], [70.0, -0.01], [80.0, 0.0], [90.0, 0.01], [100.0, 0.0], [110.0, -0.01], [120.0, 0.0]]
 
             ```
@@ -817,29 +830,24 @@ class TimToForcingConverter:
 
         df = tim_model.as_dataframe()
         time_data = df.index.tolist()
-        forcings_model_list = []
-
+        forcing_list = []
         for i, (column, vals) in enumerate(df.items()):
             unit = units[i]
-            model = ForcingModel(
-                forcing=[
-                    TimeSeries(
-                        name=user_defined_names[i],
-                        function="timeseries",
-                        timeinterpolation=time_interpolation,
-                        quantityunitpair=[
-                            QuantityUnitPair(quantity="time", unit=time_unit),
-                            QuantityUnitPair(quantity=column, unit=unit),
-                        ],
-                        datablock=[
-                            [i, j] for i, j in zip(time_data, vals.values.tolist())
-                        ],
-                    )
-                ]
+            forcing = TimeSeries(
+                name=user_defined_names[i],
+                function="timeseries",
+                timeinterpolation=time_interpolation,
+                quantityunitpair=[
+                    QuantityUnitPair(quantity="time", unit=time_unit),
+                    QuantityUnitPair(quantity=column, unit=unit),
+                ],
+                datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
             )
-            forcings_model_list.append(model)
 
-        return forcings_model_list
+            forcing_list.append(forcing)
+
+        forcing_model = ForcingModel(forcing=forcing_list)
+        return forcing_model
 
 
 class SourceSinkError(Exception):

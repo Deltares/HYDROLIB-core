@@ -1,8 +1,9 @@
+import difflib
 import filecmp
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generator, Generic, List, Optional, TypeVar
+from typing import Generator, Generic, List, Optional, TypeVar, Union
 
 from pydantic.v1.generics import GenericModel
 
@@ -209,3 +210,37 @@ def get_temp_file(filename: str) -> Generator[Path, None, None]:
     """
     with TemporaryDirectory() as temp_dir:
         yield Path(temp_dir, filename)
+
+
+def compare_two_files(path1: Union[str, Path], path2: Union[str, Path]) -> List[str]:
+    """Compare two files and return the differences.
+
+    Args:
+        path1 (str, Path): The path to the first file.
+        path2 (str, Path): The path to the second file.
+
+    Returns:
+        List[str]: The differences between the two files.
+
+    Examples:
+        ```python
+        >>> compare_two_files("file1.txt", "file2.txt") # doctest +SKIP
+        ```
+    """
+    if isinstance(path1, str):
+        path1 = Path(path1)
+    if isinstance(path2, str):
+        path2 = Path(path2)
+
+    if not path1.exists():
+        raise FileNotFoundError(f"File {path1} does not exist.")
+    if not path2.exists():
+        raise FileNotFoundError(f"File {path2} does not exist.")
+
+    file1_lines = path1.read_text().splitlines()
+    file2_lines = path2.read_text().splitlines()
+
+    diff = difflib.unified_diff(
+        file1_lines, file2_lines, lineterm="", fromfile=str(path1), tofile=str(path2)
+    )
+    return list(diff)

@@ -3,7 +3,6 @@ from typing import Dict, List
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -15,6 +14,7 @@ from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
     ext_old_to_new_dir_recursive,
 )
+from tests.utils import compare_two_files
 
 
 class TestExtOldToNewFromMDU:
@@ -228,6 +228,17 @@ class TestUpdate:
         assert [
             str(quantities[i].locationfile.filepath) for i in range(num_quantities)
         ] == old_forcing_file_boundary["locationfile"]
+        r_dir = converter.root_dir
+        # test save files
+        ext_model.save(recurse=True)
+
+        reference_files = ["new-external-forcing-reference.ext", "tfl_01-reference.bc"]
+        files = ["new-external-forcing.ext", "tfl_01.bc"]
+        for i in range(2):
+            assert (r_dir / files[i]).exists()
+            diff = compare_two_files(r_dir / reference_files[i], r_dir / files[i])
+            assert diff == []
+            (r_dir / files[i]).unlink()
 
 
 class TestUpdateSourcesSinks:
@@ -255,6 +266,9 @@ class TestUpdateSourcesSinks:
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             ext_model, inifield_model, structure_model = converter.update()
 
+        ext_model.save(
+            "tests/data/input/source-sink/convert-source-sink.ext", recurse=True
+        )
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = 1

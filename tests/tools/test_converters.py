@@ -146,26 +146,21 @@ class TestBoundaryConverter:
         assert new_quantity_block.nodeid is None
         assert new_quantity_block.bndwidth1d is None
         assert new_quantity_block.bndbldepth is None
-        assert len(forcing_model) == 2
+        assert len(forcing_model.forcing) == 2
         names = ["tfl_01_0001", "tfl_01_0002"]
-        assert all(
-            forcing_model[i].forcing[0].name == names[i] for i in range(len(names))
-        )
+        assert all(forcing_model.forcing[i].name == names[i] for i in range(len(names)))
         assert all(
             [
-                forcing_model[i].forcing[0].quantityunitpair[0].quantity == "time"
+                forcing_model.forcing[i].quantityunitpair[0].quantity == "time"
                 for i in range(2)
             ]
         )
         # check forcing model file path
-        assert all(
-            [forcing_model[i].filepath == Path(f"{names[i]}.bc") for i in range(2)]
-        )
+        assert forcing_model.filepath.name == "tfl_01.bc"
         assert all(
             [
-                forcing_model[i].forcing[0].quantityunitpair[1].quantity
-                == "waterlevelbnd"
+                forcing_model.forcing[i].quantityunitpair[1].quantity == "waterlevelbnd"
                 for i in range(2)
             ]
         )
-        assert forcing_model[0].forcing[0].datablock == [[0, 0.01], [120, 0.01]]
+        assert forcing_model.forcing[0].datablock == [[0, 0.01], [120, 0.01]]
