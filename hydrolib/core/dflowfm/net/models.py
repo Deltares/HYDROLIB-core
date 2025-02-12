@@ -256,13 +256,13 @@ class Mesh2d(BaseModel):
             interiors = parts[1:]
 
         # Inside
-        else:            
+        else:
             # Get exterior and interiors
             parts = split_by(geometrylist, geometrylist.geometry_separator)
 
             exteriors = parts[:]
             interiors = []
-        
+
         # Delete everything outside the (Multi)Polygon
         for exterior in exteriors:
             self.meshkernel.mesh2d_delete(
@@ -279,22 +279,24 @@ class Mesh2d(BaseModel):
                 invert_deletion=inside,
             )
 
-    def refine(self, 
-               polygon: mk.GeometryList, 
-               level: int, 
-               refine_intersected: bool=False,
-               use_mass_center_when_refining: bool=True,
-               refinement_type: int=2,
-               connect_hanging_nodes: bool=True,
-               account_for_samples_outside_face: bool=False,
-               min_edge_size: float = 0.5):
+    def refine(
+        self,
+        polygon: mk.GeometryList,
+        level: int,
+        refine_intersected: bool = False,
+        use_mass_center_when_refining: bool = True,
+        refinement_type: int = 2,
+        connect_hanging_nodes: bool = True,
+        account_for_samples_outside_face: bool = False,
+        min_edge_size: float = 0.5,
+    ):
         """Refine the mesh within a polygon, by a number of steps (level)
 
         Args:
             polygon (GeometryList): Polygon in which to refine
             level (int): Number of refinement steps
             refine_intersected (bool): whether to compute faces intersected by polygon
-            use_mass_center_when_refining (bool): whether to use the mass center when splitting a face in the refinement process 
+            use_mass_center_when_refining (bool): whether to use the mass center when splitting a face in the refinement process
             min_edge_size (float): smallest allowed cell size
             refinement_type (int): refinement criterion type
             connect_hanging_nodes (bool): whether to connect hanging nodes at the end of the iteration
@@ -1185,23 +1187,26 @@ class Network:
         )
 
     def mesh2d_refine_mesh(
-        self, 
-        polygon: mk.GeometryList, 
-        level: int = None,         
-        refine_intersected: bool=False,
-        use_mass_center_when_refining: bool=True,
-        refinement_type: int=2,
-        connect_hanging_nodes: bool=True,
-        account_for_samples_outside_face: bool=False,
-        min_edge_size: float=0.5):
-        self._mesh2d.refine(polygon=polygon, 
-                            level=level, 
-                            refine_intersected=refine_intersected,
-                            use_mass_center_when_refining=use_mass_center_when_refining,
-                            refinement_type=refinement_type,
-                            connect_hanging_nodes=connect_hanging_nodes,
-                            account_for_samples_outside_face=account_for_samples_outside_face,
-                            min_edge_size=min_edge_size)
+        self,
+        polygon: mk.GeometryList,
+        level: int = None,
+        refine_intersected: bool = False,
+        use_mass_center_when_refining: bool = True,
+        refinement_type: int = 2,
+        connect_hanging_nodes: bool = True,
+        account_for_samples_outside_face: bool = False,
+        min_edge_size: float = 0.5,
+    ):
+        self._mesh2d.refine(
+            polygon=polygon,
+            level=level,
+            refine_intersected=refine_intersected,
+            use_mass_center_when_refining=use_mass_center_when_refining,
+            refinement_type=refinement_type,
+            connect_hanging_nodes=connect_hanging_nodes,
+            account_for_samples_outside_face=account_for_samples_outside_face,
+            min_edge_size=min_edge_size,
+        )
 
     def mesh1d_add_branch(
         self,
