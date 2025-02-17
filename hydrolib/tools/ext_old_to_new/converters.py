@@ -859,7 +859,7 @@ class SourceSinkError(Exception):
 
 
 class InitialFieldError(Exception):
-    """SourceSinkError."""
+    """InitialFieldError."""
 
     def __init__(self, error_message: str):
         """__init__."""
@@ -867,7 +867,7 @@ class InitialFieldError(Exception):
 
 
 class MeteoError(Exception):
-    """SourceSinkError."""
+    """MeteoError."""
 
     def __init__(self, error_message: str):
         """__init__."""
@@ -875,7 +875,7 @@ class MeteoError(Exception):
 
 
 class BoundaryError(Exception):
-    """SourceSinkError."""
+    """BoundaryError."""
 
     def __init__(self, error_message: str):
         """__init__."""
@@ -883,7 +883,7 @@ class BoundaryError(Exception):
 
 
 class ParameterFieldError(Exception):
-    """SourceSinkError."""
+    """ParameterFieldError."""
 
     def __init__(self, error_message: str):
         """__init__."""
