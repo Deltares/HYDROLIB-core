@@ -686,6 +686,8 @@ class SourceSinkConverter(BaseConverter):
             "ycoordinates": polyline.y,
         }
         forcings = self.separate_forcing_model(forcing_model)
+        for name, force in forcings.items():
+            force.filepath = Path(f"{name}.bc")
 
         data = data | forcings
 
