@@ -19,6 +19,9 @@ from tests.utils import compare_two_files
 
 class TestExtOldToNewFromMDU:
     def test_wind_combi_uniform_curvi(self, capsys, input_files_dir: Path):
+        """
+        The mdu file in this test is read correctly with the `LegacyFMModel` class.
+        """
         mdu_filename = (
             input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
         )
@@ -31,19 +34,25 @@ class TestExtOldToNewFromMDU:
         assert isinstance(fm_model.external_forcing.extforcefilenew, ExtModel)
 
     def test_extrapolate_slr(self, capsys, input_files_dir: Path):
+        """
+        - This test used mdu file with `Unknown keywords` so the reading of the mdu file using the `LegacyFMModel`
+        fails.
+        - Since the `LegacyFMModel` class is not created, the converter will read only the [physics] and [time] section
+        """
         main_converter._verbose = True
         mdu_filename = (
             input_files_dir
             / "e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu"
         )
-
-        # test with error
         converter = ExternalForcingConverter.from_mdu(
             mdu_filename, suppress_errors=True
         )
         ext_model, _, _ = converter.update()
         assert isinstance(ext_model, ExtModel)
         assert len(ext_model.meteo) == 1
+        ext_model.save(recurse=True)
+        # converter.save()
+        # converter._update_fm_model()
 
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
