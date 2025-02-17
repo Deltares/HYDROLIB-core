@@ -51,8 +51,6 @@ class TestExtOldToNewFromMDU:
         assert isinstance(ext_model, ExtModel)
         assert len(ext_model.meteo) == 1
         ext_model.save(recurse=True)
-        # converter.save()
-        # converter._update_fm_model()
 
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
