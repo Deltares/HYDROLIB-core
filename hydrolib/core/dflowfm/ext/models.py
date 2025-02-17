@@ -216,6 +216,9 @@ class SourceSink(INIBasedModel):
     salinitydelta: Optional[ForcingData] = Field(alias="salinityDelta")
     temperaturedelta: Optional[ForcingData] = Field(alias="temperatureDelta")
 
+    def is_intermediate_link(self) -> bool:
+        return True
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.__fields__
