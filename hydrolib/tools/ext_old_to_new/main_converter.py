@@ -313,14 +313,22 @@ class ExternalForcingConverter:
         """
         # FIXME: the backup is done is the file is already there, and here is backup is done before saving the files,
         #  so it is not successfuly done.
+        if (
+            len(self.inifield_model.parameter) > 0
+            or len(self.inifield_model.initial) > 0
+        ):
+            if backup:
+                backup_file(self.inifield_model.filepath)
+            self.inifield_model.save(recurse=recursive)
+
+        if len(self.structure_model.structure) > 0:
+            if backup:
+                backup_file(self.structure_model.filepath)
+            self.structure_model.save(recurse=recursive)
+
         if backup:
             backup_file(self.ext_model.filepath)
-            backup_file(self.inifield_model.filepath)
-            backup_file(self.structure_model.filepath)
-
         self.ext_model.save(recurse=recursive)
-        self.inifield_model.save(recurse=recursive)
-        self.structure_model.save(recurse=recursive)
 
         if self.mdu_info is not None:
             mdu_file = self.mdu_info.get("file_path")

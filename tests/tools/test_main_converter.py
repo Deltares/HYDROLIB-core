@@ -142,12 +142,12 @@ class TestExternalFocingConverter:
         converter.save()
 
         assert converter.ext_model.filepath.exists()
-        assert converter.inifield_model.filepath.exists()
-        assert converter.structure_model.filepath.exists()
-
-        converter.ext_model.filepath.unlink()
-        converter.inifield_model.filepath.unlink()
-        converter.structure_model.filepath.unlink()
+        assert not converter.inifield_model.filepath.exists()
+        assert not converter.structure_model.filepath.exists()
+        try:
+            converter.ext_model.filepath.unlink()
+        except PermissionError:
+            pass
 
     def test_read_old_file(
         self,
