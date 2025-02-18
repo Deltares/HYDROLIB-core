@@ -50,7 +50,17 @@ class TestExtOldToNewFromMDU:
         ext_model, _, _ = converter.update()
         assert isinstance(ext_model, ExtModel)
         assert len(ext_model.meteo) == 1
-        ext_model.save(recurse=True)
+        # check the saved files
+        converter.save()
+
+        assert ext_model.filepath.exists()
+        ext_model.filepath.unlink()
+        # delete the mdu file (this is the updated one with the new external forcing file)
+        mdu_filename.unlink()
+        # check the mdu backup file
+        assert mdu_filename.with_suffix(".mdu.bak").exists()
+        # rename back the backup file
+        mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
 
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
