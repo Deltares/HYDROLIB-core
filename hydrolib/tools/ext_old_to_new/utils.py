@@ -211,7 +211,7 @@ def create_initial_cond_and_parameter_input_dict(
     """
     block_data = {
         "quantity": forcing.quantity,
-        "datafile": forcing.filename,
+        "datafile": forcing.filename.filepath,
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
     if block_data["datafiletype"] == "polygon":
