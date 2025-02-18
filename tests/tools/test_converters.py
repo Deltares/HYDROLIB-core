@@ -3,7 +3,6 @@ from pathlib import Path
 import numpy as np
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
@@ -18,6 +17,8 @@ from hydrolib.tools.ext_old_to_new.converters import (
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
+    save_mdu_file,
+    update_extforce_file_new,
 )
 
 
@@ -164,3 +165,22 @@ class TestBoundaryConverter:
             ]
         )
         assert forcing_model.forcing[0].datablock == [[0, 0.01], [120, 0.01]]
+
+
+def test_update_mdu_on_the_fly(input_files_dir: Path):
+    mdu_filename = (
+        input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
+    )
+    new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
+    updated_mdu_file = update_extforce_file_new(mdu_filename, "test.ext")
+    assert (
+        updated_mdu_file[151]
+        == "ExtForceFileNew                      = test.ext                              # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n"
+    )
+    # test the save mdu file function
+    save_mdu_file(updated_mdu_file, new_mdu_file)
+    assert new_mdu_file.exists()
+    try:
+        new_mdu_file.unlink()
+    except PermissionError as e:
+        pass
