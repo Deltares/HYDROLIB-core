@@ -1,6 +1,7 @@
 import logging
 from abc import ABC
 from enum import Enum
+from inspect import isclass
 from math import isnan
 from re import compile
 from typing import (
@@ -472,7 +473,9 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             bool: True if the Union includes a FileModel; otherwise, False.
         """
-        return any(issubclass(arg, FileModel) for arg in get_args(field_type))
+        return any(
+            isclass(arg) and issubclass(arg, FileModel) for arg in get_args(field_type)
+        )
 
     @staticmethod
     def _is_list(field_type: type) -> bool:
