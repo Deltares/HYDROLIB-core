@@ -81,26 +81,34 @@ class INIBasedModel(BaseModel, ABC):
 
     Examples:
         Define a custom INI block subclass:
-
+            ```python
+            >>> from hydrolib.core.dflowfm.ini.models import INIBasedModel
             >>> class MyModel(INIBasedModel):
             ...     _header = "MyHeader"
             ...     field_a: str = "default_value"
 
-        Parse an INI section:
+            ```
 
-        >>> from hydrolib.core.dflowfm.ini.io_models import Section
-        >>> section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])
-        >>> model = MyModel.parse_obj(section.flatten())
-        >>> print(model.field_a)
-        value
+        Parse an INI section:
+            ```python
+            >>> from hydrolib.core.dflowfm.ini.io_models import Section
+            >>> section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])
+            >>> model = MyModel.parse_obj(section.flatten())
+            >>> print(model.field_a)
+            value
+
+            ```
 
         Serialize a model to an INI format:
-        >>> from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
-        >>> from hydrolib.core.basemodel import ModelSaveSettings
-        >>> config = INISerializerConfig()
-        >>> section = model._to_section(config, save_settings=ModelSaveSettings())
-        >>> print(section.header)
-        MyHeader
+            ```python
+            >>> from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
+            >>> from hydrolib.core.basemodel import ModelSaveSettings
+            >>> config = INISerializerConfig()
+            >>> section = model._to_section(config, save_settings=ModelSaveSettings())
+            >>> print(section.header)
+            MyHeader
+
+            ```
 
     Notes:
         - Subclasses can override the `_header` attribute to define the INI block header.
