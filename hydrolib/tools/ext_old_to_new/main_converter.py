@@ -426,7 +426,12 @@ class ExternalForcingConverter:
 
                 inifieldfile = geometry.get("inifieldfile")
                 structurefile = geometry.get("structurefile")
-                old_ext_force_file = external_forcing_data["extforcefile"]
+                old_ext_force_file = external_forcing_data.get("extforcefile")
+                if old_ext_force_file is None:
+                    raise ValueError(
+                        "The old external forcing file is not found in the mdu file."
+                    )
+
                 new_ext_force_file = external_forcing_data["extforcefilenew"]
                 old_ext_force_file = (
                     Path(old_ext_force_file)
