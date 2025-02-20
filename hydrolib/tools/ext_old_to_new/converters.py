@@ -679,7 +679,6 @@ class SourceSinkConverter(BaseConverter):
         data = {
             "id": location_name,
             "name": forcing.quantity,
-            "locationfile": location_file,
             "numcoordinates": len(polyline.x),
             "xcoordinates": polyline.x,
             "ycoordinates": polyline.y,
