@@ -674,9 +674,9 @@ def main(args=None):
     elif args.extoldfile is not None:
         converter = ExternalForcingConverter(
             args.extoldfile,
-            outfiles["extfile"],
-            outfiles["inifieldfile"],
-            outfiles["structurefile"],
+            outfiles["ext_file"],
+            outfiles["inifield_file"],
+            outfiles["structure_file"],
         )
         converter.update()
         converter.save(backup=backup)
