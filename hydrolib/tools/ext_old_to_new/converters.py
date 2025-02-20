@@ -668,9 +668,7 @@ class SourceSinkConverter(BaseConverter):
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
         units = time_model.get_units()
-        user_defined_names = [
-            f"{location_name}-{i}" for i in range(len(time_model.quantities_names))
-        ]
+        user_defined_names = [f"{location_name}"] * len(time_model.quantities_names)
 
         forcing_model = self.convert_tim_to_bc(
             time_model, start_time, units=units, user_defined_names=user_defined_names
