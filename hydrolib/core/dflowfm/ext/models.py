@@ -284,7 +284,7 @@ class SourceSink(INIBasedModel):
         if not (has_locationfile or has_coordinates):
             raise ValueError(
                 "Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` "
-                f"must be provided. for the SourceSink block `{values.get("id")}`."
+                f"must be provided. for the SourceSink block `{values.get('id')}`."
             )
 
         return values
