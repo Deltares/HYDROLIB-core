@@ -247,6 +247,48 @@ class SourceSink(INIBasedModel):
             ):
                 setattr(self, key, value)
 
+    @root_validator(pre=True)
+    def validate_location_specification(cls, values):
+        """
+        Ensures that either `locationfile` or a valid set of coordinates is provided.
+
+         This validation enforces that at least one of the following conditions is met:
+         1. `locationfile` is provided.
+         2. The combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` is valid:
+             - `xcoordinates` and `ycoordinates` must be lists of equal length.
+             - The length of `xcoordinates` and `ycoordinates` must match `numcoordinates`.
+
+         Raises:
+             ValueError: If neither `locationfile` nor a valid coordinate set is provided.
+
+         Returns:
+             Dict: The validated input values.
+        """
+        locationfile = (
+            values.get("locationfile")
+            if values.get("locationfile") is not None
+            else values.get("locationFile")
+        )
+        numcoordinates = values.get("numcoordinates")
+        xcoordinates = values.get("xcoordinates")
+        ycoordinates = values.get("ycoordinates")
+
+        has_locationfile = locationfile is not None
+        has_coordinates = (
+            numcoordinates is not None
+            and xcoordinates is not None
+            and ycoordinates is not None
+            and len(xcoordinates) == len(ycoordinates) == numcoordinates
+        )
+
+        if not (has_locationfile or has_coordinates):
+            raise ValueError(
+                "Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` "
+                f"must be provided. for the SourceSink block `{values.get("id")}`."
+            )
+
+        return values
+
 
 class MeteoForcingFileType(StrEnum):
     """

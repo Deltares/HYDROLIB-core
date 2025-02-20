@@ -3,15 +3,13 @@ Class to test all methods contained in the
 hydrolib.core.dflowfm.ext.models.SourceSink class
 """
 
-from typing import Dict, List, Optional
+from pathlib import Path
 
 import numpy as np
 import pytest
-from pydantic.v1 import ValidationError
 
-from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink
-from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from tests.utils import test_data_dir
 
 
@@ -51,41 +49,68 @@ class TestSourceSink:
         assert np.isclose(m.sourcesink[0].discharge, 1.23)
 
 
-#     def test_sourcesink_todict(self):
+class TestSourceSinkValidator:
+    """
+    class to test the validate_location_specification validator.
+    """
 
-#         filepath = test_data_dir / "input/dflowfm_individual_files/FlowFM_bnd.ext"
-#         m = ExtModel(filepath)
-#         d = m.dict()
-#         assert len(d["lateral"]) == 72
-#         assert d["lateral"][0]["discharge"] == "realtime"
-#         assert d["lateral"][1]["discharge"] == 1.23
-#         assert d["lateral"][3]["discharge"]["forcing"][0]["constant"]["value"] == 1.23
+    def test_source_sink_with_locationfile(self):
+        """Test SourceSink creation with locationfile provided."""
+        source_sink = SourceSink(
+            id="test1",
+            locationfile=DiskOnlyFileModel(filepath=Path("locationfile.pli")),
+            discharge=5,
+        )
+        assert source_sink.locationfile is not None
+        assert source_sink.numcoordinates is None
+        assert source_sink.xcoordinates is None
+        assert source_sink.ycoordinates is None
 
-#     def test_sourcesink_todict_fromdict(self):
+    def test_source_sink_with_coordinates(self):
+        """Test SourceSink creation with coordinates provided."""
+        source_sink = SourceSink(
+            id="test2",
+            numcoordinates=2,
+            xcoordinates=[1.0, 2.0],
+            ycoordinates=[3.0, 4.0],
+            discharge=5,
+        )
+        assert source_sink.numcoordinates == 2
+        assert source_sink.xcoordinates == [1.0, 2.0]
+        assert source_sink.ycoordinates == [3.0, 4.0]
+        assert source_sink.locationfile.filepath is None
 
-#         data = {
-#             "lateral": [
-#                 {"discharge": 1.23},
-#                 {"discharge": {"forcing": [{"constant": {"value": 1.23}}]}},
-#             ]
-#         }
-#         m = ExtModel(**data)
-#         d = m.dict()
-#         assert len(d["lateral"])
+    def test_source_sink_without_locationfile_or_coordinates(self):
+        """Test that creating a SourceSink without locationfile or coordinates raises an error."""
+        with pytest.raises(
+            ValueError,
+            match="Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` must be provided.",
+        ):
+            SourceSink(id="test3", discharge=None)
 
+    def test_source_sink_with_incomplete_coordinates(self):
+        """Test that creating a SourceSink with incomplete coordinates raises an error."""
+        with pytest.raises(
+            ValueError,
+            match="Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` must be provided.",
+        ):
+            SourceSink(
+                id="test4",
+                numcoordinates=2,
+                xcoordinates=[1.0, 2.0],  # ycoordinates missing
+                discharge=None,
+            )
 
-# class TestValidateForcingData:
-#     """
-#     Class to test the different types of discharge forcings.
-#     """
-
-#     def test_dischargeforcings_fromfile(self):
-
-#         filepath = test_data_dir / "input/dflowfm_individual_files/FlowFM_bnd.ext"
-#         m = ExtModel(filepath)
-#         assert len(m.lateral) == 72
-#         assert m.lateral[0].discharge == RealTime.realtime
-#         assert np.isclose(m.lateral[1].discharge, 1.23)
-#         assert isinstance(m.lateral[3].discharge, ForcingModel)
-#         assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
-#         assert m.lateral[3].discharge.forcing[0].name == "10637"
+    def test_source_sink_with_mismatched_coordinates(self):
+        """Test that creating a SourceSink with mismatched coordinate lengths raises an error."""
+        with pytest.raises(
+            ValueError,
+            match="Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` must be provided.",
+        ):
+            SourceSink(
+                id="test5",
+                numcoordinates=2,
+                xcoordinates=[1.0, 2.0, 3.0],  # Too many x-coordinates
+                ycoordinates=[3.0, 4.0],
+                discharge=None,
+            )
