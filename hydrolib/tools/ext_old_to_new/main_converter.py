@@ -658,11 +658,11 @@ def main(args=None):
         sys.exit(1)
     ...
 
-    outfiles = {"extfile": None, "inifieldfile": None, "structurefile": None}
+    outfiles = {"ext_file": None, "inifield_file": None, "structure_file": None}
     if args.outfiles is not None:
-        outfiles["extfile"] = args.outfiles[0]
-        outfiles["inifieldfile"] = args.outfiles[1]
-        outfiles["structurefile"] = args.outfiles[2]
+        outfiles["ext_file"] = args.outfiles[0]
+        outfiles["inifield_file"] = args.outfiles[1]
+        outfiles["structure_file"] = args.outfiles[2]
 
     if args.mdufile is not None:
         converter = ExternalForcingConverter.from_mdu(

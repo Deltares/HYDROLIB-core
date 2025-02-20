@@ -305,19 +305,19 @@ class MeteoForcingFileType(StrEnum):
     unimagdir = "uniMagDir"
     """str: Space-uniform wind magnitude+direction in <*.tim> file."""
 
-    meteogridequi = "meteoGridEqui"
+    arcinfo = "arcInfo"
     """str: Space- and time-varying wind and pressure on an equidistant grid in <*.amu/v/p> files."""
 
     spiderweb = "spiderweb"
     """str: Space- and time-varying cyclone wind and pressure in <*.spw> files."""
 
-    meteogridcurvi = "meteoGridCurvi"
+    curvigrid = "curviGrid"
     """str: Space- and time-varying wind and pressure on a curvilinear grid in <*.grd+*.amu/v/p> files."""
 
     netcdf = "netcdf"
     """str: NetCDF, either with gridded data, or multiple station time series."""
 
-    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf."
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf."
 
 
 class MeteoInterpolationMethod(StrEnum):

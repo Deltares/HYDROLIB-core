@@ -142,6 +142,10 @@ class ResearchGeometry(Geometry):
             "Correct volumes when keepzlayeringatbed=1 (0: too large bedcell volumes, 1: correct bedcell volumes).",
             alias="keepzlay1bedvol",
         )
+        research_stretchcoef: Optional[str] = Field(
+            "Layers thickness percentage",
+            alias="stretchcoef",
+        )
 
     comments: Comments = Comments()
 
@@ -177,6 +181,7 @@ class ResearchGeometry(Geometry):
     )
     research_extrbl: Optional[bool] = Field(None, alias="extrbl")
     research_keepzlay1bedvol: Optional[bool] = Field(None, alias="keepzlay1bedvol")
+    research_stretchcoef: Optional[str] = Field(None, alias="stretchcoef")
 
 
 class ResearchNumerics(Numerics):
@@ -383,6 +388,35 @@ class ResearchNumerics(Numerics):
             "Include density gradient in advection term (0: no(strongly advised), 1: yes, 2: Also in barotropic and baroclinic pressure term, 3,4: Also in vertical advection).",
             alias="jarhoxu",
         )
+        research_jaorgsethu: Optional[str] = Field(
+            "Deprecated variable.",
+            alias="jaorgsethu",
+        )
+        research_cflwavefrac: Optional[str] = Field(
+            "Deprecated variable.",
+            alias="cflwavefrac",
+        )
+        research_jaembed1d: Optional[str] = Field(
+            "Deprecated variable.",
+            alias="jaembed1d",
+        )
+        research_maxitverticalforester: Optional[str] = Field(
+            "Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).",
+            alias="maxitverticalforester",
+        )
+
+        research_ilutype: Optional[str] = Field(
+            "0: parms-default",
+            alias="ilutype",
+        )
+        research_nlevel: Optional[str] = Field(
+            "0d0: parms-default",
+            alias="nlevel",
+        )
+        research_dtol: Optional[str] = Field(
+            "0d0: parms-default",
+            alias="dtol",
+        )
 
     comments: Comments = Comments()
 
@@ -456,6 +490,15 @@ class ResearchNumerics(Numerics):
     )
     research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
     research_jarhoxu: Optional[int] = Field(None, alias="jarhoxu")
+    research_jaorgsethu: Optional[str] = Field(None, alias="jaorgsethu")
+    research_cflwavefrac: Optional[str] = Field(None, alias="cflwavefrac")
+    research_jaembed1d: Optional[str] = Field(None, alias="jaembed1d")
+    research_maxitverticalforester: Optional[str] = Field(
+        None, alias="maxitverticalforester"
+    )
+    research_ilutype: Optional[str] = Field(None, alias="ilutype")
+    research_nlevel: Optional[str] = Field(None, alias="nlevel")
+    research_dtol: Optional[str] = Field(None, alias="dtol")
 
 
 class ResearchPhysics(Physics):
@@ -515,6 +558,10 @@ class ResearchPhysics(Physics):
             "Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction).",
             alias="uniffrictcoef1dgrlay",
         )
+        research_effectspiral: Optional[str] = Field(
+            "Deprecated keyword.",
+            alias="effectspiral",
+        )
 
     comments: Comments = Comments()
 
@@ -548,6 +595,7 @@ class ResearchPhysics(Physics):
     research_uniffrictcoef1dgrlay: Optional[float] = Field(
         None, alias="uniffrictcoef1dgrlay"
     )
+    research_effectspiral: Optional[float] = Field(None, alias="effectspiral")
 
 
 class ResearchSediment(Sediment):
@@ -592,12 +640,17 @@ class ResearchWind(Wind):
             "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
             alias="wind_eachstep",
         )
+        research_gapres: Optional[str] = Field(
+            "Deprecated keyword.",
+            alias="gapres",
+        )
 
     comments: Comments = Comments()
 
     research_windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
     research_varyingairdensity: Optional[bool] = Field(None, alias="varyingairdensity")
     research_wind_eachstep: Optional[int] = Field(None, alias="wind_eachstep")
+    research_gapres: Optional[str] = Field(None, alias="gapres")
 
 
 class ResearchWaves(Waves):
@@ -647,6 +700,10 @@ class ResearchWaves(Waves):
             "Sign wave height on his output; 0: hrms wave height on his output. Default=1.",
             alias="jahissigwav",
         )
+        research_wavenikuradse: Optional[str] = Field(
+            "Deprecated keyword.",
+            alias="wavenikuradse",
+        )
 
     comments: Comments = Comments()
 
@@ -668,6 +725,7 @@ class ResearchWaves(Waves):
     research_jamapsigwav: Optional[int] = Field(None, alias="jamapsigwav")
     research_hminlw: Optional[float] = Field(None, alias="hminlw")
     research_jahissigwav: Optional[int] = Field(None, alias="jahissigwav")
+    research_wavenikuradse: Optional[str] = Field(None, alias="wavenikuradse")
 
 
 class ResearchTime(Time):
@@ -817,6 +875,22 @@ class ResearchOutput(Output):
             "Write trachytope roughnesses to map file (1: yes, 0: no).",
             alias="wrimap_trachytopes",
         )
+        research_s1incinterval: Optional[str] = Field(
+            "Deprecated keyword.",
+            alias="s1incinterval",
+        )
+        research_waqfilebase: Optional[str] = Field(
+            "Deprecated keyword.",
+            alias="waqfilebase",
+        )
+        research_snapshotdir: Optional[str] = Field(
+            "Deprecated keyword.",
+            alias="snapshotdir",
+        )
+        research_heatfluxesonoutput: Optional[str] = Field(
+            "Deprecated keyword.",
+            alias="heatfluxesonoutput",
+        )
 
     comments: Comments = Comments()
 
@@ -854,6 +928,10 @@ class ResearchOutput(Output):
     research_wrimap_trachytopes: Optional[bool] = Field(
         None, alias="wrimap_trachytopes"
     )
+    research_s1incinterval: Optional[str] = Field(None, alias="s1incinterval")
+    research_waqfilebase: Optional[str] = Field(None, alias="waqfilebase")
+    research_snapshotdir: Optional[str] = Field(None, alias="snapshotdir")
+    research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
 
 
 class ResearchProcesses(Processes):
