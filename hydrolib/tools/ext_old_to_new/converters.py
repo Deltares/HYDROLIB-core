@@ -976,6 +976,8 @@ def update_extforce_file_new(
 
                     updated_lines.append(new_line)
                     continue
+            elif line.strip().lower().startswith("extforcefile"):
+                continue
 
         # Default: write the line unmodified
         updated_lines.append(line)
