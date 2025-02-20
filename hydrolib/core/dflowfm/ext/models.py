@@ -200,7 +200,7 @@ class SourceSink(INIBasedModel):
     _header: Literal["SourceSink"] = "SourceSink"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationfile: DiskOnlyFileModel = Field(
+    locationfile: Optional[DiskOnlyFileModel] = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
 

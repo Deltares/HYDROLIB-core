@@ -654,7 +654,7 @@ class SourceSinkConverter(BaseConverter):
         """
         location_file = forcing.filename.filepath
         polyline = forcing.filename
-
+        location_name = location_file.stem
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
@@ -668,9 +668,7 @@ class SourceSinkConverter(BaseConverter):
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
         units = time_model.get_units()
-        user_defined_names = [
-            f"user-defines-{i}" for i in range(len(time_model.quantities_names))
-        ]
+        user_defined_names = [f"{location_name}"] * len(time_model.quantities_names)
 
         forcing_model = self.convert_tim_to_bc(
             time_model, start_time, units=units, user_defined_names=user_defined_names
@@ -679,16 +677,18 @@ class SourceSinkConverter(BaseConverter):
         forcing_model.filepath = location_file.with_suffix(".bc").name
 
         data = {
-            "id": "L1",
+            "id": location_name,
             "name": forcing.quantity,
-            "locationfile": location_file,
             "numcoordinates": len(polyline.x),
             "xcoordinates": polyline.x,
             "ycoordinates": polyline.y,
         }
         forcings = self.separate_forcing_model(forcing_model)
+
+        # the same forcing model will be used for all the forcings to be able to save all the forcings (sourcesinks)
+        # in the same file.
         for name, force in forcings.items():
-            force.filepath = Path(f"{name}.bc")
+            forcings[name] = forcing_model
 
         data = data | forcings
 
@@ -976,6 +976,8 @@ def update_extforce_file_new(
 
                     updated_lines.append(new_line)
                     continue
+            elif line.strip().lower().startswith("extforcefile"):
+                continue
 
         # Default: write the line unmodified
         updated_lines.append(line)

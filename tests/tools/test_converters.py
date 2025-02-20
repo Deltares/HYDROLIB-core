@@ -173,8 +173,9 @@ def test_update_mdu_on_the_fly(input_files_dir: Path):
     )
     new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
     updated_mdu_file = update_extforce_file_new(mdu_filename, "test.ext")
+    assert updated_mdu_file[149] == "[external forcing]\n"
     assert (
-        updated_mdu_file[151]
+        updated_mdu_file[150]
         == "ExtForceFileNew                      = test.ext                              # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n"
     )
     # test the save mdu file function
@@ -182,5 +183,5 @@ def test_update_mdu_on_the_fly(input_files_dir: Path):
     assert new_mdu_file.exists()
     try:
         new_mdu_file.unlink()
-    except PermissionError as e:
+    except PermissionError:
         pass

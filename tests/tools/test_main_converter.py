@@ -283,9 +283,6 @@ class TestUpdateSourcesSinks:
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             ext_model, inifield_model, structure_model = converter.update()
 
-        ext_model.save(
-            "tests/data/input/source-sink/convert-source-sink.ext", recurse=True
-        )
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = 1

@@ -1,6 +1,7 @@
 import logging
 from abc import ABC
 from enum import Enum
+from inspect import isclass
 from math import isnan
 from re import compile
 from typing import (
@@ -67,9 +68,6 @@ class INIBasedModel(BaseModel, ABC):
         comments (Optional[Comments], optional):
             Comments for the model fields. Defaults to None.
 
-    Returns:
-        None
-
     Raises:
         ValueError: If unknown fields are encountered during validation.
 
@@ -80,26 +78,34 @@ class INIBasedModel(BaseModel, ABC):
 
     Examples:
         Define a custom INI block subclass:
-
+            ```python
+            >>> from hydrolib.core.dflowfm.ini.models import INIBasedModel
             >>> class MyModel(INIBasedModel):
             ...     _header = "MyHeader"
             ...     field_a: str = "default_value"
 
-        Parse an INI section:
+            ```
 
-        >>> from hydrolib.core.dflowfm.ini.io_models import Section
-        >>> section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])
-        >>> model = MyModel.parse_obj(section.flatten())
-        >>> print(model.field_a)
-        value
+        Parse an INI section:
+            ```python
+            >>> from hydrolib.core.dflowfm.ini.io_models import Section
+            >>> section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])
+            >>> model = MyModel.parse_obj(section.flatten())
+            >>> print(model.field_a)
+            value
+
+            ```
 
         Serialize a model to an INI format:
-        >>> from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
-        >>> from hydrolib.core.basemodel import ModelSaveSettings
-        >>> config = INISerializerConfig()
-        >>> section = model._to_section(config, save_settings=ModelSaveSettings())
-        >>> print(section.header)
-        MyHeader
+            ```python
+            >>> from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
+            >>> from hydrolib.core.basemodel import ModelSaveSettings
+            >>> config = INISerializerConfig()
+            >>> section = model._to_section(config, save_settings=ModelSaveSettings())
+            >>> print(section.header)
+            MyHeader
+
+            ```
 
     Notes:
         - Subclasses can override the `_header` attribute to define the INI block header.
@@ -128,7 +134,7 @@ class INIBasedModel(BaseModel, ABC):
         return UnknownKeywordErrorManager()
 
     @classmethod
-    def _supports_comments(cls):
+    def _supports_comments(cls) -> bool:
         """
         Indicates whether the model supports comments for its fields.
 
@@ -138,7 +144,7 @@ class INIBasedModel(BaseModel, ABC):
         return True
 
     @classmethod
-    def _duplicate_keys_as_list(cls):
+    def _duplicate_keys_as_list(cls) -> bool:
         """
         Indicates whether duplicate keys in INI sections should be treated as lists.
 
@@ -472,7 +478,9 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             bool: True if the Union includes a FileModel; otherwise, False.
         """
-        return any(issubclass(arg, FileModel) for arg in get_args(field_type))
+        return any(
+            isclass(arg) and issubclass(arg, FileModel) for arg in get_args(field_type)
+        )
 
     @staticmethod
     def _is_list(field_type: type) -> bool:
@@ -523,9 +531,6 @@ class DataBlockINIBasedModel(INIBasedModel):
     Args:
         datablock (List[List[Union[float, str]]], optional):
             The initial data block for the model. Defaults to an empty list.
-
-    Returns:
-        None
 
     Raises:
         ValueError: If a NaN value is found within the data block.
@@ -746,6 +751,9 @@ class INIModel(ParsableFileModel):
         return Document(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
+        """
+        Create a `Document` from the model and write it to the file.
+        """
         write_ini(
             self._resolved_filepath,
             self._to_document(save_settings),
