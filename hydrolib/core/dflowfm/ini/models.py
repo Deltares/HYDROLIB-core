@@ -68,9 +68,6 @@ class INIBasedModel(BaseModel, ABC):
         comments (Optional[Comments], optional):
             Comments for the model fields. Defaults to None.
 
-    Returns:
-        None
-
     Raises:
         ValueError: If unknown fields are encountered during validation.
 
@@ -137,7 +134,7 @@ class INIBasedModel(BaseModel, ABC):
         return UnknownKeywordErrorManager()
 
     @classmethod
-    def _supports_comments(cls):
+    def _supports_comments(cls) -> bool:
         """
         Indicates whether the model supports comments for its fields.
 
@@ -147,7 +144,7 @@ class INIBasedModel(BaseModel, ABC):
         return True
 
     @classmethod
-    def _duplicate_keys_as_list(cls):
+    def _duplicate_keys_as_list(cls) -> bool:
         """
         Indicates whether duplicate keys in INI sections should be treated as lists.
 
@@ -535,9 +532,6 @@ class DataBlockINIBasedModel(INIBasedModel):
         datablock (List[List[Union[float, str]]], optional):
             The initial data block for the model. Defaults to an empty list.
 
-    Returns:
-        None
-
     Raises:
         ValueError: If a NaN value is found within the data block.
 
@@ -757,6 +751,9 @@ class INIModel(ParsableFileModel):
         return Document(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
+        """
+        Create a `Document` from the model and write it to the file.
+        """
         write_ini(
             self._resolved_filepath,
             self._to_document(save_settings),
