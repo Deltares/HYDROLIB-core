@@ -1,6 +1,5 @@
 import argparse
 import os
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
@@ -646,9 +645,7 @@ def main(args=None):
     backup = args.backup is not None
 
     if args.mdufile is not None and args.extoldfile is not None:
-        print("Error: use either input MDUFILE or EXTOLDFILE, not both.")
-        sys.exit(1)
-    ...
+        raise ValueError("Error: use either input MDUFILE or EXTOLDFILE, not both.")
 
     outfiles = {"ext_file": None, "inifield_file": None, "structure_file": None}
     if args.outfiles is not None:
