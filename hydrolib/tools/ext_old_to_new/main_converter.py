@@ -405,76 +405,67 @@ class ExternalForcingConverter:
             ExternalForcingConverter: The converter object.
         """
         try:
-            try:
-                fm_model = LegacyFMModel(mdu_file, recurse=False)
-                old_ext_force_file = fm_model.external_forcing.extforcefile.filepath
-                new_ext_force_file = fm_model.external_forcing.extforcefilenew
-                inifieldfile = fm_model.geometry.inifieldfile
-                structurefile = fm_model.geometry.structurefile
-                mdu_info = {
-                    "file_path": mdu_file,
-                    "fm_model": fm_model,
-                    "refdate": fm_model.time.refdate,
-                    "temperature": fm_model.physics.temperature,
-                    "salinity": fm_model.physics.salinity,
-                }
-            except ValidationError:
-                data, mdu_info = ExternalForcingConverter.get_mdu_info(mdu_file)
+            fm_model = LegacyFMModel(mdu_file, recurse=False)
+            old_ext_force_file = fm_model.external_forcing.extforcefile.filepath
+            new_ext_force_file = fm_model.external_forcing.extforcefilenew
+            inifieldfile = fm_model.geometry.inifieldfile
+            structurefile = fm_model.geometry.structurefile
+            mdu_info = {
+                "file_path": mdu_file,
+                "fm_model": fm_model,
+                "refdate": fm_model.time.refdate,
+                "temperature": fm_model.physics.temperature,
+                "salinity": fm_model.physics.salinity,
+            }
+        except ValidationError:
+            data, mdu_info = ExternalForcingConverter.get_mdu_info(mdu_file)
 
-                external_forcing_data = data.get("external_forcing")
-                geometry = data.get("geometry")
+            external_forcing_data = data.get("external_forcing")
+            geometry = data.get("geometry")
 
-                inifieldfile = geometry.get("inifieldfile")
-                structurefile = geometry.get("structurefile")
-                old_ext_force_file = external_forcing_data.get("extforcefile")
-                if old_ext_force_file is None:
-                    raise ValueError(
-                        "The old external forcing file is not found in the mdu file."
-                    )
-
-                new_ext_force_file = external_forcing_data["extforcefilenew"]
-                old_ext_force_file = (
-                    Path(old_ext_force_file)
-                    if old_ext_force_file is not None
-                    else old_ext_force_file
-                )
-                new_ext_force_file = (
-                    Path(new_ext_force_file)
-                    if new_ext_force_file is not None
-                    else new_ext_force_file
+            inifieldfile = geometry.get("inifieldfile")
+            structurefile = geometry.get("structurefile")
+            old_ext_force_file = external_forcing_data.get("extforcefile")
+            if old_ext_force_file is None:
+                raise ValueError(
+                    "The old external forcing file is not found in the mdu file."
                 )
 
-            root_dir = mdu_file.parent
-            extoldfile = root_dir / old_ext_force_file
-
-            if new_ext_force_file:
-                ext_file = new_ext_force_file._resolved_filepath
-            else:
-                if ext_file is None:
-                    old_ext = old_ext_force_file.with_stem(
-                        old_ext_force_file.stem + "-new"
-                    )
-                    ext_file = root_dir / old_ext
-                else:
-                    ext_file = root_dir / ext_file
-
-            inifield_file = (
-                inifieldfile._resolved_filepath
-                if inifieldfile
-                else root_dir / inifield_file
+            new_ext_force_file = external_forcing_data["extforcefilenew"]
+            old_ext_force_file = (
+                Path(old_ext_force_file)
+                if old_ext_force_file is not None
+                else old_ext_force_file
             )
-            structure_file = (
-                structurefile[0]._resolved_filepath
-                if structurefile
-                else root_dir / structure_file
+            new_ext_force_file = (
+                Path(new_ext_force_file)
+                if new_ext_force_file is not None
+                else new_ext_force_file
             )
-            return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
 
-        except Exception as error:
-            if suppress_errors:
-                print(f"Could not read {mdu_file} as a valid FM model:", error)
+        root_dir = mdu_file.parent
+        extoldfile = root_dir / old_ext_force_file
+
+        if new_ext_force_file:
+            ext_file = new_ext_force_file._resolved_filepath
+        else:
+            if ext_file is None:
+                old_ext = old_ext_force_file.with_stem(old_ext_force_file.stem + "-new")
+                ext_file = root_dir / old_ext
             else:
-                raise error
+                ext_file = root_dir / ext_file
+
+        inifield_file = (
+            inifieldfile._resolved_filepath
+            if inifieldfile
+            else root_dir / inifield_file
+        )
+        structure_file = (
+            structurefile[0]._resolved_filepath
+            if structurefile
+            else root_dir / structure_file
+        )
+        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
 
     def _update_fm_model(self):
         """Update the FM model with the new external forcings, initial fields and structures files.
