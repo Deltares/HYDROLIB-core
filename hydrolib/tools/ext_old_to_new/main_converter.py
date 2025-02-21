@@ -431,7 +431,8 @@ class ExternalForcingConverter:
                     "The old external forcing file is not found in the mdu file."
                 )
 
-            new_ext_force_file = external_forcing_data["extforcefilenew"]
+            new_ext_force_file = external_forcing_data.get("extforcefilenew")
+
             old_ext_force_file = (
                 Path(old_ext_force_file)
                 if old_ext_force_file is not None
