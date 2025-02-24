@@ -416,8 +416,8 @@ class ExternalForcingConverter:
             mdu_info = {
                 "file_path": mdu_file,
                 "fm_model": fm_model,
-                "refdate": fm_model.time.refdate,
-                "temperature": fm_model.physics.temperature,
+                "refdate": get_ref_time(fm_model.time.refdate),
+                "temperature": False if fm_model.physics.temperature == 0 else True,
                 "salinity": fm_model.physics.salinity,
             }
         except ValidationError:
