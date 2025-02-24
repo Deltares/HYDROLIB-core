@@ -403,6 +403,12 @@ class ExternalForcingConverter:
         Returns:
             ExternalForcingConverter: The converter object.
         """
+        if isinstance(mdu_file, str):
+            mdu_file = Path(mdu_file)
+
+        if not mdu_file.exists():
+            raise FileNotFoundError(f"File not found: {mdu_file}")
+
         try:
             fm_model = LegacyFMModel(mdu_file, recurse=False)
             old_ext_force_file = fm_model.external_forcing.extforcefile.filepath
