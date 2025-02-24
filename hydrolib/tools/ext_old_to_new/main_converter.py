@@ -611,12 +611,7 @@ def _get_parser() -> argparse.ArgumentParser:
         metavar=("EXTFILE", "INIFIELDFILE", "STRUCTUREFILE"),
         help="Save forcings, initial fields and structures to specified filenames",
     )
-    parser.add_argument(
-        "--postfix",
-        "-p",
-        action="store",
-        help="Append POSTFIX to the output filenames (before the extension).",
-    )
+
     parser.add_argument(
         "--backup",
         "-b",
