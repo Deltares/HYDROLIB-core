@@ -1,10 +1,19 @@
 import argparse
+from argparse import ArgumentTypeError
+from pathlib import Path
 
 from hydrolib.core import __version__
 from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
     ext_old_to_new_dir_recursive,
 )
+
+
+def valid_file(path_str):
+    path = Path(path_str)
+    if not path.exists():
+        raise ArgumentTypeError(f"File not found: {path}")
+    return path
 
 
 def _get_parser() -> argparse.ArgumentParser:
@@ -17,24 +26,31 @@ def _get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Print diagnostic information"
     )
-    parser.add_argument(
+
+    # mdu file, extforcefile and dir are mutually exclusive (can only use one)
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument(
         "--mdufile",
         "-m",
         action="store",
+        type=valid_file,
         help="Automatically take input and output filenames from MDUFILE",
     )
-    parser.add_argument(
+    group.add_argument(
         "--extoldfile",
         "-e",
         action="store",
+        type=valid_file,
         help="Input EXTOLDFILE to be converted.",
     )
-    parser.add_argument(
+    group.add_argument(
         "--dir",
         "-d",
         action="store",
         help="Directory to recursively find and convert .mdu files in",
     )
+
     parser.add_argument(
         "--outfiles",
         "-o",
@@ -44,14 +60,16 @@ def _get_parser() -> argparse.ArgumentParser:
         help="Save forcings, initial fields and structures to specified filenames",
     )
 
-    parser.add_argument(
+    backup_group = parser.add_mutually_exclusive_group()
+
+    backup_group.add_argument(
         "--backup",
         "-b",
         action="store_true",
         default=True,
         help="Create a backup of each file that will be overwritten.",
     )
-    parser.add_argument(
+    backup_group.add_argument(
         "--no-backup",
         dest="backup",
         action="store_false",
@@ -72,35 +90,32 @@ def main(args=None):
     args = parser.parse_args(args)
     backup = args.backup
 
-    if args.mdufile is not None and args.extoldfile is not None:
-        raise ValueError("Error: use either input MDUFILE or EXTOLDFILE, not both.")
-
-    outfiles = {
-        "ext_file": None,
-        "inifield_file": "inifields.ini",
-        "structure_file": "structures.ini",
-    }
-    if args.outfiles is not None:
-        outfiles["ext_file"] = args.outfiles[0]
-        outfiles["inifield_file"] = args.outfiles[1]
-        outfiles["structure_file"] = args.outfiles[2]
-
-    if args.mdufile is not None:
+    # three cases to consider
+    if args.mdufile:
+        # mdu file is given
         converter = ExternalForcingConverter.from_mdu(
-            args.mdufile, **outfiles, suppress_errors=True
+            args.mdufile,
+            ext_file=(args.outfiles[0] if args.outfiles else None),
+            inifield_file=(args.outfiles[1] if args.outfiles else "inifields.ini"),
+            structure_file=(args.outfiles[2] if args.outfiles else "structures.ini"),
+            suppress_errors=True,
         )
         converter.verbose = args.verbose
         converter.update()
         converter.save(backup=backup)
+
     elif args.extoldfile is not None:
+        # extold file is given
         converter = ExternalForcingConverter(
             args.extoldfile,
-            outfiles["ext_file"],
-            outfiles["inifield_file"],
-            outfiles["structure_file"],
+            ext_file=(args.outfiles[0] if args.outfiles else None),
+            inifield_file=(args.outfiles[1] if args.outfiles else "inifields.ini"),
+            structure_file=(args.outfiles[2] if args.outfiles else "structures.ini"),
         )
+        converter.verbose = args.verbose
         converter.update()
         converter.save(backup=backup)
+
     elif args.dir is not None:
         ext_old_to_new_dir_recursive(args.dir, backup=backup)
     else:
