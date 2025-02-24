@@ -465,3 +465,43 @@ class ExtModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "bnd"
+
+
+class SourceSinkError(Exception):
+    """SourceSinkError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+
+class InitialFieldError(Exception):
+    """InitialFieldError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+
+class MeteoError(Exception):
+    """MeteoError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+
+class BoundaryError(Exception):
+    """BoundaryError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
+
+
+class ParameterFieldError(Exception):
+    """ParameterFieldError."""
+
+    def __init__(self, error_message: str):
+        """__init__."""
+        print(error_message)
