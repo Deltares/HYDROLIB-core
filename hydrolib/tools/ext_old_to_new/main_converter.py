@@ -653,7 +653,11 @@ def main(args=None):
     if args.mdufile is not None and args.extoldfile is not None:
         raise ValueError("Error: use either input MDUFILE or EXTOLDFILE, not both.")
 
-    outfiles = {"ext_file": None, "inifield_file": None, "structure_file": None}
+    outfiles = {
+        "ext_file": None,
+        "inifield_file": "inifields.ini",
+        "structure_file": "structures.ini",
+    }
     if args.outfiles is not None:
         outfiles["ext_file"] = args.outfiles[0]
         outfiles["inifield_file"] = args.outfiles[1]
