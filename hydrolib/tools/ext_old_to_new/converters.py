@@ -9,8 +9,12 @@ from hydrolib.core.dflowfm.bc.models import ForcingModel, QuantityUnitPair, Time
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
+    BoundaryError,
+    InitialFieldError,
     Meteo,
+    MeteoError,
     SourceSink,
+    SourceSinkError,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
@@ -851,46 +855,6 @@ class TimToForcingConverter:
 
         forcing_model = ForcingModel(forcing=forcing_list)
         return forcing_model
-
-
-class SourceSinkError(Exception):
-    """SourceSinkError."""
-
-    def __init__(self, error_message: str):
-        """__init__."""
-        print(error_message)
-
-
-class InitialFieldError(Exception):
-    """InitialFieldError."""
-
-    def __init__(self, error_message: str):
-        """__init__."""
-        print(error_message)
-
-
-class MeteoError(Exception):
-    """MeteoError."""
-
-    def __init__(self, error_message: str):
-        """__init__."""
-        print(error_message)
-
-
-class BoundaryError(Exception):
-    """BoundaryError."""
-
-    def __init__(self, error_message: str):
-        """__init__."""
-        print(error_message)
-
-
-class ParameterFieldError(Exception):
-    """ParameterFieldError."""
-
-    def __init__(self, error_message: str):
-        """__init__."""
-        print(error_message)
 
 
 def update_extforce_file_new(
