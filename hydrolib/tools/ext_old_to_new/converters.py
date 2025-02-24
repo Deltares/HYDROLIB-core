@@ -256,19 +256,16 @@ class BoundaryConditionConverter(BaseConverter):
         if not isinstance(poly_line, PolyFile):
             poly_line = PolyFile(location_file)
 
-        num_files = poly_line.number_of_points
         if self.root_dir is None:
             raise ValueError(
                 "The 'root_dir' property must be set before calling this method."
             )
 
-        tim_files = [
-            self.root_dir
-            / poly_line.filepath.with_name(
-                f"{poly_line.filepath.stem}_000{i + 1}.tim"
-            ).name
-            for i in range(num_files)
-        ]
+        tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.tim"))
+        if len(tim_files) < 1:
+            raise ValueError(
+                f"There are no tim files found for the given poly file: {poly_line}, in the directory: {self.root_dir}"
+            )
 
         tim_model = self.merge_tim_files(tim_files, forcing)
         # switch the quantity names from the Tim model (loction names) to quantity names.
