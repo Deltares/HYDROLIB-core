@@ -648,7 +648,7 @@ def main(args=None):
     """
     parser = _get_parser()
     args = parser.parse_args(args)
-    backup = args.backup is not None
+    backup = args.backup
 
     if args.mdufile is not None and args.extoldfile is not None:
         raise ValueError("Error: use either input MDUFILE or EXTOLDFILE, not both.")
