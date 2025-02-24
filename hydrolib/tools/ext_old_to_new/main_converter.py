@@ -310,8 +310,6 @@ class ExternalForcingConverter:
             recursive (bool, optional): Defaults to True.
                 Save the models recursively.
         """
-        # FIXME: the backup is done is the file is already there, and here is backup is done before saving the files,
-        #  so it is not successfuly done.
         if (
             len(self.inifield_model.parameter) > 0
             or len(self.inifield_model.initial) > 0
@@ -485,9 +483,9 @@ class ExternalForcingConverter:
             `new_mdu_content` key.
         """
         if self.fm_model is not None:
-            if len(self.extold_model.forcing) > 0:
-                self.fm_model.external_forcing.extforcefile = self.extold_model
 
+            # remove the old external forcings file from the mdu file.
+            self.fm_model.external_forcing.extforcefile = None
             # Intentionally always include the new external forcings file, even if empty.
             self.fm_model.external_forcing.extforcefilenew = self.ext_model
             if (

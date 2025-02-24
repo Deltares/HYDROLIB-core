@@ -867,13 +867,10 @@ def update_extforce_file_new(
     or overwrites the original file otherwise.
 
     Args:
-
         mdu_path (PathOrStr):
             Path to the original .mdu file.
         new_forcing_filename (PathOrStr):
             The filename to be placed after `ExtForceFileNew =`.
-        output_path (PathOrStr):
-            Path to write the updated .mdu file. If None, overwrites the original file.
 
     Returns:
         List[str]:
@@ -883,6 +880,8 @@ def update_extforce_file_new(
         - This function is a workaround for updating the ExtForceFileNew entry in an MDU file.
         - The function reads the entire file into memory, updates the line containing ExtForceFileNew, and writes the
             updated content back to disk.
+        - The function removes the `extforcefile` from the mdu file, and only keeps the new updated `ExtForceFileNew`
+        entry, as all the old forcing quantities in the old forcing file are converted to the new format.
         - after fixing the issue with mdu files having `Unkown keyword` error, this function will be removed,
         and the `LegacyFMModel` will be the only way to read/update the mdu file
 
