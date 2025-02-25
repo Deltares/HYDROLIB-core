@@ -329,6 +329,22 @@ class ExternalForcingConverter:
             mdu_file = self.mdu_info.get("file_path")
             backup_file(mdu_file)
             if self.fm_model is not None:
+                external_forcing = self.fm_model.external_forcing
+                if (
+                    hasattr(external_forcing, "extforcefile")
+                    and external_forcing.extforcefile is not None
+                ):
+                    external_forcing.extforcefile.filepath = (
+                        external_forcing.extforcefile.filepath.name
+                    )
+                if (
+                    hasattr(external_forcing, "extforcefilenew")
+                    and external_forcing.extforcefilenew is not None
+                ):
+                    external_forcing.extforcefilenew.filepath = (
+                        external_forcing.extforcefilenew.filepath.name
+                    )
+
                 self.fm_model.save(recurse=False, exclude_unset=True)
             elif "new_mdu_content" in self.mdu_info:
                 with open(mdu_file, "w", encoding="utf-8") as file:

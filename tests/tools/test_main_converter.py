@@ -37,6 +37,11 @@ class TestExtOldToNewFromMDU:
         # check the saved files
         converter.save()
 
+        # check that the mdu file has the relative pathes, not the absolute pathes
+        # the pathes are changes to the relative pathes inside the save function.
+        mdu_path = fm_model.external_forcing.extforcefilenew.filepath
+        assert mdu_path.parent == Path(".")  # no parent
+
         assert ext_model.filepath.exists()
         ext_model.filepath.unlink()
         # delete the mdu file (this is the updated one with the new external forcing file)
