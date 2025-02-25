@@ -149,7 +149,9 @@ class TestBoundaryConverter:
         assert new_quantity_block.bndbldepth is None
         assert len(forcing_model.forcing) == 2
         names = ["tfl_01_0001", "tfl_01_0002"]
-        assert all(forcing_model.forcing[i].name == names[i] for i in range(len(names)))
+        assert all(
+            forcing.name == name for forcing, name in zip(forcing_model.forcing, names)
+        )
         assert all(
             [
                 forcing_model.forcing[i].quantityunitpair[0].quantity == "time"
