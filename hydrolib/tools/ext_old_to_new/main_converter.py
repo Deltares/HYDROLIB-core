@@ -414,8 +414,8 @@ class ExternalForcingConverter:
             mdu_info = {
                 "file_path": mdu_file,
                 "fm_model": fm_model,
-                "refdate": fm_model.time.refdate,
-                "temperature": fm_model.physics.temperature,
+                "refdate": get_ref_time(fm_model.time.refdate),
+                "temperature": False if fm_model.physics.temperature == 0 else True,
                 "salinity": fm_model.physics.salinity,
             }
         except ValidationError:
@@ -481,9 +481,9 @@ class ExternalForcingConverter:
             `new_mdu_content` key.
         """
         if self.fm_model is not None:
-            if len(self.extold_model.forcing) > 0:
-                self.fm_model.external_forcing.extforcefile = self.extold_model
 
+            # remove the old external forcings file from the mdu file.
+            self.fm_model.external_forcing.extforcefile = None
             # Intentionally always include the new external forcings file, even if empty.
             self.fm_model.external_forcing.extforcefilenew = self.ext_model
             if (

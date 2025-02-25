@@ -27,11 +27,24 @@ class TestExtOldToNewFromMDU:
         )
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         converter.verbose = True
-        _, _, _ = converter.update()
+        ext_model, _, _ = converter.update()
         fm_model = converter.fm_model
         assert isinstance(fm_model, LegacyFMModel)
         assert len(converter.extold_model.forcing) == 5
         assert isinstance(fm_model.external_forcing.extforcefilenew, ExtModel)
+        assert not hasattr(fm_model.external_forcing, "extforcefile")
+
+        # check the saved files
+        converter.save()
+
+        assert ext_model.filepath.exists()
+        ext_model.filepath.unlink()
+        # delete the mdu file (this is the updated one with the new external forcing file)
+        mdu_filename.unlink()
+        # check the mdu backup file
+        assert mdu_filename.with_suffix(".mdu.bak").exists()
+        # rename back the backup file
+        mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
 
     def test_extrapolate_slr(self, capsys, input_files_dir: Path):
         """
