@@ -241,8 +241,8 @@ def compare_two_files(path1: PathOrStr, path2: PathOrStr) -> List[str]:
     if not path2.exists():
         raise FileNotFoundError(f"File {path2} does not exist.")
 
-    file1_lines = path1.read_text(encoding="utf-8").splitlines()
-    file2_lines = path2.read_text(encoding="utf-8").splitlines()
+    file1_lines = path1.read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
+    file2_lines = path2.read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
 
     # Remove trailing blank lines (if any)
     while file1_lines and not file1_lines[-1].strip():
