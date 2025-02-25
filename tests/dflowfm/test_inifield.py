@@ -125,7 +125,7 @@ class TestIniField:
         assert m.parameter[1].datafile.filepath == Path("calibration1.pol")
         assert m.parameter[1].datafiletype == DataFileType.polygon
         assert m.parameter[1].interpolationmethod == InterpolationMethod.constant
-        assert m.parameter[1].value == 0.03
+        assert m.parameter[1].value == pytest.approx(0.03)
         assert m.parameter[1].operand == Operand.mult
 
     def test_load_and_save(self, input_files_dir: Path):
@@ -257,11 +257,11 @@ class TestInitialConditions:
         )
         assert initial_conditions.interpolationmethod is None
         assert initial_conditions.operand == "O"
-        assert initial_conditions.averagingtype is "mean"
+        assert initial_conditions.averagingtype == "mean"
         assert np.isclose(initial_conditions.averagingrelsize, 1.01)
         assert initial_conditions.averagingnummin == 1
         assert initial_conditions.extrapolationmethod is False
-        assert initial_conditions.locationtype is "all"
+        assert initial_conditions.locationtype == "all"
         assert np.isclose(initial_conditions.averagingpercentile, 0.0)
 
     def test_setting_optional_fields(self):
