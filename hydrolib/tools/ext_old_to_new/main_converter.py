@@ -444,6 +444,7 @@ class ExternalForcingConverter:
 
             inifieldfile = geometry.get("inifieldfile")
             structurefile = geometry.get("structurefile")
+
             old_ext_force_file = external_forcing_data.get("extforcefile")
             if old_ext_force_file is None:
                 raise ValueError(
@@ -481,10 +482,9 @@ class ExternalForcingConverter:
             else root_dir / inifield_file
         )
         structure_file = (
-            structurefile[0]._resolved_filepath
-            if structurefile
-            else root_dir / structure_file
+            root_dir / structurefile if structurefile else root_dir / structure_file
         )
+
         return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
 
     def _update_fm_model(self):
