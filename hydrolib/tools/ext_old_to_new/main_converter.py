@@ -3,7 +3,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 
-from pydantic.v1 import Extra
 from pydantic.v1.error_wrappers import ValidationError
 from tqdm import tqdm
 
@@ -29,6 +28,7 @@ from hydrolib.tools.ext_old_to_new.converters import (
     update_extforce_file_new,
 )
 from hydrolib.tools.ext_old_to_new.utils import (
+    IgnoreUnknownKeyWordClass,
     backup_file,
     construct_filemodel_new_or_existing,
 )
@@ -373,8 +373,8 @@ class ExternalForcingConverter:
         # read sections of the mdu file.
         time_data = data.get("time")
         physics_data = data.get("physics")
-        mdu_time = Time(**time_data)
-        mdu_physics = MyPhysics(**physics_data)
+        mdu_time = IgnoreUnknownKeyWordClass(Time, **time_data)
+        mdu_physics = IgnoreUnknownKeyWordClass(Physics, **physics_data)
 
         ref_time = get_ref_time(mdu_time.refdate)
         mdu_info = {
@@ -442,6 +442,7 @@ class ExternalForcingConverter:
 
             inifieldfile = geometry.get("inifieldfile")
             structurefile = geometry.get("structurefile")
+
             old_ext_force_file = external_forcing_data.get("extforcefile")
             if old_ext_force_file is None:
                 raise ValueError(
@@ -479,10 +480,9 @@ class ExternalForcingConverter:
             else root_dir / inifield_file
         )
         structure_file = (
-            structurefile[0]._resolved_filepath
-            if structurefile
-            else root_dir / structure_file
+            root_dir / structurefile if structurefile else root_dir / structure_file
         )
+
         return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
 
     def _update_fm_model(self):
@@ -539,21 +539,6 @@ class MDUUpdateError(Exception):
     def __init__(self, error_message: str):
         """__init__."""
         print(error_message)
-
-
-class MyPhysics(Physics):
-    # Define your attributes here
-
-    class Config:
-        extra = Extra.ignore  # Ignore unknown fields instead of raising an error
-
-    def __init__(self, **data):
-        # Filter out unexpected fields before initializing Physics
-        valid_fields = self.__annotations__.keys()
-        filtered_data = {k: v for k, v in data.items() if k in valid_fields}
-        super().__init__(
-            **filtered_data
-        )  # Initialize the parent class with valid fields only
 
 
 def ext_old_to_new_dir_recursive(
