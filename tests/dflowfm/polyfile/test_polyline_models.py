@@ -30,6 +30,7 @@ def test_with_label(polylines_dir: Path):
     assert polyline.x == [0, 0]
     assert polyline.y == [0, 2]
     assert polyline.number_of_points == 2
+    assert polyline.objects[0].metadata.name == "tfl_01"
 
 
 def test_without_z(polylines_dir: Path):

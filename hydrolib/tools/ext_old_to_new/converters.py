@@ -25,6 +25,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldSourcesSinks,
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.ext_old_to_new.utils import (
@@ -249,8 +250,6 @@ class BoundaryConditionConverter(BaseConverter):
             boundary Condition can be only converted by reading the mdu file and the external forcing file is not
             enough.
         """
-        from hydrolib.core.dflowfm.polyfile.models import PolyFile
-
         location_file = forcing.filename.filepath
         poly_line = forcing.filename
         if not isinstance(poly_line, PolyFile):
@@ -268,8 +267,14 @@ class BoundaryConditionConverter(BaseConverter):
             )
 
         tim_model = self.merge_tim_files(tim_files, forcing)
+
+        label = poly_line.objects[0].metadata.name
+        num_quantities = len(tim_model.quantities_names)
         # switch the quantity names from the Tim model (loction names) to quantity names.
-        user_defined_names = tim_model.quantities_names
+        user_defined_names = [
+            f"{label}_{str(i).zfill(4)}" for i in range(1, num_quantities + 1)
+        ]
+
         tim_model.quantities_names = [forcing.quantity] * len(tim_model.get_units())
 
         units = tim_model.get_units()
