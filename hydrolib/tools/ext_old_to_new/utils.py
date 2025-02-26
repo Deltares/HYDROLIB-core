@@ -2,6 +2,8 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
+from pydantic.v1 import Extra
+
 from hydrolib.core.basemodel import DiskOnlyFileModel, FileModel, PathOrStr
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
@@ -281,3 +283,25 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
         )  # Default temperature value is 2
 
     return result
+
+
+class IgnoreUnknownKeyWord(type):
+    """Metaclass to ignore unknown keyword arguments when creating a new class instance"""
+
+    def __call__(cls, base_class, **data):
+        """Dynamically create and instantiate a subclass of base_class."""
+
+        class DynamicClass(base_class):
+            class Config:
+                extra = Extra.ignore
+
+            def __init__(self, **data):
+                valid_fields = self.__annotations__.keys()
+                filtered_data = {k: v for k, v in data.items() if k in valid_fields}
+                super().__init__(**filtered_data)
+
+        return DynamicClass(**data)
+
+
+class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
+    pass
