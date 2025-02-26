@@ -5,7 +5,7 @@ fileVersion = 1.01
 fileType    = boundConds
 
 [Forcing]
-name              = tfl_01_0001
+name              = L1_0001
 function          = timeseries
 timeInterpolation = linear
 offset            = 0.0
@@ -18,7 +18,7 @@ unit              = m
 120.0  0.01
 
 [Forcing]
-name              = tfl_01_0002
+name              = L1_0002
 function          = timeseries
 timeInterpolation = linear
 offset            = 0.0

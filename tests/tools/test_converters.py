@@ -148,7 +148,7 @@ class TestBoundaryConverter:
         assert new_quantity_block.bndwidth1d is None
         assert new_quantity_block.bndbldepth is None
         assert len(forcing_model.forcing) == 2
-        names = ["tfl_01_0001", "tfl_01_0002"]
+        names = ["L1_0001", "L1_0002"]
         assert all(
             forcing.name == name for forcing, name in zip(forcing_model.forcing, names)
         )
