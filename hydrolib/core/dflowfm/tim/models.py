@@ -69,26 +69,33 @@ class TimModel(ParsableFileModel):
 
     Examples:
         Create a TimModel object from a .tim file:
+
+            ```python
             >>> from hydrolib.core.dflowfm.tim.models import TimModel, TimRecord
             >>> tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")
             >>> print(tim_model.timeseries)
             [TimRecord(time=10.0, data=[1.232, 2.343, 3.454]), TimRecord(time=20.0, data=[4.565, 5.676, 6.787]), TimRecord(time=30.0, data=[1.5, 2.6, 3.7])]
 
+            ```
+
         Provide names for the quantities in the timeseries:
             ```python
-            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature", "tracerA"]
+            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature", "initialtracer"]
             >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim", quantities_names=quantities_names)
             >>> print(tim_model.quantities_names)
-            ['discharge', 'waterlevel', 'salinity', 'temperature', 'tracerA']
+            ['discharge', 'waterlevel', 'salinity', 'temperature', 'initialtracer']
             >>> print(tim_model.as_dataframe())
-                   discharge  waterlevel  salinity  temperature  tracerA
-            0.0          1.0         2.0       3.0          4.0      5.0
-            100.0        1.0         2.0       3.0          4.0      5.0
-            200.0        1.0         2.0       3.0          4.0      5.0
-            300.0        1.0         2.0       3.0          4.0      5.0
-            400.0        1.0         2.0       3.0          4.0      5.0
+                   discharge  waterlevel  salinity  temperature  initialtracer
+            0.0          1.0         2.0       3.0          4.0            5.0
+            100.0        1.0         2.0       3.0          4.0            5.0
+            200.0        1.0         2.0       3.0          4.0            5.0
+            300.0        1.0         2.0       3.0          4.0            5.0
+            400.0        1.0         2.0       3.0          4.0            5.0
+
+            ```
 
         Create a `TimModel` object from a dictionary:
+            ```python
             >>> data = {
             ...     "comments": ["# Example comment"],
             ...     "timeseries": [TimRecord(time=0.0, data=[1.0, 2.0])]
@@ -97,13 +104,21 @@ class TimModel(ParsableFileModel):
             >>> print(tim_model.timeseries)
             [TimRecord(time=0.0, data=[1.0, 2.0])]
 
+            ```
+
         Create `TimModel` from `TimRecord` objects:
+            ```python
             >>> new_tim = TimModel()
             >>> new_tim.comments = ["# Example comment"]
             >>> new_tim.timeseries = [TimRecord(time=0.0, data=[1.0, 2.0])]
 
+            ```
+
         Serialize the `TimModel` to a .tim file:
-            >>> new_tim.save(filepath="output.tim") # doctest: +SKIP
+            ```python
+            >>> new_tim.save(filepath=Path("output.tim")) # doctest: +SKIP
+
+            ```
 
     See Also:
         TimParser: Used for parsing .tim files.
@@ -185,14 +200,14 @@ class TimModel(ParsableFileModel):
     @validator("timeseries")
     @classmethod
     def _validate_timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
-        """Validate if the amount of columns per timeseries match and if the timeseries have no duplicate times.
+        """Validate if the number of columns per timeseries matches and if the timeseries have no duplicate times.
 
         Args:
             v (List[TimRecord]): Timeseries to validate.
 
         Raises:
-            ValueError: When the amount of columns for timeseries is zero.
-            ValueError: When the amount of columns differs per timeseries.
+            ValueError: When the number of columns for timeseries is zero.
+            ValueError: When the number of columns differs per timeseries.
             ValueError: When the timeseries has a duplicate time.
 
         Returns:
@@ -231,9 +246,9 @@ class TimModel(ParsableFileModel):
 
     @validator("quantities_names")
     def _validate_quantities_names(cls, v, values):
-        """Validate if the amount of quantities_names match the amount of columns in the timeseries.
+        """Validate if the number of quantities_names matches the number of columns in the timeseries.
 
-        The validator compared the amount of quantities_names with the amount of columns in the first record of
+        The validator compared the amount of quantities_names with the number of columns in the first record of
         the timeseries.
         """
         if v is not None:
@@ -243,6 +258,45 @@ class TimModel(ParsableFileModel):
                     f"The number of quantities_names ({len(v)}) must match the number of columns in the Tim file ({len(first_records_data)})."
                 )
         return v
+
+    def add_column(self, new_values: List[float], column_name: str = None) -> None:
+        """
+        Add new values to each TimRecord in the timeseries, representing a new location.
+
+        Args:
+            new_values (List[float]): A list of new values to add, one for each TimRecord.
+            column_name (str, optional): The name of the new column. Defaults to None.
+                if None, the column is named as "quantity-{len(quantities_names) + 1}".
+
+        Raises:
+            ValueError: If the number of new values does not match the number of TimRecords.
+
+        Examples:
+            ```python
+            >>> tim_model = TimModel(
+            ...     timeseries=[
+            ...         TimRecord(time=0.0, data=[1.0, 2.0]),
+            ...         TimRecord(time=1.0, data=[3.0, 4.0]),
+            ...     ]
+            ... )
+            >>> tim_model.add_column([5.0, 6.0])
+            >>> print(tim_model.timeseries)
+            [TimRecord(time=0.0, data=[1.0, 2.0, 5.0]), TimRecord(time=1.0, data=[3.0, 4.0, 6.0])]
+
+            ```
+        """
+        if len(new_values) != len(self.timeseries):
+            raise ValueError(
+                f"Expected {len(self.timeseries)} values, but got {len(new_values)}."
+            )
+
+        for record, value in zip(self.timeseries, new_values):
+            record.data.append(value)
+
+        if self.quantities_names:
+            if column_name is None:
+                column_name = f"quantity-{len(self.quantities_names) + 1}"
+            self.quantities_names.append(column_name)
 
     def as_dataframe(self, columns: List[Any] = None) -> DataFrame:
         """Return the timeseries as a pandas DataFrame.
@@ -304,6 +358,7 @@ class TimModel(ParsableFileModel):
             (excluding the first column(time)).
 
         Examples:
+            ```python
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
             >>> time_file = TimParser.parse(tim_file)
             >>> tim_model = TimModel(**time_file)
@@ -315,6 +370,7 @@ class TimModel(ParsableFileModel):
                 3: [3.0, 5.0, 12.0, 9.0, 23.0],
                 4: [4.0, 4.0, 4.0, 4.0, 4.0]
             }
+            ```
         """
         data = self.as_dataframe().to_dict(orient="list")
         return data
@@ -327,9 +383,10 @@ class TimModel(ParsableFileModel):
 
         Examples:
             Create a `TimModel` object from a .tim file:
+                ```python
                 >>> from hydrolib.core.dflowfm.tim.models import TimModel
                 >>> tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")
-                >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "tracerA"]
+                >>> tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]
                 >>> print(tim_model.get_units())
                 ['m3/s', 'm', 'degC', '1e-3', '-']
 

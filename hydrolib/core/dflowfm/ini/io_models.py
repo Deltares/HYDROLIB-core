@@ -1,8 +1,7 @@
 from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
-from xmlrpc.client import Boolean
 
-from pydantic.v1 import Field, validator
+from pydantic.v1 import Field
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.utils import to_key
@@ -69,6 +68,15 @@ class Section(BaseModel):
             An optional data block associated with this Section. The datablock is
             structured as a sequence of rows, i.e. datablock[2][1] refers to the third
             row, second column.
+
+    Examples:
+        ```python
+        >>> from hydrolib.core.dflowfm.ini.io_models import Section
+        >>> section = Section(header="header", content=[Property(key="a", value="1")])
+        >>> section.flatten()
+        {'_header': 'header', 'datablock': None, 'a': '1', 'comments': {'a': None}}
+
+        ```
     """
 
     header: str = Field(alias="_header")
@@ -100,11 +108,11 @@ class Section(BaseModel):
     def _convert_section_content(
         self, duplicate_key_as_list: bool, with_comments: bool
     ) -> Dict:
-        def group_and_flatten(l: Iterable[Tuple[str, Any]]) -> Dict[str, Any]:
+        def group_and_flatten(val: Iterable[Tuple[str, Any]]) -> Dict[str, Any]:
             if duplicate_key_as_list:
-                return reduce(_combine_in_dict, l, {})
+                return reduce(_combine_in_dict, val, {})
             else:
-                return dict(l)
+                return dict(val)
 
         values = group_and_flatten(
             (to_key(v.key), v.value) for v in self.content if isinstance(v, Property)

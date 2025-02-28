@@ -25,18 +25,16 @@ numpy = [
 pydantic = "^2.5"
 # lxml 5.0 is from December 2023
 lxml = "^5.0"
-meshkernel = "^6.0.0"
+meshkernel = "^5.0.1"
 strenum = "^0"
 tqdm = "^4.67.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.0"
 pytest-cov = "^6.0"
-black = "^24.3"
-isort = "^5.8"
-devtools = "^0.6.1"
-commitizen = "^2.17"
-mypy = "^0.910"
+devtools = "^0.12.2"
+commitizen = "^4.0"
+mypy = "^1.13"
 openpyxl = "^3.0.9"
 jinja2 = "^3.0"
 markupsafe = "<2.1"
@@ -61,7 +59,7 @@ mike = "^1.1.2"
 jupyter = "^1.0.0"
 notebook = "^7.3.2"
 mkdocstrings-python = "^1.13.0"
-
+mkdocs-mermaid2-plugin = "^1.2.1"
 
 [tool.poetry.group.pre-commit.dependencies]
 coverage = {extras = ["toml"], version = "^7.6.1"}

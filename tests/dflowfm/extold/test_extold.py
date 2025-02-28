@@ -24,6 +24,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
+from hydrolib.core.dflowfm.tim.models import TimModel
 from tests.utils import assert_files_equal, create_temp_file_from_lines, get_temp_file
 
 quantities_with_prefixes = copy.deepcopy(INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES)
@@ -151,7 +152,7 @@ class TestExtOldModel:
             "",
             "QUANTITY=waterlevelbnd",
             "FILENAME=OB_001_orgsize.pli",
-            "FILETYPE=9",
+            "FILETYPE=4",
             "METHOD=3",
             "* This is a comment",
             "OPERAND=O",
@@ -196,7 +197,7 @@ class TestExtOldModel:
         assert forcing_2.filename.filepath == Path("OB_001_orgsize.pli")
         assert forcing_2.varname is None
         assert forcing_2.sourcemask.filepath is None
-        assert forcing_2.filetype == ExtOldFileType.Polyline
+        assert forcing_2.filetype == ExtOldFileType.ArcInfo
         assert forcing_2.method == ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
         assert forcing_2.operand == Operand.override
         assert forcing_2.value is None
@@ -224,7 +225,7 @@ class TestExtOldModel:
             "",
             "QUANTITY=waterlevelbnd",
             "FILENAME=OB_001_orgsize.pli",
-            "FILETYPE=9",
+            "FILETYPE=4",
             "METHOD=3",
             "OPERAND=O",
         ]
@@ -242,8 +243,8 @@ class TestExtOldModel:
 
         forcing_2 = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=Path("OB_001_orgsize.pli"),
-            filetype=ExtOldFileType.Polyline,
+            filename="OB_001_orgsize.pli",
+            filetype=ExtOldFileType.ArcInfo,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
         )
@@ -436,3 +437,27 @@ def test_ext_old_source_sinks():
         quantity.value in ["discharge_salinity_temperature_sorsin"]
         for quantity in ExtOldSourcesSinks.__members__.values()
     )
+
+
+def test_ext_old_chooce_file_model_validator(tim_files_dir: Path):
+    """
+    Check if the root validator correctly chose the right type of file model.
+    """
+
+    forcing = ExtOldForcing(
+        quantity="initialwaterlevel",
+        filename="xs.xyz",
+        filetype=7,
+        method=5,
+        operand="O",
+    )
+    assert isinstance(forcing.filename, DiskOnlyFileModel)
+
+    forcing = ExtOldForcing(
+        quantity="initialwaterlevel",
+        filename=tim_files_dir / "triple_data_for_timeseries.tim",
+        filetype=1,
+        method=5,
+        operand="O",
+    )
+    assert isinstance(forcing.filename, TimModel)

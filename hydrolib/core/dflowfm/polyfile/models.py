@@ -161,13 +161,13 @@ class PolyFile(ParsableFileModel):
             >>> polyline = PolyFile("tests/data/input/source-sink/leftsor.pliz")
             >>> z_source, z_sink = polyline.get_z_sources_sinks()
             >>> print(z_source, z_sink)
-            [-3] [-4.2]
+            [-3.0] [-4.2]
 
         in case the polyline has more than 3 columns:
             >>> polyline = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz") #Doctest: +SKIP
             >>> z_source, z_sink = polyline.get_z_sources_sinks()
             >>> print(z_source, z_sink)
-            [-3, -2.9] [-4.2, -5.35]
+            [-3.0, -2.9] [-4.2, -5.35]
 
         in case the polyline does not have z-values:
             >>> root_dir = "tests/data/input/dflowfm_individual_files/polylines"
@@ -189,3 +189,8 @@ class PolyFile(ParsableFileModel):
         z_sink: list[float | None] = z_source_sink[0]
         z_source: list[float | None] = z_source_sink[1]
         return z_source, z_sink
+
+    @property
+    def number_of_points(self) -> int:
+        """Total number of points in the PolyFile."""
+        return len(self.x)

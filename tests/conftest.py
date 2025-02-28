@@ -82,11 +82,11 @@ def meteo_forcing_file_type() -> List[str]:
         "bcAscii",
         "uniform",
         "uniMagDir",
-        "meteoGridEqui",
+        "arcInfo",
         "spiderweb",
-        "meteoGridCurvi",
+        "curviGrid",
         "netcdf",
-        "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf.",
+        "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf.",
     ]
 
 
@@ -119,6 +119,11 @@ def polylines_dir() -> Path:
 
 
 @pytest.fixture
+def tim_files_dir() -> Path:
+    return Path("tests/data/input/tim")
+
+
+@pytest.fixture
 def time_series_file(input_files_dir: Path) -> Path:
     return input_files_dir.joinpath("tim/single_data_for_timeseries.tim")
 
@@ -142,7 +147,7 @@ def old_forcing_file_initial_condition() -> Dict[str, Path]:
             "tests/data/input/old-external-forcing-initial-contitions-only.ext"
         ),
         "quantities": ["initialwaterlevel", "initialwaterlevel", "initialsalinity"],
-        "file_type": ["polygon", "sample", "sample"],
+        "file_type": ["arcinfo", "arcinfo", "arcinfo"],
         "file_path": ["iniwaterlevel1.pol", "iniwaterlevel.xyz", "inisalinity.xyz"],
     }
 
@@ -152,7 +157,7 @@ def old_forcing_file_meteo() -> Dict[str, Path]:
     return {
         "path": Path("tests/data/input/old-external-meteo-only.ext"),
         "quantities": ["windx", "windy"],
-        "file_type": ["meteoGridEqui", "meteoGridEqui"],
+        "file_type": ["arcInfo", "arcInfo"],
         "file_path": ["windtest.amu", "windtest.amv"],
     }
 
@@ -165,25 +170,9 @@ def old_forcing_file_boundary() -> Dict[str, Path]:
         ),
         "quantities": [
             "waterlevelbnd",
-            "dischargebnd",
-            "velocitybnd",
-            "tangentialvelocitybnd",
-            "neumannbnd",
-            "riemannbnd",
-            "outflowbnd",
-            "qhbnd",
-            "salinitybnd",
         ],
         "locationfile": [
             "tfl_01.pli",
-            "left01.pli",
-            "vel01.pli",
-            "tanvelN.pli",
-            "right01.pli",
-            "left01.pli",
-            "right01.pli",
-            "right01.pli",
-            "tfl_02_sal.pli",
         ],
     }
 

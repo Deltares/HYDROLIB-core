@@ -304,6 +304,31 @@ class TestTimModel:
         assert math.isclose(tim_model.timeseries[1].time, 9e9)
         assert tim_model.timeseries[1].data == [1.0, 270.0]
 
+    def test_add_location_values(self):
+        model = TimModel(
+            timeseries=[
+                TimRecord(time=0.0, data=[1.0, 2.0]),
+                TimRecord(time=1.0, data=[3.0, 4.0]),
+            ],
+            comments=["this file", "contains", "stuff"],
+            quantities_names=["discharge", "waterlevel"],
+        )
+
+        model.add_column([5.0, 6.0], "location")
+
+        assert model.timeseries[0].data == [1.0, 2.0, 5.0]
+        assert model.timeseries[1].data == [3.0, 4.0, 6.0]
+        assert model.quantities_names == ["discharge", "waterlevel", "location"]
+        model.as_dict()["location"] = [5.0, 6.0]
+
+        # Test with mismatched lengths
+        with pytest.raises(ValueError):
+            model.add_column([7.0])
+
+        # test when quantities_names is not provided
+        model.add_column([7.0, 8.0])
+        assert model.as_dict()["quantity-4"] == [7.0, 8.0]
+
 
 class TestTimRecord:
     def test_initialization(self):

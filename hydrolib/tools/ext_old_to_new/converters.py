@@ -1,14 +1,20 @@
+import warnings
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
-from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeSeries
+from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
+from hydrolib.core.dflowfm.bc.models import ForcingModel, QuantityUnitPair, TimeSeries
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
+    BoundaryError,
+    InitialFieldError,
     Meteo,
+    MeteoError,
     SourceSink,
+    SourceSinkError,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
@@ -19,6 +25,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldSourcesSinks,
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.ext_old_to_new.utils import (
@@ -42,7 +49,17 @@ class BaseConverter(ABC):
 
     def __init__(self):
         """Initializes the BaseConverter object."""
-        pass
+        self._root_dir = None
+
+    @property
+    def root_dir(self) -> Path:
+        return self._root_dir
+
+    @root_dir.setter
+    def root_dir(self, value: Union[Path, str]):
+        if isinstance(value, str):
+            value = Path(value)
+        self._root_dir = value
 
     @abstractmethod
     def convert(self, data: ExtOldForcing) -> Any:
@@ -55,7 +72,7 @@ class BaseConverter(ABC):
 
         Returns:
             Any: The converted data in the new format. Should be
-                included into some FileModel object by the caller.
+                included in some FileModel object by the caller.
         """
         raise NotImplementedError("Subclasses must implement convert method")
 
@@ -108,8 +125,12 @@ class MeteoConverter(BaseConverter):
         meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
         meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
         meteo_data["operand"] = forcing.operand
-
-        meteo_block = Meteo(**meteo_data)
+        try:
+            meteo_block = Meteo(**meteo_data)
+        except Exception as e:
+            raise MeteoError(
+                f"Failed to create the Meteo object. for the following Errors: {e}"
+            )
 
         return meteo_block
 
@@ -119,7 +140,81 @@ class BoundaryConditionConverter(BaseConverter):
     def __init__(self):
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> Boundary:
+    @staticmethod
+    def merge_tim_files(tim_files: List[Path], forcing: ExtOldForcing) -> TimModel:
+        """Parse the boundary condition related time series from the tim files.
+
+        The function will merge all the tim files into one tim model and assign the quantity names to the tim model.
+
+        Args:
+            tim_files (List[Path]):
+                List of TIM models paths.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps, required for the conversion process.
+        Returns:
+            TimModel: A TimModel object containing the time series data from all given TIM files.
+        """
+        time_files_exist = all([tim_file.exists() for tim_file in tim_files])
+        if not time_files_exist:
+            raise FileNotFoundError(
+                f"TIM files '{tim_files}' not found for QUANTITY={forcing.quantity}"
+            )
+
+        tim_models = [
+            TimModel(file, quantities_names=[file.stem]) for file in tim_files
+        ]
+        # merge all the tim files into one tim model
+        for tim_model in tim_models[1:]:
+            data = tim_model.as_dict()
+            if len(data.keys()) != 1:
+                raise ValueError(
+                    f"Number of columns in the TIM file '{tim_model.filepath}' should be 1 column. in addition to the "
+                    "time column."
+                )
+            tim_models[0].add_column(
+                list(data.values())[0], column_name=list(data.keys())[0]
+            )
+        return tim_models[0]
+
+    @staticmethod
+    def convert_tim_to_bc(
+        tim_model: TimModel,
+        time_unit: str,
+        time_interpolation: str = "linear",
+        units: List[str] = None,
+        user_defined_names: List[str] = None,
+    ) -> ForcingModel:
+        """Convert a TimModel into a ForcingModel.
+
+        wrapper on top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
+
+        Args:
+            tim_model (TimModel):
+                The input TimModel to be converted.
+            time_unit (str):
+                Formatted string containing the units of time, including absolute datetime reference information
+                (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
+            time_interpolation (str, default is linear):
+                The interpolation method to be used for the time series data.
+            units (List[str], optional):
+                A list of units corresponding to the forcing quantities.
+            user_defined_names (List[str], optional):
+                A list of user-defined names for the forcing blocks.
+
+        Returns:
+            ForcingModel: The converted ForcingModel.
+
+        Raises:
+            ValueError: If `units` and `user_defined_names` are not provided.
+            ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
+        """
+        forcing_model = TimToForcingConverter.convert(
+            tim_model, time_unit, time_interpolation, units, user_defined_names
+        )
+        return forcing_model
+
+    def convert(self, forcing: ExtOldForcing, time_unit: str) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
 
@@ -131,29 +226,77 @@ class BoundaryConditionConverter(BaseConverter):
 
         Args:
             forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            time_unit:
+                The start date of the time series data.
 
         Returns:
             Boundary: A Boundary object that represents the converted forcing
             block, ready to be included in a new external forcings file. The
             Boundary object conforms to the new format specifications, ensuring
-            compatibility with updated systems anbd models.
+            compatibility with updated systems and models.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
             supported by the converter, a ValueError is raised. This ensures
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
+
+        Notes:
+            - The `root_dir` property must be set before calling this method.
+            - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
+            boundary Condition can be only converted by reading the mdu file and the external forcing file is not
+            enough.
         """
+        location_file = forcing.filename.filepath
+        poly_line = forcing.filename
+        if not isinstance(poly_line, PolyFile):
+            poly_line = PolyFile(location_file)
+
+        if self.root_dir is None:
+            raise ValueError(
+                "The 'root_dir' property must be set before calling this method."
+            )
+
+        tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.tim"))
+        if len(tim_files) < 1:
+            raise ValueError(
+                f"There are no tim files found for the given poly file: {poly_line}, in the directory: {self.root_dir}"
+            )
+
+        tim_model = self.merge_tim_files(tim_files, forcing)
+
+        label = poly_line.objects[0].metadata.name
+        num_quantities = len(tim_model.quantities_names)
+        # switch the quantity names from the Tim model (loction names) to quantity names.
+        user_defined_names = [
+            f"{label}_{str(i).zfill(4)}" for i in range(1, num_quantities + 1)
+        ]
+
+        tim_model.quantities_names = [forcing.quantity] * len(tim_model.get_units())
+
+        units = tim_model.get_units()
+
+        forcing_model = self.convert_tim_to_bc(
+            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+        )
+        # set the bc file names to the same names as the tim files.
+        forcing_model.filepath = location_file.with_suffix(".bc")
+
         data = {
             "quantity": forcing.quantity,
-            "locationfile": forcing.filename.filepath,
-            "forcingfile": ForcingModel(),
+            "locationfile": location_file,
+            "forcingfile": forcing_model,
         }
 
-        new_block = Boundary(**data)
+        try:
+            new_block = Boundary(**data)
+        except Exception as e:
+            raise BoundaryError(
+                f"Failed to create the Boundary object. for the following Errors: {e}"
+            )
 
         return new_block
 
@@ -192,7 +335,12 @@ class InitialConditionConverter(BaseConverter):
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
         data = create_initial_cond_and_parameter_input_dict(forcing)
-        new_block = InitialField(**data)
+        try:
+            new_block = InitialField(**data)
+        except Exception as e:
+            raise InitialFieldError(
+                f"Failed to create the InitialField object. for the following Errors: {e}"
+            )
 
         return new_block
 
@@ -411,7 +559,7 @@ class SourceSinkConverter(BaseConverter):
     @staticmethod
     def convert_tim_to_bc(
         tim_model: TimModel,
-        start_time: str,
+        time_unit: str,
         units: List[str] = None,
         user_defined_names: List[str] = None,
     ) -> ForcingModel:
@@ -422,8 +570,9 @@ class SourceSinkConverter(BaseConverter):
         Args:
             tim_model (TimModel):
                 The input TimModel to be converted.
-            start_time (str):
-                The reference time for the forcing data.
+            time_unit (str):
+                Formatted string containing the units of time, including absolute datetime reference information
+                (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             units (List[str], optional):
                 A list of units corresponding to the forcing quantities.
             user_defined_names (List[str], optional):
@@ -437,9 +586,27 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
         forcing_model = TimToForcingConverter.convert(
-            tim_model, start_time, units=units, user_defined_names=user_defined_names
+            tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
         return forcing_model
+
+    @staticmethod
+    def separate_forcing_model(forcing_model: ForcingModel) -> Dict[str, ForcingModel]:
+        """Separate the forcing model into a list of forcing models.
+        each forcing model will contain only one forcing quantity.
+        """
+        forcing_list = [deepcopy(forcing) for forcing in forcing_model.forcing]
+
+        forcing_model_list = []
+        forcings = {}
+        for forcing in forcing_list:
+            model = deepcopy(forcing_model)
+            model.forcing = [forcing]
+            forcing_model_list.append(model)
+            name = forcing.quantityunitpair[1].quantity
+            forcings[name] = model
+
+        return forcings
 
     def convert(
         self,
@@ -493,7 +660,7 @@ class SourceSinkConverter(BaseConverter):
         """
         location_file = forcing.filename.filepath
         polyline = forcing.filename
-
+        location_name = location_file.stem
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
@@ -507,29 +674,44 @@ class SourceSinkConverter(BaseConverter):
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
         units = time_model.get_units()
-        user_defined_names = [
-            f"user-defines-{i}" for i in range(len(time_model.quantities_names))
-        ]
+        user_defined_names = [f"{location_name}"] * len(time_model.quantities_names)
 
-        forcing_model_list = self.convert_tim_to_bc(
+        forcing_model = self.convert_tim_to_bc(
             time_model, start_time, units=units, user_defined_names=user_defined_names
         )
+        # set the bc file names to the same names as the tim files.
+        forcing_model.filepath = location_file.with_suffix(".bc").name
+
         data = {
-            "id": "L1",
+            "id": location_name,
             "name": forcing.quantity,
-            "locationfile": location_file,
             "numcoordinates": len(polyline.x),
             "xcoordinates": polyline.x,
             "ycoordinates": polyline.y,
-            "zsource": z_source,
-            "zsink": z_sink,
         }
-        forcings = {
-            key: value
-            for key, value in zip(time_model.quantities_names, forcing_model_list)
-        }
+        forcings = self.separate_forcing_model(forcing_model)
+
+        # the same forcing model will be used for all the forcings to be able to save all the forcings (sourcesinks)
+        # in the same file.
+        for name, force in forcings.items():
+            forcings[name] = forcing_model
+
         data = data | forcings
-        new_block = SourceSink(**data)
+
+        if None not in z_source:
+            # if the z_source and z_sink are not None, then add them to the data
+            z_source_sink_data = {
+                "zsource": z_source,
+                "zsink": z_sink,
+            }
+            data = data | z_source_sink_data
+
+        try:
+            new_block = SourceSink(**data)
+        except Exception as e:  # pragma: no cover
+            raise SourceSinkError(
+                f"Failed to create the SourceSink object. for the following Errors: {e}"
+            )
 
         return new_block
 
@@ -594,19 +776,20 @@ class TimToForcingConverter:
     @staticmethod
     def convert(
         tim_model: TimModel,
-        start_time: str,
+        time_unit: str,
         time_interpolation: str = "linear",
         units: List[str] = None,
         user_defined_names: List[str] = None,
-    ) -> List[ForcingModel]:
+    ) -> ForcingModel:
         """
         Convert a TimModel into a ForcingModel.
 
         Args:
             tim_model (TimModel):
                 The input TimModel to be converted.
-            start_time (str):
-                The reference time for the forcing data.
+            time_unit (str):
+                Formatted string containing the units of time, including absolute datetime reference information
+                (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             time_interpolation (str, optional):
                 The time interpolation method for the forcing data. Defaults to "linear".
             units (List[str], optional):
@@ -615,7 +798,7 @@ class TimToForcingConverter:
                 A list of user-defined names for the forcing blocks.
 
         Returns:
-            ForcingModel: The converted ForcingModel.
+            ForcingModel: The converted ForcingModel, with all the quantities inside it.
 
         Raises:
             ValueError: If `units` and `user_defined_names` are not provided.
@@ -624,6 +807,8 @@ class TimToForcingConverter:
 
         Examples:
             ```python
+            >>> from hydrolib.core.dflowfm.tim.models import TimModel
+            >>> from hydrolib.tools.ext_old_to_new.converters import TimToForcingConverter
             >>> file_path = "tests/data/input/tim/single_data_for_timeseries.tim"
             >>> user_defined_names = ["discharge"]
             >>> tim_model = TimModel(file_path, user_defined_names)
@@ -631,19 +816,19 @@ class TimToForcingConverter:
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
             >>> converter = TimToForcingConverter()
             >>> forcing_model = converter.convert(
-            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m³/s"], ["discharge"]
+            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
             ... )
-            >>> print(forcing_model[0].forcing[0].name)
+            >>> print(forcing_model.forcing[0].name)
             discharge
-            >>> print(forcing_model[0].forcing[0].datablock)
-            [[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0], [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]]
+            >>> print(forcing_model.forcing[0].datablock)
+            [[0.0, 0.0], [10.0, 0.01], [20.0, 0.0], [30.0, -0.01], [40.0, 0.0], [50.0, 0.01], [60.0, 0.0], [70.0, -0.01], [80.0, 0.0], [90.0, 0.01], [100.0, 0.0], [110.0, -0.01], [120.0, 0.0]]
 
             ```
         """
         if units is None or user_defined_names is None:
             raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
 
-        if start_time is None:
+        if time_unit is None:
             raise ValueError("The 'start_time' must be provided.")
 
         first_record = tim_model.timeseries[0].data
@@ -654,22 +839,123 @@ class TimToForcingConverter:
 
         df = tim_model.as_dataframe()
         time_data = df.index.tolist()
-        forcings_model_list = []
-
+        forcing_list = []
         for i, (column, vals) in enumerate(df.items()):
             unit = units[i]
-            model = ForcingModel(
-                forcing=[
-                    TimeSeries(
-                        name=user_defined_names[i],
-                        function="timeseries",
-                        timeinterpolation=time_interpolation,
-                        quantity=["time", column],
-                        unit=[start_time, unit],
-                        datablock=[time_data, vals.values.tolist()],
-                    )
-                ]
+            forcing = TimeSeries(
+                name=user_defined_names[i],
+                function="timeseries",
+                timeinterpolation=time_interpolation,
+                quantityunitpair=[
+                    QuantityUnitPair(quantity="time", unit=time_unit),
+                    QuantityUnitPair(quantity=column, unit=unit),
+                ],
+                datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
             )
-            forcings_model_list.append(model)
 
-        return forcings_model_list
+            forcing_list.append(forcing)
+
+        forcing_model = ForcingModel(forcing=forcing_list)
+        return forcing_model
+
+
+def update_extforce_file_new(
+    mdu_path: PathOrStr,
+    new_forcing_filename: PathOrStr,
+) -> List[str]:
+    """
+    Update the 'ExtForceFileNew' entry under the '[external forcing]' section
+    of an MDU file. Writes the updated content to output_path if provided,
+    or overwrites the original file otherwise.
+
+    Args:
+        mdu_path (PathOrStr):
+            Path to the original .mdu file.
+        new_forcing_filename (PathOrStr):
+            The filename to be placed after `ExtForceFileNew =`.
+
+    Returns:
+        List[str]:
+            The updated lines of the .mdu file.
+
+    Notes:
+        - This function is a workaround for updating the ExtForceFileNew entry in an MDU file.
+        - The function reads the entire file into memory, updates the line containing ExtForceFileNew, and writes the
+            updated content back to disk.
+        - The function removes the `extforcefile` from the mdu file, and only keeps the new updated `ExtForceFileNew`
+        entry, as all the old forcing quantities in the old forcing file are converted to the new format.
+        - after fixing the issue with mdu files having `Unkown keyword` error, this function will be removed,
+        and the `LegacyFMModel` will be the only way to read/update the mdu file
+
+    """
+    warnings.warn(
+        "This function is a workaround for updating the ExtForceFileNew entry in an MDU file. "
+        "It will be removed in the future, and the LegacyFMModel will be the only way to read/update the mdu file.",
+        DeprecationWarning,
+    )
+
+    # Read all lines from the .mdu file
+    with open(mdu_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    # We will track whether we are inside the [external forcing] section
+    inside_external_forcing = False
+
+    # Buffer for the modified lines
+    updated_lines = []
+
+    for line in lines:
+        # Check if we've hit the [external forcing] header
+        if line.strip().lower().startswith("[external forcing]"):
+            inside_external_forcing = True
+            updated_lines.append(line)
+            continue
+
+        # If we are inside the [external forcing] section, look for ExtForceFileNew
+        if inside_external_forcing:
+            # If we find another section header, it means [external forcing] section ended
+            if (
+                line.strip().startswith("[")
+                and line.strip().endswith("]")
+                and (line.strip().lower() != "[external forcing]")
+            ):
+                inside_external_forcing = False
+                # fall through to just append the line below
+
+            # If the line has ExtForceFileNew, replace it
+            # The simplest way is to check if it starts with or contains ExtForceFileNew
+            # ignoring trailing spaces. You can refine the logic as needed.
+            if line.strip().lower().startswith("extforcefilenew"):
+                # Find the '=' character
+                eq_index = line.find("=")
+                if eq_index != -1:
+                    # Everything up to and including '='
+                    left_part = line[: eq_index + 1]
+                    # Remainder of the line (after '=')
+                    right_part = line[eq_index + 1 :]  # noqa: E203
+                    name_len = len(new_forcing_filename)
+                    # Insert new filename immediately after '=' + a space
+                    new_line = (
+                        f"{left_part} {new_forcing_filename}{right_part[name_len + 1:]}"
+                    )
+
+                    updated_lines.append(new_line)
+                    continue
+            elif line.strip().lower().startswith("extforcefile"):
+                continue
+
+        # Default: write the line unmodified
+        updated_lines.append(line)
+
+    return updated_lines
+
+
+def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
+    warnings.warn(
+        "This function is a workaround for updating the ExtForceFileNew entry in an MDU file. "
+        "It will be removed in the future, and the LegacyFMModel will be the only way to read/update the mdu file.",
+        DeprecationWarning,
+    )
+    # Finally, write the updated lines to disk
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.writelines(content)
