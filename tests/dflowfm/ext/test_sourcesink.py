@@ -84,7 +84,7 @@ class TestSourceSinkValidator:
         """Test that creating a SourceSink without locationfile or coordinates raises an error."""
         with pytest.raises(
             ValueError,
-            match="Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` must be provided.",
+            match="Either `locationFile` or the combination of `numCoordinates`, `xCoordinates`, and `yCoordinates` must be provided.",
         ):
             SourceSink(id="test3", discharge=None)
 
@@ -92,7 +92,7 @@ class TestSourceSinkValidator:
         """Test that creating a SourceSink with incomplete coordinates raises an error."""
         with pytest.raises(
             ValueError,
-            match="Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` must be provided.",
+            match="Either `locationFile` or the combination of `numCoordinates`, `xCoordinates`, and `yCoordinates` must be provided.",
         ):
             SourceSink(
                 id="test4",
@@ -105,7 +105,7 @@ class TestSourceSinkValidator:
         """Test that creating a SourceSink with mismatched coordinate lengths raises an error."""
         with pytest.raises(
             ValueError,
-            match="Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` must be provided.",
+            match="Either `locationFile` or the combination of `numCoordinates`, `xCoordinates`, and `yCoordinates` must be provided.",
         ):
             SourceSink(
                 id="test5",

@@ -264,14 +264,11 @@ class SourceSink(INIBasedModel):
          Returns:
              Dict: The validated input values.
         """
-        locationfile = (
-            values.get("locationfile")
-            if values.get("locationfile") is not None
-            else values.get("locationFile")
-        )
-        numcoordinates = values.get("numcoordinates")
-        xcoordinates = values.get("xcoordinates")
-        ycoordinates = values.get("ycoordinates")
+        locationfile = values.get("locationfile", values.get("locationFile"))
+
+        numcoordinates = values.get("numcoordinates", values.get("numCoordinates"))
+        xcoordinates = values.get("xcoordinates", values.get("xCoordinates"))
+        ycoordinates = values.get("ycoordinates", values.get("yCoordinates"))
 
         has_locationfile = locationfile is not None
         has_coordinates = (
@@ -283,7 +280,7 @@ class SourceSink(INIBasedModel):
 
         if not (has_locationfile or has_coordinates):
             raise ValueError(
-                "Either `locationfile` or the combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` "
+                "Either `locationFile` or the combination of `numCoordinates`, `xCoordinates`, and `yCoordinates` "
                 f"must be provided. for the SourceSink block `{values.get('id')}`."
             )
 
