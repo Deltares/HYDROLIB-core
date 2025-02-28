@@ -424,7 +424,14 @@ class ExternalForcingConverter:
 
         try:
             fm_model = LegacyFMModel(mdu_file, recurse=False)
-            old_ext_force_file = fm_model.external_forcing.extforcefile.filepath
+            old_ext_force = fm_model.external_forcing.extforcefile
+            if old_ext_force is not None:
+                old_ext_force_file = old_ext_force.filepath
+            else:
+                raise ValueError(
+                    "The old external forcing file is not found in the mdu file."
+                )
+
             new_ext_force_file = fm_model.external_forcing.extforcefilenew
             inifieldfile = fm_model.geometry.inifieldfile
             structurefile = fm_model.geometry.structurefile
