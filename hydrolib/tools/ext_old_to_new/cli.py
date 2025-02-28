@@ -102,7 +102,11 @@ def main(args=None):
         )
         converter.verbose = args.verbose
         converter.update()
+        print(
+            "Converting the old external forcing file to the new format files is done."
+        )
         converter.save(backup=backup)
+        print("The new files are saved.")
 
     elif args.extoldfile is not None:
         # extold file is given
@@ -114,7 +118,11 @@ def main(args=None):
         )
         converter.verbose = args.verbose
         converter.update()
+        print(
+            "Converting the old external forcing file to the new format files is done."
+        )
         converter.save(backup=backup)
+        print("The new files are saved.")
 
     elif args.dir is not None:
         ext_old_to_new_dir_recursive(args.dir, backup=backup)
