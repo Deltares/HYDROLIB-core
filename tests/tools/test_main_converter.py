@@ -89,6 +89,17 @@ class TestExtOldToNewFromMDU:
         ):
             ext_old_to_new_dir_recursive(path, suppress_errors=True)
 
+    def test_deprecated_warning(self):
+        """
+        Test that the deprecated warning is raised.
+        """
+        with patch("warnings.warn", side_effect=SystemExit):
+            with pytest.raises(SystemExit):
+                ExternalForcingConverter.from_mdu(
+                    "tests/data/input/dflowfm_individual_files/mdu/sp.mdu",
+                    suppress_errors=True,
+                )
+
 
 class TestExternalFocingConverter:
 

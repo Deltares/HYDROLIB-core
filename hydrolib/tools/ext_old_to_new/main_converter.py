@@ -1,5 +1,6 @@
 import argparse
 import os
+import warnings
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
@@ -436,7 +437,12 @@ class ExternalForcingConverter:
                 "temperature": False if fm_model.physics.temperature == 0 else True,
                 "salinity": fm_model.physics.salinity,
             }
-        except ValidationError:
+        except ValidationError as e:
+            warnings.warn(
+                "The MDU file contains unknown keywords. These keywords will be ignored, but in future versions "
+                f"these keywords will raise an error, Error: {e}",
+                category=DeprecationWarning,
+            )
             data, mdu_info = ExternalForcingConverter.get_mdu_info(mdu_file)
 
             external_forcing_data = data.get("external_forcing")
