@@ -119,6 +119,11 @@ def polylines_dir() -> Path:
 
 
 @pytest.fixture
+def tim_files_dir() -> Path:
+    return Path("tests/data/input/tim")
+
+
+@pytest.fixture
 def time_series_file(input_files_dir: Path) -> Path:
     return input_files_dir.joinpath("tim/single_data_for_timeseries.tim")
 
@@ -142,7 +147,7 @@ def old_forcing_file_initial_condition() -> Dict[str, Path]:
             "tests/data/input/old-external-forcing-initial-contitions-only.ext"
         ),
         "quantities": ["initialwaterlevel", "initialwaterlevel", "initialsalinity"],
-        "file_type": ["polygon", "sample", "sample"],
+        "file_type": ["arcinfo", "arcinfo", "arcinfo"],
         "file_path": ["iniwaterlevel1.pol", "iniwaterlevel.xyz", "inisalinity.xyz"],
     }
 
