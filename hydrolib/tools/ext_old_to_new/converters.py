@@ -900,14 +900,16 @@ def update_extforce_file_new(
 
     # We will track whether we are inside the [external forcing] section
     inside_external_forcing = False
-
+    found_extforcefilenew = False
     # Buffer for the modified lines
     updated_lines = []
 
     for line in lines:
+        stripped = line.strip()
         # Check if we've hit the [external forcing] header
-        if line.strip().lower().startswith("[external forcing]"):
+        if stripped.lower().startswith("[external forcing]"):
             inside_external_forcing = True
+            found_extforcefilenew = False
             updated_lines.append(line)
             continue
 
@@ -915,17 +917,24 @@ def update_extforce_file_new(
         if inside_external_forcing:
             # If we find another section header, it means [external forcing] section ended
             if (
-                line.strip().startswith("[")
-                and line.strip().endswith("]")
-                and (line.strip().lower() != "[external forcing]")
+                stripped.startswith("[")
+                and stripped.endswith("]")
+                and "external forcing" not in stripped.lower()
             ):
+                # If we never found ExtForceFileNew before leaving, add it now
+                if not found_extforcefilenew:
+                    new_line = f"ExtForceFileNew                           = {new_forcing_filename}\n"
+                    updated_lines.append(new_line)
+                    updated_lines.append("\n")
+
                 inside_external_forcing = False
                 # fall through to just append the line below
 
             # If the line has ExtForceFileNew, replace it
             # The simplest way is to check if it starts with or contains ExtForceFileNew
             # ignoring trailing spaces. You can refine the logic as needed.
-            if line.strip().lower().startswith("extforcefilenew"):
+            if stripped.lower().startswith("extforcefilenew"):
+                found_extforcefilenew = True
                 # Find the '=' character
                 eq_index = line.find("=")
                 if eq_index != -1:
@@ -941,11 +950,19 @@ def update_extforce_file_new(
 
                     updated_lines.append(new_line)
                     continue
-            elif line.strip().lower().startswith("extforcefile"):
+            elif stripped.lower().startswith("extforcefile"):
                 continue
 
         # Default: write the line unmodified
         updated_lines.append(line)
+
+    # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
+    if inside_external_forcing and not found_extforcefilenew:
+        new_line = (
+            f"ExtForceFileNew                           = {new_forcing_filename}\n"
+        )
+        updated_lines.append(new_line)
+        updated_lines.append("\n")
 
     return updated_lines
 
