@@ -355,6 +355,18 @@ class ExternalForcingConverter:
                     "The FM model is not saved, and there was no new updated content for the mdu file."
                 )
 
+    def clean(self):
+        """
+        Clean the directory from the old external forcing file and the time file.
+        """
+        root_dir = self.root_dir
+        time_files = list(root_dir.glob("*.tim"))
+        if len(time_files) > 0:
+            for file in time_files:
+                file.unlink()
+
+        self.extold_model.filepath.unlink()
+
     @staticmethod
     def get_mdu_info(mdu_file: str) -> Tuple[Dict, Dict]:
         """Get the info needed from the mdu to process and convert the old external forcing files.

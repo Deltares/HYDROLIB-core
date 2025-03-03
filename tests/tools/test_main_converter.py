@@ -363,3 +363,23 @@ class TestUpdateSourcesSinks:
         assert len(inifield_model.initial) == 2
         quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
+
+
+def test_clean():
+    """mock test to test the clean method of the ExternalForcingConverter class.
+
+    Notes:
+    - The glob method is mocked to return two files with the extension .tim.
+    - The unlink method is mocked to return True.
+    """
+    with (
+        patch.object(Path, "glob") as mock_glob,
+        patch("pathlib.Path.unlink", return_value=True) as mock_unlink,
+    ):
+        mock_glob.return_value = [Path("fake.tim"), Path("fake2.tim")]
+        converter = ExternalForcingConverter(
+            "tests/data/input/old-external-forcing.ext"
+        )
+        converter.clean()
+        mock_glob.assert_called_once_with("*.tim")
+        assert mock_unlink.call_count == 3
