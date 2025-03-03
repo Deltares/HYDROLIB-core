@@ -75,6 +75,14 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Do not create a backup of each file that will be overwritten.",
     )
+
+    parser.add_argument(
+        "--remove-legacy-files",
+        dest="remove_legacy",
+        action="store_true",
+        default=False,
+        help="Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.",
+    )
     return parser
 
 
@@ -108,6 +116,10 @@ def main(args=None):
         converter.save(backup=backup)
         print("The new files are saved.")
 
+        if args.remove_legacy:
+            print("Cleaning legacy tim files ...")
+            converter.clean()
+
     elif args.extoldfile is not None:
         # extold file is given
         converter = ExternalForcingConverter(
@@ -123,9 +135,13 @@ def main(args=None):
         )
         converter.save(backup=backup)
         print("The new files are saved.")
-
+        if args.remove_legacy:
+            print("Cleaning legacy tim files ...")
+            converter.clean()
     elif args.dir is not None:
-        ext_old_to_new_dir_recursive(args.dir, backup=backup)
+        ext_old_to_new_dir_recursive(
+            args.dir, backup=backup, remove_legacy=args.remove_legacy
+        )
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 

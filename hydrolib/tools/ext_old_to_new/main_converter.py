@@ -567,7 +567,10 @@ class MDUUpdateError(Exception):
 
 
 def ext_old_to_new_dir_recursive(
-    root_dir: PathOrStr, backup: bool = True, suppress_errors: bool = False
+    root_dir: PathOrStr,
+    backup: bool = True,
+    suppress_errors: bool = False,
+    remove_legacy: bool = False,
 ):
     """Migrate all external forcings files in a directory tree to the new format.
 
@@ -575,6 +578,7 @@ def ext_old_to_new_dir_recursive(
         root_dir: Directory to recursively find and convert .mdu files in.
         backup (bool, optional): Create a backup of each file that will be overwritten.
         suppress_errors (bool, optional): Suppress errors during conversion.
+        remove_legacy (bool, optional): Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.
     """
     mdu_files = [
         path for path in Path(root_dir).rglob("*.mdu") if "_ext" not in path.name
@@ -592,6 +596,8 @@ def ext_old_to_new_dir_recursive(
                 )
                 _, _, _ = converter.update()
                 converter.save(backup=backup)
+                if remove_legacy:
+                    converter.clean()
             except Exception as e:
                 if not suppress_errors:
                     print(f"Error processing {path}: {e}")
