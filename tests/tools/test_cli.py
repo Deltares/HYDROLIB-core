@@ -1,9 +1,11 @@
 import sys
+from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 from hydrolib.core import __version__
-from hydrolib.tools.ext_old_to_new.cli import main
+from hydrolib.tools.ext_old_to_new.cli import ExternalForcingConverter, main
 
 
 def test_no_arguments(monkeypatch, capsys):
@@ -42,3 +44,31 @@ def test_version(monkeypatch, capsys):
         main()
     captured = capsys.readouterr()
     assert __version__ in captured.out
+
+
+def test_mdufile_ok(monkeypatch, capsys, input_files_dir: Path):
+    """
+    Test the minimal valid command with --mdufile.
+    Ensures it doesn't raise an error.
+    """
+    mdu_file = input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
+    monkeypatch.setattr(sys, "argv", ["prog", "--mdufile", str(mdu_file)])
+
+    # mock all the called methods from the ExternalForcingConverter.
+    with (
+        patch.object(ExternalForcingConverter, "update") as mock_update,
+        patch.object(ExternalForcingConverter, "save") as mock_save,
+        patch.object(ExternalForcingConverter, "clean") as mock_clean,
+    ):
+        mock_update.return_value = None, None, None
+        mock_save.return_value = None
+        mock_clean.return_value = None
+        main()
+
+    # Confirm nothing indicates an error
+    captured = capsys.readouterr()
+    assert (
+        "Converting the old external forcing file to the new format files is done."
+        in captured.out
+    )
+    assert "The new files are saved." in captured.out
