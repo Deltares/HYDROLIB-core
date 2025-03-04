@@ -5,7 +5,7 @@ import pytest
 
 from hydrolib.core.dflowfm.ext.models import SourceSink
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
-from hydrolib.tools.ext_old_to_new.converters import SourceSinkConverter
+from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 
 
 class TestParseTimFileForSourceSink:

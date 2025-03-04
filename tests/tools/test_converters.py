@@ -12,7 +12,7 @@ from hydrolib.core.dflowfm.ext.models import (
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
-from hydrolib.tools.ext_old_to_new.converters import (
+from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     InitialConditionConverter,
     MeteoConverter,

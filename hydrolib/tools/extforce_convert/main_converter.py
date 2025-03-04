@@ -24,11 +24,11 @@ from hydrolib.core.dflowfm.inifield.models import (
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-from hydrolib.tools.ext_old_to_new.converters import (
+from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     update_extforce_file_new,
 )
-from hydrolib.tools.ext_old_to_new.utils import (
+from hydrolib.tools.extforce_convert.utils import (
     IgnoreUnknownKeyWordClass,
     backup_file,
     construct_filemodel_new_or_existing,
@@ -566,7 +566,7 @@ class MDUUpdateError(Exception):
         print(error_message)
 
 
-def ext_old_to_new_dir_recursive(
+def recursive_converter(
     root_dir: PathOrStr,
     backup: bool = True,
     suppress_errors: bool = False,

@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from hydrolib.core import __version__
-from hydrolib.tools.ext_old_to_new.cli import ExternalForcingConverter, main
+from hydrolib.tools.extforce_convert.cli import ExternalForcingConverter, main
 
 
 def test_no_arguments(monkeypatch, capsys):

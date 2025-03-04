@@ -14,7 +14,7 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 "issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
 [tool.poetry.scripts]
-extforce-convert = 'hydrolib.tools.ext_old_to_new.cli:main'
+extforce-convert = 'hydrolib.tools.extforce_convert.cli:main'
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"

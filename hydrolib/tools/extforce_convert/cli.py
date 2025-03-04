@@ -3,9 +3,9 @@ from argparse import ArgumentTypeError
 from pathlib import Path
 
 from hydrolib.core import __version__
-from hydrolib.tools.ext_old_to_new.main_converter import (
+from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
-    ext_old_to_new_dir_recursive,
+    recursive_converter,
 )
 
 
@@ -18,7 +18,7 @@ def valid_file(path_str):
 
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="ext_old_to_new",
+        prog="extforce_convert",
         description="Convert D-Flow FM legacy external forcings files to current external forcings file/initial fields file/structures file.",
     )
 
@@ -88,7 +88,7 @@ def _get_parser() -> argparse.ArgumentParser:
 
 def main(args=None):
     """
-    Main entry point for ext_old_to_new tool.
+    Main entry point for extforce_convert tool.
     Args:
         args : list
             A of arguments as if they were input in the command line. Leave it
@@ -139,9 +139,7 @@ def main(args=None):
             print("Cleaning legacy tim files ...")
             converter.clean()
     elif args.dir is not None:
-        ext_old_to_new_dir_recursive(
-            args.dir, backup=backup, remove_legacy=args.remove_legacy
-        )
+        recursive_converter(args.dir, backup=backup, remove_legacy=args.remove_legacy)
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 

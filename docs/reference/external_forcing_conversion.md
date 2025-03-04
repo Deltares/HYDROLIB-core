@@ -43,7 +43,7 @@ pip install hydrolib
 ```
 Once installed, the `extforce-convert` command should be available in your PATH if your Python script folder is accessible. Alternatively, you may run it using:
 ```bash
-python -m hydrolib.tools.ext_old_to_new.cli [options]
+python -m hydrolib.tools.extforce_convert.cli [options]
 ```
 
 ---
