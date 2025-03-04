@@ -20,7 +20,7 @@ class LayerType(StrEnum):
 
 TIME_PATTERN = re.compile(
     r"^"
-    r"(\d+(?:\.\d+)?)\s+"  # (1) float
+    r"(\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)\s+"  # (1) sci_float = \d+(?:\.\d+)?(?:[eE][+\-]?\d+)?  (handles 1, 1.23, 1e9, 1.23e-10, etc.)
     r"(seconds|minutes|hours|days)\s+"  # (2) space + valid time unit
     r"since\s+"  # (3) space + 'since' + space
     r"\d{4}-\d{2}-\d{2}"  # (4) date in YYYY-MM-DD e.g. 2006-01-01

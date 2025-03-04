@@ -25,3 +25,10 @@ class TestT3DTimeRecord:
         data = [1, 2, 3, 4, 5]
         with pytest.raises(ValidationError):
             T3DTimeRecord(time=time, data=data)
+
+    def test_scientific_notation(self):
+        time = "1e9 seconds since 2001-01-01 00:00:00 +00:00"
+        data = [1, 2, 3, 4, 5]
+        record = T3DTimeRecord(time=time, data=data)
+        assert record.data == data
+        assert record.time == time
