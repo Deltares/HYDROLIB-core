@@ -20,14 +20,12 @@ class CmpParser:
                 ...    mock_file.return_value = file
                 ...    cmp_model = CmpParser.parse(Path(""))
                 >>> print(cmp_model)
-                {'comments': ['some comment'], 'components': [0, 1, 2]}
+                {'comments': ['some comment'], 'components': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}
         """
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
             comments, start_components_index = CmpParser._read_header_comments(lines)
-            # handle component data
-            # [placeholder]
-            components = list([0, 1, 2])
+            components = CmpParser._read_components_data(lines, start_components_index)
         return {"comments": comments, "components": components}
 
     @staticmethod
@@ -60,3 +58,30 @@ class CmpParser:
             break
 
         return comments, start_components_index
+
+    @staticmethod
+    def _read_components_data(
+        lines: List[str], start_components_index: int
+    ) -> List[CmpData]:
+        components_data: List[CmpData] = []
+        for line_index in range(start_components_index, len(lines)):
+            line = lines[line_index].strip()
+
+            if len(line) == 0:
+                continue
+
+            CmpParser._raise_error_if_contains_comment(line, line_index + 1)
+
+            period, amplitude, phase = filter(None, line.split(" "))
+
+            component = {"period": period, "amplitude": amplitude, "phase": phase}
+            components_data.append(component)
+
+        return components_data
+
+    @staticmethod
+    def _raise_error_if_contains_comment(line: str, line_index: int) -> None:
+        if "#" in line or "*" in line:
+            raise ValueError(
+                f"Line {line_index}: comments are only supported at the start of the file, before the components data."
+            )
