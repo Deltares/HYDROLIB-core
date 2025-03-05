@@ -10,6 +10,21 @@ class CmpParser:
     @staticmethod
     def parse(filepath: Path) -> Dict[str, List[Any]]:
         r"""Parse a cmp file to a Dict containing amplitude and phase for period.
+
+        Args:
+            filepath (Path): Path to the .cmp file to be parsed.
+
+        Returns:
+            Dict[str, List[Any]]: A dictionary with keys "comments" and "components".
+            - "comments" represents comments found at the start of the file.
+            - "components" is a list of dictionaries with the values "period", "amplitude" and "phase".
+                - "period" is a float as a string.
+                - "amplitude" is a float as a string.
+                - "phase" is a float as a string.
+
+        Raises:
+            ValueError: If the file contains a comment that is not at the start of the file.
+
         Examples:
             Read a `.cmp` file:
                 ```python

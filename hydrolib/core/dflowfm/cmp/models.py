@@ -5,7 +5,7 @@ from pydantic.v1 import Field
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.cmp.parser import CmpParser
-from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
+from hydrolib.core.dflowfm.cmp.serializer import CmpSerializer
 
 
 class CmpRecord(BaseModel):
@@ -15,10 +15,10 @@ class CmpRecord(BaseModel):
     """float: of the period."""
 
     amplitude: float
-    """float: of the harmonic amplitude."""
+    """float: of the amplitude."""
 
     phase: float
-    """float: of the harmonic phase."""
+    """float: of the phase."""
 
 
 class CmpModel(ParsableFileModel):
@@ -53,8 +53,8 @@ class CmpModel(ParsableFileModel):
     @classmethod
     def _get_serializer(
         cls,
-    ) -> Callable[[Path, Dict, TimSerializerConfig, ModelSaveSettings], None]:
-        return TimSerializer.serialize
+    ) -> Callable[[Path, Dict, ModelSaveSettings], None]:
+        return CmpSerializer.serialize
 
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
