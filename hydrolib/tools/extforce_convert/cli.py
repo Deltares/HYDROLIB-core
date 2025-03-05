@@ -104,8 +104,8 @@ def main(args=None):
         converter = ExternalForcingConverter.from_mdu(
             args.mdufile,
             ext_file=(args.outfiles[0] if args.outfiles else None),
-            inifield_file=(args.outfiles[1] if args.outfiles else "inifields.ini"),
-            structure_file=(args.outfiles[2] if args.outfiles else "structures.ini"),
+            inifield_file=(args.outfiles[1] if args.outfiles else None),
+            structure_file=(args.outfiles[2] if args.outfiles else None),
             suppress_errors=True,
         )
         converter.verbose = args.verbose
@@ -125,8 +125,8 @@ def main(args=None):
         converter = ExternalForcingConverter(
             args.extoldfile,
             ext_file=(args.outfiles[0] if args.outfiles else None),
-            inifield_file=(args.outfiles[1] if args.outfiles else "inifields.ini"),
-            structure_file=(args.outfiles[2] if args.outfiles else "structures.ini"),
+            inifield_file=(args.outfiles[1] if args.outfiles else None),
+            structure_file=(args.outfiles[2] if args.outfiles else None),
         )
         converter.verbose = args.verbose
         converter.update()
