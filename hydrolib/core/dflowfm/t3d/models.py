@@ -148,6 +148,7 @@ class T3DModel(ParsableFileModel):
     def _filename(self) -> str:
         return "test"
 
+    @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return T3DParser.parse
 

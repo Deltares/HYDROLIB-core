@@ -70,6 +70,34 @@ class TestT3DModel:
         assert model.layers == layers
         assert model.records == record
 
+    def test_initialize_with_dict(self):
+        data = {
+            "comments": [],
+            "layer_type": "SIGMA",
+            "layers": [0.0, 0.2, 0.6, 0.8, 1.0],
+            "records": [
+                {
+                    "time": "0 seconds since 2006-01-01 00:00:00 +00:00",
+                    "data": [1.0, 1.0, 1.0, 1.0, 1.0],
+                },
+                {
+                    "time": "180 seconds since 2001-01-01 00:00:00 +00:00",
+                    "data": [2.0, 2.0, 2.0, 2.0, 2.0],
+                },
+            ],
+        }
+        model = T3DModel(**data)
+        assert model.comments == data["comments"]
+        assert model.layer_type == data["layer_type"]
+        assert model.layers == data["layers"]
+        assert model.records == data["records"]
+
+    def test_initialize_with_file_path(self):
+        filepath = t3d_file_path / "sigma-5-layers-3-times.t3d"
+        model = T3DModel(filepath=filepath)
+        assert model.filepath == filepath
+        assert model.serializer_config.float_format == ""
+
 
 class TestParser:
     @pytest.mark.parametrize(
@@ -77,7 +105,7 @@ class TestParser:
         [
             pytest.param(
                 t3d_file_path / "sigma-5-layers-3-times.t3d",
-                id="sigma_t3d",
+                id="sigma-5-layers-3-times",
             ),
         ],
     )
