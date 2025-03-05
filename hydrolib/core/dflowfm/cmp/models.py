@@ -34,6 +34,8 @@ class CmpModel(ParsableFileModel):
             >>> cmp_model = CmpModel(**data)
             >>> print(cmp_model.components)
             [CmpRecord(period=0.0, amplitude=1.0, phase=2.0)]
+
+            ```
     """
 
     comments: List[str] = Field(default_factory=list)

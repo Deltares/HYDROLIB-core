@@ -36,6 +36,8 @@ class CmpParser:
                 ...    cmp_model = CmpParser.parse(Path(""))
                 >>> print(cmp_model)
                 {'comments': ['some comment'], 'components': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}
+
+                ```
         """
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
