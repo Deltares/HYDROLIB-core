@@ -36,12 +36,14 @@ class CmpSerializer:
         with path.open("w", encoding="utf8") as file:
             file.write(file_content)
 
+    @staticmethod
     def _serialize_comment_lines(data: Dict[str, List[Any]]) -> List[str]:
         comment_lines = []
         for comment in data["comments"]:
             comment_lines.append(f"#{comment}")
         return comment_lines
 
+    @staticmethod
     def _serialize_components_lines(data: Dict[str, List[Any]]) -> List[str]:
         components_lines = []
         for component in data["components"]:
@@ -50,6 +52,7 @@ class CmpSerializer:
             )
         return components_lines
 
+    @staticmethod
     def _serialize_file_content(
         components_lines: List[str], comment_lines: List[str]
     ) -> str:
