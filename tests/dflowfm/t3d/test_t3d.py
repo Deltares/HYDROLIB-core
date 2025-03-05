@@ -13,25 +13,31 @@ class TestT3DModelAtrributes:
 
 
 class TestT3DTimeRecord:
-    def test_initialization(self):
-        time = "0 seconds since 2006-01-01 00:00:00 +00:00"
-        data = [1, 2, 3, 4, 5]
-        record = T3DTimeRecord(time=time, data=data)
-        assert record.data == data
-        assert record.time == time
+    @pytest.mark.parametrize(
+        "time,data,should_fail",
+        [
+            ("0 seconds since 2006-01-01 00:00:00 +00:00", [1, 2, 3, 4, 5], False),
+            ("any string", [1, 2, 3, 4, 5], True),
+            ("1e9 seconds since 2001-01-01 00:00:00 +00:00", [1, 2, 3, 4, 5], False),
+        ],
+        ids=["Valid time format", "Invalid time format", "Scientific notation in time"],
+    )
+    def test_time_record_initialization(self, time, data, should_fail):
+        """
+        Test various T3DTimeRecord initialization scenarios.
 
-    def test_wrong_time_format(self):
-        time = "any string"
-        data = [1, 2, 3, 4, 5]
-        with pytest.raises(ValidationError):
-            T3DTimeRecord(time=time, data=data)
-
-    def test_scientific_notation(self):
-        time = "1e9 seconds since 2001-01-01 00:00:00 +00:00"
-        data = [1, 2, 3, 4, 5]
-        record = T3DTimeRecord(time=time, data=data)
-        assert record.data == data
-        assert record.time == time
+        * When `should_fail` is False, the T3DTimeRecord should initialize
+          successfully and its fields should match the inputs.
+        * When `should_fail` is True, a ValidationError is expected,
+          indicating the time format is invalid or cannot be parsed.
+        """
+        if should_fail:
+            with pytest.raises(ValidationError):
+                T3DTimeRecord(time=time, data=data)
+        else:
+            record = T3DTimeRecord(time=time, data=data)
+            assert record.data == data
+            assert record.time == time
 
 
 class TestT3DModel:
@@ -57,3 +63,7 @@ class TestT3DModel:
         assert model.layer_type == layer_name
         assert model.layers == layers
         assert model.records == record
+
+
+# class TestParser:
+#     def test
