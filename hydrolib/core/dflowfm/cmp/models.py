@@ -37,7 +37,7 @@ class CmpModel(ParsableFileModel):
     """
 
     comments: List[str] = Field(default_factory=list)
-    """List[str]: A list with the header comment of the tim file."""
+    """List[str]: A list with the header comment of the cmp file."""
 
     components: List[CmpRecord] = Field(default_factory=list)
     """List[CmpRecord]: A list containing the harmonic components."""
