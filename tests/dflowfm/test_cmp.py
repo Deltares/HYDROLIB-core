@@ -72,14 +72,14 @@ class TestCmpParser:
             ),
             pytest.param(
                 {
-                    "comments": ["test content", "second test content"],
+                    "comments": ["test content", "", "second test content"],
                     "components": [
                         {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
                         {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
                     ],
                 },
-                "#test content\n#second test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
-                id="multiple",
+                "#test content\n\n#second test content\n0.0   1.0  2.0\n\n1.0   3.0  4.0",
+                id="multiple with empty line",
             ),
         ],
         ids=["empty", "single", "multiple components", "multiple comments", "multiple"],
