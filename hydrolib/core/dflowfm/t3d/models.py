@@ -1,12 +1,18 @@
 """T3D file"""
 
 import re
-from typing import List
+from pathlib import Path
+from typing import Callable, Dict, List, Optional
 
 from pydantic.v1 import Field, validator
 from strenum import StrEnum
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.basemodel import (
+    BaseModel,
+    ModelSaveSettings,
+    ParsableFileModel,
+    SerializerConfig,
+)
 
 
 class LayerType(StrEnum):
@@ -81,3 +87,70 @@ class T3DTimeRecord(BaseModel):
                 "    <float> <time unit> since <ISO date> [optional time] [optional timezone]"
             )
         return value
+
+
+class T3DModel(ParsableFileModel):
+    """T3D file model.
+
+    Args:
+        comments (List[str]):
+            A list with the header comment of the tim file.
+
+        records (List[T3DTimeRecord]):
+            List of time records.
+
+        layers (List[float]):
+            List of layers.
+
+        vectormax (Optional[int]):
+            The VECTORMAX value.
+
+        layer_type (LayerType):
+            The layer type.
+
+    Examples:
+        >>> from hydrolib.core.dflowfm.t3d.models import T3DTimeRecord, T3DModel
+        >>> layer_name = "SIGMA"
+        >>> comments = ["comment1", "comment2"]
+        >>> layers = [1, 2, 3, 4, 5]
+        >>> record = [
+        ...     T3DTimeRecord(time="0 seconds since 2006-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0]),
+        ...     T3DTimeRecord(time="1e9 seconds since 2001-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0])
+        ... ]
+        >>> model = T3DModel(comments=comments, layer_type=layer_name, layers=layers, records=record)
+        >>> print(model) # doctest: +SKIP
+        T3DModel(
+            filepath=None,
+            serializer_config=SerializerConfig(float_format=''),
+            comments=['comment1', 'comment2'],
+            records=[
+                T3DTimeRecord(time='0 seconds since 2006-01-01 00:00:00 +00:00', data=[5.0, 5.0, 10.0, 10.0]),
+                T3DTimeRecord(time='1e9 seconds since 2001-01-01 00:00:00 +00:00', data=[5.0, 5.0, 10.0, 10.0])
+            ],
+            layers=[1.0, 2.0, 3.0, 4.0, 5.0], vectormax=1, layer_type='SIGMA'
+        )
+
+    """
+
+    comments: List[str] = Field(default_factory=list)
+    """List[str]: A list with the header comment of the tim file."""
+
+    records: List[T3DTimeRecord] = Field(default_factory=list)
+
+    layers: List[float] = Field(default_factory=list)
+    vectormax: Optional[int] = Field(default=1, alias="VECTORMAX")
+    layer_type: LayerType = Field(default=None, alias="LAYER_TYPE")
+
+    def _ext(self) -> str:
+        return ".test"
+
+    def _filename(self) -> str:
+        return "test"
+
+    def _get_parser(cls) -> Callable[[Path], Dict]:
+        return cls._parse
+
+    def _get_serializer(
+        cls,
+    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
+        return cls._serialize
