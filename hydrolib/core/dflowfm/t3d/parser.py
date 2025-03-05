@@ -54,6 +54,7 @@ class T3DParser:
                         "data": [3.0, 3.0, 3.0, 3.0, 3.0]
                     }
                 ]
+            }
         """
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
