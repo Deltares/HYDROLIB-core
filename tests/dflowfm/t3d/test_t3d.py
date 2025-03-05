@@ -1,7 +1,13 @@
+from pathlib import Path
+
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.t3d.models import LayerType, T3DModel, T3DTimeRecord
+from hydrolib.core.dflowfm.t3d.parser import T3DParser
+from tests.utils import test_input_dir
+
+t3d_file_path = test_input_dir / "dflowfm_individual_files/t3d"
 
 
 class TestT3DModelAtrributes:
@@ -65,5 +71,20 @@ class TestT3DModel:
         assert model.records == record
 
 
-# class TestParser:
-#     def test
+class TestParser:
+    @pytest.mark.parametrize(
+        "input_path",
+        [
+            pytest.param(
+                t3d_file_path / "sigma-5-layers-3-times.t3d",
+                id="sigma_t3d",
+            ),
+        ],
+    )
+    def test_parse_t3d_files(self, input_path):
+        data = T3DParser.parse(input_path)
+        keys = ["records", "layer_type", "layers"]
+        assert all(key in data.keys() for key in keys)
+        assert data["layer_type"] == "SIGMA"
+        assert len(data["records"]) == 3
+        assert len(data["layers"]) == 5

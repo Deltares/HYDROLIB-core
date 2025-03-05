@@ -13,6 +13,7 @@ from hydrolib.core.basemodel import (
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.dflowfm.t3d.parser import T3DParser
 
 
 class LayerType(StrEnum):
@@ -148,7 +149,7 @@ class T3DModel(ParsableFileModel):
         return "test"
 
     def _get_parser(cls) -> Callable[[Path], Dict]:
-        return cls._parse
+        return T3DParser.parse
 
     def _get_serializer(
         cls,
