@@ -28,26 +28,70 @@ class TestCmpParser:
         assert parser is not None
         assert isinstance(parser, CmpParser)
 
-    def test_cmp_parser_parse(self, fs: FakeFilesystem):
+    @pytest.mark.parametrize(
+        "expected, content",
+        [
+            pytest.param(
+                {
+                    "comments": [],
+                    "components": [],
+                },
+                "",
+                id="empty",
+            ),
+            pytest.param(
+                {
+                    "comments": ["test content"],
+                    "components": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"}
+                    ],
+                },
+                "#test content\n0.0   1.0  2.0",
+                id="single",
+            ),
+            pytest.param(
+                {
+                    "comments": ["test content"],
+                    "components": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                        {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+                    ],
+                },
+                "#test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
+                id="multiple components",
+            ),
+            pytest.param(
+                {
+                    "comments": ["test content", "second test content"],
+                    "components": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                    ],
+                },
+                "#test content\n#second test content\n0.0   1.0  2.0",
+                id="multiple comments",
+            ),
+            pytest.param(
+                {
+                    "comments": ["test content", "second test content"],
+                    "components": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                        {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+                    ],
+                },
+                "#test content\n#second test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
+                id="multiple",
+            ),
+        ],
+        ids=["empty", "single", "multiple components", "multiple comments", "multiple"],
+    )
+    def test_cmp_parser_parse(self, expected, content, fs: FakeFilesystem):
         cmp_file = Path("input.cmp")
-        fs.create_file(cmp_file, contents="#test content\n0.0   1.0  2.0")
+        fs.create_file(cmp_file, contents=content)
 
         parser = CmpParser()
         model = parser.parse(cmp_file)
         assert model is not None
-        assert model == {
-            "comments": ["test content"],
-            "components": [{"period": "0.0", "amplitude": "1.0", "phase": "2.0"}],
-        }
-
-    def test_cmp_parser_parse_empty_file(self, fs: FakeFilesystem):
-        cmp_file = Path("empty.cmp")
-        fs.create_file(cmp_file, contents="")
-
-        parser = CmpParser()
-        model = parser.parse(cmp_file)
-        assert model is not None
-        assert model == {"comments": [], "components": []}
+        assert model == expected
 
 
 class TestCmpSerializer:
