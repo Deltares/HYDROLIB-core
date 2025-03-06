@@ -3,9 +3,11 @@ from pathlib import Path
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
+from hydrolib.core.basemodel import ModelSaveSettings
 from hydrolib.core.dflowfm.t3d.models import LayerType, T3DModel, T3DTimeRecord
 from hydrolib.core.dflowfm.t3d.parser import T3DParser
-from tests.utils import test_input_dir
+from hydrolib.core.dflowfm.t3d.serializer import T3DSerializer, T3DSerializerConfig
+from tests.utils import assert_files_equal, test_input_dir
 
 t3d_file_path = test_input_dir / "dflowfm_individual_files/t3d"
 
@@ -116,3 +118,33 @@ class TestParser:
         assert data["layer_type"] == "SIGMA"
         assert len(data["records"]) == 3
         assert len(data["layers"]) == 5
+
+
+class TestT3DModelSerializer:
+    data = {
+        "comments": [],
+        "layer_type": "SIGMA",
+        "layers": [0.0, 0.2, 0.6, 0.8, 1.0],
+        "records": [
+            {
+                "time": "0 seconds since 2006-01-01 00:00:00 +00:00",
+                "data": [1.0, 1.0, 1.0, 1.0, 1.0],
+            },
+            {
+                "time": "180 seconds since 2006-01-01 00:00:00 +00:00",
+                "data": [2.0, 2.0, 2.0, 2.0, 2.0],
+            },
+            {
+                "time": "9999999 seconds since 2006-01-01 00:00:00 +00:00",
+                "data": [3.0, 3.0, 3.0, 3.0, 3.0],
+            },
+        ],
+    }
+
+    def test_serialize_data(self):
+        reference_path = t3d_file_path / "sigma-5-layers-3-times.t3d"
+        output_path = t3d_file_path / "test_serialize.t3d"
+        config = T3DSerializerConfig(float_format=".1f")
+        T3DSerializer.serialize(output_path, self.data, config, ModelSaveSettings())
+        assert_files_equal(output_path, reference_path)
+        output_path.unlink()
