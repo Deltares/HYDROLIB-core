@@ -144,10 +144,10 @@ class T3DModel(ParsableFileModel):
     layer_type: LayerType = Field(default=None, alias="LAYER_TYPE")
 
     def _ext(self) -> str:
-        return ".test"
+        return ".t3d"
 
     def _filename(self) -> str:
-        return "test"
+        return "t3d"
 
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
