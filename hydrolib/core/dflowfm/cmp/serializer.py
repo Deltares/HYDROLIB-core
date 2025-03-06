@@ -40,7 +40,7 @@ class CmpSerializer:
     def _serialize_comment_lines(data: Dict[str, List[Any]]) -> List[str]:
         comment_lines = []
         for comment in data["comments"]:
-            comment_lines.append(f"#{comment}")
+            comment_lines.append(f"{'#' if comment != '' else ''}{comment}")
         return comment_lines
 
     @staticmethod

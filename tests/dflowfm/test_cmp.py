@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import pytest
@@ -7,6 +8,58 @@ from hydrolib.core.basemodel import ModelSaveSettings
 from hydrolib.core.dflowfm.cmp.models import CmpModel, CmpRecord
 from hydrolib.core.dflowfm.cmp.parser import CmpParser
 from hydrolib.core.dflowfm.cmp.serializer import CmpSerializer
+
+# Cmp file content and expected data
+cmp_test_parameters = [
+    pytest.param(
+        {
+            "comments": [],
+            "components": [],
+        },
+        "",
+        id="empty",
+    ),
+    pytest.param(
+        {
+            "comments": ["test content"],
+            "components": [{"period": "0.0", "amplitude": "1.0", "phase": "2.0"}],
+        },
+        "#test content\n0.0   1.0  2.0",
+        id="single",
+    ),
+    pytest.param(
+        {
+            "comments": ["test content"],
+            "components": [
+                {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+            ],
+        },
+        "#test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
+        id="multiple components",
+    ),
+    pytest.param(
+        {
+            "comments": ["test content", "second test content"],
+            "components": [
+                {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+            ],
+        },
+        "#test content\n#second test content\n0.0   1.0  2.0",
+        id="multiple comments",
+    ),
+    pytest.param(
+        {
+            "comments": ["test content", "", "second test content"],
+            "components": [
+                {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+            ],
+        },
+        "#test content\n\n#second test content\n0.0   1.0  2.0\n\n1.0   3.0  4.0",
+        id="multiple with empty line",
+    ),
+]
 
 
 class TestCmpModel:
@@ -28,62 +81,7 @@ class TestCmpParser:
         assert parser is not None
         assert isinstance(parser, CmpParser)
 
-    @pytest.mark.parametrize(
-        "expected, content",
-        [
-            pytest.param(
-                {
-                    "comments": [],
-                    "components": [],
-                },
-                "",
-                id="empty",
-            ),
-            pytest.param(
-                {
-                    "comments": ["test content"],
-                    "components": [
-                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"}
-                    ],
-                },
-                "#test content\n0.0   1.0  2.0",
-                id="single",
-            ),
-            pytest.param(
-                {
-                    "comments": ["test content"],
-                    "components": [
-                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                        {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
-                    ],
-                },
-                "#test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
-                id="multiple components",
-            ),
-            pytest.param(
-                {
-                    "comments": ["test content", "second test content"],
-                    "components": [
-                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                    ],
-                },
-                "#test content\n#second test content\n0.0   1.0  2.0",
-                id="multiple comments",
-            ),
-            pytest.param(
-                {
-                    "comments": ["test content", "", "second test content"],
-                    "components": [
-                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                        {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
-                    ],
-                },
-                "#test content\n\n#second test content\n0.0   1.0  2.0\n\n1.0   3.0  4.0",
-                id="multiple with empty line",
-            ),
-        ],
-        ids=["empty", "single", "multiple components", "multiple comments", "multiple"],
-    )
+    @pytest.mark.parametrize("expected, content", cmp_test_parameters)
     def test_cmp_parser_parse(self, expected, content, fs: FakeFilesystem):
         cmp_file = Path("input.cmp")
         fs.create_file(cmp_file, contents=content)
@@ -93,26 +91,45 @@ class TestCmpParser:
         assert model is not None
         assert model == expected
 
+    def test_cmp_parser_parse_comment_error(self, fs: FakeFilesystem):
+        cmp_file = Path("input.cmp")
+        fs.create_file(
+            cmp_file, contents="#test content\n0.0   1.0  2.0\n#comment\n1.0   3.0  4.0"
+        )
+
+        with pytest.raises(ValueError) as error:
+            CmpParser.parse(cmp_file)
+
+        expected_error_msg = f"Line 3: comments are only supported at the start of the file, before the components data."
+        assert expected_error_msg in str(error.value)
+
 
 class TestCmpSerializer:
+    # Filter out the "multiple with empty line" test case for the serializer test
+    cmp_test_parameters_for_serializer = [
+        param for param in cmp_test_parameters if param.id != "multiple with empty line"
+    ]
+
+    def normalize_expected_content(self, content: str) -> str:
+        # Remove extra spaces
+        stripped = re.sub(" +", " ", content)
+        return stripped
+
     def test_cmp_serializer_initialization(self):
         serializer = CmpSerializer()
         assert serializer is not None
         assert isinstance(serializer, CmpSerializer)
 
-    def test_cmp_serializer_serialize(self, fs: FakeFilesystem):
-        data = {
-            "comments": ["test comment"],
-            "components": [{"period": "0.0", "amplitude": "1.0", "phase": "2.0"}],
-        }
+    @pytest.mark.parametrize("data, expected", cmp_test_parameters_for_serializer)
+    def test_cmp_serializer_serialize(self, data, expected, fs: FakeFilesystem):
 
-        serializer = CmpSerializer()
+        serializer = CmpModel._get_serializer()
         cmp_file = Path("/fake/output.cmp")
         save_settings = ModelSaveSettings()
 
-        serializer.serialize(cmp_file, data, save_settings)
+        serializer(cmp_file, data, save_settings)
 
         assert fs.exists(cmp_file)
         with open(cmp_file, "r", encoding="utf8") as file:
             content = file.read()
-            assert content == "#test comment\n0.0 1.0 2.0"
+            assert content == self.normalize_expected_content(expected)
