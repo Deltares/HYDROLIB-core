@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
@@ -147,4 +145,11 @@ class TestT3DModelSerializer:
         config = T3DSerializerConfig(float_format=".1f")
         T3DSerializer.serialize(output_path, self.data, config, ModelSaveSettings())
         assert_files_equal(output_path, reference_path)
+        output_path.unlink()
+
+    def test_save_model(self):
+        model = T3DModel(**self.data)
+        output_path = t3d_file_path / "test_save.t3d"
+        model.save(output_path)
+        assert_files_equal(output_path, t3d_file_path / "sigma-5-layers-3-times.t3d")
         output_path.unlink()
