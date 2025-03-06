@@ -35,7 +35,7 @@ class AstronomicRecord(BaseModel):
     """float: of the phase."""
 
 
-class CmpRecord(BaseModel):
+class CmpSet(BaseModel):
     harmonics: List[HarmonicRecord] = Field(default_factory=list)
     """List[HarmonicRecord]: A list containing the harmonic components."""
 
@@ -50,7 +50,7 @@ class CmpModel(ParsableFileModel):
 
     Attributes:
         comments (List[str]): A list with the header comment of the cmp file.
-        components (CmpRecord): A record with the components of the cmp file.
+        components (CmpSet): A set with the components of the cmp file.
 
     Examples:
         Create a `CmpModel` object from a dictionary:
@@ -68,7 +68,7 @@ class CmpModel(ParsableFileModel):
 
             ```
     See Also:
-        CmpRecord: Class representing the components of the cmp file.
+        CmpSet: Class representing the components of the cmp file.
         CmpSerializer: Class responsible for serializing cmp files.
         CmpParser: Class responsible for parsing cmp files.
     """
@@ -76,8 +76,8 @@ class CmpModel(ParsableFileModel):
     comments: List[str] = Field(default_factory=list)
     """List[str]: A list with the header comment of the cmp file."""
 
-    components: CmpRecord = Field(default_factory=CmpRecord)
-    """CmpRecord: A record with the components of the cmp file."""
+    components: CmpSet = Field(default_factory=CmpSet)
+    """CmpSet: A record with the components of the cmp file."""
 
     @classmethod
     def _ext(cls) -> str:
