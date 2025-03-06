@@ -28,7 +28,18 @@ cmp_test_parameters = [
             },
         },
         "#test content\n0.0   1.0  2.0",
-        id="single",
+        id="single harmonics",
+    ),
+    pytest.param(
+        {
+            "comments": ["test content"],
+            "components": {
+                "astronomics": [{"name": "M12", "amplitude": "1.0", "phase": "2.0"}],
+                "harmonics": [],
+            },
+        },
+        "#test content\nM12   1.0  2.0",
+        id="single astronomics",
     ),
     pytest.param(
         {
@@ -42,7 +53,21 @@ cmp_test_parameters = [
             },
         },
         "#test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
-        id="multiple components",
+        id="multiple harmonics",
+    ),
+    pytest.param(
+        {
+            "comments": ["test content"],
+            "components": {
+                "astronomics": [
+                    {"name": "M12", "amplitude": "1.0", "phase": "2.0"},
+                    {"name": "4MSN12", "amplitude": "3.0", "phase": "4.0"},
+                ],
+                "harmonics": [],
+            },
+        },
+        "#test content\nM12   1.0  2.0\n4MSN12   3.0  4.0",
+        id="multiple astronomics",
     ),
     pytest.param(
         {
@@ -59,16 +84,34 @@ cmp_test_parameters = [
     ),
     pytest.param(
         {
+            "comments": ["test content"],
+            "components": {
+                "harmonics": [
+                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                ],
+                "astronomics": [
+                    {"name": "2(MS)N10", "amplitude": "3.0", "phase": "4.0"},
+                ],
+            },
+        },
+        "#test content\n0.0   1.0  2.0\n2(MS)N10   3.0  4.0",
+        id="mixed components",
+    ),
+    pytest.param(
+        {
             "comments": ["test content", "", "second test content"],
             "components": {
                 "harmonics": [
                     {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
                     {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
                 ],
-                "astronomics": [],
+                "astronomics": [
+                    {"name": "M12", "amplitude": "1.0", "phase": "2.0"},
+                    {"name": "4MSN12", "amplitude": "3.0", "phase": "4.0"},
+                ],
             },
         },
-        "#test content\n\n#second test content\n0.0   1.0  2.0\n\n1.0   3.0  4.0",
+        "#test content\n\n#second test content\n0.0   1.0  2.0\n1.0   3.0  4.0\n\nM12   1.0  2.0\n4MSN12   3.0  4.0",
         id="multiple with empty line",
     ),
 ]
@@ -91,6 +134,44 @@ class TestCmpModel:
         record = HarmonicRecord(period=0.0, amplitude=1.0, phase=2.0)
         assert record is not None
         assert record.period == 0.0
+
+    def test_cmp_model_initialization_with_data(self):
+        model = CmpModel(
+            comments=["test content"],
+            components={
+                "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
+            },
+        )
+        assert model is not None
+        assert model.comments == ["test content"]
+        assert len(model.components.harmonics) == 1
+        assert len(model.components.astronomics) == 1
+
+    def test_cmp_model_initialization_with_invalid_data(self):
+        with pytest.raises(ValueError) as error:
+            CmpModel(
+                comments=["test content"],
+                components={
+                    "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                    "astronomics": [{"name": "4MS10", "amplitude": 1.0}],
+                },
+            )
+
+        expected_error_msg = f"phase\n  field required (type=value_error.missing)"
+        assert expected_error_msg in str(error.value)
+
+    def test_cmp_model_parse(self):
+        model = CmpModel._get_parser()
+        assert model is not None
+        assert model == CmpParser.parse
+
+    def test_cmp_model_parse_file_error(self):
+        with pytest.raises(Exception) as error:
+            CmpModel._get_parser()()
+
+        expected_error_msg = f"missing 1 required positional argument: 'filepath'"
+        assert expected_error_msg in str(error.value)
 
 
 class TestCmpParser:
@@ -120,6 +201,29 @@ class TestCmpParser:
 
         expected_error_msg = f"Line 3: comments are only supported at the start of the file, before the components data."
         assert expected_error_msg in str(error.value)
+
+    def test_cmp_parser_parse_too_few_values(self, fs: FakeFilesystem):
+        cmp_file = Path("input.cmp")
+        fs.create_file(cmp_file, contents="#test content\n0.0   1.0  ")
+
+        with pytest.raises(ValueError) as error:
+            CmpParser.parse(cmp_file)
+
+        expected_error_msg = f"not enough values to unpack (expected 3, got 2)"
+        assert expected_error_msg in str(error.value)
+
+    def test_cmp_parser_parse_too_many_values(self, fs: FakeFilesystem):
+        cmp_file = Path("input.cmp")
+        fs.create_file(cmp_file, contents="#test content\n0.0   1.0  2.0 3.0")
+
+        with pytest.raises(ValueError) as error:
+            CmpParser.parse(cmp_file)
+
+        expected_error_msg = f"too many values to unpack (expected 3)"
+        assert expected_error_msg in str(error.value)
+
+    def test__is_float_value_none(self):
+        assert not CmpParser._is_float(None)
 
 
 class TestCmpSerializer:
