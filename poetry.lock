@@ -4007,7 +4007,7 @@ version = "5.7.4"
 description = "pyfakefs implements a fake file system that mocks the Python file system modules."
 optional = false
 python-versions = ">=3.7"
-groups = ["main"]
+groups = ["dev"]
 files = [
     {file = "pyfakefs-5.7.4-py3-none-any.whl", hash = "sha256:3e763d700b91c54ade6388be2cfa4e521abc00e34f7defb84ee511c73031f45f"},
     {file = "pyfakefs-5.7.4.tar.gz", hash = "sha256:4971e65cc80a93a1e6f1e3a4654909c0c493186539084dc9301da3d68c8878fe"},
@@ -5519,4 +5519,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "52e736de6dbd9393bc474b35c3347fa1308502909e3cbd2f244230c85d3f6a19"
+content-hash = "6e8df7a5c76d766633cc71e309889101555b5b4bf45d1dc8ec2157b8af6abec4"
