@@ -1,7 +1,9 @@
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-CmpData = Dict[str, Tuple[int, int, int]]
+AstronomicData = Dict[str, Tuple[float, float, float]]
+HarmonicData = Dict[str, Tuple[str, float, float]]
+CmpData = Dict[str, Tuple[AstronomicData, HarmonicData]]
 
 
 class CmpParser:
@@ -35,7 +37,7 @@ class CmpParser:
                 ...    mock_file.return_value = file
                 ...    cmp_model = CmpParser.parse(Path(""))
                 >>> print(cmp_model)
-                {'comments': ['some comment'], 'components': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}
+                {'comments': ['some comment'], 'components': {'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}], 'astronomics': []}}
 
                 ```
         """
@@ -80,7 +82,8 @@ class CmpParser:
     def _read_components_data(
         lines: List[str], start_components_index: int
     ) -> List[CmpData]:
-        components_data: List[CmpData] = []
+        harmonics_data: List[CmpData] = []
+        astronomics_data: List[CmpData] = []
         for line_index in range(start_components_index, len(lines)):
             line = lines[line_index].strip()
 
@@ -91,10 +94,24 @@ class CmpParser:
 
             period, amplitude, phase = filter(None, line.split(" "))
 
-            component = {"period": period, "amplitude": amplitude, "phase": phase}
-            components_data.append(component)
+            if CmpParser._is_float(period):
+                component = {"period": period, "amplitude": amplitude, "phase": phase}
+                harmonics_data.append(component)
+            else:
+                component = {"name": period, "amplitude": amplitude, "phase": phase}
+                astronomics_data.append(component)
 
-        return components_data
+        return {"harmonics": harmonics_data, "astronomics": astronomics_data}
+
+    @staticmethod
+    def _is_float(element: any) -> bool:
+        if element is None:
+            return False
+        try:
+            float(element)
+            return True
+        except ValueError:
+            return False
 
     @staticmethod
     def _raise_error_if_contains_comment(line: str, line_index: int) -> None:

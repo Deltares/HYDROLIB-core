@@ -5,7 +5,7 @@ import pytest
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.basemodel import ModelSaveSettings
-from hydrolib.core.dflowfm.cmp.models import CmpModel, CmpRecord
+from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CmpModel, HarmonicRecord
 from hydrolib.core.dflowfm.cmp.parser import CmpParser
 from hydrolib.core.dflowfm.cmp.serializer import CmpSerializer
 
@@ -14,7 +14,7 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": [],
-            "components": [],
+            "components": {"astronomics": [], "harmonics": []},
         },
         "",
         id="empty",
@@ -22,7 +22,10 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content"],
-            "components": [{"period": "0.0", "amplitude": "1.0", "phase": "2.0"}],
+            "components": {
+                "astronomics": [],
+                "harmonics": [{"period": "0.0", "amplitude": "1.0", "phase": "2.0"}],
+            },
         },
         "#test content\n0.0   1.0  2.0",
         id="single",
@@ -30,10 +33,13 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content"],
-            "components": [
-                {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
-            ],
+            "components": {
+                "harmonics": [
+                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                    {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+                ],
+                "astronomics": [],
+            },
         },
         "#test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
         id="multiple components",
@@ -41,9 +47,12 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content", "second test content"],
-            "components": [
-                {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-            ],
+            "components": {
+                "harmonics": [
+                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                ],
+                "astronomics": [],
+            },
         },
         "#test content\n#second test content\n0.0   1.0  2.0",
         id="multiple comments",
@@ -51,10 +60,13 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content", "", "second test content"],
-            "components": [
-                {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
-            ],
+            "components": {
+                "harmonics": [
+                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                    {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+                ],
+                "astronomics": [],
+            },
         },
         "#test content\n\n#second test content\n0.0   1.0  2.0\n\n1.0   3.0  4.0",
         id="multiple with empty line",
@@ -67,10 +79,16 @@ class TestCmpModel:
         model = CmpModel()
         assert model is not None
         assert len(model.comments) == 0
-        assert len(model.components) == 0
+        assert len(model.components.harmonics) == 0
+        assert len(model.components.astronomics) == 0
 
-    def test_cmp_record_initialization(self):
-        record = CmpRecord(period=0.0, amplitude=1.0, phase=2.0)
+    def test_astronomic_record_initialization(self):
+        record = AstronomicRecord(name="3MS2", amplitude=1.0, phase=2.0)
+        assert record is not None
+        assert record.name == "3MS2"
+
+    def test_harmonic_record_initialization(self):
+        record = HarmonicRecord(period=0.0, amplitude=1.0, phase=2.0)
         assert record is not None
         assert record.period == 0.0
 

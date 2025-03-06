@@ -16,12 +16,17 @@ class CmpSerializer:
 
         Args:
             path (Path): The path to the destination .cmp file.
-            data (Dict[str, List[Any]]): A dictionary with keys "comments" and "components".
+            data (Dict[str, Any]): A dictionary with keys "comments" and "components".
             - "comments" represents comments found at the start of the file.
-            - "components" is a list of dictionaries with the values as "period", "amplitude" and "phase".
-                - "period" is a float as a string.
-                - "amplitude" is a float as a string.
-                - "phase" is a float as a string.
+            - "components" is a dictionary with keys "harmonics" and "astronomics".
+                - "harmonics" is a list of dictionaries with the values as "period", "amplitude" and "phase".
+                    - "period" is a float as a string.
+                    - "amplitude" is a float as a string.
+                    - "phase" is a float as a string.
+                - "astronomics" is a list of dictionaries with the values as "name", "amplitude" and "phase".
+                    - "name" is an AstronomicName as a string.
+                    - "amplitude" is a float as a string.
+                    - "phase" is a float as a string.
 
             save_settings (ModelSaveSettings): The save settings to be used.
         """
@@ -44,11 +49,15 @@ class CmpSerializer:
         return comment_lines
 
     @staticmethod
-    def _serialize_components_lines(data: Dict[str, List[Any]]) -> List[str]:
+    def _serialize_components_lines(data: Dict[str, Any]) -> List[str]:
         components_lines = []
-        for component in data["components"]:
+        for harmonic in data["components"]["harmonics"]:
             components_lines.append(
-                f"{component['period']} {component['amplitude']} {component['phase']}"
+                f"{harmonic['period']} {harmonic['amplitude']} {harmonic['phase']}"
+            )
+        for astronomic in data["components"]["astronomics"]:
+            components_lines.append(
+                f"{astronomic['name']} {astronomic['amplitude']} {astronomic['phase']}"
             )
         return components_lines
 
