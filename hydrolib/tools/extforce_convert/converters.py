@@ -5,7 +5,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
-from hydrolib.core.dflowfm.bc.models import ForcingModel, QuantityUnitPair, TimeSeries
+from hydrolib.core.dflowfm.bc.models import (
+    T3D,
+    ForcingModel,
+    QuantityUnitPair,
+    TimeSeries,
+)
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
@@ -26,6 +31,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
@@ -857,6 +863,86 @@ class TimToForcingConverter:
 
         forcing_model = ForcingModel(forcing=forcing_list)
         return forcing_model
+
+
+class T3DToForcingConverter:
+
+    @staticmethod
+    def convert(
+        t3d_model: T3DModel, quantities_names: List[str], units: List[str]
+    ) -> T3D:
+        """Convert a T3DModel into a T3D Forcing to be saved into the .bc file.
+
+        Args:
+            t3d_model(T3DModel):
+                T3DModel representing the .t3d file model.
+            quantities_names(List[str]):
+                names of the quantities.
+            units(List[str]):
+                units of the quantities.
+
+        Returns:
+            T3D: The converted T3D object.
+
+        Examples:
+            ```python
+            >>> from hydrolib.core.dflowfm.t3d.models import T3DModel, T3DTimeRecord
+            >>> from hydrolib.tools.extforce_convert.converters import T3DToForcingConverter
+            >>> from hydrolib.core.dflowfm.bc.models import QuantityUnitPair, T3D
+            >>> t3d_model = T3DModel(
+            ...     layer_type="SIGMA",
+            ...     layers=[0.0, 0.1, 0.2, 0.3, 0.4],
+            ...     records = [
+            ...         T3DTimeRecord(time="0 seconds since 2006-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0]),
+            ...         T3DTimeRecord(time="1e9 seconds since 2001-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0])
+            ...     ]
+            ... )
+            >>> converter = T3DToForcingConverter()
+            >>> t3d_forcing = converter.convert(t3d_model, ["temperature", "salinity", "discharge"], ["degC", "ppt", "m3/s"])
+            >>> print(t3d_forcing.name)
+            sigma-5-layers-3-times
+            >>> print(t3d_forcing.function)
+            t3d
+            >>> print(t3d_forcing.datablock)
+            [[0.0, 5.0, 5.0, 10.0, 10.0], [1000000000.0, 5.0, 5.0, 10.0, 10.0]]
+            >>> print(t3d_forcing.quantityunitpair) # doctest: +SKIP
+            [
+                QuantityUnitPair(quantity='time', unit='seconds since 2006-01-01 00:00:00 +00:00', vertpositionindex=None),
+                QuantityUnitPair(quantity='temperature', unit='degC', vertpositionindex=1),
+                QuantityUnitPair(quantity='salinity', unit='ppt', vertpositionindex=2),
+                QuantityUnitPair(quantity='discharge', unit='m3/s', vertpositionindex=3)
+            ]
+            >>> print(t3d_forcing.vertpositions)
+            [0.0, 0.1, 0.2, 0.3, 0.4]
+            >>> print(t3d_forcing.vertpositiontype)
+            percBed
+
+            ```
+        """
+        data = {
+            "name": "sigma-5-layers-3-times",
+            "vertpositions": t3d_model.layers,
+            "vertpositiontype": "percBed",
+        }
+        data_dict = t3d_model.as_dict()
+        updated = [[k] + v for k, v in data_dict.items()]
+        data["datablock"] = updated
+
+        unit = t3d_model.records[0].unit
+        ref_date = t3d_model.records[0].reference_date
+        quantities_list = [
+            QuantityUnitPair(quantity="time", unit=f"{unit} since {ref_date}")
+        ]
+
+        for i, (quantity, unit) in enumerate(zip(quantities_names, units)):
+            quantities_list.append(
+                QuantityUnitPair(quantity=quantity, unit=unit, vertpositionindex=i + 1)
+            )
+
+        data["quantityunitpair"] = quantities_list
+
+        t3d = T3D(**data)
+        return t3d
 
 
 def update_extforce_file_new(
