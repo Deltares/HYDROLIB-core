@@ -5,7 +5,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
-from hydrolib.core.dflowfm.bc.models import ForcingModel, QuantityUnitPair, TimeSeries
+from hydrolib.core.dflowfm.bc.models import (
+    Astronomic,
+    ForcingModel,
+    Harmonic,
+    QuantityUnitPair,
+    TimeSeries,
+)
+from hydrolib.core.dflowfm.cmp.models import CmpModel
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
@@ -757,6 +764,82 @@ class ConverterFactory:
             return False
 
         return True
+
+
+class CmpToForcingConverter:
+    """
+    A class to convert CmpModel data into ForcingModel data for boundary condition definitions.
+    """
+
+    @staticmethod
+    def convert(cmp_model: CmpModel) -> ForcingModel:
+        """
+        Convert a CmpModel into a ForcingModel.
+
+        Args:
+            cmp_model (CmpModel):
+                The input CmpModel to be converted.
+
+        Returns:
+            ForcingModel: The converted ForcingModel.
+
+        Raises:
+            ValueError: If the lengths of the columns in the first row of the CmpModel do not match the number of
+                quantities in the CmpModel.
+
+        Examples:
+            Convert a CmpModel into a ForcingModel.
+                ```python
+                >>> from hydrolib.core.dflowfm.cmp.models import CmpModel
+                >>> from hydrolib.tools.ext_old_to_new.converters import CmpToForcingConverter
+                >>> data = {
+                ...     "comments": ["# Example comment"],
+                ...     "components": {
+                ...         "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                ...         "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
+                ...     }
+                ... }
+                >>> cmp_model = CmpModel(**data)
+                >>> CmpToForcingConverter.convert(cmp_model).forcing[0].datablock
+                [[0.0, 1.0, 2.0]]
+                >>> CmpToForcingConverter.convert(cmp_model).forcing[1].datablock
+                [['4MS10', 1.0, 2.0]]
+
+                ```
+        """
+        forcing_list = []
+
+        """ Convert harmonics data from the cmp file."""
+        for harmonic in cmp_model.components.harmonics:
+            forcing = Harmonic(
+                name="harmonics",
+                function="harmonic",
+                timeinterpolation="linear",
+                quantityunitpair=[
+                    QuantityUnitPair(quantity="period", unit="s"),
+                    QuantityUnitPair(quantity="amplitude", unit="m"),
+                    QuantityUnitPair(quantity="phase", unit="rad"),
+                ],
+                datablock=[[harmonic.period, harmonic.amplitude, harmonic.phase]],
+            )
+            forcing_list.append(forcing)
+
+        """Convert astronomic data from the cmp file."""
+        for astronomic in cmp_model.components.astronomics:
+            forcing = Astronomic(
+                name="astronomics",
+                function="astronomic",
+                timeinterpolation="linear",
+                quantityunitpair=[
+                    QuantityUnitPair(quantity="name", unit="string"),
+                    QuantityUnitPair(quantity="amplitude", unit="m"),
+                    QuantityUnitPair(quantity="phase", unit="rad"),
+                ],
+                datablock=[[astronomic.name, astronomic.amplitude, astronomic.phase]],
+            )
+            forcing_list.append(forcing)
+        forcing_model = ForcingModel(forcing=forcing_list)
+        return forcing_model
 
 
 class TimToForcingConverter:
