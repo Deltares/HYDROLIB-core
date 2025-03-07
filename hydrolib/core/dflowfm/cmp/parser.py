@@ -37,14 +37,16 @@ class CmpParser:
                 ...    mock_file.return_value = file
                 ...    cmp_model = CmpParser.parse(Path(""))
                 >>> print(cmp_model)
-                {'comments': ['some comment'], 'components': {'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}], 'astronomics': []}}
+                {'comments': ['some comment'], 'components': [{'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}], 'astronomics': []}]}
 
                 ```
         """
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
             comments, start_components_index = CmpParser._read_header_comments(lines)
-            components = CmpParser._read_components_data(lines, start_components_index)
+            components = [
+                CmpParser._read_components_data(lines, start_components_index)
+            ]
         return {"comments": comments, "components": components}
 
     @staticmethod
@@ -101,7 +103,13 @@ class CmpParser:
                 component = {"name": period, "amplitude": amplitude, "phase": phase}
                 astronomics_data.append(component)
 
-        return {"harmonics": harmonics_data, "astronomics": astronomics_data}
+        component_data = {}
+        if harmonics_data:
+            component_data["harmonics"] = harmonics_data
+        if astronomics_data:
+            component_data["astronomics"] = astronomics_data
+
+        return component_data
 
     @staticmethod
     def _is_float(element: any) -> bool:

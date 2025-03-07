@@ -18,16 +18,22 @@ from tests.utils import compare_two_files
 def cmp_model() -> CmpModel:
     data = {
         "comments": ["# Example comment"],
-        "components": {
-            "harmonics": [
-                {"period": 0.0, "amplitude": 1.0, "phase": 2.0},
-                {"period": 3.0, "amplitude": 2.0, "phase": 1.0},
-            ],
-            "astronomics": [
-                {"name": "4MS10", "amplitude": 1.0, "phase": 2.0},
-                {"name": "KO0", "amplitude": 1.0, "phase": 2.0},
-            ],
-        },
+        "components": [
+            {
+                "harmonics": [
+                    {"period": 0.0, "amplitude": 1.0, "phase": 2.0},
+                    {"period": 3.0, "amplitude": 2.0, "phase": 1.0},
+                ],
+                "quantity_name": "boundary_harmonic",
+            },
+            {
+                "astronomics": [
+                    {"name": "4MS10", "amplitude": 1.0, "phase": 2.0},
+                    {"name": "KO0", "amplitude": 1.0, "phase": 2.0},
+                ],
+                "quantity_name": "boundary_astronomic",
+            },
+        ],
     }
     cmp_model = CmpModel(**data)
     return cmp_model
@@ -67,7 +73,7 @@ def reference() -> str:
     )
 
 
-def test_cmp_to_forcing_converter(cmp_model):
+def test_cmp_to_forcing_converter(cmp_model: CmpModel):
     # Convert CmpModel to ForcingModel
     forcing_model = CmpToForcingConverter.convert(cmp_model)
 
@@ -107,5 +113,7 @@ def test_cmp_to_forcing_converter_file(
     reference_bc_path = Path("tests/data/reference/reference.bc")
     CmpToForcingConverter.convert(cmp_model).save(converted_bc_path)
     fs.create_file(reference_bc_path, contents=reference)
+    with open(converted_bc_path, "r") as f:
+        print(f.read())
     diff = compare_two_files(converted_bc_path, reference_bc_path)
     assert diff == []

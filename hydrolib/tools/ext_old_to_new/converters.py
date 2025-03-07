@@ -2,7 +2,7 @@ import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
 from hydrolib.core.dflowfm.bc.models import (
@@ -12,7 +12,7 @@ from hydrolib.core.dflowfm.bc.models import (
     QuantityUnitPair,
     TimeSeries,
 )
-from hydrolib.core.dflowfm.cmp.models import CmpModel
+from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CmpModel, HarmonicRecord
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
@@ -809,47 +809,62 @@ class CmpToForcingConverter:
         """
         forcing_list = []
 
-        """Convert harmonic components."""
-        harmonic_block = [
-            [harmonic.period, harmonic.amplitude, harmonic.phase]
-            for harmonic in cmp_model.components.harmonics
-        ]
-        if harmonic_block:
-            forcing_list.append(
-                Harmonic(
-                    name="boundary_harmonic",
-                    function="harmonic",
-                    quantityunitpair=[
-                        QuantityUnitPair(quantity="harmonic component", unit="minutes"),
-                        QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                        QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
-                    ],
-                    datablock=harmonic_block,
-                )
+        for component in cmp_model.components:
+            harmonic_model = CmpToForcingConverter.convert_harmonic(
+                component.quantity_name, component.harmonics
             )
+            if harmonic_model:
+                forcing_list.append(harmonic_model)
 
-        """ Convert astronomic components."""
-        astronomic_block = [
-            [astronomic.name, astronomic.amplitude, astronomic.phase]
-            for astronomic in cmp_model.components.astronomics
-        ]
-        if astronomic_block:
-            forcing_list.append(
-                Astronomic(
-                    name="boundary_astronomic",
-                    function="astronomic",
-                    quantityunitpair=[
-                        QuantityUnitPair(
-                            quantity="astronomic component", unit="string"
-                        ),
-                        QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                        QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
-                    ],
-                    datablock=astronomic_block,
-                )
+            astronomic_model = CmpToForcingConverter.convert_astronomic(
+                component.quantity_name, component.astronomics
             )
+            if astronomic_model:
+                forcing_list.append(astronomic_model)
 
         return ForcingModel(forcing=forcing_list)
+
+    @staticmethod
+    def convert_harmonic(
+        quantity_name: str, harmonics: List[HarmonicRecord]
+    ) -> Optional[Harmonic]:
+        harmonic_block = [
+            [harmonic.period, harmonic.amplitude, harmonic.phase]
+            for harmonic in harmonics
+        ]
+        if harmonic_block:
+            harmonic_model = Harmonic(
+                name=quantity_name,
+                function="harmonic",
+                quantityunitpair=[
+                    QuantityUnitPair(quantity="harmonic component", unit="minutes"),
+                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+                ],
+                datablock=harmonic_block,
+            )
+            return harmonic_model
+
+    @staticmethod
+    def convert_astronomic(
+        quantity_name: str, astronomics: List[AstronomicRecord]
+    ) -> Optional[Astronomic]:
+        astronomic_block = [
+            [astronomic.name, astronomic.amplitude, astronomic.phase]
+            for astronomic in astronomics
+        ]
+        if astronomic_block:
+            astronomic_model = Astronomic(
+                name=quantity_name,
+                function="astronomic",
+                quantityunitpair=[
+                    QuantityUnitPair(quantity="astronomic component", unit="string"),
+                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+                ],
+                datablock=astronomic_block,
+            )
+            return astronomic_model
 
 
 class TimToForcingConverter:

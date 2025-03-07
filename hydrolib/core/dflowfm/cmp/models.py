@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Optional
 
 from pydantic.v1 import Field
 
@@ -36,11 +36,13 @@ class AstronomicRecord(BaseModel):
 
 
 class CmpSet(BaseModel):
-    harmonics: List[HarmonicRecord] = Field(default_factory=list)
+    harmonics: Optional[List[HarmonicRecord]] = Field(default_factory=list)
     """List[HarmonicRecord]: A list containing the harmonic components."""
 
-    astronomics: List[AstronomicRecord] = Field(default_factory=list)
+    astronomics: Optional[List[AstronomicRecord]] = Field(default_factory=list)
     """List[AstronomicRecord]: A list containing the astronomic components."""
+
+    quantity_name: Optional[str] = None
 
 
 class CmpModel(ParsableFileModel):
@@ -57,13 +59,13 @@ class CmpModel(ParsableFileModel):
             ```python
             >>> data = {
             ...     "comments": ["# Example comment"],
-            ...     "components": {
+            ...     "components": [{
             ...         "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
             ...         "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
-            ...     }
+            ...     }]
             ... }
             >>> cmp_model = CmpModel(**data)
-            >>> print(cmp_model.components.astronomics)
+            >>> print(cmp_model.components[0].astronomics)
             [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
 
             ```
@@ -76,7 +78,7 @@ class CmpModel(ParsableFileModel):
     comments: List[str] = Field(default_factory=list)
     """List[str]: A list with the header comment of the cmp file."""
 
-    components: CmpSet = Field(default_factory=CmpSet)
+    components: List[CmpSet] = Field(default_factory=list)
     """CmpSet: A record with the components of the cmp file."""
 
     @classmethod

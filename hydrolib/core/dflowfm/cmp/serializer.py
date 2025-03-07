@@ -33,7 +33,11 @@ class CmpSerializer:
         path.parent.mkdir(parents=True, exist_ok=True)
 
         comment_lines = CmpSerializer._serialize_comment_lines(data)
-        components_lines = CmpSerializer._serialize_components_lines(data)
+        components_lines = []
+        for component in data["components"]:
+            components_lines.extend(
+                CmpSerializer._serialize_components_lines(component)
+            )
 
         file_content = CmpSerializer._serialize_file_content(
             components_lines, comment_lines
@@ -51,14 +55,16 @@ class CmpSerializer:
     @staticmethod
     def _serialize_components_lines(data: Dict[str, Any]) -> List[str]:
         components_lines = []
-        for harmonic in data["components"]["harmonics"]:
-            components_lines.append(
-                f"{harmonic['period']} {harmonic['amplitude']} {harmonic['phase']}"
-            )
-        for astronomic in data["components"]["astronomics"]:
-            components_lines.append(
-                f"{astronomic['name']} {astronomic['amplitude']} {astronomic['phase']}"
-            )
+        if "harmonics" in data:
+            for harmonic in data["harmonics"]:
+                components_lines.append(
+                    f"{harmonic['period']} {harmonic['amplitude']} {harmonic['phase']}"
+                )
+        if "astronomics" in data:
+            for astronomic in data["astronomics"]:
+                components_lines.append(
+                    f"{astronomic['name']} {astronomic['amplitude']} {astronomic['phase']}"
+                )
         return components_lines
 
     @staticmethod

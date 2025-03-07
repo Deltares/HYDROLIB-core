@@ -14,7 +14,7 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": [],
-            "components": {"astronomics": [], "harmonics": []},
+            "components": [{}],
         },
         "",
         id="empty",
@@ -22,10 +22,13 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content"],
-            "components": {
-                "astronomics": [],
-                "harmonics": [{"period": "0.0", "amplitude": "1.0", "phase": "2.0"}],
-            },
+            "components": [
+                {
+                    "harmonics": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"}
+                    ],
+                }
+            ],
         },
         "#test content\n0.0   1.0  2.0",
         id="single harmonics",
@@ -33,10 +36,13 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content"],
-            "components": {
-                "astronomics": [{"name": "M12", "amplitude": "1.0", "phase": "2.0"}],
-                "harmonics": [],
-            },
+            "components": [
+                {
+                    "astronomics": [
+                        {"name": "M12", "amplitude": "1.0", "phase": "2.0"}
+                    ],
+                }
+            ],
         },
         "#test content\nM12   1.0  2.0",
         id="single astronomics",
@@ -44,13 +50,14 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content"],
-            "components": {
-                "harmonics": [
-                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                    {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
-                ],
-                "astronomics": [],
-            },
+            "components": [
+                {
+                    "harmonics": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                        {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+                    ],
+                }
+            ],
         },
         "#test content\n0.0   1.0  2.0\n1.0   3.0  4.0",
         id="multiple harmonics",
@@ -58,13 +65,14 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content"],
-            "components": {
-                "astronomics": [
-                    {"name": "M12", "amplitude": "1.0", "phase": "2.0"},
-                    {"name": "4MSN12", "amplitude": "3.0", "phase": "4.0"},
-                ],
-                "harmonics": [],
-            },
+            "components": [
+                {
+                    "astronomics": [
+                        {"name": "M12", "amplitude": "1.0", "phase": "2.0"},
+                        {"name": "4MSN12", "amplitude": "3.0", "phase": "4.0"},
+                    ],
+                }
+            ],
         },
         "#test content\nM12   1.0  2.0\n4MSN12   3.0  4.0",
         id="multiple astronomics",
@@ -72,12 +80,13 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content", "second test content"],
-            "components": {
-                "harmonics": [
-                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                ],
-                "astronomics": [],
-            },
+            "components": [
+                {
+                    "harmonics": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                    ],
+                }
+            ],
         },
         "#test content\n#second test content\n0.0   1.0  2.0",
         id="multiple comments",
@@ -85,14 +94,16 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content"],
-            "components": {
-                "harmonics": [
-                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                ],
-                "astronomics": [
-                    {"name": "2(MS)N10", "amplitude": "3.0", "phase": "4.0"},
-                ],
-            },
+            "components": [
+                {
+                    "harmonics": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                    ],
+                    "astronomics": [
+                        {"name": "2(MS)N10", "amplitude": "3.0", "phase": "4.0"},
+                    ],
+                }
+            ],
         },
         "#test content\n0.0   1.0  2.0\n2(MS)N10   3.0  4.0",
         id="mixed components",
@@ -100,16 +111,18 @@ cmp_test_parameters = [
     pytest.param(
         {
             "comments": ["test content", "", "second test content"],
-            "components": {
-                "harmonics": [
-                    {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
-                    {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
-                ],
-                "astronomics": [
-                    {"name": "M12", "amplitude": "1.0", "phase": "2.0"},
-                    {"name": "4MSN12", "amplitude": "3.0", "phase": "4.0"},
-                ],
-            },
+            "components": [
+                {
+                    "harmonics": [
+                        {"period": "0.0", "amplitude": "1.0", "phase": "2.0"},
+                        {"period": "1.0", "amplitude": "3.0", "phase": "4.0"},
+                    ],
+                    "astronomics": [
+                        {"name": "M12", "amplitude": "1.0", "phase": "2.0"},
+                        {"name": "4MSN12", "amplitude": "3.0", "phase": "4.0"},
+                    ],
+                }
+            ],
         },
         "#test content\n\n#second test content\n0.0   1.0  2.0\n1.0   3.0  4.0\n\nM12   1.0  2.0\n4MSN12   3.0  4.0",
         id="multiple with empty line",
@@ -122,8 +135,7 @@ class TestCmpModel:
         model = CmpModel()
         assert model is not None
         assert len(model.comments) == 0
-        assert len(model.components.harmonics) == 0
-        assert len(model.components.astronomics) == 0
+        assert len(model.components) == 0
 
     def test_astronomic_record_initialization(self):
         record = AstronomicRecord(name="3MS2", amplitude=1.0, phase=2.0)
@@ -138,24 +150,28 @@ class TestCmpModel:
     def test_cmp_model_initialization_with_data(self):
         model = CmpModel(
             comments=["test content"],
-            components={
-                "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
-                "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
-            },
+            components=[
+                {
+                    "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                    "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
+                }
+            ],
         )
         assert model is not None
         assert model.comments == ["test content"]
-        assert len(model.components.harmonics) == 1
-        assert len(model.components.astronomics) == 1
+        assert len(model.components[0].harmonics) == 1
+        assert len(model.components[0].astronomics) == 1
 
     def test_cmp_model_initialization_with_invalid_data(self):
         with pytest.raises(ValueError) as error:
             CmpModel(
                 comments=["test content"],
-                components={
-                    "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
-                    "astronomics": [{"name": "4MS10", "amplitude": 1.0}],
-                },
+                components=[
+                    {
+                        "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                        "astronomics": [{"name": "4MS10", "amplitude": 1.0}],
+                    }
+                ],
             )
 
         expected_error_msg = f"phase\n  field required (type=value_error.missing)"
