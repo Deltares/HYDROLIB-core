@@ -98,8 +98,6 @@ def test_cmp_to_forcing_converter_file(
     converted_bc_path = Path("tests/data/output/converted.bc")
     reference_bc_path = Path("tests/data/reference/reference.bc")
     CmpToForcingConverter.convert(cmp_model).save(converted_bc_path)
-    with open(converted_bc_path, "r") as f:
-        print(f.read())
     fs.create_file(reference_bc_path, contents=reference)
     diff = compare_two_files(converted_bc_path, reference_bc_path)
     assert diff == []
