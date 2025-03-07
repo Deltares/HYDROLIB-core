@@ -161,3 +161,32 @@ class T3DModel(ParsableFileModel):
         cls,
     ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return T3DSerializer.serialize
+
+    def as_dict(self) -> Dict[str, List[float]]:
+        """Return the data from the records as a dictionary.
+
+        Returns:
+            data (Dict[str, List[float]]):
+                A dictionary with the data from the records.
+
+        Examples:
+            >>> from hydrolib.core.dflowfm.t3d.models import T3DTimeRecord, T3DModel
+            >>> layer_name = "SIGMA"
+            >>> comments = ["comment1", "comment2"]
+            >>> layers = [0, 0.2, 0.6, 0.8, 1.0]
+            >>> record = [
+            ...     T3DTimeRecord(time="0 seconds since 2006-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0]),
+            ...     T3DTimeRecord(time="1e9 seconds since 2001-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0])
+            ... ]
+            >>> model = T3DModel(comments=comments, layer_type=layer_name, layers=layers, records=record)
+            >>> model.as_dict()
+            {0.0: [5.0, 5.0, 10.0, 10.0], 1000000000.0: [5.0, 5.0, 10.0, 10.0]}
+        """
+        data = {}
+        for record in self.records:
+            match = TIME_PATTERN.match(record.time)
+            offset_str, _, _ = match.groups()
+            offset = float(offset_str)
+            data[offset] = record.data
+
+        return data

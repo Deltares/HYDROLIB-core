@@ -47,6 +47,21 @@ class TestT3DTimeRecord:
 
 
 class TestT3DModel:
+    data = {
+        "comments": [],
+        "layer_type": "SIGMA",
+        "layers": [0.0, 0.2, 0.6, 0.8, 1.0],
+        "records": [
+            {
+                "time": "0 seconds since 2006-01-01 00:00:00 +00:00",
+                "data": [1.0, 1.0, 1.0, 1.0, 1.0],
+            },
+            {
+                "time": "180 seconds since 2001-01-01 00:00:00 +00:00",
+                "data": [2.0, 2.0, 2.0, 2.0, 2.0],
+            },
+        ],
+    }
 
     def test_default(self):
         layer_name = "SIGMA"
@@ -71,32 +86,27 @@ class TestT3DModel:
         assert model.records == record
 
     def test_initialize_with_dict(self):
-        data = {
-            "comments": [],
-            "layer_type": "SIGMA",
-            "layers": [0.0, 0.2, 0.6, 0.8, 1.0],
-            "records": [
-                {
-                    "time": "0 seconds since 2006-01-01 00:00:00 +00:00",
-                    "data": [1.0, 1.0, 1.0, 1.0, 1.0],
-                },
-                {
-                    "time": "180 seconds since 2001-01-01 00:00:00 +00:00",
-                    "data": [2.0, 2.0, 2.0, 2.0, 2.0],
-                },
-            ],
-        }
-        model = T3DModel(**data)
-        assert model.comments == data["comments"]
-        assert model.layer_type == data["layer_type"]
-        assert model.layers == data["layers"]
-        assert model.records == data["records"]
+        model = T3DModel(**self.data)
+        assert model.comments == self.data["comments"]
+        assert model.layer_type == self.data["layer_type"]
+        assert model.layers == self.data["layers"]
+        assert model.records == self.data["records"]
 
     def test_initialize_with_file_path(self):
         filepath = t3d_file_path / "sigma-5-layers-3-times.t3d"
         model = T3DModel(filepath=filepath)
         assert model.filepath == filepath
         assert model.serializer_config.float_format == ""
+
+    def test_as_dict(self):
+        model = T3DModel(**self.data)
+        data = model.as_dict()
+        assert isinstance(data, dict)
+        records = self.data["records"]
+        assert list(data.values()) == [record["data"] for record in records]
+        assert list(data.keys()) == [
+            int(record["time"].split(" ")[0]) for record in records
+        ]
 
 
 class TestParser:
