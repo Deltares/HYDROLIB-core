@@ -45,6 +45,14 @@ class TestT3DTimeRecord:
             assert record.data == data
             assert record.time == time
 
+    def test_properties(self):
+        record = T3DTimeRecord(
+            time="0 seconds since 2006-01-01 00:00:00 +00:00", data=[1, 2, 3, 4, 5]
+        )
+        assert record.unit == "seconds"
+        assert record.time_offset == 0
+        assert record.reference_date == "2006-01-01 00:00:00 +00:00"
+
 
 class TestT3DModel:
     data = {

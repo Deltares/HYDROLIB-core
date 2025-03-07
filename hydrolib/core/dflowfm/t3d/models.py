@@ -93,6 +93,35 @@ class T3DTimeRecord(BaseModel):
             )
         return value
 
+    @property
+    def unit(self) -> str:
+        """Return the unit of the time string.
+
+        Returns:
+            str: The unit of the time string. The unit can be [seconds|minutes|hours|days].
+        """
+        match = TIME_PATTERN.match(self.time)
+        return match.group(2)
+
+    @property
+    def reference_date(self) -> str:
+        """Return the date of the time string.
+
+        Returns:
+            str: The date of the time string in the format: YYYY-MM-DD.
+            - ISO date YYYY-MM-DD.
+            - With optional time and optional timezone.
+            - i.e, "15.5 seconds since 2023-02-01T13:45:59Z"
+        """
+        match = TIME_PATTERN.match(self.time)
+        return match.group(3)
+
+    @property
+    def time_offset(self) -> float:
+        """Return the time offset of the time string."""
+        match = TIME_PATTERN.match(self.time)
+        return float(match.group(1))
+
 
 class T3DModel(ParsableFileModel):
     """T3D file model.
