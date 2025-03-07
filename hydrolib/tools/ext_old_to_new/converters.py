@@ -808,34 +808,41 @@ class CmpToForcingConverter:
                 ```
         """
         forcing_list = []
+        harmonic_block = []
+        astronomic_block = []
 
         """ Convert harmonics data from the cmp file."""
         for harmonic in cmp_model.components.harmonics:
-            forcing = Harmonic(
-                name="boundary_harmonic",
-                function="harmonic",
-                quantityunitpair=[
-                    QuantityUnitPair(quantity="harmonic component", unit="minutes"),
-                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
-                ],
-                datablock=[[harmonic.period, harmonic.amplitude, harmonic.phase]],
-            )
-            forcing_list.append(forcing)
+            harmonic_block.append([harmonic.period, harmonic.amplitude, harmonic.phase])
+        forcing = Harmonic(
+            name="boundary_harmonic",
+            function="harmonic",
+            quantityunitpair=[
+                QuantityUnitPair(quantity="harmonic component", unit="minutes"),
+                QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+            ],
+            datablock=harmonic_block,
+        )
+        forcing_list.append(forcing)
 
         """Convert astronomic data from the cmp file."""
         for astronomic in cmp_model.components.astronomics:
-            forcing = Astronomic(
-                name="boundary_astronomic",
-                function="astronomic",
-                quantityunitpair=[
-                    QuantityUnitPair(quantity="astronomic component", unit="string"),
-                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
-                ],
-                datablock=[[astronomic.name, astronomic.amplitude, astronomic.phase]],
+            astronomic_block.append(
+                [astronomic.name, astronomic.amplitude, astronomic.phase]
             )
-            forcing_list.append(forcing)
+        forcing = Astronomic(
+            name="boundary_astronomic",
+            function="astronomic",
+            quantityunitpair=[
+                QuantityUnitPair(quantity="astronomic component", unit="string"),
+                QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+            ],
+            datablock=astronomic_block,
+        )
+
+        forcing_list.append(forcing)
         forcing_model = ForcingModel(forcing=forcing_list)
         return forcing_model
 

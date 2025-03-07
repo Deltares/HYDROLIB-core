@@ -19,8 +19,14 @@ def cmp_model() -> CmpModel:
     data = {
         "comments": ["# Example comment"],
         "components": {
-            "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
-            "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
+            "harmonics": [
+                {"period": 0.0, "amplitude": 1.0, "phase": 2.0},
+                {"period": 3.0, "amplitude": 2.0, "phase": 1.0},
+            ],
+            "astronomics": [
+                {"name": "4MS10", "amplitude": 1.0, "phase": 2.0},
+                {"name": "KO0", "amplitude": 1.0, "phase": 2.0},
+            ],
         },
     }
     cmp_model = CmpModel(**data)
@@ -44,7 +50,8 @@ def reference() -> str:
         "unit     = m\n"
         "quantity = waterlevelbnd phase\n"
         "unit     = deg\n"
-        "0.0  1.0  2.0\n\n"
+        "0.0  1.0  2.0\n"
+        "3.0  2.0  1.0\n\n"
         "[Forcing]\n"
         "name     = boundary_astronomic\n"
         "function = astronomic\n"
@@ -55,7 +62,8 @@ def reference() -> str:
         "unit     = m\n"
         "quantity = waterlevelbnd phase\n"
         "unit     = deg\n"
-        "4MS10  1.0  2.0\n\n"
+        "4MS10  1.0  2.0\n"
+        "KO0    1.0  2.0\n"
     )
 
 
@@ -74,7 +82,7 @@ def test_cmp_to_forcing_converter(cmp_model):
                     QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
                     QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
                 ],
-                datablock=[[0.0, 1.0, 2.0]],
+                datablock=[[0.0, 1.0, 2.0], [3.0, 2.0, 1.0]],
             ),
             Astronomic(
                 name="boundary_astronomic",
@@ -84,7 +92,7 @@ def test_cmp_to_forcing_converter(cmp_model):
                     QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
                     QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
                 ],
-                datablock=[["4MS10", 1.0, 2.0]],
+                datablock=[["4MS10", 1.0, 2.0], ["KO0", 1.0, 2.0]],
             ),
         ]
     )
