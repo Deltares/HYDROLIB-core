@@ -26,14 +26,17 @@ class LayerType(StrEnum):
     z = "Z"
 
 
+# Group1 (float at the beginning)
+# Group2 (time unit) seconds|minutes|hours|days
+# Group3 (date) YYYY-MM-DD
 TIME_PATTERN = re.compile(
     r"^"
     r"(\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)\s+"  # (1) sci_float = \d+(?:\.\d+)?(?:[eE][+\-]?\d+)?  (handles 1, 1.23, 1e9, 1.23e-10, etc.)
     r"(seconds|minutes|hours|days)\s+"  # (2) space + valid time unit
     r"since\s+"  # (3) space + 'since' + space
-    r"\d{4}-\d{2}-\d{2}"  # (4) date in YYYY-MM-DD e.g. 2006-01-01
+    r"(\d{4}-\d{2}-\d{2}"  # (4) date in YYYY-MM-DD e.g. 2006-01-01 (|<---the parentheses at the beginning)
     r"(?:[T ][0-9]{2}:[0-9]{2}:[0-9]{2})?"  # (5) optional time: preceded by 'T' or space, then hh:mm:ss 'T00:00:00' or ' 00:00:00'
-    r"(?:\s*(?:Z|[+\-][0-9]{2}:[0-9]{2}))?"  # (6)(7) optional whitespace + optional timezone: Z or ±hh:mm
+    r"(?:\s*(?:Z|[+\-][0-9]{2}:[0-9]{2}))?)"  # (6)(7) optional whitespace + optional timezone: Z or ±hh:mm. (|<---the parentheses ends here)
     r"$"
 )
 
