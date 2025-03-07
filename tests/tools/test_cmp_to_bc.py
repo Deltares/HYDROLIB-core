@@ -35,26 +35,26 @@ def reference() -> str:
         "fileVersion = 1.01\n"
         "fileType    = boundConds\n\n"
         "[Forcing]\n"
-        "name     = harmonics\n"
+        "name     = boundary_harmonic\n"
         "function = harmonic\n"
         "factor   = 1.0\n"
-        "quantity = period\n"
-        "unit     = s\n"
-        "quantity = amplitude\n"
+        "quantity = harmonic component\n"
+        "unit     = minutes\n"
+        "quantity = waterlevelbnd amplitude\n"
         "unit     = m\n"
-        "quantity = phase\n"
-        "unit     = rad\n"
+        "quantity = waterlevelbnd phase\n"
+        "unit     = deg\n"
         "0.0  1.0  2.0\n\n"
         "[Forcing]\n"
-        "name     = astronomics\n"
+        "name     = boundary_astronomic\n"
         "function = astronomic\n"
         "factor   = 1.0\n"
-        "quantity = name\n"
+        "quantity = astronomic component\n"
         "unit     = string\n"
-        "quantity = amplitude\n"
+        "quantity = waterlevelbnd amplitude\n"
         "unit     = m\n"
-        "quantity = phase\n"
-        "unit     = rad\n"
+        "quantity = waterlevelbnd phase\n"
+        "unit     = deg\n"
         "4MS10  1.0  2.0\n\n"
     )
 
@@ -67,24 +67,22 @@ def test_cmp_to_forcing_converter(cmp_model):
     expected_forcing_model = ForcingModel(
         forcing=[
             Harmonic(
-                name="harmonics",
+                name="boundary_harmonic",
                 function="harmonic",
-                timeinterpolation="linear",
                 quantityunitpair=[
-                    QuantityUnitPair(quantity="period", unit="s"),
-                    QuantityUnitPair(quantity="amplitude", unit="m"),
-                    QuantityUnitPair(quantity="phase", unit="rad"),
+                    QuantityUnitPair(quantity="harmonic component", unit="minutes"),
+                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
                 ],
                 datablock=[[0.0, 1.0, 2.0]],
             ),
             Astronomic(
-                name="astronomics",
+                name="boundary_astronomic",
                 function="astronomic",
-                timeinterpolation="linear",
                 quantityunitpair=[
-                    QuantityUnitPair(quantity="name", unit="string"),
-                    QuantityUnitPair(quantity="amplitude", unit="m"),
-                    QuantityUnitPair(quantity="phase", unit="rad"),
+                    QuantityUnitPair(quantity="astronomic component", unit="string"),
+                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
                 ],
                 datablock=[["4MS10", 1.0, 2.0]],
             ),
@@ -100,6 +98,8 @@ def test_cmp_to_forcing_converter_file(
     converted_bc_path = Path("tests/data/output/converted.bc")
     reference_bc_path = Path("tests/data/reference/reference.bc")
     CmpToForcingConverter.convert(cmp_model).save(converted_bc_path)
+    with open(converted_bc_path, "r") as f:
+        print(f.read())
     fs.create_file(reference_bc_path, contents=reference)
     diff = compare_two_files(converted_bc_path, reference_bc_path)
     assert diff == []

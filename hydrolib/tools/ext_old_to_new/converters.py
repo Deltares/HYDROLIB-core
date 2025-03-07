@@ -812,13 +812,12 @@ class CmpToForcingConverter:
         """ Convert harmonics data from the cmp file."""
         for harmonic in cmp_model.components.harmonics:
             forcing = Harmonic(
-                name="harmonics",
+                name="boundary_harmonic",
                 function="harmonic",
-                timeinterpolation="linear",
                 quantityunitpair=[
-                    QuantityUnitPair(quantity="period", unit="s"),
-                    QuantityUnitPair(quantity="amplitude", unit="m"),
-                    QuantityUnitPair(quantity="phase", unit="rad"),
+                    QuantityUnitPair(quantity="harmonic component", unit="minutes"),
+                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
                 ],
                 datablock=[[harmonic.period, harmonic.amplitude, harmonic.phase]],
             )
@@ -827,13 +826,12 @@ class CmpToForcingConverter:
         """Convert astronomic data from the cmp file."""
         for astronomic in cmp_model.components.astronomics:
             forcing = Astronomic(
-                name="astronomics",
+                name="boundary_astronomic",
                 function="astronomic",
-                timeinterpolation="linear",
                 quantityunitpair=[
-                    QuantityUnitPair(quantity="name", unit="string"),
-                    QuantityUnitPair(quantity="amplitude", unit="m"),
-                    QuantityUnitPair(quantity="phase", unit="rad"),
+                    QuantityUnitPair(quantity="astronomic component", unit="string"),
+                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
                 ],
                 datablock=[[astronomic.name, astronomic.amplitude, astronomic.phase]],
             )
