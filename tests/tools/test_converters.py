@@ -1,6 +1,8 @@
 from pathlib import Path
+from typing import List
 
 import numpy as np
+import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
@@ -114,6 +116,44 @@ class TestBoundaryConverter:
         assert df.index.tolist() == [0, 120]
         assert df.columns.tolist() == ["tfl_01_0001", "tfl_01_0002"]
         assert df.values.tolist() == [[0.01, 0.01], [0.01, 0.01]]
+
+    @pytest.fixture
+    def cmp_files(self, tmpdir: Path) -> List[Path]:
+        path_list = [
+            Path(tmpdir / "tfl_01_0001.cmp"),
+            Path(tmpdir / "tfl_01_0002.cmp"),
+        ]
+        with open(path_list[0], "w") as file:
+            file.write("#test content\n0.0  1.0  2.0\n")
+        with open(path_list[1], "w") as file:
+            file.write("#test content\n4MS10  2.0  1.0\n")
+        return path_list
+
+    def test_merge_cmp_files(self, input_files_dir: Path, cmp_files: List[Path]):
+        """
+        Test merging multiple cmp files into a single cmp model.
+        """
+        file_name = input_files_dir / "boundary-conditions/tfl_01.pli"
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename=file_name,
+            filetype=9,
+            method="3",
+            operand="O",
+        )
+        cmp_model = BoundaryConditionConverter.merge_cmp_files(cmp_files, forcing)
+        assert cmp_model.components[0].quantity_name == "tfl_01_0001"
+        assert cmp_model.components[1].quantity_name == "tfl_01_0002"
+        assert cmp_model.components[0].harmonics[0] == {
+            "period": 0.0,
+            "amplitude": 1.0,
+            "phase": 2.0,
+        }
+        assert cmp_model.components[1].astronomics[0] == {
+            "name": "4MS10",
+            "amplitude": 2.0,
+            "phase": 1.0,
+        }
 
     def test_with_pli(self, input_files_dir):
         """

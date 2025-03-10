@@ -185,6 +185,38 @@ class BoundaryConditionConverter(BaseConverter):
         return tim_models[0]
 
     @staticmethod
+    def merge_cmp_files(cmp_files: List[Path], forcing: ExtOldForcing) -> CmpModel:
+        """Parse the boundary condition related components from the cmp files.
+
+        The function will merge all the cmp files into one cmp model and assign the quantity names to the cmp model.
+
+        Args:
+            cmp_files (List[Path]):
+                List of CMP models paths.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps, required for the conversion process.
+        Returns:
+            CmpModel: A CmpModel object containing the time series data from all given CMP files.
+        """
+        cmp_files_exist = all([cmp_file.exists() for cmp_file in cmp_files])
+        if not cmp_files_exist:
+            raise FileNotFoundError(
+                f"CMP files '{cmp_files}' not found for QUANTITY={forcing.quantity}"
+            )
+
+        cmp_models: List[CmpModel] = []
+        for file in cmp_files:
+            cmp_model = CmpModel(file)
+            cmp_model.components[0].quantity_name = file.stem
+            cmp_models.append(cmp_model)
+
+        for cmp_model in cmp_models[1:]:
+            data = cmp_model.components[0]
+            cmp_models[0].components.append(data)
+        return cmp_models[0]
+
+    @staticmethod
     def convert_tim_to_bc(
         tim_model: TimModel,
         time_unit: str,
