@@ -37,7 +37,7 @@ class CmpParser:
                 ...    mock_file.return_value = file
                 ...    cmp_model = CmpParser.parse(Path(""))
                 >>> print(cmp_model)
-                {'comments': ['some comment'], 'components': [{'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}], 'astronomics': []}]}
+                {'comments': ['some comment'], 'components': [{'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}]}
 
                 ```
         """

@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.dflowfm.bc.models import (
     Astronomic,
@@ -40,37 +39,50 @@ def cmp_model() -> CmpModel:
 
 
 @pytest.fixture
-def reference() -> str:
-    return (
-        "# written by HYDROLIB-core 0.8.1\n\n"
-        "[General]\n"
-        "fileVersion = 1.01\n"
-        "fileType    = boundConds\n\n"
-        "[Forcing]\n"
-        "name     = boundary_harmonic\n"
-        "function = harmonic\n"
-        "factor   = 1.0\n"
-        "quantity = harmonic component\n"
-        "unit     = minutes\n"
-        "quantity = waterlevelbnd amplitude\n"
-        "unit     = m\n"
-        "quantity = waterlevelbnd phase\n"
-        "unit     = deg\n"
-        "0.0  1.0  2.0\n"
-        "3.0  2.0  1.0\n\n"
-        "[Forcing]\n"
-        "name     = boundary_astronomic\n"
-        "function = astronomic\n"
-        "factor   = 1.0\n"
-        "quantity = astronomic component\n"
-        "unit     = string\n"
-        "quantity = waterlevelbnd amplitude\n"
-        "unit     = m\n"
-        "quantity = waterlevelbnd phase\n"
-        "unit     = deg\n"
-        "4MS10  1.0  2.0\n"
-        "KO0    1.0  2.0\n"
-    )
+def cmp_file(tmpdir: Path) -> Path:
+    cmp_file = tmpdir / "test.cmp"
+    with open(cmp_file, "w") as file:
+        file.write(
+            "#test content\n0.0  1.0  2.0\n3.0  2.0  1.0\n4MS10  1.0  2.0\nKO0    1.0  2.0\n"
+        )
+    return cmp_file
+
+
+@pytest.fixture
+def reference_path(tmpdir: Path) -> Path:
+    reference_path = tmpdir / "reference.bc"
+    with open(reference_path, "w") as file:
+        file.write(
+            "# written by HYDROLIB-core 0.8.1\n\n"
+            "[General]\n"
+            "fileVersion = 1.01\n"
+            "fileType    = boundConds\n\n"
+            "[Forcing]\n"
+            "name     = boundary_harmonic\n"
+            "function = harmonic\n"
+            "factor   = 1.0\n"
+            "quantity = harmonic component\n"
+            "unit     = minutes\n"
+            "quantity = waterlevelbnd amplitude\n"
+            "unit     = m\n"
+            "quantity = waterlevelbnd phase\n"
+            "unit     = deg\n"
+            "0.0  1.0  2.0\n"
+            "3.0  2.0  1.0\n\n"
+            "[Forcing]\n"
+            "name     = boundary_harmonic\n"
+            "function = astronomic\n"
+            "factor   = 1.0\n"
+            "quantity = astronomic component\n"
+            "unit     = string\n"
+            "quantity = waterlevelbnd amplitude\n"
+            "unit     = m\n"
+            "quantity = waterlevelbnd phase\n"
+            "unit     = deg\n"
+            "4MS10  1.0  2.0\n"
+            "KO0    1.0  2.0\n"
+        )
+    return reference_path
 
 
 def test_cmp_to_forcing_converter(cmp_model: CmpModel):
@@ -106,14 +118,14 @@ def test_cmp_to_forcing_converter(cmp_model: CmpModel):
 
 
 def test_cmp_to_forcing_converter_file(
-    cmp_model: CmpModel, reference: str, fs: FakeFilesystem
+    cmp_file: Path, reference_path: Path, tmpdir: Path
 ):
-    # Convert CmpModel to ForcingModel and save to file
-    converted_bc_path = Path("tests/data/output/converted.bc")
-    reference_bc_path = Path("tests/data/reference/reference.bc")
-    CmpToForcingConverter.convert(cmp_model).save(converted_bc_path)
-    fs.create_file(reference_bc_path, contents=reference)
-    with open(converted_bc_path, "r") as f:
-        print(f.read())
-    diff = compare_two_files(converted_bc_path, reference_bc_path)
+    cmp_model = CmpModel(cmp_file)
+    cmp_model.components[0].quantity_name = "boundary_harmonic"
+
+    converted_bc_path = tmpdir / "converted.bc"
+    model = CmpToForcingConverter.convert(cmp_model)
+    model.save(converted_bc_path)
+
+    diff = compare_two_files(converted_bc_path, reference_path)
     assert diff == []

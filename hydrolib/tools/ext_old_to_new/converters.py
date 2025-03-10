@@ -794,15 +794,21 @@ class CmpToForcingConverter:
                 >>> from hydrolib.tools.ext_old_to_new.converters import CmpToForcingConverter
                 >>> data = {
                 ...     "comments": ["# Example comment"],
-                ...     "components": {
-                ...         "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
-                ...         "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
-                ...     }
+                ...     "components": [
+                ...         {
+                ...             "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                ...             "quantity_name": "harmonicboundary"
+                ...         }, {
+                ...             "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
+                ...             "quantity_name": "astronomicboundary"
+                ...         }
+                ...     ]
                 ... }
                 >>> cmp_model = CmpModel(**data)
-                >>> CmpToForcingConverter.convert(cmp_model).forcing[0].datablock
+                >>> forcing_model = CmpToForcingConverter.convert(cmp_model)
+                >>> forcing_model.forcing[0].datablock
                 [[0.0, 1.0, 2.0]]
-                >>> CmpToForcingConverter.convert(cmp_model).forcing[1].datablock
+                >>> forcing_model.forcing[1].datablock
                 [['4MS10', 1.0, 2.0]]
 
                 ```
