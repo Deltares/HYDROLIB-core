@@ -880,7 +880,9 @@ class T3DToForcingConverter:
                 model, quantities_names, units, label
             )
             forcings.append(t3d)
-        return forcings
+
+        forcing_model = ForcingModel(forcing=forcings)
+        return forcing_model
 
     @staticmethod
     def convert_t3d_model(

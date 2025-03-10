@@ -1,3 +1,4 @@
+from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.tools.extforce_convert.converters import T3DToForcingConverter
 from tests.utils import test_input_dir
@@ -17,10 +18,11 @@ def test_convert():
     ]
     units = ["ppt", "ppt", "ppt", "ppt", "ppt"]
     labels = ["sigma-5-layers-3-times"]
-    t3d_forcing = T3DToForcingConverter.convert(
+    forcing_model = T3DToForcingConverter.convert(
         [t3d_model], quantities_names, units, labels
     )
-    t3d_forcing = t3d_forcing[0]
+    assert isinstance(forcing_model, ForcingModel)
+    t3d_forcing = forcing_model.forcing[0]
     units.insert(0, "seconds since 2006-01-01 00:00:00 +00:00")
     quantities_names.insert(0, "time")
 
