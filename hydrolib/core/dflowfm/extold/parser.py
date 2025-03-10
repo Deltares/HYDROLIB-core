@@ -15,7 +15,7 @@ class Parser:
         Comments are only allowed at the header of the file. Elsewhere, they will be skipped.
 
         Args:
-            path (Path): The path to parse the data from.
+            filepath (Path): The path to parse the data from.
 
         Returns:
             Dict[str, List[Any]]: A dictionary with the parsed data, with two keys:

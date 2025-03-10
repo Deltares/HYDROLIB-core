@@ -6,8 +6,6 @@ from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from typing import Any, Callable, List, Optional
 
-from pydantic import validator
-from pydantic.v1.fields import ModelField
 from strenum import StrEnum
 
 
@@ -50,10 +48,10 @@ def to_key(string: str) -> str:
     }
     m = re.search(r"^\d+", string)
     if m:
-        digitstring = string[0 : m.end()]
+        digitstring = string[0 : m.end()]  # noqa: E203
         for key, val in digitdict.items():
             digitstring = digitstring.replace(key, val)
-        string = digitstring + string[m.end() :]
+        string = digitstring + string[m.end() :]  # noqa: E203
 
     # Next, replace spaces and hyphens in the potential variable name.
     return string.lower().replace(" ", "_").replace("-", "")
@@ -216,7 +214,7 @@ class FilePathStyleConverter:
 
         Args:
             file_path (Path): The file path to convert to the OS path style.
-            file_path_style (PathStyle): The file path style of the given file path.
+            source_path_style (PathStyle): The file path style of the given file path.
 
         Returns:
             str: The converted file path with OS path style.

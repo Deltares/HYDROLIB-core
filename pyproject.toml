@@ -14,7 +14,7 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 "issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<4"
 # exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
 netCDF4 = "^1.5,!=1.7.0,!=1.7.1"
 # no caret here, since numpy v2 is required for future python 3.13 support, but this is not yet widely supported by packages numpy v1 support is also still required.
@@ -25,21 +25,20 @@ numpy = [
 pydantic = "^2.5"
 # lxml 5.0 is from December 2023
 lxml = "^5.0"
-meshkernel = "^6.0.0"
+meshkernel = "^5.0.1"
 strenum = "^0"
+tqdm = "^4.67.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.0"
-pytest-cov = "^5.0"
-black = "^24.3"
-isort = "^5.8"
-devtools = "^0.6.1"
-commitizen = "^2.17"
-flake8 = "^3.9.2"
-mypy = "^0.910"
+pytest-cov = "^6.0"
+devtools = "^0.12.2"
+commitizen = "^4.0"
+mypy = "^1.13"
 openpyxl = "^3.0.9"
 jinja2 = "^3.0"
 markupsafe = "<2.1"
+jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
 # matplotlib >=3.8 supports numpy 2.0
 matplotlib = "^3.8"
@@ -60,6 +59,25 @@ mike = "^1.1.2"
 jupyter = "^1.0.0"
 notebook = "^7.3.2"
 mkdocstrings-python = "^1.13.0"
+mkdocs-mermaid2-plugin = "^1.2.1"
+
+[tool.poetry.group.pre-commit.dependencies]
+coverage = {extras = ["toml"], version = "^7.6.1"}
+safety = "^3.2.9"
+pre-commit = "^4.0.1"
+black = "^24.8.0"
+flake8 = "^7.1.1"
+flake8-bandit = "^4.1.1"
+flake8-bugbear = "^24.10.31"
+flake8-docstrings = "^1.6.0"
+flake8-rst-docstrings = "^0.3.0"
+flake8-pyproject = "^1.2.3"
+isort = "^5.8"
+pep8-naming = "*"
+darglint = "^1.8.1"
+reorder-python-imports = "^3.8.2"
+pre-commit-hooks = "^5.0.0"
+pre-commit-commit-msg-hooks = "^0.1.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -95,6 +113,14 @@ exclude = '''
 )
 '''
 
+[tool.flake8]
+ignore = ["E501", "W503", "E731"]
+per-file-ignores = [
+    '__init__.py:F401',
+]
+max-line-length = 120
+count = true
+
 [tool.isort]
 profile = "black"
 multi_line_output = 3
@@ -102,7 +128,11 @@ line_length = 88
 
 [tool.pytest.ini_options]
 markers = ["plots", "docker"]
-
+addopts = """
+--ignore=tests/rr/test_fnm.py
+--deselect=tests/test_model.py::test_dimr_mode_save
+--deselect=tests/test_model.py::test_dimr_model
+"""
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

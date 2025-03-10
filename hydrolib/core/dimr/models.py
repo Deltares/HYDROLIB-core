@@ -53,8 +53,8 @@ class Component(BaseModel, ABC):
     workingDir: Path
     inputFile: Path
     process: Optional[int]
-    setting: Optional[List[KeyValuePair]] = []
-    parameter: Optional[List[KeyValuePair]] = []
+    setting: Optional[List[KeyValuePair]] = Field(default_factory=list)
+    parameter: Optional[List[KeyValuePair]] = Field(default_factory=list)
     mpiCommunicator: Optional[str]
 
     model: Optional[FileModel]
@@ -225,7 +225,7 @@ class Coupler(BaseModel):
     name: str
     sourceComponent: str
     targetComponent: str
-    item: List[CoupledItem] = []
+    item: List[CoupledItem] = Field(default_factory=list)
     logger: Optional[Logger]
 
     @validator("item", pre=True)
@@ -252,8 +252,8 @@ class StartGroup(BaseModel):
     """
 
     time: str
-    start: List[ComponentOrCouplerRef] = []
-    coupler: List[ComponentOrCouplerRef] = []
+    start: List[ComponentOrCouplerRef] = Field(default_factory=list)
+    coupler: List[ComponentOrCouplerRef] = Field(default_factory=list)
 
     @validator("start", "coupler", pre=True)
     def validate_start(cls, v):
@@ -336,9 +336,11 @@ class DIMR(ParsableFileModel):
     """
 
     documentation: Documentation = Documentation()
-    control: List[Union[Start, Parallel]] = Field([])
-    component: List[Union[RRComponent, FMComponent, Component]] = []
-    coupler: Optional[List[Coupler]] = []
+    control: List[Union[Start, Parallel]] = Field(default_factory=list)
+    component: List[Union[RRComponent, FMComponent, Component]] = Field(
+        default_factory=list
+    )
+    coupler: Optional[List[Coupler]] = Field(default_factory=list)
     waitFile: Optional[str]
     global_settings: Optional[GlobalSettings]
 
