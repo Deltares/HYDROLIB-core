@@ -873,7 +873,7 @@ class T3DToForcingConverter:
         quantities_names: List[str],
         units: List[str],
         user_defined_names: List[str] = None,
-    ) -> List[T3D]:
+    ) -> ForcingModel:
         forcings = []
         for label, model in zip(user_defined_names, t3d_model_list):
             t3d = T3DToForcingConverter.convert_t3d_model(
