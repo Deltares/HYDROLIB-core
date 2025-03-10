@@ -9,10 +9,10 @@ from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
-from hydrolib.tools.ext_old_to_new import main_converter
-from hydrolib.tools.ext_old_to_new.main_converter import (
+from hydrolib.tools.extforce_convert import main_converter
+from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
-    ext_old_to_new_dir_recursive,
+    recursive_converter,
 )
 from tests.utils import compare_two_files
 
@@ -84,10 +84,10 @@ class TestExtOldToNewFromMDU:
         main_converter._verbose = True
         path = input_files_dir / "e02/f006_external_forcing"
         with patch(
-            "hydrolib.tools.ext_old_to_new.main_converter.ExternalForcingConverter.save",
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.save",
             return_value=None,
         ):
-            ext_old_to_new_dir_recursive(path, suppress_errors=True)
+            recursive_converter(path, suppress_errors=True)
 
     def test_deprecated_warning(self):
         """
@@ -363,3 +363,23 @@ class TestUpdateSourcesSinks:
         assert len(inifield_model.initial) == 2
         quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
+
+
+def test_clean():
+    """mock test to test the clean method of the ExternalForcingConverter class.
+
+    Notes:
+    - The glob method is mocked to return two files with the extension .tim.
+    - The unlink method is mocked to return True.
+    """
+    with (
+        patch.object(Path, "glob") as mock_glob,
+        patch("pathlib.Path.unlink", return_value=True) as mock_unlink,
+    ):
+        mock_glob.return_value = [Path("fake.tim"), Path("fake2.tim")]
+        converter = ExternalForcingConverter(
+            "tests/data/input/old-external-forcing.ext"
+        )
+        converter.clean()
+        mock_glob.assert_called_once_with("*.tim")
+        assert mock_unlink.call_count == 3

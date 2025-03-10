@@ -24,11 +24,11 @@ from hydrolib.core.dflowfm.inifield.models import (
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-from hydrolib.tools.ext_old_to_new.converters import (
+from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     update_extforce_file_new,
 )
-from hydrolib.tools.ext_old_to_new.utils import (
+from hydrolib.tools.extforce_convert.utils import (
     IgnoreUnknownKeyWordClass,
     backup_file,
     construct_filemodel_new_or_existing,
@@ -355,6 +355,18 @@ class ExternalForcingConverter:
                     "The FM model is not saved, and there was no new updated content for the mdu file."
                 )
 
+    def clean(self):
+        """
+        Clean the directory from the old external forcing file and the time file.
+        """
+        root_dir = self.root_dir
+        time_files = list(root_dir.glob("*.tim"))
+        if len(time_files) > 0:
+            for file in time_files:
+                file.unlink()
+
+        self.extold_model.filepath.unlink()
+
     @staticmethod
     def get_mdu_info(mdu_file: str) -> Tuple[Dict, Dict]:
         """Get the info needed from the mdu to process and convert the old external forcing files.
@@ -391,8 +403,8 @@ class ExternalForcingConverter:
         cls,
         mdu_file: PathOrStr,
         ext_file: Optional[PathOrStr] = None,
-        inifield_file: Optional[PathOrStr] = "inifields.ini",
-        structure_file: Optional[PathOrStr] = "structures.ini",
+        inifield_file: Optional[PathOrStr] = None,
+        structure_file: Optional[PathOrStr] = None,
         suppress_errors: Optional[bool] = False,
     ) -> "ExternalForcingConverter":
         """class method to create the converter from MDU file.
@@ -433,8 +445,8 @@ class ExternalForcingConverter:
                 )
 
             new_ext_force_file = fm_model.external_forcing.extforcefilenew
-            inifieldfile = fm_model.geometry.inifieldfile
-            structurefile = fm_model.geometry.structurefile
+            inifieldfile_mdu = fm_model.geometry.inifieldfile
+            structurefile_mdu = fm_model.geometry.structurefile
             mdu_info = {
                 "file_path": mdu_file,
                 "fm_model": fm_model,
@@ -453,8 +465,8 @@ class ExternalForcingConverter:
             external_forcing_data = data.get("external_forcing")
             geometry = data.get("geometry")
 
-            inifieldfile = geometry.get("inifieldfile")
-            structurefile = geometry.get("structurefile")
+            inifieldfile_mdu = geometry.get("inifieldfile")
+            structurefile_mdu = geometry.get("structurefile")
 
             old_ext_force_file = external_forcing_data.get("extforcefile")
             if old_ext_force_file is None:
@@ -487,14 +499,36 @@ class ExternalForcingConverter:
             else:
                 ext_file = root_dir / ext_file
 
-        inifield_file = (
-            inifieldfile._resolved_filepath
-            if inifieldfile
-            else root_dir / inifield_file
-        )
-        structure_file = (
-            root_dir / structurefile if structurefile else root_dir / structure_file
-        )
+        if inifield_file is not None:
+            # user defined initial field file
+            inifield_file = root_dir / inifield_file
+        elif isinstance(inifieldfile_mdu, Path):
+            # from the LegacyFMModel
+            inifield_file = inifieldfile_mdu._resolved_filepath
+        elif isinstance(inifieldfile_mdu, str):
+            # from reading the geometry section
+            inifield_file = root_dir / inifieldfile_mdu
+        else:
+            print(
+                f"The initial field file is not found in the mdu file, and not provided by the user. \n "
+                f"given: {inifield_file}."
+            )
+
+        # the structure file will be taken from the mdu file if it is not provided by the user.
+        if structure_file is not None:
+            # user defined structure file
+            structure_file = root_dir / structure_file
+        elif isinstance(structurefile_mdu, Path):
+            # from the LegacyFMModel
+            structure_file = structurefile_mdu._resolved_filepath
+        elif isinstance(structurefile_mdu, str):
+            # from reading the geometry section
+            structure_file = root_dir / structurefile_mdu
+        else:
+            print(
+                "The structure file is not found in the mdu file, and not provide by the user. \n"
+                f"given: {structure_file}."
+            )
 
         return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
 
@@ -554,8 +588,11 @@ class MDUUpdateError(Exception):
         print(error_message)
 
 
-def ext_old_to_new_dir_recursive(
-    root_dir: PathOrStr, backup: bool = True, suppress_errors: bool = False
+def recursive_converter(
+    root_dir: PathOrStr,
+    backup: bool = True,
+    suppress_errors: bool = False,
+    remove_legacy: bool = False,
 ):
     """Migrate all external forcings files in a directory tree to the new format.
 
@@ -563,6 +600,7 @@ def ext_old_to_new_dir_recursive(
         root_dir: Directory to recursively find and convert .mdu files in.
         backup (bool, optional): Create a backup of each file that will be overwritten.
         suppress_errors (bool, optional): Suppress errors during conversion.
+        remove_legacy (bool, optional): Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.
     """
     mdu_files = [
         path for path in Path(root_dir).rglob("*.mdu") if "_ext" not in path.name
@@ -580,6 +618,8 @@ def ext_old_to_new_dir_recursive(
                 )
                 _, _, _ = converter.update()
                 converter.save(backup=backup)
+                if remove_legacy:
+                    converter.clean()
             except Exception as e:
                 if not suppress_errors:
                     print(f"Error processing {path}: {e}")

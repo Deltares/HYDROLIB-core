@@ -8,7 +8,7 @@ from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mdu.models import Time
 from hydrolib.core.dflowfm.structure.models import StructureModel
-from hydrolib.tools.ext_old_to_new.utils import (
+from hydrolib.tools.extforce_convert.utils import (
     IgnoreUnknownKeyWordClass,
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
@@ -77,7 +77,7 @@ def test_ignore_unknown_keyword_class():
     try:
         Time(**time_data)
     except ValidationError:
-        from hydrolib.tools.ext_old_to_new.utils import IgnoreUnknownKeyWord
+        from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWord
 
         mdu_time = IgnoreUnknownKeyWordClass(Time, **time_data)
         assert mdu_time.__class__.__name__ == "DynamicClass"

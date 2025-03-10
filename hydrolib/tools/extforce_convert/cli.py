@@ -3,9 +3,9 @@ from argparse import ArgumentTypeError
 from pathlib import Path
 
 from hydrolib.core import __version__
-from hydrolib.tools.ext_old_to_new.main_converter import (
+from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
-    ext_old_to_new_dir_recursive,
+    recursive_converter,
 )
 
 
@@ -18,7 +18,7 @@ def valid_file(path_str):
 
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="ext_old_to_new",
+        prog="extforce_convert",
         description="Convert D-Flow FM legacy external forcings files to current external forcings file/initial fields file/structures file.",
     )
 
@@ -75,12 +75,20 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Do not create a backup of each file that will be overwritten.",
     )
+
+    parser.add_argument(
+        "--remove-legacy-files",
+        dest="remove_legacy",
+        action="store_true",
+        default=False,
+        help="Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.",
+    )
     return parser
 
 
 def main(args=None):
     """
-    Main entry point for ext_old_to_new tool.
+    Main entry point for extforce_convert tool.
     Args:
         args : list
             A of arguments as if they were input in the command line. Leave it
@@ -96,8 +104,8 @@ def main(args=None):
         converter = ExternalForcingConverter.from_mdu(
             args.mdufile,
             ext_file=(args.outfiles[0] if args.outfiles else None),
-            inifield_file=(args.outfiles[1] if args.outfiles else "inifields.ini"),
-            structure_file=(args.outfiles[2] if args.outfiles else "structures.ini"),
+            inifield_file=(args.outfiles[1] if args.outfiles else None),
+            structure_file=(args.outfiles[2] if args.outfiles else None),
             suppress_errors=True,
         )
         converter.verbose = args.verbose
@@ -108,13 +116,17 @@ def main(args=None):
         converter.save(backup=backup)
         print("The new files are saved.")
 
+        if args.remove_legacy:
+            print("Cleaning legacy tim files ...")
+            converter.clean()
+
     elif args.extoldfile is not None:
         # extold file is given
         converter = ExternalForcingConverter(
             args.extoldfile,
             ext_file=(args.outfiles[0] if args.outfiles else None),
-            inifield_file=(args.outfiles[1] if args.outfiles else "inifields.ini"),
-            structure_file=(args.outfiles[2] if args.outfiles else "structures.ini"),
+            inifield_file=(args.outfiles[1] if args.outfiles else None),
+            structure_file=(args.outfiles[2] if args.outfiles else None),
         )
         converter.verbose = args.verbose
         converter.update()
@@ -123,9 +135,11 @@ def main(args=None):
         )
         converter.save(backup=backup)
         print("The new files are saved.")
-
+        if args.remove_legacy:
+            print("Cleaning legacy tim files ...")
+            converter.clean()
     elif args.dir is not None:
-        ext_old_to_new_dir_recursive(args.dir, backup=backup)
+        recursive_converter(args.dir, backup=backup, remove_legacy=args.remove_legacy)
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 

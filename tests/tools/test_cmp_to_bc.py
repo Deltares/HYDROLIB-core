@@ -9,7 +9,7 @@ from hydrolib.core.dflowfm.bc.models import (
     QuantityUnitPair,
 )
 from hydrolib.core.dflowfm.cmp.models import CmpModel
-from hydrolib.tools.ext_old_to_new.converters import CmpToForcingConverter
+from hydrolib.tools.extforce_convert.converters import CmpToForcingConverter
 from tests.utils import compare_two_files
 
 

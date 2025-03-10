@@ -35,7 +35,7 @@ from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
-from hydrolib.tools.ext_old_to_new.utils import (
+from hydrolib.tools.extforce_convert.utils import (
     convert_interpolation_data,
     create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
@@ -954,7 +954,7 @@ class TimToForcingConverter:
         Examples:
             ```python
             >>> from hydrolib.core.dflowfm.tim.models import TimModel
-            >>> from hydrolib.tools.ext_old_to_new.converters import TimToForcingConverter
+            >>> from hydrolib.tools.extforce_convert.converters import TimToForcingConverter
             >>> file_path = "tests/data/input/tim/single_data_for_timeseries.tim"
             >>> user_defined_names = ["discharge"]
             >>> tim_model = TimModel(file_path, user_defined_names)

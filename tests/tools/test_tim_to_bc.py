@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from hydrolib.core.dflowfm.tim.models import TimModel
-from hydrolib.tools.ext_old_to_new.converters import TimToForcingConverter
+from hydrolib.tools.extforce_convert.converters import TimToForcingConverter
 from tests.utils import compare_two_files
 
 
