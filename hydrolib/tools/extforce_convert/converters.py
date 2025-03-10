@@ -147,7 +147,7 @@ class BoundaryConditionConverter(BaseConverter):
         super().__init__()
 
     @staticmethod
-    def merge_tim_files(tim_files: List[Path], forcing: ExtOldForcing) -> TimModel:
+    def merge_tim_files(tim_files: List[Path], quantity: str) -> TimModel:
         """Parse the boundary condition related time series from the tim files.
 
         The function will merge all the tim files into one tim model and assign the quantity names to the tim model.
@@ -155,16 +155,15 @@ class BoundaryConditionConverter(BaseConverter):
         Args:
             tim_files (List[Path]):
                 List of TIM models paths.
-            forcing (ExtOldForcing):
-                The contents of a single forcing block in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps, required for the conversion process.
+            quantity (str):
+                name of the quantity that the tim files represent.
         Returns:
             TimModel: A TimModel object containing the time series data from all given TIM files.
         """
         time_files_exist = all([tim_file.exists() for tim_file in tim_files])
         if not time_files_exist:
             raise FileNotFoundError(
-                f"TIM files '{tim_files}' not found for QUANTITY={forcing.quantity}"
+                f"TIM files '{tim_files}' not found for QUANTITY={quantity}"
             )
 
         tim_models = [
@@ -183,30 +182,30 @@ class BoundaryConditionConverter(BaseConverter):
             )
         return tim_models[0]
 
-    @staticmethod
     def convert_tim_to_bc(
-        tim_model: TimModel,
+        self,
+        tim_files: List[Union[Path, str]],
         time_unit: str,
         time_interpolation: str = "linear",
-        units: List[str] = None,
-        user_defined_names: List[str] = None,
+        quantity: str = None,
+        label: str = None,
     ) -> ForcingModel:
         """Convert a TimModel into a ForcingModel.
 
         wrapper on top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
 
         Args:
-            tim_model (TimModel):
-                The input TimModel to be converted.
+            tim_files (List[Union[Path, str]]):
+                paths to the tim files to be converted.
             time_unit (str):
                 Formatted string containing the units of time, including absolute datetime reference information
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             time_interpolation (str, default is linear):
                 The interpolation method to be used for the time series data.
-            units (List[str], optional):
-                A list of units corresponding to the forcing quantities.
-            user_defined_names (List[str], optional):
-                A list of user-defined names for the forcing blocks.
+            quantity (str, default is None):
+                name of the quantity that the tim files represent.
+            label (str, default is None):
+                the label from the pli file to be used to name the time series sections in the .bc model.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -215,6 +214,15 @@ class BoundaryConditionConverter(BaseConverter):
             ValueError: If `units` and `user_defined_names` are not provided.
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
+        tim_model = self.merge_tim_files(tim_files, quantity)
+
+        num_tim_files = len(tim_files)
+        # switch the quantity names from the Tim model (loction names) to quantity names.
+        user_defined_names = [
+            f"{label}_{str(i).zfill(4)}" for i in range(1, num_tim_files + 1)
+        ]
+        tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+        units = tim_model.get_units()
         forcing_model = TimToForcingConverter.convert(
             tim_model, time_unit, time_interpolation, units, user_defined_names
         )
@@ -256,38 +264,23 @@ class BoundaryConditionConverter(BaseConverter):
             boundary Condition can be only converted by reading the mdu file and the external forcing file is not
             enough.
         """
+        quantity = forcing.quantity
         location_file = forcing.filename.filepath
         poly_line = forcing.filename
         if not isinstance(poly_line, PolyFile):
             poly_line = PolyFile(location_file)
 
+        label = poly_line.objects[0].metadata.name
         if self.root_dir is None:
             raise ValueError(
                 "The 'root_dir' property must be set before calling this method."
             )
 
         tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.tim"))
-        if len(tim_files) < 1:
-            raise ValueError(
-                f"There are no tim files found for the given poly file: {poly_line}, in the directory: {self.root_dir}"
+        if len(tim_files) > 1:
+            forcing_model = self.convert_tim_to_bc(
+                tim_files, time_unit, quantity=quantity, label=label
             )
-
-        tim_model = self.merge_tim_files(tim_files, forcing)
-
-        label = poly_line.objects[0].metadata.name
-        num_quantities = len(tim_model.quantities_names)
-        # switch the quantity names from the Tim model (loction names) to quantity names.
-        user_defined_names = [
-            f"{label}_{str(i).zfill(4)}" for i in range(1, num_quantities + 1)
-        ]
-
-        tim_model.quantities_names = [forcing.quantity] * len(tim_model.get_units())
-
-        units = tim_model.get_units()
-
-        forcing_model = self.convert_tim_to_bc(
-            tim_model, time_unit, units=units, user_defined_names=user_defined_names
-        )
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = location_file.with_suffix(".bc")
 
