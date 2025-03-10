@@ -18,11 +18,11 @@ def test_convert():
     ]
     units = ["ppt", "ppt", "ppt", "ppt", "ppt"]
     labels = ["sigma-5-layers-3-times"]
-    forcing_model = T3DToForcingConverter.convert(
+    t3d_forcings_list = T3DToForcingConverter.convert(
         [t3d_model], quantities_names, units, labels
     )
-    assert isinstance(forcing_model, ForcingModel)
-    t3d_forcing = forcing_model.forcing[0]
+
+    t3d_forcing = t3d_forcings_list[0]
     units.insert(0, "seconds since 2006-01-01 00:00:00 +00:00")
     quantities_names.insert(0, "time")
 
