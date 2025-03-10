@@ -189,7 +189,7 @@ class BoundaryConditionConverter(BaseConverter):
         time_interpolation: str = "linear",
         quantity: str = None,
         label: str = None,
-    ) -> ForcingModel:
+    ) -> List[TimeSeries]:
         """Convert a TimModel into a ForcingModel.
 
         wrapper on top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
@@ -223,10 +223,10 @@ class BoundaryConditionConverter(BaseConverter):
         ]
         tim_model.quantities_names = [quantity] * len(tim_model.get_units())
         units = tim_model.get_units()
-        forcing_model = TimToForcingConverter.convert(
+        time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, time_interpolation, units, user_defined_names
         )
-        return forcing_model
+        return time_series_list
 
     def convert(self, forcing: ExtOldForcing, time_unit: str) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
@@ -276,11 +276,15 @@ class BoundaryConditionConverter(BaseConverter):
                 "The 'root_dir' property must be set before calling this method."
             )
 
+        forcings_list = []
         tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.tim"))
         if len(tim_files) > 1:
-            forcing_model = self.convert_tim_to_bc(
+            time_series_list = self.convert_tim_to_bc(
                 tim_files, time_unit, quantity=quantity, label=label
             )
+            forcings_list.extend(time_series_list)
+
+        forcing_model = ForcingModel(forcing=forcings_list)
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = location_file.with_suffix(".bc")
 
@@ -584,9 +588,10 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If `units` and `user_defined_names` are not provided.
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
-        forcing_model = TimToForcingConverter.convert(
+        time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
+        forcing_model = ForcingModel(forcing=time_series_list)
         return forcing_model
 
     @staticmethod
@@ -779,7 +784,7 @@ class TimToForcingConverter:
         time_interpolation: str = "linear",
         units: List[str] = None,
         user_defined_names: List[str] = None,
-    ) -> ForcingModel:
+    ) -> List[TimeSeries]:
         """
         Convert a TimModel into a ForcingModel.
 
@@ -797,7 +802,8 @@ class TimToForcingConverter:
                 A list of user-defined names for the forcing blocks.
 
         Returns:
-            ForcingModel: The converted ForcingModel, with all the quantities inside it.
+            TimeSeries:
+                The converted TimeSeries.
 
         Raises:
             ValueError: If `units` and `user_defined_names` are not provided.
@@ -814,12 +820,12 @@ class TimToForcingConverter:
             >>> print(tim_model.as_dict())
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
             >>> converter = TimToForcingConverter()
-            >>> forcing_model = converter.convert(
+            >>> time_series = converter.convert(
             ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
             ... )
-            >>> print(forcing_model.forcing[0].name)
+            >>> print(time_series[0].name)
             discharge
-            >>> print(forcing_model.forcing[0].datablock)
+            >>> print(time_series[0].datablock)
             [[0.0, 0.0], [10.0, 0.01], [20.0, 0.0], [30.0, -0.01], [40.0, 0.0], [50.0, 0.01], [60.0, 0.0], [70.0, -0.01], [80.0, 0.0], [90.0, 0.01], [100.0, 0.0], [110.0, -0.01], [120.0, 0.0]]
 
             ```
@@ -838,7 +844,7 @@ class TimToForcingConverter:
 
         df = tim_model.as_dataframe()
         time_data = df.index.tolist()
-        forcing_list = []
+        time_series_list = []
         for i, (column, vals) in enumerate(df.items()):
             unit = units[i]
             forcing = TimeSeries(
@@ -852,23 +858,22 @@ class TimToForcingConverter:
                 datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
             )
 
-            forcing_list.append(forcing)
+            time_series_list.append(forcing)
 
-        forcing_model = ForcingModel(forcing=forcing_list)
-        return forcing_model
+        return time_series_list
 
 
 class T3DToForcingConverter:
 
     @staticmethod
     def convert(
-        t3d_model_list: List[T3DModel],
+        t3d_models: List[T3DModel],
         quantities_names: List[str],
         units: List[str],
         user_defined_names: List[str] = None,
     ) -> ForcingModel:
         forcings = []
-        for label, model in zip(user_defined_names, t3d_model_list):
+        for label, model in zip(user_defined_names, t3d_models):
             t3d = T3DToForcingConverter.convert_t3d_model(
                 model, quantities_names, units, label
             )
