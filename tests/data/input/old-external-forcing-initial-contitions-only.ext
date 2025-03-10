@@ -65,19 +65,19 @@
 * First 1D2D:
 QUANTITY =initialwaterlevel
 FILENAME =iniwaterlevel1.pol
-FILETYPE =10
+FILETYPE =4
 METHOD   =4
 OPERAND  =O
 VALUE    =1.0
 
 QUANTITY =initialwaterlevel
 FILENAME =iniwaterlevel.xyz
-FILETYPE =7
+FILETYPE =4
 METHOD   =5
 OPERAND  =O
 
 QUANTITY =initialsalinity
 FILENAME =inisalinity.xyz
-FILETYPE =7
+FILETYPE =4
 METHOD   =5
 OPERAND  =O

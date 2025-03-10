@@ -158,7 +158,7 @@ class TestParseTimFileForSourceSink:
 
 
 def compare_data(new_quantity_block: SourceSink):
-    # check the converted bc_forcing
+    # check the converted forcings
     quantity_list = [
         "discharge",
         "salinitydelta",
@@ -167,24 +167,26 @@ def compare_data(new_quantity_block: SourceSink):
     ]
 
     assert all(quantity in new_quantity_block.__dict__ for quantity in quantity_list)
+    # all the quantities are stored in discharge attribute (one forcing model that has all the Forcings)
+    # and this forcingModel is duplicated in the salinitydelta, temperaturedelta, and initialtracer_anyname
+    # to be able to save them in the same .bc file.
+    quantity = "discharge"
+    forcing_model = getattr(new_quantity_block, quantity)
     units = [
-        getattr(new_quantity_block, quantity).forcing[0].quantityunitpair[1].unit
-        for quantity in quantity_list
+        forcing_model.forcing[i].quantityunitpair[1].unit
+        for i in range(len(quantity_list))
     ]
     assert units == ["m3/s", "1e-3", "degC", "-"]
     # check the values of the data block
-    data = [
-        getattr(new_quantity_block, quantity).forcing[0].datablock[1]
-        for quantity in quantity_list
-    ]
+    data = [forcing_model.forcing[i].as_dataframe() for i in range(len(quantity_list))]
     # initialtracer_anyname
-    assert data[3] == [4.0, 4.0, 4.0, 4.0, 4.0]
+    assert data[3].loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
     # temperature
-    assert data[2] == [3.0, 3.0, 3.0, 3.0, 3.0]
+    assert data[2].loc[:, 0].to_list() == [3.0, 3.0, 3.0, 3.0, 3.0]
     # salinity
-    assert data[1] == [2.0, 2.0, 2.0, 2.0, 2.0]
+    assert data[1].loc[:, 0].to_list() == [2.0, 2.0, 2.0, 2.0, 2.0]
     # discharge
-    assert data[0] == [1.0, 1.0, 1.0, 1.0, 1.0]
+    assert data[0].loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]
 
 
 class TestSourceSinkConverter:
@@ -344,7 +346,7 @@ class TestSourceSinkConverter:
         ```
 
 
-        - The tim file file has the following structure:
+        - The tim file has the following structure:
         ```
         0.0 1.0 4.0
         100 1.0 4.0
@@ -379,29 +381,27 @@ class TestSourceSinkConverter:
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
+
         validation_list = ["discharge", "initialtracer_anyname"]
         # check the converted bc_forcing
-
+        quantity = "discharge"
+        forcing_model = getattr(new_quantity_block, quantity)
         quantities_names = [
-            getattr(new_quantity_block, quantity)
-            .forcing[0]
-            .quantityunitpair[1]
-            .quantity
-            for quantity in validation_list
+            forcing_model.forcing[i].quantityunitpair[1].quantity
+            for i in range(len(validation_list))
         ]
         units = [
-            getattr(new_quantity_block, quantity).forcing[0].quantityunitpair[1].unit
-            for quantity in validation_list
+            forcing_model.forcing[i].quantityunitpair[1].unit
+            for i in range(len(validation_list))
         ]
         assert quantities_names == validation_list
 
         assert units == ["m3/s", "-"]
         data = [
-            getattr(new_quantity_block, quantity).forcing[0].datablock[1]
-            for quantity in validation_list
+            forcing_model.forcing[i].as_dataframe() for i in range(len(validation_list))
         ]
         # check the values of the data block
         # initialtracer_anyname
-        assert data[1] == [4.0, 4.0, 4.0, 4.0, 4.0]
+        assert data[1].loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
         # discharge
-        assert data[0] == [1.0, 1.0, 1.0, 1.0, 1.0]
+        assert data[0].loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]

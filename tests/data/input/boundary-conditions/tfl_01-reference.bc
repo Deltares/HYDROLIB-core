@@ -1,0 +1,31 @@
+# written by HYDROLIB-core 0.8.1
+
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name              = L1_0001
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0    0.01
+120.0  0.01
+
+[Forcing]
+name              = L1_0002
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0    0.01
+120.0  0.01

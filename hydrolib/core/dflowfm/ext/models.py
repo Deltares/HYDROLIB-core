@@ -51,7 +51,7 @@ class Boundary(INIBasedModel):
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
-    forcingfile: ForcingModel = Field(alias="forcingFile")
+    forcingfile: Union[ForcingModel, List[ForcingModel]] = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
 
@@ -200,7 +200,7 @@ class SourceSink(INIBasedModel):
     _header: Literal["SourceSink"] = "SourceSink"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationfile: DiskOnlyFileModel = Field(
+    locationfile: Optional[DiskOnlyFileModel] = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
 
@@ -215,6 +215,9 @@ class SourceSink(INIBasedModel):
     discharge: ForcingData = Field(alias="discharge")
     salinitydelta: Optional[ForcingData] = Field(alias="salinityDelta")
     temperaturedelta: Optional[ForcingData] = Field(alias="temperatureDelta")
+
+    def is_intermediate_link(self) -> bool:
+        return True
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
@@ -244,6 +247,45 @@ class SourceSink(INIBasedModel):
             ):
                 setattr(self, key, value)
 
+    @root_validator(pre=True)
+    def validate_location_specification(cls, values):
+        """
+        Ensures that either `locationfile` or a valid set of coordinates is provided.
+
+         This validation enforces that at least one of the following conditions is met:
+         1. `locationfile` is provided.
+         2. The combination of `numcoordinates`, `xcoordinates`, and `ycoordinates` is valid:
+             - `xcoordinates` and `ycoordinates` must be lists of equal length.
+             - The length of `xcoordinates` and `ycoordinates` must match `numcoordinates`.
+
+         Raises:
+             ValueError: If neither `locationfile` nor a valid coordinate set is provided.
+
+         Returns:
+             Dict: The validated input values.
+        """
+        locationfile = values.get("locationfile", values.get("locationFile"))
+
+        numcoordinates = values.get("numcoordinates", values.get("numCoordinates"))
+        xcoordinates = values.get("xcoordinates", values.get("xCoordinates"))
+        ycoordinates = values.get("ycoordinates", values.get("yCoordinates"))
+
+        has_locationfile = locationfile is not None
+        has_coordinates = (
+            numcoordinates is not None
+            and xcoordinates is not None
+            and ycoordinates is not None
+            and len(xcoordinates) == len(ycoordinates) == numcoordinates
+        )
+
+        if not (has_locationfile or has_coordinates):
+            raise ValueError(
+                "Either `locationFile` or the combination of `numCoordinates`, `xCoordinates`, and `yCoordinates` "
+                f"must be provided. for the SourceSink block `{values.get('id')}`."
+            )
+
+        return values
+
 
 class MeteoForcingFileType(StrEnum):
     """
@@ -260,19 +302,19 @@ class MeteoForcingFileType(StrEnum):
     unimagdir = "uniMagDir"
     """str: Space-uniform wind magnitude+direction in <*.tim> file."""
 
-    meteogridequi = "meteoGridEqui"
+    arcinfo = "arcInfo"
     """str: Space- and time-varying wind and pressure on an equidistant grid in <*.amu/v/p> files."""
 
     spiderweb = "spiderweb"
     """str: Space- and time-varying cyclone wind and pressure in <*.spw> files."""
 
-    meteogridcurvi = "meteoGridCurvi"
+    curvigrid = "curviGrid"
     """str: Space- and time-varying wind and pressure on a curvilinear grid in <*.grd+*.amu/v/p> files."""
 
     netcdf = "netcdf"
     """str: NetCDF, either with gridded data, or multiple station time series."""
 
-    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, meteoGridEqui, spiderweb, meteoGridCurvi, netcdf."
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf."
 
 
 class MeteoInterpolationMethod(StrEnum):
@@ -382,7 +424,7 @@ class Meteo(INIBasedModel):
 
 
 class ExtGeneral(INIGeneral):
-    """The external forcing file's `[General]` section with file meta data."""
+    """The external forcing file's `[General]` section with file meta-data."""
 
     _header: Literal["General"] = "General"
     fileversion: str = Field("2.01", alias="fileVersion")
@@ -420,3 +462,43 @@ class ExtModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "bnd"
+
+
+class SourceSinkError(Exception):
+    """SourceSinkError."""
+
+    def __init__(self, error_message: str):
+        """SourceSinkError constructor."""
+        print(error_message)
+
+
+class InitialFieldError(Exception):
+    """InitialFieldError."""
+
+    def __init__(self, error_message: str):
+        """InitialFieldError constructor."""
+        print(error_message)
+
+
+class MeteoError(Exception):
+    """MeteoError."""
+
+    def __init__(self, error_message: str):
+        """MeteoError constructor."""
+        print(error_message)
+
+
+class BoundaryError(Exception):
+    """BoundaryError."""
+
+    def __init__(self, error_message: str):
+        """BoundaryError constructor."""
+        print(error_message)
+
+
+class ParameterFieldError(Exception):
+    """ParameterFieldError."""
+
+    def __init__(self, error_message: str):
+        """ParameterFieldError constructor."""
+        print(error_message)

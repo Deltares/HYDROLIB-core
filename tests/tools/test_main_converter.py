@@ -3,7 +3,6 @@ from typing import Dict, List
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -15,42 +14,91 @@ from hydrolib.tools.ext_old_to_new.main_converter import (
     ExternalForcingConverter,
     ext_old_to_new_dir_recursive,
 )
+from tests.utils import compare_two_files
 
 
 class TestExtOldToNewFromMDU:
     def test_wind_combi_uniform_curvi(self, capsys, input_files_dir: Path):
+        """
+        The mdu file in this test is read correctly with the `LegacyFMModel` class.
+        """
         mdu_filename = (
             input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
         )
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         converter.verbose = True
-        _, _, _ = converter.update()
+        ext_model, _, _ = converter.update()
         fm_model = converter.fm_model
         assert isinstance(fm_model, LegacyFMModel)
         assert len(converter.extold_model.forcing) == 5
         assert isinstance(fm_model.external_forcing.extforcefilenew, ExtModel)
+        assert not hasattr(fm_model.external_forcing, "extforcefile")
+
+        # check the saved files
+        converter.save()
+
+        # check that the mdu file has the relative pathes, not the absolute pathes
+        # the pathes are changes to the relative pathes inside the save function.
+        mdu_path = fm_model.external_forcing.extforcefilenew.filepath
+        assert mdu_path.parent == Path(".")  # no parent
+
+        assert ext_model.filepath.exists()
+        ext_model.filepath.unlink()
+        # delete the mdu file (this is the updated one with the new external forcing file)
+        mdu_filename.unlink()
+        # check the mdu backup file
+        assert mdu_filename.with_suffix(".mdu.bak").exists()
+        # rename back the backup file
+        mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
 
     def test_extrapolate_slr(self, capsys, input_files_dir: Path):
+        """
+        - This test used mdu file with `Unknown keywords` so the reading of the mdu file using the `LegacyFMModel`
+        fails.
+        - Since the `LegacyFMModel` class is not created, the converter will read only the [physics] and [time] section
+        """
         main_converter._verbose = True
         mdu_filename = (
             input_files_dir
             / "e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu"
         )
-
-        # test with error
-        with pytest.raises(ValidationError):
-            ExternalForcingConverter.from_mdu(mdu_filename)
-
-        ExternalForcingConverter.from_mdu(mdu_filename, suppress_errors=True)
-        captured = capsys.readouterr()
-        assert captured.out.startswith(
-            f"Could not read {mdu_filename} as a valid FM model:"
+        converter = ExternalForcingConverter.from_mdu(
+            mdu_filename, suppress_errors=True
         )
+        ext_model, _, _ = converter.update()
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.meteo) == 1
+        # check the saved files
+        converter.save()
+
+        assert ext_model.filepath.exists()
+        ext_model.filepath.unlink()
+        # delete the mdu file (this is the updated one with the new external forcing file)
+        mdu_filename.unlink()
+        # check the mdu backup file
+        assert mdu_filename.with_suffix(".mdu.bak").exists()
+        # rename back the backup file
+        mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
 
     def test_recursive(self, capsys, input_files_dir: Path):
         main_converter._verbose = True
         path = input_files_dir / "e02/f006_external_forcing"
-        ext_old_to_new_dir_recursive(path, suppress_errors=True)
+        with patch(
+            "hydrolib.tools.ext_old_to_new.main_converter.ExternalForcingConverter.save",
+            return_value=None,
+        ):
+            ext_old_to_new_dir_recursive(path, suppress_errors=True)
+
+    def test_deprecated_warning(self):
+        """
+        Test that the deprecated warning is raised.
+        """
+        with patch("warnings.warn", side_effect=SystemExit):
+            with pytest.raises(SystemExit):
+                ExternalForcingConverter.from_mdu(
+                    "tests/data/input/dflowfm_individual_files/mdu/sp.mdu",
+                    suppress_errors=True,
+                )
 
 
 class TestExternalFocingConverter:
@@ -123,12 +171,12 @@ class TestExternalFocingConverter:
         converter.save()
 
         assert converter.ext_model.filepath.exists()
-        assert converter.inifield_model.filepath.exists()
-        assert converter.structure_model.filepath.exists()
-
-        converter.ext_model.filepath.unlink()
-        converter.inifield_model.filepath.unlink()
-        converter.structure_model.filepath.unlink()
+        assert not converter.inifield_model.filepath.exists()
+        assert not converter.structure_model.filepath.exists()
+        try:
+            converter.ext_model.filepath.unlink()
+        except PermissionError:
+            pass
 
     def test_read_old_file(
         self,
@@ -201,8 +249,16 @@ class TestUpdate:
         The old external forcing file contains only 9 boundary condition quantities all with polyline location files
         and no forcing files. The update method should convert all the quantities to boundary conditions.
         """
-        converter = ExternalForcingConverter(old_forcing_file_boundary["path"])
+        mdu_info = {
+            "refdate": "minutes since 2015-01-01 00:00:00",
+        }
+        converter = ExternalForcingConverter(
+            old_forcing_file_boundary["path"], mdu_info=mdu_info
+        )
 
+        # Mock the fm_model
+        mock_fm_model = Mock()
+        converter._fm_model = mock_fm_model
         ext_model, inifield_model, structure_model = converter.update()
 
         # all the quantities in the old external file are initial conditions
@@ -218,6 +274,17 @@ class TestUpdate:
         assert [
             str(quantities[i].locationfile.filepath) for i in range(num_quantities)
         ] == old_forcing_file_boundary["locationfile"]
+        r_dir = converter.root_dir
+        # test save files
+        ext_model.save(recurse=True)
+
+        reference_files = ["new-external-forcing-reference.ext", "tfl_01-reference.bc"]
+        files = ["new-external-forcing.ext", "tfl_01.bc"]
+        for i in range(2):
+            assert (r_dir / files[i]).exists()
+            diff = compare_two_files(r_dir / reference_files[i], r_dir / files[i])
+            assert diff == []
+            (r_dir / files[i]).unlink()
 
 
 class TestUpdateSourcesSinks:
@@ -233,11 +300,14 @@ class TestUpdateSourcesSinks:
 
         """
         path = "tests/data/input/source-sink/source-sink.ext"
-        converter = ExternalForcingConverter(path)
+        mdu_info = {
+            "refdate": "minutes since 2015-01-01 00:00:00",
+        }
+        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
         # Mock the fm_model
         mock_fm_model = Mock()
-        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
         converter._fm_model = mock_fm_model
+
         tim_file = Path("tim-3-columns.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             ext_model, inifield_model, structure_model = converter.update()
@@ -266,13 +336,15 @@ class TestUpdateSourcesSinks:
 
         """
         path = "tests/data/input/source-sink/source-sink.ext"
-        converter = ExternalForcingConverter(path)
+        mdu_info = {
+            "refdate": "minutes since 2015-01-01 00:00:00",
+            "salinity": True,
+            "temperature": True,
+        }
+        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
 
         # Mock the fm_model
         mock_fm_model = Mock()
-        mock_fm_model.physics.salinity = True
-        mock_fm_model.physics.temperature = True
-        mock_fm_model.time.refdate = "minutes since 2015-01-01 00:00:00"
         converter._fm_model = mock_fm_model
 
         tim_file = Path("tim-3-columns.tim")

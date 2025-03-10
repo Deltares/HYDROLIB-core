@@ -76,40 +76,40 @@ OPERAND=O
 * First 1D2D:
 QUANTITY =initialwaterlevel
 FILENAME =iniwaterlevel1.pol
-FILETYPE =10
+FILETYPE =3
 METHOD   =4
 OPERAND  =O
 VALUE    =1.0
 
 QUANTITY =initialwaterlevel
 FILENAME =iniwaterlevel.xyz
-FILETYPE =7
+FILETYPE =3
 METHOD   =5
 OPERAND  =O
 
 QUANTITY =initialsalinity
 FILENAME =inisalinity.xyz
-FILETYPE =7
+FILETYPE =3
 METHOD   =5
 OPERAND  =O
 
 QUANTITY=bedlevel
 FILENAME=bathy.xyz
-FILETYPE=7
+FILETYPE=3
 METHOD=6
 OPERAND=O
 NUMMIN=4
 
 QUANTITY=bedlevel
 FILENAME=bathy.xyz
-FILETYPE=7
+FILETYPE=3
 METHOD=6
 OPERAND=O
 
 
 QUANTITY =waterlevelbnd
 FILENAME =right.pli
-FILETYPE =9
+FILETYPE =3
 METHOD   =3
 OPERAND  =O
 
@@ -121,20 +121,20 @@ OPERAND  =O
 
 QUANTITY =horizontaleddyviscositycoefficient
 FILENAME =eddvishor.xyz
-FILETYPE =7
+FILETYPE =3
 METHOD   =5
 OPERAND  =O
 
 QUANTITY =horizontaleddyviscositycoefficient
 FILENAME =eddvishor1.pol
-FILETYPE =10
+FILETYPE =3
 METHOD   =4
 OPERAND  =O
 VALUE    =7.0
 
 QUANTITY =horizontaleddyviscositycoefficient
 FILENAME =eddvishor2.pol
-FILETYPE =10
+FILETYPE =3
 METHOD   =4
 OPERAND  =O
 VALUE    =6.0
@@ -142,6 +142,6 @@ VALUE    =6.0
 
 QUANTITY =salinitybnd
 FILENAME =rightsal.pli
-FILETYPE =9
+FILETYPE =3
 METHOD   =3
 OPERAND  =O

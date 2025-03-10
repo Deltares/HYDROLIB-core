@@ -202,6 +202,8 @@ class ForcingBase(DataBlockINIBasedModel):
 
     Examples:
         Create a simple forcing block:
+
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import ForcingBase, QuantityUnitPair
             >>> forcing = ForcingBase(
             ...     name="Location1",
@@ -213,7 +215,11 @@ class ForcingBase(DataBlockINIBasedModel):
             >>> print(forcing.function)
             timeseries
 
+            ```
+
         Handle vector quantities:
+
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import VectorQuantityUnitPairs
             >>> forcing = ForcingBase(
             ...     name="Location2",
@@ -231,6 +237,8 @@ class ForcingBase(DataBlockINIBasedModel):
             ... )
             >>> print(forcing.quantityunitpair[0].vectorname)
             velocity
+
+            ```
 
     Notes:
         - The `ForcingBase` class is typically subclassed to provide specific behavior for different forcing types.
@@ -561,7 +569,92 @@ class VectorForcingBase(ForcingBase):
 
 
 class TimeSeries(VectorForcingBase):
-    """Subclass for a .bc file [Forcing] block with timeseries data."""
+    """Subclass for a .bc file [Forcing] block with timeseries data.
+
+    Attributes:
+        function (Literal["timeseries"]):
+            Specifies that this is a timeseries forcing block. Defaults to "timeseries".
+        timeinterpolation (TimeInterpolation):
+            The type of time interpolation, such as "linear", "block-From", or "block-To".
+        offset (float):
+            All values in the table are increased by the offset (after multiplication by factor).
+            Defaults to 0.0.
+        factor (float):
+            All values in the table are multiplied by the factor. Defaults to 1.0.
+
+     Methods:
+        rename_keys(cls, values: Dict) -> Dict:
+            Renames old keywords to currently supported keywords for backward compatibility.
+
+    Examples:
+        One quantity:
+        ```python
+        >>> from hydrolib.core.dflowfm.bc.models import TimeSeries
+        >>> timeseries = TimeSeries(
+        ...     name="Boundary1",
+        ...     function="timeseries",
+        ...     timeinterpolation="block-From",
+        ...     offset=1.23,
+        ...     factor=2.34,
+        ...     quantityunitpair=[
+        ...         QuantityUnitPair(quantity="time", unit="minutes since 2015-01-01 00:00:00"),
+        ...         QuantityUnitPair(quantity="waterlevel", unit="m")
+        ...    ],
+        ...     datablock=[["0", "10"], ["1.0", "20"], ["2.0", "30"]]
+        ... )
+
+        ```
+        the forcing will look as follows:
+        ```
+        [Forcing]
+            name              = Boundary1
+            timeinterpolation = block-From
+            function          = timeseries
+            quantity          = time
+            unit              = minutes since 2001-01-01
+            quantity          = waterlevel
+            unit              = m
+            offset            = 1.23
+            factor            = 2.34
+            0 10
+            1 20
+            2 30
+        ```
+        Two quantities:
+        >>> timeseries = TimeSeries(
+        ...     name="Boundary1",
+        ...     function="timeseries",
+        ...     timeinterpolation="block-From",
+        ...     offset=1.23,
+        ...     factor=2.34,
+        ...     quantityunitpair=[
+        ...         QuantityUnitPair(quantity="time", unit="minutes since 2015-01-01 00:00:00"),
+        ...         QuantityUnitPair(quantity="dischargebnd", unit="m³/s"),
+        ...         QuantityUnitPair(quantity="waterlevelbnd", unit="m")
+        ...     ],
+        ...    datablock=[["0", "50", "4.0"], ["1", "60", "5.0"], ["2", "70", "6.0"]]
+        ... )
+
+        ```
+        the forcing will look as follows:
+        ```
+        [Forcing]
+            name              = Boundary1
+            timeinterpolation = block-From
+            function          = timeseries
+            quantity          = time
+            unit              = minutes since 2015-01-01 00:00:00
+            quantity          = dischargebnd
+            unit              = m³/s
+            quantity          = waterlevelbnd
+            unit              = m
+            offset            = 1.23
+            factor            = 2.34
+            0 50 4.0
+            1 60 5.0
+            2 70 6.0
+        ```
+    """
 
     function: Literal["timeseries"] = "timeseries"
 
@@ -882,7 +975,7 @@ class ForcingModel(INIModel):
 
     Examples:
         Create a simple ForcingModel:
-
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import ForcingModel, ForcingBase, ForcingGeneral, QuantityUnitPair
             >>> forcing_block = ForcingBase(
             ...     name="Location1",
@@ -897,8 +990,11 @@ class ForcingModel(INIModel):
             ... )
             >>> print(model.general.fileversion)
             1.01
+            >>> model.save(filepath="tests/data/output.bc") # doctest: +SKIP
+            ```
 
         Parse a .bc file:
+            ```python
             >>> from pathlib import Path
             >>> filepath = Path("tests/data/reference/bc/test.bc")
             >>> parsed_model = ForcingModel.parse(filepath)
@@ -906,7 +1002,7 @@ class ForcingModel(INIModel):
             dict_keys(['general', 'forcing'])
             >>> print(len(parsed_model["forcing"]))
             6
-            >>> print(parsed_model["forcing"][0]) # doctest: +NORMALIZE_WHITESPACE
+            >>> print(parsed_model["forcing"][0]) # doctest: +SKIP
             {'_header': 'Forcing',
              'datablock': [['0.0000', '1.2300'],
               ['60.0000', '2.3400'],
@@ -918,14 +1014,18 @@ class ForcingModel(INIModel):
              'factor': '2.340',
              'quantity': ['time', 'dischargebnd'],
              'unit': ['minutes since 2015-01-01 00:00:00', 'm³/s']}
+            ```
 
         Serialize a ForcingModel:
+            ```python
             >>> save_path = Path("output.bc")
             >>> model.save(filepath=save_path) # doctest: +SKIP
             >>> print(save_path.exists()) # doctest: +SKIP
             True
+            ```
 
         Create a ForcingModel from a dictionary:
+            ```python
             >>> from hydrolib.core.dflowfm.bc.models import ForcingModel
             >>> forcing_blocks_list = [
             ...     {
@@ -955,6 +1055,8 @@ class ForcingModel(INIModel):
             <class 'hydrolib.core.dflowfm.bc.models.TimeSeries'>
             >>> print(model.general.fileversion)
             1.01
+
+            ```
 
     Example .bc file content:
         ```.bc

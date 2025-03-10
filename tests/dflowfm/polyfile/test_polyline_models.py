@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.dflowfm.polyfile.models import Point, PolyFile
+from hydrolib.core.dflowfm.polyfile.parser import read_polyfile
 
 
 def test_with_label(polylines_dir: Path):
@@ -28,6 +29,8 @@ def test_with_label(polylines_dir: Path):
     assert polyline.save_location == path.absolute()
     assert polyline.x == [0, 0]
     assert polyline.y == [0, 2]
+    assert polyline.number_of_points == 2
+    assert polyline.objects[0].metadata.name == "tfl_01"
 
 
 def test_without_z(polylines_dir: Path):
@@ -48,6 +51,7 @@ def test_without_z(polylines_dir: Path):
     assert points[1] == Point(x=-80, y=550, z=None, data=[])
     assert polyline.x == [-80, -80]
     assert polyline.y == [-50, 550]
+    assert polyline.number_of_points == 2
 
 
 def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
@@ -69,6 +73,25 @@ def test_with_z_and_pli_extension_2by2(polylines_dir: Path):
     assert points[1] == Point(x=0, y=2, z=None, data=[])
     assert polyline.x == [0, 0]
     assert polyline.y == [0, 2]
+
+
+def test_scientific_notation(polylines_dir: Path):
+    """
+    The test check a 2*2 polyline file with z values, but the extension is pli not pliz.
+    the parser will ignore the z values and read the file as a normal polyline file.
+
+    ```plaintext
+    tfl_01
+        2      2
+        0.00000000000000000e+00	0.00000000000000000e+00
+        0.00000000000000000e+00	2.00000000000000000e+00
+    ```
+    """
+    path = polylines_dir / "tfl_01-scientific-notation.pli"
+    polyline = read_polyfile(path, has_z_values=False)
+
+    assert polyline["objects"][0].points[0] == Point(x=0, y=0, z=None, data=[])
+    assert polyline["objects"][0].points[1] == Point(x=0, y=2, z=None, data=[])
 
 
 class TestGetZSourcesSinks:

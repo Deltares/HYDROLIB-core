@@ -988,7 +988,7 @@ class FileModel(BaseModel, ABC):
             Path: The updated file path.
         """
 
-        updated_file_parts = loading_path.parts[-len(file_path.parts) :]
+        updated_file_parts = loading_path.parts[-len(file_path.parts) :]  # noqa: E203
         updated_file_path = Path(*updated_file_parts)
 
         if str(updated_file_path) != str(file_path):
@@ -1233,7 +1233,7 @@ class SerializerConfig(BaseModel, ABC):
 
     float_format: str = ""
     """str: The string format that will be used for float serialization. If empty, the original number will be serialized. Defaults to an empty string.
-        
+
         Examples:
             Input value = 123.456
 
@@ -1250,7 +1250,7 @@ class SerializerConfig(BaseModel, ABC):
             "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
             ">15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
             "*>15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
-            "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.     
+            "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.
             ".3%"     | 12345.600%      | Format percentage with 3 decimal places.
 
             More information: https://docs.python.org/3/library/string.html#format-specification-mini-language

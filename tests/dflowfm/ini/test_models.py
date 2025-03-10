@@ -40,6 +40,14 @@ class TestDataBlockINIBasedModel:
         expected_message = "NaN is not supported in datablocks."
         assert error_occurs_only_once(expected_message, str(error.value))
 
+    def test_as_dataframe(self):
+        model = DataBlockINIBasedModel()
+
+        valid_datablock = [[0, 1], [2, 3]]
+        model.datablock = valid_datablock
+        df = model.as_dataframe()
+        assert df.loc[:, 0].to_list() == [1.0, 3.0]
+
 
 class TestINIBasedModel:
     class INIBasedModelTest(INIBasedModel):

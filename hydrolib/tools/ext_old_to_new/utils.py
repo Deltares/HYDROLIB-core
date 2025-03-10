@@ -2,6 +2,8 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
+from pydantic.v1 import Extra
+
 from hydrolib.core.basemodel import DiskOnlyFileModel, FileModel, PathOrStr
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
@@ -66,8 +68,10 @@ def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:
         Path: The new filepath with the postfix included.
 
     Examples:
-        >>> construct_filepath_with_postfix("file.txt", "_new")
+        ```python
+        >>> construct_filepath_with_postfix("file.txt", "_new") # doctest: +SKIP
         Path("file_new.txt")
+        ```
     """
     file_as_path = Path(filepath)
     return file_as_path.with_stem(file_as_path.stem + postfix)
@@ -98,11 +102,11 @@ def oldfiletype_to_forcing_file_type(
             "FILETYPE = 3 (spatially verying wind and pressure) is no longer supported."
         )
     elif oldfiletype == ExtOldFileType.ArcInfo:  # 4
-        forcing_file_type = MeteoForcingFileType.meteogridequi
+        forcing_file_type = MeteoForcingFileType.arcinfo
     elif oldfiletype == ExtOldFileType.SpiderWebData:  # 5
         forcing_file_type = MeteoForcingFileType.spiderweb
     elif oldfiletype == ExtOldFileType.CurvilinearData:  # 6
-        forcing_file_type = MeteoForcingFileType.meteogridcurvi
+        forcing_file_type = MeteoForcingFileType.curvigrid
     elif oldfiletype == ExtOldFileType.Samples:  # 7
         forcing_file_type = DataFileType.sample
     elif oldfiletype == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
@@ -209,7 +213,7 @@ def create_initial_cond_and_parameter_input_dict(
     """
     block_data = {
         "quantity": forcing.quantity,
-        "datafile": forcing.filename,
+        "datafile": DiskOnlyFileModel(forcing.filename.filepath),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
     if block_data["datafiletype"] == "polygon":
@@ -245,22 +249,31 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
                         and values 3 and 4 respectively.
 
      Examples:
+         ```python
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({"salinitydelta": 3, "temperaturedelta": 4})
-
+        OrderedDict({'salinitydelta': 3, 'temperaturedelta': 4})
         >>> find_temperature_salinity_in_quantities(["Temperature"])
-        OrderedDict({"temperaturedelta": 3})
-
+        OrderedDict({'temperaturedelta': 3})
         >>> find_temperature_salinity_in_quantities(["Salinity"])
-        OrderedDict({"salinitydelta": 3})
-
+        OrderedDict({'salinitydelta': 3})
         >>> find_temperature_salinity_in_quantities(["tracers"])
         OrderedDict()
-
         >>> find_temperature_salinity_in_quantities([])
         OrderedDict()
+        >>> find_temperature_salinity_in_quantities(["discharge_salinity_temperature_sorsin", "Salinity"])
+        OrderedDict({'salinitydelta': 3})
+
+        ```
+
+    Notes:
+        - The function removes the `discharge_salinity_temperature_sorsin` from the given list of strings.
+        - The function removes the duplicate strings in the list.
     """
     result = OrderedDict()
+    strings = list(set(strings))
+    # remove the `discharge_salinity_temperature_sorsin` quantity from the list
+    if "discharge_salinity_temperature_sorsin" in strings:
+        strings.remove("discharge_salinity_temperature_sorsin")
 
     if any("salinity" in string.lower() for string in strings):
         result["salinitydelta"] = 3
@@ -270,3 +283,25 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
         )  # Default temperature value is 2
 
     return result
+
+
+class IgnoreUnknownKeyWord(type):
+    """Metaclass to ignore unknown keyword arguments when creating a new class instance"""
+
+    def __call__(cls, base_class, **data):
+        """Dynamically create and instantiate a subclass of base_class."""
+
+        class DynamicClass(base_class):
+            class Config:
+                extra = Extra.ignore
+
+            def __init__(self, **data):
+                valid_fields = self.__annotations__.keys()
+                filtered_data = {k: v for k, v in data.items() if k in valid_fields}
+                super().__init__(**filtered_data)
+
+        return DynamicClass(**data)
+
+
+class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
+    pass

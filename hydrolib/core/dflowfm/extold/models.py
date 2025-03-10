@@ -25,6 +25,20 @@ INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
     "initialverticalsigmasedfracprofile",
 )
 
+FILETYPE_FILEMODEL_MAPPING = {
+    1: TimModel,
+    2: TimModel,
+    3: DiskOnlyFileModel,
+    4: DiskOnlyFileModel,
+    5: DiskOnlyFileModel,
+    6: DiskOnlyFileModel,
+    7: DiskOnlyFileModel,
+    8: DiskOnlyFileModel,
+    9: PolyFile,
+    10: PolyFile,
+    11: DiskOnlyFileModel,
+    12: DiskOnlyFileModel,
+}
 
 HEADER = """
  QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
@@ -757,6 +771,42 @@ class ExtOldForcing(BaseModel):
             area, quantity, ExtOldQuantity.DischargeSalinityTemperatureSorSin
         )
         only_allowed_when(nummin, method, ExtOldMethod.AveragingSpace)
+
+        return values
+
+    @root_validator(pre=True)
+    def chooce_file_model(cls, values):
+        """Root-level validator to the right class for the filename parameter based on the filetype.
+
+        The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
+        dictionary.
+
+        FileType_FileModel_mapping = {
+            1: TimModel,
+            2: TimModel,
+            3: DiskOnlyFileModel,
+            4: DiskOnlyFileModel,
+            5: DiskOnlyFileModel,
+            6: DiskOnlyFileModel,
+            7: DiskOnlyFileModel,
+            8: DiskOnlyFileModel,
+            9: PolyFile,
+            10: PolyFile,
+            11: DiskOnlyFileModel,
+            12: DiskOnlyFileModel,
+        }
+        """
+        # if the filetype and the filename are present in the values
+        if any(par in values for par in ["filetype", "FILETYPE"]) and any(
+            par in values for par in ["filename", "FILENAME"]
+        ):
+            file_type_var_name = "filetype" if "filetype" in values else "FILETYPE"
+            filename_var_name = "filename" if "filename" in values else "FILENAME"
+            file_type = values.get(file_type_var_name)
+            raw_path = values.get(filename_var_name)
+            model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
+
+            values[filename_var_name] = model(raw_path)
 
         return values
 
