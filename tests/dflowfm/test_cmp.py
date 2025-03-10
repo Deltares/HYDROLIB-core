@@ -1,3 +1,4 @@
+import math
 import re
 from pathlib import Path
 
@@ -145,7 +146,7 @@ class TestCmpModel:
     def test_harmonic_record_initialization(self):
         record = HarmonicRecord(period=0.0, amplitude=1.0, phase=2.0)
         assert record is not None
-        assert record.period == 0.0
+        assert math.isclose(record.period, 0.0)
 
     def test_cmp_model_initialization_with_data(self):
         model = CmpModel(
