@@ -869,7 +869,25 @@ class T3DToForcingConverter:
 
     @staticmethod
     def convert(
-        t3d_model: T3DModel, quantities_names: List[str], units: List[str]
+        t3d_model_list: List[T3DModel],
+        quantities_names: List[str],
+        units: List[str],
+        user_defined_names: List[str] = None,
+    ) -> List[T3D]:
+        forcings = []
+        for label, model in zip(user_defined_names, t3d_model_list):
+            t3d = T3DToForcingConverter.convert_t3d_model(
+                model, quantities_names, units, label
+            )
+            forcings.append(t3d)
+        return forcings
+
+    @staticmethod
+    def convert_t3d_model(
+        t3d_model: T3DModel,
+        quantities_names: List[str],
+        units: List[str],
+        user_defined_name: List[str] = None,
     ) -> T3D:
         """Convert a T3DModel into a T3D Forcing to be saved into the .bc file.
 
@@ -880,6 +898,8 @@ class T3DToForcingConverter:
                 names of the quantities.
             units(List[str]):
                 units of the quantities.
+            user_defined_name (List[str], optional):
+                user-defined name for the forcing block.
 
         Returns:
             T3D: The converted T3D object.
@@ -898,9 +918,12 @@ class T3DToForcingConverter:
             ...     ]
             ... )
             >>> converter = T3DToForcingConverter()
-            >>> t3d_forcing = converter.convert(t3d_model, ["temperature", "salinity", "discharge"], ["degC", "ppt", "m3/s"])
+            >>> t3d_forcing = converter.convert_t3d_model(
+            ...     t3d_model, ["temperature", "salinity", "discharge"], ["degC", "ppt", "m3/s"],
+            ...     "sigma-5-layers-time-steps"
+            ... )
             >>> print(t3d_forcing.name)
-            sigma-5-layers-3-times
+            sigma-5-layers-time-steps
             >>> print(t3d_forcing.function)
             t3d
             >>> print(t3d_forcing.datablock)
@@ -920,7 +943,7 @@ class T3DToForcingConverter:
             ```
         """
         data = {
-            "name": "sigma-5-layers-3-times",
+            "name": user_defined_name,
             "vertpositions": t3d_model.layers,
             "vertpositiontype": "percBed",
         }

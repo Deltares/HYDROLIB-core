@@ -16,8 +16,11 @@ def test_convert():
         "salinitybnd",
     ]
     units = ["ppt", "ppt", "ppt", "ppt", "ppt"]
-    t3d_forcing = T3DToForcingConverter.convert(t3d_model, quantities_names, units)
-
+    labels = ["sigma-5-layers-3-times"]
+    t3d_forcing = T3DToForcingConverter.convert(
+        [t3d_model], quantities_names, units, labels
+    )
+    t3d_forcing = t3d_forcing[0]
     units.insert(0, "seconds since 2006-01-01 00:00:00 +00:00")
     quantities_names.insert(0, "time")
 
