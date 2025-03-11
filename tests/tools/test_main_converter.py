@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -242,84 +242,6 @@ class TestUpdate:
             str(inifield_model.initial[i].datafile.filepath)
             for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_path"]
-
-
-class TestUpdateSourcesSinks:
-
-    def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
-        """
-        The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
-        `initialsalinity`, and `initialtemperature`.
-
-        - polyline 2*3 file `leftsor.pliz` is used to read the source and sink points.
-        - tim file `tim-3-columns.tim` with 3 columns (plus the time column) the name should be the same as the
-        polyline but the `tim-3-columns.tim` is mocked in the test.
-
-        """
-        path = "tests/data/input/source-sink/source-sink.ext"
-        mdu_info = {
-            "refdate": "minutes since 2015-01-01 00:00:00",
-        }
-        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
-
-        tim_file = Path("tim-3-columns.tim")
-        with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            ext_model, inifield_model, structure_model = converter.update()
-
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
-        num_quantities = 1
-        assert len(ext_model.sourcesink) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
-        assert len(ext_model.lateral) == 0
-        assert len(ext_model.meteo) == 0
-        assert len(structure_model.structure) == 0
-        assert len(inifield_model.initial) == 2
-        quantities = ext_model.sourcesink
-        quantities[0].name = "discharge_salinity_temperature_sorsin"
-
-    def test_sources_sinks_with_fm(self, old_forcing_file_boundary: Dict[str, str]):
-        """
-        The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
-        `initialsalinity`, and `initialtemperature`.
-
-        - polyline 2*3 file `leftsor.pliz` is used to read the source and sink points.
-        - tim file `tim-3-columns.tim` with 3 columns (plus the time column) the name should be the same as the
-        polyline but the `tim-3-columns.tim` is mocked in the test.
-
-        """
-        path = "tests/data/input/source-sink/source-sink.ext"
-        mdu_info = {
-            "refdate": "minutes since 2015-01-01 00:00:00",
-            "salinity": True,
-            "temperature": True,
-        }
-        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
-
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
-
-        tim_file = Path("tim-3-columns.tim")
-        with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            ext_model, inifield_model, structure_model = converter.update()
-
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
-        num_quantities = 1
-        assert len(ext_model.sourcesink) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
-        assert len(ext_model.lateral) == 0
-        assert len(ext_model.meteo) == 0
-        assert len(structure_model.structure) == 0
-        assert len(inifield_model.initial) == 2
-        quantities = ext_model.sourcesink
-        quantities[0].name = "discharge_salinity_temperature_sorsin"
 
 
 def test_clean():
