@@ -242,3 +242,68 @@ class T3DModel(ParsableFileModel):
             data[offset] = record.data
 
         return data
+
+    def get_units(self):
+        """Return the units for each quantity in the timeseries.
+
+        Returns:
+            List[str]: A list of units for each quantity in the timeseries.
+
+        Examples:
+            Create a `TimModel` object from a .tim file:
+                ```python
+                >>> from hydrolib.core.dflowfm.t3d.models import T3DTimeRecord, T3DModel
+                >>> layer_name = "SIGMA"
+                >>> comments = ["comment1", "comment2"]
+                >>> layers = [0, 0.2, 0.6, 0.8, 1.0]
+                >>> record = [
+                ...     T3DTimeRecord(time="0 seconds since 2006-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10, 10, 10]),
+                ...     T3DTimeRecord(time="1e9 seconds since 2001-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10, 10, 10])
+                ... ]
+                >>> model = T3DModel(comments=comments, layer_type=layer_name, layers=layers, records=record)
+                >>> model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]
+                >>> print(model.get_units())
+                ['m3/s', 'm', 'degC', '1e-3', '-']
+
+                ```
+        """
+        if self.quantities_names is None:
+            return None
+        return get_quantity_unit(self.quantities_names)
+
+
+def get_quantity_unit(quantities_names: List[str]) -> List[str]:
+    """
+    Maps each quantity in the input list to a specific unit based on its content.
+
+    Args:
+        quantities_names (list of str): A list of strings to be checked for specific keywords.
+
+    Returns:
+        list of str: A list of corresponding units for each input string.
+
+    Examples:
+        >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
+        >>> get_quantity_unit(quantities_names)
+        ['m3/s', 'm', '1e-3', 'degC']
+    """
+    # Define the mapping of keywords to units
+    unit_mapping = {
+        "discharge": "m3/s",
+        "waterlevel": "m",
+        "salinity": "1e-3",
+        "temperature": "degC",
+    }
+
+    # Generate the list of units based on the mapping
+    units = []
+    for string in quantities_names:
+        for keyword, unit in unit_mapping.items():
+            if keyword in string.lower():
+                units.append(unit)
+                break
+        else:
+            # Append "-" if no keywords match
+            units.append("-")
+
+    return units

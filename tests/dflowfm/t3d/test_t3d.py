@@ -122,6 +122,31 @@ class TestT3DModel:
                 quantities_names=quantities_names,
             )
 
+    def test_get_units(self):
+        layer_name = "SIGMA"
+        comments = ["comment1", "comment2"]
+        layers = [1, 2, 3, 4, 5]
+        record = [
+            T3DTimeRecord(
+                time="0 seconds since 2006-01-01 00:00:00 +00:00",
+                data=[5.0, 5.0, 10.0, 10.0],
+            ),
+            T3DTimeRecord(
+                time="1e9 seconds since 2001-01-01 00:00:00 +00:00",
+                data=[5.0, 5.0, 10.0, 10.0],
+            ),
+        ]
+        model = T3DModel(
+            comments=comments,
+            layer_type=layer_name,
+            layers=layers,
+            records=record,
+        )
+        model.quantities_names = ["quantity1", "quantity2", "quantity3", "quantity4"]
+        assert model.get_units() == ["-", "-", "-", "-"]
+        model.quantities_names = ["waterlevel", "temperature", "salinity", "discharge"]
+        assert model.get_units() == ["m", "degC", "1e-3", "m3/s"]
+
     def test_different_record_length(self):
         layer_name = "SIGMA"
         comments = ["comment1", "comment2"]
