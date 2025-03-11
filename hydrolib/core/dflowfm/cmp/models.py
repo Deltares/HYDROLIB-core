@@ -5,47 +5,114 @@ from pydantic.v1 import Field
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.cmp.astronomicname import AstronomicName
-from hydrolib.core.dflowfm.cmp.parser import CmpParser
-from hydrolib.core.dflowfm.cmp.serializer import CmpSerializer
+from hydrolib.core.dflowfm.cmp.parser import CMPParser
+from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer
 
 
 class HarmonicRecord(BaseModel):
-    """Single cmp record, representing a harmonic component with amplitude and phase."""
+    """Single cmp record, representing a harmonic component with amplitude and phase.
+
+    Attributes:
+        period (float): of the period.
+        amplitude (float): of the amplitude.
+        phase (float): of the phase.
+
+        Examples:
+            Create a `HarmonicRecord` object from a dictionary:
+                ```python
+                >>> data = {
+                ...     "period": 0.0,
+                ...     "amplitude": 1.0,
+                ...     "phase": 2.0
+                ... }
+                >>> harmonic_record = HarmonicRecord(**data)
+                >>> print(harmonic_record.period)
+                0.0
+
+                ```
+        Returns:
+            HarmonicRecord: A new instance of the `HarmonicRecord` class.
+
+        Raises:
+            ValueError: If the period, amplitude or phase are not valid numbers.
+    """
 
     period: float
-    """float: of the period."""
 
     amplitude: float
-    """float: of the amplitude."""
 
     phase: float
-    """float: of the phase."""
 
 
 class AstronomicRecord(BaseModel):
-    """Single cmp record, representing an astronomic component with amplitude and phase."""
+    """Single cmp record, representing an astronomic component with amplitude and phase.
+
+    Attributes:
+        name (AstronomicName): of the astronomic name.
+        amplitude (float): of the amplitude.
+        phase (float): of the phase.
+
+        Examples:
+            Create an `AstronomicRecord` object from a dictionary:
+                ```python
+                >>> data = {
+                ...     "name": "4MS10",
+                ...     "amplitude": 1.0,
+                ...     "phase": 2.0
+                ... }
+                >>> astronomic_record = AstronomicRecord(**data)
+                >>> print(astronomic_record.name)
+                4MS10
+
+                ```
+        Returns:
+            AstronomicRecord: A new instance of the `AstronomicRecord` class.
+
+        Raises:
+            ValueError: If the name, amplitude or phase are not valid numbers.
+    """
 
     name: AstronomicName
-    """string of the astronomic name."""
 
     amplitude: float
-    """float: of the amplitude."""
 
     phase: float
-    """float: of the phase."""
 
 
-class CmpSet(BaseModel):
+class CMPSet(BaseModel):
+    """A CMP set containing harmonics and astronomics.
+
+    Attributes:
+        harmonics (List[HarmonicRecord]): A list containing the harmonic components.
+        astronomics (List[AstronomicRecord]): A list containing the astronomic components.
+        quantity_name (str): The name of the quantity.
+
+        Examples:
+            Create a `CmpSet` object from a dictionary:
+                ```python
+                >>> data = {
+                ...     "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
+                ... }
+                >>> cmp_set = CMPSet(**data)
+                >>> print(cmp_set.astronomics)
+                [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
+
+                ```
+        Returns:
+            CmpSet: A new instance of the `CmpSet` class.
+
+        Raises:
+            ValueError: If the harmonics or astronomics are not valid lists.
+    """
+
     harmonics: Optional[List[HarmonicRecord]] = Field(default_factory=list)
-    """List[HarmonicRecord]: A list containing the harmonic components."""
 
     astronomics: Optional[List[AstronomicRecord]] = Field(default_factory=list)
-    """List[AstronomicRecord]: A list containing the astronomic components."""
 
     quantity_name: Optional[str] = None
 
 
-class CmpModel(ParsableFileModel):
+class CMPModel(ParsableFileModel):
     """Class representing a cmp (*.cmp) file.
     This class is used to parse and serialize cmp files, which contain
     information about various components such as harmonics and astronomics.
@@ -64,11 +131,18 @@ class CmpModel(ParsableFileModel):
             ...         "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
             ...     }]
             ... }
-            >>> cmp_model = CmpModel(**data)
+            >>> cmp_model = CMPModel(**data)
             >>> print(cmp_model.components[0].astronomics)
             [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
 
             ```
+
+    Returns:
+        CmpModel: A new instance of the `CmpModel` class.
+
+    Raises:
+        ValueError: If the comments or components are not valid lists.
+
     See Also:
         CmpSet: Class representing the components of the cmp file.
         CmpSerializer: Class responsible for serializing cmp files.
@@ -76,10 +150,8 @@ class CmpModel(ParsableFileModel):
     """
 
     comments: List[str] = Field(default_factory=list)
-    """List[str]: A list with the header comment of the cmp file."""
 
-    components: List[CmpSet] = Field(default_factory=list)
-    """CmpSet: A record with the components of the cmp file."""
+    components: List[CMPSet] = Field(default_factory=list)
 
     @classmethod
     def _ext(cls) -> str:
@@ -93,8 +165,8 @@ class CmpModel(ParsableFileModel):
     def _get_serializer(
         cls,
     ) -> Callable[[Path, Dict, ModelSaveSettings], None]:
-        return CmpSerializer.serialize
+        return CMPSerializer.serialize
 
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
-        return CmpParser.parse
+        return CMPParser.parse

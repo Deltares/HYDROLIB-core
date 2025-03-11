@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 from hydrolib.core.basemodel import ModelSaveSettings
 
 
-class CmpSerializer:
+class CMPSerializer:
     @staticmethod
     def serialize(
         path: Path,
@@ -32,14 +32,14 @@ class CmpSerializer:
         """
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        comment_lines = CmpSerializer._serialize_comment_lines(data)
+        comment_lines = CMPSerializer._serialize_comment_lines(data)
         components_lines = []
         for component in data["components"]:
             components_lines.extend(
-                CmpSerializer._serialize_components_lines(component)
+                CMPSerializer._serialize_components_lines(component)
             )
 
-        file_content = CmpSerializer._serialize_file_content(
+        file_content = CMPSerializer._serialize_file_content(
             components_lines, comment_lines
         )
         with path.open("w", encoding="utf8") as file:

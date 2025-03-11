@@ -6,8 +6,11 @@ HarmonicData = Dict[str, Tuple[str, float, float]]
 CmpData = Dict[str, Tuple[AstronomicData, HarmonicData]]
 
 
-class CmpParser:
-    """"""
+class CMPParser:
+    """Parser for .cmp files.
+    Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.
+    No other comments are supported.
+    """
 
     @staticmethod
     def parse(filepath: Path) -> Dict[str, List[Any]]:
@@ -35,7 +38,7 @@ class CmpParser:
                 >>> file = io.StringIO("#some comment\n0.0   1.0  2.0")
                 >>> with patch.object(Path, 'open') as mock_file:
                 ...    mock_file.return_value = file
-                ...    cmp_model = CmpParser.parse(Path(""))
+                ...    cmp_model = CMPParser.parse(Path(""))
                 >>> print(cmp_model)
                 {'comments': ['some comment'], 'components': [{'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}]}
 
@@ -43,9 +46,9 @@ class CmpParser:
         """
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
-            comments, start_components_index = CmpParser._read_header_comments(lines)
+            comments, start_components_index = CMPParser._read_header_comments(lines)
             components = [
-                CmpParser._read_components_data(lines, start_components_index)
+                CMPParser._read_components_data(lines, start_components_index)
             ]
         return {"comments": comments, "components": components}
 
@@ -92,11 +95,11 @@ class CmpParser:
             if len(line) == 0:
                 continue
 
-            CmpParser._raise_error_if_contains_comment(line, line_index + 1)
+            CMPParser._raise_error_if_contains_comment(line, line_index + 1)
 
-            period, amplitude, phase = filter(None, line.split(" "))
+            period, amplitude, phase = line.split()
 
-            if CmpParser._is_float(period):
+            if CMPParser._is_float(period):
                 component = {"period": period, "amplitude": amplitude, "phase": phase}
                 harmonics_data.append(component)
             else:

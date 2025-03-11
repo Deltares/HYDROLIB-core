@@ -7,12 +7,13 @@ from typing import Any, Dict, List, Optional, Union
 from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
 from hydrolib.core.dflowfm.bc.models import (
     Astronomic,
+    ForcingBase,
     ForcingModel,
     Harmonic,
     QuantityUnitPair,
     TimeSeries,
 )
-from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CmpModel, HarmonicRecord
+from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
@@ -185,7 +186,7 @@ class BoundaryConditionConverter(BaseConverter):
         return tim_models[0]
 
     @staticmethod
-    def merge_cmp_files(cmp_files: List[Path], forcing: ExtOldForcing) -> CmpModel:
+    def merge_cmp_files(cmp_files: List[Path], forcing: ExtOldForcing) -> CMPModel:
         """Parse the boundary condition related components from the cmp files.
 
         The function will merge all the cmp files into one cmp model and assign the quantity names to the cmp model.
@@ -205,9 +206,9 @@ class BoundaryConditionConverter(BaseConverter):
                 f"CMP files '{cmp_files}' not found for QUANTITY={forcing.quantity}"
             )
 
-        cmp_models: List[CmpModel] = []
+        cmp_models: List[CMPModel] = []
         for file in cmp_files:
-            cmp_model = CmpModel(file)
+            cmp_model = CMPModel(file)
             cmp_model.components[0].quantity_name = file.stem
             cmp_models.append(cmp_model)
 
@@ -798,13 +799,13 @@ class ConverterFactory:
         return True
 
 
-class CmpToForcingConverter:
+class CMPToForcingConverter:
     """
     A class to convert CmpModel data into ForcingModel data for boundary condition definitions.
     """
 
     @staticmethod
-    def convert(cmp_model: CmpModel) -> ForcingModel:
+    def convert(cmp_model: CMPModel) -> List[ForcingBase]:
         """
         Convert a CmpModel into a ForcingModel.
 
@@ -822,8 +823,6 @@ class CmpToForcingConverter:
         Examples:
             Convert a CmpModel into a ForcingModel.
                 ```python
-                >>> from hydrolib.core.dflowfm.cmp.models import CmpModel
-                >>> from hydrolib.tools.ext_old_to_new.converters import CmpToForcingConverter
                 >>> data = {
                 ...     "comments": ["# Example comment"],
                 ...     "components": [
@@ -836,11 +835,11 @@ class CmpToForcingConverter:
                 ...         }
                 ...     ]
                 ... }
-                >>> cmp_model = CmpModel(**data)
-                >>> forcing_model = CmpToForcingConverter.convert(cmp_model)
-                >>> forcing_model.forcing[0].datablock
+                >>> cmp_model = CMPModel(**data)
+                >>> forcing_model = CMPToForcingConverter.convert(cmp_model)
+                >>> forcing_model[0].datablock
                 [[0.0, 1.0, 2.0]]
-                >>> forcing_model.forcing[1].datablock
+                >>> forcing_model[1].datablock
                 [['4MS10', 1.0, 2.0]]
 
                 ```
@@ -848,19 +847,19 @@ class CmpToForcingConverter:
         forcing_list = []
 
         for component in cmp_model.components:
-            harmonic_model = CmpToForcingConverter.convert_harmonic(
+            harmonic_model = CMPToForcingConverter.convert_harmonic(
                 component.quantity_name, component.harmonics
             )
             if harmonic_model:
                 forcing_list.append(harmonic_model)
 
-            astronomic_model = CmpToForcingConverter.convert_astronomic(
+            astronomic_model = CMPToForcingConverter.convert_astronomic(
                 component.quantity_name, component.astronomics
             )
             if astronomic_model:
                 forcing_list.append(astronomic_model)
 
-        return ForcingModel(forcing=forcing_list)
+        return forcing_list
 
     @staticmethod
     def convert_harmonic(

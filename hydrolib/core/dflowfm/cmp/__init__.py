@@ -1,8 +1,8 @@
-from .models import AstronomicRecord, CmpModel, CmpSet, HarmonicRecord
+from .models import AstronomicRecord, CMPModel, CMPSet, HarmonicRecord
 
 __all__ = [
-    "CmpModel",
-    "CmpSet",
+    "CMPModel",
+    "CMPSet",
     "HarmonicRecord",
     "AstronomicRecord",
 ]

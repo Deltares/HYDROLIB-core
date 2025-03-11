@@ -1,4 +1,3 @@
-import math
 import re
 from pathlib import Path
 
@@ -6,9 +5,9 @@ import pytest
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.basemodel import ModelSaveSettings
-from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CmpModel, HarmonicRecord
-from hydrolib.core.dflowfm.cmp.parser import CmpParser
-from hydrolib.core.dflowfm.cmp.serializer import CmpSerializer
+from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
+from hydrolib.core.dflowfm.cmp.parser import CMPParser
+from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer
 
 # Cmp file content and expected data
 cmp_test_parameters = [
@@ -131,25 +130,22 @@ cmp_test_parameters = [
 ]
 
 
-class TestCmpModel:
+class TestCMPModel:
     def test_cmp_model_initialization(self):
-        model = CmpModel()
-        assert model is not None
+        model = CMPModel()
         assert len(model.comments) == 0
         assert len(model.components) == 0
 
     def test_astronomic_record_initialization(self):
         record = AstronomicRecord(name="3MS2", amplitude=1.0, phase=2.0)
-        assert record is not None
         assert record.name == "3MS2"
 
     def test_harmonic_record_initialization(self):
         record = HarmonicRecord(period=0.0, amplitude=1.0, phase=2.0)
-        assert record is not None
-        assert math.isclose(record.period, 0.0)
+        assert record.period == pytest.approx(0.0)
 
     def test_cmp_model_initialization_with_data(self):
-        model = CmpModel(
+        model = CMPModel(
             comments=["test content"],
             components=[
                 {
@@ -158,14 +154,13 @@ class TestCmpModel:
                 }
             ],
         )
-        assert model is not None
         assert model.comments == ["test content"]
         assert len(model.components[0].harmonics) == 1
         assert len(model.components[0].astronomics) == 1
 
     def test_cmp_model_initialization_with_invalid_data(self):
         with pytest.raises(ValueError) as error:
-            CmpModel(
+            CMPModel(
                 comments=["test content"],
                 components=[
                     {
@@ -179,13 +174,12 @@ class TestCmpModel:
         assert expected_error_msg in str(error.value)
 
     def test_cmp_model_parse(self):
-        model = CmpModel._get_parser()
-        assert model is not None
-        assert model == CmpParser.parse
+        model = CMPModel._get_parser()
+        assert model == CMPParser.parse
 
     def test_cmp_model_parse_file_error(self):
         with pytest.raises(Exception) as error:
-            CmpModel._get_parser()()
+            CMPModel._get_parser()()
 
         expected_error_msg = f"missing 1 required positional argument: 'filepath'"
         assert expected_error_msg in str(error.value)
@@ -193,18 +187,16 @@ class TestCmpModel:
 
 class TestCmpParser:
     def test_cmp_parser_initialization(self):
-        parser = CmpParser()
-        assert parser is not None
-        assert isinstance(parser, CmpParser)
+        parser = CMPParser()
+        assert isinstance(parser, CMPParser)
 
     @pytest.mark.parametrize("expected, content", cmp_test_parameters)
     def test_cmp_parser_parse(self, expected, content, fs: FakeFilesystem):
         cmp_file = Path("input.cmp")
         fs.create_file(cmp_file, contents=content)
 
-        parser = CmpParser()
+        parser = CMPParser()
         model = parser.parse(cmp_file)
-        assert model is not None
         assert model == expected
 
     def test_cmp_parser_parse_comment_error(self, fs: FakeFilesystem):
@@ -214,7 +206,7 @@ class TestCmpParser:
         )
 
         with pytest.raises(ValueError) as error:
-            CmpParser.parse(cmp_file)
+            CMPParser.parse(cmp_file)
 
         expected_error_msg = f"Line 3: comments are only supported at the start of the file, before the components data."
         assert expected_error_msg in str(error.value)
@@ -224,7 +216,7 @@ class TestCmpParser:
         fs.create_file(cmp_file, contents="#test content\n0.0   1.0  ")
 
         with pytest.raises(ValueError) as error:
-            CmpParser.parse(cmp_file)
+            CMPParser.parse(cmp_file)
 
         expected_error_msg = f"not enough values to unpack (expected 3, got 2)"
         assert expected_error_msg in str(error.value)
@@ -234,13 +226,13 @@ class TestCmpParser:
         fs.create_file(cmp_file, contents="#test content\n0.0   1.0  2.0 3.0")
 
         with pytest.raises(ValueError) as error:
-            CmpParser.parse(cmp_file)
+            CMPParser.parse(cmp_file)
 
         expected_error_msg = f"too many values to unpack (expected 3)"
         assert expected_error_msg in str(error.value)
 
     def test__is_float_value_none(self):
-        assert not CmpParser._is_float(None)
+        assert not CMPParser._is_float(None)
 
 
 class TestCmpSerializer:
@@ -255,14 +247,13 @@ class TestCmpSerializer:
         return stripped
 
     def test_cmp_serializer_initialization(self):
-        serializer = CmpSerializer()
-        assert serializer is not None
-        assert isinstance(serializer, CmpSerializer)
+        serializer = CMPSerializer()
+        assert isinstance(serializer, CMPSerializer)
 
     @pytest.mark.parametrize("data, expected", cmp_test_parameters_for_serializer)
     def test_cmp_serializer_serialize(self, data, expected, fs: FakeFilesystem):
 
-        serializer = CmpModel._get_serializer()
+        serializer = CMPModel._get_serializer()
         cmp_file = Path("/fake/output.cmp")
         save_settings = ModelSaveSettings()
 
