@@ -2,7 +2,7 @@
 
 import re
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
@@ -160,6 +160,8 @@ class T3DModel(ParsableFileModel):
             ],
             layers=[1.0, 2.0, 3.0, 4.0, 5.0], vectormax=1, layer_type='SIGMA'
         )
+        >>> print(model.size)
+        (2, 4)
 
     ```
     """
@@ -194,6 +196,11 @@ class T3DModel(ParsableFileModel):
                     "The number of quantities names must be equal to the number of values in the records."
                 )
         return value
+
+    @property
+    def size(self) -> Tuple[int, int]:
+        """Return the number ot time step * length of each record."""
+        return len(self.records), len(self.records[0].data)
 
     def _ext(self) -> str:
         return ".t3d"
@@ -283,9 +290,12 @@ def get_quantity_unit(quantities_names: List[str]) -> List[str]:
         list of str: A list of corresponding units for each input string.
 
     Examples:
+        ```python
         >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
         >>> get_quantity_unit(quantities_names)
         ['m3/s', 'm', '1e-3', 'degC']
+
+        ```
     """
     # Define the mapping of keywords to units
     unit_mapping = {

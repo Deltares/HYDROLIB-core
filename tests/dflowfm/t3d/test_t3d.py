@@ -97,6 +97,8 @@ class TestT3DModel:
         assert model.layer_type == layer_name
         assert model.layers == layers
         assert model.records == record
+        assert model.quantities_names == quantities_names
+        assert model.size == (2, 4)
 
     def test_wrong_quantities_number(self):
         layer_name = "SIGMA"
