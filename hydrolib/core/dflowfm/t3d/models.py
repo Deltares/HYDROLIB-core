@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic.v1 import Field, validator
+from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
@@ -169,6 +169,7 @@ class T3DModel(ParsableFileModel):
     layers: List[float] = Field(default_factory=list)
     vectormax: Optional[int] = Field(default=1, alias="VECTORMAX")
     layer_type: LayerType = Field(default=None, alias="LAYER_TYPE")
+    quantities_names: Optional[List[str]] = Field(default=None)
 
     @validator("records", pre=False, check_fields=True, allow_reuse=True)
     def validate_record_length(cls, value: List[T3DTimeRecord]):
@@ -177,6 +178,21 @@ class T3DModel(ParsableFileModel):
         if not all(len(sublist) == len(records[0]) for sublist in records):
             raise ValueError("All records must have the same length.")
 
+        return value
+
+    @root_validator(pre=False)
+    def validate_quantities_names(cls, value: Dict[str, str]) -> str:
+        """
+        Validate that the number of quantities names is equal to the number of values in the records.
+        """
+        record = value.get("records")
+        record_len = len(record[0].data)
+        quantities_names = value.get("quantities_names")
+        if quantities_names is not None:
+            if len(quantities_names) != record_len:
+                raise ValueError(
+                    "The number of quantities names must be equal to the number of values in the records."
+                )
         return value
 
     def _ext(self) -> str:
