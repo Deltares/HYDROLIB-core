@@ -93,6 +93,25 @@ class TestT3DModel:
         assert model.layers == layers
         assert model.records == record
 
+    def test_different_record_length(self):
+        layer_name = "SIGMA"
+        comments = ["comment1", "comment2"]
+        layers = [1, 2, 3, 4, 5]
+        record = [
+            T3DTimeRecord(
+                time="0 seconds since 2006-01-01 00:00:00 +00:00",
+                data=[5.0, 5.0, 10.0, 10.0],
+            ),
+            T3DTimeRecord(
+                time="1e9 seconds since 2001-01-01 00:00:00 +00:00",
+                data=[5.0, 5.0, 10.0, 10.0, 10.0],
+            ),
+        ]
+        with pytest.raises(ValidationError):
+            T3DModel(
+                comments=comments, layer_type=layer_name, layers=layers, records=record
+            )
+
     def test_initialize_with_dict(self):
         model = T3DModel(**self.data)
         assert model.comments == self.data["comments"]

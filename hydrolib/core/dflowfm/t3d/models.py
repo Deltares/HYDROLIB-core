@@ -129,20 +129,17 @@ class T3DModel(ParsableFileModel):
     Args:
         comments (List[str]):
             A list with the header comment of the tim file.
-
         records (List[T3DTimeRecord]):
             List of time records.
-
         layers (List[float]):
             List of layers.
-
         vectormax (Optional[int]):
             The VECTORMAX value.
-
         layer_type (LayerType):
             The layer type.
 
     Examples:
+        ```python
         >>> from hydrolib.core.dflowfm.t3d.models import T3DTimeRecord, T3DModel
         >>> layer_name = "SIGMA"
         >>> comments = ["comment1", "comment2"]
@@ -164,16 +161,23 @@ class T3DModel(ParsableFileModel):
             layers=[1.0, 2.0, 3.0, 4.0, 5.0], vectormax=1, layer_type='SIGMA'
         )
 
+    ```
     """
 
     comments: List[str] = Field(default_factory=list)
-    """List[str]: A list with the header comment of the tim file."""
-
     records: List[T3DTimeRecord] = Field(default_factory=list)
-
     layers: List[float] = Field(default_factory=list)
     vectormax: Optional[int] = Field(default=1, alias="VECTORMAX")
     layer_type: LayerType = Field(default=None, alias="LAYER_TYPE")
+
+    @validator("records", pre=False, check_fields=True, allow_reuse=True)
+    def validate_record_length(cls, value: List[T3DTimeRecord]):
+        """Check if the records have the same length."""
+        records = [v.data for v in value]
+        if not all(len(sublist) == len(records[0]) for sublist in records):
+            raise ValueError("All records must have the same length.")
+
+        return value
 
     def _ext(self) -> str:
         return ".t3d"
@@ -199,6 +203,7 @@ class T3DModel(ParsableFileModel):
                 A dictionary with the data from the records.
 
         Examples:
+            ```python
             >>> from hydrolib.core.dflowfm.t3d.models import T3DTimeRecord, T3DModel
             >>> layer_name = "SIGMA"
             >>> comments = ["comment1", "comment2"]
@@ -210,6 +215,8 @@ class T3DModel(ParsableFileModel):
             >>> model = T3DModel(comments=comments, layer_type=layer_name, layers=layers, records=record)
             >>> model.as_dict()
             {0.0: [5.0, 5.0, 10.0, 10.0], 1000000000.0: [5.0, 5.0, 10.0, 10.0]}
+
+            ```
         """
         data = {}
         for record in self.records:
