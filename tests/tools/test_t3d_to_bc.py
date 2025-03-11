@@ -16,10 +16,10 @@ def test_convert():
         "salinitybnd",
         "salinitybnd",
     ]
-    units = ["ppt", "ppt", "ppt", "ppt", "ppt"]
+    units = ["1e-3", "1e-3", "1e-3", "1e-3", "1e-3"]
     labels = ["sigma-5-layers-3-times"]
     t3d_forcings_list = T3DToForcingConverter.convert(
-        [t3d_model], quantities_names, units, labels
+        [t3d_model], quantities_names, labels
     )
 
     t3d_forcing = t3d_forcings_list[0]
