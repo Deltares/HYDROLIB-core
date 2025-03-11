@@ -60,113 +60,75 @@ class TestT3DModel:
         "layer_type": "SIGMA",
         "layers": [0.0, 0.2, 0.6, 0.8, 1.0],
         "records": [
-            {
-                "time": "0 seconds since 2006-01-01 00:00:00 +00:00",
-                "data": [1.0, 1.0, 1.0, 1.0, 1.0],
-            },
-            {
-                "time": "180 seconds since 2001-01-01 00:00:00 +00:00",
-                "data": [2.0, 2.0, 2.0, 2.0, 2.0],
-            },
+            {"time": "0 seconds since 2006-01-01 00:00:00 +00:00", "data": [1.0] * 5},
+            {"time": "180 seconds since 2001-01-01 00:00:00 +00:00", "data": [2.0] * 5},
         ],
     }
 
-    def test_default(self):
-        layer_name = "SIGMA"
-        comments = ["comment1", "comment2"]
-        layers = [1, 2, 3, 4, 5]
-        record = [
-            T3DTimeRecord(
-                time="0 seconds since 2006-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0],
-            ),
-            T3DTimeRecord(
-                time="1e9 seconds since 2001-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0],
-            ),
-        ]
-        quantities_names = ["quantity1", "quantity2", "quantity3", "quantity4"]
-        model = T3DModel(
-            comments=comments,
-            layer_type=layer_name,
-            layers=layers,
-            records=record,
-            quantities_names=quantities_names,
-        )
-        assert model.comments == comments
-        assert model.layer_type == layer_name
-        assert model.layers == layers
-        assert model.records == record
-        assert model.quantities_names == quantities_names
-        assert model.size == (2, 4)
-
-    def test_wrong_quantities_number(self):
-        layer_name = "SIGMA"
-        comments = ["comment1", "comment2"]
-        layers = [1, 2, 3, 4, 5]
-        record = [
-            T3DTimeRecord(
-                time="0 seconds since 2006-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0],
-            ),
-            T3DTimeRecord(
-                time="1e9 seconds since 2001-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0],
-            ),
-        ]
-        quantities_names = ["quantity1", "quantity2"]
-        with pytest.raises(ValueError):
-            T3DModel(
-                comments=comments,
-                layer_type=layer_name,
-                layers=layers,
-                records=record,
-                quantities_names=quantities_names,
-            )
+    @pytest.mark.parametrize(
+        "quantities_names, should_fail",
+        [
+            (["quantity1", "quantity2", "quantity3", "quantity4", "quantity5"], False),
+            (["quantity1", "quantity2"], True),
+        ],
+        ids=["Correct quantities", "Incorrect quantities"],
+    )
+    def test_model_initialization(self, quantities_names, should_fail):
+        if should_fail:
+            with pytest.raises(ValueError):
+                T3DModel(**self.data, quantities_names=quantities_names)
+        else:
+            model = T3DModel(**self.data, quantities_names=quantities_names)
+            assert model.size == (2, 5)
 
     def test_get_units(self):
-        layer_name = "SIGMA"
-        comments = ["comment1", "comment2"]
-        layers = [1, 2, 3, 4, 5]
-        record = [
-            T3DTimeRecord(
-                time="0 seconds since 2006-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0],
-            ),
-            T3DTimeRecord(
-                time="1e9 seconds since 2001-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0],
-            ),
+        model = T3DModel(**self.data)
+        model.quantities_names = [
+            "quantity1",
+            "quantity2",
+            "quantity3",
+            "quantity4",
+            "quantity5",
         ]
-        model = T3DModel(
-            comments=comments,
-            layer_type=layer_name,
-            layers=layers,
-            records=record,
-        )
-        model.quantities_names = ["quantity1", "quantity2", "quantity3", "quantity4"]
-        assert model.get_units() == ["-", "-", "-", "-"]
-        model.quantities_names = ["waterlevel", "temperature", "salinity", "discharge"]
-        assert model.get_units() == ["m", "degC", "1e-3", "m3/s"]
+        assert model.get_units() == ["-", "-", "-", "-", "-"]
 
-    def test_different_record_length(self):
-        layer_name = "SIGMA"
-        comments = ["comment1", "comment2"]
-        layers = [1, 2, 3, 4, 5]
-        record = [
-            T3DTimeRecord(
-                time="0 seconds since 2006-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0],
-            ),
-            T3DTimeRecord(
-                time="1e9 seconds since 2001-01-01 00:00:00 +00:00",
-                data=[5.0, 5.0, 10.0, 10.0, 10.0],
-            ),
+        model.quantities_names = [
+            "waterlevel",
+            "temperature",
+            "salinity",
+            "discharge",
+            "any quantity",
         ]
-        with pytest.raises(ValidationError):
-            T3DModel(
-                comments=comments, layer_type=layer_name, layers=layers, records=record
-            )
+        assert model.get_units() == ["m", "degC", "1e-3", "m3/s", "-"]
+
+    @pytest.mark.parametrize(
+        "record_data, should_fail",
+        [
+            (
+                [
+                    {
+                        "time": "0 seconds since 2006-01-01 00:00:00 +00:00",
+                        "data": [5.0] * 4,
+                    },
+                    {
+                        "time": "1e9 seconds since 2001-01-01 00:00:00 +00:00",
+                        "data": [5.0] * 5,
+                    },
+                ],
+                True,
+            ),
+        ],
+        ids=["Different record lengths"],
+    )
+    def test_different_record_length(self, record_data, should_fail):
+        if should_fail:
+            with pytest.raises(ValidationError):
+                T3DModel(
+                    comments=[],
+                    layer_type="SIGMA",
+                    layers=[1, 2, 3, 4, 5],
+                    records=record_data,
+                )
 
     def test_initialize_with_dict(self):
         model = T3DModel(**self.data)
@@ -217,17 +179,11 @@ class TestT3DModelSerializer:
         "layer_type": "SIGMA",
         "layers": [0.0, 0.2, 0.6, 0.8, 1.0],
         "records": [
-            {
-                "time": "0 seconds since 2006-01-01 00:00:00 +00:00",
-                "data": [1.0, 1.0, 1.0, 1.0, 1.0],
-            },
-            {
-                "time": "180 seconds since 2006-01-01 00:00:00 +00:00",
-                "data": [2.0, 2.0, 2.0, 2.0, 2.0],
-            },
+            {"time": "0 seconds since 2006-01-01 00:00:00 +00:00", "data": [1.0] * 5},
+            {"time": "180 seconds since 2006-01-01 00:00:00 +00:00", "data": [2.0] * 5},
             {
                 "time": "9999999 seconds since 2006-01-01 00:00:00 +00:00",
-                "data": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "data": [3.0] * 5,
             },
         ],
     }
