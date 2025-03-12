@@ -140,14 +140,10 @@ class AbstractSpatialField(INIBasedModel, ABC):
         alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    averagingtype: Optional[AveragingType] = Field(
-        AveragingType.mean.value, alias="averagingType"
-    )
-    averagingrelsize: Optional[NonNegativeFloat] = Field(1.01, alias="averagingRelSize")
-    averagingnummin: Optional[PositiveInt] = Field(1, alias="averagingNumMin")
-    averagingpercentile: Optional[NonNegativeFloat] = Field(
-        0, alias="averagingPercentile"
-    )
+    averagingtype: Optional[AveragingType] = Field(alias="averagingType")
+    averagingrelsize: Optional[NonNegativeFloat] = Field(alias="averagingRelSize")
+    averagingnummin: Optional[PositiveInt] = Field(alias="averagingNumMin")
+    averagingpercentile: Optional[NonNegativeFloat] = Field(alias="averagingPercentile")
     extrapolationmethod: Optional[bool] = Field(False, alias="extrapolationMethod")
     locationtype: Optional[LocationType] = Field(
         LocationType.all.value, alias="locationType"
