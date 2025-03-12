@@ -1,6 +1,8 @@
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 from unittest.mock import Mock, patch
+
+import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import Boundary
@@ -10,67 +12,98 @@ from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConver
 from tests.utils import compare_two_files
 
 
+@pytest.fixture
+def converter(input_files_dir: Path) -> BoundaryConditionConverter:
+    converter = BoundaryConditionConverter()
+    converter.root_dir = input_files_dir / "boundary-conditions"
+    return converter
+
+
+@pytest.fixture
+def start_date() -> str:
+    return "minutes since 2015-01-01 00:00:00"
+
+
+@pytest.fixture
+def tim_files(input_files_dir: Path) -> List[Path]:
+    return [
+        input_files_dir / "boundary-conditions/tfl_01_0001.tim",
+        input_files_dir / "boundary-conditions/tfl_01_0002.tim",
+    ]
+
+
+@pytest.fixture
+def t3d_files(input_files_dir: Path) -> List[Path]:
+    return [
+        input_files_dir / "boundary-conditions/tfl_01_0001.t3d",
+        input_files_dir / "boundary-conditions/tfl_01_0002.t3d",
+    ]
+
+
+@pytest.fixture
+def forcing(input_files_dir: Path) -> ExtOldForcing:
+    return ExtOldForcing(
+        quantity=ExtOldQuantity.WaterLevelBnd,
+        filename=input_files_dir / "boundary-conditions/tfl_01.pli",
+        filetype=9,
+        method="3",
+        operand="O",
+    )
+
+
+def verify_boundary_conditions(
+    new_quantity_block, expected_quantity, forcing_model_filename, forcing
+):
+    assert isinstance(new_quantity_block, Boundary)
+    assert new_quantity_block.quantity == expected_quantity
+    forcing_model = new_quantity_block.forcingfile
+    assert forcing_model.filepath.name == forcing_model_filename
+    assert len(forcing_model.forcing) == 2
+    names = ["L1_0001", "L1_0002"]
+    assert all(f.name == name for f, name in zip(forcing_model.forcing, names))
+    assert all(f.quantityunitpair[0].quantity == "time" for f in forcing_model.forcing)
+    assert new_quantity_block.locationfile == DiskOnlyFileModel(str(forcing.filename))
+    assert new_quantity_block.bndwidth1d is None
+    assert new_quantity_block.bndbldepth is None
+    assert new_quantity_block.nodeid is None
+
+    assert forcing_model.filepath.name == "tfl_01.bc"
+
+
+def test_merge_tim_files(converter: BoundaryConditionConverter, tim_files: List[Path]):
+    """
+    Test merging multiple tim files into a single tim model.
+    """
+    tim_model = converter.merge_tim_files(tim_files, "waterlevelbnd")
+    assert tim_model.quantities_names == ["tfl_01_0001", "tfl_01_0002"]
+    df = tim_model.as_dataframe()
+    assert df.index.tolist() == [0, 120]
+    assert df.columns.tolist() == ["tfl_01_0001", "tfl_01_0002"]
+    assert df.values.tolist() == [[0.01, 0.01], [0.01, 0.01]]
+
+
 class TestBoundaryConverter:
 
-    def test_merge_tim_files(self, input_files_dir: Path):
-        """
-        Test merging multiple tim files into a single tim model.
-        """
-        path_list = [
-            input_files_dir / "boundary-conditions/tfl_01_0001.tim",
-            input_files_dir / "boundary-conditions/tfl_01_0002.tim",
-        ]
-        converter = BoundaryConditionConverter()
-        tim_model = converter.merge_tim_files(path_list, "waterlevelbnd")
-        assert tim_model.quantities_names == ["tfl_01_0001", "tfl_01_0002"]
-        df = tim_model.as_dataframe()
-        assert df.index.tolist() == [0, 120]
-        assert df.columns.tolist() == ["tfl_01_0001", "tfl_01_0002"]
-        assert df.values.tolist() == [[0.01, 0.01], [0.01, 0.01]]
-
-    def test_with_tim(self, input_files_dir):
+    def test_with_tim(
+        self,
+        converter: BoundaryConditionConverter,
+        input_files_dir: Path,
+        forcing: ExtOldForcing,
+        tim_files: List[Path],
+        start_date: str,
+    ):
         """
         Test converting a boundary condition with a tim file.
         """
-        file_name = input_files_dir / "boundary-conditions/tfl_01.pli"
-        forcing = ExtOldForcing(
-            quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=file_name,
-            filetype=9,
-            method="3",
-            operand="O",
-        )
-
-        converter = BoundaryConditionConverter()
-        converter.root_dir = input_files_dir / "boundary-conditions"
-        start_date = "minutes since 2015-01-01 00:00:00"
-        tim_files = [
-            input_files_dir / "boundary-conditions/tfl_01_0001.tim",
-            input_files_dir / "boundary-conditions/tfl_01_0002.tim",
-        ]
         t3d_files = []
         with patch.object(Path, "glob", side_effect=[tim_files, t3d_files]):
             new_quantity_block = converter.convert(forcing, start_date)
-        assert isinstance(new_quantity_block, Boundary)
-        assert new_quantity_block.quantity == "waterlevelbnd"
+
+        verify_boundary_conditions(
+            new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
+        )
+
         forcing_model = new_quantity_block.forcingfile
-        assert new_quantity_block.locationfile == DiskOnlyFileModel(file_name)
-        assert new_quantity_block.nodeid is None
-        assert new_quantity_block.bndwidth1d is None
-        assert new_quantity_block.bndbldepth is None
-        assert len(forcing_model.forcing) == 2
-        names = ["L1_0001", "L1_0002"]
-        assert all(
-            forcing.name == name for forcing, name in zip(forcing_model.forcing, names)
-        )
-        assert all(
-            [
-                forcing_model.forcing[i].quantityunitpair[0].quantity == "time"
-                for i in range(2)
-            ]
-        )
-        # check forcing model file path
-        assert forcing_model.filepath.name == "tfl_01.bc"
         assert all(
             [
                 forcing_model.forcing[i].quantityunitpair[1].quantity == "waterlevelbnd"
@@ -79,51 +112,27 @@ class TestBoundaryConverter:
         )
         assert forcing_model.forcing[0].datablock == [[0, 0.01], [120, 0.01]]
 
-    def test_with_t3d(self, input_files_dir):
+    def test_with_t3d(
+        self,
+        converter: BoundaryConditionConverter,
+        input_files_dir: Path,
+        forcing: ExtOldForcing,
+        t3d_files: List[Path],
+        start_date: str,
+    ):
         """
         Test convert a boundary condition with a t3d file.
         """
-        file_name = input_files_dir / "boundary-conditions/tfl_01.pli"
-        self.forcing = ExtOldForcing(
-            quantity=ExtOldQuantity.WaterLevelBnd,
-            filename=file_name,
-            filetype=9,
-            method="3",
-            operand="O",
-        )
-        forcing = self.forcing
-
-        converter = BoundaryConditionConverter()
-        converter.root_dir = input_files_dir / "boundary-conditions"
-        start_date = "minutes since 2015-01-01 00:00:00"
         tim_files = []
-        t3d_files = [
-            input_files_dir / "boundary-conditions/tfl_01_0001.t3d",
-            input_files_dir / "boundary-conditions/tfl_01_0002.t3d",
-        ]
-
         with patch.object(Path, "glob", side_effect=[tim_files, t3d_files]):
             new_quantity_block = converter.convert(forcing, start_date)
-        assert isinstance(new_quantity_block, Boundary)
-        assert new_quantity_block.quantity == "waterlevelbnd"
+
+        verify_boundary_conditions(
+            new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
+        )
+
         forcing_model = new_quantity_block.forcingfile
-        assert new_quantity_block.locationfile == DiskOnlyFileModel(file_name)
-        assert new_quantity_block.nodeid is None
-        assert new_quantity_block.bndwidth1d is None
-        assert new_quantity_block.bndbldepth is None
-        assert len(forcing_model.forcing) == 2
-        names = ["L1_0001", "L1_0002"]
-        assert all(
-            forcing.name == name for forcing, name in zip(forcing_model.forcing, names)
-        )
-        assert all(
-            [
-                forcing_model.forcing[i].quantityunitpair[0].quantity == "time"
-                for i in range(2)
-            ]
-        )
-        # check forcing model file path
-        assert forcing_model.filepath.name == "tfl_01.bc"
+
         assert all(
             len(forcing_model.forcing[i].quantityunitpair) == 6 for i in range(2)
         )
