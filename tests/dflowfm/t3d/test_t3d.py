@@ -172,6 +172,23 @@ class TestParser:
         assert len(data["records"]) == 3
         assert len(data["layers"]) == 5
 
+    def test_end_of_file_error(self):
+        """test if there are empty lines at the end of the file the parser is able to exit the loop."""
+        data = """
+        LAYER_TYPE=SIGMA
+        LAYERS=0.0 0.5 0.55 0.75 1
+        TIME = 0 seconds since 2006-01-01 00:00:00 +00:00
+        41 36.45455 36 34 31
+        TIME = 180 seconds since 2006-01-01 00:00:00 +00:00
+        41.00002 36.45456 36.00002 34.00002 31.00002
+        TIME = 9999999 seconds since 2006-01-01 00:00:00 +00:00
+        42 37.45455 37 35 32
+
+
+        """
+        lines = data.splitlines()
+        assert T3DParser._read_data(lines, 0)
+
 
 class TestT3DModelSerializer:
     data = {

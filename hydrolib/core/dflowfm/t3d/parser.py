@@ -105,6 +105,7 @@ class T3DParser:
             line = lines[i].strip()
 
             if len(line) == 0:
+                i += 1
                 continue
 
             T3DParser._raise_error_if_contains_comment(line, i + 1)
