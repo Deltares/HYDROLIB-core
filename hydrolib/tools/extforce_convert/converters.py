@@ -284,6 +284,20 @@ class BoundaryConditionConverter(BaseConverter):
             )
             forcings_list.extend(time_series_list)
 
+        # check t3d files
+        t3d_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.t3d"))
+        if len(t3d_files) > 1:
+            t3d_models = [T3DModel(path) for path in t3d_files]
+            # this line assumed that the two t3d files will have the same number of layers and same number of quantities
+            quantities_names = [quantity] * t3d_models[0].size[1]
+            user_defined_names = [
+                f"{label}_{str(i).zfill(4)}" for i in range(1, len(t3d_files) + 1)
+            ]
+            t3d_forcing_list = T3DToForcingConverter.convert(
+                t3d_models, quantities_names, user_defined_names
+            )
+            forcings_list.extend(t3d_forcing_list)
+
         forcing_model = ForcingModel(forcing=forcings_list)
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = location_file.with_suffix(".bc")

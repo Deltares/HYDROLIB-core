@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import Boundary
@@ -28,31 +28,29 @@ class TestBoundaryConverter:
         assert df.columns.tolist() == ["tfl_01_0001", "tfl_01_0002"]
         assert df.values.tolist() == [[0.01, 0.01], [0.01, 0.01]]
 
-    def test_with_pli(self, input_files_dir):
+    def test_with_tim(self, input_files_dir):
         """
-        Old quantity block:
-
-        ```
-        QUANTITY =waterlevelbnd
-        FILENAME =tfl_01.pli
-        FILETYPE =9
-        METHOD   =3
-        OPERAND  =O
-        ```
+        Test converting a boundary condition with a tim file.
         """
         file_name = input_files_dir / "boundary-conditions/tfl_01.pli"
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename=file_name,
-            filetype=9,  # "Polyline"
-            method="3",  # "Interpolate space",
+            filetype=9,
+            method="3",
             operand="O",
         )
 
         converter = BoundaryConditionConverter()
         converter.root_dir = input_files_dir / "boundary-conditions"
         start_date = "minutes since 2015-01-01 00:00:00"
-        new_quantity_block = converter.convert(forcing, start_date)
+        tim_files = [
+            input_files_dir / "boundary-conditions/tfl_01_0001.tim",
+            input_files_dir / "boundary-conditions/tfl_01_0002.tim",
+        ]
+        t3d_files = []
+        with patch.object(Path, "glob", side_effect=[tim_files, t3d_files]):
+            new_quantity_block = converter.convert(forcing, start_date)
         assert isinstance(new_quantity_block, Boundary)
         assert new_quantity_block.quantity == "waterlevelbnd"
         forcing_model = new_quantity_block.forcingfile
@@ -80,6 +78,80 @@ class TestBoundaryConverter:
             ]
         )
         assert forcing_model.forcing[0].datablock == [[0, 0.01], [120, 0.01]]
+
+    def test_with_t3d(self, input_files_dir):
+        """
+        Test convert a boundary condition with a t3d file.
+        """
+        file_name = input_files_dir / "boundary-conditions/tfl_01.pli"
+        self.forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename=file_name,
+            filetype=9,
+            method="3",
+            operand="O",
+        )
+        forcing = self.forcing
+
+        converter = BoundaryConditionConverter()
+        converter.root_dir = input_files_dir / "boundary-conditions"
+        start_date = "minutes since 2015-01-01 00:00:00"
+        tim_files = []
+        t3d_files = [
+            input_files_dir / "boundary-conditions/tfl_01_0001.t3d",
+            input_files_dir / "boundary-conditions/tfl_01_0002.t3d",
+        ]
+
+        with patch.object(Path, "glob", side_effect=[tim_files, t3d_files]):
+            new_quantity_block = converter.convert(forcing, start_date)
+        assert isinstance(new_quantity_block, Boundary)
+        assert new_quantity_block.quantity == "waterlevelbnd"
+        forcing_model = new_quantity_block.forcingfile
+        assert new_quantity_block.locationfile == DiskOnlyFileModel(file_name)
+        assert new_quantity_block.nodeid is None
+        assert new_quantity_block.bndwidth1d is None
+        assert new_quantity_block.bndbldepth is None
+        assert len(forcing_model.forcing) == 2
+        names = ["L1_0001", "L1_0002"]
+        assert all(
+            forcing.name == name for forcing, name in zip(forcing_model.forcing, names)
+        )
+        assert all(
+            [
+                forcing_model.forcing[i].quantityunitpair[0].quantity == "time"
+                for i in range(2)
+            ]
+        )
+        # check forcing model file path
+        assert forcing_model.filepath.name == "tfl_01.bc"
+        assert all(
+            len(forcing_model.forcing[i].quantityunitpair) == 6 for i in range(2)
+        )
+        assert forcing_model.forcing[0].quantityunitpair[0].quantity == "time"
+        assert (
+            forcing_model.forcing[0].quantityunitpair[0].unit
+            == "seconds since 2006-01-01 00:00:00 +00:00"
+        )
+
+        assert all(
+            forcing_model.forcing[0].quantityunitpair[i].quantity == "waterlevelbnd"
+            for i in range(1, 6)
+        )
+        assert all(
+            forcing_model.forcing[0].quantityunitpair[i].unit == "m"
+            for i in range(1, 6)
+        )
+
+        assert forcing_model.forcing[0].datablock == [
+            [0.0, 40.0, 35.0, 34.5, 32.5, 30.0],
+            [180.0, 80.0, 35.0, 34.5, 32.5, 30.0],
+            [9999999.0, 40.0, 35.0, 34.5, 32.5, 30.0],
+        ]
+        assert forcing_model.forcing[1].datablock == [
+            [0.0, 41.0, 36.45455, 36.0, 34.0, 31.0],
+            [180.0, 41.00002, 36.45456, 36.00002, 34.00002, 31.00002],
+            [9999999.0, 42.0, 37.45455, 37.0, 35.0, 32.0],
+        ]
 
 
 class TestMainConverter:
