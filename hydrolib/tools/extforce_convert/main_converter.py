@@ -491,7 +491,12 @@ class ExternalForcingConverter:
         extoldfile = root_dir / old_ext_force_file
 
         if new_ext_force_file:
-            ext_file = new_ext_force_file._resolved_filepath
+            if isinstance(new_ext_force_file, Path):
+                # extforcefilenew is a Path object
+                ext_file = new_ext_force_file.resolve()
+            else:
+                # extforcefilenew is a extmodel object
+                ext_file = new_ext_force_file._resolved_filepath
         else:
             if ext_file is None:
                 old_ext = old_ext_force_file.with_stem(old_ext_force_file.stem + "-new")
