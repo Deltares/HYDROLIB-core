@@ -183,7 +183,7 @@ class T3DModel(ParsableFileModel):
         return value
 
     @root_validator(pre=False)
-    def validate_quantities_names(cls, value: Dict[str, str]) -> str:
+    def validate_quantities_names(cls, value: Dict[str, str]) -> Dict[str, str]:
         """
         Validate that the number of quantities names is equal to the number of values in the records.
         """
