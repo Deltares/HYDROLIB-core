@@ -256,13 +256,13 @@ class Mesh2d(BaseModel):
             interiors = parts[1:]
 
         # Inside
-        else:            
+        else:
             # Get exterior and interiors
             parts = split_by(geometrylist, geometrylist.geometry_separator)
 
             exteriors = parts[:]
             interiors = []
-        
+
         # Delete everything outside the (Multi)Polygon
         for exterior in exteriors:
             self.meshkernel.mesh2d_delete(
@@ -279,26 +279,27 @@ class Mesh2d(BaseModel):
                 invert_deletion=inside,
             )
 
-    def refine(self, 
-               polygon: mk.GeometryList, 
-               level: int, 
-               refine_intersected: bool=False,
-               use_mass_center_when_refining: bool=True,
-               refinement_type: int=2,
-               connect_hanging_nodes: bool=True,
-               account_for_samples_outside_face: bool=False,
-               min_edge_size: float = 0.5,
-               smoothing_iterations=5,
-               max_courant_time=120.0,
-               directional_refinement=False,
-              ):
+    def refine(
+        self,
+        polygon: mk.GeometryList,
+        level: int,
+        refine_intersected: bool = False,
+        use_mass_center_when_refining: bool = True,
+        refinement_type: int = 2,
+        connect_hanging_nodes: bool = True,
+        account_for_samples_outside_face: bool = False,
+        min_edge_size: float = 0.5,
+        smoothing_iterations=5,
+        max_courant_time=120.0,
+        directional_refinement=False,
+    ):
         """Refine the mesh within a polygon, by a number of steps (level)
 
         Args:
             polygon (GeometryList): Polygon in which to refine
             level (int): Number of refinement steps
             refine_intersected (bool): whether to compute faces intersected by polygon
-            use_mass_center_when_refining (bool): whether to use the mass center when splitting a face in the refinement process 
+            use_mass_center_when_refining (bool): whether to use the mass center when splitting a face in the refinement process
             min_edge_size (float): smallest allowed cell size
             refinement_type (int): refinement criterion type
             connect_hanging_nodes (bool): whether to connect hanging nodes at the end of the iteration
@@ -310,7 +311,7 @@ class Mesh2d(BaseModel):
             Default values are taken from meskernel documentation.
         """
 
-        parameters = mk.MeshRefinementParameters(   
+        parameters = mk.MeshRefinementParameters(
             refine_intersected=refine_intersected,
             use_mass_center_when_refining=use_mass_center_when_refining,
             min_edge_size=min_edge_size,
@@ -318,9 +319,9 @@ class Mesh2d(BaseModel):
             connect_hanging_nodes=connect_hanging_nodes,
             account_for_samples_outside_face=account_for_samples_outside_face,
             max_refinement_iterations=level,
-            smoothing_iterations=smoothing_iterations,#5,
-            max_courant_time=max_courant_time,#120.0,
-            directional_refinement=directional_refinement#False,
+            smoothing_iterations=smoothing_iterations,  # 5,
+            max_courant_time=max_courant_time,  # 120.0,
+            directional_refinement=directional_refinement,  # False,
         )
         self.meshkernel.mesh2d_refine_based_on_polygon(polygon, parameters)
 
@@ -673,7 +674,9 @@ class Link1d2d(BaseModel):
         self, node_mask: np.ndarray, polygons: mk.GeometryList
     ):
         """"""
-        self.meshkernel.contacts_compute_with_points(node_mask=node_mask, polygons=polygons)
+        self.meshkernel.contacts_compute_with_points(
+            node_mask=node_mask, polygons=polygons
+        )
 
     def _link_from_2d_to_1d_lateral(
         self,
@@ -1195,29 +1198,32 @@ class Network:
         )
 
     def mesh2d_refine_mesh(
-        self, 
-        polygon: mk.GeometryList, 
-        level: int = None,         
-        refine_intersected: bool=False,
-        use_mass_center_when_refining: bool=True,
-        refinement_type: int=2,
-        connect_hanging_nodes: bool=True,
-        account_for_samples_outside_face: bool=False,
-        min_edge_size: float=0.5,
-        smoothing_iterations: int=5,
-        max_courant_time: float=120.0,
-        directional_refinement: bool=False):
-            self._mesh2d.refine(polygon=polygon, 
-                            level=level, 
-                            refine_intersected=refine_intersected,
-                            use_mass_center_when_refining=use_mass_center_when_refining,
-                            refinement_type=refinement_type,
-                            connect_hanging_nodes=connect_hanging_nodes,
-                            account_for_samples_outside_face=account_for_samples_outside_face,
-                            min_edge_size=min_edge_size, 
-                            smoothing_iterations=smoothing_iterations,
-                            max_courant_time=max_courant_time,
-                            directional_refinement=directional_refinement)
+        self,
+        polygon: mk.GeometryList,
+        level: int = None,
+        refine_intersected: bool = False,
+        use_mass_center_when_refining: bool = True,
+        refinement_type: int = 2,
+        connect_hanging_nodes: bool = True,
+        account_for_samples_outside_face: bool = False,
+        min_edge_size: float = 0.5,
+        smoothing_iterations: int = 5,
+        max_courant_time: float = 120.0,
+        directional_refinement: bool = False,
+    ):
+        self._mesh2d.refine(
+            polygon=polygon,
+            level=level,
+            refine_intersected=refine_intersected,
+            use_mass_center_when_refining=use_mass_center_when_refining,
+            refinement_type=refinement_type,
+            connect_hanging_nodes=connect_hanging_nodes,
+            account_for_samples_outside_face=account_for_samples_outside_face,
+            min_edge_size=min_edge_size,
+            smoothing_iterations=smoothing_iterations,
+            max_courant_time=max_courant_time,
+            directional_refinement=directional_refinement,
+        )
 
     def mesh1d_add_branch(
         self,
