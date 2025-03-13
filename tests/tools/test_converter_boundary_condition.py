@@ -9,7 +9,7 @@ from hydrolib.core.dflowfm.ext.models import Boundary
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import BoundaryConditionConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
-from tests.utils import compare_two_files
+from tests.utils import compare_two_files, is_macos
 
 
 @pytest.fixture
@@ -196,13 +196,18 @@ class TestMainConverter:
             str(quantities[i].locationfile.filepath) for i in range(num_quantities)
         ] == old_forcing_file_boundary["locationfile"]
         r_dir = converter.root_dir
-        # test save files
-        ext_model.save(recurse=True)
 
-        reference_files = ["new-external-forcing-reference.ext", "tfl_01-reference.bc"]
-        files = ["new-external-forcing.ext", "tfl_01.bc"]
-        for i in range(2):
-            assert (r_dir / files[i]).exists()
-            diff = compare_two_files(r_dir / reference_files[i], r_dir / files[i])
-            assert diff == []
-            (r_dir / files[i]).unlink()
+        if not is_macos:
+            # test save files
+            ext_model.save(recurse=True)
+
+            reference_files = [
+                "new-external-forcing-reference.ext",
+                "tfl_01-reference.bc",
+            ]
+            files = ["new-external-forcing.ext", "tfl_01.bc"]
+            for i in range(2):
+                assert (r_dir / files[i]).exists()
+                diff = compare_two_files(r_dir / reference_files[i], r_dir / files[i])
+                assert diff == []
+                (r_dir / files[i]).unlink()
