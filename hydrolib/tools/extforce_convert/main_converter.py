@@ -92,13 +92,13 @@ class ExternalForcingConverter:
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
 
         path = (
-            rdir / "new-initial-conditions.ext"
+            rdir / "new-initial-conditions.ini"
             if inifield_file is None
             else inifield_file
         )
         self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path)
 
-        path = rdir / "new-structure.ext" if structure_file is None else structure_file
+        path = rdir / "new-structure.ini" if structure_file is None else structure_file
         self._structure_model = construct_filemodel_new_or_existing(
             StructureModel, path
         )

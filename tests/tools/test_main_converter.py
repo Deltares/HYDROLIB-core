@@ -121,13 +121,11 @@ class TestExternalFocingConverter:
         rdir = ext_old_model.filepath.parent
 
         assert isinstance(converter.ext_model, ExtModel)
-        assert converter.ext_model.filepath == rdir.joinpath("new-external-forcing.ext")
+        assert converter.ext_model.filepath == rdir / "new-external-forcing.ext"
         assert isinstance(converter.inifield_model, IniFieldModel)
-        assert converter.inifield_model.filepath == rdir.joinpath(
-            "new-initial-conditions.ext"
-        )
+        assert converter.inifield_model.filepath == rdir / "new-initial-conditions.ini"
         assert isinstance(converter.structure_model, StructureModel)
-        assert converter.structure_model.filepath == rdir.joinpath("new-structure.ext")
+        assert converter.structure_model.filepath == rdir / "new-structure.ini"
 
     def test_path_not_exist(self):
         """
