@@ -794,19 +794,6 @@ def _should_execute(model: BaseModel, _: FileLoadContext) -> bool:
 PathOrStr = Union[Path, str]
 
 
-def save_pre(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
-    if isinstance(model, FileModel):
-        acc.push_new_parent(model.filepath.parent, model._relative_mode)  # type: ignore[arg-type]
-    return acc
-
-
-def execute_generate_name(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
-    # Ensure all names are generated prior to saving
-    if isinstance(model, FileModel) and model.filepath is None:
-        model.filepath = model._generate_name()
-    return acc
-
-
 class FileModel(BaseModel, ABC):
     """Base class to represent models with a file representation.
 
@@ -1090,6 +1077,13 @@ class FileModel(BaseModel, ABC):
     def _save_tree(
         self, context: FileLoadContext, save_settings: ModelSaveSettings
     ) -> None:
+        # Ensure all names are generated prior to saving
+        def execute_generate_name(
+            model: BaseModel, acc: FileLoadContext
+        ) -> FileLoadContext:
+            if isinstance(model, FileModel) and model.filepath is None:
+                model.filepath = model._generate_name()
+            return acc
 
         name_traverser = ModelTreeTraverser[FileLoadContext](
             should_traverse=_should_traverse,
@@ -1098,6 +1092,11 @@ class FileModel(BaseModel, ABC):
         )
 
         name_traverser.traverse(self, context)
+
+        def save_pre(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
+            if isinstance(model, FileModel):
+                acc.push_new_parent(model.filepath.parent, model._relative_mode)  # type: ignore[arg-type]
+            return acc
 
         def save_post(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
             if isinstance(model, FileModel):

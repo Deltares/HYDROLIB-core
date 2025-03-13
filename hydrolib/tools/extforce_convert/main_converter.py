@@ -403,8 +403,8 @@ class ExternalForcingConverter:
         cls,
         mdu_file: PathOrStr,
         ext_file: Optional[PathOrStr] = None,
-        inifield_file: Optional[PathOrStr] = "inifields.ini",
-        structure_file: Optional[PathOrStr] = "structures.ini",
+        inifield_file: Optional[PathOrStr] = None,
+        structure_file: Optional[PathOrStr] = None,
         suppress_errors: Optional[bool] = False,
     ) -> "ExternalForcingConverter":
         """class method to create the converter from MDU file.
@@ -445,8 +445,8 @@ class ExternalForcingConverter:
                 )
 
             new_ext_force_file = fm_model.external_forcing.extforcefilenew
-            inifieldfile = fm_model.geometry.inifieldfile
-            structurefile = fm_model.geometry.structurefile
+            inifieldfile_mdu = fm_model.geometry.inifieldfile
+            structurefile_mdu = fm_model.geometry.structurefile
             mdu_info = {
                 "file_path": mdu_file,
                 "fm_model": fm_model,
@@ -465,8 +465,8 @@ class ExternalForcingConverter:
             external_forcing_data = data.get("external_forcing")
             geometry = data.get("geometry")
 
-            inifieldfile = geometry.get("inifieldfile")
-            structurefile = geometry.get("structurefile")
+            inifieldfile_mdu = geometry.get("inifieldfile")
+            structurefile_mdu = geometry.get("structurefile")
 
             old_ext_force_file = external_forcing_data.get("extforcefile")
             if old_ext_force_file is None:
@@ -491,7 +491,12 @@ class ExternalForcingConverter:
         extoldfile = root_dir / old_ext_force_file
 
         if new_ext_force_file:
-            ext_file = new_ext_force_file._resolved_filepath
+            if isinstance(new_ext_force_file, Path):
+                # extforcefilenew is a Path object
+                ext_file = new_ext_force_file.resolve()
+            else:
+                # extforcefilenew is a extmodel object
+                ext_file = new_ext_force_file._resolved_filepath
         else:
             if ext_file is None:
                 old_ext = old_ext_force_file.with_stem(old_ext_force_file.stem + "-new")
@@ -499,14 +504,36 @@ class ExternalForcingConverter:
             else:
                 ext_file = root_dir / ext_file
 
-        inifield_file = (
-            inifieldfile._resolved_filepath
-            if inifieldfile
-            else root_dir / inifield_file
-        )
-        structure_file = (
-            root_dir / structurefile if structurefile else root_dir / structure_file
-        )
+        if inifield_file is not None:
+            # user defined initial field file
+            inifield_file = root_dir / inifield_file
+        elif isinstance(inifieldfile_mdu, Path):
+            # from the LegacyFMModel
+            inifield_file = inifieldfile_mdu._resolved_filepath
+        elif isinstance(inifieldfile_mdu, str):
+            # from reading the geometry section
+            inifield_file = root_dir / inifieldfile_mdu
+        else:
+            print(
+                f"The initial field file is not found in the mdu file, and not provided by the user. \n "
+                f"given: {inifield_file}."
+            )
+
+        # the structure file will be taken from the mdu file if it is not provided by the user.
+        if structure_file is not None:
+            # user defined structure file
+            structure_file = root_dir / structure_file
+        elif isinstance(structurefile_mdu, Path):
+            # from the LegacyFMModel
+            structure_file = structurefile_mdu._resolved_filepath
+        elif isinstance(structurefile_mdu, str):
+            # from reading the geometry section
+            structure_file = root_dir / structurefile_mdu
+        else:
+            print(
+                "The structure file is not found in the mdu file, and not provide by the user. \n"
+                f"given: {structure_file}."
+            )
 
         return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
 
