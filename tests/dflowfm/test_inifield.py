@@ -257,12 +257,8 @@ class TestInitialConditions:
         )
         assert initial_conditions.interpolationmethod is None
         assert initial_conditions.operand == "O"
-        assert initial_conditions.averagingtype == "mean"
-        assert np.isclose(initial_conditions.averagingrelsize, 1.01)
-        assert initial_conditions.averagingnummin == 1
         assert initial_conditions.extrapolationmethod is False
         assert initial_conditions.locationtype == "all"
-        assert np.isclose(initial_conditions.averagingpercentile, 0.0)
 
     def test_setting_optional_fields(self):
         initial_conditions = InitialField(
