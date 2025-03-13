@@ -449,18 +449,7 @@ class TestMainConverter:
         with patch("pathlib.Path.with_suffix", return_value=self.tim_file):
             ext_model, inifield_model, structure_model = converter.update()
 
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
-        num_quantities = 1
-        assert len(ext_model.sourcesink) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
-        assert len(ext_model.lateral) == 0
-        assert len(ext_model.meteo) == 0
-        assert len(structure_model.structure) == 0
-        assert len(inifield_model.initial) == 2
-        quantities = ext_model.sourcesink
-        quantities[0].name = "discharge_salinity_temperature_sorsin"
+        self._compare(ext_model, inifield_model, structure_model)
 
     def test_sources_sinks_with_fm(self, old_forcing_file_boundary: Dict[str, str]):
         """
@@ -472,11 +461,10 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        self.mdu_info["salinity"] = (True,)
+        self.mdu_info["salinity"] = True
         self.mdu_info["temperature"] = True
 
         converter = ExternalForcingConverter(self.path, mdu_info=self.mdu_info)
-
         # Mock the fm_model
         mock_fm_model = Mock()
         converter._fm_model = mock_fm_model
@@ -484,6 +472,10 @@ class TestMainConverter:
         with patch("pathlib.Path.with_suffix", return_value=self.tim_file):
             ext_model, inifield_model, structure_model = converter.update()
 
+        self._compare(ext_model, inifield_model, structure_model)
+
+    @staticmethod
+    def _compare(ext_model, inifield_model, structure_model):
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = 1
