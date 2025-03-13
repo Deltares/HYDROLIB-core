@@ -165,14 +165,14 @@ class TestBoundaryConverter:
 
 class TestMainConverter:
 
-    def test_converter_update(self, old_forcing_file_boundary: Dict[str, str]):
+    def test_converter_update(
+        self, old_forcing_file_boundary: Dict[str, str], start_date: str
+    ):
         """
         The old external forcing file contains only 9 boundary condition quantities all with polyline location files
         and no forcing files. The update method should convert all the quantities to boundary conditions.
         """
-        mdu_info = {
-            "refdate": "minutes since 2015-01-01 00:00:00",
-        }
+        mdu_info = {"refdate": start_date}
         converter = ExternalForcingConverter(
             old_forcing_file_boundary["path"], mdu_info=mdu_info
         )
