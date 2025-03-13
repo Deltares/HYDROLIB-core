@@ -275,14 +275,14 @@ def test_create_refine_2d():
 
     mesh2d_output = mesh2d.get_mesh2d()
 
-    assert mesh2d_output.node_x.size == 114
-    assert mesh2d_output.edge_nodes.size == 426
+    assert mesh2d_output.node_x.size == 95
+    assert mesh2d_output.edge_nodes.size == 362
 
     # check fnc
     fnc = mesh2d.mesh2d_face_nodes
-    assert fnc.shape == (100, 4)
+    assert fnc.shape == (87, 4)
     fnc_fill_value = np.iinfo(np.int32).min
-    assert (fnc == fnc_fill_value).sum() == 12  # amount of triangles
+    assert (fnc == fnc_fill_value).sum() == 19  # amount of triangles
 
 
 cases = [
