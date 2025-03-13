@@ -323,6 +323,10 @@ class BoundaryConditionConverter(BaseConverter):
         forcing_model = self.convert_tim_to_bc(
             tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
+        # cmp_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.cmp"))
+        # cmp_model = self.merge_cmp_files(cmp_files, forcing)
+        # cmp_model.quantities_names = [forcing.quantity] * len(cmp_model.quantities_names)
+        # forcing_list = CMPToForcingConverter.convert(cmp_model)
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = location_file.with_suffix(".bc")
 
