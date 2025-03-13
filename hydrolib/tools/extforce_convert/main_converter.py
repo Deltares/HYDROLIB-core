@@ -427,6 +427,11 @@ class ExternalForcingConverter:
 
         Returns:
             ExternalForcingConverter: The converter object.
+
+        Raises:
+            FileNotFoundError: If the MDU file does not exist.
+            ValueError: If the old external forcing file is not found in the MDU file.
+            DeprecationWarning: If the MDU file contains unknown keywords.
         """
         if isinstance(mdu_file, str):
             mdu_file = Path(mdu_file)
