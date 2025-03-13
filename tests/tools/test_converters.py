@@ -142,8 +142,8 @@ class TestBoundaryConverter:
             operand="O",
         )
         cmp_model = BoundaryConditionConverter.merge_cmp_files(cmp_files, forcing)
-        assert cmp_model.components[0].quantity_name == "tfl_01_0001"
-        assert cmp_model.components[1].quantity_name == "tfl_01_0002"
+        assert cmp_model.quantities_names[0] == "tfl_01_0001"
+        assert cmp_model.quantities_names[1] == "tfl_01_0002"
         assert cmp_model.components[0].harmonics[0] == {
             "period": 0.0,
             "amplitude": 1.0,

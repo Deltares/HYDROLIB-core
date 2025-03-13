@@ -23,16 +23,15 @@ def cmp_model() -> CMPModel:
                     {"period": 0.0, "amplitude": 1.0, "phase": 2.0},
                     {"period": 3.0, "amplitude": 2.0, "phase": 1.0},
                 ],
-                "quantity_name": "boundary_harmonic",
             },
             {
                 "astronomics": [
                     {"name": "4MS10", "amplitude": 1.0, "phase": 2.0},
                     {"name": "KO0", "amplitude": 1.0, "phase": 2.0},
                 ],
-                "quantity_name": "boundary_astronomic",
             },
         ],
+        "quantities_names": ["dischargebnd", "waterlevelbnd"],
     }
     cmp_model = CMPModel(**data)
     return cmp_model
@@ -58,26 +57,26 @@ def reference_path(tmpdir: Path) -> Path:
             "fileVersion = 1.01\n"
             "fileType    = boundConds\n\n"
             "[Forcing]\n"
-            "name     = boundary_harmonic\n"
+            "name     = waterlevelbnd\n"
             "function = harmonic\n"
             "factor   = 1.0\n"
             "quantity = harmonic component\n"
             "unit     = minutes\n"
-            "quantity = waterlevelbnd amplitude\n"
+            "quantity = waterlevelbnd\n"
             "unit     = m\n"
-            "quantity = waterlevelbnd phase\n"
+            "quantity = waterlevelbnd\n"
             "unit     = deg\n"
             "0.0  1.0  2.0\n"
             "3.0  2.0  1.0\n\n"
             "[Forcing]\n"
-            "name     = boundary_harmonic\n"
+            "name     = waterlevelbnd\n"
             "function = astronomic\n"
             "factor   = 1.0\n"
             "quantity = astronomic component\n"
-            "unit     = string\n"
-            "quantity = waterlevelbnd amplitude\n"
+            "unit     = -\n"
+            "quantity = waterlevelbnd\n"
             "unit     = m\n"
-            "quantity = waterlevelbnd phase\n"
+            "quantity = waterlevelbnd\n"
             "unit     = deg\n"
             "4MS10  1.0  2.0\n"
             "KO0    1.0  2.0\n"
@@ -92,22 +91,22 @@ def test_cmp_to_forcing_converter(cmp_model: CMPModel):
     # Expected ForcingModel
     expected_forcing_model = [
         Harmonic(
-            name="boundary_harmonic",
+            name="dischargebnd",
             function="harmonic",
             quantityunitpair=[
                 QuantityUnitPair(quantity="harmonic component", unit="minutes"),
-                QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+                QuantityUnitPair(quantity="dischargebnd", unit="m3/s"),
+                QuantityUnitPair(quantity="dischargebnd", unit="deg"),
             ],
             datablock=[[0.0, 1.0, 2.0], [3.0, 2.0, 1.0]],
         ),
         Astronomic(
-            name="boundary_astronomic",
+            name="waterlevelbnd",
             function="astronomic",
             quantityunitpair=[
-                QuantityUnitPair(quantity="astronomic component", unit="string"),
-                QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+                QuantityUnitPair(quantity="astronomic component", unit="-"),
+                QuantityUnitPair(quantity="waterlevelbnd", unit="m"),
+                QuantityUnitPair(quantity="waterlevelbnd", unit="deg"),
             ],
             datablock=[["4MS10", 1.0, 2.0], ["KO0", 1.0, 2.0]],
         ),
@@ -119,7 +118,7 @@ def test_cmp_to_forcing_converter_file(
     cmp_file: Path, reference_path: Path, tmpdir: Path
 ):
     cmp_model = CMPModel(cmp_file)
-    cmp_model.components[0].quantity_name = "boundary_harmonic"
+    cmp_model.quantities_names = ["waterlevelbnd"]
 
     converted_bc_path = tmpdir / "converted.bc"
     model = CMPToForcingConverter.convert(cmp_model)

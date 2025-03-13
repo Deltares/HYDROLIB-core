@@ -109,8 +109,6 @@ class CMPSet(BaseModel):
 
     astronomics: Optional[List[AstronomicRecord]] = Field(default_factory=list)
 
-    quantity_name: Optional[str] = None
-
 
 class CMPModel(ParsableFileModel):
     """Class representing a cmp (*.cmp) file.
@@ -153,6 +151,8 @@ class CMPModel(ParsableFileModel):
 
     components: List[CMPSet] = Field(default_factory=list)
 
+    quantities_names: Optional[List[str]] = None
+
     @classmethod
     def _ext(cls) -> str:
         return ".cmp"
@@ -170,3 +170,69 @@ class CMPModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return CMPParser.parse
+
+    def get_units(self):
+        """Return the units for each quantity in the timeseries.
+        Returns:
+            List[str]: A list of units for each quantity in the timeseries.
+        Examples:
+            Create a `CMPModel` object from a .cmp file:
+                ```python
+                >>> from hydrolib.core.dflowfm.cmp.models import CMPModel
+                >>> data = {
+                ...     "comments": ["# Example comment"],
+                ...     "components": [
+                ...         {
+                ...             "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                ...         }, {
+                ...             "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
+                ...         }
+                ...     ],
+                ...     "quantities_names": ["discharge", "waterlevel"],
+                ... }
+                >>> model = CMPModel(**data)
+                >>> print(model.get_units())
+                ['m3/s', 'm']
+
+                ```
+        """
+        if self.quantities_names is None:
+            return None
+        return get_quantity_unit(self.quantities_names)
+
+
+def get_quantity_unit(quantities_names: List[str]) -> List[str]:
+    """
+    Maps each quantity in the input list to a specific unit based on its content.
+    Args:
+        quantities_names (list of str): A list of strings to be checked for specific keywords.
+    Returns:
+        list of str: A list of corresponding units for each input string.
+    Examples:
+        ```python
+        >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
+        >>> get_quantity_unit(quantities_names)
+        ['m3/s', 'm', '1e-3', 'degC']
+
+        ```
+    """
+    # Define the mapping of keywords to units
+    unit_mapping = {
+        "discharge": "m3/s",
+        "waterlevel": "m",
+        "salinity": "1e-3",
+        "temperature": "degC",
+    }
+
+    # Generate the list of units based on the mapping
+    units = []
+    for string in quantities_names:
+        for keyword, unit in unit_mapping.items():
+            if keyword in string.lower():
+                units.append(unit)
+                break
+        else:
+            # Append "-" if no keywords match
+            units.append("-")
+
+    return units

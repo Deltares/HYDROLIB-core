@@ -198,7 +198,7 @@ class BoundaryConditionConverter(BaseConverter):
                 The contents of a single forcing block in an old external forcings file. This object contains all the
                 necessary information, such as quantity, values, and timestamps, required for the conversion process.
         Returns:
-            CmpModel: A CmpModel object containing the time series data from all given CMP files.
+            CmpModel: A CmpModel object containing the astronomic and harmonic data from all given CMP files.
         """
         cmp_files_exist = all([cmp_file.exists() for cmp_file in cmp_files])
         if not cmp_files_exist:
@@ -206,15 +206,16 @@ class BoundaryConditionConverter(BaseConverter):
                 f"CMP files '{cmp_files}' not found for QUANTITY={forcing.quantity}"
             )
 
-        cmp_models: List[CMPModel] = []
-        for file in cmp_files:
-            cmp_model = CMPModel(file)
-            cmp_model.components[0].quantity_name = file.stem
-            cmp_models.append(cmp_model)
+        cmp_models = [
+            CMPModel(file, quantities_names=[file.stem]) for file in cmp_files
+        ]
 
         for cmp_model in cmp_models[1:]:
             data = cmp_model.components[0]
+            quantity_name = cmp_model.quantities_names[0]
             cmp_models[0].components.append(data)
+            cmp_models[0].quantities_names.append(quantity_name)
+
         return cmp_models[0]
 
     @staticmethod
@@ -828,12 +829,11 @@ class CMPToForcingConverter:
                 ...     "components": [
                 ...         {
                 ...             "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
-                ...             "quantity_name": "harmonicboundary"
                 ...         }, {
                 ...             "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
-                ...             "quantity_name": "astronomicboundary"
                 ...         }
-                ...     ]
+                ...     ],
+                ...     "quantities_names": ["discharge", "waterlevel"],
                 ... }
                 >>> cmp_model = CMPModel(**data)
                 >>> forcing_model = CMPToForcingConverter.convert(cmp_model)
@@ -845,16 +845,21 @@ class CMPToForcingConverter:
                 ```
         """
         forcing_list = []
+        units = cmp_model.get_units()
 
-        for component in cmp_model.components:
+        for i in range(len(cmp_model.components)):
             harmonic_model = CMPToForcingConverter.convert_harmonic(
-                component.quantity_name, component.harmonics
+                cmp_model.quantities_names[i],
+                cmp_model.components[i].harmonics,
+                units[i],
             )
             if harmonic_model:
                 forcing_list.append(harmonic_model)
 
             astronomic_model = CMPToForcingConverter.convert_astronomic(
-                component.quantity_name, component.astronomics
+                cmp_model.quantities_names[i],
+                cmp_model.components[i].astronomics,
+                units[i],
             )
             if astronomic_model:
                 forcing_list.append(astronomic_model)
@@ -863,7 +868,7 @@ class CMPToForcingConverter:
 
     @staticmethod
     def convert_harmonic(
-        quantity_name: str, harmonics: List[HarmonicRecord]
+        quantity_name: str, harmonics: List[HarmonicRecord], unit: str
     ) -> Optional[Harmonic]:
         harmonic_block = [
             [harmonic.period, harmonic.amplitude, harmonic.phase]
@@ -875,8 +880,8 @@ class CMPToForcingConverter:
                 function="harmonic",
                 quantityunitpair=[
                     QuantityUnitPair(quantity="harmonic component", unit="minutes"),
-                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+                    QuantityUnitPair(quantity=quantity_name, unit=unit),
+                    QuantityUnitPair(quantity=quantity_name, unit="deg"),
                 ],
                 datablock=harmonic_block,
             )
@@ -884,7 +889,7 @@ class CMPToForcingConverter:
 
     @staticmethod
     def convert_astronomic(
-        quantity_name: str, astronomics: List[AstronomicRecord]
+        quantity_name: str, astronomics: List[AstronomicRecord], unit: str
     ) -> Optional[Astronomic]:
         astronomic_block = [
             [astronomic.name, astronomic.amplitude, astronomic.phase]
@@ -895,9 +900,9 @@ class CMPToForcingConverter:
                 name=quantity_name,
                 function="astronomic",
                 quantityunitpair=[
-                    QuantityUnitPair(quantity="astronomic component", unit="string"),
-                    QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
-                    QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
+                    QuantityUnitPair(quantity="astronomic component", unit="-"),
+                    QuantityUnitPair(quantity=quantity_name, unit=unit),
+                    QuantityUnitPair(quantity=quantity_name, unit="deg"),
                 ],
                 datablock=astronomic_block,
             )
