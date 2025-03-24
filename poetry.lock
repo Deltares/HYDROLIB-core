@@ -2292,18 +2292,18 @@ files = [
 
 [[package]]
 name = "meshkernel"
-version = "6.0.0"
+version = "7.0.0"
 description = "`meshkernel` is a library which can be used to manipulate meshes."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
-    {file = "meshkernel-6.0.0-py3-none-macosx_13_0_arm64.whl", hash = "sha256:5fc2699d226d0138981bc12e5e5950fc9d5836bc82cbf922894fc899ac552d63"},
-    {file = "meshkernel-6.0.0-py3-none-macosx_13_0_x86_64.whl", hash = "sha256:588a35053e2c8ce6ca87940611dc352d8d069ab582bfa6172d7a06e6423c07cf"},
-    {file = "meshkernel-6.0.0-py3-none-macosx_14_0_arm64.whl", hash = "sha256:b86fb2eb839fdd348ec9879b26a57f75b378f2125f2e359d7d136577d4dd8bfd"},
-    {file = "meshkernel-6.0.0-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:ebf8c6df00bd573374ed4a2c051b490d76c6e88e1e3421c6a2a490ebcedfb91d"},
-    {file = "meshkernel-6.0.0-py3-none-win_amd64.whl", hash = "sha256:6e83d35c545227b59c45ef03a445984d5f0f8e7fcf43204a0a5ce280fb15bc2c"},
+    {file = "meshkernel-7.0.0-py3-none-macosx_13_0_arm64.whl", hash = "sha256:2a87783f1f4150fcfdaffabb4bd864637370c58d93aaebe6723c71f30e9886b4"},
+    {file = "meshkernel-7.0.0-py3-none-macosx_13_0_x86_64.whl", hash = "sha256:29cd338a7af5dc9b593297df7fd9c5bc9d40d99e8f45917351aefe1490ee6a3b"},
+    {file = "meshkernel-7.0.0-py3-none-macosx_14_0_arm64.whl", hash = "sha256:849860c5cbc9ea898cf8da8d5a922111a89a1c80361ef80ba38a48d2705c16e7"},
+    {file = "meshkernel-7.0.0-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:85806ad807fde4d2e3111f8f4aa71d2558dc73f1030fbbe3fc224f8768329b4d"},
+    {file = "meshkernel-7.0.0-py3-none-win_amd64.whl", hash = "sha256:a7b2c0e6fe7f6a96005d8cbeaa62884825757071b68d2c438d69bdcd21759ddb"},
 ]
 
 [package.dependencies]
@@ -4826,4 +4826,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "4cb38a3b0d03658b21ce594f21f9b20ece8df99a88c4325d8dedce85e8255fc5"
+content-hash = "2b46d04397a1663b57e3cd6a03cd979a9b39ecbaa20cfd1f4d91fe555fd6d1a0"
