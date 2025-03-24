@@ -25,7 +25,7 @@ numpy = [
 pydantic = "^2.5"
 # lxml 5.0 is from December 2023
 lxml = "^5.0"
-meshkernel = "^6.0.0"
+meshkernel = "^7.0.0"
 strenum = "^0"
 
 [tool.poetry.dev-dependencies]
