@@ -7,7 +7,7 @@ class T3DSerializerConfig(SerializerConfig):
     """Configuration settings for the TimSerializer."""
 
     column_spacing: int = 1
-    """(int): The number of spaces to include between columns in the serialized .tim file."""
+    """(int): The number of spaces to include between columns in the serialized .t3d file."""
 
 
 class T3DSerializer:
