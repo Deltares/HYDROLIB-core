@@ -884,8 +884,8 @@ class CMPToForcingConverter:
                 function="harmonic",
                 quantityunitpair=[
                     QuantityUnitPair(quantity="harmonic component", unit="minutes"),
-                    QuantityUnitPair(quantity=quantity_name, unit=unit),
-                    QuantityUnitPair(quantity=quantity_name, unit="deg"),
+                    QuantityUnitPair(quantity=f"{quantity_name} amplitude", unit=unit),
+                    QuantityUnitPair(quantity=f"{quantity_name} phase", unit="deg"),
                 ],
                 datablock=harmonic_block,
             )
@@ -905,8 +905,8 @@ class CMPToForcingConverter:
                 function="astronomic",
                 quantityunitpair=[
                     QuantityUnitPair(quantity="astronomic component", unit="-"),
-                    QuantityUnitPair(quantity=quantity_name, unit=unit),
-                    QuantityUnitPair(quantity=quantity_name, unit="deg"),
+                    QuantityUnitPair(quantity=f"{quantity_name} amplitude", unit=unit),
+                    QuantityUnitPair(quantity=f"{quantity_name} phase", unit="deg"),
                 ],
                 datablock=astronomic_block,
             )

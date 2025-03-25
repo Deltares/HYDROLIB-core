@@ -62,9 +62,9 @@ def reference_path(tmpdir: Path) -> Path:
             "factor   = 1.0\n"
             "quantity = harmonic component\n"
             "unit     = minutes\n"
-            "quantity = waterlevelbnd\n"
+            "quantity = waterlevelbnd amplitude\n"
             "unit     = m\n"
-            "quantity = waterlevelbnd\n"
+            "quantity = waterlevelbnd phase\n"
             "unit     = deg\n"
             "0.0  1.0  2.0\n"
             "3.0  2.0  1.0\n\n"
@@ -74,9 +74,9 @@ def reference_path(tmpdir: Path) -> Path:
             "factor   = 1.0\n"
             "quantity = astronomic component\n"
             "unit     = -\n"
-            "quantity = waterlevelbnd\n"
+            "quantity = waterlevelbnd amplitude\n"
             "unit     = m\n"
-            "quantity = waterlevelbnd\n"
+            "quantity = waterlevelbnd phase\n"
             "unit     = deg\n"
             "4MS10  1.0  2.0\n"
             "KO0    1.0  2.0\n"
@@ -95,8 +95,8 @@ def test_cmp_to_forcing_converter(cmp_model: CMPModel):
             function="harmonic",
             quantityunitpair=[
                 QuantityUnitPair(quantity="harmonic component", unit="minutes"),
-                QuantityUnitPair(quantity="dischargebnd", unit="m3/s"),
-                QuantityUnitPair(quantity="dischargebnd", unit="deg"),
+                QuantityUnitPair(quantity="dischargebnd amplitude", unit="m3/s"),
+                QuantityUnitPair(quantity="dischargebnd phase", unit="deg"),
             ],
             datablock=[[0.0, 1.0, 2.0], [3.0, 2.0, 1.0]],
         ),
@@ -105,8 +105,8 @@ def test_cmp_to_forcing_converter(cmp_model: CMPModel):
             function="astronomic",
             quantityunitpair=[
                 QuantityUnitPair(quantity="astronomic component", unit="-"),
-                QuantityUnitPair(quantity="waterlevelbnd", unit="m"),
-                QuantityUnitPair(quantity="waterlevelbnd", unit="deg"),
+                QuantityUnitPair(quantity="waterlevelbnd amplitude", unit="m"),
+                QuantityUnitPair(quantity="waterlevelbnd phase", unit="deg"),
             ],
             datablock=[["4MS10", 1.0, 2.0], ["KO0", 1.0, 2.0]],
         ),
