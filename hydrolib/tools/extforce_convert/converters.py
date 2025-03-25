@@ -184,7 +184,7 @@ class BoundaryConditionConverter(BaseConverter):
 
     def convert_tim_to_bc(
         self,
-        tim_files: List[Union[Path, str]],
+        tim_files: List[PathOrStr],
         time_unit: str,
         time_interpolation: str = "linear",
         quantity: str = None,
