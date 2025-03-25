@@ -124,10 +124,10 @@ class T3DTimeRecord(BaseModel):
 
 
 class T3DModel(ParsableFileModel):
-    """T3D file model.
+    r"""T3D file model.
 
     Args:
-        comments (List[str]):
+        comments (List[str]):x
             A list with the header comment of the tim file.
         records (List[T3DTimeRecord]):
             List of time records.
@@ -137,6 +137,8 @@ class T3DModel(ParsableFileModel):
             The VECTORMAX value.
         layer_type (LayerType):
             The layer type.
+        quantities_names (Optional[List[str]]):
+            List of names for the quantities in the timeseries.
 
     Examples:
         ```python
@@ -162,6 +164,18 @@ class T3DModel(ParsableFileModel):
         )
         >>> print(model.size)
         (2, 4)
+        >>> model.quantities_names = ["quantity-1", "quantity-2", "quantity-3"] # doctest: +SKIP
+        Traceback (most recent call last):
+            model.quantities_names = ["quantity-1", "quantity-2", "quantity-3"]
+            ^^^^^^^^^^^^^^^^^^^^^^
+          File "...\Lib\site-packages\pydantic\v1\main.py", line 397, in __setattr__
+            raise ValidationError(errors, self.__class__)
+        pydantic.v1.error_wrappers.ValidationError: 1 validation error for T3DModel
+        __root__
+          The number of quantities names must be equal to the number of values in the records. (type=value_error)
+        >>> model.quantities_names = ["quantity-1", "quantity-2", "quantity-3", "quantity-4"]
+        >>> print(model.quantities_names)
+        ['quantity-1', 'quantity-2', 'quantity-3', 'quantity-4']
 
     ```
     """
@@ -190,11 +204,10 @@ class T3DModel(ParsableFileModel):
         record = value.get("records")
         record_len = len(record[0].data)
         quantities_names = value.get("quantities_names")
-        if quantities_names is not None:
-            if len(quantities_names) != record_len:
-                raise ValueError(
-                    "The number of quantities names must be equal to the number of values in the records."
-                )
+        if quantities_names is not None and len(quantities_names) != record_len:
+            raise ValueError(
+                "The number of quantities names must be equal to the number of values in the records."
+            )
         return value
 
     @property
