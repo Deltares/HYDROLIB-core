@@ -94,7 +94,7 @@ class T3DTimeRecord(BaseModel):
         return value
 
     @property
-    def unit(self) -> str:
+    def time_unit(self) -> str:
         """Return the unit of the time string.
 
         Returns:

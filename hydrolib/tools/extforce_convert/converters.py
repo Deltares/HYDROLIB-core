@@ -951,7 +951,7 @@ class T3DToForcingConverter:
         updated = [[k] + v for k, v in data_dict.items()]
         data["datablock"] = updated
 
-        time_unit = t3d_model.records[0].unit
+        time_unit = t3d_model.records[0].time_unit
         ref_date = t3d_model.records[0].reference_date
         quantities_list = [
             QuantityUnitPair(quantity="time", unit=f"{time_unit} since {ref_date}")
