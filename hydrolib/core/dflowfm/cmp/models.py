@@ -13,9 +13,9 @@ class HarmonicRecord(BaseModel):
     """Single cmp record, representing a harmonic component with amplitude and phase.
 
     Attributes:
-        period (float): of the period.
-        amplitude (float): of the amplitude.
-        phase (float): of the phase.
+        period (float): the period.
+        amplitude (float): the amplitude.
+        phase (float): the phase in degrees.
 
         Examples:
             Create a `HarmonicRecord` object from a dictionary:
@@ -48,9 +48,9 @@ class AstronomicRecord(BaseModel):
     """Single cmp record, representing an astronomic component with amplitude and phase.
 
     Attributes:
-        name (AstronomicName): of the astronomic name.
-        amplitude (float): of the amplitude.
-        phase (float): of the phase.
+        name (AstronomicName): the astronomic name.
+        amplitude (float): the amplitude.
+        phase (float): the phase in degrees.
 
         Examples:
             Create an `AstronomicRecord` object from a dictionary:
@@ -117,7 +117,7 @@ class CMPModel(ParsableFileModel):
 
     Attributes:
         comments (List[str]): A list with the header comment of the cmp file.
-        components (CmpSet): A set with the components of the cmp file.
+        components (List[CMPSet]): A list of CMPSet records where each entry represents one cmp file.
 
     Examples:
         Create a `CmpModel` object from a dictionary:

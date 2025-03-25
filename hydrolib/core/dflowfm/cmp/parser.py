@@ -54,12 +54,12 @@ class CMPParser:
 
     @staticmethod
     def _read_header_comments(lines: List[str]) -> Tuple[List[str], int]:
-        """Read the header comments of the lines from the .cpm file.
-        The comments are only expected at the start of the .cpm file.
+        """Read the header comments of the lines from the .cmp file.
+        The comments are only expected at the start of the .cmp file.
         When a non comment line is encountered, all comments from the header will be retuned together with the start index of the components data.
 
         Args:
-            lines (List[str]): Lines from the the .cpm file.
+            lines (List[str]): Lines from the the .cmp file.
 
         Returns:
             Tuple of List[str] and int, the List[str] contains the comments from the header, the int is the start index of the components.
