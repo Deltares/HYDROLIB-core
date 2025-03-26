@@ -29,3 +29,63 @@ quantity          = waterlevelbnd
 unit              = m
 0.0    0.01
 120.0  0.01
+
+[Forcing]
+name              = L1_0001
+function          = t3d
+offset            = 0.0
+factor            = 1.0
+vertPositions     = 0.0 0.5 0.55 0.75 1.0
+vertInterpolation = linear
+vertPositionType  = percBed
+timeInterpolation = linear
+quantity          = time
+unit              = seconds since 2006-01-01 00:00:00 +00:00
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 1
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 2
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 3
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 4
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 5
+0.0        40.0  35.0  34.5  32.5  30.0
+180.0      80.0  35.0  34.5  32.5  30.0
+9999999.0  40.0  35.0  34.5  32.5  30.0
+
+[Forcing]
+name              = L1_0002
+function          = t3d
+offset            = 0.0
+factor            = 1.0
+vertPositions     = 0.0 0.5 0.55 0.75 1.0
+vertInterpolation = linear
+vertPositionType  = percBed
+timeInterpolation = linear
+quantity          = time
+unit              = seconds since 2006-01-01 00:00:00 +00:00
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 1
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 2
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 3
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 4
+quantity          = waterlevelbnd
+unit              = m
+vertPositionIndex = 5
+0.0        41.0      36.45455  36.0      34.0      31.0
+180.0      41.00002  36.45456  36.00002  34.00002  31.00002
+9999999.0  42.0      37.45455  37.0      35.0      32.0
