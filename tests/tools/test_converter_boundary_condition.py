@@ -41,7 +41,7 @@ def t3d_files(input_files_dir: Path) -> List[Path]:
 
 
 @pytest.fixture
-def cmp_files(self, tmpdir: Path) -> List[Path]:
+def cmp_files(tmpdir: Path) -> List[Path]:
     path_list = [
         Path(tmpdir / "tfl_01_0001.cmp"),
         Path(tmpdir / "tfl_01_0002.cmp"),
