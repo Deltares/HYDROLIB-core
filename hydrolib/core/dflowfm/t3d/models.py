@@ -127,7 +127,7 @@ class T3DModel(ParsableFileModel):
     r"""T3D file model.
 
     Args:
-        comments (List[str]):x
+        comments (List[str]):
             A list with the header comment of the tim file.
         records (List[T3DTimeRecord]):
             List of time records.
