@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
 from hydrolib.core.dflowfm.bc.models import (
+    T3D,
     Astronomic,
     ForcingBase,
     ForcingModel,
@@ -34,6 +35,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
@@ -149,7 +151,7 @@ class BoundaryConditionConverter(BaseConverter):
         super().__init__()
 
     @staticmethod
-    def merge_tim_files(tim_files: List[Path], forcing: ExtOldForcing) -> TimModel:
+    def merge_tim_files(tim_files: List[Path], quantity: str) -> TimModel:
         """Parse the boundary condition related time series from the tim files.
 
         The function will merge all the tim files into one tim model and assign the quantity names to the tim model.
@@ -157,16 +159,15 @@ class BoundaryConditionConverter(BaseConverter):
         Args:
             tim_files (List[Path]):
                 List of TIM models paths.
-            forcing (ExtOldForcing):
-                The contents of a single forcing block in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps, required for the conversion process.
+            quantity (str):
+                name of the quantity that the tim files represent.
         Returns:
             TimModel: A TimModel object containing the time series data from all given TIM files.
         """
         time_files_exist = all([tim_file.exists() for tim_file in tim_files])
         if not time_files_exist:
             raise FileNotFoundError(
-                f"TIM files '{tim_files}' not found for QUANTITY={forcing.quantity}"
+                f"TIM files '{tim_files}' not found for QUANTITY={quantity}"
             )
 
         tim_models = [
@@ -218,30 +219,30 @@ class BoundaryConditionConverter(BaseConverter):
 
         return cmp_models[0]
 
-    @staticmethod
     def convert_tim_to_bc(
-        tim_model: TimModel,
+        self,
+        tim_files: List[PathOrStr],
         time_unit: str,
         time_interpolation: str = "linear",
-        units: List[str] = None,
-        user_defined_names: List[str] = None,
-    ) -> ForcingModel:
+        quantity: str = None,
+        label: str = None,
+    ) -> List[TimeSeries]:
         """Convert a TimModel into a ForcingModel.
 
         wrapper on top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
 
         Args:
-            tim_model (TimModel):
-                The input TimModel to be converted.
+            tim_files (List[Union[Path, str]]):
+                paths to the tim files to be converted.
             time_unit (str):
                 Formatted string containing the units of time, including absolute datetime reference information
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             time_interpolation (str, default is linear):
                 The interpolation method to be used for the time series data.
-            units (List[str], optional):
-                A list of units corresponding to the forcing quantities.
-            user_defined_names (List[str], optional):
-                A list of user-defined names for the forcing blocks.
+            quantity (str, default is None):
+                name of the quantity that the tim files represent.
+            label (str, default is None):
+                the label from the pli file to be used to name the time series sections in the .bc model.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -250,10 +251,19 @@ class BoundaryConditionConverter(BaseConverter):
             ValueError: If `units` and `user_defined_names` are not provided.
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
-        forcing_model = TimToForcingConverter.convert(
+        tim_model = self.merge_tim_files(tim_files, quantity)
+
+        num_tim_files = len(tim_files)
+        # switch the quantity names from the Tim model (loction names) to quantity names.
+        user_defined_names = [
+            f"{label}_{str(i).zfill(4)}" for i in range(1, num_tim_files + 1)
+        ]
+        tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+        units = tim_model.get_units()
+        time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, time_interpolation, units, user_defined_names
         )
-        return forcing_model
+        return time_series_list
 
     def convert(self, forcing: ExtOldForcing, time_unit: str) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
@@ -291,42 +301,46 @@ class BoundaryConditionConverter(BaseConverter):
             boundary Condition can be only converted by reading the mdu file and the external forcing file is not
             enough.
         """
+        quantity = forcing.quantity
         location_file = forcing.filename.filepath
         poly_line = forcing.filename
         if not isinstance(poly_line, PolyFile):
             poly_line = PolyFile(location_file)
 
+        label = poly_line.objects[0].metadata.name
         if self.root_dir is None:
             raise ValueError(
                 "The 'root_dir' property must be set before calling this method."
             )
 
+        forcings_list = []
         tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.tim"))
-        if len(tim_files) < 1:
-            raise ValueError(
-                f"There are no tim files found for the given poly file: {poly_line}, in the directory: {self.root_dir}"
+        if len(tim_files) > 1:
+            time_series_list = self.convert_tim_to_bc(
+                tim_files, time_unit, quantity=quantity, label=label
             )
+            forcings_list.extend(time_series_list)
 
-        tim_model = self.merge_tim_files(tim_files, forcing)
+        # check t3d files
+        t3d_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.t3d"))
+        if len(t3d_files) > 1:
+            t3d_models = [T3DModel(path) for path in t3d_files]
+            # this line assumed that the two t3d files will have the same number of layers and same number of quantities
+            quantities_names = [quantity] * t3d_models[0].size[1]
+            user_defined_names = [
+                f"{label}_{str(i).zfill(4)}" for i in range(1, len(t3d_files) + 1)
+            ]
+            t3d_forcing_list = T3DToForcingConverter.convert(
+                t3d_models, quantities_names, user_defined_names
+            )
+            forcings_list.extend(t3d_forcing_list)
 
-        label = poly_line.objects[0].metadata.name
-        num_quantities = len(tim_model.quantities_names)
-        # switch the quantity names from the Tim model (loction names) to quantity names.
-        user_defined_names = [
-            f"{label}_{str(i).zfill(4)}" for i in range(1, num_quantities + 1)
-        ]
-
-        tim_model.quantities_names = [forcing.quantity] * len(tim_model.get_units())
-
-        units = tim_model.get_units()
-
-        forcing_model = self.convert_tim_to_bc(
-            tim_model, time_unit, units=units, user_defined_names=user_defined_names
-        )
+        forcing_model = ForcingModel(forcing=forcings_list)
         # cmp_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}*.cmp"))
         # cmp_model = self.merge_cmp_files(cmp_files, forcing)
         # cmp_model.quantities_names = [forcing.quantity] * len(cmp_model.quantities_names)
         # forcing_list = CMPToForcingConverter.convert(cmp_model)
+
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = location_file.with_suffix(".bc")
 
@@ -605,7 +619,6 @@ class SourceSinkConverter(BaseConverter):
     def convert_tim_to_bc(
         tim_model: TimModel,
         time_unit: str,
-        units: List[str] = None,
         user_defined_names: List[str] = None,
     ) -> ForcingModel:
         """Convert a TimModel into a ForcingModel.
@@ -618,8 +631,6 @@ class SourceSinkConverter(BaseConverter):
             time_unit (str):
                 Formatted string containing the units of time, including absolute datetime reference information
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
-            units (List[str], optional):
-                A list of units corresponding to the forcing quantities.
             user_defined_names (List[str], optional):
                 A list of user-defined names for the forcing blocks.
 
@@ -630,9 +641,11 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If `units` and `user_defined_names` are not provided.
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
-        forcing_model = TimToForcingConverter.convert(
+        units = tim_model.get_units()
+        time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
+        forcing_model = ForcingModel(forcing=time_series_list)
         return forcing_model
 
     @staticmethod
@@ -715,14 +728,13 @@ class SourceSinkConverter(BaseConverter):
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
             )
 
-        time_model = self.parse_tim_model(
+        tim_model = self.parse_tim_model(
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
-        units = time_model.get_units()
-        user_defined_names = [f"{location_name}"] * len(time_model.quantities_names)
+        labels = [f"{location_name}"] * len(tim_model.quantities_names)
 
         forcing_model = self.convert_tim_to_bc(
-            time_model, start_time, units=units, user_defined_names=user_defined_names
+            tim_model, start_time, user_defined_names=labels
         )
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = location_file.with_suffix(".bc").name
@@ -934,7 +946,7 @@ class TimToForcingConverter:
         time_interpolation: str = "linear",
         units: List[str] = None,
         user_defined_names: List[str] = None,
-    ) -> ForcingModel:
+    ) -> List[TimeSeries]:
         """
         Convert a TimModel into a ForcingModel.
 
@@ -952,7 +964,8 @@ class TimToForcingConverter:
                 A list of user-defined names for the forcing blocks.
 
         Returns:
-            ForcingModel: The converted ForcingModel, with all the quantities inside it.
+            TimeSeries:
+                The converted TimeSeries.
 
         Raises:
             ValueError: If `units` and `user_defined_names` are not provided.
@@ -969,12 +982,12 @@ class TimToForcingConverter:
             >>> print(tim_model.as_dict())
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
             >>> converter = TimToForcingConverter()
-            >>> forcing_model = converter.convert(
+            >>> time_series = converter.convert(
             ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
             ... )
-            >>> print(forcing_model.forcing[0].name)
+            >>> print(time_series[0].name)
             discharge
-            >>> print(forcing_model.forcing[0].datablock)
+            >>> print(time_series[0].datablock)
             [[0.0, 0.0], [10.0, 0.01], [20.0, 0.0], [30.0, -0.01], [40.0, 0.0], [50.0, 0.01], [60.0, 0.0], [70.0, -0.01], [80.0, 0.0], [90.0, 0.01], [100.0, 0.0], [110.0, -0.01], [120.0, 0.0]]
 
             ```
@@ -993,7 +1006,7 @@ class TimToForcingConverter:
 
         df = tim_model.as_dataframe()
         time_data = df.index.tolist()
-        forcing_list = []
+        time_series_list = []
         for i, (column, vals) in enumerate(df.items()):
             unit = units[i]
             forcing = TimeSeries(
@@ -1007,10 +1020,105 @@ class TimToForcingConverter:
                 datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
             )
 
-            forcing_list.append(forcing)
+            time_series_list.append(forcing)
 
-        forcing_model = ForcingModel(forcing=forcing_list)
-        return forcing_model
+        return time_series_list
+
+
+class T3DToForcingConverter:
+
+    @staticmethod
+    def convert(
+        t3d_models: List[T3DModel],
+        quantities_names: List[str],
+        user_defined_names: List[str] = None,
+    ) -> List[T3D]:
+        t3d_forcings = []
+        for label, model in zip(user_defined_names, t3d_models):
+            model.quantities_names = quantities_names
+            t3d = T3DToForcingConverter.convert_t3d_model(model, label)
+            t3d_forcings.append(t3d)
+
+        return t3d_forcings
+
+    @staticmethod
+    def convert_t3d_model(
+        t3d_model: T3DModel,
+        user_defined_name: List[str] = None,
+    ) -> T3D:
+        """Convert a T3DModel into a T3D Forcing to be saved into the .bc file.
+
+        Args:
+            t3d_model(T3DModel):
+                T3DModel representing the .t3d file model.
+            user_defined_name (List[str], optional):
+                user-defined name for the forcing block.
+
+        Returns:
+            T3D: The converted T3D object.
+
+        Examples:
+            ```python
+            >>> from hydrolib.core.dflowfm.t3d.models import T3DModel, T3DTimeRecord
+            >>> from hydrolib.tools.extforce_convert.converters import T3DToForcingConverter
+            >>> from hydrolib.core.dflowfm.bc.models import QuantityUnitPair, T3D
+            >>> t3d_model = T3DModel(
+            ...     layer_type="SIGMA",
+            ...     layers=[0.0, 0.1, 0.2, 0.3, 0.4],
+            ...     records = [
+            ...         T3DTimeRecord(time="0 seconds since 2006-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0]),
+            ...         T3DTimeRecord(time="1e9 seconds since 2001-01-01 00:00:00 +00:00", data=[5.0, 5.0, 10.0, 10.0])
+            ...     ],
+            ...     quantities_names=["temperature", "salinity", "discharge", "any quantity"]
+            ... )
+            >>> converter = T3DToForcingConverter()
+            >>> t3d_forcing = converter.convert_t3d_model(t3d_model,"sigma-5-layers-time-steps")
+            >>> print(t3d_forcing.name)
+            sigma-5-layers-time-steps
+            >>> print(t3d_forcing.function)
+            t3d
+            >>> print(t3d_forcing.datablock)
+            [[0.0, 5.0, 5.0, 10.0, 10.0], [1000000000.0, 5.0, 5.0, 10.0, 10.0]]
+            >>> print(t3d_forcing.quantityunitpair) # doctest: +SKIP
+            [
+                QuantityUnitPair(quantity='time', unit='seconds since 2006-01-01 00:00:00 +00:00', vertpositionindex=None),
+                QuantityUnitPair(quantity='temperature', unit='degC', vertpositionindex=1),
+                QuantityUnitPair(quantity='salinity', unit='ppt', vertpositionindex=2),
+                QuantityUnitPair(quantity='discharge', unit='m3/s', vertpositionindex=3)
+            ]
+            >>> print(t3d_forcing.vertpositions)
+            [0.0, 0.1, 0.2, 0.3, 0.4]
+            >>> print(t3d_forcing.vertpositiontype)
+            percBed
+
+            ```
+        """
+        data = {
+            "name": user_defined_name,
+            "vertpositions": t3d_model.layers,
+            "vertpositiontype": "percBed",
+        }
+        data_dict = t3d_model.as_dict()
+        updated = [[k] + v for k, v in data_dict.items()]
+        data["datablock"] = updated
+
+        time_unit = t3d_model.records[0].time_unit
+        ref_date = t3d_model.records[0].reference_date
+        quantities_list = [
+            QuantityUnitPair(quantity="time", unit=f"{time_unit} since {ref_date}")
+        ]
+
+        units = t3d_model.get_units()
+        quantities_names = t3d_model.quantities_names
+        for i, (quantity, unit) in enumerate(zip(quantities_names, units)):
+            quantities_list.append(
+                QuantityUnitPair(quantity=quantity, unit=unit, vertpositionindex=i + 1)
+            )
+
+        data["quantityunitpair"] = quantities_list
+
+        t3d = T3D(**data)
+        return t3d
 
 
 def update_extforce_file_new(
