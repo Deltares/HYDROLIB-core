@@ -10,6 +10,11 @@ from hydrolib.tools.extforce_convert.cli import ExternalForcingConverter, main
 
 def test_no_arguments(monkeypatch, capsys):
     """
+    Purpose:
+        Ensures that when no arguments are provided, the CLI fails with an appropriate usage message.
+    Expected Behavior:
+        The program exits with a `SystemExit` error (code `2`), and the help text is displayed.
+
     If no arguments are provided, argparse should fail or show help.
     Because we used required=True in the mutually exclusive group,
     it will raise a SystemExit.
@@ -28,6 +33,12 @@ def test_no_arguments(monkeypatch, capsys):
 
 
 def test_help(monkeypatch, capsys):
+    """
+    Purpose:
+        Verifies that the `--help` argument correctly displays usage information.
+    Expected Behavior:
+        The program exits normally and prints usage instructions, including a brief description of the tool.
+    """
     # Simulate `--help`
     monkeypatch.setattr(sys, "argv", ["prog_name", "--help"])
     with pytest.raises(SystemExit):  # `argparse` raises SystemExit on `--help`
@@ -38,6 +49,12 @@ def test_help(monkeypatch, capsys):
 
 
 def test_version(monkeypatch, capsys):
+    """
+    Purpose:
+        Confirms that the `--version` argument correctly prints the package version.
+    Expected Behavior:
+        The program exits normally and displays the `__version__` string.
+    """
     # Simulate `--version`
     monkeypatch.setattr(sys, "argv", ["prog_name", "--version"])
     with pytest.raises(SystemExit):
@@ -48,8 +65,12 @@ def test_version(monkeypatch, capsys):
 
 def test_mdufile_ok(monkeypatch, capsys, input_files_dir: Path):
     """
-    Test the minimal valid command with --mdufile.
-    Ensures it doesn't raise an error.
+    Purpose:
+        Tests the CLI behavior when a valid `--mdufile` argument is provided.
+    Expected Behavior:
+      - The CLI processes the given file without errors.
+      - It calls the `update`, `save`, and `clean` methods of `ExternalForcingConverter`.
+      - The expected success messages appear in the output.
     """
     mdu_file = input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
     monkeypatch.setattr(sys, "argv", ["prog", "--mdufile", str(mdu_file)])
