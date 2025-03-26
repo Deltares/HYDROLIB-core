@@ -120,4 +120,6 @@ nav:
       - RainfallRunoff:
           - reference/rr/rr.md
           - reference/rr/meteo.md
+      - External Forcing Conversion:
+          - reference/external_forcing_conversion.md
   - Release notes: "releasenotes.md"

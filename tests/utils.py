@@ -1,5 +1,7 @@
 import difflib
 import filecmp
+import os
+import sys
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -254,3 +256,7 @@ def compare_two_files(path1: PathOrStr, path2: PathOrStr) -> List[str]:
         file1_lines, file2_lines, lineterm="", fromfile=str(path1), tofile=str(path2)
     )
     return list(diff)
+
+
+def is_macos():
+    return os.name == "posix" and sys.platform == "darwin"
