@@ -12,101 +12,95 @@ from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer
 class HarmonicRecord(BaseModel):
     """Single cmp record, representing a harmonic component with amplitude and phase.
 
-    Attributes:
+    Args:
         period (float): the period.
         amplitude (float): the amplitude.
         phase (float): the phase in degrees.
 
-        Examples:
-            Create a `HarmonicRecord` object from a dictionary:
-                ```python
-                >>> data = {
-                ...     "period": 0.0,
-                ...     "amplitude": 1.0,
-                ...     "phase": 2.0
-                ... }
-                >>> harmonic_record = HarmonicRecord(**data)
-                >>> print(harmonic_record.period)
-                0.0
+    Examples:
+        Create a `HarmonicRecord` object from a dictionary:
+            ```python
+            >>> data = {
+            ...     "period": 0.0,
+            ...     "amplitude": 1.0,
+            ...     "phase": 2.0
+            ... }
+            >>> harmonic_record = HarmonicRecord(**data)
+            >>> print(harmonic_record.period)
+            0.0
 
-                ```
-        Returns:
-            HarmonicRecord: A new instance of the `HarmonicRecord` class.
+            ```
+    Returns:
+        HarmonicRecord: A new instance of the `HarmonicRecord` class.
 
-        Raises:
-            ValueError: If the period, amplitude or phase are not valid numbers.
+    Raises:
+        ValueError: If the period, amplitude or phase are not valid numbers.
     """
 
     period: float
-
     amplitude: float
-
     phase: float
 
 
 class AstronomicRecord(BaseModel):
     """Single cmp record, representing an astronomic component with amplitude and phase.
 
-    Attributes:
+    Args:
         name (AstronomicName): the astronomic name.
         amplitude (float): the amplitude.
         phase (float): the phase in degrees.
 
-        Examples:
-            Create an `AstronomicRecord` object from a dictionary:
-                ```python
-                >>> data = {
-                ...     "name": "4MS10",
-                ...     "amplitude": 1.0,
-                ...     "phase": 2.0
-                ... }
-                >>> astronomic_record = AstronomicRecord(**data)
-                >>> print(astronomic_record.name)
-                4MS10
+    Examples:
+        Create an `AstronomicRecord` object from a dictionary:
+            ```python
+            >>> data = {
+            ...     "name": "4MS10",
+            ...     "amplitude": 1.0,
+            ...     "phase": 2.0
+            ... }
+            >>> astronomic_record = AstronomicRecord(**data)
+            >>> print(astronomic_record.name)
+            4MS10
 
-                ```
-        Returns:
-            AstronomicRecord: A new instance of the `AstronomicRecord` class.
+            ```
+    Returns:
+        AstronomicRecord: A new instance of the `AstronomicRecord` class.
 
-        Raises:
-            ValueError: If the name, amplitude or phase are not valid numbers.
+    Raises:
+        ValueError: If the name, amplitude or phase are not valid numbers.
     """
 
     name: AstronomicName
-
     amplitude: float
-
     phase: float
 
 
 class CMPSet(BaseModel):
     """A CMP set containing harmonics and astronomics.
 
-    Attributes:
+    Args:
         harmonics (List[HarmonicRecord]): A list containing the harmonic components.
         astronomics (List[AstronomicRecord]): A list containing the astronomic components.
-        quantity_name (str): The name of the quantity.
 
-        Examples:
-            Create a `CmpSet` object from a dictionary:
-                ```python
-                >>> data = {
-                ...     "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
-                ... }
-                >>> cmp_set = CMPSet(**data)
-                >>> print(cmp_set.astronomics)
-                [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
+    Examples:
+        Create a `CmpSet` object from a dictionary:
+            ```python
+            >>> data = {
+            ...     "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
+            ... }
+            >>> cmp_set = CMPSet(**data)
+            >>> print(cmp_set.astronomics)
+            [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
 
-                ```
-        Returns:
-            CmpSet: A new instance of the `CmpSet` class.
+            ```
+    Returns:
+        CmpSet: A new instance of the `CmpSet` class.
 
-        Raises:
-            ValueError: If the harmonics or astronomics are not valid lists.
+    Raises:
+        ValueError: If the harmonics or astronomics are not valid lists.
     """
 
     harmonics: Optional[List[HarmonicRecord]] = Field(default_factory=list)
-
     astronomics: Optional[List[AstronomicRecord]] = Field(default_factory=list)
 
 
@@ -115,7 +109,7 @@ class CMPModel(ParsableFileModel):
     This class is used to parse and serialize cmp files, which contain
     information about various components such as harmonics and astronomics.
 
-    Attributes:
+    Args:
         comments (List[str]): A list with the header comment of the cmp file.
         components (List[CMPSet]): A list of CMPSet records where each entry represents one cmp file.
 
@@ -148,9 +142,7 @@ class CMPModel(ParsableFileModel):
     """
 
     comments: List[str] = Field(default_factory=list)
-
     components: List[CMPSet] = Field(default_factory=list)
-
     quantities_names: Optional[List[str]] = None
 
     @classmethod
@@ -173,8 +165,10 @@ class CMPModel(ParsableFileModel):
 
     def get_units(self):
         """Return the units for each quantity in the timeseries.
+
         Returns:
             List[str]: A list of units for each quantity in the timeseries.
+
         Examples:
             Create a `CMPModel` object from a .cmp file:
                 ```python
@@ -204,10 +198,13 @@ class CMPModel(ParsableFileModel):
 def get_quantity_unit(quantities_names: List[str]) -> List[str]:
     """
     Maps each quantity in the input list to a specific unit based on its content.
+
     Args:
-        quantities_names (list of str): A list of strings to be checked for specific keywords.
+        quantities_names (List[str]): A list of strings to be checked for specific keywords.
+
     Returns:
-        list of str: A list of corresponding units for each input string.
+        List[str]: A list of corresponding units for each input string.
+
     Examples:
         ```python
         >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
