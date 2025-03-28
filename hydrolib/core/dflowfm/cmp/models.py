@@ -111,7 +111,7 @@ class CMPModel(ParsableFileModel):
 
     Args:
         comments (List[str]): A list with the header comment of the cmp file.
-        components (List[CMPSet]): A list of CMPSet records where each entry represents one cmp file.
+        components (CMPSet): A CMPSet of astronomic and/or harmonic records.
 
     Examples:
         Create a `CmpModel` object from a dictionary:
