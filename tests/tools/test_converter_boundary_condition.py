@@ -74,7 +74,6 @@ def verify_boundary_conditions(
     assert len(forcing_model.forcing) == 2
     names = ["L1_0001", "L1_0002"]
     assert all(f.name == name for f, name in zip(forcing_model.forcing, names))
-    assert all(f.quantityunitpair[0].quantity == "time" for f in forcing_model.forcing)
     assert new_quantity_block.locationfile == DiskOnlyFileModel(str(forcing.filename))
     assert new_quantity_block.bndwidth1d is None
     assert new_quantity_block.bndbldepth is None
@@ -118,6 +117,7 @@ class TestBoundaryConverter:
         )
 
         forcing_model = new_quantity_block.forcingfile
+        assert forcing_model.forcing[0].quantityunitpair[0].quantity == "time"
         assert all(
             [
                 forcing_model.forcing[i].quantityunitpair[1].quantity == "waterlevelbnd"
@@ -125,6 +125,42 @@ class TestBoundaryConverter:
             ]
         )
         assert forcing_model.forcing[0].datablock == [[0, 0.01], [120, 0.01]]
+
+    def test_with_cmp(
+        self,
+        converter: BoundaryConditionConverter,
+        forcing: ExtOldForcing,
+        cmp_files: List[Path],
+        start_date: str,
+    ):
+        """
+        Test converting a boundary condition with a tim file.
+        """
+        t3d_files = []
+        tim_files = []
+        with patch.object(Path, "glob", side_effect=[tim_files, t3d_files, cmp_files]):
+            new_quantity_block = converter.convert(forcing, start_date)
+
+        verify_boundary_conditions(
+            new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
+        )
+
+        forcing_model = new_quantity_block.forcingfile
+        assert all(
+            [
+                forcing_model.forcing[i].quantityunitpair[1].quantity
+                == "waterlevelbnd amplitude"
+                for i in range(2)
+            ]
+        )
+        assert all(
+            [
+                forcing_model.forcing[i].quantityunitpair[2].quantity
+                == "waterlevelbnd phase"
+                for i in range(2)
+            ]
+        )
+        assert forcing_model.forcing[0].datablock == [[0.0, 1.0, 2.0]]
 
     def test_with_t3d(
         self,
