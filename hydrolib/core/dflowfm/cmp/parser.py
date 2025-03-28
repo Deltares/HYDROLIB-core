@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 AstronomicData = Dict[str, Tuple[float, float, float]]
 HarmonicData = Dict[str, Tuple[str, float, float]]
-CmpData = Dict[str, Tuple[AstronomicData, HarmonicData]]
+CMPData = Dict[str, Tuple[AstronomicData, HarmonicData]]
 
 
 class CMPParser:
@@ -86,9 +86,9 @@ class CMPParser:
     @staticmethod
     def _read_components_data(
         lines: List[str], start_components_index: int
-    ) -> List[CmpData]:
-        harmonics_data: List[CmpData] = []
-        astronomics_data: List[CmpData] = []
+    ) -> List[CMPData]:
+        harmonics_data: List[CMPData] = []
+        astronomics_data: List[CMPData] = []
         for line_index in range(start_components_index, len(lines)):
             line = lines[line_index].strip()
 
