@@ -40,17 +40,15 @@ class CMPParser:
                 ...    mock_file.return_value = file
                 ...    cmp_model = CMPParser.parse(Path(""))
                 >>> print(cmp_model)
-                {'comments': ['some comment'], 'components': [{'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}]}
+                {'comments': ['some comment'], 'component': {'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}}
 
                 ```
         """
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
             comments, start_components_index = CMPParser._read_header_comments(lines)
-            components = [
-                CMPParser._read_components_data(lines, start_components_index)
-            ]
-        return {"comments": comments, "components": components}
+            component = CMPParser._read_components_data(lines, start_components_index)
+        return {"comments": comments, "component": component}
 
     @staticmethod
     def _read_header_comments(lines: List[str]) -> Tuple[List[str], int]:

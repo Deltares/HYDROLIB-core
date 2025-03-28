@@ -118,13 +118,13 @@ class CMPModel(ParsableFileModel):
             ```python
             >>> data = {
             ...     "comments": ["# Example comment"],
-            ...     "components": [{
+            ...     "component": {
             ...         "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
             ...         "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}]
-            ...     }]
+            ...     }
             ... }
             >>> cmp_model = CMPModel(**data)
-            >>> print(cmp_model.components[0].astronomics)
+            >>> print(cmp_model.component.astronomics)
             [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
 
             ```
@@ -142,8 +142,8 @@ class CMPModel(ParsableFileModel):
     """
 
     comments: List[str] = Field(default_factory=list)
-    components: List[CMPSet] = Field(default_factory=list)
-    quantities_names: Optional[List[str]] = None
+    component: CMPSet = Field(default_factory=list)
+    quantities_name: Optional[List[str]] = None
 
     @classmethod
     def _ext(cls) -> str:
@@ -172,27 +172,22 @@ class CMPModel(ParsableFileModel):
         Examples:
             Create a `CMPModel` object from a .cmp file:
                 ```python
-                >>> from hydrolib.core.dflowfm.cmp.models import CMPModel
                 >>> data = {
                 ...     "comments": ["# Example comment"],
-                ...     "components": [
-                ...         {
-                ...             "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
-                ...         }, {
-                ...             "astronomics": [{"name": "4MS10", "amplitude": 1.0, "phase": 2.0}],
-                ...         }
-                ...     ],
-                ...     "quantities_names": ["discharge", "waterlevel"],
+                ...     "component": {
+                ...         "harmonics": [{"period": 0.0, "amplitude": 1.0, "phase": 2.0}],
+                ...     },
+                ...     "quantities_name": ["discharge"],
                 ... }
                 >>> model = CMPModel(**data)
                 >>> print(model.get_units())
-                ['m3/s', 'm']
+                ['m3/s']
 
                 ```
         """
-        if self.quantities_names is None:
+        if self.quantities_name is None:
             return None
-        return get_quantity_unit(self.quantities_names)
+        return get_quantity_unit(self.quantities_name)
 
 
 def get_quantity_unit(quantities_names: List[str]) -> List[str]:

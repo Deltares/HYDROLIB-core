@@ -33,14 +33,10 @@ class CMPSerializer:
         path.parent.mkdir(parents=True, exist_ok=True)
 
         comment_lines = CMPSerializer._serialize_comment_lines(data)
-        components_lines = []
-        for component in data["components"]:
-            components_lines.extend(
-                CMPSerializer._serialize_components_lines(component)
-            )
+        component_lines = CMPSerializer._serialize_components_lines(data["component"])
 
         file_content = CMPSerializer._serialize_file_content(
-            components_lines, comment_lines
+            component_lines, comment_lines
         )
         with path.open("w", encoding="utf8") as file:
             file.write(file_content)
