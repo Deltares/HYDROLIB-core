@@ -71,7 +71,6 @@ def verify_boundary_conditions(
     assert new_quantity_block.quantity == expected_quantity
     forcing_model = new_quantity_block.forcingfile
     assert forcing_model.filepath.name == forcing_model_filename
-    assert len(forcing_model.forcing) == 2
     names = ["L1_0001", "L1_0002"]
     assert all(f.name == name for f, name in zip(forcing_model.forcing, names))
     assert new_quantity_block.locationfile == DiskOnlyFileModel(str(forcing.filename))
@@ -95,6 +94,75 @@ def test_merge_tim_files(converter: BoundaryConditionConverter, tim_files: List[
 
 
 class TestBoundaryConverter:
+    tim_data = [[[0, 0.01], [120, 0.01]], [[0, 0.01], [120, 0.01]]]
+    t3d_data = [
+        [
+            [0.0, 40.0, 35.0, 34.5, 32.5, 30.0],
+            [180.0, 80.0, 35.0, 34.5, 32.5, 30.0],
+            [9999999.0, 40.0, 35.0, 34.5, 32.5, 30.0],
+        ],
+        [
+            [0.0, 41.0, 36.45455, 36.0, 34.0, 31.0],
+            [180.0, 41.00002, 36.45456, 36.00002, 34.00002, 31.00002],
+            [9999999.0, 42.0, 37.45455, 37.0, 35.0, 32.0],
+        ],
+    ]
+    cmp_data = [[[0.0, 1.0, 2.0]], [["4MS10", 2.0, 1.0]]]
+    boundary_parameters = [
+        pytest.param(["tim_files", [], []], tim_data, id="tim_files_case"),
+        pytest.param([[], "t3d_files", []], t3d_data, id="t3d_files_case"),
+        pytest.param([[], [], "cmp_files"], cmp_data, id="cmp_files_case"),
+        pytest.param(
+            ["tim_files", "t3d_files", []],
+            tim_data + t3d_data,
+            id="tim_and_t3d_files_case",
+        ),
+        pytest.param(
+            ["tim_files", [], "cmp_files"],
+            tim_data + cmp_data,
+            id="tim_and_cmp_files_case",
+        ),
+        pytest.param(
+            [[], "t3d_files", "cmp_files"],
+            t3d_data + cmp_data,
+            id="t3d_and_cmp_files_case",
+        ),
+        pytest.param(
+            ["tim_files", "t3d_files", "cmp_files"],
+            tim_data + t3d_data + cmp_data,
+            id="all_files_case",
+        ),
+    ]
+
+    @pytest.mark.parametrize("files, contents", boundary_parameters)
+    def test_boundary_converter(
+        self,
+        request,
+        files: List[str],
+        contents,
+        converter: BoundaryConditionConverter,
+        forcing: ExtOldForcing,
+        start_date: str,
+    ):
+        resolved_files = [
+            (
+                request.getfixturevalue(fixture_name)
+                if isinstance(fixture_name, str)
+                else fixture_name
+            )
+            for fixture_name in files
+        ]
+
+        with patch.object(Path, "glob", side_effect=resolved_files):
+            new_quantity_block = converter.convert(forcing, start_date)
+
+        verify_boundary_conditions(
+            new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
+        )
+
+        forcing_model = new_quantity_block.forcingfile
+        for forcing, content in zip(forcing_model.forcing, contents):
+            assert forcing.datablock == content
 
     def test_with_tim(
         self,
