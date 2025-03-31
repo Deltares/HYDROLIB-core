@@ -17,6 +17,12 @@ class HarmonicRecord(BaseModel):
         amplitude (float): the amplitude.
         phase (float): the phase in degrees.
 
+    Returns:
+        HarmonicRecord: A new instance of the `HarmonicRecord` class.
+
+    Raises:
+        ValueError: If the period, amplitude or phase are not valid numbers.
+
     Examples:
         Create a `HarmonicRecord` object from a dictionary:
             ```python
@@ -30,11 +36,6 @@ class HarmonicRecord(BaseModel):
             0.0
 
             ```
-    Returns:
-        HarmonicRecord: A new instance of the `HarmonicRecord` class.
-
-    Raises:
-        ValueError: If the period, amplitude or phase are not valid numbers.
     """
 
     period: float
@@ -287,6 +288,12 @@ class AstronomicRecord(BaseModel):
         amplitude (float): the amplitude.
         phase (float): the phase in degrees.
 
+    Returns:
+        AstronomicRecord: A new instance of the `AstronomicRecord` class.
+
+    Raises:
+        ValueError: If the name, amplitude or phase are not valid numbers.
+
     Examples:
         Create an `AstronomicRecord` object from a dictionary:
             ```python
@@ -300,11 +307,6 @@ class AstronomicRecord(BaseModel):
             4MS10
 
             ```
-    Returns:
-        AstronomicRecord: A new instance of the `AstronomicRecord` class.
-
-    Raises:
-        ValueError: If the name, amplitude or phase are not valid numbers.
     """
 
     name: AstronomicName
@@ -319,6 +321,12 @@ class CMPSet(BaseModel):
         harmonics (List[HarmonicRecord]): A list containing the harmonic components.
         astronomics (List[AstronomicRecord]): A list containing the astronomic components.
 
+    Returns:
+        CmpSet: A new instance of the `CmpSet` class.
+
+    Raises:
+        ValueError: If the harmonics or astronomics are not valid lists.
+
     Examples:
         Create a `CmpSet` object from a dictionary:
             ```python
@@ -330,11 +338,6 @@ class CMPSet(BaseModel):
             [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
 
             ```
-    Returns:
-        CmpSet: A new instance of the `CmpSet` class.
-
-    Raises:
-        ValueError: If the harmonics or astronomics are not valid lists.
     """
 
     harmonics: Optional[List[HarmonicRecord]] = Field(default_factory=list)
@@ -349,6 +352,12 @@ class CMPModel(ParsableFileModel):
     Args:
         comments (List[str]): A list with the header comment of the cmp file.
         components (CMPSet): A CMPSet of astronomic and/or harmonic records.
+
+    Returns:
+        CmpModel: A new instance of the `CmpModel` class.
+
+    Raises:
+        ValueError: If the comments or components are not valid lists.
 
     Examples:
         Create a `CmpModel` object from a dictionary:
@@ -365,12 +374,6 @@ class CMPModel(ParsableFileModel):
             [AstronomicRecord(name='4MS10', amplitude=1.0, phase=2.0)]
 
             ```
-
-    Returns:
-        CmpModel: A new instance of the `CmpModel` class.
-
-    Raises:
-        ValueError: If the comments or components are not valid lists.
 
     See Also:
         CmpSet: Class representing the components of the cmp file.
