@@ -281,7 +281,7 @@ class BoundaryConditionConverter(BaseConverter):
             )
 
         forcings_list = []
-        tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}_*.tim"))
+        tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9].tim"))
         if len(tim_files) > 1:
             time_series_list = self.convert_tim_to_bc(
                 tim_files, time_unit, quantity=quantity, label=label
