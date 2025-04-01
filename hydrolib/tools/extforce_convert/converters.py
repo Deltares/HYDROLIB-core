@@ -281,7 +281,9 @@ class BoundaryConditionConverter(BaseConverter):
             )
 
         forcings_list = []
-        tim_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9].tim"))
+        tim_files = list(
+            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9].tim")
+        )
         if len(tim_files) > 1:
             time_series_list = self.convert_tim_to_bc(
                 tim_files, time_unit, quantity=quantity, label=label
@@ -289,7 +291,9 @@ class BoundaryConditionConverter(BaseConverter):
             forcings_list.extend(time_series_list)
 
         # check t3d files
-        t3d_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}_*.t3d"))
+        t3d_files = list(
+            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9]*.t3d")
+        )
         if len(t3d_files) > 1:
             t3d_models = [T3DModel(path) for path in t3d_files]
             # this line assumed that the two t3d files will have the same number of layers and same number of quantities
@@ -303,7 +307,9 @@ class BoundaryConditionConverter(BaseConverter):
             forcings_list.extend(t3d_forcing_list)
 
         # check cmp files
-        cmp_files = list(self.root_dir.glob(f"{poly_line.filepath.stem}_*.cmp"))
+        cmp_files = list(
+            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9]*.cmp")
+        )
         if len(cmp_files) > 1:
             cmp_models = [CMPModel(path) for path in cmp_files]
             for cmp_model in cmp_models:
