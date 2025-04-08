@@ -44,6 +44,7 @@ class HarmonicRecord(BaseModel):
 
 
 class AstronomicName(Enum):
+    A0 = "A0"
     SA = "SA"
     SSA = "SSA"
     MSM = "MSM"
