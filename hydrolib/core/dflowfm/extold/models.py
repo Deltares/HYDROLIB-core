@@ -190,7 +190,7 @@ class ExtOldBoundaryQuantity(StrEnum):
         """
         # Allow strings starting with "tracer"
         if isinstance(value, str) and value.startswith(
-                BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
+            BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
         ):
             new_member = str.__new__(cls, value)
             new_member._value_ = value
