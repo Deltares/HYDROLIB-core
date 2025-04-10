@@ -25,6 +25,11 @@ INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
     "initialverticalsigmasedfracprofile",
 )
 
+BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = (
+    "tracerbnd",
+    "sedfracbnd",
+)
+
 FILETYPE_FILEMODEL_MAPPING = {
     1: TimModel,
     2: TimModel,
@@ -176,6 +181,25 @@ class ExtOldBoundaryQuantity(StrEnum):
     """Tangential velocity"""
     QhBnd = "qhbnd"
     """Discharge-water level dependency"""
+
+    @classmethod
+    def _missing_(cls, value):
+        """Custom implementation for handling missing values.
+
+        the method parses any missing values and only allows the ones that start with "initialtracer".
+        """
+        # Allow strings starting with "tracer"
+        if isinstance(value, str) and value.startswith(
+                BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
+        ):
+            new_member = str.__new__(cls, value)
+            new_member._value_ = value
+            return new_member
+        else:
+            raise ValueError(
+                f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
+                f"and quantities that start with 'tracer'"
+            )
 
 
 class ExtOldParametersQuantity(StrEnum):
