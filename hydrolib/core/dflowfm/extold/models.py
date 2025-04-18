@@ -149,6 +149,7 @@ class ExtOldTracerQuantity(StrEnum):
     """User-defined tracer"""
     InitialTracer = "initialtracer"
     """Initial tracer"""
+    SedFracBnd = "sedfracbnd"
 
 
 class ExtOldBoundaryQuantity(StrEnum):
