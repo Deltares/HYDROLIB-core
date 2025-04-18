@@ -31,6 +31,7 @@ class DataFileType(StrEnum):
     sample = "sample"
     onedfield = "1dField"
     polygon = "polygon"
+    uniform = "uniform"
 
     allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
 
@@ -44,6 +45,7 @@ class InterpolationMethod(StrEnum):
     constant = "constant"  # only with dataFileType=polygon .
     triangulation = "triangulation"  # Delaunay triangulation+linear interpolation.
     averaging = "averaging"  # grid cell averaging.
+    linear_space_time = "linearSpaceTime"  # linear interpolation in space and time.
 
     allowedvaluestext = "Possible values: constant, triangulation, averaging."
 
