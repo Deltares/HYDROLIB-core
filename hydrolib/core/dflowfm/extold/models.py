@@ -216,6 +216,8 @@ class ExtOldParametersQuantity(StrEnum):
     HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
     AdvectionType = "advectiontype"
     InfiltrationCapacity = "infiltrationcapacity"
+    BedRockSurfaceElevation = "bedrock_surface_elevation"
+
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -482,6 +484,7 @@ class ExtOldQuantity(StrEnum):
     AdvectionType = "advectiontype"
     """Type of advection scheme"""
     IBotLevType = "ibotlevtype"
+    BedRockSurfaceElevation = "bedrock_surface_elevation"
     """Type of bed-level handling"""
 
     # Miscellaneous
