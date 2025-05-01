@@ -219,7 +219,6 @@ class ExtOldParametersQuantity(StrEnum):
     BedRockSurfaceElevation = "bedrock_surface_elevation"
 
 
-
 class ExtOldMeteoQuantity(StrEnum):
 
     # Meteorological fields
