@@ -217,6 +217,11 @@ class ExtOldParametersQuantity(StrEnum):
     AdvectionType = "advectiontype"
     InfiltrationCapacity = "infiltrationcapacity"
     BedRockSurfaceElevation = "bedrock_surface_elevation"
+    WaveDirection = "wavedirection"
+    XWaveForce = "xwaveforce"
+    YWaveForce = "ywaveforce"
+    WavePeriod = "waveperiod"
+    WaveSignificantHeight = "wavesignificantheight"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -495,6 +500,9 @@ class ExtOldQuantity(StrEnum):
     """Wave significant height"""
     WavePeriod = "waveperiod"
     """Wave period"""
+    WaveDirection = "wavedirection"
+    XWaveForce = "xwaveforce"
+    YWaveForce = "ywaveforce"
 
 
 class ExtOldFileType(IntEnum):
