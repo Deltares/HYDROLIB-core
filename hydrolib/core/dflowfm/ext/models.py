@@ -54,6 +54,7 @@ class Boundary(INIBasedModel):
     forcingfile: Union[ForcingModel, List[ForcingModel]] = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
+    returntime: Optional[float] = Field(alias="returnTime")
 
     def is_intermediate_link(self) -> bool:
         return True
