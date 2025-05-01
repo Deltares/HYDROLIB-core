@@ -211,7 +211,7 @@ def parameter_quantities() -> List[str]:
         "horizontaleddydiffusivitycoefficient",
         "advectiontype",
         "infiltrationcapacity",
-        "bedrock_surface_elevation"
+        "bedrock_surface_elevation",
     ]
 
 
