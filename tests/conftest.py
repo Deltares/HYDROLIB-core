@@ -74,6 +74,7 @@ def initial_condition_file_type() -> List[str]:
         "1dField",
         "polygon",
         "uniform",
+        "netcdf",
         "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon.",
     ]
 
@@ -212,6 +213,11 @@ def parameter_quantities() -> List[str]:
         "advectiontype",
         "infiltrationcapacity",
         "bedrock_surface_elevation",
+        "wavedirection",
+        "xwaveforce",
+        "ywaveforce",
+        "waveperiod",
+        "wavesignificantheight"
     ]
 
 

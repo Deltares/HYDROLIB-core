@@ -211,7 +211,7 @@ def test_initial_conditions_interpolation_methods(
 
 
 def test_initial_condition_file_type(initial_condition_file_type: List[str]):
-    assert len(DataFileType) == 7
+    assert len(DataFileType) == 8
     assert all(
         quantity.value in initial_condition_file_type
         for quantity in DataFileType.__members__.values()
