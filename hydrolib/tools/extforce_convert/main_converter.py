@@ -439,58 +439,32 @@ class ExternalForcingConverter:
         if not mdu_file.exists():
             raise FileNotFoundError(f"File not found: {mdu_file}")
 
-        try:
-            fm_model = LegacyFMModel(mdu_file, recurse=False)
-            old_ext_force = fm_model.external_forcing.extforcefile
-            if old_ext_force is not None:
-                old_ext_force_file = old_ext_force.filepath
-            else:
-                raise ValueError(
-                    "The old external forcing file is not found in the mdu file."
-                )
+        data, mdu_info = ExternalForcingConverter.get_mdu_info(mdu_file)
 
-            new_ext_force_file = fm_model.external_forcing.extforcefilenew
-            inifieldfile_mdu = fm_model.geometry.inifieldfile
-            structurefile_mdu = fm_model.geometry.structurefile
-            mdu_info = {
-                "file_path": mdu_file,
-                "fm_model": fm_model,
-                "refdate": get_ref_time(fm_model.time.refdate),
-                "temperature": False if fm_model.physics.temperature == 0 else True,
-                "salinity": fm_model.physics.salinity,
-            }
-        except ValidationError as e:
-            warnings.warn(
-                "The MDU file contains unknown keywords. These keywords will be ignored, but in future versions "
-                f"these keywords will raise an error, Error: {e}",
-                category=DeprecationWarning,
+        external_forcing_data = data.get("external_forcing")
+        geometry = data.get("geometry")
+
+        inifieldfile_mdu = geometry.get("inifieldfile")
+        structurefile_mdu = geometry.get("structurefile")
+
+        old_ext_force_file = external_forcing_data.get("extforcefile")
+        if old_ext_force_file is None:
+            raise ValueError(
+                "The old external forcing file is not found in the mdu file."
             )
-            data, mdu_info = ExternalForcingConverter.get_mdu_info(mdu_file)
 
-            external_forcing_data = data.get("external_forcing")
-            geometry = data.get("geometry")
+        new_ext_force_file = external_forcing_data.get("extforcefilenew")
 
-            inifieldfile_mdu = geometry.get("inifieldfile")
-            structurefile_mdu = geometry.get("structurefile")
-
-            old_ext_force_file = external_forcing_data.get("extforcefile")
-            if old_ext_force_file is None:
-                raise ValueError(
-                    "The old external forcing file is not found in the mdu file."
-                )
-
-            new_ext_force_file = external_forcing_data.get("extforcefilenew")
-
-            old_ext_force_file = (
-                Path(old_ext_force_file)
-                if old_ext_force_file is not None
-                else old_ext_force_file
-            )
-            new_ext_force_file = (
-                Path(new_ext_force_file)
-                if new_ext_force_file is not None
-                else new_ext_force_file
-            )
+        old_ext_force_file = (
+            Path(old_ext_force_file)
+            if old_ext_force_file is not None
+            else old_ext_force_file
+        )
+        new_ext_force_file = (
+            Path(new_ext_force_file)
+            if new_ext_force_file is not None
+            else new_ext_force_file
+        )
 
         root_dir = mdu_file.parent
         extoldfile = root_dir / old_ext_force_file
@@ -566,15 +540,15 @@ class ExternalForcingConverter:
                 self.fm_model.geometry.inifieldfile = self.inifield_model
             if len(self.structure_model.structure) > 0:
                 self.fm_model.geometry.structurefile[0] = self.structure_model
+
+            if self.verbose:
+                print(f"succesfully saved converted file {self.fm_model.filepath} ")
         else:
             mdu_path = self.mdu_info.get("file_path")
             new_ext_file = self.ext_model.filepath.name
             self.mdu_info["new_mdu_content"] = update_extforce_file_new(
                 mdu_path, new_ext_file
             )
-
-        if self.verbose:
-            print(f"succesfully saved converted file {self.fm_model.filepath} ")
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""

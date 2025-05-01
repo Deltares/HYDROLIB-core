@@ -27,19 +27,11 @@ class TestExtOldToNewFromMDU:
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         converter.verbose = True
         ext_model, _, _ = converter.update()
-        fm_model = converter.fm_model
-        assert isinstance(fm_model, LegacyFMModel)
         assert len(converter.extold_model.forcing) == 5
-        assert isinstance(fm_model.external_forcing.extforcefilenew, ExtModel)
-        assert not hasattr(fm_model.external_forcing, "extforcefile")
 
         # check the saved files
         converter.save()
 
-        # check that the mdu file has the relative pathes, not the absolute pathes
-        # the pathes are changes to the relative pathes inside the save function.
-        mdu_path = fm_model.external_forcing.extforcefilenew.filepath
-        assert mdu_path.parent == Path(".")  # no parent
 
         assert ext_model.filepath.exists()
         ext_model.filepath.unlink()
@@ -88,16 +80,6 @@ class TestExtOldToNewFromMDU:
         ):
             recursive_converter(path, suppress_errors=True)
 
-    def test_deprecated_warning(self):
-        """
-        Test that the deprecated warning is raised.
-        """
-        with patch("warnings.warn", side_effect=SystemExit):
-            with pytest.raises(SystemExit):
-                ExternalForcingConverter.from_mdu(
-                    "tests/data/input/dflowfm_individual_files/mdu/sp.mdu",
-                    suppress_errors=True,
-                )
 
 
 class TestExternalFocingConverter:
