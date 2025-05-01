@@ -183,7 +183,6 @@ class ExtOldBoundaryQuantity(StrEnum):
     QhBnd = "qhbnd"
     """Discharge-water level dependency"""
 
-
     @classmethod
     def _missing_(cls, value):
         """Custom implementation for handling missing values.
