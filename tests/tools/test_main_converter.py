@@ -32,7 +32,6 @@ class TestExtOldToNewFromMDU:
         # check the saved files
         converter.save()
 
-
         assert ext_model.filepath.exists()
         ext_model.filepath.unlink()
         # delete the mdu file (this is the updated one with the new external forcing file)
@@ -79,7 +78,6 @@ class TestExtOldToNewFromMDU:
             return_value=None,
         ):
             recursive_converter(path, suppress_errors=True)
-
 
 
 class TestExternalFocingConverter:
