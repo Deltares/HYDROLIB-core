@@ -218,6 +218,7 @@ def parameter_quantities() -> List[str]:
         "ywaveforce",
         "waveperiod",
         "wavesignificantheight",
+        "internaltidesfrictioncoefficient"
     ]
 
 
