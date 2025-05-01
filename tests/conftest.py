@@ -217,7 +217,7 @@ def parameter_quantities() -> List[str]:
         "xwaveforce",
         "ywaveforce",
         "waveperiod",
-        "wavesignificantheight"
+        "wavesignificantheight",
     ]
 
 
