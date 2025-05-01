@@ -222,6 +222,7 @@ class ExtOldParametersQuantity(StrEnum):
     YWaveForce = "ywaveforce"
     WavePeriod = "waveperiod"
     WaveSignificantHeight = "wavesignificantheight"
+    InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
 
 
 class ExtOldMeteoQuantity(StrEnum):
