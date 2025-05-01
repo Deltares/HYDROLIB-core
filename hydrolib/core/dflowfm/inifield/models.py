@@ -32,6 +32,7 @@ class DataFileType(StrEnum):
     onedfield = "1dField"
     polygon = "polygon"
     uniform = "uniform"
+    netcdf = "netcdf"
 
     allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
 
