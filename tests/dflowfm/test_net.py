@@ -311,10 +311,7 @@ def test_create_refine_2d():
     assert fnc.shape == (87, 4)
     fnc_fill_value = np.iinfo(np.int32).min
     assert (fnc == fnc_fill_value).sum() == 19  # amount of triangles
-<<<<<<< HEAD
-=======
 
->>>>>>> 88a14a618702cc711460c4962f111bbab0a08e50
 
 cases = [
     test_input_dir / "e02/f101_1D-boundaries/c01_steady-state-flow/Boundary_net.nc",
