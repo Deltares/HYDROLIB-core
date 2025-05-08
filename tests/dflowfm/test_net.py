@@ -6,7 +6,12 @@ import netCDF4 as nc
 import numpy as np
 import pytest
 import xarray as xr  # dev dependency only
-from meshkernel import DeleteMeshOption, GeometryList, MeshKernel, MeshRefinementParameters
+from meshkernel import (
+    DeleteMeshOption,
+    GeometryList,
+    MeshKernel,
+    MeshRefinementParameters,
+)
 
 from hydrolib.core.basemodel import BaseModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
@@ -125,13 +130,14 @@ def network_1d_2d_1d2dlinks():
         extent=(-22, -22, 22, 22), dx=2, dy=2
     )
     network.mesh2d_clip_mesh(geometrylist=get_circle_gl(22))
-    
+
     network.mesh2d_refine_mesh(polygon=get_circle_gl(11), level=1)
     network.mesh2d_refine_mesh(polygon=get_circle_gl(3), level=1)
 
     # Add links
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
     return network
+
 
 @pytest.mark.plots
 def test_create_1d_2d_1d2d():
@@ -255,31 +261,41 @@ def test_create_clip_2d(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
     assert mesh2d_output.edge_nodes.size == nedgenodes  # 2x nedges
     assert mesh2d_output.face_x.size == nfaces
 
+
 @pytest.mark.parametrize(
     "deletemeshoption,inside,nnodes,nedgenodes,nfaces",
-    [      
+    [
         (DeleteMeshOption.INSIDE_NOT_INTERSECTED, True, 289, 1032, 228),
         (DeleteMeshOption.INSIDE_AND_INTERSECTED, True, 177, 584, 116),
         (DeleteMeshOption.FACES_WITH_INCLUDED_CIRCUMCENTERS, True, 233, 808, 172),
     ],
 )
-def test_create_clip_inside_with_hole(deletemeshoption, inside, nnodes, nedgenodes, nfaces):
-    
-    clipgeom = GeometryList(x_coordinates=np.array([ -5., -5., 5., 5., -5., -998., 2., -2., -2., 2., 2.]), 
-                        y_coordinates=np.array([ -5., 5., 5., -5., -5., -998., 2., 2., -2., -2., 2.]),
-                        inner_outer_separator=-998.,
-                        geometry_separator=-999.)
-        
+def test_create_clip_inside_with_hole(
+    deletemeshoption, inside, nnodes, nedgenodes, nfaces
+):
+
+    clipgeom = GeometryList(
+        x_coordinates=np.array(
+            [-5.0, -5.0, 5.0, 5.0, -5.0, -998.0, 2.0, -2.0, -2.0, 2.0, 2.0]
+        ),
+        y_coordinates=np.array(
+            [-5.0, 5.0, 5.0, -5.0, -5.0, -998.0, 2.0, 2.0, -2.0, -2.0, 2.0]
+        ),
+        inner_outer_separator=-998.0,
+        geometry_separator=-999.0,
+    )
+
     # Define polygon
-    bbox = (-8.,-8., 8., 8.)
+    bbox = (-8.0, -8.0, 8.0, 8.0)
     mesh2d = Mesh2d(meshkernel=MeshKernel())
-    mesh2d.create_rectilinear(extent=bbox, dx=1., dy=1.)
+    mesh2d.create_rectilinear(extent=bbox, dx=1.0, dy=1.0)
 
     mesh2d.clip(clipgeom, deletemeshoption=deletemeshoption, inside=inside)
     mesh2d_output = mesh2d.get_mesh2d()
     assert mesh2d_output.node_x.size == nnodes
     assert mesh2d_output.edge_nodes.size == nedgenodes  # 2x nedges
     assert mesh2d_output.face_x.size == nfaces
+
 
 def test_create_refine_2d():
 
@@ -294,10 +310,10 @@ def test_create_refine_2d():
     mesh2d = Mesh2d(meshkernel=MeshKernel())
     # Create within bounding box
     mesh2d.create_rectilinear(extent=bbox, dx=0.5, dy=0.75)
-    
-    parameters = MeshRefinementParameters(   
-                min_edge_size=0.1,                
-            )
+
+    parameters = MeshRefinementParameters(
+        min_edge_size=0.1,
+    )
     # Refine
     mesh2d.refine(polygon, parameters=parameters, level=1)
 

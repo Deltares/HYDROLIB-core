@@ -227,7 +227,7 @@ class Mesh2d(BaseModel):
         """
         # Call meshkernel
         self.meshkernel.mesh2d_make_triangular_mesh_from_polygon(geometry_list)
-    
+
     def clip(
         self,
         geometrylist: mk.GeometryList,
@@ -265,15 +265,14 @@ class Mesh2d(BaseModel):
                     raise ValueError(
                         "First and last coordinate of each GeometryList part should match."
                     )
-                
+
         # Inside
         else:
             # Get exterior and interiors
             parts = split_by(geometrylist, geometrylist.geometry_separator)
             exteriors = parts[:]
             interiors = []
-         
-      
+
         # Delete everything outside the (Multi)Polygon
         for exterior in exteriors:
             self.meshkernel.mesh2d_delete(
@@ -290,11 +289,12 @@ class Mesh2d(BaseModel):
                 invert_deletion=inside,
             )
 
-    def refine(self, 
-               polygon: mk.GeometryList, 
-               level: int,                
-               parameters: mk.MeshRefinementParameters=None
-              ):
+    def refine(
+        self,
+        polygon: mk.GeometryList,
+        level: int,
+        parameters: mk.MeshRefinementParameters = None,
+    ):
         """Refine the mesh within a polygon, by a number of steps (level)
 
         Args:
@@ -303,7 +303,7 @@ class Mesh2d(BaseModel):
             parameters (MeshRefinementParameters): object containing the Meshkernel refinement parameters. Default values are taken from meskernel documentation.
         """
         if parameters is None:
-            parameters = mk.MeshRefinementParameters(   
+            parameters = mk.MeshRefinementParameters(
                 refine_intersected=True,
                 use_mass_center_when_refining=True,
                 min_edge_size=1.0,
@@ -667,7 +667,9 @@ class Link1d2d(BaseModel):
         self, node_mask: np.ndarray, polygons: mk.GeometryList
     ):
         """"""
-        self.meshkernel.contacts_compute_with_points(node_mask=node_mask, polygons=polygons)
+        self.meshkernel.contacts_compute_with_points(
+            node_mask=node_mask, polygons=polygons
+        )
 
     def _link_from_2d_to_1d_lateral(
         self,
@@ -1189,13 +1191,12 @@ class Network:
         )
 
     def mesh2d_refine_mesh(
-        self, 
-        polygon: mk.GeometryList, 
-        level: int = None,         
-        parameters: mk.MeshRefineParameters=None):
-        self._mesh2d.refine(polygon=polygon, 
-                        level=level, 
-                        parameters=parameters)
+        self,
+        polygon: mk.GeometryList,
+        level: int = None,
+        parameters: mk.MeshRefineParameters = None,
+    ):
+        self._mesh2d.refine(polygon=polygon, level=level, parameters=parameters)
 
     def mesh1d_add_branch(
         self,
