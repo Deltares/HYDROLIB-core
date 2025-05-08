@@ -234,7 +234,8 @@ class Mesh2d(BaseModel):
         deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         inside=False,
     ) -> None:
-        """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
+        """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.
+
 
         Args:
             geometrylist (GeometryList): Polygon stored as GeometryList
