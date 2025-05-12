@@ -3,7 +3,9 @@ from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
 import pytest
+from pyfakefs.fake_filesystem import FakeFilesystem
 
+from hydrolib.core.basemodel import FileModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
@@ -78,6 +80,132 @@ class TestExtOldToNewFromMDU:
             return_value=None,
         ):
             recursive_converter(path, suppress_errors=True)
+
+    @pytest.mark.parametrize(
+        "mdu_file_content, ext_file, inifield_file, structure_file",
+        [
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": "new_forcing.ext",
+                    },
+                    "geometry": {
+                        "inifieldfile": "initial_conditions.ini",
+                        "structurefile": "structures.ini",
+                    },
+                },
+                None,
+                None,
+                None,
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                    },
+                    "geometry": {
+                        "inifieldfile": "initial_conditions.ini",
+                        "structurefile": "structures.ini",
+                    },
+                },
+                "user_provided.ext",
+                None,
+                None,
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": "new_forcing.ext",
+                    },
+                    "geometry": {
+                        "structurefile": "structures.ini",
+                    },
+                },
+                None,
+                "user_initial_conditions.ini",
+                None,
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": "new_forcing.ext",
+                    },
+                    "geometry": {
+                        "inifieldfile": "initial_conditions.ini",
+                    },
+                },
+                None,
+                None,
+                "user_structures.ini",
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": None,
+                    },
+                    "geometry": {
+                        "inifieldfile": MagicMock(spec=FileModel),
+                        "structurefile": MagicMock(spec=FileModel),
+                    },
+                },
+                None,
+                None,
+                None,
+            ),
+        ],
+        ids=[
+            "Valid MDU file with all fields present",
+            "MDU file missing extforcefilenew, user provides ext_file",
+            "MDU file missing inifieldfile, user provides inifield_file",
+            "MDU file missing structurefile, user provides structure_file",
+            "MDU file missing extforcefilenew, inifieldfile, and structurefile",
+        ],
+    )
+    @patch(
+        "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file"
+    )
+    @patch("hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing")
+    def test_from_mdu(
+        self,
+        mock_read_old_file,
+        mock_construct_filemodel,
+        mdu_file_content,
+        ext_file,
+        inifield_file,
+        structure_file,
+        fs: FakeFilesystem,
+    ):
+        """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
+        # Create a temporary MDU file
+        mdu_file = Path("test/test.mdu")
+        fs.create_file(mdu_file, contents="")
+
+        # Mock the content of the MDU file
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.get_mdu_info"
+        ) as mock_get_mdu_info:
+            mock_get_mdu_info.return_value = (mdu_file_content, {})
+
+            converter = ExternalForcingConverter.from_mdu(
+                mdu_file, ext_file, inifield_file, structure_file
+            )
+
+            # Assert the expected paths
+            assert (
+                converter.ext_model.filepath.name == ext_file or "new_forcing.ext"
+            )
+            assert (
+                converter.inifield_model.filepath.name == inifield_file
+                or "initial_conditions.ini"
+            )
+            assert (
+                converter.structure_model.filepath.name == structure_file
+                or "structures.ini"
+            )
 
 
 class TestExternalFocingConverter:
