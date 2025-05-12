@@ -180,11 +180,9 @@ class TestExtOldToNewFromMDU:
         fs: FakeFilesystem,
     ):
         """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
-        # Create a temporary MDU file
         mdu_file = Path("test/test.mdu")
         fs.create_file(mdu_file, contents="")
 
-        # Mock the content of the MDU file
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.get_mdu_info"
         ) as mock_get_mdu_info:
@@ -194,18 +192,15 @@ class TestExtOldToNewFromMDU:
                 mdu_file, ext_file, inifield_file, structure_file
             )
 
-            # Assert the expected paths
-            assert (
-                converter.ext_model.filepath.name == ext_file or "new_forcing.ext"
-            )
-            assert (
-                converter.inifield_model.filepath.name == inifield_file
-                or "initial_conditions.ini"
-            )
-            assert (
-                converter.structure_model.filepath.name == structure_file
-                or "structures.ini"
-            )
+        assert converter.ext_model.filepath.name == ext_file or "new_forcing.ext"
+        assert (
+            converter.inifield_model.filepath.name == inifield_file
+            or "initial_conditions.ini"
+        )
+        assert (
+            converter.structure_model.filepath.name == structure_file
+            or "structures.ini"
+        )
 
 
 class TestExternalFocingConverter:
