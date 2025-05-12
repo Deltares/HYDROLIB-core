@@ -28,7 +28,7 @@ numpy = [
 pydantic = "^2.5"
 # lxml 5.0 is from December 2023
 lxml = "^5.0"
-meshkernel = "^5.0.1"
+meshkernel = "^7.0.0"
 strenum = "^0"
 tqdm = "^4.67.1"
 pandas = "^2.2.3"
