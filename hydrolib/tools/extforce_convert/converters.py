@@ -1199,7 +1199,7 @@ def update_extforce_file_new(
                     # Protect against filename overflow into the comment
                     right_part_clipped = right_part[name_len + 1 :]
                     if right_part_clipped and right_part_clipped.find("#") == -1:
-                        right_part_clipped = f"#{right_part_clipped}"
+                        right_part_clipped = f" # {right_part_clipped[3:]}"
                     # Insert new filename immediately after '=' + a space
                     new_line = (
                         f"{left_part} {new_forcing_filename}{right_part_clipped}\n"
