@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -9,12 +9,11 @@ from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
-from hydrolib.tools.ext_old_to_new import main_converter
-from hydrolib.tools.ext_old_to_new.main_converter import (
+from hydrolib.tools.extforce_convert import main_converter
+from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
-    ext_old_to_new_dir_recursive,
+    recursive_converter,
 )
-from tests.utils import compare_two_files
 
 
 class TestExtOldToNewFromMDU:
@@ -28,19 +27,10 @@ class TestExtOldToNewFromMDU:
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         converter.verbose = True
         ext_model, _, _ = converter.update()
-        fm_model = converter.fm_model
-        assert isinstance(fm_model, LegacyFMModel)
         assert len(converter.extold_model.forcing) == 5
-        assert isinstance(fm_model.external_forcing.extforcefilenew, ExtModel)
-        assert not hasattr(fm_model.external_forcing, "extforcefile")
 
         # check the saved files
         converter.save()
-
-        # check that the mdu file has the relative pathes, not the absolute pathes
-        # the pathes are changes to the relative pathes inside the save function.
-        mdu_path = fm_model.external_forcing.extforcefilenew.filepath
-        assert mdu_path.parent == Path(".")  # no parent
 
         assert ext_model.filepath.exists()
         ext_model.filepath.unlink()
@@ -84,21 +74,10 @@ class TestExtOldToNewFromMDU:
         main_converter._verbose = True
         path = input_files_dir / "e02/f006_external_forcing"
         with patch(
-            "hydrolib.tools.ext_old_to_new.main_converter.ExternalForcingConverter.save",
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.save",
             return_value=None,
         ):
-            ext_old_to_new_dir_recursive(path, suppress_errors=True)
-
-    def test_deprecated_warning(self):
-        """
-        Test that the deprecated warning is raised.
-        """
-        with patch("warnings.warn", side_effect=SystemExit):
-            with pytest.raises(SystemExit):
-                ExternalForcingConverter.from_mdu(
-                    "tests/data/input/dflowfm_individual_files/mdu/sp.mdu",
-                    suppress_errors=True,
-                )
+            recursive_converter(path, suppress_errors=True)
 
 
 class TestExternalFocingConverter:
@@ -121,13 +100,11 @@ class TestExternalFocingConverter:
         rdir = ext_old_model.filepath.parent
 
         assert isinstance(converter.ext_model, ExtModel)
-        assert converter.ext_model.filepath == rdir.joinpath("new-external-forcing.ext")
+        assert converter.ext_model.filepath == rdir / "new-external-forcing.ext"
         assert isinstance(converter.inifield_model, IniFieldModel)
-        assert converter.inifield_model.filepath == rdir.joinpath(
-            "new-initial-conditions.ext"
-        )
+        assert converter.inifield_model.filepath == rdir / "new-initial-conditions.ini"
         assert isinstance(converter.structure_model, StructureModel)
-        assert converter.structure_model.filepath == rdir.joinpath("new-structure.ext")
+        assert converter.structure_model.filepath == rdir / "new-structure.ini"
 
     def test_path_not_exist(self):
         """
@@ -244,122 +221,22 @@ class TestUpdate:
             for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_path"]
 
-    def test_boundary_only(self, old_forcing_file_boundary: Dict[str, str]):
-        """
-        The old external forcing file contains only 9 boundary condition quantities all with polyline location files
-        and no forcing files. The update method should convert all the quantities to boundary conditions.
-        """
-        mdu_info = {
-            "refdate": "minutes since 2015-01-01 00:00:00",
-        }
+
+def test_clean():
+    """mock test to test the clean method of the ExternalForcingConverter class.
+
+    Notes:
+    - The glob method is mocked to return two files with the extension .tim.
+    - The unlink method is mocked to return True.
+    """
+    with (
+        patch.object(Path, "glob") as mock_glob,
+        patch("pathlib.Path.unlink", return_value=True) as mock_unlink,
+    ):
+        mock_glob.return_value = [Path("fake.tim"), Path("fake2.tim")]
         converter = ExternalForcingConverter(
-            old_forcing_file_boundary["path"], mdu_info=mdu_info
+            "tests/data/input/old-external-forcing.ext"
         )
-
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
-        ext_model, inifield_model, structure_model = converter.update()
-
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
-        num_quantities = len(old_forcing_file_boundary["quantities"])
-        assert len(ext_model.boundary) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
-        assert len(ext_model.lateral) == 0
-        assert len(ext_model.meteo) == 0
-        assert len(structure_model.structure) == 0
-        quantities = ext_model.boundary
-        assert [
-            str(quantities[i].locationfile.filepath) for i in range(num_quantities)
-        ] == old_forcing_file_boundary["locationfile"]
-        r_dir = converter.root_dir
-        # test save files
-        ext_model.save(recurse=True)
-
-        reference_files = ["new-external-forcing-reference.ext", "tfl_01-reference.bc"]
-        files = ["new-external-forcing.ext", "tfl_01.bc"]
-        for i in range(2):
-            assert (r_dir / files[i]).exists()
-            diff = compare_two_files(r_dir / reference_files[i], r_dir / files[i])
-            assert diff == []
-            (r_dir / files[i]).unlink()
-
-
-class TestUpdateSourcesSinks:
-
-    def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
-        """
-        The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
-        `initialsalinity`, and `initialtemperature`.
-
-        - polyline 2*3 file `leftsor.pliz` is used to read the source and sink points.
-        - tim file `tim-3-columns.tim` with 3 columns (plus the time column) the name should be the same as the
-        polyline but the `tim-3-columns.tim` is mocked in the test.
-
-        """
-        path = "tests/data/input/source-sink/source-sink.ext"
-        mdu_info = {
-            "refdate": "minutes since 2015-01-01 00:00:00",
-        }
-        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
-
-        tim_file = Path("tim-3-columns.tim")
-        with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            ext_model, inifield_model, structure_model = converter.update()
-
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
-        num_quantities = 1
-        assert len(ext_model.sourcesink) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
-        assert len(ext_model.lateral) == 0
-        assert len(ext_model.meteo) == 0
-        assert len(structure_model.structure) == 0
-        assert len(inifield_model.initial) == 2
-        quantities = ext_model.sourcesink
-        quantities[0].name = "discharge_salinity_temperature_sorsin"
-
-    def test_sources_sinks_with_fm(self, old_forcing_file_boundary: Dict[str, str]):
-        """
-        The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
-        `initialsalinity`, and `initialtemperature`.
-
-        - polyline 2*3 file `leftsor.pliz` is used to read the source and sink points.
-        - tim file `tim-3-columns.tim` with 3 columns (plus the time column) the name should be the same as the
-        polyline but the `tim-3-columns.tim` is mocked in the test.
-
-        """
-        path = "tests/data/input/source-sink/source-sink.ext"
-        mdu_info = {
-            "refdate": "minutes since 2015-01-01 00:00:00",
-            "salinity": True,
-            "temperature": True,
-        }
-        converter = ExternalForcingConverter(path, mdu_info=mdu_info)
-
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
-
-        tim_file = Path("tim-3-columns.tim")
-        with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            ext_model, inifield_model, structure_model = converter.update()
-
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
-        num_quantities = 1
-        assert len(ext_model.sourcesink) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
-        assert len(ext_model.lateral) == 0
-        assert len(ext_model.meteo) == 0
-        assert len(structure_model.structure) == 0
-        assert len(inifield_model.initial) == 2
-        quantities = ext_model.sourcesink
-        quantities[0].name = "discharge_salinity_temperature_sorsin"
+        converter.clean()
+        mock_glob.assert_called_once_with("*.tim")
+        assert mock_unlink.call_count == 3

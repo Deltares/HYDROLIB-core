@@ -25,6 +25,11 @@ INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
     "initialverticalsigmasedfracprofile",
 )
 
+BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = (
+    "tracerbnd",
+    "sedfracbnd",
+)
+
 FILETYPE_FILEMODEL_MAPPING = {
     1: TimModel,
     2: TimModel,
@@ -144,6 +149,7 @@ class ExtOldTracerQuantity(StrEnum):
     """User-defined tracer"""
     InitialTracer = "initialtracer"
     """Initial tracer"""
+    SedFracBnd = "sedfracbnd"
 
 
 class ExtOldBoundaryQuantity(StrEnum):
@@ -177,6 +183,25 @@ class ExtOldBoundaryQuantity(StrEnum):
     QhBnd = "qhbnd"
     """Discharge-water level dependency"""
 
+    @classmethod
+    def _missing_(cls, value):
+        """Custom implementation for handling missing values.
+
+        the method parses any missing values and only allows the ones that start with "initialtracer".
+        """
+        # Allow strings starting with "tracer"
+        if isinstance(value, str) and value.startswith(
+            BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
+        ):
+            new_member = str.__new__(cls, value)
+            new_member._value_ = value
+            return new_member
+        else:
+            raise ValueError(
+                f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
+                f"and quantities that start with 'tracer'"
+            )
+
 
 class ExtOldParametersQuantity(StrEnum):
     """Enum class containing the valid values for the Spatial parameter category
@@ -191,6 +216,13 @@ class ExtOldParametersQuantity(StrEnum):
     HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
     AdvectionType = "advectiontype"
     InfiltrationCapacity = "infiltrationcapacity"
+    BedRockSurfaceElevation = "bedrock_surface_elevation"
+    WaveDirection = "wavedirection"
+    XWaveForce = "xwaveforce"
+    YWaveForce = "ywaveforce"
+    WavePeriod = "waveperiod"
+    WaveSignificantHeight = "wavesignificantheight"
+    InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -457,6 +489,7 @@ class ExtOldQuantity(StrEnum):
     AdvectionType = "advectiontype"
     """Type of advection scheme"""
     IBotLevType = "ibotlevtype"
+    BedRockSurfaceElevation = "bedrock_surface_elevation"
     """Type of bed-level handling"""
 
     # Miscellaneous
@@ -468,6 +501,13 @@ class ExtOldQuantity(StrEnum):
     """Wave significant height"""
     WavePeriod = "waveperiod"
     """Wave period"""
+    WaveDirection = "wavedirection"
+    XWaveForce = "xwaveforce"
+    YWaveForce = "ywaveforce"
+
+    InitialVelocityX = "initialvelocityx"
+    InitialVelocityY = "initialvelocityy"
+    InitialVelocity = "initialvelocity"
 
 
 class ExtOldFileType(IntEnum):

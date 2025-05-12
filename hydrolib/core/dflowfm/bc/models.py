@@ -1,11 +1,11 @@
 """Representation of a .bc file in various classes.
 
-    Most relevant classes are:
+Most relevant classes are:
 
-    *   ForcingModel: toplevel class containing the whole .bc file contents.
-    *   ForcingBase subclasses: containing the actual data columns, for example:
-        TimeSeries, HarmonicComponent, AstronomicComponent, HarmonicCorrection,
-        AstronomicCorrection, Constant, T3D.
+*   ForcingModel: toplevel class containing the whole .bc file contents.
+*   ForcingBase subclasses: containing the actual data columns, for example:
+    TimeSeries, HarmonicComponent, AstronomicComponent, HarmonicCorrection,
+    AstronomicCorrection, Constant, T3D.
 
 """
 
@@ -713,31 +713,37 @@ class AstronomicCorrection(ForcingBase):
 
 
 class T3D(VectorForcingBase):
-    """Subclass for a .bc file [Forcing] block with 3D timeseries data."""
+    """Subclass for a .bc file [Forcing] block with 3D timeseries data.
+
+    Args:
+        offset (float): default is 0.0
+            All values in the table are increased by the offset (after multiplication by factor).
+        factor (float): default is 1.0
+            all values in the table are multiplied with the factor.
+        vertpositions (List[float]):
+            The specification of the vertical positions.
+        vertinterpolation (VerticalInterpolation): default is linear
+            The type of vertical interpolation.
+        vertpositiontype (VerticalPositionType):
+            The vertical position type of the verticalpositions values.
+        timeinterpolation (TimeInterpolation): default is linear
+            The type of time interpolation.
+
+    Examples:
+
+    """
 
     function: Literal["t3d"] = "t3d"
-
     offset: float = Field(0.0, alias="offset")
-    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
-
     factor: float = Field(1.0, alias="factor")
-    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
-
     vertpositions: List[float] = Field(alias="vertPositions")
-    """List[float]: The specification of the vertical positions."""
-
     vertinterpolation: VerticalInterpolation = Field(
         VerticalInterpolation.linear, alias="vertInterpolation"
     )
-    """VerticalInterpolation: The type of vertical interpolation. Defaults to linear."""
-
     vertpositiontype: VerticalPositionType = Field(alias="vertPositionType")
-    """VerticalPositionType: The vertical position type of the verticalpositions values."""
-
     timeinterpolation: TimeInterpolation = Field(
         TimeInterpolation.linear, alias="timeInterpolation"
     )
-    """TimeInterpolation: The type of time interpolation. Defaults to linear."""
 
     _keys_to_rename = {
         "timeinterpolation": ["time_interpolation"],

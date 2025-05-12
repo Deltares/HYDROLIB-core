@@ -60,6 +60,7 @@ def initial_condition_interpolation_methods() -> List[str]:
         "constant",
         "averaging",
         "triangulation",
+        "linearSpaceTime",
         "Possible values: constant, triangulation, averaging.",
     ]
 
@@ -72,6 +73,8 @@ def initial_condition_file_type() -> List[str]:
         "sample",
         "1dField",
         "polygon",
+        "uniform",
+        "netcdf",
         "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon.",
     ]
 
@@ -209,6 +212,13 @@ def parameter_quantities() -> List[str]:
         "horizontaleddydiffusivitycoefficient",
         "advectiontype",
         "infiltrationcapacity",
+        "bedrock_surface_elevation",
+        "wavedirection",
+        "xwaveforce",
+        "ywaveforce",
+        "waveperiod",
+        "wavesignificantheight",
+        "internaltidesfrictioncoefficient",
     ]
 
 

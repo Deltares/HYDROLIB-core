@@ -13,6 +13,9 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 [tool.poetry.urls]
 "issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
+[tool.poetry.scripts]
+extforce-convert = 'hydrolib.tools.extforce_convert.cli:main'
+
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
 # exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
@@ -28,12 +31,15 @@ lxml = "^5.0"
 meshkernel = "^5.0.1"
 strenum = "^0"
 tqdm = "^4.67.1"
+pandas = "^2.2.3"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 pytest-cov = "^6.0"
 devtools = "^0.12.2"
 commitizen = "^4.0"
+isort = "^5.8"
+black = "^24.8.0"
 mypy = "^1.13"
 openpyxl = "^3.0.9"
 jinja2 = "^3.0"
@@ -44,6 +50,7 @@ ipykernel = "^6.15.0"
 matplotlib = "^3.8"
 # xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
 xarray = ">=2024.6.0"
+pyfakefs = "^5.7.4"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -61,23 +68,6 @@ notebook = "^7.3.2"
 mkdocstrings-python = "^1.13.0"
 mkdocs-mermaid2-plugin = "^1.2.1"
 
-[tool.poetry.group.pre-commit.dependencies]
-coverage = {extras = ["toml"], version = "^7.6.1"}
-safety = "^3.2.9"
-pre-commit = "^4.0.1"
-black = "^24.8.0"
-flake8 = "^7.1.1"
-flake8-bandit = "^4.1.1"
-flake8-bugbear = "^24.10.31"
-flake8-docstrings = "^1.6.0"
-flake8-rst-docstrings = "^0.3.0"
-flake8-pyproject = "^1.2.3"
-isort = "^5.8"
-pep8-naming = "*"
-darglint = "^1.8.1"
-reorder-python-imports = "^3.8.2"
-pre-commit-hooks = "^5.0.0"
-pre-commit-commit-msg-hooks = "^0.1.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
