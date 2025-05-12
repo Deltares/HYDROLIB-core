@@ -96,7 +96,7 @@ class TestConvertMeteo:
         (
             "dflowfm_individual_files/with_optional_sections.mdu",
             (232, 233),
-            "ExtForceFileNew                           = test.ext",
+            "ExtForceFileNew                           = test.ext\n",
         ),
         (
             "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu",
@@ -104,6 +104,7 @@ class TestConvertMeteo:
             "ExtForceFileNew                      = test.ext                              # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n",
         ),
     ],
+    ids=["without comment", "with comment"],
 )
 def test_update_mdu_on_the_fly(
     input_files_dir: Path, input_file: str, on_line: Tuple[int, int], expected_line: str
