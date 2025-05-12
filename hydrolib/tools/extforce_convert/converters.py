@@ -1194,7 +1194,7 @@ def update_extforce_file_new(
                     # Everything up to and including '='
                     left_part = line[: eq_index + 1]
                     # Remainder of the line (after '=')
-                    right_part = line[eq_index + 1 :]  # noqa: E203
+                    right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
                     name_len = len(new_forcing_filename)
                     # Insert new filename immediately after '=' + a space
                     new_line = f"{left_part} {new_forcing_filename}{right_part[name_len + 1:]}\n"
