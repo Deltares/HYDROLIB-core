@@ -542,7 +542,7 @@ class ExternalForcingConverter:
                 self.fm_model.geometry.structurefile[0] = self.structure_model
 
             if self.verbose:
-                print(f"succesfully saved converted file {self.fm_model.filepath} ")
+                print(f"successfully saved converted file {self.fm_model.filepath} ")
         else:
             mdu_path = self.mdu_info.get("file_path")
             new_ext_file = self.ext_model.filepath.name
