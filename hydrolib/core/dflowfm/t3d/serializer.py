@@ -71,7 +71,6 @@ class T3DSerializer:
 
             ```
         """
-
         format_float = lambda v: f"{v:{config.float_format}}"
 
         with path.open("w", encoding="utf-8") as f:
