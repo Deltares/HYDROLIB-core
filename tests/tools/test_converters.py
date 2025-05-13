@@ -14,11 +14,11 @@ from hydrolib.core.dflowfm.ext.models import (
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.tools.extforce_convert.converters import (
+    ExtForceFileUpdater,
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
     save_mdu_file,
-    update_extforce_file_new,
 )
 
 
@@ -123,7 +123,8 @@ def test_update_mdu_on_the_fly(
 ):
     mdu_filename = input_files_dir / input_file
     new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
-    updated_mdu_file = update_extforce_file_new(mdu_filename, ext_file)
+    updater = ExtForceFileUpdater(mdu_filename, ext_file)
+    updated_mdu_file = updater.update_extforce_file_new()
     assert updated_mdu_file[on_line[0]] == "[external forcing]\n"
     assert updated_mdu_file[on_line[1]] == expected_line
     # test the save mdu file function

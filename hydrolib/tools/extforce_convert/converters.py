@@ -1114,118 +1114,111 @@ class T3DToForcingConverter:
         return t3d
 
 
-def update_extforce_file_new(
-    mdu_path: PathOrStr,
-    new_forcing_filename: PathOrStr,
-) -> List[str]:
-    """
-    Update the 'ExtForceFileNew' entry under the '[external forcing]' section
-    of an MDU file. Writes the updated content to output_path if provided,
-    or overwrites the original file otherwise.
+class ExtForceFileUpdater:
+    """A class to update the ExtForceFileNew entry in an MDU file."""
 
-    Args:
-        mdu_path (PathOrStr):
-            Path to the original .mdu file.
-        new_forcing_filename (PathOrStr):
-            The filename to be placed after `ExtForceFileNew =`.
+    def __init__(self, mdu_path: PathOrStr, new_forcing_filename: PathOrStr):
+        self.mdu_path = mdu_path
+        self.new_forcing_filename = new_forcing_filename
+        self.updated_lines = []
+        self.inside_external_forcing = False
+        self.found_extforcefilenew = False
 
-    Returns:
-        List[str]:
-            The updated lines of the .mdu file.
+    def update_extforce_file_new(self) -> List[str]:
+        """
+        Update the 'ExtForceFileNew' entry under the '[external forcing]' section
+        of an MDU file. Writes the updated content to output_path if provided,
+        or overwrites the original file otherwise.
 
-    Notes:
-        - This function is a workaround for updating the ExtForceFileNew entry in an MDU file.
-        - The function reads the entire file into memory, updates the line containing ExtForceFileNew, and writes the
-            updated content back to disk.
-        - The function removes the `extforcefile` from the mdu file, and only keeps the new updated `ExtForceFileNew`
-        entry, as all the old forcing quantities in the old forcing file are converted to the new format.
-        - after fixing the issue with mdu files having `Unkown keyword` error, this function will be removed,
-        and the `LegacyFMModel` will be the only way to read/update the mdu file
+        Returns:
+            List[str]:
+                The updated lines of the .mdu file.
 
-    """
-    # Read all lines from the .mdu file
-    with open(mdu_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+        Notes:
+            - This function is a workaround for updating the ExtForceFileNew entry in an MDU file.
+            - The function reads the entire file into memory, updates the line containing ExtForceFileNew, and writes the
+                updated content back to disk.
+            - The function removes the `extforcefile` from the mdu file, and only keeps the new updated `ExtForceFileNew`
+            entry, as all the old forcing quantities in the old forcing file are converted to the new format.
+            - after fixing the issue with mdu files having `Unkown keyword` error, this function will be removed,
+            and the `LegacyFMModel` will be the only way to read/update the mdu file
 
-    # We will track whether we are inside the [external forcing] section
-    inside_external_forcing = False
-    found_extforcefilenew = False
-    # Buffer for the modified lines
-    updated_lines = []
+        """
+        with open(self.mdu_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
 
-    for line in lines:
-        stripped = line.strip()
-        # Check if we've hit the [external forcing] header
-        if stripped.lower().startswith("[external forcing]"):
-            inside_external_forcing = True
-            found_extforcefilenew = False
-            updated_lines.append(line)
-            continue
-
-        # If we are inside the [external forcing] section, look for ExtForceFileNew
-        if inside_external_forcing:
-            # If we find another section header, it means [external forcing] section ended
-            if is_section_header(stripped):
-                # If we never found ExtForceFileNew before leaving, add it now
-                if not found_extforcefilenew:
-                    new_line = f"ExtForceFileNew                           = {new_forcing_filename}\n"
-                    updated_lines.extend([new_line, "\n"])
-
-                inside_external_forcing = False
-                # fall through to just append the line below
-
-            # If the line has ExtForceFileNew, replace it
-            # The simplest way is to check if it starts with or contains ExtForceFileNew
-            # ignoring trailing spaces. You can refine the logic as needed.
-            if stripped.lower().startswith("extforcefilenew"):
-                found_extforcefilenew = True
-                updated_lines.append(
-                    replace_extforcefilenew(line, new_forcing_filename)
-                )
-                continue
-            elif stripped.lower().startswith("extforcefile"):
+        for line in lines:
+            stripped = line.strip()
+            # Check if we've hit the [external forcing] header
+            if stripped.lower().startswith("[external forcing]"):
+                self.inside_external_forcing = True
+                self.found_extforcefilenew = False
+                self.updated_lines.append(line)
                 continue
 
-        # Default: write the line unmodified
-        updated_lines.append(line)
+            # If we are inside the [external forcing] section, look for ExtForceFileNew
+            if self.inside_external_forcing:
+                # If we find another section header, it means [external forcing] section ended
+                self._handle_external_forcing_section(line, stripped)
+                continue
 
-    # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
-    if inside_external_forcing and not found_extforcefilenew:
-        new_line = (
-            f"ExtForceFileNew                           = {new_forcing_filename}\n"
+            # Default: write the line unmodified
+            self.updated_lines.append(line)
+
+        # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
+        if self.inside_external_forcing and not self.found_extforcefilenew:
+            new_line = f"ExtForceFileNew                           = {self.new_forcing_filename}\n"
+            self.updated_lines.append(new_line)
+            self.updated_lines.append("\n")
+
+        return self.updated_lines
+
+    def is_section_header(self, line: str) -> bool:
+        """Check if the line is a section header (e.g., '[...]')."""
+        return (
+            line.startswith("[")
+            and line.endswith("]")
+            and "external forcing" not in line.lower()
         )
-        updated_lines.append(new_line)
-        updated_lines.append("\n")
 
-    return updated_lines
+    def replace_extforcefilenew(self, line: str) -> str:
+        """Replace the ExtForceFileNew line with the new filename."""
+        # Find the '=' character
+        eq_index = line.find("=")
+        if eq_index == -1:
+            return line
+        # Everything up to and including '='
+        left_part = line[: eq_index + 1]
+        # Remainder of the line (after '=')
+        right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
+        name_len = len(self.new_forcing_filename)
+        # Protect against filename overflow into the comment
+        right_part_clipped = right_part[name_len + 1 :]
+        if right_part_clipped.find("#") == -1:
+            right_part_clipped = f" {right_part.lstrip()}"
+        # Insert new filename immediately after '=' + a space
+        return f"{left_part} {self.new_forcing_filename}{right_part_clipped}\n"
 
+    def _handle_external_forcing_section(self, line: str, stripped: str) -> None:
+        if self.is_section_header(stripped):
+            # If we never found ExtForceFileNew before leaving, add it now
+            if not self.found_extforcefilenew:
+                new_line = f"ExtForceFileNew                           = {self.new_forcing_filename}\n"
+                self.updated_lines.extend([new_line, "\n"])
 
-def is_section_header(line: str) -> bool:
-    """Check if the line is a section header (e.g., '[...]')."""
-    return (
-        line.startswith("[")
-        and line.endswith("]")
-        and "external forcing" not in line.lower()
-    )
+            self.inside_external_forcing = False
+            # fall through to just append the line below
 
-
-def replace_extforcefilenew(line: str, new_forcing_filename: PathOrStr) -> str:
-    """Replace the ExtForceFileNew line with the new filename."""
-    # Find the '=' character
-    eq_index = line.find("=")
-    if eq_index == -1:
-        return line
-    # Everything up to and including '='
-    left_part = line[: eq_index + 1]
-    # Remainder of the line (after '=')
-    right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
-    name_len = len(new_forcing_filename)
-    # Protect against filename overflow into the comment
-    right_part_clipped = right_part[name_len + 1 :]
-    if right_part_clipped.find("#") == -1:
-        right_part_clipped = f" {right_part.lstrip()}"
-    # Insert new filename immediately after '=' + a space
-    return f"{left_part} {new_forcing_filename}{right_part_clipped}\n"
+        # If the line has ExtForceFileNew, replace it
+        # The simplest way is to check if it starts with or contains ExtForceFileNew
+        # ignoring trailing spaces. You can refine the logic as needed.
+        if stripped.lower().startswith("extforcefilenew"):
+            self.found_extforcefilenew = True
+            self.updated_lines.append(self.replace_extforcefilenew(line))
+            return
+        elif stripped.lower().startswith("extforcefile"):
+            return
+        self.updated_lines.append(line)
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
