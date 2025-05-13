@@ -1165,16 +1165,11 @@ def update_extforce_file_new(
         # If we are inside the [external forcing] section, look for ExtForceFileNew
         if inside_external_forcing:
             # If we find another section header, it means [external forcing] section ended
-            if (
-                stripped.startswith("[")
-                and stripped.endswith("]")
-                and "external forcing" not in stripped.lower()
-            ):
+            if is_section_header(stripped):
                 # If we never found ExtForceFileNew before leaving, add it now
                 if not found_extforcefilenew:
                     new_line = f"ExtForceFileNew                           = {new_forcing_filename}\n"
-                    updated_lines.append(new_line)
-                    updated_lines.append("\n")
+                    updated_lines.extend([new_line, "\n"])
 
                 inside_external_forcing = False
                 # fall through to just append the line below
@@ -1184,25 +1179,10 @@ def update_extforce_file_new(
             # ignoring trailing spaces. You can refine the logic as needed.
             if stripped.lower().startswith("extforcefilenew"):
                 found_extforcefilenew = True
-                # Find the '=' character
-                eq_index = line.find("=")
-                if eq_index != -1:
-                    # Everything up to and including '='
-                    left_part = line[: eq_index + 1]
-                    # Remainder of the line (after '=')
-                    right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
-                    name_len = len(new_forcing_filename)
-                    # Protect against filename overflow into the comment
-                    right_part_clipped = right_part[name_len + 1 :]
-                    if right_part_clipped.find("#") == -1:
-                        right_part_clipped = f" {right_part.lstrip()}"
-                    # Insert new filename immediately after '=' + a space
-                    new_line = (
-                        f"{left_part} {new_forcing_filename}{right_part_clipped}\n"
-                    )
-
-                    updated_lines.append(new_line)
-                    continue
+                updated_lines.append(
+                    replace_extforcefilenew(line, new_forcing_filename)
+                )
+                continue
             elif stripped.lower().startswith("extforcefile"):
                 continue
 
@@ -1218,6 +1198,34 @@ def update_extforce_file_new(
         updated_lines.append("\n")
 
     return updated_lines
+
+
+def is_section_header(line: str) -> bool:
+    """Check if the line is a section header (e.g., '[...]')."""
+    return (
+        line.startswith("[")
+        and line.endswith("]")
+        and "external forcing" not in line.lower()
+    )
+
+
+def replace_extforcefilenew(line: str, new_forcing_filename: PathOrStr) -> str:
+    """Replace the ExtForceFileNew line with the new filename."""
+    # Find the '=' character
+    eq_index = line.find("=")
+    if eq_index == -1:
+        return line
+    # Everything up to and including '='
+    left_part = line[: eq_index + 1]
+    # Remainder of the line (after '=')
+    right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
+    name_len = len(new_forcing_filename)
+    # Protect against filename overflow into the comment
+    right_part_clipped = right_part[name_len + 1 :]
+    if right_part_clipped.find("#") == -1:
+        right_part_clipped = f" {right_part.lstrip()}"
+    # Insert new filename immediately after '=' + a space
+    return f"{left_part} {new_forcing_filename}{right_part_clipped}\n"
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
