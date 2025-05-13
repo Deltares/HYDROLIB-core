@@ -33,14 +33,12 @@ class CMPParser:
         Examples:
             Read a `.cmp` file:
                 ```python
-                >>> import io
-                >>> from unittest.mock import patch
-                >>> file = io.StringIO("#some comment\n0.0   1.0  2.0")
-                >>> with patch.object(Path, 'open') as mock_file:
-                ...    mock_file.return_value = file
-                ...    cmp_model = CMPParser.parse(Path(""))
-                >>> print(cmp_model)
-                {'comments': ['some comment'], 'component': {'harmonics': [{'period': '0.0', 'amplitude': '1.0', 'phase': '2.0'}]}}
+                >>> file_path = Path(
+                ...    "tests/data/input/e02/f006_external_forcing/c020_basinnofriction_squares/openboundary1_0001.cmp"
+                ... )
+                >>> cmp_model = CMPParser.parse(file_path)
+                >>> print(cmp_model)  # doctest: +ELLIPSIS
+                {'comments': [' COLUMNN=3', ' COLUMN1=Period (min) or Astronomical Componentname',... 'amplitude': '1.0000000', 'phase': '45.1200000'}]}}
 
                 ```
         """
