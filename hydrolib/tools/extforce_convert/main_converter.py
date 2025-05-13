@@ -316,7 +316,7 @@ class ExternalForcingConverter:
             self._save_inifield_model(backup, recursive)
 
         if len(self.structure_model.structure) > 0:
-            self._save_inifield_model(backup, recursive)
+            self._save_structure_model(backup, recursive)
 
         if backup and self.ext_model.filepath.exists():
             backup_file(self.ext_model.filepath)
