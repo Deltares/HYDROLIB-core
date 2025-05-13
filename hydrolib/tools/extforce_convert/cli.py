@@ -119,8 +119,6 @@ def convert_with_mdu_file(args: Namespace):
     Args:
         args : Namespace
             The arguments parsed from the command line.
-        backup : bool
-            Whether to create a backup of the files that will be overwritten.
     """
     converter = ExternalForcingConverter.from_mdu(
         args.mdufile,
@@ -137,8 +135,6 @@ def convert_with_extold_file(args: Namespace):
     Args:
         args : Namespace
             The arguments parsed from the command line.
-        backup : bool
-            Whether to create a backup of the files that will be overwritten.
     """
     converter = ExternalForcingConverter(
         args.extoldfile,
@@ -155,8 +151,6 @@ def convert(converter: ExternalForcingConverter, args: Namespace):
     Args:
         converter : ExternalForcingConverter
             The converter object to convert the old external forcing file.
-        backup : bool
-            Whether to create a backup of the files that will be overwritten.
         args : Namespace
             The arguments parsed from the command line.
     """
