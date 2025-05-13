@@ -3,13 +3,10 @@ from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
 import pytest
-from pyfakefs.fake_filesystem import FakeFilesystem
 
-from hydrolib.core.basemodel import FileModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
-from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
@@ -177,11 +174,11 @@ class TestExtOldToNewFromMDU:
         ext_file,
         inifield_file,
         structure_file,
-        fs: FakeFilesystem,
+        tmp_path: Path,
     ):
         """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
-        mdu_file = Path("test/test.mdu")
-        fs.create_file(mdu_file, contents="")
+        mdu_file = tmp_path / "test.mdu"
+        mdu_file.touch()
 
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.get_mdu_info"
@@ -191,6 +188,7 @@ class TestExtOldToNewFromMDU:
             converter = ExternalForcingConverter.from_mdu(
                 mdu_file, ext_file, inifield_file, structure_file
             )
+        mdu_file.unlink()
 
         assert converter.ext_model.filepath.name == ext_file or "new_forcing.ext"
         assert (
