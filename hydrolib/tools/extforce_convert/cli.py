@@ -1,5 +1,5 @@
 import argparse
-from argparse import ArgumentTypeError
+from argparse import ArgumentTypeError, Namespace
 from pathlib import Path
 
 from hydrolib.core import __version__
@@ -96,52 +96,79 @@ def main(args=None):
     """
     parser = _get_parser()
     args = parser.parse_args(args)
-    backup = args.backup
 
     # three cases to consider
     if args.mdufile:
-        # mdu file is given
-        converter = ExternalForcingConverter.from_mdu(
-            args.mdufile,
-            ext_file=(args.outfiles[0] if args.outfiles else None),
-            inifield_file=(args.outfiles[1] if args.outfiles else None),
-            structure_file=(args.outfiles[2] if args.outfiles else None),
-            suppress_errors=True,
-        )
-        converter.verbose = args.verbose
-        converter.update()
-        print(
-            "Converting the old external forcing file to the new format files is done."
-        )
-        converter.save(backup=backup)
-        print("The new files are saved.")
-
-        if args.remove_legacy:
-            print("Cleaning legacy tim files ...")
-            converter.clean()
-
+        convert_with_mdufile(args)
     elif args.extoldfile is not None:
-        # extold file is given
-        converter = ExternalForcingConverter(
-            args.extoldfile,
-            ext_file=(args.outfiles[0] if args.outfiles else None),
-            inifield_file=(args.outfiles[1] if args.outfiles else None),
-            structure_file=(args.outfiles[2] if args.outfiles else None),
-        )
-        converter.verbose = args.verbose
-        converter.update()
-        print(
-            "Converting the old external forcing file to the new format files is done."
-        )
-        converter.save(backup=backup)
-        print("The new files are saved.")
-        if args.remove_legacy:
-            print("Cleaning legacy tim files ...")
-            converter.clean()
+        convert_with_extoldfile(args)
     elif args.dir is not None:
-        recursive_converter(args.dir, backup=backup, remove_legacy=args.remove_legacy)
+        recursive_converter(
+            args.dir, backup=args.backup, remove_legacy=args.remove_legacy
+        )
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
+
+
+def convert_with_mdufile(args: Namespace):
+    """Convert the old external forcing file using the mdu file.
+
+    Read the old external forcing file path from the mdu file,
+    and convert it to the new format files.
+
+    Args:
+        args : Namespace
+            The arguments parsed from the command line.
+        backup : bool
+            Whether to create a backup of the files that will be overwritten.
+    """
+    converter = ExternalForcingConverter.from_mdu(
+        args.mdufile,
+        ext_file=(args.outfiles[0] if args.outfiles else None),
+        inifield_file=(args.outfiles[1] if args.outfiles else None),
+        structure_file=(args.outfiles[2] if args.outfiles else None),
+        suppress_errors=True,
+    )
+    convert(converter, args)
+
+
+def convert_with_extoldfile(args: Namespace):
+    """Convert the old external forcing file to the new format files.
+
+    Args:
+        args : Namespace
+            The arguments parsed from the command line.
+        backup : bool
+            Whether to create a backup of the files that will be overwritten.
+    """
+    converter = ExternalForcingConverter(
+        args.extoldfile,
+        ext_file=(args.outfiles[0] if args.outfiles else None),
+        inifield_file=(args.outfiles[1] if args.outfiles else None),
+        structure_file=(args.outfiles[2] if args.outfiles else None),
+    )
+    convert(converter, args)
+
+
+def convert(converter: ExternalForcingConverter, args: Namespace):
+    """Run the update method of ExternalForcingConverter and save the results.
+
+    Args:
+        converter : ExternalForcingConverter
+            The converter object to convert the old external forcing file.
+        backup : bool
+            Whether to create a backup of the files that will be overwritten.
+        args : Namespace
+            The arguments parsed from the command line.
+    """
+    converter.verbose = args.verbose
+    converter.update()
+    print("Converting the old external forcing file to the new format files is done.")
+    converter.save(backup=args.backup)
+    print("The new files are saved.")
+    if args.remove_legacy:
+        print("Cleaning legacy tim files ...")
+        converter.clean()
 
 
 if __name__ == "__main__":
