@@ -2612,7 +2612,10 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">325</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
 <span class="normal">326</span>
 <span class="normal">327</span>
 <span class="normal">328</span>
@@ -2856,10 +2859,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">566</span>
 <span class="normal">567</span>
 <span class="normal">568</span>
-<span class="normal">569</span>
-<span class="normal">570</span>
-<span class="normal">571</span>
-<span class="normal">572</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">:</span>
+<span class="normal">569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">geometry</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -3233,7 +3233,10 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">367</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
 <span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
@@ -3254,10 +3257,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_nodes</span><span class="p">(</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_nodes</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">mesh1d_edge_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">structure_chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3334,7 +3334,10 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">558</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
 <span class="normal">559</span>
 <span class="normal">560</span>
 <span class="normal">561</span>
@@ -3345,10 +3348,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">566</span>
 <span class="normal">567</span>
 <span class="normal">568</span>
-<span class="normal">569</span>
-<span class="normal">570</span>
-<span class="normal">571</span>
-<span class="normal">572</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="normal">569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate coordinates along branch by length</span>
 
 <span class="sd">    Args:</span>
@@ -3471,7 +3471,10 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">575</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
 <span class="normal">576</span>
 <span class="normal">577</span>
 <span class="normal">578</span>
@@ -3582,8 +3585,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">683</span>
 <span class="normal">684</span>
 <span class="normal">685</span>
-<span class="normal">686</span>
-<span class="normal">687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Link1d2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">686</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Link1d2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Link1d2d defines the 1D2D Links of a model network.</span>
 
 <span class="sd">    Attributes:</span>
@@ -3678,10 +3680,12 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="c1"># a bounding polygon or the end points of the 1d mesh.</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_link_from_2d_to_1d_embedded</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">node_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">node_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">polygons</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_with_points</span><span class="p">(</span><span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_with_points</span><span class="p">(</span>
+            <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="n">polygons</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_link_from_2d_to_1d_lateral</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3726,16 +3730,16 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">635</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
 <span class="normal">636</span>
 <span class="normal">637</span>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">641</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all saved links from the links administration&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
@@ -3789,13 +3793,13 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">617</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
 <span class="normal">618</span>
 <span class="normal">619</span>
-<span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">620</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether this Link1d2d is currently empty.</span>
 
 <span class="sd">    Returns:</span>
@@ -3854,15 +3858,15 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">625</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
 <span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">630</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the Link1d2d data from the specified netCDF file at file_path into this</span>
 
 <span class="sd">    Args:</span>
@@ -3910,7 +3914,8 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 690</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 689</span>
+<span class="normal"> 690</span>
 <span class="normal"> 691</span>
 <span class="normal"> 692</span>
 <span class="normal"> 693</span>
@@ -4310,8 +4315,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1087</span>
 <span class="normal">1088</span>
 <span class="normal">1089</span>
-<span class="normal">1090</span>
-<span class="normal">1091</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh1d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">1090</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh1d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
 
     <span class="n">meshkernel</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span><span class="p">)</span>
@@ -4743,7 +4747,8 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1076</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1075</span>
+<span class="normal">1076</span>
 <span class="normal">1077</span>
 <span class="normal">1078</span>
 <span class="normal">1079</span>
@@ -4757,8 +4762,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1087</span>
 <span class="normal">1088</span>
 <span class="normal">1089</span>
-<span class="normal">1090</span>
-<span class="normal">1091</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_node_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="normal">1090</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_node_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get node mask, give a mask with True for each node that is in the given branchid list&quot;&quot;&quot;</span>
 
     <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_id</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -5128,10 +5132,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mesh2d defines a single two dimensional grid.</span>
 
 <span class="sd">    Attributes:</span>
@@ -5317,7 +5318,8 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">deletemeshoption</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span><span class="o">.</span><span class="n">INSIDE_NOT_INTERSECTED</span><span class="p">,</span>
         <span class="n">inside</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.</span>
+
 
 <span class="sd">        Args:</span>
 <span class="sd">            geometrylist (GeometryList): Polygon stored as GeometryList</span>
@@ -5338,29 +5340,22 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
             <span class="n">exteriors</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
             <span class="n">interiors</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 
+            <span class="c1"># Check if parts are closed</span>
+            <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">exteriors</span> <span class="o">+</span> <span class="n">interiors</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span>
+                    <span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
+                    <span class="p">)</span>
+
         <span class="c1"># Inside</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Check if any polygon contains holes, when clipping inside</span>
-            <span class="k">if</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">inner_outer_separator</span> <span class="ow">in</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">&quot;Deleting inside a (Multi)Polygon with holes is not implemented.&quot;</span>
-                <span class="p">)</span>
-
             <span class="c1"># Get exterior and interiors</span>
             <span class="n">parts</span> <span class="o">=</span> <span class="n">split_by</span><span class="p">(</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">geometry_separator</span><span class="p">)</span>
-
             <span class="n">exteriors</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[:]</span>
             <span class="n">interiors</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="c1"># Check if parts are closed</span>
-        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">exteriors</span> <span class="o">+</span> <span class="n">interiors</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span>
-                <span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
-                <span class="p">)</span>
 
         <span class="c1"># Delete everything outside the (Multi)Polygon</span>
         <span class="k">for</span> <span class="n">exterior</span> <span class="ow">in</span> <span class="n">exteriors</span><span class="p">:</span>
@@ -5378,30 +5373,33 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
                 <span class="n">invert_deletion</span><span class="o">=</span><span class="n">inside</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">refine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refine</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span>
+        <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Refine the mesh within a polygon, by a number of steps (level)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            polygon (GeometryList): Polygon in which to refine</span>
 <span class="sd">            level (int): Number of refinement steps</span>
+<span class="sd">            parameters (MeshRefinementParameters): object containing the Meshkernel refinement parameters. Default values are taken from meskernel documentation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># Check if parts are closed</span>
-        <span class="c1"># if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (</span>
-        <span class="c1">#     polygon.x_coordinates[-1],</span>
-        <span class="c1">#     polygon.y_coordinates[-1],</span>
-        <span class="c1"># ):</span>
-        <span class="c1">#     raise ValueError(&quot;First and last coordinate of each GeometryList part should match.&quot;)</span>
-
-        <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
-            <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">min_edge_size</span><span class="o">=</span><span class="n">min_edge_size</span><span class="p">,</span>
-            <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
+                <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">min_edge_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">refinement_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">smoothing_iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">max_courant_time</span><span class="o">=</span><span class="mf">120.0</span><span class="p">,</span>
+                <span class="n">directional_refinement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="n">max_refinement_iterations</span> <span class="o">=</span> <span class="n">level</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_refine_based_on_polygon</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5781,7 +5779,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped</p>
+        <p>Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -5891,19 +5889,14 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span>
+<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">geometrylist</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span>
     <span class="n">deletemeshoption</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span><span class="o">.</span><span class="n">INSIDE_NOT_INTERSECTED</span><span class="p">,</span>
     <span class="n">inside</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.</span>
+
 
 <span class="sd">    Args:</span>
 <span class="sd">        geometrylist (GeometryList): Polygon stored as GeometryList</span>
@@ -5924,29 +5917,22 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">exteriors</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="n">interiors</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 
+        <span class="c1"># Check if parts are closed</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">exteriors</span> <span class="o">+</span> <span class="n">interiors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span>
+                <span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
+                <span class="p">)</span>
+
     <span class="c1"># Inside</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Check if any polygon contains holes, when clipping inside</span>
-        <span class="k">if</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">inner_outer_separator</span> <span class="ow">in</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;Deleting inside a (Multi)Polygon with holes is not implemented.&quot;</span>
-            <span class="p">)</span>
-
         <span class="c1"># Get exterior and interiors</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="n">split_by</span><span class="p">(</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">geometry_separator</span><span class="p">)</span>
-
         <span class="n">exteriors</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[:]</span>
         <span class="n">interiors</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="c1"># Check if parts are closed</span>
-    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">exteriors</span> <span class="o">+</span> <span class="n">interiors</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span>
-            <span class="n">part</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
-            <span class="p">)</span>
 
     <span class="c1"># Delete everything outside the (Multi)Polygon</span>
     <span class="k">for</span> <span class="n">exterior</span> <span class="ow">in</span> <span class="n">exteriors</span><span class="p">:</span>
@@ -6385,7 +6371,7 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
 
 <h3 id="hydrolib.core.dflowfm.net.models.Mesh2d.refine" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">refine</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">refine</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#hydrolib.core.dflowfm.net.models.Mesh2d.refine" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -6438,12 +6424,34 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
                 <em>required</em>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>parameters</code>
+            </td>
+            <td>
+                  <code>MeshRefinementParameters</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>object containing the Meshkernel refinement parameters. Default values are taken from meskernel documentation.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
 <span class="normal">301</span>
@@ -6464,33 +6472,33 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">refine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">):</span>
+<span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">refine</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the mesh within a polygon, by a number of steps (level)</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        polygon (GeometryList): Polygon in which to refine</span>
 <span class="sd">        level (int): Number of refinement steps</span>
+<span class="sd">        parameters (MeshRefinementParameters): object containing the Meshkernel refinement parameters. Default values are taken from meskernel documentation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># Check if parts are closed</span>
-    <span class="c1"># if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (</span>
-    <span class="c1">#     polygon.x_coordinates[-1],</span>
-    <span class="c1">#     polygon.y_coordinates[-1],</span>
-    <span class="c1"># ):</span>
-    <span class="c1">#     raise ValueError(&quot;First and last coordinate of each GeometryList part should match.&quot;)</span>
-
-    <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
-        <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">min_edge_size</span><span class="o">=</span><span class="n">min_edge_size</span><span class="p">,</span>
-        <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
+            <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">min_edge_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">refinement_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">smoothing_iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">max_courant_time</span><span class="o">=</span><span class="mf">120.0</span><span class="p">,</span>
+            <span class="n">directional_refinement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">parameters</span><span class="o">.</span><span class="n">max_refinement_iterations</span> <span class="o">=</span> <span class="n">level</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_refine_based_on_polygon</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6527,7 +6535,8 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1094</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1093</span>
+<span class="normal">1094</span>
 <span class="normal">1095</span>
 <span class="normal">1096</span>
 <span class="normal">1097</span>
@@ -6667,7 +6676,9 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1231</span>
 <span class="normal">1232</span>
 <span class="normal">1233</span>
-<span class="normal">1234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">:</span>
+<span class="normal">1234</span>
+<span class="normal">1235</span>
+<span class="normal">1236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_geographic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_geographic</span><span class="p">:</span>
             <span class="n">projection</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">ProjectionType</span><span class="o">.</span><span class="n">CARTESIAN</span>
@@ -6768,9 +6779,12 @@ and <a href="../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_refine_mesh</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">refine</span><span class="p">(</span><span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">min_edge_size</span><span class="o">=</span><span class="n">min_edge_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span>
+        <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefineParameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">refine</span><span class="p">(</span><span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh1d_add_branch</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -6941,7 +6955,8 @@ present, and loads them one by one.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1109</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1108</span>
+<span class="normal">1109</span>
 <span class="normal">1110</span>
 <span class="normal">1111</span>
 <span class="normal">1112</span>
@@ -6963,8 +6978,7 @@ present, and loads them one by one.</p>
 <span class="normal">1128</span>
 <span class="normal">1129</span>
 <span class="normal">1130</span>
-<span class="normal">1131</span>
-<span class="normal">1132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">1131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Network</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read network from file. This classmethod checks what mesh components (mesh1d &amp; network1d, mesh2d, link1d2d) are</span>
 <span class="sd">    present, and loads them one by one.</span>
@@ -7041,14 +7055,14 @@ directly, but is easier accessible for users.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1173</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1172</span>
+<span class="normal">1173</span>
 <span class="normal">1174</span>
 <span class="normal">1175</span>
 <span class="normal">1176</span>
 <span class="normal">1177</span>
 <span class="normal">1178</span>
-<span class="normal">1179</span>
-<span class="normal">1180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">1179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular</span>
 <span class="sd">    directly, but is easier accessible for users.</span>
 
@@ -7108,9 +7122,7 @@ directly, but is easier accessible for users.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1217</span>
-<span class="normal">1218</span>
-<span class="normal">1219</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1219</span>
 <span class="normal">1220</span>
 <span class="normal">1221</span>
 <span class="normal">1222</span>
@@ -7125,7 +7137,9 @@ directly, but is easier accessible for users.</p>
 <span class="normal">1231</span>
 <span class="normal">1232</span>
 <span class="normal">1233</span>
-<span class="normal">1234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">1234</span>
+<span class="normal">1235</span>
+<span class="normal">1236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a plot of the 1d2d links and edges within this network.</span>
 
 <span class="sd">    Args:</span>
@@ -7195,15 +7209,15 @@ directly, but is easier accessible for users.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1134</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1133</span>
+<span class="normal">1134</span>
 <span class="normal">1135</span>
 <span class="normal">1136</span>
 <span class="normal">1137</span>
 <span class="normal">1138</span>
 <span class="normal">1139</span>
 <span class="normal">1140</span>
-<span class="normal">1141</span>
-<span class="normal">1142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">1141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write network to file</span>
 
 <span class="sd">    Args:</span>
@@ -7251,9 +7265,7 @@ directly, but is easier accessible for users.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1237</span>
-<span class="normal">1238</span>
-<span class="normal">1239</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1239</span>
 <span class="normal">1240</span>
 <span class="normal">1241</span>
 <span class="normal">1242</span>
@@ -7320,7 +7332,9 @@ directly, but is easier accessible for users.</p>
 <span class="normal">1303</span>
 <span class="normal">1304</span>
 <span class="normal">1305</span>
-<span class="normal">1306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NetworkModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">1306</span>
+<span class="normal">1307</span>
+<span class="normal">1308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NetworkModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Network model representation.&quot;&quot;&quot;</span>
 
     <span class="n">network</span><span class="p">:</span> <span class="n">Network</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Network</span><span class="p">)</span>
