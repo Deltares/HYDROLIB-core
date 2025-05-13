@@ -405,7 +405,6 @@ class ExternalForcingConverter:
         ext_file: Optional[PathOrStr] = None,
         inifield_file: Optional[PathOrStr] = None,
         structure_file: Optional[PathOrStr] = None,
-        suppress_errors: Optional[bool] = False,
     ) -> "ExternalForcingConverter":
         """class method to create the converter from MDU file.
 
@@ -592,9 +591,7 @@ def recursive_converter(
 
         for path in tqdm(mdu_files, desc="Converting files"):
             try:
-                converter = ExternalForcingConverter.from_mdu(
-                    path, suppress_errors=suppress_errors
-                )
+                converter = ExternalForcingConverter.from_mdu(path)
                 _, _, _ = converter.update()
                 converter.save(backup=backup)
                 if remove_legacy:
