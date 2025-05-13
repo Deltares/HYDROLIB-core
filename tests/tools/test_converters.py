@@ -96,7 +96,7 @@ class TestConvertMeteo:
         (
             "dflowfm_individual_files/with_optional_sections.mdu",
             (232, 233),
-            "ExtForceFileNew                           = test.ext\n",
+            "ExtForceFileNew                           = test.ext \n",
             "test.ext",
         ),
         (
