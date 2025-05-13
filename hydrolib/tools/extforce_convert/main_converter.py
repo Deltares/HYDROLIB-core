@@ -313,14 +313,10 @@ class ExternalForcingConverter:
             len(self.inifield_model.parameter) > 0
             or len(self.inifield_model.initial) > 0
         ):
-            if backup and self.inifield_model.filepath.exists():
-                backup_file(self.inifield_model.filepath)
-            self.inifield_model.save(recurse=recursive)
+            self._save_inifield_model(backup, recursive)
 
         if len(self.structure_model.structure) > 0:
-            if backup and self.structure_model.filepath.exists():
-                backup_file(self.structure_model.filepath)
-            self.structure_model.save(recurse=recursive)
+            self._save_inifield_model(backup, recursive)
 
         if backup and self.ext_model.filepath.exists():
             backup_file(self.ext_model.filepath)
@@ -330,23 +326,7 @@ class ExternalForcingConverter:
             mdu_file = self.mdu_info.get("file_path")
             backup_file(mdu_file)
             if self.fm_model is not None:
-                external_forcing = self.fm_model.external_forcing
-                if (
-                    hasattr(external_forcing, "extforcefile")
-                    and external_forcing.extforcefile is not None
-                ):
-                    external_forcing.extforcefile.filepath = (
-                        external_forcing.extforcefile.filepath.name
-                    )
-                if (
-                    hasattr(external_forcing, "extforcefilenew")
-                    and external_forcing.extforcefilenew is not None
-                ):
-                    external_forcing.extforcefilenew.filepath = (
-                        external_forcing.extforcefilenew.filepath.name
-                    )
-
-                self.fm_model.save(recurse=False, exclude_unset=True)
+                self._save_fm_model()
             elif "new_mdu_content" in self.mdu_info:
                 with open(mdu_file, "w", encoding="utf-8") as file:
                     file.writelines(self.mdu_info.get("new_mdu_content"))
@@ -354,6 +334,35 @@ class ExternalForcingConverter:
                 raise MDUUpdateError(
                     "The FM model is not saved, and there was no new updated content for the mdu file."
                 )
+
+    def _save_inifield_model(self, backup: bool, recursive: bool):
+        if backup and self.inifield_model.filepath.exists():
+            backup_file(self.inifield_model.filepath)
+        self.inifield_model.save(recurse=recursive)
+
+    def _save_structure_model(self, backup: bool, recursive: bool):
+        if backup and self.structure_model.filepath.exists():
+            backup_file(self.structure_model.filepath)
+        self.structure_model.save(recurse=recursive)
+
+    def _save_fm_model(self):
+        external_forcing = self.fm_model.external_forcing
+        if (
+            hasattr(external_forcing, "extforcefile")
+            and external_forcing.extforcefile is not None
+        ):
+            external_forcing.extforcefile.filepath = (
+                external_forcing.extforcefile.filepath.name
+            )
+        if (
+            hasattr(external_forcing, "extforcefilenew")
+            and external_forcing.extforcefilenew is not None
+        ):
+            external_forcing.extforcefilenew.filepath = (
+                external_forcing.extforcefilenew.filepath.name
+            )
+
+        self.fm_model.save(recurse=False, exclude_unset=True)
 
     def clean(self):
         """
