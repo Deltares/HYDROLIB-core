@@ -270,7 +270,8 @@ class TestForcingModel:
         assert model.serializer_config.skip_empty_properties == True
 
     def test_forcing_model_with_datablock_that_has_nan_values_should_raise_error(self):
-        datablock = np.random.uniform(low=-40, high=130.3, size=(4, 2)) * np.nan
+        rng = np.random.default_rng(seed=42)
+        datablock = rng.uniform(low=-40, high=130.3, size=(4, 2)) * np.nan
         datablock_list = datablock.tolist()
 
         with pytest.raises(ValidationError) as error:
