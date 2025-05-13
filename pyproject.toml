@@ -103,6 +103,9 @@ exclude = '''
 )
 '''
 
+#[tool.black]
+#line-length = 88
+
 [tool.flake8]
 ignore = ["E501", "W503", "E731"]
 per-file-ignores = [
