@@ -487,6 +487,21 @@ class ExternalForcingConverter:
             else:
                 ext_file = root_dir / ext_file
 
+        inifield_file = ExternalForcingConverter._get_inifield_file(
+            inifield_file, root_dir, inifieldfile_mdu
+        )
+        structure_file = ExternalForcingConverter._get_structure_file(
+            structure_file, root_dir, structurefile_mdu
+        )
+
+        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
+
+    @staticmethod
+    def _get_inifield_file(
+        inifield_file: Optional[PathOrStr],
+        root_dir: Path,
+        inifieldfile_mdu: Optional[PathOrStr],
+    ) -> Path:
         if inifield_file is not None:
             # user defined initial field file
             inifield_file = root_dir / inifield_file
@@ -501,8 +516,14 @@ class ExternalForcingConverter:
                 f"The initial field file is not found in the mdu file, and not provided by the user. \n "
                 f"given: {inifield_file}."
             )
+        return inifield_file
 
-        # the structure file will be taken from the mdu file if it is not provided by the user.
+    @staticmethod
+    def _get_structure_file(
+        structure_file: Optional[PathOrStr],
+        root_dir: Path,
+        structurefile_mdu: Optional[PathOrStr],
+    ) -> Path:
         if structure_file is not None:
             # user defined structure file
             structure_file = root_dir / structure_file
@@ -517,8 +538,7 @@ class ExternalForcingConverter:
                 "The structure file is not found in the mdu file, and not provide by the user. \n"
                 f"given: {structure_file}."
             )
-
-        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
+        return structure_file
 
     def _update_fm_model(self):
         """Update the FM model with the new external forcings, initial fields and structures files.
