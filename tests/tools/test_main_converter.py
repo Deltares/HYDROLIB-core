@@ -148,8 +148,8 @@ class TestExtOldToNewFromMDU:
                         "extforcefilenew": None,
                     },
                     "geometry": {
-                        "inifieldfile": MagicMock(spec=FileModel),
-                        "structurefile": MagicMock(spec=FileModel),
+                        "inifieldfile": Path("initial_conditions.ini"),
+                        "structurefile": Path("structures.ini"),
                     },
                 },
                 None,
@@ -201,6 +201,10 @@ class TestExtOldToNewFromMDU:
             converter.structure_model.filepath.name == structure_file
             or "structures.ini"
         )
+
+    def test_from_mdu_not_exist(self):
+        with pytest.raises(FileNotFoundError):
+            ExternalForcingConverter.from_mdu("not_exist.mdu")
 
 
 class TestExternalFocingConverter:
