@@ -37,5 +37,5 @@ class BaseParser:
     def _raise_error_if_contains_comment(line: str, line_index: int) -> None:
         if "#" in line or "*" in line:
             raise ValueError(
-                f"Line {line_index}: comments are only supported at the start of the file, before the components data."
+                f"Line {line_index}: comments are only supported at the start of the file, before the data."
             )

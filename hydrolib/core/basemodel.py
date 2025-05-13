@@ -1365,7 +1365,7 @@ class ParsableFileModel(FileModel):
         Examples:
             ```python
             >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
-            >>> get_quantity_unit(quantities_names)
+            >>> ParsableFileModel._get_quantity_unit(quantities_names)
             ['m3/s', 'm', '1e-3', 'degC']
 
             ```
