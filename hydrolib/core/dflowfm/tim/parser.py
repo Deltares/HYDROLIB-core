@@ -66,8 +66,3 @@ class TimParser(BaseParser):
             raise ValueError(
                 f"Line {line_index}: comments are only supported at the start of the file, before the time series data."
             )
-
-    @staticmethod
-    def _raise_error_if_values_empty(values: List[str], line_index: int) -> None:
-        if len(values) == 0:
-            raise ValueError(f"Line {line_index}: Time series cannot be empty.")
