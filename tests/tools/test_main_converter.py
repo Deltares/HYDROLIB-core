@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -79,7 +79,7 @@ class TestExtOldToNewFromMDU:
             recursive_converter(path, suppress_errors=True)
 
     @pytest.mark.parametrize(
-        "mdu_file_content, ext_file, inifield_file, structure_file",
+        "mdu_file_content, input, expected",
         [
             (
                 {
@@ -92,9 +92,8 @@ class TestExtOldToNewFromMDU:
                         "structurefile": "structures.ini",
                     },
                 },
-                None,
-                None,
-                None,
+                (None, None, None),
+                ("new_forcing.ext", "initial_conditions.ini", "structures.ini"),
             ),
             (
                 {
@@ -106,9 +105,8 @@ class TestExtOldToNewFromMDU:
                         "structurefile": "structures.ini",
                     },
                 },
-                "user_provided.ext",
-                None,
-                None,
+                ("user_provided.ext", None, None),
+                ("user_provided.ext", "initial_conditions.ini", "structures.ini"),
             ),
             (
                 {
@@ -120,9 +118,8 @@ class TestExtOldToNewFromMDU:
                         "structurefile": "structures.ini",
                     },
                 },
-                None,
-                "user_initial_conditions.ini",
-                None,
+                (None, "user_initial_conditions.ini", None),
+                ("new_forcing.ext", "user_initial_conditions.ini", "structures.ini"),
             ),
             (
                 {
@@ -134,9 +131,8 @@ class TestExtOldToNewFromMDU:
                         "inifieldfile": "initial_conditions.ini",
                     },
                 },
-                None,
-                None,
-                "user_structures.ini",
+                (None, None, "user_structures.ini"),
+                ("new_forcing.ext", "initial_conditions.ini", "user_structures.ini"),
             ),
             (
                 {
@@ -149,9 +145,8 @@ class TestExtOldToNewFromMDU:
                         "structurefile": Path("structures.ini"),
                     },
                 },
-                None,
-                None,
-                None,
+                (None, None, None),
+                ("old_forcing-new.ext", "initial_conditions.ini", "structures.ini"),
             ),
         ],
         ids=[
@@ -159,7 +154,7 @@ class TestExtOldToNewFromMDU:
             "MDU file missing extforcefilenew, user provides ext_file",
             "MDU file missing inifieldfile, user provides inifield_file",
             "MDU file missing structurefile, user provides structure_file",
-            "MDU file missing extforcefilenew, inifieldfile, and structurefile",
+            "MDU file empty extforcefilenew",
         ],
     )
     @patch(
@@ -170,12 +165,12 @@ class TestExtOldToNewFromMDU:
         self,
         mock_read_old_file,
         mock_construct_filemodel,
-        mdu_file_content,
-        ext_file,
-        inifield_file,
-        structure_file,
+        mdu_file_content: Dict[str, Any],
+        input: Tuple[Optional[str], Optional[str], Optional[str]],
+        expected: Tuple[str, str, str],
         tmp_path: Path,
     ):
+        # ext_file, inifield_file, structure_file
         """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
         mdu_file = tmp_path / "test.mdu"
         mdu_file.touch()
@@ -186,19 +181,13 @@ class TestExtOldToNewFromMDU:
             mock_get_mdu_info.return_value = (mdu_file_content, {})
 
             converter = ExternalForcingConverter.from_mdu(
-                mdu_file, ext_file, inifield_file, structure_file
+                mdu_file, input[0], input[1], input[2]
             )
         mdu_file.unlink()
 
-        assert converter.ext_model.filepath.name == ext_file or "new_forcing.ext"
-        assert (
-            converter.inifield_model.filepath.name == inifield_file
-            or "initial_conditions.ini"
-        )
-        assert (
-            converter.structure_model.filepath.name == structure_file
-            or "structures.ini"
-        )
+        assert converter.ext_model.filepath.name == expected[0]
+        assert converter.inifield_model.filepath.name == expected[1]
+        assert converter.structure_model.filepath.name == expected[2]
 
     def test_from_mdu_not_exist(self):
         with pytest.raises(FileNotFoundError):
