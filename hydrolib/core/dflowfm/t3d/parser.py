@@ -1,7 +1,7 @@
 """T3D File Parser."""
 
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from hydrolib.core.baseparser import BaseParser
 
