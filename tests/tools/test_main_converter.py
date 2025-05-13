@@ -79,7 +79,7 @@ class TestExtOldToNewFromMDU:
             recursive_converter(path, suppress_errors=True)
 
     @pytest.mark.parametrize(
-        "mdu_file_content, input, expected",
+        "mdu_file_content, input_files, expected",
         [
             (
                 {
@@ -166,7 +166,7 @@ class TestExtOldToNewFromMDU:
         mock_read_old_file,
         mock_construct_filemodel,
         mdu_file_content: Dict[str, Any],
-        input: Tuple[Optional[str], Optional[str], Optional[str]],
+        input_files: Tuple[Optional[str], Optional[str], Optional[str]],
         expected: Tuple[str, str, str],
         tmp_path: Path,
     ):
@@ -181,7 +181,7 @@ class TestExtOldToNewFromMDU:
             mock_get_mdu_info.return_value = (mdu_file_content, {})
 
             converter = ExternalForcingConverter.from_mdu(
-                mdu_file, input[0], input[1], input[2]
+                mdu_file, input_files[0], input_files[1], input_files[2]
             )
         mdu_file.unlink()
 
