@@ -72,7 +72,7 @@ class BaseConverter(ABC):
         self._root_dir = value
 
     @abstractmethod
-    def convert(self, data: ExtOldForcing) -> Any:
+    def convert(self, forcing: ExtOldForcing) -> Any:
         """Converts the data from the old external forcings format to
         the proper/new model input block.
 
@@ -232,7 +232,7 @@ class BoundaryConditionConverter(BaseConverter):
         )
         return time_series_list
 
-    def convert(self, forcing: ExtOldForcing, time_unit: str) -> Boundary:
+    def convert(self, forcing: ExtOldForcing, time_unit: str = "") -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
 
