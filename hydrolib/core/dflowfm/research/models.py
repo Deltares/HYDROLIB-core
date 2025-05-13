@@ -25,6 +25,7 @@ from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validat
 DEPRECATED_VARIABLE = "Deprecated variable."
 DEPRECATED_KEYWORD = "Deprecated keyword."
 
+
 class ResearchGeneral(General):
     """An extended [general] section that includes highly experimental research keywords."""
 
