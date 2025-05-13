@@ -1141,12 +1141,6 @@ def update_extforce_file_new(
         and the `LegacyFMModel` will be the only way to read/update the mdu file
 
     """
-    warnings.warn(
-        "This function is a workaround for updating the ExtForceFileNew entry in an MDU file. "
-        "It will be removed in the future, and the LegacyFMModel will be the only way to read/update the mdu file.",
-        DeprecationWarning,
-    )
-
     # Read all lines from the .mdu file
     with open(mdu_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
