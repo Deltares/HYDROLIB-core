@@ -330,8 +330,11 @@ def test_fnm_save_as_with_recurse_correctly_copies_subfiles():
     target_path = test_output_dir / name
 
     if target_path.exists() and target_path.is_dir():
-        shutil.rmtree(target_path)
-    target_path.mkdir()
+        try:
+            shutil.rmtree(target_path)
+        except PermissionError:
+            pass
+    target_path.mkdir(exist_ok=True)
 
     with file_load_context() as context:
         context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
@@ -359,8 +362,12 @@ def test_fnm_save_without_recurse_only_copies_fnm_file():
     target_path = test_output_dir / name
 
     if target_path.exists() and target_path.is_dir():
-        shutil.rmtree(target_path)
-    target_path.mkdir()
+        try:
+            shutil.rmtree(target_path)
+        except PermissionError:
+            pass
+
+    target_path.mkdir(exist_ok=True)
 
     with file_load_context() as context:
         context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
@@ -387,8 +394,11 @@ def test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files():
     target_path = test_output_dir / name
 
     if target_path.exists() and target_path.is_dir():
-        shutil.rmtree(target_path)
-    target_path.mkdir()
+        try:
+            shutil.rmtree(target_path)
+        except PermissionError:
+            pass
+    target_path.mkdir(exist_ok=True)
 
     with file_load_context() as context:
         context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)

@@ -36,12 +36,12 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.13
 
       - name: Run image
         uses: abatilo/actions-poetry@v2.3.0
         with:
-          poetry-version: 1.8.3
+          poetry-version: 1.8.4
 
       - name: Cache Poetry virtualenv
         uses: actions/cache@v4

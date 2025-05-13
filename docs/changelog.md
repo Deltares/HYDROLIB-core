@@ -1,3 +1,14 @@
+## 0.8.1 (2025-02-04)
+
+### Feat
+
+- Support Fortran scientific notation in .tim files (e.g., 1d0) (#720)
+- Corrected comment for layerType (#697)
+
+### Fix
+
+- failing docs (#728)
+
 ## 0.8.0 (2024-07-09)
 
 ### Feat
