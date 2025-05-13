@@ -53,9 +53,9 @@ class CMPParser(BaseParser):
     @staticmethod
     def _read_components_data(
         lines: List[str], start_components_index: int
-    ) -> List[CMPData]:
-        harmonics_data: List[CMPData] = []
-        astronomics_data: List[CMPData] = []
+    ) -> Dict[str, Any]:
+        harmonics_data: List[Dict[str, Any]] = []
+        astronomics_data: List[Dict[str, Any]] = []
         for line_index in range(start_components_index, len(lines)):
             line = lines[line_index].strip()
 
