@@ -470,12 +470,7 @@ class ExternalForcingConverter:
         extoldfile = root_dir / old_ext_force_file
 
         if new_ext_force_file:
-            if isinstance(new_ext_force_file, Path):
-                # extforcefilenew is a Path object
-                ext_file = new_ext_force_file.resolve()
-            else:
-                # extforcefilenew is a extmodel object
-                ext_file = new_ext_force_file._resolved_filepath
+            ext_file = new_ext_force_file.resolve()
         else:
             if ext_file is None:
                 old_ext = old_ext_force_file.with_stem(old_ext_force_file.stem + "-new")
@@ -488,7 +483,7 @@ class ExternalForcingConverter:
             inifield_file = root_dir / inifield_file
         elif isinstance(inifieldfile_mdu, Path):
             # from the LegacyFMModel
-            inifield_file = inifieldfile_mdu._resolved_filepath
+            inifield_file = inifieldfile_mdu.resolve()
         elif isinstance(inifieldfile_mdu, str):
             # from reading the geometry section
             inifield_file = root_dir / inifieldfile_mdu
@@ -504,7 +499,7 @@ class ExternalForcingConverter:
             structure_file = root_dir / structure_file
         elif isinstance(structurefile_mdu, Path):
             # from the LegacyFMModel
-            structure_file = structurefile_mdu._resolved_filepath
+            structure_file = structurefile_mdu.resolve()
         elif isinstance(structurefile_mdu, str):
             # from reading the geometry section
             structure_file = root_dir / structurefile_mdu

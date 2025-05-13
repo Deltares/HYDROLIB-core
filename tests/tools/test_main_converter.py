@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -7,7 +7,6 @@ import pytest
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
-from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
@@ -78,6 +77,123 @@ class TestExtOldToNewFromMDU:
             return_value=None,
         ):
             recursive_converter(path, suppress_errors=True)
+
+    @pytest.mark.parametrize(
+        "mdu_file_content, input_files, expected",
+        [
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": "new_forcing.ext",
+                    },
+                    "geometry": {
+                        "inifieldfile": "initial_conditions.ini",
+                        "structurefile": "structures.ini",
+                    },
+                },
+                (None, None, None),
+                ("new_forcing.ext", "initial_conditions.ini", "structures.ini"),
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                    },
+                    "geometry": {
+                        "inifieldfile": "initial_conditions.ini",
+                        "structurefile": "structures.ini",
+                    },
+                },
+                ("user_provided.ext", None, None),
+                ("user_provided.ext", "initial_conditions.ini", "structures.ini"),
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": "new_forcing.ext",
+                    },
+                    "geometry": {
+                        "structurefile": "structures.ini",
+                    },
+                },
+                (None, "user_initial_conditions.ini", None),
+                ("new_forcing.ext", "user_initial_conditions.ini", "structures.ini"),
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": "new_forcing.ext",
+                    },
+                    "geometry": {
+                        "inifieldfile": "initial_conditions.ini",
+                    },
+                },
+                (None, None, "user_structures.ini"),
+                ("new_forcing.ext", "initial_conditions.ini", "user_structures.ini"),
+            ),
+            (
+                {
+                    "external_forcing": {
+                        "extforcefile": "old_forcing.ext",
+                        "extforcefilenew": None,
+                    },
+                    "geometry": {
+                        "inifieldfile": Path("initial_conditions.ini"),
+                        "structurefile": Path("structures.ini"),
+                    },
+                },
+                (None, None, None),
+                ("old_forcing-new.ext", "initial_conditions.ini", "structures.ini"),
+            ),
+        ],
+        ids=[
+            "Valid MDU file with all fields present",
+            "MDU file missing extforcefilenew, user provides ext_file",
+            "MDU file missing inifieldfile, user provides inifield_file",
+            "MDU file missing structurefile, user provides structure_file",
+            "MDU file empty extforcefilenew",
+        ],
+    )
+    def test_from_mdu(
+        self,
+        mdu_file_content: Dict[str, Any],
+        input_files: Tuple[Optional[str], Optional[str], Optional[str]],
+        expected: Tuple[str, str, str],
+        tmp_path: Path,
+    ):
+        # ext_file, inifield_file, structure_file
+        """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
+        mdu_file = tmp_path / "test.mdu"
+        mdu_file.touch()
+
+        with (
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.get_mdu_info"
+            ) as mock_get_mdu_info,
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file"
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing"
+            ),
+        ):
+            mock_get_mdu_info.return_value = (mdu_file_content, {})
+
+            converter = ExternalForcingConverter.from_mdu(
+                mdu_file, input_files[0], input_files[1], input_files[2]
+            )
+        mdu_file.unlink()
+
+        assert converter.ext_model.filepath.name == expected[0]
+        assert converter.inifield_model.filepath.name == expected[1]
+        assert converter.structure_model.filepath.name == expected[2]
+
+    def test_from_mdu_not_exist(self):
+        with pytest.raises(FileNotFoundError):
+            ExternalForcingConverter.from_mdu("not_exist.mdu")
 
 
 class TestExternalFocingConverter:
