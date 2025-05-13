@@ -99,9 +99,9 @@ def main(args=None):
 
     # three cases to consider
     if args.mdufile:
-        convert_with_mdufile(args)
+        convert_with_mdu_file(args)
     elif args.extoldfile is not None:
-        convert_with_extoldfile(args)
+        convert_with_extold_file(args)
     elif args.dir is not None:
         recursive_converter(
             args.dir, backup=args.backup, remove_legacy=args.remove_legacy
@@ -110,7 +110,7 @@ def main(args=None):
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
 
 
-def convert_with_mdufile(args: Namespace):
+def convert_with_mdu_file(args: Namespace):
     """Convert the old external forcing file using the mdu file.
 
     Read the old external forcing file path from the mdu file,
@@ -131,7 +131,7 @@ def convert_with_mdufile(args: Namespace):
     convert(converter, args)
 
 
-def convert_with_extoldfile(args: Namespace):
+def convert_with_extold_file(args: Namespace):
     """Convert the old external forcing file to the new format files.
 
     Args:
