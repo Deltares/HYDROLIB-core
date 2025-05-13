@@ -1,12 +1,14 @@
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from hydrolib.core.baseparser import BaseParser
+
 AstronomicData = Dict[str, Tuple[float, float, float]]
 HarmonicData = Dict[str, Tuple[str, float, float]]
 CMPData = Dict[str, Tuple[AstronomicData, HarmonicData]]
 
 
-class CMPParser:
+class CMPParser(BaseParser):
     """Parser for .cmp files.
     Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.
     No other comments are supported.
@@ -47,37 +49,6 @@ class CMPParser:
             comments, start_components_index = CMPParser._read_header_comments(lines)
             component = CMPParser._read_components_data(lines, start_components_index)
         return {"comments": comments, "component": component}
-
-    @staticmethod
-    def _read_header_comments(lines: List[str]) -> Tuple[List[str], int]:
-        """Read the header comments of the lines from the .cmp file.
-        The comments are only expected at the start of the .cmp file.
-        When a non comment line is encountered, all comments from the header will be retuned together with the start index of the components data.
-
-        Args:
-            lines (List[str]): Lines from the the .cmp file.
-
-        Returns:
-            Tuple of List[str] and int, the List[str] contains the comments from the header, the int is the start index of the components.
-        """
-        comments: List[str] = []
-        start_components_index = 0
-        for line_index in range(len(lines)):
-
-            line = lines[line_index].strip()
-
-            if len(line) == 0:
-                comments.append(line)
-                continue
-
-            if line.startswith("#") or line.startswith("*"):
-                comments.append(line[1:])
-                continue
-
-            start_components_index = line_index
-            break
-
-        return comments, start_components_index
 
     @staticmethod
     def _read_components_data(
