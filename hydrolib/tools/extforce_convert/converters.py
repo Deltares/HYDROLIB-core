@@ -1141,12 +1141,6 @@ def update_extforce_file_new(
         and the `LegacyFMModel` will be the only way to read/update the mdu file
 
     """
-    warnings.warn(
-        "This function is a workaround for updating the ExtForceFileNew entry in an MDU file. "
-        "It will be removed in the future, and the LegacyFMModel will be the only way to read/update the mdu file.",
-        DeprecationWarning,
-    )
-
     # Read all lines from the .mdu file
     with open(mdu_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -1194,11 +1188,15 @@ def update_extforce_file_new(
                     # Everything up to and including '='
                     left_part = line[: eq_index + 1]
                     # Remainder of the line (after '=')
-                    right_part = line[eq_index + 1 :]  # noqa: E203
+                    right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
                     name_len = len(new_forcing_filename)
+                    # Protect against filename overflow into the comment
+                    right_part_clipped = right_part[name_len + 1 :]
+                    if right_part_clipped.find("#") == -1:
+                        right_part_clipped = f" {right_part.lstrip()}"
                     # Insert new filename immediately after '=' + a space
                     new_line = (
-                        f"{left_part} {new_forcing_filename}{right_part[name_len + 1:]}"
+                        f"{left_part} {new_forcing_filename}{right_part_clipped}\n"
                     )
 
                     updated_lines.append(new_line)

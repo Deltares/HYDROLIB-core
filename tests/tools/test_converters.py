@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import pytest
@@ -90,17 +90,42 @@ class TestConvertMeteo:
         )
 
 
-def test_update_mdu_on_the_fly(input_files_dir: Path):
-    mdu_filename = (
-        input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
-    )
+@pytest.mark.parametrize(
+    "input_file, on_line, expected_line, ext_file",
+    [
+        (
+            "dflowfm_individual_files/with_optional_sections.mdu",
+            (232, 233),
+            "ExtForceFileNew                           = test.ext \n",
+            "test.ext",
+        ),
+        (
+            "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu",
+            (149, 150),
+            "ExtForceFileNew                      = test.ext                              # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n",
+            "test.ext",
+        ),
+        (
+            "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu",
+            (149, 150),
+            "ExtForceFileNew                      = really_long_external_forcing_file_results_name.ext # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n",
+            "really_long_external_forcing_file_results_name.ext",
+        ),
+    ],
+    ids=["without comment", "with comment", "overflow comment"],
+)
+def test_update_mdu_on_the_fly(
+    input_files_dir: Path,
+    input_file: str,
+    on_line: Tuple[int, int],
+    expected_line: str,
+    ext_file: str,
+):
+    mdu_filename = input_files_dir / input_file
     new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
-    updated_mdu_file = update_extforce_file_new(mdu_filename, "test.ext")
-    assert updated_mdu_file[149] == "[external forcing]\n"
-    assert (
-        updated_mdu_file[150]
-        == "ExtForceFileNew                      = test.ext                              # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n"
-    )
+    updated_mdu_file = update_extforce_file_new(mdu_filename, ext_file)
+    assert updated_mdu_file[on_line[0]] == "[external forcing]\n"
+    assert updated_mdu_file[on_line[1]] == expected_line
     # test the save mdu file function
     save_mdu_file(updated_mdu_file, new_mdu_file)
     assert new_mdu_file.exists()

@@ -170,7 +170,7 @@ class TestExtOldToNewFromMDU:
         mdu_file.touch()
 
         with patch(
-                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.get_mdu_info"
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.get_mdu_info"
         ) as mock_get_mdu_info, patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file"
         ), patch(
