@@ -2,7 +2,7 @@ import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
 from hydrolib.core.dflowfm.bc.models import (
@@ -232,7 +232,9 @@ class BoundaryConditionConverter(BaseConverter):
         )
         return time_series_list
 
-    def convert(self, forcing: ExtOldForcing, time_unit: str = "") -> Boundary:
+    def convert(
+        self, forcing: ExtOldForcing, time_unit: Optional[str] = None
+    ) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
 
