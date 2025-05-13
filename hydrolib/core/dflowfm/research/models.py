@@ -22,6 +22,8 @@ from hydrolib.core.dflowfm import (
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
 
+DEPRECATED_VARIABLE = "Deprecated variable."
+DEPRECATED_KEYWORD = "Deprecated keyword."
 
 class ResearchGeneral(General):
     """An extended [general] section that includes highly experimental research keywords."""
@@ -389,15 +391,15 @@ class ResearchNumerics(Numerics):
             alias="jarhoxu",
         )
         research_jaorgsethu: Optional[str] = Field(
-            "Deprecated variable.",
+            DEPRECATED_VARIABLE,
             alias="jaorgsethu",
         )
         research_cflwavefrac: Optional[str] = Field(
-            "Deprecated variable.",
+            DEPRECATED_VARIABLE,
             alias="cflwavefrac",
         )
         research_jaembed1d: Optional[str] = Field(
-            "Deprecated variable.",
+            DEPRECATED_VARIABLE,
             alias="jaembed1d",
         )
         research_maxitverticalforester: Optional[str] = Field(
@@ -559,7 +561,7 @@ class ResearchPhysics(Physics):
             alias="uniffrictcoef1dgrlay",
         )
         research_effectspiral: Optional[str] = Field(
-            "Deprecated keyword.",
+            DEPRECATED_KEYWORD,
             alias="effectspiral",
         )
 
@@ -641,7 +643,7 @@ class ResearchWind(Wind):
             alias="wind_eachstep",
         )
         research_gapres: Optional[str] = Field(
-            "Deprecated keyword.",
+            DEPRECATED_KEYWORD,
             alias="gapres",
         )
 
@@ -701,7 +703,7 @@ class ResearchWaves(Waves):
             alias="jahissigwav",
         )
         research_wavenikuradse: Optional[str] = Field(
-            "Deprecated keyword.",
+            DEPRECATED_KEYWORD,
             alias="wavenikuradse",
         )
 
@@ -876,19 +878,19 @@ class ResearchOutput(Output):
             alias="wrimap_trachytopes",
         )
         research_s1incinterval: Optional[str] = Field(
-            "Deprecated keyword.",
+            DEPRECATED_KEYWORD,
             alias="s1incinterval",
         )
         research_waqfilebase: Optional[str] = Field(
-            "Deprecated keyword.",
+            DEPRECATED_KEYWORD,
             alias="waqfilebase",
         )
         research_snapshotdir: Optional[str] = Field(
-            "Deprecated keyword.",
+            DEPRECATED_KEYWORD,
             alias="snapshotdir",
         )
         research_heatfluxesonoutput: Optional[str] = Field(
-            "Deprecated keyword.",
+            DEPRECATED_KEYWORD,
             alias="heatfluxesonoutput",
         )
 
