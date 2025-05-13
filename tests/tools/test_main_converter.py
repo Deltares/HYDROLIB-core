@@ -51,9 +51,7 @@ class TestExtOldToNewFromMDU:
             input_files_dir
             / "e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu"
         )
-        converter = ExternalForcingConverter.from_mdu(
-            mdu_filename, suppress_errors=True
-        )
+        converter = ExternalForcingConverter.from_mdu(mdu_filename)
         ext_model, _, _ = converter.update()
         assert isinstance(ext_model, ExtModel)
         assert len(ext_model.meteo) == 1

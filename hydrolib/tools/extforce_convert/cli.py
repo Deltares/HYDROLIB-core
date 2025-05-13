@@ -127,7 +127,6 @@ def convert_with_mdufile(args: Namespace):
         ext_file=(args.outfiles[0] if args.outfiles else None),
         inifield_file=(args.outfiles[1] if args.outfiles else None),
         structure_file=(args.outfiles[2] if args.outfiles else None),
-        suppress_errors=True,
     )
     convert(converter, args)
 
