@@ -71,15 +71,12 @@ class BaseModel(PydanticBaseModel):
         except ValidationError as e:
 
             # Give a special message for faulty list input
-            for re in e.raw_errors:
-                if (
-                    hasattr(re, "_loc")
-                    and hasattr(re.exc, "msg_template")
-                    and isinstance(data.get(to_key(re._loc)), list)
-                ):
-                    re.exc.msg_template += (
-                        f". The key {re._loc} might be duplicated in the input file."
-                    )
+            for error in e.errors():
+                loc = error.get("loc", [])
+                if loc and isinstance(data.get(to_key(loc[0])), list):
+                    error[
+                        "msg"
+                    ] += f". The key {loc[0]} might be duplicated in the input file."
 
             # Update error with specific model location name
             identifier = self._get_identifier(data)
