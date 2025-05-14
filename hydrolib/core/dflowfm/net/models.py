@@ -9,7 +9,7 @@ import netCDF4 as nc
 import numpy as np
 import numpy.typing as npt
 from meshkernel.py_structures import GeometryList
-from pydantic.v1 import Field
+from pydantic import Field
 
 from hydrolib.core import __version__
 from hydrolib.core.basemodel import (
