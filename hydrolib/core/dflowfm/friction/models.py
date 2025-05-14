@@ -1,8 +1,7 @@
 import logging
 from typing import List, Literal, Optional
 
-from pydantic.v1 import Field, NonNegativeInt, PositiveInt
-from pydantic.v1.class_validators import validator
+from pydantic import Field, NonNegativeInt, PositiveInt, field_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
@@ -180,7 +179,7 @@ class FrictBranch(INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")
 
-    @validator("levels", always=True)
+    @field_validator("levels")
     @classmethod
     def _validate_levels(cls, v, values):
         if v is not None and (
@@ -192,7 +191,7 @@ class FrictBranch(INIBasedModel):
 
         return v
 
-    @validator("chainage", always=True)
+    @field_validator("chainage")
     @classmethod
     def _validate_chainage(cls, v, values):
         if v is not None and len(v) != values["numlocations"]:
@@ -202,7 +201,7 @@ class FrictBranch(INIBasedModel):
 
         return v
 
-    @validator("frictionvalues", always=True)
+    @field_validator("frictionvalues")
     @classmethod
     def _validate_frictionvalues(cls, v, values):
         # number of values should be equal to numlocations*numlevels
