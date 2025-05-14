@@ -75,3 +75,20 @@ def test_replace_extforcefilenew(line, expected):
         parser = MDUParser("dummy_path", "new_file.ext")
 
     assert parser.replace_extforcefilenew(line) == expected
+
+
+def test_is_section_header():
+    """Test the is_section_header method."""
+    # Test with valid section headers
+    assert MDUParser.is_section_header("[general]") is True
+    assert MDUParser.is_section_header("[output]") is True
+
+    # Test with invalid section headers
+    assert MDUParser.is_section_header("general") is False
+    assert MDUParser.is_section_header("[general") is False
+    assert MDUParser.is_section_header("general]") is False
+
+    # Test with external forcing section header (should return False)
+    assert MDUParser.is_section_header("[external forcing]") is False
+    assert MDUParser.is_section_header("[EXTERNAL FORCING]") is False
+
