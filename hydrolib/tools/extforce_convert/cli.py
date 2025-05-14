@@ -1,3 +1,9 @@
+"""CLI.
+
+CLI for converting D-Flow FM legacy external forcings files to current external forcings file/initial
+fields file/structures file.
+"""
+
 import argparse
 from argparse import ArgumentTypeError, Namespace
 from pathlib import Path
@@ -10,6 +16,7 @@ from hydrolib.tools.extforce_convert.main_converter import (
 
 
 def valid_file(path_str):
+    """Check if the file exists and return its path."""
     path = Path(path_str)
     if not path.exists():
         raise ArgumentTypeError(f"File not found: {path}")
@@ -87,8 +94,8 @@ def _get_parser() -> argparse.ArgumentParser:
 
 
 def main(args=None):
-    """
-    Main entry point for extforce_convert tool.
+    """Entry point for extforce_convert tool.
+
     Args:
         args : list
             A of arguments as if they were input in the command line. Leave it

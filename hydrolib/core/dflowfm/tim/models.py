@@ -145,7 +145,7 @@ class TimModel(ParsableFileModel):
 
     def __init__(
         self,
-        filepath: Optional[str] = None,
+        filepath: Optional[str | Path] = None,
         quantities_names: Optional[List[str]] = None,
         **parsable_file_kwargs,
     ):

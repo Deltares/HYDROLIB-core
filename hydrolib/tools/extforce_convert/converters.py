@@ -1,3 +1,5 @@
+"""External forcing converter."""
+
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
@@ -46,8 +48,7 @@ from hydrolib.tools.extforce_convert.utils import (
 
 
 class BaseConverter(ABC):
-    """Abstract base class for converting old external forcings blocks
-    to new blocks.
+    """Abstract base class for converting old external forcings blocks to new blocks.
 
     Subclasses must implement the `convert` method, specific for the
     type of model data in the various old external forcing blocks.
@@ -62,6 +63,7 @@ class BaseConverter(ABC):
 
     @property
     def root_dir(self) -> Path:
+        """Get the root directory of the external forcing files."""
         return self._root_dir
 
     @root_dir.setter
@@ -72,11 +74,10 @@ class BaseConverter(ABC):
 
     @abstractmethod
     def convert(self, forcing: ExtOldForcing) -> Any:
-        """Converts the data from the old external forcings format to
-        the proper/new model input block.
+        """Converts the data from the old external forcings format to the proper/new model input block.
 
         Args:
-            data (ExtOldForcing): The data read from an old format
+            forcing (ExtOldForcing): The data read from an old format
                 external forcings file.
 
         Returns:
@@ -87,11 +88,16 @@ class BaseConverter(ABC):
 
 
 class MeteoConverter(BaseConverter):
+    """Meteo quantities Converter."""
+
     def __init__(self):
+        """Meteo converter constructor."""
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> Meteo:
-        """Convert an old external forcing block with meteo data to a Meteo
+        """Meteo converter.
+
+        Convert an old external forcing block with meteo data to a Meteo
         forcing block suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
@@ -145,8 +151,10 @@ class MeteoConverter(BaseConverter):
 
 
 class BoundaryConditionConverter(BaseConverter):
+    """Boundary condition converter."""
 
     def __init__(self):
+        """Boundary condition converter constructor."""
         super().__init__()
 
     @staticmethod
@@ -234,7 +242,9 @@ class BoundaryConditionConverter(BaseConverter):
     def convert(
         self, forcing: ExtOldForcing, time_unit: Optional[str] = None
     ) -> Boundary:
-        """Convert an old external forcing block to a boundary forcing block
+        """Boundary condition converter.
+
+        Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
@@ -343,12 +353,16 @@ class BoundaryConditionConverter(BaseConverter):
 
 
 class InitialConditionConverter(BaseConverter):
+    """Initial condition converter."""
 
     def __init__(self):
+        """Initial condition converter constructor."""
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> InitialField:
-        """Convert an old external forcing block with Initial condition data to a IinitialField
+        """Convert the Initial condition quantities.
+
+        Convert an old external forcing block with Initial condition data to a IinitialField
         forcing block suitable for inclusion in a new inifieldfile file.
 
 
@@ -387,12 +401,16 @@ class InitialConditionConverter(BaseConverter):
 
 
 class ParametersConverter(BaseConverter):
+    """Parameter converter."""
 
     def __init__(self):
+        """Parameter converter constructor."""
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> ParameterField:
-        """Convert an old external forcing block to a parameter forcing block
+        """Parameter converter.
+
+        Convert an old external forcing block to a parameter forcing block
         suitable for inclusion in an initial field and parameter file.
 
         This function takes a forcing block from an old external forcings
@@ -427,8 +445,10 @@ class ParametersConverter(BaseConverter):
 
 
 class SourceSinkConverter(BaseConverter):
+    """Source and sink converter."""
 
     def __init__(self):
+        """Source and sink converter Constructor."""
         super().__init__()
 
     @staticmethod
@@ -589,6 +609,7 @@ class SourceSinkConverter(BaseConverter):
 
     @property
     def root_dir(self) -> Path:
+        """Root directory of the external forcing files."""
         return self._root_dir
 
     @root_dir.setter
@@ -633,6 +654,7 @@ class SourceSinkConverter(BaseConverter):
     @staticmethod
     def separate_forcing_model(forcing_model: ForcingModel) -> Dict[str, ForcingModel]:
         """Separate the forcing model into a list of forcing models.
+
         each forcing model will contain only one forcing quantity.
         """
         forcing_list = [deepcopy(forcing) for forcing in forcing_model.forcing]
@@ -655,7 +677,9 @@ class SourceSinkConverter(BaseConverter):
         start_time: str = None,
         **temp_salinity_mdu,
     ) -> SourceSink:
-        """Convert an old external forcing block with Sources and sinks to a SourceSink
+        """Source and sink converter.
+
+        Convert an old external forcing block with Sources and sinks to a SourceSink
         forcing block suitable for inclusion in a new external forcings file.
 
         Args:
@@ -732,7 +756,7 @@ class SourceSinkConverter(BaseConverter):
 
         # the same forcing model will be used for all the forcings to be able to save all the forcings (sourcesinks)
         # in the same file.
-        for name, force in forcings.items():
+        for name, _ in forcings.items():
             forcings[name] = forcing_model
 
         data = data | forcings
@@ -756,9 +780,7 @@ class SourceSinkConverter(BaseConverter):
 
 
 class ConverterFactory:
-    """
-    A factory class for creating converters based on the given quantity.
-    """
+    """A factory class for creating converters based on the given quantity."""
 
     @staticmethod
     def create_converter(quantity) -> BaseConverter:
@@ -790,6 +812,7 @@ class ConverterFactory:
 
     @staticmethod
     def contains(quantity_class, quantity) -> bool:
+        """Check if the given quantity is in the specified class."""
         try:
             quantity_class(quantity)
         except ValueError:
@@ -799,9 +822,7 @@ class ConverterFactory:
 
 
 class CMPToForcingConverter:
-    """
-    A class to convert CmpModel data into ForcingModel data for boundary condition definitions.
-    """
+    """A class to convert CmpModel data into ForcingModel data for boundary condition definitions."""
 
     @staticmethod
     def convert(
@@ -811,8 +832,10 @@ class CMPToForcingConverter:
         Convert a CmpModel into a ForcingModel.
 
         Args:
-            cmp_model (CmpModel):
+            cmp_models (List[CmpModel]):
                 The input CmpModel to be converted.
+            user_defined_names (List[str]):
+                user defined names for the quantities.Default is None.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -877,6 +900,7 @@ class CMPToForcingConverter:
         quantity_name: str,
         unit: str,
     ) -> Harmonic:
+        """Convert a list of harmonic records into a Harmonic object."""
         harmonic_block = [
             [harmonic.period, harmonic.amplitude, harmonic.phase]
             for harmonic in harmonics
@@ -900,6 +924,7 @@ class CMPToForcingConverter:
         quantity_name: str,
         unit: str,
     ) -> Astronomic:
+        """Convert a list of astronomic records into an Astronomic object."""
         astronomic_block = [
             [astronomic.name, astronomic.amplitude, astronomic.phase]
             for astronomic in astronomics
@@ -1018,6 +1043,7 @@ class TimToForcingConverter:
 
 
 class T3DToForcingConverter:
+    """T3D to Forcing Converter."""
 
     @staticmethod
     def convert(
@@ -1025,6 +1051,7 @@ class T3DToForcingConverter:
         quantities_names: List[str],
         user_defined_names: List[str] = None,
     ) -> List[T3D]:
+        """Convert a list of T3DModel into a list of T3D Forcing to be saved into the .bc file."""
         t3d_forcings = []
         for label, model in zip(user_defined_names, t3d_models):
             model.quantities_names = quantities_names
