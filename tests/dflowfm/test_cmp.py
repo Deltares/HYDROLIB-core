@@ -6,6 +6,7 @@ from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.basemodel import ModelSaveSettings
 from hydrolib.core.dflowfm.cmp.models import (
+    AstronomicName,
     AstronomicRecord,
     CMPModel,
     CMPSet,
@@ -121,7 +122,7 @@ class TestCMPModel:
     def test_cmp_model_initialization(self):
         model = CMPModel()
         assert len(model.comments) == 0
-        assert len(model.component) == 0
+        assert isinstance(model.component, CMPSet)
 
     def test_astronomic_record_initialization(self):
         record = AstronomicRecord(name="3MS2", amplitude=1.0, phase=2.0)
