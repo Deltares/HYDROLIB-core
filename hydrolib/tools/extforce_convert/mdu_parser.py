@@ -10,6 +10,20 @@ class MDUParser:
         self.updated_lines = []
         self.inside_external_forcing = False
         self.found_extforcefilenew = False
+        self._content = self._read_file()
+
+    def _read_file(self) -> List[str]:
+        with open(self.mdu_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        return lines
+
+    @property
+    def content(self) -> List[str]:
+        return self._content
+
+    @content.setter
+    def content(self, new_content: List[str]) -> None:
+        self._content = new_content
 
     def update_extforce_file_new(self) -> List[str]:
         """
@@ -31,9 +45,7 @@ class MDUParser:
             and the `LegacyFMModel` will be the only way to read/update the mdu file
 
         """
-        with open(self.mdu_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-
+        lines = self.content
         for line in lines:
             stripped = line.strip()
             # Check if we've hit the [external forcing] header
@@ -46,7 +58,7 @@ class MDUParser:
             # If we are inside the [external forcing] section, look for ExtForceFileNew
             if self.inside_external_forcing:
                 # If we find another section header, it means [external forcing] section ended
-                self._handle_external_forcing_section(line, stripped)
+                self._handle_external_forcing_section(stripped)
                 continue
 
             # Default: write the line unmodified
@@ -60,7 +72,8 @@ class MDUParser:
 
         return self.updated_lines
 
-    def is_section_header(self, line: str) -> bool:
+    @staticmethod
+    def is_section_header(line: str) -> bool:
         """Check if the line is a section header (e.g., '[...]')."""
         return (
                 line.startswith("[")
@@ -86,7 +99,7 @@ class MDUParser:
         # Insert new filename immediately after '=' + a space
         return f"{left_part} {self.new_forcing_filename}{right_part_clipped}\n"
 
-    def _handle_external_forcing_section(self, line: str, stripped: str) -> None:
+    def _handle_external_forcing_section(self, stripped: str) -> None:
         if self.is_section_header(stripped):
             # If we never found ExtForceFileNew before leaving, add it now
             if not self.found_extforcefilenew:
@@ -101,11 +114,11 @@ class MDUParser:
         # ignoring trailing spaces. You can refine the logic as needed.
         if stripped.lower().startswith("extforcefilenew"):
             self.found_extforcefilenew = True
-            self.updated_lines.append(self.replace_extforcefilenew(line))
+            self.updated_lines.append(self.replace_extforcefilenew(stripped))
             return
         elif stripped.lower().startswith("extforcefile"):
             return
-        self.updated_lines.append(line)
+        self.updated_lines.append(f"{stripped}\n")
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
