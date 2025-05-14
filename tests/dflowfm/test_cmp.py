@@ -2,11 +2,11 @@ import re
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.basemodel import ModelSaveSettings
 from hydrolib.core.dflowfm.cmp.models import (
-    AstronomicName,
     AstronomicRecord,
     CMPModel,
     CMPSet,
@@ -145,7 +145,7 @@ class TestCMPModel:
         assert len(model.component.astronomics) == 1
 
     def test_cmp_model_initialization_with_invalid_data(self):
-        with pytest.raises(ValueError) as error:
+        with pytest.raises(ValidationError) as error:
             CMPModel(
                 comments=["test content"],
                 component={
@@ -154,7 +154,10 @@ class TestCMPModel:
                 },
             )
 
-        expected_error_msg = f"phase\n  field required (type=value_error.missing)"
+        expected_error_msg = (
+            "1 validation error for CMPModel\n"
+            "component.astronomics.0.phase\n  Field required"
+        )
         assert expected_error_msg in str(error.value)
 
     def test_cmp_model_parse(self):
