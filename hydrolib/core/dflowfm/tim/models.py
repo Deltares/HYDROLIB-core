@@ -2,8 +2,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from pandas import DataFrame
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import validator
+from pydantic import Field, field_validator
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
@@ -132,7 +131,7 @@ class TimModel(ParsableFileModel):
         - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
     """
 
-    serializer_config = TimSerializerConfig()
+    serializer_config: TimSerializerConfig = Field(default_factory=TimSerializerConfig)
     """TimSerializerConfig: The serialization configuration for the tim file."""
 
     comments: List[str] = Field(default_factory=list)
@@ -177,7 +176,7 @@ class TimModel(ParsableFileModel):
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return TimParser.parse
 
-    @validator("timeseries", pre=True, check_fields=True, allow_reuse=True)
+    @field_validator("timeseries", mode="before", check_fields=True)
     def replace_fortran_scientific_notation_for_floats(cls, value, field):
         for record in value:
             if isinstance(record, dict):
@@ -197,7 +196,7 @@ class TimModel(ParsableFileModel):
 
         return value
 
-    @validator("timeseries")
+    @field_validator("timeseries")
     @classmethod
     def _validate_timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
         """Validate if the number of columns per timeseries matches and if the timeseries have no duplicate times.
@@ -244,7 +243,7 @@ class TimModel(ParsableFileModel):
                 )
             seen_times.add(timrecord.time)
 
-    @validator("quantities_names")
+    @field_validator("quantities_names")
     def _validate_quantities_names(cls, v, values):
         """Validate if the number of quantities_names matches the number of columns in the timeseries.
 
