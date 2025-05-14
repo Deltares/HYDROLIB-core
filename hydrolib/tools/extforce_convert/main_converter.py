@@ -24,10 +24,8 @@ from hydrolib.core.dflowfm.inifield.models import (
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-from hydrolib.tools.extforce_convert.converters import (
-    ConverterFactory,
-    MDUParser,
-)
+from hydrolib.tools.extforce_convert.converters import ConverterFactory
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     IgnoreUnknownKeyWordClass,
     backup_file,
