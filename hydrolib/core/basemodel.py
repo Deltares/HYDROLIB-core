@@ -27,10 +27,9 @@ from typing import (
 )
 from weakref import WeakValueDictionary
 
-from pydantic.v1 import BaseModel as PydanticBaseModel
-from pydantic.v1 import validator
-from pydantic.v1.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.v1.fields import ModelField, PrivateAttr
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import ValidationError, field_validator
+from pydantic.fields import FieldInfo, PrivateAttr
 
 from hydrolib.core.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import (
@@ -88,7 +87,16 @@ class BaseModel(PydanticBaseModel):
                 raise e
             else:
                 # If there is an identifier, include this in the ValidationError messages.
-                raise ValidationError([ErrorWrapper(e, loc=identifier)], self.__class__)
+                raise ValidationError(
+                    [
+                        {
+                            "loc": (identifier),
+                            "msg": str(e),
+                            "type": "value_error",  # You can customize the error type if needed
+                        }
+                    ],
+                    model=self.__class__,
+                ) from e
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
@@ -824,7 +832,7 @@ class FileModel(BaseModel, ABC):
             cwd / filename.extension
     """
 
-    __slots__ = ["__weakref__"]
+    # __slots__ = ["__weakref__"]
     # Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
     _file_models_cache: WeakValueDictionary = WeakValueDictionary()
     filepath: Optional[Path] = None
@@ -1223,7 +1231,7 @@ class FileModel(BaseModel, ABC):
         else:
             return Path(filepath)
 
-    @validator("filepath")
+    @field_validator("filepath")
     def _conform_filepath_to_pathlib(cls, value):
         return FileModel._change_to_path(value)
 
@@ -1419,12 +1427,12 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
         classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
     """
 
-    def adjust_none(v: Any, field: ModelField) -> Any:
+    def adjust_none(v: Any, field: FieldInfo) -> Any:
         if field.type_ is DiskOnlyFileModel and v is None:
             return {"filepath": None}
         return v
 
-    return validator("*", allow_reuse=True, pre=True)(adjust_none)
+    return field_validator("*", mode="before")(adjust_none)
 
 
 class PathStyleValidator:
