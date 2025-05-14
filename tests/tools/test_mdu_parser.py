@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Tuple
-
+from unittest.mock import patch
 import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser, save_mdu_file
@@ -12,7 +12,7 @@ from hydrolib.tools.extforce_convert.mdu_parser import MDUParser, save_mdu_file
         (
             "dflowfm_individual_files/with_optional_sections.mdu",
             (232, 233),
-            "ExtForceFileNew                           = test.ext \n",
+            "ExtForceFileNew                           = test.ext\n",
             "test.ext",
         ),
         (
@@ -50,3 +50,28 @@ def test_update_mdu_on_the_fly(
         new_mdu_file.unlink()
     except PermissionError:
         pass
+
+@pytest.mark.parametrize(
+    "line, expected",
+    [
+        (
+                "ExtForceFileNew                           = old_file.ext",
+                "ExtForceFileNew                           = new_file.ext\n",
+        ),
+        (
+                "ExtForceFileNew                           = old_file.ext # Comment",
+                "ExtForceFileNew                           = new_file.ext # Comment\n",
+        ),
+        (
+                "ExtForceFileNew",
+                "ExtForceFileNew",
+        ),
+    ],
+    ids=["without comment", "with comment", "without equals sign"],
+)
+def test_replace_extforcefilenew(line, expected):
+    """Test the replace_extforcefilenew method."""
+    with patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file"):
+        parser = MDUParser("dummy_path", "new_file.ext")
+
+    assert parser.replace_extforcefilenew(line) == expected

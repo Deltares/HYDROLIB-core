@@ -136,7 +136,7 @@ class MDUParser:
         name_len = len(self.new_forcing_filename)
         # Protect against filename overflow into the comment
         right_part_clipped = right_part[name_len + 1 :]
-        if right_part_clipped.find("#") == -1:
+        if right_part_clipped.find("#") == -1 and right_part_clipped != "":
             right_part_clipped = f" {right_part.lstrip()}"
         # Insert new filename immediately after '=' + a space
         return f"{left_part} {self.new_forcing_filename}{right_part_clipped}\n"
