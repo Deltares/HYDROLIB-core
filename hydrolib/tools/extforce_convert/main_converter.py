@@ -24,10 +24,8 @@ from hydrolib.core.dflowfm.inifield.models import (
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-from hydrolib.tools.extforce_convert.converters import (
-    ConverterFactory,
-    update_extforce_file_new,
-)
+from hydrolib.tools.extforce_convert.converters import ConverterFactory
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     IgnoreUnknownKeyWordClass,
     backup_file,
@@ -313,14 +311,10 @@ class ExternalForcingConverter:
             len(self.inifield_model.parameter) > 0
             or len(self.inifield_model.initial) > 0
         ):
-            if backup and self.inifield_model.filepath.exists():
-                backup_file(self.inifield_model.filepath)
-            self.inifield_model.save(recurse=recursive)
+            self._save_inifield_model(backup, recursive)
 
         if len(self.structure_model.structure) > 0:
-            if backup and self.structure_model.filepath.exists():
-                backup_file(self.structure_model.filepath)
-            self.structure_model.save(recurse=recursive)
+            self._save_structure_model(backup, recursive)
 
         if backup and self.ext_model.filepath.exists():
             backup_file(self.ext_model.filepath)
@@ -330,23 +324,7 @@ class ExternalForcingConverter:
             mdu_file = self.mdu_info.get("file_path")
             backup_file(mdu_file)
             if self.fm_model is not None:
-                external_forcing = self.fm_model.external_forcing
-                if (
-                    hasattr(external_forcing, "extforcefile")
-                    and external_forcing.extforcefile is not None
-                ):
-                    external_forcing.extforcefile.filepath = (
-                        external_forcing.extforcefile.filepath.name
-                    )
-                if (
-                    hasattr(external_forcing, "extforcefilenew")
-                    and external_forcing.extforcefilenew is not None
-                ):
-                    external_forcing.extforcefilenew.filepath = (
-                        external_forcing.extforcefilenew.filepath.name
-                    )
-
-                self.fm_model.save(recurse=False, exclude_unset=True)
+                self._save_fm_model()
             elif "new_mdu_content" in self.mdu_info:
                 with open(mdu_file, "w", encoding="utf-8") as file:
                     file.writelines(self.mdu_info.get("new_mdu_content"))
@@ -354,6 +332,35 @@ class ExternalForcingConverter:
                 raise MDUUpdateError(
                     "The FM model is not saved, and there was no new updated content for the mdu file."
                 )
+
+    def _save_inifield_model(self, backup: bool, recursive: bool):
+        if backup and self.inifield_model.filepath.exists():
+            backup_file(self.inifield_model.filepath)
+        self.inifield_model.save(recurse=recursive)
+
+    def _save_structure_model(self, backup: bool, recursive: bool):
+        if backup and self.structure_model.filepath.exists():
+            backup_file(self.structure_model.filepath)
+        self.structure_model.save(recurse=recursive)
+
+    def _save_fm_model(self):
+        external_forcing = self.fm_model.external_forcing
+        if (
+            hasattr(external_forcing, "extforcefile")
+            and external_forcing.extforcefile is not None
+        ):
+            external_forcing.extforcefile.filepath = (
+                external_forcing.extforcefile.filepath.name
+            )
+        if (
+            hasattr(external_forcing, "extforcefilenew")
+            and external_forcing.extforcefilenew is not None
+        ):
+            external_forcing.extforcefilenew.filepath = (
+                external_forcing.extforcefilenew.filepath.name
+            )
+
+        self.fm_model.save(recurse=False, exclude_unset=True)
 
     def clean(self):
         """
@@ -477,6 +484,21 @@ class ExternalForcingConverter:
             else:
                 ext_file = root_dir / ext_file
 
+        inifield_file = ExternalForcingConverter._get_inifield_file(
+            inifield_file, root_dir, inifieldfile_mdu
+        )
+        structure_file = ExternalForcingConverter._get_structure_file(
+            structure_file, root_dir, structurefile_mdu
+        )
+
+        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
+
+    @staticmethod
+    def _get_inifield_file(
+        inifield_file: Optional[PathOrStr],
+        root_dir: Path,
+        inifieldfile_mdu: Optional[PathOrStr],
+    ) -> Path:
         if inifield_file is not None:
             # user defined initial field file
             inifield_file = root_dir / inifield_file
@@ -491,8 +513,14 @@ class ExternalForcingConverter:
                 f"The initial field file is not found in the mdu file, and not provided by the user. \n "
                 f"given: {inifield_file}."
             )
+        return inifield_file
 
-        # the structure file will be taken from the mdu file if it is not provided by the user.
+    @staticmethod
+    def _get_structure_file(
+        structure_file: Optional[PathOrStr],
+        root_dir: Path,
+        structurefile_mdu: Optional[PathOrStr],
+    ) -> Path:
         if structure_file is not None:
             # user defined structure file
             structure_file = root_dir / structure_file
@@ -507,8 +535,7 @@ class ExternalForcingConverter:
                 "The structure file is not found in the mdu file, and not provide by the user. \n"
                 f"given: {structure_file}."
             )
-
-        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
+        return structure_file
 
     def _update_fm_model(self):
         """Update the FM model with the new external forcings, initial fields and structures files.
@@ -540,9 +567,8 @@ class ExternalForcingConverter:
         else:
             mdu_path = self.mdu_info.get("file_path")
             new_ext_file = self.ext_model.filepath.name
-            self.mdu_info["new_mdu_content"] = update_extforce_file_new(
-                mdu_path, new_ext_file
-            )
+            updater = MDUParser(mdu_path, new_ext_file)
+            self.mdu_info["new_mdu_content"] = updater.update_extforce_file_new()
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""

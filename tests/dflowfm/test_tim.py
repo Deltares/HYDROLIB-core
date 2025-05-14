@@ -429,7 +429,7 @@ class TestTimParser:
         with pytest.raises(ValueError) as error:
             TimParser.parse(input_path)
 
-        expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the time series data."
+        expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the data."
         assert expected_error_msg in str(error.value)
 
     @pytest.mark.parametrize(

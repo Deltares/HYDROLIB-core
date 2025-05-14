@@ -394,42 +394,4 @@ class TimModel(ParsableFileModel):
         """
         if self.quantities_names is None:
             return None
-        return self.map_to_units(self.quantities_names)
-
-    @staticmethod
-    def map_to_units(quantities_names: List[str]) -> List[str]:
-        """
-        Maps each quantity in the input list to a specific unit based on its content.
-
-        Args:
-            quantities_names (list of str): A list of strings to be checked for specific keywords.
-
-        Returns:
-            list of str: A list of corresponding units for each input string.
-
-        Examples:
-            >>> from hydrolib.core.dflowfm.tim.models import TimModel
-            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
-            >>> TimModel.map_to_units(quantities_names)
-            ['m3/s', 'm', '1e-3', 'degC']
-        """
-        # Define the mapping of keywords to units
-        unit_mapping = {
-            "discharge": "m3/s",
-            "waterlevel": "m",
-            "salinity": "1e-3",
-            "temperature": "degC",
-        }
-
-        # Generate the list of units based on the mapping
-        units = []
-        for string in quantities_names:
-            for keyword, unit in unit_mapping.items():
-                if keyword in string.lower():
-                    units.append(unit)
-                    break
-            else:
-                # Append "-" if no keywords match
-                units.append("-")
-
-        return units
+        return TimModel._get_quantity_unit(self.quantities_names)

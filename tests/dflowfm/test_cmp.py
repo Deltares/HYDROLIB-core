@@ -5,12 +5,7 @@ import pytest
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.basemodel import ModelSaveSettings
-from hydrolib.core.dflowfm.cmp.models import (
-    AstronomicRecord,
-    CMPModel,
-    CMPSet,
-    HarmonicRecord,
-)
+from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.cmp.parser import CMPParser
 from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer
 
@@ -153,7 +148,7 @@ class TestCMPModel:
                 },
             )
 
-        expected_error_msg = f"phase\n  field required (type=value_error.missing)"
+        expected_error_msg = "phase\n  field required (type=value_error.missing)"
         assert expected_error_msg in str(error.value)
 
     def test_cmp_model_parse(self):
@@ -164,7 +159,7 @@ class TestCMPModel:
         with pytest.raises(Exception) as error:
             CMPModel._get_parser()()
 
-        expected_error_msg = f"missing 1 required positional argument: 'filepath'"
+        expected_error_msg = "missing 1 required positional argument: 'filepath'"
         assert expected_error_msg in str(error.value)
 
 
@@ -191,7 +186,7 @@ class TestCmpParser:
         with pytest.raises(ValueError) as error:
             CMPParser.parse(cmp_file)
 
-        expected_error_msg = f"Line 3: comments are only supported at the start of the file, before the components data."
+        expected_error_msg = "Line 3: comments are only supported at the start of the file, before the data."
         assert expected_error_msg in str(error.value)
 
     def test_cmp_parser_parse_too_few_values(self, fs: FakeFilesystem):
@@ -201,7 +196,7 @@ class TestCmpParser:
         with pytest.raises(ValueError) as error:
             CMPParser.parse(cmp_file)
 
-        expected_error_msg = f"not enough values to unpack (expected 3, got 2)"
+        expected_error_msg = "not enough values to unpack (expected 3, got 2)"
         assert expected_error_msg in str(error.value)
 
     def test_cmp_parser_parse_too_many_values(self, fs: FakeFilesystem):
@@ -211,7 +206,7 @@ class TestCmpParser:
         with pytest.raises(ValueError) as error:
             CMPParser.parse(cmp_file)
 
-        expected_error_msg = f"too many values to unpack (expected 3)"
+        expected_error_msg = "too many values to unpack (expected 3)"
         assert expected_error_msg in str(error.value)
 
     def test__is_float_value_none(self):

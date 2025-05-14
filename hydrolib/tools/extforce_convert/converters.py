@@ -1,8 +1,7 @@
-import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from hydrolib.core.basemodel import DiskOnlyFileModel, PathOrStr
 from hydrolib.core.dflowfm.bc.models import (
@@ -72,7 +71,7 @@ class BaseConverter(ABC):
         self._root_dir = value
 
     @abstractmethod
-    def convert(self, data: ExtOldForcing) -> Any:
+    def convert(self, forcing: ExtOldForcing) -> Any:
         """Converts the data from the old external forcings format to
         the proper/new model input block.
 
@@ -232,7 +231,9 @@ class BoundaryConditionConverter(BaseConverter):
         )
         return time_series_list
 
-    def convert(self, forcing: ExtOldForcing, time_unit: str) -> Boundary:
+    def convert(
+        self, forcing: ExtOldForcing, time_unit: Optional[str] = None
+    ) -> Boundary:
         """Convert an old external forcing block to a boundary forcing block
         suitable for inclusion in a new external forcings file.
 
@@ -1110,120 +1111,3 @@ class T3DToForcingConverter:
 
         t3d = T3D(**data)
         return t3d
-
-
-def update_extforce_file_new(
-    mdu_path: PathOrStr,
-    new_forcing_filename: PathOrStr,
-) -> List[str]:
-    """
-    Update the 'ExtForceFileNew' entry under the '[external forcing]' section
-    of an MDU file. Writes the updated content to output_path if provided,
-    or overwrites the original file otherwise.
-
-    Args:
-        mdu_path (PathOrStr):
-            Path to the original .mdu file.
-        new_forcing_filename (PathOrStr):
-            The filename to be placed after `ExtForceFileNew =`.
-
-    Returns:
-        List[str]:
-            The updated lines of the .mdu file.
-
-    Notes:
-        - This function is a workaround for updating the ExtForceFileNew entry in an MDU file.
-        - The function reads the entire file into memory, updates the line containing ExtForceFileNew, and writes the
-            updated content back to disk.
-        - The function removes the `extforcefile` from the mdu file, and only keeps the new updated `ExtForceFileNew`
-        entry, as all the old forcing quantities in the old forcing file are converted to the new format.
-        - after fixing the issue with mdu files having `Unkown keyword` error, this function will be removed,
-        and the `LegacyFMModel` will be the only way to read/update the mdu file
-
-    """
-    # Read all lines from the .mdu file
-    with open(mdu_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    # We will track whether we are inside the [external forcing] section
-    inside_external_forcing = False
-    found_extforcefilenew = False
-    # Buffer for the modified lines
-    updated_lines = []
-
-    for line in lines:
-        stripped = line.strip()
-        # Check if we've hit the [external forcing] header
-        if stripped.lower().startswith("[external forcing]"):
-            inside_external_forcing = True
-            found_extforcefilenew = False
-            updated_lines.append(line)
-            continue
-
-        # If we are inside the [external forcing] section, look for ExtForceFileNew
-        if inside_external_forcing:
-            # If we find another section header, it means [external forcing] section ended
-            if (
-                stripped.startswith("[")
-                and stripped.endswith("]")
-                and "external forcing" not in stripped.lower()
-            ):
-                # If we never found ExtForceFileNew before leaving, add it now
-                if not found_extforcefilenew:
-                    new_line = f"ExtForceFileNew                           = {new_forcing_filename}\n"
-                    updated_lines.append(new_line)
-                    updated_lines.append("\n")
-
-                inside_external_forcing = False
-                # fall through to just append the line below
-
-            # If the line has ExtForceFileNew, replace it
-            # The simplest way is to check if it starts with or contains ExtForceFileNew
-            # ignoring trailing spaces. You can refine the logic as needed.
-            if stripped.lower().startswith("extforcefilenew"):
-                found_extforcefilenew = True
-                # Find the '=' character
-                eq_index = line.find("=")
-                if eq_index != -1:
-                    # Everything up to and including '='
-                    left_part = line[: eq_index + 1]
-                    # Remainder of the line (after '=')
-                    right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
-                    name_len = len(new_forcing_filename)
-                    # Protect against filename overflow into the comment
-                    right_part_clipped = right_part[name_len + 1 :]
-                    if right_part_clipped.find("#") == -1:
-                        right_part_clipped = f" {right_part.lstrip()}"
-                    # Insert new filename immediately after '=' + a space
-                    new_line = (
-                        f"{left_part} {new_forcing_filename}{right_part_clipped}\n"
-                    )
-
-                    updated_lines.append(new_line)
-                    continue
-            elif stripped.lower().startswith("extforcefile"):
-                continue
-
-        # Default: write the line unmodified
-        updated_lines.append(line)
-
-    # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
-    if inside_external_forcing and not found_extforcefilenew:
-        new_line = (
-            f"ExtForceFileNew                           = {new_forcing_filename}\n"
-        )
-        updated_lines.append(new_line)
-        updated_lines.append("\n")
-
-    return updated_lines
-
-
-def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
-    warnings.warn(
-        "This function is a workaround for updating the ExtForceFileNew entry in an MDU file. "
-        "It will be removed in the future, and the LegacyFMModel will be the only way to read/update the mdu file.",
-        DeprecationWarning,
-    )
-    # Finally, write the updated lines to disk
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.writelines(content)
