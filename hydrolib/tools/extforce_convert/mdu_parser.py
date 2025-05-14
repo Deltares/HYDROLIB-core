@@ -1,5 +1,7 @@
 from typing import List
+
 from hydrolib.core.basemodel import PathOrStr
+
 
 class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""
@@ -63,9 +65,9 @@ class MDUParser:
     def is_section_header(self, line: str) -> bool:
         """Check if the line is a section header (e.g., '[...]')."""
         return (
-                line.startswith("[")
-                and line.endswith("]")
-                and "external forcing" not in line.lower()
+            line.startswith("[")
+            and line.endswith("]")
+            and "external forcing" not in line.lower()
         )
 
     def replace_extforcefilenew(self, line: str) -> str:
