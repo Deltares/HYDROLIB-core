@@ -93,4 +93,3 @@ def test_is_section_header():
     # Test with external forcing section header (should return False)
     assert MDUParser.is_section_header("[external forcing]") is False
     assert MDUParser.is_section_header("[EXTERNAL FORCING]") is False
-
