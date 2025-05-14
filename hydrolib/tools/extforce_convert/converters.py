@@ -1114,7 +1114,7 @@ class T3DToForcingConverter:
         return t3d
 
 
-class ExtForceFileUpdater:
+class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""
 
     def __init__(self, mdu_path: PathOrStr, new_forcing_filename: PathOrStr):

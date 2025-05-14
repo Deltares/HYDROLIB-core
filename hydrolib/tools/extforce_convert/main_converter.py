@@ -26,7 +26,7 @@ from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
-    ExtForceFileUpdater,
+    MDUParser,
 )
 from hydrolib.tools.extforce_convert.utils import (
     IgnoreUnknownKeyWordClass,
@@ -569,7 +569,7 @@ class ExternalForcingConverter:
         else:
             mdu_path = self.mdu_info.get("file_path")
             new_ext_file = self.ext_model.filepath.name
-            updater = ExtForceFileUpdater(mdu_path, new_ext_file)
+            updater = MDUParser(mdu_path, new_ext_file)
             self.mdu_info["new_mdu_content"] = updater.update_extforce_file_new()
 
     def _log_conversion_details(self):
