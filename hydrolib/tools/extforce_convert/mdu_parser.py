@@ -5,6 +5,12 @@ class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""
 
     def __init__(self, mdu_path: PathOrStr, new_forcing_filename: PathOrStr):
+        """Initialize the MDUParser.
+
+        Args:
+            mdu_path: Path to the MDU file to update
+            new_forcing_filename: New filename for the ExtForceFileNew entry
+        """
         self.mdu_path = mdu_path
         self.new_forcing_filename = new_forcing_filename
         self.updated_lines = []
@@ -13,16 +19,31 @@ class MDUParser:
         self._content = self._read_file()
 
     def _read_file(self) -> List[str]:
+        """Read the MDU file into a list of strings.
+
+        Returns:
+            List of strings, one for each line in the file
+        """
         with open(self.mdu_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
         return lines
 
     @property
     def content(self) -> List[str]:
+        """Get the content of the MDU file.
+
+        Returns:
+            List of strings, one for each line in the file
+        """
         return self._content
 
     @content.setter
     def content(self, new_content: List[str]) -> None:
+        """Set the content of the MDU file.
+
+        Args:
+            new_content: New content for the MDU file
+        """
         self._content = new_content
 
     def update_extforce_file_new(self) -> List[str]:
@@ -74,7 +95,14 @@ class MDUParser:
 
     @staticmethod
     def is_section_header(line: str) -> bool:
-        """Check if the line is a section header (e.g., '[...]')."""
+        """Check if the line is a section header (e.g., '[...]').
+
+        Args:
+            line: The line to check
+
+        Returns:
+            True if the line is a section header (excluding '[external forcing]'), False otherwise
+        """
         return (
                 line.startswith("[")
                 and line.endswith("]")
@@ -82,7 +110,19 @@ class MDUParser:
         )
 
     def replace_extforcefilenew(self, line: str) -> str:
-        """Replace the ExtForceFileNew line with the new filename."""
+        """Replace the ExtForceFileNew line with the new filename.
+
+        Args:
+            line: The line containing the ExtForceFileNew entry
+
+        Returns:
+            The updated line with the new filename
+
+        Notes:
+            - This method preserves the formatting of the original line, including comments
+            - If the line doesn't contain an '=' character, it's returned unchanged
+            - If the new filename would overflow into a comment, the comment is preserved
+        """
         # Find the '=' character
         eq_index = line.find("=")
         if eq_index == -1:
@@ -100,6 +140,18 @@ class MDUParser:
         return f"{left_part} {self.new_forcing_filename}{right_part_clipped}\n"
 
     def _handle_external_forcing_section(self, stripped: str) -> None:
+        """Handle a line within the [external forcing] section.
+
+        Args:
+            stripped: The stripped line to process
+
+        Notes:
+            - If the line is a section header, it means we're leaving the [external forcing] section
+            - If we're leaving the section and haven't found ExtForceFileNew, add it
+            - If the line starts with ExtForceFileNew, replace it with the new filename
+            - If the line starts with ExtForceFile, skip it (remove it from the output)
+            - Otherwise, add the line to the output unchanged
+        """
         if self.is_section_header(stripped):
             # If we never found ExtForceFileNew before leaving, add it now
             if not self.found_extforcefilenew:
@@ -122,6 +174,11 @@ class MDUParser:
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
-    # Finally, write the updated lines to disk
+    """Save the updated MDU file content to disk.
+
+    Args:
+        content: The updated content of the MDU file
+        output_path: The path where the updated MDU file should be saved
+    """
     with open(output_path, "w", encoding="utf-8") as f:
         f.writelines(content)
