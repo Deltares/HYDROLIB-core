@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Tuple
 from unittest.mock import patch
+
 import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser, save_mdu_file
@@ -51,20 +52,21 @@ def test_update_mdu_on_the_fly(
     except PermissionError:
         pass
 
+
 @pytest.mark.parametrize(
     "line, expected",
     [
         (
-                "ExtForceFileNew                           = old_file.ext",
-                "ExtForceFileNew                           = new_file.ext\n",
+            "ExtForceFileNew                           = old_file.ext",
+            "ExtForceFileNew                           = new_file.ext\n",
         ),
         (
-                "ExtForceFileNew                           = old_file.ext # Comment",
-                "ExtForceFileNew                           = new_file.ext # Comment\n",
+            "ExtForceFileNew                           = old_file.ext # Comment",
+            "ExtForceFileNew                           = new_file.ext # Comment\n",
         ),
         (
-                "ExtForceFileNew",
-                "ExtForceFileNew",
+            "ExtForceFileNew",
+            "ExtForceFileNew",
         ),
     ],
     ids=["without comment", "with comment", "without equals sign"],
