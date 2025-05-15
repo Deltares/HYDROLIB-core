@@ -510,9 +510,6 @@ class LongCulvert(Structure):
     frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
     valverelativeopening: float = Field(alias="valveRelativeOpening")
-    branchid: Optional[str] = Field(
-        "Branch on which the structure is located.", alias="branchId"
-    )
     csdefid: Optional[str] = Field("Id of Cross-Section Definition.", alias="csDefId")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
