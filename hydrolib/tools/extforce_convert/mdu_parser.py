@@ -41,7 +41,7 @@ class MDUParser:
             file_name(PathOrStr):
                 New filename for the ExtForceFileNew entry
         """
-        if not isinstance(file_name, PathOrStr):
+        if not isinstance(file_name, (Path, str)):
             raise ValueError("new_forcing_filename must be a str or Path")
         self._new_forcing_file = file_name
 
