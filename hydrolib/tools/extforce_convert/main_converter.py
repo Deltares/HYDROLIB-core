@@ -228,7 +228,7 @@ class ExternalForcingConverter:
                 )
 
         if self.mdu_parser is not None:
-            self._update_fm_model()
+            self._update_mdu_file()
 
         return self.ext_model, self.inifield_model, self.structure_model
 
@@ -453,7 +453,7 @@ class ExternalForcingConverter:
             )
         return structure_file
 
-    def _update_fm_model(self):
+    def _update_mdu_file(self):
         """Update the FM model with the new external forcings, initial fields and structures files.
 
         - The FM model will be saved with a postfix added to the filename.
