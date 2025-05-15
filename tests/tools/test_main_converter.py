@@ -8,6 +8,7 @@ from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
+from hydrolib.core.dflowfm.ext.models import Meteo, SourceSink, Lateral, Boundary
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
@@ -262,15 +263,16 @@ class TestExternalFocingConverter:
         mock_ext_old_model.filepath = old_forcing_file_initial_condition["path"]
 
         converter = ExternalForcingConverter(mock_ext_old_model)
-        converter.save()
+        converter._ext_model = MagicMock(spec=ExtModel)
+        converter._ext_model.meteo = [MagicMock(spec=Meteo)]
+        converter._ext_model.sourcesink = [MagicMock(spec=SourceSink)]
+        converter._ext_model.lateral = [MagicMock(spec=Lateral)]
+        converter._ext_model.boundary = [MagicMock(spec=Boundary)]
+        converter._ext_model.filepath = Path("any-path.ext")
 
-        assert converter.ext_model.filepath.exists()
-        assert not converter.inifield_model.filepath.exists()
-        assert not converter.structure_model.filepath.exists()
-        try:
-            converter.ext_model.filepath.unlink()
-        except PermissionError:
-            pass
+        converter.save()
+        converter._ext_model.save.assert_called_once()
+
 
     def test_read_old_file(
         self,

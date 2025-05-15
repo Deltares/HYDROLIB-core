@@ -18,7 +18,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     InitialField,
     ParameterField,
 )
-from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
+
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import ConverterFactory
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -97,7 +97,6 @@ class ExternalForcingConverter:
         )
 
         if mdu_parser is not None:
-            self._fm_model = None
             self._mdu_info: Dict[str, int] = mdu_parser.temperature_salinity_data
 
     @property
@@ -108,15 +107,6 @@ class ExternalForcingConverter:
     @verbose.setter
     def verbose(self, value: bool):
         self._verbose = value
-
-    @property
-    def fm_model(self) -> LegacyFMModel:
-        """FMModel: object with all blocks."""
-        if not hasattr(self, "_fm_model"):
-            model = None
-        else:
-            model = self._fm_model
-        return model
 
     @property
     def mdu_parser(self) -> MDUParser:
@@ -335,9 +325,8 @@ class ExternalForcingConverter:
         if self.mdu_info is not None:
             mdu_file = self.mdu_info.get("file_path")
             backup_file(mdu_file)
-            if self.fm_model is not None:
-                self._save_fm_model()
-            elif "new_mdu_content" in self.mdu_info:
+
+            if "new_mdu_content" in self.mdu_info:
                 with open(mdu_file, "w", encoding="utf-8") as file:
                     file.writelines(self.mdu_info.get("new_mdu_content"))
             else:
@@ -354,25 +343,6 @@ class ExternalForcingConverter:
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
         self.structure_model.save(recurse=recursive)
-
-    def _save_fm_model(self):
-        external_forcing = self.fm_model.external_forcing
-        if (
-            hasattr(external_forcing, "extforcefile")
-            and external_forcing.extforcefile is not None
-        ):
-            external_forcing.extforcefile.filepath = (
-                external_forcing.extforcefile.filepath.name
-            )
-        if (
-            hasattr(external_forcing, "extforcefilenew")
-            and external_forcing.extforcefilenew is not None
-        ):
-            external_forcing.extforcefilenew.filepath = (
-                external_forcing.extforcefilenew.filepath.name
-            )
-
-        self.fm_model.save(recurse=False, exclude_unset=True)
 
     def clean(self):
         """

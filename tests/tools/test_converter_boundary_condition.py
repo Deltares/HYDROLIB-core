@@ -295,14 +295,10 @@ class TestMainConverter:
         mock_mdu_parser = MagicMock(spec=MDUParser)
         mock_mdu_parser.temperature_salinity_data = {"refdate": start_date}
 
-        # mdu_info = {"refdate": start_date}
         converter = ExternalForcingConverter(
             old_forcing_file_boundary["path"], mdu_parser=mock_mdu_parser
         )
 
-        # Mock the fm_model
-        # mock_fm_model = Mock()
-        # converter._fm_model = mock_fm_model
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"
         ):

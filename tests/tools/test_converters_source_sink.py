@@ -444,12 +444,7 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        # mdu_parser = MagicMock(spec=MDUParser)
-        # mdu_parser.temperature_salinity_data = self.mdu_info
         converter = ExternalForcingConverter(self.path, mdu_parser=self.mdu_parser)
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
@@ -475,9 +470,6 @@ class TestMainConverter:
         self.mdu_parser.temperature_salinity_data["temperature"] = True
 
         converter = ExternalForcingConverter(self.path, mdu_parser=self.mdu_parser)
-
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
