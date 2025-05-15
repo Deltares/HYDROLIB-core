@@ -329,8 +329,7 @@ class FileChecksumCalculator:
 
     @staticmethod
     def _calculate_md5_checksum(filepath: Path) -> str:
-        """
-        Calculate the MD5 checksum of a file.
+        """Calculate the MD5 checksum of a file.
 
         This method uses the `hashlib.md5` function with the `usedforsecurity=False` parameter
         to indicate that the MD5 hash is not being used for security purposes. MD5 is considered
