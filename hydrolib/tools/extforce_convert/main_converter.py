@@ -20,12 +20,10 @@ from hydrolib.core.dflowfm.inifield.models import (
     ParameterField,
 )
 from hydrolib.core.dflowfm.mdu.legacy import LegacyFMModel
-from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import ConverterFactory
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
-    IgnoreUnknownKeyWordClass,
     backup_file,
     construct_filemodel_new_or_existing,
 )
@@ -372,37 +370,6 @@ class ExternalForcingConverter:
 
         self.extold_model.filepath.unlink()
 
-    @staticmethod
-    def get_mdu_info(mdu_file: str) -> Tuple[Dict, Dict]:
-        """Get the info needed from the mdu to process and convert the old external forcing files.
-
-        Args:
-            mdu_file (str):
-                path to the mdu file
-        Returns:
-            data (Dict[str, str]):
-                all the data inside the mdu file, with each section in the file as a key and the data of that section is
-                the value of that key.
-            mdu_info (Dict[str, str]):
-                dictionary with the information needed for the conversion tool to convert the `SourceSink` and
-                `Boundary` quantities. The dictionary will have three keys `temperature`, `salinity`, and `refdate`.
-        """
-        data = FMModel._load(FMModel, mdu_file)
-        # read sections of the mdu file.
-        time_data = data.get("time")
-        physics_data = data.get("physics")
-        mdu_time = IgnoreUnknownKeyWordClass(Time, **time_data)
-        mdu_physics = IgnoreUnknownKeyWordClass(Physics, **physics_data)
-
-        ref_time = get_ref_time(mdu_time.refdate)
-        mdu_info = {
-            "file_path": mdu_file,
-            "refdate": ref_time,
-            "temperature": False if mdu_physics.temperature == 0 else True,
-            "salinity": mdu_physics.salinity,
-        }
-        return data, mdu_info
-
     @classmethod
     def from_mdu(
         cls,
@@ -427,7 +394,6 @@ class ExternalForcingConverter:
             structure_file (PathOrStr, optional): Path to the output structures.ini
                 file. Defaults to the given StructureFile in the MDU file, if
                 present, or structures.ini otherwise.
-            suppress_errors: Optional[bool]: Whether to suppress errors during execution.
 
         Returns:
             ExternalForcingConverter: The converter object.
@@ -440,10 +406,8 @@ class ExternalForcingConverter:
         if isinstance(mdu_file, str):
             mdu_file = Path(mdu_file)
 
-        if not mdu_file.exists():
-            raise FileNotFoundError(f"File not found: {mdu_file}")
-
-        data, mdu_info = ExternalForcingConverter.get_mdu_info(mdu_file)
+        mdu_parser = MDUParser(mdu_file)
+        data, mdu_info = mdu_parser.get_mdu_info()
 
         external_forcing_data = data.get("external_forcing")
         geometry = data.get("geometry")
@@ -567,7 +531,8 @@ class ExternalForcingConverter:
         else:
             mdu_path = self.mdu_info.get("file_path")
             new_ext_file = self.ext_model.filepath.name
-            updater = MDUParser(mdu_path, new_ext_file)
+            updater = MDUParser(mdu_path)
+            updater.new_forcing_file = new_ext_file
             self.mdu_info["new_mdu_content"] = updater.update_extforce_file_new()
 
     def _log_conversion_details(self):
@@ -625,8 +590,3 @@ def recursive_converter(
             except Exception as e:
                 if not suppress_errors:
                     print(f"Error processing {path}: {e}")
-
-
-def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
-    date_object = datetime.strptime(f"{input_date}", date_format)
-    return f"MINUTES SINCE {date_object}"

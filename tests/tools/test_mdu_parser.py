@@ -40,7 +40,8 @@ def test_update_mdu_on_the_fly(
 ):
     mdu_filename = input_files_dir / input_file
     new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
-    updater = MDUParser(mdu_filename, ext_file)
+    updater = MDUParser(mdu_filename)
+    updater.new_forcing_file = ext_file
     updated_mdu_file = updater.update_extforce_file_new()
     assert updated_mdu_file[on_line[0]] == "[external forcing]\n"
     assert updated_mdu_file[on_line[1]] == expected_line
@@ -73,8 +74,9 @@ def test_update_mdu_on_the_fly(
 )
 def test_replace_extforcefilenew(line, expected):
     """Test the replace_extforcefilenew method."""
-    with patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file"):
-        parser = MDUParser("dummy_path", "new_file.ext")
+    with patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file"), patch("pathlib.Path.exists", return_value=True):
+        parser = MDUParser("dummy_path")
+        parser.new_forcing_file = "new_file.ext"
 
     assert parser.replace_extforcefilenew(line) == expected
 
