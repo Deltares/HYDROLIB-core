@@ -1,14 +1,14 @@
 from pathlib import Path
 from typing import Dict
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
 from hydrolib.core.dflowfm.ext.models import SourceSink
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 tim_file = Path("tests/data/input/source-sink/leftsor.tim")
 
@@ -453,7 +453,9 @@ class TestMainConverter:
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
-            patch("hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model")
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"
+            ),
         ):
             ext_model, inifield_model, structure_model = converter.update()
 
@@ -479,7 +481,9 @@ class TestMainConverter:
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
-            patch("hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model")
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"
+            ),
         ):
             ext_model, inifield_model, structure_model = converter.update()
 
