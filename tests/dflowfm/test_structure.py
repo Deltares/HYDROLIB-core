@@ -2424,11 +2424,11 @@ class TestLongCulvert:
         assert lc.xcoordinates == [6.515339, 44.636787]
         assert lc.ycoordinates == [25.151608, 25.727361]
         assert lc.zcoordinates == [-0.3, -0.3]
-        assert lc.width == 0.4
-        assert lc.height == 0.2
+        assert lc.width == pytest.approx(0.4)
+        assert lc.height == pytest.approx(0.2)
         assert lc.frictiontype == FrictionType.manning
-        assert lc.frictionvalue == 0.035
-        assert lc.valverelativeopening == 1.0
+        assert lc.frictionvalue == pytest.approx(0.035)
+        assert lc.valverelativeopening == pytest.approx(1.0)
 
     @pytest.mark.parametrize(
         "missing_field",
