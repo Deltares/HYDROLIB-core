@@ -118,11 +118,7 @@ line_length = 88
 
 [tool.pytest.ini_options]
 markers = ["plots", "docker"]
-addopts = """
---ignore=tests/rr/test_fnm.py
---deselect=tests/test_model.py::test_dimr_mode_save
---deselect=tests/test_model.py::test_dimr_model
-"""
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
