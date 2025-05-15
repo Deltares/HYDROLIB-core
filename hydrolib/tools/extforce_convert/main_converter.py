@@ -53,15 +53,8 @@ class ExternalForcingConverter:
                 Path to the initial field file.
             structure_file (PathOrStr, optional):
                 Path to the structure file.
-            mdu_info (Optional[Dict[LegacyFMModel, str]], optional):
-                Dictionary with the FM model and other information.
-                >>> mdu_info = {
-                ...     "file_path": "path/to/mdu_file.mdu",
-                ...     "refdate": "minutes since 2015-01-01 00:00:00",
-                ...     "temperature": False,
-                ...     "salinity": True,
-                ... }
-
+            mdu_parser (Optional[MDUParser], optional):
+                a Parser for the MDU file.
             verbose (bool, optional, Defaults to False):
                 Enable verbose output.
 
@@ -97,7 +90,8 @@ class ExternalForcingConverter:
         )
 
         if mdu_parser is not None:
-            self._mdu_info: Dict[str, int] = mdu_parser.temperature_salinity_data
+            self.temperature_salinity_data: Dict[str, int] = mdu_parser.temperature_salinity_data
+            self._mdu_parser = mdu_parser
 
     @property
     def verbose(self) -> bool:
@@ -110,38 +104,11 @@ class ExternalForcingConverter:
 
     @property
     def mdu_parser(self) -> MDUParser:
-        return self._mdu_parser
-
-    @mdu_parser.setter
-    def mdu_parser(self, mdu_file: PathOrStr):
-        """FMModel: object with all blocks."""
-        if not isinstance(mdu_file, Path):
-            mdu_file = Path(mdu_file)
-
-        if not mdu_file.exists():
-            raise FileNotFoundError(f"File not found: {mdu_file}")
-
-        self._mdu_parser = MDUParser(mdu_file)
-
-    @property
-    def mdu_info(self) -> Dict[int, str]:
-        """Info from the mdu file needed for the conversion.
-
-        - The SourceSink converter needs the salinity and temperature from the FM model.
-        - The BoundaryCondition converter needs the start time from the FM model.
-        Examples:
-            >>> mdu_info = { #doctest: +SKIP
-            ...     "fm_model": FMModel,
-            ...     "refdate": "minutes since 2015-01-01 00:00:00",
-            ...     "temperature": True,
-            ...     "salinity": True,
-            ... }
-        """
-        if not hasattr(self, "_mdu_info"):
-            info = None
+        if hasattr(self, "_mdu_parser"):
+            val = self._mdu_parser
         else:
-            info = self._mdu_info
-        return info
+            val = None
+        return val
 
     @property
     def root_dir(self) -> Path:
@@ -261,13 +228,18 @@ class ExternalForcingConverter:
                     f"{self.extold_model.filepath}."
                 )
 
-        if self.mdu_info is not None:
+        if self.mdu_parser is not None:
             self._update_fm_model()
 
         return self.ext_model, self.inifield_model, self.structure_model
 
     def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink]:
-        """Convert a single forcing block to the appropriate new format."""
+        """Convert a single forcing block to the appropriate new format.
+
+        Notes:
+            - The SourceSink converter needs the salinity and temperature from the FM model.
+            - The BoundaryCondition converter needs the start time from the FM model.
+        """
 
         converter_class = ConverterFactory.create_converter(forcing.quantity)
         converter_class.root_dir = self.root_dir
@@ -275,23 +247,23 @@ class ExternalForcingConverter:
         # only the SourceSink converter needs the quantities' list
         if converter_class.__class__.__name__ == "SourceSinkConverter":
 
-            if self.mdu_info is None:
+            if self.temperature_salinity_data is None:
                 raise ValueError(
                     "FM model is required to convert SourcesSink quantities."
                 )
             else:
-                temp_salinity_mdu = self.mdu_info
-                start_time = self.mdu_info.get("refdate")
+                temp_salinity_mdu = self.temperature_salinity_data
+                start_time = self.temperature_salinity_data.get("refdate")
 
             quantities = self.extold_model.quantities
             new_quantity_block = converter_class.convert(
                 forcing, quantities, start_time=start_time, **temp_salinity_mdu
             )
         elif converter_class.__class__.__name__ == "BoundaryConditionConverter":
-            if self.mdu_info is None:
+            if self.temperature_salinity_data is None:
                 raise ValueError("FM model is required to convert Boundary conditions.")
             else:
-                start_time = self.mdu_info.get("refdate")
+                start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
         else:
             new_quantity_block = converter_class.convert(forcing)
@@ -322,17 +294,8 @@ class ExternalForcingConverter:
                 backup_file(self.ext_model.filepath)
             self.ext_model.save(recurse=recursive)
 
-        if self.mdu_info is not None:
-            mdu_file = self.mdu_info.get("file_path")
-            backup_file(mdu_file)
-
-            if "new_mdu_content" in self.mdu_info:
-                with open(mdu_file, "w", encoding="utf-8") as file:
-                    file.writelines(self.mdu_info.get("new_mdu_content"))
-            else:
-                raise MDUUpdateError(
-                    "The FM model is not saved, and there was no new updated content for the mdu file."
-                )
+        if self.mdu_parser is not None:
+            self.mdu_parser.save(backup=True)
 
     def _save_inifield_model(self, backup: bool, recursive: bool):
         if backup and self.inifield_model.filepath.exists():
@@ -497,11 +460,9 @@ class ExternalForcingConverter:
             `ExtForceFileNew` in the mdu file, and store the new content in the `mdu_info` dictionary under a
             `new_mdu_content` key.
         """
-        mdu_path = self.mdu_info.get("file_path")
         new_ext_file = self.ext_model.filepath.name
-        updater = MDUParser(mdu_path)
-        updater.new_forcing_file = new_ext_file
-        self.mdu_info["new_mdu_content"] = updater.update_extforce_file_new()
+        self.mdu_parser.new_forcing_file = new_ext_file
+        self.mdu_parser.content = self.mdu_parser.update_extforce_file_new()
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""
@@ -515,14 +476,6 @@ class ExternalForcingConverter:
             print(f"* {self.ext_model.filepath}")
             print(f"* {self.inifield_model.filepath}")
             print(f"* {self.structure_model.filepath}")
-
-
-class MDUUpdateError(Exception):
-    """mdu file is not updated."""
-
-    def __init__(self, error_message: str):
-        """__init__."""
-        print(error_message)
 
 
 def recursive_converter(

@@ -427,12 +427,12 @@ class TestConverter:
 
 class TestMainConverter:
     path = "tests/data/input/source-sink/source-sink.ext"
-    mdu_info = {
+    temperature_and_salinity_info = {
         "refdate": "minutes since 2015-01-01 00:00:00",
     }
     tim_file = Path("tim-3-columns.tim")
     mdu_parser = MagicMock(spec=MDUParser)
-    mdu_parser.temperature_salinity_data = mdu_info
+    mdu_parser.temperature_salinity_data = temperature_and_salinity_info
 
     def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
         """

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Union
 from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass
+from hydrolib.tools.extforce_convert.utils import backup_file
 
 
 class MDUParser:
@@ -66,6 +67,13 @@ class MDUParser:
         with open(self.mdu_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
         return lines
+
+    def save(self, backup: bool = False) -> None:
+        if backup:
+            backup_file(self.mdu_path)
+
+        with open(self.mdu_path, "w", encoding="utf-8") as file:
+            file.writelines(self.content)
 
     @property
     def content(self) -> List[str]:
@@ -217,9 +225,18 @@ class MDUParser:
         """Get the info needed from the mdu to process and convert the old external forcing files.
 
         Returns:
-            mdu_info (Dict[str, str]):
+            temperature_and_salinity_info (Dict[str, str]):
                 dictionary with the information needed for the conversion tool to convert the `SourceSink` and
                 `Boundary` quantities. The dictionary will have three keys `temperature`, `salinity`, and `refdate`.
+
+        Examples:
+            ```python
+            >>> mdu_info = { #doctest: +SKIP
+            ...     "refdate": "minutes since 2015-01-01 00:00:00",
+            ...     "temperature": True,
+            ...     "salinity": True,
+            ... }
+            ```
         """
         # read sections of the mdu file.
         time_data = self.loaded_fm_data.get("time")
@@ -228,13 +245,13 @@ class MDUParser:
         mdu_physics = IgnoreUnknownKeyWordClass(Physics, **physics_data)
 
         ref_time = get_ref_time(mdu_time.refdate)
-        mdu_info = {
+        temperature_and_salinity_info = {
             "file_path": self.mdu_path,
             "refdate": ref_time,
             "temperature": False if mdu_physics.temperature == 0 else True,
             "salinity": mdu_physics.salinity,
         }
-        return mdu_info
+        return temperature_and_salinity_info
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
