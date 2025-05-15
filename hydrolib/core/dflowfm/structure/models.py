@@ -499,7 +499,7 @@ class LongCulvert(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the long culvert input as described in
-    [UM Sec.C.12.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.4).
+    [UM Sec.C.13.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.13.4).
     """
 
     type: Literal["longCulvert"] = Field("longCulvert", alias="type")
