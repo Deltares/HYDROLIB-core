@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from pandas import DataFrame
 from pydantic.v1 import Field
@@ -145,7 +145,7 @@ class TimModel(ParsableFileModel):
 
     def __init__(
         self,
-        filepath: Optional[str | Path] = None,
+        filepath: Optional[Union[str, Path]] = None,
         quantities_names: Optional[List[str]] = None,
         **parsable_file_kwargs,
     ):
