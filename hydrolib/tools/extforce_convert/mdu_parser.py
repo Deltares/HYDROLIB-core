@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, Union, Dict, List
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -27,13 +28,13 @@ class MDUParser:
         self._content = self._read_file()
 
     @property
-    def new_forcing_file(self):
+    def new_forcing_file(self) -> Union[Path, str]:
         if not hasattr(self, "_new_forcing_file"):
             raise AttributeError("new_forcing_file not set")
         return self._new_forcing_file
 
     @new_forcing_file.setter
-    def new_forcing_file(self, file_name: PathOrStr):
+    def new_forcing_file(self, file_name: Union[Path, str]) -> None:
         """Set the new filename for the ExtForceFileNew entry.
 
         Args:
