@@ -213,7 +213,7 @@ class MDUParser:
             return
         self.updated_lines.append(f"{stripped}\n")
 
-    def get_temperature_salinity_data(self) -> dict[str, Path | str | bool | Any]:
+    def get_temperature_salinity_data(self) -> dict[str, Any]:
         """Get the info needed from the mdu to process and convert the old external forcing files.
 
         Returns:
