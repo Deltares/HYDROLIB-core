@@ -327,9 +327,11 @@ class ExternalForcingConverter:
         if len(self.structure_model.structure) > 0:
             self._save_structure_model(backup, recursive)
 
-        if backup and self.ext_model.filepath.exists():
-            backup_file(self.ext_model.filepath)
-        self.ext_model.save(recurse=recursive)
+        num_quantities_ext = len(self.ext_model.meteo) + len(self.ext_model.sourcesink) + len(self.ext_model.boundary) + len(self.ext_model.lateral)
+        if num_quantities_ext:
+            if backup and self.ext_model.filepath.exists():
+                backup_file(self.ext_model.filepath)
+            self.ext_model.save(recurse=recursive)
 
         if self.mdu_info is not None:
             mdu_file = self.mdu_info.get("file_path")
