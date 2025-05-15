@@ -329,7 +329,7 @@ class FileChecksumCalculator:
 
     @staticmethod
     def _calculate_md5_checksum(filepath: Path) -> str:
-        md5_hash = md5()
+        md5_hash = md5(usedforsecurity=False)
         with open(filepath, "rb") as file:
             for chunk in iter(lambda: file.read(4096), b""):
                 md5_hash.update(chunk)
