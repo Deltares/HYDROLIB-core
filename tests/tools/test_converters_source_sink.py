@@ -449,7 +449,7 @@ class TestMainConverter:
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
             patch(
-                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
             ),
         ):
             ext_model, inifield_model, structure_model = converter.update()
@@ -474,7 +474,7 @@ class TestMainConverter:
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
             patch(
-                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
             ),
         ):
             ext_model, inifield_model, structure_model = converter.update()

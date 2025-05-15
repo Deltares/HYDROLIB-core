@@ -300,7 +300,7 @@ class TestMainConverter:
         )
 
         with patch(
-            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
         ):
             ext_model, inifield_model, structure_model = converter.update()
 
