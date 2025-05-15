@@ -1,15 +1,15 @@
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import Boundary
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.converters import BoundaryConditionConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from tests.utils import compare_two_files, is_macos
 
 
@@ -303,7 +303,9 @@ class TestMainConverter:
         # Mock the fm_model
         # mock_fm_model = Mock()
         # converter._fm_model = mock_fm_model
-        with patch("hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"):
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_fm_model"
+        ):
             ext_model, inifield_model, structure_model = converter.update()
 
         # all the quantities in the old external file are initial conditions

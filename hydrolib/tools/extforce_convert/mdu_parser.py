@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Any, Union, Dict, List
 from pathlib import Path
+from typing import Any, Dict, List, Union
 
 from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
@@ -126,7 +126,9 @@ class MDUParser:
 
         # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
         if self.inside_external_forcing and not self.found_extforcefilenew:
-            new_line = f"ExtForceFileNew                           = {self.new_forcing_file}\n"
+            new_line = (
+                f"ExtForceFileNew                           = {self.new_forcing_file}\n"
+            )
             self.updated_lines.append(new_line)
             self.updated_lines.append("\n")
 

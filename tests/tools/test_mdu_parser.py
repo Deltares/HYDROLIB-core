@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Tuple
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -78,12 +78,17 @@ def test_replace_extforcefilenew(line, expected):
     with (
         patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file"),
         patch("pathlib.Path.exists", return_value=True),
-        patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model", return_value=None),
-        patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data", return_value=None),
+        patch(
+            "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
+            return_value=None,
+        ),
+        patch(
+            "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
+            return_value=None,
+        ),
     ):
         parser = MDUParser("dummy_path")
         parser.new_forcing_file = Path("new_file.ext")
-
 
     assert parser.replace_extforcefilenew(line) == expected
 

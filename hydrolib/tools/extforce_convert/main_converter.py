@@ -133,7 +133,6 @@ class ExternalForcingConverter:
 
         self._mdu_parser = MDUParser(mdu_file)
 
-
     @property
     def mdu_info(self) -> Dict[int, str]:
         """Info from the mdu file needed for the conversion.
