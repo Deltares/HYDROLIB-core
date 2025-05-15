@@ -456,7 +456,9 @@ class ExternalForcingConverter:
         old_ext_force_file = external_forcing_data.get("extforcefile")
         if old_ext_force_file is None:
             raise ValueError(
-                "The old external forcing file is not found in the mdu file."
+                "An old formatted external forcing file (.ext)"
+                "could not be found in the mdu file.\n"
+                "Conversion is not possible or may not be necessary."
             )
 
         new_ext_force_file = external_forcing_data.get("extforcefilenew")
