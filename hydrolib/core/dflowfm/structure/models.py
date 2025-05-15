@@ -493,6 +493,31 @@ class Culvert(Structure):
         )
 
 
+class LongCulvert(Structure):
+    """
+    Hydraulic structure with `type=longCulvert`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the long culvert input as described in
+    [UM Sec.C.12.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.4).
+    """
+
+    type: Literal["longCulvert"] = Field("longCulvert", alias="type")
+    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
+
+    width: float = Field(alias="width")
+    height: float = Field(alias="height")
+    frictiontype: FrictionType = Field(alias="frictionType")
+    frictionvalue: float = Field(alias="frictionValue")
+    valverelativeopening: float = Field(alias="valveRelativeOpening")
+    branchid: Optional[str] = Field(
+        "Branch on which the structure is located.", alias="branchId"
+    )
+    csdefid: Optional[str] = Field("Id of Cross-Section Definition.", alias="csDefId")
+
+    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
+
 class Pump(Structure):
     """
     Hydraulic structure with `type=pump`, to be included in a structure file.
