@@ -89,7 +89,9 @@ class ExternalForcingConverter:
         )
 
         if mdu_parser is not None:
-            self.temperature_salinity_data: Dict[str, int] = mdu_parser.temperature_salinity_data
+            self.temperature_salinity_data: Dict[str, int] = (
+                mdu_parser.temperature_salinity_data
+            )
             self._mdu_parser = mdu_parser
 
     @property
