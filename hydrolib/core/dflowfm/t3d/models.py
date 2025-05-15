@@ -183,7 +183,7 @@ class T3DModel(ParsableFileModel):
     comments: List[str] = Field(default_factory=list)
     records: List[T3DTimeRecord] = Field(default_factory=list)
     layers: List[float] = Field(default_factory=list)
-    vectormax: Optional[int] = Field(default=1, alias="VECTORMAX")
+    vectormax: Optional[int] = Field(default=None, alias="VECTORMAX")
     layer_type: LayerType = Field(default=None, alias="LAYER_TYPE")
     quantities_names: Optional[List[str]] = Field(default=None)
 
