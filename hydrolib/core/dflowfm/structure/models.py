@@ -503,16 +503,20 @@ class LongCulvert(Structure):
     """
 
     type: Literal["longCulvert"] = Field("longCulvert", alias="type")
-    allowedflowdir: FlowDirection = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(alias="allowedFlowDir")
+    zcoordinates: Optional[List[float]] = Field(None, alias="zCoordinates")
 
     width: float = Field(alias="width")
     height: float = Field(alias="height")
     frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
     valverelativeopening: float = Field(alias="valveRelativeOpening")
-    csdefid: Optional[str] = Field("Id of Cross-Section Definition.", alias="csDefId")
+    csdefid: Optional[str] = Field(alias="csDefId")
 
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
+    _split_to_list = get_split_string_on_delimiter_validator("zcoordinates")
 
 
 class Pump(Structure):
