@@ -1,3 +1,5 @@
+"""MDU Parser."""
+
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Union
@@ -41,6 +43,7 @@ class MDUParser:
 
     @property
     def new_forcing_file(self) -> Union[Path, str]:
+        """Get the filename for the ExtForceFileNew entry."""
         if not hasattr(self, "_new_forcing_file"):
             raise AttributeError("new_forcing_file not set")
         return self._new_forcing_file
@@ -68,6 +71,7 @@ class MDUParser:
         return lines
 
     def save(self, backup: bool = False) -> None:
+        """Save the updated MDU file."""
         if backup:
             backup_file(self.mdu_path)
 
@@ -93,7 +97,8 @@ class MDUParser:
         self._content = new_content
 
     def update_extforce_file_new(self) -> List[str]:
-        """
+        """Update the ExtForceFileNew entry in the MDU file.
+
         Update the 'ExtForceFileNew' entry under the '[external forcing]' section
         of an MDU file. Writes the updated content to output_path if provided,
         or overwrites the original file otherwise.
@@ -265,5 +270,6 @@ def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
 
 
 def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
+    """Convert a date string to a datetime object."""
     date_object = datetime.strptime(f"{input_date}", date_format)
     return f"MINUTES SINCE {date_object}"
