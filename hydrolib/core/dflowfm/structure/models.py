@@ -518,6 +518,16 @@ class LongCulvert(Structure):
 
     _split_to_list = get_split_string_on_delimiter_validator("zcoordinates")
 
+    @validator("zcoordinates", always=True)
+    @classmethod
+    def _validate_zcoordinates(cls, v, values):
+        if len(v) != values["numcoordinates"]:
+            raise ValueError(
+                f"Expected {values['numcoordinates']} z-coordinates, but got {len(v)}."
+            )
+
+        return v
+
 
 class Pump(Structure):
     """
