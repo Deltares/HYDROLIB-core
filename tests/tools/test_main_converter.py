@@ -4,7 +4,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.core.dflowfm.ext.models import (
+    Boundary,
+    ExtModel,
+    Lateral,
+    Meteo,
+    SourceSink,
+)
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
@@ -169,8 +175,11 @@ class TestExtOldToNewFromMDU:
 
         with (
             patch(
-                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.get_mdu_info"
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model"
             ) as mock_get_mdu_info,
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data"
+            ),
             patch(
                 "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file"
             ),
@@ -178,7 +187,7 @@ class TestExtOldToNewFromMDU:
                 "hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing"
             ),
         ):
-            mock_get_mdu_info.return_value = (mdu_file_content, {})
+            mock_get_mdu_info.return_value = mdu_file_content
 
             converter = ExternalForcingConverter.from_mdu(
                 mdu_file, input_files[0], input_files[1], input_files[2]
@@ -259,15 +268,15 @@ class TestExternalFocingConverter:
         mock_ext_old_model.filepath = old_forcing_file_initial_condition["path"]
 
         converter = ExternalForcingConverter(mock_ext_old_model)
-        converter.save()
+        converter._ext_model = MagicMock(spec=ExtModel)
+        converter._ext_model.meteo = [MagicMock(spec=Meteo)]
+        converter._ext_model.sourcesink = [MagicMock(spec=SourceSink)]
+        converter._ext_model.lateral = [MagicMock(spec=Lateral)]
+        converter._ext_model.boundary = [MagicMock(spec=Boundary)]
+        converter._ext_model.filepath = Path("any-path.ext")
 
-        assert converter.ext_model.filepath.exists()
-        assert not converter.inifield_model.filepath.exists()
-        assert not converter.structure_model.filepath.exists()
-        try:
-            converter.ext_model.filepath.unlink()
-        except PermissionError:
-            pass
+        converter.save()
+        converter._ext_model.save.assert_called_once()
 
     def test_read_old_file(
         self,

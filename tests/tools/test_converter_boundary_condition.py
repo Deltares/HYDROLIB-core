@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -9,6 +9,7 @@ from hydrolib.core.dflowfm.ext.models import Boundary
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import BoundaryConditionConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from tests.utils import compare_two_files, is_macos
 
 
@@ -291,15 +292,17 @@ class TestMainConverter:
         The old external forcing file contains only 9 boundary condition quantities all with polyline location files
         and no forcing files. The update method should convert all the quantities to boundary conditions.
         """
-        mdu_info = {"refdate": start_date}
+        mock_mdu_parser = MagicMock(spec=MDUParser)
+        mock_mdu_parser.temperature_salinity_data = {"refdate": start_date}
+
         converter = ExternalForcingConverter(
-            old_forcing_file_boundary["path"], mdu_info=mdu_info
+            old_forcing_file_boundary["path"], mdu_parser=mock_mdu_parser
         )
 
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
-        ext_model, inifield_model, structure_model = converter.update()
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
+        ):
+            ext_model, inifield_model, structure_model = converter.update()
 
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
