@@ -234,7 +234,8 @@ class Mesh2d(BaseModel):
         deletemeshoption: mk.DeleteMeshOption = mk.DeleteMeshOption.INSIDE_NOT_INTERSECTED,
         inside=False,
     ) -> None:
-        """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped
+        """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.
+
 
         Args:
             geometrylist (GeometryList): Polygon stored as GeometryList
@@ -255,29 +256,22 @@ class Mesh2d(BaseModel):
             exteriors = [parts[0]]
             interiors = parts[1:]
 
+            # Check if parts are closed
+            for part in exteriors + interiors:
+                if (part.x_coordinates[0], part.y_coordinates[0]) != (
+                    part.x_coordinates[-1],
+                    part.y_coordinates[-1],
+                ):
+                    raise ValueError(
+                        "First and last coordinate of each GeometryList part should match."
+                    )
+
         # Inside
         else:
-            # Check if any polygon contains holes, when clipping inside
-            if geometrylist.inner_outer_separator in geometrylist.x_coordinates:
-                raise NotImplementedError(
-                    "Deleting inside a (Multi)Polygon with holes is not implemented."
-                )
-
             # Get exterior and interiors
             parts = split_by(geometrylist, geometrylist.geometry_separator)
-
             exteriors = parts[:]
             interiors = []
-
-        # Check if parts are closed
-        for part in exteriors + interiors:
-            if (part.x_coordinates[0], part.y_coordinates[0]) != (
-                part.x_coordinates[-1],
-                part.y_coordinates[-1],
-            ):
-                raise ValueError(
-                    "First and last coordinate of each GeometryList part should match."
-                )
 
         # Delete everything outside the (Multi)Polygon
         for exterior in exteriors:
@@ -295,30 +289,33 @@ class Mesh2d(BaseModel):
                 invert_deletion=inside,
             )
 
-    def refine(self, polygon: mk.GeometryList, level: int, min_edge_size: float = 10.0):
+    def refine(
+        self,
+        polygon: mk.GeometryList,
+        level: int,
+        parameters: mk.MeshRefinementParameters = None,
+    ):
         """Refine the mesh within a polygon, by a number of steps (level)
 
         Args:
             polygon (GeometryList): Polygon in which to refine
             level (int): Number of refinement steps
+            parameters (MeshRefinementParameters): object containing the Meshkernel refinement parameters. Default values are taken from meskernel documentation.
         """
-
-        # Check if parts are closed
-        # if not (polygon.x_coordinates[0], polygon.y_coordinates[0]) == (
-        #     polygon.x_coordinates[-1],
-        #     polygon.y_coordinates[-1],
-        # ):
-        #     raise ValueError("First and last coordinate of each GeometryList part should match.")
-
-        parameters = mk.MeshRefinementParameters(
-            refine_intersected=True,
-            use_mass_center_when_refining=False,
-            min_edge_size=min_edge_size,
-            refinement_type=1,
-            connect_hanging_nodes=True,
-            account_for_samples_outside_face=False,
-            max_refinement_iterations=level,
-        )
+        if parameters is None:
+            parameters = mk.MeshRefinementParameters(
+                refine_intersected=True,
+                use_mass_center_when_refining=True,
+                min_edge_size=1.0,
+                refinement_type=2,
+                connect_hanging_nodes=True,
+                account_for_samples_outside_face=True,
+                max_refinement_iterations=1,
+                smoothing_iterations=5,
+                max_courant_time=120.0,
+                directional_refinement=False,
+            )
+        parameters.max_refinement_iterations = level
         self.meshkernel.mesh2d_refine_based_on_polygon(polygon, parameters)
 
 
@@ -667,10 +664,12 @@ class Link1d2d(BaseModel):
         # a bounding polygon or the end points of the 1d mesh.
 
     def _link_from_2d_to_1d_embedded(
-        self, node_mask: np.ndarray, points: mk.GeometryList
+        self, node_mask: np.ndarray, polygons: mk.GeometryList
     ):
         """"""
-        self.meshkernel.contacts_compute_with_points(node_mask=node_mask, points=points)
+        self.meshkernel.contacts_compute_with_points(
+            node_mask=node_mask, polygons=polygons
+        )
 
     def _link_from_2d_to_1d_lateral(
         self,
@@ -1192,9 +1191,12 @@ class Network:
         )
 
     def mesh2d_refine_mesh(
-        self, polygon: mk.GeometryList, level: int = 1, min_edge_size: float = 10.0
-    ) -> None:
-        self._mesh2d.refine(polygon=polygon, level=level, min_edge_size=min_edge_size)
+        self,
+        polygon: mk.GeometryList,
+        level: int = None,
+        parameters: mk.MeshRefineParameters = None,
+    ):
+        self._mesh2d.refine(polygon=polygon, level=level, parameters=parameters)
 
     def mesh1d_add_branch(
         self,

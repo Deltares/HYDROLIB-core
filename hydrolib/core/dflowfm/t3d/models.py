@@ -134,7 +134,7 @@ class T3DModel(ParsableFileModel):
         layers (List[float]):
             List of layers.
         vectormax (Optional[int]):
-            The VECTORMAX value.
+            The VECTORMAX value. Default is None.
         layer_type (LayerType):
             The layer type.
         quantities_names (Optional[List[str]]):
@@ -160,7 +160,7 @@ class T3DModel(ParsableFileModel):
                 T3DTimeRecord(time='0 seconds since 2006-01-01 00:00:00 +00:00', data=[5.0, 5.0, 10.0, 10.0]),
                 T3DTimeRecord(time='1e9 seconds since 2001-01-01 00:00:00 +00:00', data=[5.0, 5.0, 10.0, 10.0])
             ],
-            layers=[1.0, 2.0, 3.0, 4.0, 5.0], vectormax=1, layer_type='SIGMA'
+            layers=[1.0, 2.0, 3.0, 4.0, 5.0], vectormax=None, layer_type='SIGMA', quantities_names=None
         )
         >>> print(model.size)
         (2, 4)
@@ -183,7 +183,7 @@ class T3DModel(ParsableFileModel):
     comments: List[str] = Field(default_factory=list)
     records: List[T3DTimeRecord] = Field(default_factory=list)
     layers: List[float] = Field(default_factory=list)
-    vectormax: Optional[int] = Field(default=1, alias="VECTORMAX")
+    vectormax: Optional[int] = Field(default=None, alias="VECTORMAX")
     layer_type: LayerType = Field(default=None, alias="LAYER_TYPE")
     quantities_names: Optional[List[str]] = Field(default=None)
 
@@ -289,44 +289,4 @@ class T3DModel(ParsableFileModel):
         """
         if self.quantities_names is None:
             return None
-        return get_quantity_unit(self.quantities_names)
-
-
-def get_quantity_unit(quantities_names: List[str]) -> List[str]:
-    """
-    Maps each quantity in the input list to a specific unit based on its content.
-
-    Args:
-        quantities_names (list of str): A list of strings to be checked for specific keywords.
-
-    Returns:
-        list of str: A list of corresponding units for each input string.
-
-    Examples:
-        ```python
-        >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
-        >>> get_quantity_unit(quantities_names)
-        ['m3/s', 'm', '1e-3', 'degC']
-
-        ```
-    """
-    # Define the mapping of keywords to units
-    unit_mapping = {
-        "discharge": "m3/s",
-        "waterlevel": "m",
-        "salinity": "1e-3",
-        "temperature": "degC",
-    }
-
-    # Generate the list of units based on the mapping
-    units = []
-    for string in quantities_names:
-        for keyword, unit in unit_mapping.items():
-            if keyword in string.lower():
-                units.append(unit)
-                break
-        else:
-            # Append "-" if no keywords match
-            units.append("-")
-
-    return units
+        return T3DModel._get_quantity_unit(self.quantities_names)

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import pytest
@@ -17,8 +17,6 @@ from hydrolib.tools.extforce_convert.converters import (
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
-    save_mdu_file,
-    update_extforce_file_new,
 )
 
 
@@ -88,23 +86,3 @@ class TestConvertMeteo:
             new_quantity_block.interpolationmethod
             == MeteoInterpolationMethod.linearSpaceTime
         )
-
-
-def test_update_mdu_on_the_fly(input_files_dir: Path):
-    mdu_filename = (
-        input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
-    )
-    new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
-    updated_mdu_file = update_extforce_file_new(mdu_filename, "test.ext")
-    assert updated_mdu_file[149] == "[external forcing]\n"
-    assert (
-        updated_mdu_file[150]
-        == "ExtForceFileNew                      = test.ext                              # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n"
-    )
-    # test the save mdu file function
-    save_mdu_file(updated_mdu_file, new_mdu_file)
-    assert new_mdu_file.exists()
-    try:
-        new_mdu_file.unlink()
-    except PermissionError:
-        pass

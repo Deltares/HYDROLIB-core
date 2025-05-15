@@ -112,8 +112,8 @@ def test_initialize_default_dimr_does_not_raise_exception():
 
 
 def test_dimr_model_save(output_files_dir: Path, reference_files_dir: Path):
-    file = output_files_dir.joinpath("model/test_dimr_model_save.xml")
-    reference_file = reference_files_dir.joinpath("model/test_dimr_model_save.xml")
+    file = output_files_dir / "model/test_dimr_model_save.xml"
+    reference_file = reference_files_dir / "model/test_dimr_model_save.xml"
 
     dimr = DIMR()
     dimr.documentation.creationDate = datetime(2021, 7, 29, 12, 45)
