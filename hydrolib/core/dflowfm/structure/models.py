@@ -521,6 +521,9 @@ class LongCulvert(Structure):
     @validator("zcoordinates", always=True)
     @classmethod
     def _validate_zcoordinates(cls, v, values):
+        if v is None:
+            return v
+
         if len(v) != values["numcoordinates"]:
             raise ValueError(
                 f"Expected {values['numcoordinates']} z-coordinates, but got {len(v)}."
