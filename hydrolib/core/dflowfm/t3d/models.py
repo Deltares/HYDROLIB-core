@@ -134,7 +134,7 @@ class T3DModel(ParsableFileModel):
         layers (List[float]):
             List of layers.
         vectormax (Optional[int]):
-            The VECTORMAX value.
+            The VECTORMAX value. Default is None.
         layer_type (LayerType):
             The layer type.
         quantities_names (Optional[List[str]]):
@@ -160,7 +160,7 @@ class T3DModel(ParsableFileModel):
                 T3DTimeRecord(time='0 seconds since 2006-01-01 00:00:00 +00:00', data=[5.0, 5.0, 10.0, 10.0]),
                 T3DTimeRecord(time='1e9 seconds since 2001-01-01 00:00:00 +00:00', data=[5.0, 5.0, 10.0, 10.0])
             ],
-            layers=[1.0, 2.0, 3.0, 4.0, 5.0], vectormax=1, layer_type='SIGMA'
+            layers=[1.0, 2.0, 3.0, 4.0, 5.0], vectormax=None, layer_type='SIGMA', quantities_names=None
         )
         >>> print(model.size)
         (2, 4)
