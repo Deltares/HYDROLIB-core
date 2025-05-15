@@ -76,7 +76,8 @@ def test_replace_extforcefilenew(line, expected):
     """Test the replace_extforcefilenew method."""
     with patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file"), patch("pathlib.Path.exists", return_value=True):
         parser = MDUParser("dummy_path")
-        parser.new_forcing_file = "new_file.ext"
+        parser.new_forcing_file = Path("new_file.ext")
+
 
     assert parser.replace_extforcefilenew(line) == expected
 
