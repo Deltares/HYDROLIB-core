@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -8,6 +8,7 @@ from hydrolib.core.dflowfm.ext.models import SourceSink
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 tim_file = Path("tests/data/input/source-sink/leftsor.tim")
 
@@ -426,10 +427,12 @@ class TestConverter:
 
 class TestMainConverter:
     path = "tests/data/input/source-sink/source-sink.ext"
-    mdu_info = {
+    temperature_and_salinity_info = {
         "refdate": "minutes since 2015-01-01 00:00:00",
     }
     tim_file = Path("tim-3-columns.tim")
+    mdu_parser = MagicMock(spec=MDUParser)
+    mdu_parser.temperature_salinity_data = temperature_and_salinity_info
 
     def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
         """
@@ -441,12 +444,14 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        converter = ExternalForcingConverter(self.path, mdu_info=self.mdu_info)
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
+        converter = ExternalForcingConverter(self.path, mdu_parser=self.mdu_parser)
 
-        with patch("pathlib.Path.with_suffix", return_value=self.tim_file):
+        with (
+            patch("pathlib.Path.with_suffix", return_value=self.tim_file),
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
+            ),
+        ):
             ext_model, inifield_model, structure_model = converter.update()
 
         self._compare(ext_model, inifield_model, structure_model)
@@ -461,15 +466,17 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        self.mdu_info["salinity"] = True
-        self.mdu_info["temperature"] = True
+        self.mdu_parser.temperature_salinity_data["salinity"] = True
+        self.mdu_parser.temperature_salinity_data["temperature"] = True
 
-        converter = ExternalForcingConverter(self.path, mdu_info=self.mdu_info)
-        # Mock the fm_model
-        mock_fm_model = Mock()
-        converter._fm_model = mock_fm_model
+        converter = ExternalForcingConverter(self.path, mdu_parser=self.mdu_parser)
 
-        with patch("pathlib.Path.with_suffix", return_value=self.tim_file):
+        with (
+            patch("pathlib.Path.with_suffix", return_value=self.tim_file),
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
+            ),
+        ):
             ext_model, inifield_model, structure_model = converter.update()
 
         self._compare(ext_model, inifield_model, structure_model)
