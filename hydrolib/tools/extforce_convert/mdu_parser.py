@@ -1,8 +1,9 @@
-from typing import List, Tuple, Dict
 from datetime import datetime
 from pathlib import Path
-from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
+from typing import Dict, List, Tuple
+
 from hydrolib.core.basemodel import PathOrStr
+from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass
 
 
@@ -112,7 +113,9 @@ class MDUParser:
 
         # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
         if self.inside_external_forcing and not self.found_extforcefilenew:
-            new_line = f"ExtForceFileNew                           = {self.new_forcing_file}\n"
+            new_line = (
+                f"ExtForceFileNew                           = {self.new_forcing_file}\n"
+            )
             self.updated_lines.append(new_line)
             self.updated_lines.append("\n")
 
@@ -224,6 +227,7 @@ class MDUParser:
         }
         return data, mdu_info
 
+
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
     """Save the updated MDU file content to disk.
 
@@ -233,6 +237,7 @@ def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
     """
     with open(output_path, "w", encoding="utf-8") as f:
         f.writelines(content)
+
 
 def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     date_object = datetime.strptime(f"{input_date}", date_format)
