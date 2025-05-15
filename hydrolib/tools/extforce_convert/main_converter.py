@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 
@@ -37,7 +36,7 @@ class ExternalForcingConverter:
         ext_file: Optional[PathOrStr] = None,
         inifield_file: Optional[PathOrStr] = None,
         structure_file: Optional[PathOrStr] = None,
-        mdu_info: Optional[Dict[str, int]] = None,
+        mdu_parser: MDUParser = None,
         verbose: bool = False,
     ):
         """Initialize the converter.
@@ -97,9 +96,9 @@ class ExternalForcingConverter:
             StructureModel, path
         )
 
-        if mdu_info is not None:
-            self._fm_model = mdu_info.get("fm_model")
-            self._mdu_info: Dict[str, int] = mdu_info
+        if mdu_parser is not None:
+            self._fm_model = None
+            self._mdu_info: Dict[str, int] = mdu_parser.temperature_salinity_data
 
     @property
     def verbose(self) -> bool:
@@ -118,6 +117,22 @@ class ExternalForcingConverter:
         else:
             model = self._fm_model
         return model
+
+    @property
+    def mdu_parser(self) -> MDUParser:
+        return self._mdu_parser
+
+    @mdu_parser.setter
+    def mdu_parser(self, mdu_file: PathOrStr):
+        """FMModel: object with all blocks."""
+        if not isinstance(mdu_file, Path):
+            mdu_file = Path(mdu_file)
+
+        if not mdu_file.exists():
+            raise FileNotFoundError(f"File not found: {mdu_file}")
+
+        self._mdu_parser = MDUParser(mdu_file)
+
 
     @property
     def mdu_info(self) -> Dict[int, str]:
@@ -407,10 +422,9 @@ class ExternalForcingConverter:
             mdu_file = Path(mdu_file)
 
         mdu_parser = MDUParser(mdu_file)
-        data, mdu_info = mdu_parser.get_mdu_info()
 
-        external_forcing_data = data.get("external_forcing")
-        geometry = data.get("geometry")
+        external_forcing_data = mdu_parser.loaded_fm_data.get("external_forcing")
+        geometry = mdu_parser.loaded_fm_data.get("geometry")
 
         inifieldfile_mdu = geometry.get("inifieldfile")
         structurefile_mdu = geometry.get("structurefile")
@@ -455,7 +469,7 @@ class ExternalForcingConverter:
             structure_file, root_dir, structurefile_mdu
         )
 
-        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_info)
+        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_parser)
 
     @staticmethod
     def _get_inifield_file(
@@ -512,28 +526,11 @@ class ExternalForcingConverter:
             `ExtForceFileNew` in the mdu file, and store the new content in the `mdu_info` dictionary under a
             `new_mdu_content` key.
         """
-        if self.fm_model is not None:
-
-            # remove the old external forcings file from the mdu file.
-            self.fm_model.external_forcing.extforcefile = None
-            # Intentionally always include the new external forcings file, even if empty.
-            self.fm_model.external_forcing.extforcefilenew = self.ext_model
-            if (
-                len(self.inifield_model.initial) > 0
-                or len(self.inifield_model.parameter) > 0
-            ):
-                self.fm_model.geometry.inifieldfile = self.inifield_model
-            if len(self.structure_model.structure) > 0:
-                self.fm_model.geometry.structurefile[0] = self.structure_model
-
-            if self.verbose:
-                print(f"successfully saved converted file {self.fm_model.filepath} ")
-        else:
-            mdu_path = self.mdu_info.get("file_path")
-            new_ext_file = self.ext_model.filepath.name
-            updater = MDUParser(mdu_path)
-            updater.new_forcing_file = new_ext_file
-            self.mdu_info["new_mdu_content"] = updater.update_extforce_file_new()
+        mdu_path = self.mdu_info.get("file_path")
+        new_ext_file = self.ext_model.filepath.name
+        updater = MDUParser(mdu_path)
+        updater.new_forcing_file = new_ext_file
+        self.mdu_info["new_mdu_content"] = updater.update_extforce_file_new()
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""

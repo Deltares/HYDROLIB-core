@@ -169,8 +169,11 @@ class TestExtOldToNewFromMDU:
 
         with (
             patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_mdu_info"
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model"
             ) as mock_get_mdu_info,
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data"
+            ),
             patch(
                 "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file"
             ),
@@ -178,7 +181,7 @@ class TestExtOldToNewFromMDU:
                 "hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing"
             ),
         ):
-            mock_get_mdu_info.return_value = (mdu_file_content, {})
+            mock_get_mdu_info.return_value = mdu_file_content
 
             converter = ExternalForcingConverter.from_mdu(
                 mdu_file, input_files[0], input_files[1], input_files[2]

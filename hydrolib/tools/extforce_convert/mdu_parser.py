@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Any, Union, Dict, List
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 from hydrolib.core.basemodel import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
@@ -26,6 +25,19 @@ class MDUParser:
         self.inside_external_forcing = False
         self.found_extforcefilenew = False
         self._content = self._read_file()
+        self.loaded_fm_data = self._load_with_fm_model()
+        self.temperature_salinity_data = self.get_temperature_salinity_data()
+
+    def _load_with_fm_model(self) -> Dict[str, Any]:
+        """Load the MDU file using the FMModel class.
+
+        Returns:
+            data (Dict[str, str]):
+                all the data inside the mdu file, with each section in the file as a key and the data of that section is
+                the value of that key.
+        """
+        data = FMModel._load(FMModel, self.mdu_path)
+        return data
 
     @property
     def new_forcing_file(self) -> Union[Path, str]:
@@ -114,9 +126,7 @@ class MDUParser:
 
         # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
         if self.inside_external_forcing and not self.found_extforcefilenew:
-            new_line = (
-                f"ExtForceFileNew                           = {self.new_forcing_file}\n"
-            )
+            new_line = f"ExtForceFileNew                           = {self.new_forcing_file}\n"
             self.updated_lines.append(new_line)
             self.updated_lines.append("\n")
 
@@ -201,21 +211,17 @@ class MDUParser:
             return
         self.updated_lines.append(f"{stripped}\n")
 
-    def get_mdu_info(self) -> Tuple[Dict, Dict]:
+    def get_temperature_salinity_data(self) -> dict[str, Path | str | bool | Any]:
         """Get the info needed from the mdu to process and convert the old external forcing files.
 
         Returns:
-            data (Dict[str, str]):
-                all the data inside the mdu file, with each section in the file as a key and the data of that section is
-                the value of that key.
             mdu_info (Dict[str, str]):
                 dictionary with the information needed for the conversion tool to convert the `SourceSink` and
                 `Boundary` quantities. The dictionary will have three keys `temperature`, `salinity`, and `refdate`.
         """
-        data = FMModel._load(FMModel, self.mdu_path)
         # read sections of the mdu file.
-        time_data = data.get("time")
-        physics_data = data.get("physics")
+        time_data = self.loaded_fm_data.get("time")
+        physics_data = self.loaded_fm_data.get("physics")
         mdu_time = IgnoreUnknownKeyWordClass(Time, **time_data)
         mdu_physics = IgnoreUnknownKeyWordClass(Physics, **physics_data)
 
@@ -226,7 +232,7 @@ class MDUParser:
             "temperature": False if mdu_physics.temperature == 0 else True,
             "salinity": mdu_physics.salinity,
         }
-        return data, mdu_info
+        return mdu_info
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
