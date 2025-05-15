@@ -4,11 +4,16 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.core.dflowfm.ext.models import (
+    Boundary,
+    ExtModel,
+    Lateral,
+    Meteo,
+    SourceSink,
+)
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
-from hydrolib.core.dflowfm.ext.models import Meteo, SourceSink, Lateral, Boundary
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
@@ -272,7 +277,6 @@ class TestExternalFocingConverter:
 
         converter.save()
         converter._ext_model.save.assert_called_once()
-
 
     def test_read_old_file(
         self,

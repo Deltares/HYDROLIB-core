@@ -18,7 +18,6 @@ from hydrolib.core.dflowfm.inifield.models import (
     InitialField,
     ParameterField,
 )
-
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import ConverterFactory
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -316,7 +315,12 @@ class ExternalForcingConverter:
         if len(self.structure_model.structure) > 0:
             self._save_structure_model(backup, recursive)
 
-        num_quantities_ext = len(self.ext_model.meteo) + len(self.ext_model.sourcesink) + len(self.ext_model.boundary) + len(self.ext_model.lateral)
+        num_quantities_ext = (
+            len(self.ext_model.meteo)
+            + len(self.ext_model.sourcesink)
+            + len(self.ext_model.boundary)
+            + len(self.ext_model.lateral)
+        )
         if num_quantities_ext:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
