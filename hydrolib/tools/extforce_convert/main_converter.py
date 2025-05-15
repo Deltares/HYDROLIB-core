@@ -1,10 +1,8 @@
 import os
-import warnings
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 
-from pydantic.v1.error_wrappers import ValidationError
 from tqdm import tqdm
 
 from hydrolib.core.basemodel import PathOrStr
