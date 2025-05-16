@@ -18,9 +18,8 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic.v1 import Extra, Field, root_validator
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import ModelField
+from pydantic import ConfigDict, Field, field_validator, model_validator
+from pydantic.fields import FieldInfo
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import (
@@ -118,9 +117,7 @@ class INIBasedModel(BaseModel, ABC):
         r"([\d.]+)([dD])([+-]?\d{1,3})"
     )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
-    class Config:
-        extra = Extra.ignore
-        arbitrary_types_allowed = False
+    model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=False)
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
@@ -180,7 +177,7 @@ class INIBasedModel(BaseModel, ABC):
             str: the delimiter string to be used for serializing the given field.
         """
         delimiter = None
-        if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
+        if (field := cls.model_fields.get(field_key)) and isinstance(field, FieldInfo):
             delimiter = field.field_info.extra.get("delimiter")
         if not delimiter:
             delimiter = cls.get_list_delimiter()
@@ -201,13 +198,11 @@ class INIBasedModel(BaseModel, ABC):
                 Indicates that only known types are allowed.
         """
 
-        class Config:
-            extra = Extra.allow
-            arbitrary_types_allowed = False
+        model_config = ConfigDict(extra="allow", arbitrary_types_allowed=False)
 
     comments: Optional[Comments] = Comments()
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _validate_unknown_keywords(cls, values):
         """
         Validates fields and raises errors for unknown keywords.
@@ -232,7 +227,7 @@ class INIBasedModel(BaseModel, ABC):
             )
         return values
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields.
 
@@ -258,7 +253,7 @@ class INIBasedModel(BaseModel, ABC):
 
         return values
 
-    @validator("comments", always=True, allow_reuse=True)
+    @field_validator("comments")
     def comments_matches_has_comments(cls, v):
         """
         Validates the presence of comments if supported by the model.
@@ -274,7 +269,7 @@ class INIBasedModel(BaseModel, ABC):
             v = None
         return v
 
-    @validator("*", pre=True, allow_reuse=True)
+    @field_validator("*", mode="before")
     def replace_fortran_scientific_notation_for_floats(cls, value, field):
         """
         Converts FORTRAN-style scientific notation to standard notation for float fields.
@@ -660,7 +655,7 @@ class DataBlockINIBasedModel(INIBasedModel):
 
         return value
 
-    @validator("datablock")
+    @field_validator("datablock")
     def _validate_no_nans_are_present(cls, datablock: Datablock) -> Datablock:
         """Validate that the datablock does not have any NaN values.
 
