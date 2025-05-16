@@ -6,7 +6,7 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ValidationInfo, field_validator
 from pydantic.fields import FieldInfo
 
 from hydrolib.core.dflowfm.common.models import LocationType
@@ -27,9 +27,9 @@ def get_split_string_on_delimiter_validator(*field_name: str):
         the validator which splits strings on the provided delimiter.
     """
 
-    def split(cls, v: Any, field: FieldInfo):
+    def split(cls, v: Any, field: ValidationInfo):
         if isinstance(v, str):
-            v = v.split(cls.get_list_field_delimiter(field.name))
+            v = v.split(cls.get_list_field_delimiter(field.field_name))
             v = [item.strip() for item in v if item != ""]
         return v
 
@@ -270,7 +270,7 @@ def validate_conditionally(
 
 
 def validate_datetime_string(
-    field_value: Optional[str], field: FieldInfo
+    field_value: Optional[str], field: ValidationInfo
 ) -> Optional[str]:
     """Validate that a field value matches the YYYYmmddHHMMSS datetime format.
 
@@ -294,7 +294,7 @@ def validate_datetime_string(
             _ = datetime.strptime(field_value, r"%Y%m%d%H%M%S")
         except ValueError:
             raise ValueError(
-                f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS'."
+                f"Invalid datetime string for {field.field_name}: '{field_value}', expecting 'YYYYmmddHHMMSS'."
             )
 
     return field_value  # this is the value written to the class field
@@ -661,7 +661,10 @@ class UnknownKeywordErrorManager:
             )
 
     def _get_all_unknown_keywords(
-        self, data: Dict[str, Any], fields: Dict[str, FieldInfo], excluded_fields: Set
+        self,
+        data: Dict[str, Any],
+        fields: Dict[str, FieldInfo],
+        excluded_fields: Set,
     ) -> List[str]:
         """
         Get all unknown keywords in the data.
@@ -699,8 +702,8 @@ class UnknownKeywordErrorManager:
             False otherwise
         """
         exists = any(
-            keyword == model_field.name or keyword == model_field.alias
-            for model_field in fields.values()
+            keyword == model_name or keyword == model_field.alias
+            for model_name, model_field in fields.items()
         )
         # the field is not in the known fields, check if it should be excluded
         unknown = not exists and keyword not in excluded_fields
