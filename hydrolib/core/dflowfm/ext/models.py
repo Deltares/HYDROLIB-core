@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Set, Union
 
-from pydantic.v1 import Field, root_validator, validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
@@ -67,7 +67,7 @@ class Boundary(INIBasedModel):
             isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
         )
 
-    @root_validator
+    @model_validator(mode="after")
     @classmethod
     def check_nodeid_or_locationfile_present(cls, values: Dict):
         """
@@ -153,7 +153,7 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
         """Validates that the correct location specification is given."""
         return validate_location_specification(
@@ -163,7 +163,7 @@ class Lateral(INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
 
-    @validator("locationtype")
+    @field_validator("locationtype")
     @classmethod
     def validate_location_type(cls, v: str) -> str:
         """
@@ -230,13 +230,7 @@ class SourceSink(INIBasedModel):
         ]
         return set(unknown_keywords)
 
-    class Config:
-        """
-        Config class to tell Pydantic to accept fields not explicitly declared in the model.
-        """
-
-        # Allow dynamic fields
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -247,7 +241,7 @@ class SourceSink(INIBasedModel):
             ):
                 setattr(self, key, value)
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def validate_location_specification(cls, values):
         """
         Ensures that either `locationfile` or a valid set of coordinates is provided.
