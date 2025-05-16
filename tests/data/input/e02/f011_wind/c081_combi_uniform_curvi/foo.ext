@@ -1,0 +1,12 @@
+# written by HYDROLIB-core 0.7.0
+
+[General]
+fileVersion = 2.01
+fileType    = extForce
+
+[Meteo]
+quantity            = windx          # Name of the quantity. See UM Section C.5.3
+forcingFile         = windxdir.amu   # Name of file containing the forcing for this meteo quantity.
+forcingFileType     = meteoGridCurvi # Type of forcingFile.
+operand             = O              # How this data is combined with previous data for the same quantity (if any).
+

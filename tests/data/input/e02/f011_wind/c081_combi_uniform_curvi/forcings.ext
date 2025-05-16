@@ -1,0 +1,80 @@
+# written by HYDROLIB-core 0.8.0
+
+[General]
+fileVersion = 2.01
+fileType    = extForce
+
+[Meteo]
+quantity            = windx           # Name of the quantity. See UM Section C.5.3
+forcingFile         = windxdir.amu    # Name of file containing the forcing for this meteo quantity.
+forcingFileType     = meteoGridCurvi  # Type of forcingFile.
+interpolationMethod = linearSpaceTime # Type of (spatial) interpolation.
+operand             = O               # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = windy           # Name of the quantity. See UM Section C.5.3
+forcingFile         = windydir.amv    # Name of file containing the forcing for this meteo quantity.
+forcingFileType     = meteoGridCurvi  # Type of forcingFile.
+interpolationMethod = linearSpaceTime # Type of (spatial) interpolation.
+operand             = O               # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = atmosphericpressure # Name of the quantity. See UM Section C.5.3
+forcingFile         = pressure.amp        # Name of file containing the forcing for this meteo quantity.
+forcingFileType     = meteoGridCurvi      # Type of forcingFile.
+interpolationMethod = linearSpaceTime     # Type of (spatial) interpolation.
+operand             = O                   # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = windx           # Name of the quantity. See UM Section C.5.3
+forcingFile         = windxdir.wnd    # Name of file containing the forcing for this meteo quantity.
+forcingFileType     = uniform         # Type of forcingFile.
+interpolationMethod = linearSpaceTime # Type of (spatial) interpolation.
+operand             = +               # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = windy           # Name of the quantity. See UM Section C.5.3
+forcingFile         = windydir.wnd    # Name of file containing the forcing for this meteo quantity.
+forcingFileType     = uniform         # Type of forcingFile.
+interpolationMethod = linearSpaceTime # Type of (spatial) interpolation.
+operand             = +               # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity             = windx           # Name of the quantity. See UM Section C.5.3
+forcingFile          = windxdir.amu    # Name of file containing the forcing for this meteo quantity.
+forcingFileType      = meteoGridCurvi  # Type of forcingFile.
+interpolationMethod  = linearSpaceTime # Type of (spatial) interpolation.
+operand              = O               # How this data is combined with previous data for the same quantity (if any).
+extrapolationAllowed = 0               # Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.
+
+[Meteo]
+quantity             = windy           # Name of the quantity. See UM Section C.5.3
+forcingFile          = windydir.amv    # Name of file containing the forcing for this meteo quantity.
+forcingFileType      = meteoGridCurvi  # Type of forcingFile.
+interpolationMethod  = linearSpaceTime # Type of (spatial) interpolation.
+operand              = O               # How this data is combined with previous data for the same quantity (if any).
+extrapolationAllowed = 0               # Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.
+
+[Meteo]
+quantity             = atmosphericpressure # Name of the quantity. See UM Section C.5.3
+forcingFile          = pressure.amp        # Name of file containing the forcing for this meteo quantity.
+forcingFileType      = meteoGridCurvi      # Type of forcingFile.
+interpolationMethod  = linearSpaceTime     # Type of (spatial) interpolation.
+operand              = O                   # How this data is combined with previous data for the same quantity (if any).
+extrapolationAllowed = 0                   # Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.
+
+[Meteo]
+quantity             = windx           # Name of the quantity. See UM Section C.5.3
+forcingFile          = windxdir.wnd    # Name of file containing the forcing for this meteo quantity.
+forcingFileType      = uniform         # Type of forcingFile.
+interpolationMethod  = linearSpaceTime # Type of (spatial) interpolation.
+operand              = +               # How this data is combined with previous data for the same quantity (if any).
+extrapolationAllowed = 0               # Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.
+
+[Meteo]
+quantity             = windy           # Name of the quantity. See UM Section C.5.3
+forcingFile          = windydir.wnd    # Name of file containing the forcing for this meteo quantity.
+forcingFileType      = uniform         # Type of forcingFile.
+interpolationMethod  = linearSpaceTime # Type of (spatial) interpolation.
+operand              = +               # How this data is combined with previous data for the same quantity (if any).
+extrapolationAllowed = 0               # Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.

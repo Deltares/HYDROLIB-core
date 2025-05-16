@@ -1,10 +1,15 @@
+import difflib
 import filecmp
+import os
+import sys
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Generic, List, Optional, TypeVar
 
 from pydantic.v1.generics import GenericModel
+
+from hydrolib.core.basemodel import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
 
@@ -209,3 +214,49 @@ def get_temp_file(filename: str) -> Generator[Path, None, None]:
     """
     with TemporaryDirectory() as temp_dir:
         yield Path(temp_dir, filename)
+
+
+def compare_two_files(path1: PathOrStr, path2: PathOrStr) -> List[str]:
+    """Compare two files and return the differences.
+
+    Args:
+        path1 (PathOrStr): The path to the first file.
+        path2 (PathOrStr): The path to the second file.
+
+    Returns:
+        List[str]: The differences between the two files.
+
+    Examples:
+        ```python
+        >>> compare_two_files("file1.txt", "file2.txt") # doctest +SKIP
+        ```
+    Notes:
+        - The function ignores the trailing blank lines.
+    """
+    if isinstance(path1, str):
+        path1 = Path(path1)
+    if isinstance(path2, str):
+        path2 = Path(path2)
+
+    if not path1.exists():
+        raise FileNotFoundError(f"File {path1} does not exist.")
+    if not path2.exists():
+        raise FileNotFoundError(f"File {path2} does not exist.")
+
+    file1_lines = path1.read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
+    file2_lines = path2.read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
+
+    # Remove trailing blank lines (if any)
+    while file1_lines and not file1_lines[-1].strip():
+        file1_lines.pop()
+    while file2_lines and not file2_lines[-1].strip():
+        file2_lines.pop()
+
+    diff = difflib.unified_diff(
+        file1_lines, file2_lines, lineterm="", fromfile=str(path1), tofile=str(path2)
+    )
+    return list(diff)
+
+
+def is_macos():
+    return os.name == "posix" and sys.platform == "darwin"

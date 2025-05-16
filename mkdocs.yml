@@ -43,7 +43,11 @@ plugins:
 
 markdown_extensions:
   - pymdownx.highlight
-  - pymdownx.superfences
+  - pymdownx.superfences:
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
   - admonition
   - toc:
       permalink: true
@@ -86,6 +90,8 @@ nav:
       - tutorials/loading_and_saving_a_model.md
       - tutorials/dataframe_handling.md
       - tutorials/plotting_a_network.md
+      - External Forcing Conversion:
+          - tutorials/extforce-convert/external_forcing_conversion.md
   - Topics:
       - topics/dhydro_support.md
       - topics/principles.md

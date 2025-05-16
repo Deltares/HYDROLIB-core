@@ -513,17 +513,22 @@ class ModelSaveSettings:
 
     _os_path_style = get_path_style_for_current_operating_system()
 
-    def __init__(self, path_style: Optional[PathStyle] = None) -> None:
+    def __init__(
+        self, path_style: Optional[PathStyle] = None, exclude_unset: bool = False
+    ) -> None:
         """Initializes a new instance of the ModelSaveSettings class.
 
         Args:
             path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.
+            exclude_unset (bool, optional): Whether or not to exclude unset values when saving the model. Defaults to False.
         """
 
         if path_style is None:
             path_style = self._os_path_style
 
         self._path_style = path_style
+
+        self._exclude_unset = exclude_unset
 
     @property
     def path_style(self) -> PathStyle:
@@ -983,7 +988,7 @@ class FileModel(BaseModel, ABC):
             Path: The updated file path.
         """
 
-        updated_file_parts = loading_path.parts[-len(file_path.parts) :]
+        updated_file_parts = loading_path.parts[-len(file_path.parts) :]  # noqa: E203
         updated_file_path = Path(*updated_file_parts)
 
         if str(updated_file_path) != str(file_path):
@@ -1006,6 +1011,7 @@ class FileModel(BaseModel, ABC):
         filepath: Optional[Path] = None,
         recurse: bool = False,
         path_style: Optional[str] = None,
+        exclude_unset: bool = False,
     ) -> None:
         """Save the model to disk.
 
@@ -1039,6 +1045,9 @@ class FileModel(BaseModel, ABC):
                 With which file path style to save the model. File references will
                 be written with the specified path style. Defaults to the path style
                 used by the current operating system. Options: 'unix', 'windows'.
+            exclude_unset (bool, optional):
+                Whether or not to exclude unset values when saving the model.
+                Defaults to False.
 
         Raises:
             ValueError: When an unsupported path style is passed.
@@ -1047,7 +1056,9 @@ class FileModel(BaseModel, ABC):
             self.filepath = filepath
 
         path_style = path_style_validator.validate(path_style)
-        save_settings = ModelSaveSettings(path_style=path_style)
+        save_settings = ModelSaveSettings(
+            path_style=path_style, exclude_unset=exclude_unset
+        )
 
         # Handle save
         with file_load_context() as context:
@@ -1222,7 +1233,7 @@ class SerializerConfig(BaseModel, ABC):
 
     float_format: str = ""
     """str: The string format that will be used for float serialization. If empty, the original number will be serialized. Defaults to an empty string.
-        
+
         Examples:
             Input value = 123.456
 
@@ -1239,7 +1250,7 @@ class SerializerConfig(BaseModel, ABC):
             "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
             ">15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
             "*>15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
-            "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.     
+            "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.
             ".3%"     | 12345.600%      | Format percentage with 3 decimal places.
 
             More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
@@ -1339,6 +1350,46 @@ class ParsableFileModel(FileModel):
         if filepath:
             return filepath.name
         return None
+
+    @staticmethod
+    def _get_quantity_unit(quantities_names: List[str]) -> List[str]:
+        """
+        Maps each quantity in the input list to a specific unit based on its content.
+
+        Args:
+            quantities_names (list of str): A list of strings to be checked for specific keywords.
+
+        Returns:
+            list of str: A list of corresponding units for each input string.
+
+        Examples:
+            ```python
+            >>> quantities_names = ["discharge", "waterlevel", "salinity", "temperature"]
+            >>> ParsableFileModel._get_quantity_unit(quantities_names)
+            ['m3/s', 'm', '1e-3', 'degC']
+
+            ```
+        """
+        # Define the mapping of keywords to units
+        unit_mapping = {
+            "discharge": "m3/s",
+            "waterlevel": "m",
+            "salinity": "1e-3",
+            "temperature": "degC",
+        }
+
+        # Generate the list of units based on the mapping
+        units = []
+        for string in quantities_names:
+            for keyword, unit in unit_mapping.items():
+                if keyword in string.lower():
+                    units.append(unit)
+                    break
+            else:
+                # Append "-" if no keywords match
+                units.append("-")
+
+        return units
 
 
 class DiskOnlyFileModel(FileModel):

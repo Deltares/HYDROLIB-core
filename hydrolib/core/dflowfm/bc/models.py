@@ -1,18 +1,18 @@
 """Representation of a .bc file in various classes.
 
-    Most relevant classes are:
+Most relevant classes are:
 
-    *   ForcingModel: toplevel class containing the whole .bc file contents.
-    *   ForcingBase subclasses: containing the actual data columns, for example:
-        TimeSeries, HarmonicComponent, AstronomicComponent, HarmonicCorrection,
-        AstronomicCorrection, Constant, T3D.
+*   ForcingModel: toplevel class containing the whole .bc file contents.
+*   ForcingBase subclasses: containing the actual data columns, for example:
+    TimeSeries, HarmonicComponent, AstronomicComponent, HarmonicCorrection,
+    AstronomicCorrection, Constant, T3D.
 
 """
 
 import logging
 import re
 from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Literal, Optional, Set, Union
+from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, Set, Union
 
 from pydantic.v1 import Extra
 from pydantic.v1.class_validators import root_validator, validator
@@ -162,9 +162,87 @@ class ForcingBase(DataBlockINIBasedModel):
     """
     The base class of a single [Forcing] block in a .bc forcings file.
 
-    Typically subclassed, for the specific types of forcing data, e.g, Harmonic.
-    This model is for example referenced under a
-    [ForcingModel][hydrolib.core.dflowfm.bc.models.ForcingModel]`.forcing[..]`.
+    The `ForcingBase` class is used as the foundational model for various types
+    of forcing data blocks, such as TimeSeries, Harmonic, Astronomic, and others.
+    It includes functionality for handling structured data, validating input,
+    and serializing the forcing data.
+
+    This model is referenced under a [ForcingModel][hydrolib.core.dflowfm.bc.models.ForcingModel]`.forcing[..]`.
+
+    Attributes:
+        name (str):
+            Unique identifier that specifies the location for this forcing data.
+        function (str):
+            Specifies the function type of the data in the associated data block.
+        quantityunitpair (List[ScalarOrVectorQUP]):
+            List of header lines for one or more quantities and their units.
+            These describe the columns in the associated data block.
+
+    Args:
+        name (str):
+            The unique name identifying this forcing block.
+        function (str):
+            The function type specifying the behavior of the forcing block.
+            Possible values are timeseries, harmonic, astronomic, harmonic-correction, astronomic-correction, t3d,
+            constant, qhtable.
+        quantityunitpair (List[ScalarOrVectorQUP]):
+            The quantities and units associated with the data block.
+
+    Returns:
+        None
+
+    Raises:
+        ValueError: If `quantity` or `unit` fields are missing or mismatched.
+        ValueError: If the `function` field contains an unrecognized type.
+
+    See Also:
+        DataBlockINIBasedModel: Parent class for handling data blocks in INI files.
+        QuantityUnitPair: Represents a single quantity and its unit.
+        VectorQuantityUnitPairs: Handles vector quantities in the data block.
+
+    Examples:
+        Create a simple forcing block:
+
+            ```python
+            >>> from hydrolib.core.dflowfm.bc.models import ForcingBase, QuantityUnitPair
+            >>> forcing = ForcingBase(
+            ...     name="Location1",
+            ...     function="timeseries",
+            ...     quantityunitpair=[QuantityUnitPair(quantity="waterlevel", unit="m")]
+            ... )
+            >>> print(forcing.name)
+            Location1
+            >>> print(forcing.function)
+            timeseries
+
+            ```
+
+        Handle vector quantities:
+
+            ```python
+            >>> from hydrolib.core.dflowfm.bc.models import VectorQuantityUnitPairs
+            >>> forcing = ForcingBase(
+            ...     name="Location2",
+            ...     function="vector",
+            ...     quantityunitpair=[
+            ...         VectorQuantityUnitPairs(
+            ...             vectorname="velocity",
+            ...             elementname=["u", "v"],
+            ...             quantityunitpair=[
+            ...                 QuantityUnitPair(quantity="u", unit="m/s"),
+            ...                 QuantityUnitPair(quantity="v", unit="m/s")
+            ...             ]
+            ...         )
+            ...     ]
+            ... )
+            >>> print(forcing.quantityunitpair[0].vectorname)
+            velocity
+
+            ```
+
+    Notes:
+        - The `ForcingBase` class is typically subclassed to provide specific behavior for different forcing types.
+        - It includes robust validation mechanisms to ensure consistency between quantities and units.
     """
 
     _header: Literal["Forcing"] = "Forcing"
@@ -491,7 +569,92 @@ class VectorForcingBase(ForcingBase):
 
 
 class TimeSeries(VectorForcingBase):
-    """Subclass for a .bc file [Forcing] block with timeseries data."""
+    """Subclass for a .bc file [Forcing] block with timeseries data.
+
+    Attributes:
+        function (Literal["timeseries"]):
+            Specifies that this is a timeseries forcing block. Defaults to "timeseries".
+        timeinterpolation (TimeInterpolation):
+            The type of time interpolation, such as "linear", "block-From", or "block-To".
+        offset (float):
+            All values in the table are increased by the offset (after multiplication by factor).
+            Defaults to 0.0.
+        factor (float):
+            All values in the table are multiplied by the factor. Defaults to 1.0.
+
+     Methods:
+        rename_keys(cls, values: Dict) -> Dict:
+            Renames old keywords to currently supported keywords for backward compatibility.
+
+    Examples:
+        One quantity:
+        ```python
+        >>> from hydrolib.core.dflowfm.bc.models import TimeSeries
+        >>> timeseries = TimeSeries(
+        ...     name="Boundary1",
+        ...     function="timeseries",
+        ...     timeinterpolation="block-From",
+        ...     offset=1.23,
+        ...     factor=2.34,
+        ...     quantityunitpair=[
+        ...         QuantityUnitPair(quantity="time", unit="minutes since 2015-01-01 00:00:00"),
+        ...         QuantityUnitPair(quantity="waterlevel", unit="m")
+        ...    ],
+        ...     datablock=[["0", "10"], ["1.0", "20"], ["2.0", "30"]]
+        ... )
+
+        ```
+        the forcing will look as follows:
+        ```
+        [Forcing]
+            name              = Boundary1
+            timeinterpolation = block-From
+            function          = timeseries
+            quantity          = time
+            unit              = minutes since 2001-01-01
+            quantity          = waterlevel
+            unit              = m
+            offset            = 1.23
+            factor            = 2.34
+            0 10
+            1 20
+            2 30
+        ```
+        Two quantities:
+        >>> timeseries = TimeSeries(
+        ...     name="Boundary1",
+        ...     function="timeseries",
+        ...     timeinterpolation="block-From",
+        ...     offset=1.23,
+        ...     factor=2.34,
+        ...     quantityunitpair=[
+        ...         QuantityUnitPair(quantity="time", unit="minutes since 2015-01-01 00:00:00"),
+        ...         QuantityUnitPair(quantity="dischargebnd", unit="m³/s"),
+        ...         QuantityUnitPair(quantity="waterlevelbnd", unit="m")
+        ...     ],
+        ...    datablock=[["0", "50", "4.0"], ["1", "60", "5.0"], ["2", "70", "6.0"]]
+        ... )
+
+        ```
+        the forcing will look as follows:
+        ```
+        [Forcing]
+            name              = Boundary1
+            timeinterpolation = block-From
+            function          = timeseries
+            quantity          = time
+            unit              = minutes since 2015-01-01 00:00:00
+            quantity          = dischargebnd
+            unit              = m³/s
+            quantity          = waterlevelbnd
+            unit              = m
+            offset            = 1.23
+            factor            = 2.34
+            0 50 4.0
+            1 60 5.0
+            2 70 6.0
+        ```
+    """
 
     function: Literal["timeseries"] = "timeseries"
 
@@ -550,31 +713,37 @@ class AstronomicCorrection(ForcingBase):
 
 
 class T3D(VectorForcingBase):
-    """Subclass for a .bc file [Forcing] block with 3D timeseries data."""
+    """Subclass for a .bc file [Forcing] block with 3D timeseries data.
+
+    Args:
+        offset (float): default is 0.0
+            All values in the table are increased by the offset (after multiplication by factor).
+        factor (float): default is 1.0
+            all values in the table are multiplied with the factor.
+        vertpositions (List[float]):
+            The specification of the vertical positions.
+        vertinterpolation (VerticalInterpolation): default is linear
+            The type of vertical interpolation.
+        vertpositiontype (VerticalPositionType):
+            The vertical position type of the verticalpositions values.
+        timeinterpolation (TimeInterpolation): default is linear
+            The type of time interpolation.
+
+    Examples:
+
+    """
 
     function: Literal["t3d"] = "t3d"
-
     offset: float = Field(0.0, alias="offset")
-    """float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0."""
-
     factor: float = Field(1.0, alias="factor")
-    """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
-
     vertpositions: List[float] = Field(alias="vertPositions")
-    """List[float]: The specification of the vertical positions."""
-
     vertinterpolation: VerticalInterpolation = Field(
         VerticalInterpolation.linear, alias="vertInterpolation"
     )
-    """VerticalInterpolation: The type of vertical interpolation. Defaults to linear."""
-
     vertpositiontype: VerticalPositionType = Field(alias="vertPositionType")
-    """VerticalPositionType: The vertical position type of the verticalpositions values."""
-
     timeinterpolation: TimeInterpolation = Field(
         TimeInterpolation.linear, alias="timeInterpolation"
     )
-    """TimeInterpolation: The type of time interpolation. Defaults to linear."""
 
     _keys_to_rename = {
         "timeinterpolation": ["time_interpolation"],
@@ -785,14 +954,144 @@ class ForcingModel(INIModel):
     """
     The overall model that contains the contents of one .bc forcings file.
 
-    This model is for example referenced under a
-    [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel]`.boundary[..].forcingfile[..]`.
+    The `ForcingModel` class is the top-level model that aggregates metadata
+    and multiple `[Forcing]` blocks. It provides functionality for parsing,
+    serializing, and managing data within a .bc file.
+
+    Attributes:
+        general (ForcingGeneral):
+            The `[General]` block containing metadata such as file version and type.
+        forcing (List[ForcingBase]):
+            A list of `[Forcing]` blocks representing the different forcings defined
+            in the file.
+        serializer_config (DataBlockINIBasedSerializerConfig):
+            Configuration for serialization of the .bc file.
+
+    Args:
+        general (ForcingGeneral, optional):
+            Metadata for the file. Defaults to an instance of `ForcingGeneral`.
+        forcing (List[ForcingBase], optional, Defaults is []):
+            A list of forcing definitions.
+        serializer_config (DataBlockINIBasedSerializerConfig, optional):
+            Serialization settings. Default to a predefined configuration.
+
+    See Also:
+        ForcingBase: Represents individual forcing blocks within the file.
+        ForcingGeneral: Metadata model for the `[General]` section.
+
+    Examples:
+        Create a simple ForcingModel:
+            ```python
+            >>> from hydrolib.core.dflowfm.bc.models import ForcingModel, ForcingBase, ForcingGeneral, QuantityUnitPair
+            >>> forcing_block = ForcingBase(
+            ...     name="Location1",
+            ...     function="timeseries",
+            ...     quantityunitpair=[
+            ...         QuantityUnitPair(quantity="waterlevel", unit="m")
+            ...     ]
+            ... )
+            >>> model = ForcingModel(
+            ...     general=ForcingGeneral(fileversion="1.01", filetype="boundConds"),
+            ...     forcing=[forcing_block]
+            ... )
+            >>> print(model.general.fileversion)
+            1.01
+            >>> model.save(filepath="tests/data/output.bc") # doctest: +SKIP
+            ```
+
+        Parse a .bc file:
+            ```python
+            >>> from pathlib import Path
+            >>> filepath = Path("tests/data/reference/bc/test.bc")
+            >>> parsed_model = ForcingModel.parse(filepath)
+            >>> print(parsed_model.keys())
+            dict_keys(['general', 'forcing'])
+            >>> print(len(parsed_model["forcing"]))
+            6
+            >>> print(parsed_model["forcing"][0]) # doctest: +SKIP
+            {'_header': 'Forcing',
+             'datablock': [['0.0000', '1.2300'],
+              ['60.0000', '2.3400'],
+              ['120.0000', '3.4500']],
+             'name': 'boundary_timeseries',
+             'function': 'timeseries',
+             'timeinterpolation': 'block-To',
+             'offset': '1.230',
+             'factor': '2.340',
+             'quantity': ['time', 'dischargebnd'],
+             'unit': ['minutes since 2015-01-01 00:00:00', 'm³/s']}
+            ```
+
+        Serialize a ForcingModel:
+            ```python
+            >>> save_path = Path("output.bc")
+            >>> model.save(filepath=save_path) # doctest: +SKIP
+            >>> print(save_path.exists()) # doctest: +SKIP
+            True
+            ```
+
+        Create a ForcingModel from a dictionary:
+            ```python
+            >>> from hydrolib.core.dflowfm.bc.models import ForcingModel
+            >>> forcing_blocks_list = [
+            ...     {
+            ...         '_header': 'Forcing',
+            ...         'datablock': [
+            ...             ['0.0000', '1.2300'],
+            ...             ['60.0000', '2.3400'],
+            ...             ['120.0000', '3.4500']
+            ...         ],
+            ...         'name': 'boundary_timeseries',
+            ...         'function': 'timeseries',
+            ...         'timeinterpolation': 'block-To',
+            ...         'offset': '1.230',
+            ...         'factor': '2.340',
+            ...         'quantity': ['time', 'dischargebnd'],
+            ...         'unit': ['minutes since 2015-01-01 00:00:00', 'm³/s']
+            ...     }
+            ... ]
+            >>> model_dict = {
+            ...     "forcing": forcing_blocks_list,
+            ...     "general": {"fileVersion": "1.01", "fileType": "boundConds"}
+            ... }
+            >>> model = ForcingModel(**model_dict)
+            >>> print(len(model.forcing))
+            1
+            >>> type(model.forcing[0])
+            <class 'hydrolib.core.dflowfm.bc.models.TimeSeries'>
+            >>> print(model.general.fileversion)
+            1.01
+
+            ```
+
+    Example .bc file content:
+        ```.bc
+        # written by HYDROLIB-core 0.3.0
+
+        [General]
+        fileVersion = 1.01
+        fileType    = boundConds
+
+        [Forcing]
+        name               = boundary_timeseries
+        function           = timeseries
+        Time Interpolation = block-To
+        offset             = 1.23
+        factor             = 2.34
+        quantity           = time
+        unit               = minutes since 2015-01-01 00:00:00
+        quantity           = dischargebnd
+        unit               = m³/s
+        0.0      1.23
+        60.0     2.34
+        120.0    3.45
+        ```
     """
 
     general: ForcingGeneral = ForcingGeneral()
     """ForcingGeneral: `[General]` block with file metadata."""
 
-    forcing: List[ForcingBase] = []
+    forcing: List[ForcingBase] = Field(default_factory=list)
     """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
     definitions in a single .bc file. Actual data is stored in
     forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel.datablock]."""
@@ -807,18 +1106,45 @@ class ForcingModel(INIModel):
 
     @classmethod
     def _ext(cls) -> str:
+        """
+        Get the file extension for .bc files.
+
+        Returns:
+            str: The file extension, ".bc".
+        """
         return ".bc"
 
     @classmethod
     def _filename(cls) -> str:
+        """
+        Get the default filename for .bc files.
+
+        Returns:
+            str: The default filename, "boundaryconditions".
+        """
         return "boundaryconditions"
 
     @classmethod
     def _get_parser(cls) -> Callable:
+        """
+        Retrieve the parser for .bc files.
+
+        Returns:
+            Callable: The parser function.
+        """
         return cls.parse
 
     @classmethod
-    def parse(cls, filepath: Path):
+    def parse(cls, filepath: Path) -> Dict[str, Any]:
+        """
+        Parse a .bc file and create an instance of `ForcingModel`.
+
+        Args:
+            filepath (Path): The path to the .bc file.
+
+        Returns:
+            ForcingModel: The parsed model instance.
+        """
         # It's odd to have to disable parsing something as comments
         # but also need to pass it to the *flattener*.
         # This method now only supports per model settings, not per section.

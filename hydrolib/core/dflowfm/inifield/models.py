@@ -31,6 +31,8 @@ class DataFileType(StrEnum):
     sample = "sample"
     onedfield = "1dField"
     polygon = "polygon"
+    uniform = "uniform"
+    netcdf = "netcdf"
 
     allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
 
@@ -44,6 +46,7 @@ class InterpolationMethod(StrEnum):
     constant = "constant"  # only with dataFileType=polygon .
     triangulation = "triangulation"  # Delaunay triangulation+linear interpolation.
     averaging = "averaging"  # grid cell averaging.
+    linear_space_time = "linearSpaceTime"  # linear interpolation in space and time.
 
     allowedvaluestext = "Possible values: constant, triangulation, averaging."
 
@@ -188,6 +191,9 @@ class InitialField(AbstractSpatialField):
     Initial condition field definition, represents an `[Initial]` block in
     an inifield file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.initial[..]`
+
+    All lowercased attributes match with the initial field input as described in
+    [UM Sec.D.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.2).
     """
 
     _header: Literal["Initial"] = "Initial"
@@ -216,8 +222,8 @@ class IniFieldModel(INIModel):
     """
 
     general: IniFieldGeneral = IniFieldGeneral()
-    initial: List[InitialField] = []
-    parameter: List[ParameterField] = []
+    initial: List[InitialField] = Field(default_factory=list)
+    parameter: List[ParameterField] = Field(default_factory=list)
 
     _split_to_list = make_list_validator("initial", "parameter")
 
