@@ -51,22 +51,6 @@ repos:
         additional_dependencies: [Flake8-pyproject, flake8-bugbear, flake8-docstrings, flake8-black]
         name: "[py   - check] flake8"
         exclude: ^(examples/|tests/)
-#   - repo: https://github.com/pycqa/docformatter
-#     rev: v1.4
-#     hooks:
-#      - id: docformatter
-#        name: "[py   - format] docformatter"
-#        description: 'Formats docstrings to follow PEP 257.'
-#        entry: docformatter
-#        args: [-i]
-#        language: python
-#        types: [python]
-#   - repo: https://github.com/pycqa/pydocstyle
-#     rev: 6.3.0
-#     hooks:
-#       - id: pydocstyle
-#         name: "[py   - check] pydocstyle"
-#         files: ^hydrolib/.*\.py$
   - repo: https://github.com/pycqa/isort
     rev: 6.0.1
     hooks:
