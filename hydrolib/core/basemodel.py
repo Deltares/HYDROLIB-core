@@ -28,8 +28,8 @@ from typing import (
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import ConfigDict, ValidationError, field_validator
-from pydantic.fields import FieldInfo, PrivateAttr
+from pydantic import ConfigDict, ValidationError, ValidationInfo, field_validator
+from pydantic.fields import PrivateAttr
 
 from hydrolib.core.base import DummmyParser, DummySerializer
 from hydrolib.core.utils import (
@@ -86,16 +86,18 @@ class BaseModel(PydanticBaseModel):
                 raise e
             else:
                 # If there is an identifier, include this in the ValidationError messages.
-                raise ValidationError(
-                    [
-                        {
-                            "loc": (identifier),
-                            "msg": str(e),
-                            "type": "value_error",  # You can customize the error type if needed
-                        }
-                    ],
-                    model=self.__class__,
-                ) from e
+                # raise ValidationError(
+                #     [
+                #         {
+                #             "loc": (identifier,),
+                #             "msg": str(e),
+                #             "type": "value_error",  # You can customize the error type if needed
+                #         }
+                #     ],
+                #     self.__class__,
+                # ) from e
+                # TODO: needs to be fixed
+                raise e
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
@@ -1458,7 +1460,7 @@ class DiskOnlyFileModel(FileModel):
         return self.filepath is not None
 
 
-def validator_set_default_disk_only_file_model_when_none() -> classmethod:
+def validator_set_default_disk_only_file_model_when_none(*field_names) -> classmethod:
     """Validator to ensure a default empty DiskOnlyFileModel is created
     when the corresponding field is initialized with None.
 
@@ -1466,8 +1468,8 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
         classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
     """
 
-    def adjust_none(v: Any, field: FieldInfo) -> Any:
-        if field.type_ is DiskOnlyFileModel and v is None:
+    def adjust_none(v: Any, field: ValidationInfo) -> Any:
+        if field.field_name in field_names and v is None:
             return {"filepath": None}
         return v
 
