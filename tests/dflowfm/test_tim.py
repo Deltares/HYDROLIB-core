@@ -233,7 +233,7 @@ class TestTimModel:
                         {"time": 30, "data": [1.5, 2.6, 3.7]},
                     ],
                 },
-                "value is not a valid float",
+                "Input should be a valid number",
                 id="value is not a valid float",
             ),
             pytest.param(

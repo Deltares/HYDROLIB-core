@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import Field, field_validator
+from pydantic import Field, ValidationInfo, field_validator
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
@@ -244,14 +244,14 @@ class TimModel(ParsableFileModel):
             seen_times.add(timrecord.time)
 
     @field_validator("quantities_names")
-    def _validate_quantities_names(cls, v, values):
+    def _validate_quantities_names(cls, v, info: ValidationInfo):
         """Validate if the number of quantities_names matches the number of columns in the timeseries.
 
         The validator compared the amount of quantities_names with the number of columns in the first record of
         the timeseries.
         """
         if v is not None:
-            first_records_data = values["timeseries"][0].data
+            first_records_data = info.data["timeseries"][0].data
             if len(v) != len(first_records_data):
                 raise ValueError(
                     f"The number of quantities_names ({len(v)}) must match the number of columns in the Tim file ({len(first_records_data)})."
