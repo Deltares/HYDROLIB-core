@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from hydrolib.core.basemodel import (
     BaseModel,
