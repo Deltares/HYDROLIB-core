@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
-from pydantic import ConfigDict, Field, field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
