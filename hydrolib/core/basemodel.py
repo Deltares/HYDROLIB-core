@@ -28,7 +28,7 @@ from typing import (
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import ValidationError, field_validator
+from pydantic import ConfigDict, ValidationError, field_validator
 from pydantic.fields import FieldInfo, PrivateAttr
 
 from hydrolib.core.base import DummmyParser, DummySerializer
@@ -52,13 +52,15 @@ context_file_loading: ContextVar["FileLoadContext"] = ContextVar("file_loading")
 
 
 class BaseModel(PydanticBaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-        validate_assignment = True
-        use_enum_values = True
-        extra = "forbid"  # will throw errors so we can fix our models
-        allow_population_by_field_name = True
-        alias_generator = to_key
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        validate_assignment=True,
+        use_enum_values=True,
+        extra="forbid",
+        validate_by_name=True,
+        validate_by_alias=True,
+        alias_generator=to_key,
+    )
 
     def __init__(self, **data: Any) -> None:
         """Initialize a BaseModel with the provided data.
