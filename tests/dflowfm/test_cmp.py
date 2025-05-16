@@ -6,7 +6,12 @@ from pydantic import ValidationError
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.basemodel import ModelSaveSettings
-from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
+from hydrolib.core.dflowfm.cmp.models import (
+    AstronomicRecord,
+    CMPModel,
+    CMPSet,
+    HarmonicRecord,
+)
 from hydrolib.core.dflowfm.cmp.parser import CMPParser
 from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer
 
