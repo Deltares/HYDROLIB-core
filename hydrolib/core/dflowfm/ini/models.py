@@ -18,7 +18,7 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic import ConfigDict, Field, field_validator, model_validator
+from pydantic import ConfigDict, Field, ValidationInfo, field_validator, model_validator
 from pydantic.fields import FieldInfo
 
 from hydrolib.core import __version__ as version
@@ -177,8 +177,12 @@ class INIBasedModel(BaseModel, ABC):
             str: the delimiter string to be used for serializing the given field.
         """
         delimiter = None
-        if (field := cls.model_fields.get(field_key)) and isinstance(field, FieldInfo):
-            delimiter = field.field_info.extra.get("delimiter")
+        if (
+            (field := cls.model_fields.get(field_key))
+            and isinstance(field, FieldInfo)
+            and field.json_schema_extra
+        ):
+            delimiter = field.json_schema_extra.get("delimiter")
         if not delimiter:
             delimiter = cls.get_list_delimiter()
 
@@ -203,6 +207,7 @@ class INIBasedModel(BaseModel, ABC):
     comments: Optional[Comments] = Comments()
 
     @model_validator(mode="before")
+    @classmethod
     def _validate_unknown_keywords(cls, values):
         """
         Validates fields and raises errors for unknown keywords.
@@ -222,7 +227,7 @@ class INIBasedModel(BaseModel, ABC):
             unknown_keyword_error_manager.raise_error_for_unknown_keywords(
                 values,
                 cls._header,
-                cls.__fields__,
+                cls.model_fields,
                 cls._exclude_fields() | do_not_validate,
             )
         return values
@@ -270,7 +275,9 @@ class INIBasedModel(BaseModel, ABC):
         return v
 
     @field_validator("*", mode="before")
-    def replace_fortran_scientific_notation_for_floats(cls, value, field):
+    def replace_fortran_scientific_notation_for_floats(
+        cls, value, field: ValidationInfo
+    ):
         """
         Converts FORTRAN-style scientific notation to standard notation for float fields.
 
@@ -281,7 +288,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             Any: The processed field value.
         """
-        if field.type_ != float:
+        if not isinstance(value, float):
             return value
 
         return cls._replace_fortran_scientific_notation(value)
@@ -345,7 +352,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             Set: Set of field names to exclude.
         """
-        return {"comments", "datablock", "_header"}
+        return {"comments", "datablock", "header"}
 
     def _convert_value(
         self,
@@ -433,14 +440,14 @@ class INIBasedModel(BaseModel, ABC):
         if key in self._exclude_fields():
             return False
 
-        if save_settings._exclude_unset and key not in self.__fields_set__:
+        if save_settings._exclude_unset and key not in self.model_fields_set:
             return False
 
-        field = self.__fields__.get(key)
+        field = self.model_fields.get(key)
         if not field:
             return value is not None
 
-        field_type = field.type_
+        field_type = field.annotation
         if self._is_union(field_type):
             return value is not None or self._union_has_filemodel(field_type)
 
