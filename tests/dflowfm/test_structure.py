@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Union
 
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
-
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
@@ -2438,21 +2437,21 @@ class TestLongCulvert:
         self, missing_field, longculvert_values: Dict[str, Any]
     ):
         del longculvert_values[missing_field]
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             LongCulvert(**longculvert_values)
 
     def test_invalid_coordinates_length_raises(
         self, longculvert_values: Dict[str, Any]
     ):
         longculvert_values["numcoordinates"] = 3
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             LongCulvert(**longculvert_values)
 
     def test_invalid_zcoordinates_length_raises(
         self, longculvert_values: Dict[str, Any]
     ):
         longculvert_values["zcoordinates"] = [-0.3, -0.3, -0.4]
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             LongCulvert(**longculvert_values)
 
     def test_create_longculvert_without_zcoordinates(
