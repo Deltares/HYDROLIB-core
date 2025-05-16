@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic.v1 import validator
+from pydantic import field_validator
 
 from hydrolib.core.basemodel import (
     BaseModel,
@@ -33,7 +33,7 @@ class XYNPoint(BaseModel):
         n = data.get("n")
         return f"x:{x} y:{y} n:{n}"
 
-    @validator("n", pre=True)
+    @field_validator("n", mode="before")
     def _validate_name(cls, value):
         if str_is_empty_or_none(value):
             raise ValueError("Name cannot be empty.")
