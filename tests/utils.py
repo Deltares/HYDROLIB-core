@@ -7,14 +7,14 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Generic, List, Optional, TypeVar
 
-from pydantic.v1.generics import GenericModel
+from pydantic import BaseModel
 
 from hydrolib.core.basemodel import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
 
 
-class WrapperTest(GenericModel, Generic[TWrapper]):
+class WrapperTest(BaseModel, Generic[TWrapper]):
     val: TWrapper
 
 
