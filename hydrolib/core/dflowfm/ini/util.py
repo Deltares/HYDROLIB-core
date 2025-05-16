@@ -6,9 +6,8 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import ModelField
-from pydantic.v1.main import BaseModel
+from pydantic import BaseModel, field_validator
+from pydantic.fields import FieldInfo
 
 from hydrolib.core.dflowfm.common.models import LocationType
 from hydrolib.core.utils import operator_str, str_is_empty_or_none, to_list
@@ -28,13 +27,13 @@ def get_split_string_on_delimiter_validator(*field_name: str):
         the validator which splits strings on the provided delimiter.
     """
 
-    def split(cls, v: Any, field: ModelField):
+    def split(cls, v: Any, field: FieldInfo):
         if isinstance(v, str):
             v = v.split(cls.get_list_field_delimiter(field.name))
             v = [item.strip() for item in v if item != ""]
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True)(split)
+    return field_validator(*field_name, mode="before")(split)
 
 
 def get_enum_validator(
@@ -55,6 +54,8 @@ def get_enum_validator(
     """
 
     def get_enum(v):
+        if isinstance(v, list):
+            return [get_enum(item) for item in v]
         for entry in enum:
             if entry.lower() == v.lower():
                 return entry
@@ -67,7 +68,7 @@ def get_enum_validator(
 
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True, each_item=True)(get_enum)
+    return field_validator(*field_name, mode="before")(get_enum)
 
 
 def make_list_validator(*field_name: str):
@@ -78,7 +79,7 @@ def make_list_validator(*field_name: str):
             v = [v]
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True)(split)
+    return field_validator(*field_name, mode="before")(split)
 
 
 def validate_correct_length(
@@ -269,7 +270,7 @@ def validate_conditionally(
 
 
 def validate_datetime_string(
-    field_value: Optional[str], field: ModelField
+    field_value: Optional[str], field: FieldInfo
 ) -> Optional[str]:
     """Validate that a field value matches the YYYYmmddHHMMSS datetime format.
 
@@ -640,7 +641,7 @@ class UnknownKeywordErrorManager:
         self,
         data: Dict[str, Any],
         section_header: str,
-        fields: Dict[str, ModelField],
+        fields: Dict[str, FieldInfo],
         excluded_fields: Set[str],
     ) -> None:
         """
@@ -660,7 +661,7 @@ class UnknownKeywordErrorManager:
             )
 
     def _get_all_unknown_keywords(
-        self, data: Dict[str, Any], fields: Dict[str, ModelField], excluded_fields: Set
+        self, data: Dict[str, Any], fields: Dict[str, FieldInfo], excluded_fields: Set
     ) -> List[str]:
         """
         Get all unknown keywords in the data.
@@ -682,7 +683,7 @@ class UnknownKeywordErrorManager:
 
     @staticmethod
     def _is_unknown_keyword(
-        keyword: str, fields: Dict[str, ModelField], excluded_fields: Set
+        keyword: str, fields: Dict[str, FieldInfo], excluded_fields: Set
     ):
         """
         Check if the given field name equals to any of the model field names or aliases, if not, the function checks if
