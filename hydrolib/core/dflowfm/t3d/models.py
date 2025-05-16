@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
-from pydantic.v1 import Field, root_validator, validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
@@ -78,7 +78,7 @@ class T3DTimeRecord(BaseModel):
 
     data: List[float] = Field(default_factory=list)
 
-    @validator("time", pre=True, check_fields=True, allow_reuse=True)
+    @field_validator("time", mode="before", check_fields=True)
     def validate_time_format(cls, value: str) -> str:
         """Check if the time string is in the expected format.
 
@@ -187,7 +187,7 @@ class T3DModel(ParsableFileModel):
     layer_type: LayerType = Field(default=None, alias="LAYER_TYPE")
     quantities_names: Optional[List[str]] = Field(default=None)
 
-    @validator("records", pre=False, check_fields=True, allow_reuse=True)
+    @field_validator("records", mode="after", check_fields=True)
     def validate_record_length(cls, value: List[T3DTimeRecord]):
         """Check if the records have the same length."""
         records = [v.data for v in value]
@@ -196,14 +196,14 @@ class T3DModel(ParsableFileModel):
 
         return value
 
-    @root_validator(pre=False)
+    @model_validator(mode="after")
     def validate_quantities_names(cls, value: Dict[str, str]) -> Dict[str, str]:
         """
         Validate that the number of quantities names is equal to the number of values in the records.
         """
-        record = value.get("records")
+        record = value.records
         record_len = len(record[0].data)
-        quantities_names = value.get("quantities_names")
+        quantities_names = value.quantities_names
         if quantities_names is not None and len(quantities_names) != record_len:
             raise ValueError(
                 "The number of quantities names must be equal to the number of values in the records."
