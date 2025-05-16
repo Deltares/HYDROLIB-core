@@ -1,7 +1,7 @@
 import logging
 from typing import List, Literal, Optional
 
-from pydantic import Field, NonNegativeInt, PositiveInt, field_validator
+from pydantic import Field, NonNegativeInt, PositiveInt, ValidationInfo, field_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import (
@@ -72,7 +72,7 @@ class FrictGeneral(INIGeneral):
     )
 
     _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
+        validator_set_default_disk_only_file_model_when_none("frictionValuesFile")
     )
 
 
@@ -159,13 +159,13 @@ class FrictBranch(INIBasedModel):
     branchid: str = Field(alias="branchId")
     frictiontype: FrictionType = Field(alias="frictionType")
     functiontype: Optional[str] = Field("constant", alias="functionType")
-    timeseriesid: Optional[str] = Field(alias="timeSeriesId")
-    numlevels: Optional[PositiveInt] = Field(alias="numLevels")
-    levels: Optional[List[float]]
+    timeseriesid: Optional[str] = Field(default=None, alias="timeSeriesId")
+    numlevels: Optional[PositiveInt] = Field(default=None, alias="numLevels")
+    levels: Optional[List[float]] = Field(default=None)
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
-    chainage: Optional[List[float]]
+    chainage: Optional[List[float]] = Field(default=None)
     frictionvalues: Optional[List[float]] = Field(
-        alias="frictionValues"
+        default=None, alias="frictionValues"  # type: ignore
     )  # TODO: turn this into List[List[float]], see issue #143.
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -181,30 +181,31 @@ class FrictBranch(INIBasedModel):
 
     @field_validator("levels")
     @classmethod
-    def _validate_levels(cls, v, values):
+    def _validate_levels(cls, v, info: ValidationInfo):
         if v is not None and (
-            values["numlevels"] is None or len(v) != values["numlevels"]
+            info.data["numlevels"] is None or len(v) != info.data["numlevels"]
         ):
             raise ValueError(
-                f"Number of values for levels should be equal to the numLevels value (branchId={values.get('branchid', '')})."
+                f"Number of values for levels should be equal to the numLevels value (branchId={info.data.get('branchid', '')})."
             )
 
         return v
 
     @field_validator("chainage")
     @classmethod
-    def _validate_chainage(cls, v, values):
-        if v is not None and len(v) != values["numlocations"]:
+    def _validate_chainage(cls, v, info: ValidationInfo):
+        if v is not None and len(v) != info.data["numlocations"]:
             raise ValueError(
-                f"Number of values for chainage should be equal to the numLocations value (branchId={values.get('branchid', '')})."
+                f"Number of values for chainage should be equal to the numLocations value (branchId={info.data.get('branchid', '')})."
             )
 
         return v
 
     @field_validator("frictionvalues")
     @classmethod
-    def _validate_frictionvalues(cls, v, values):
+    def _validate_frictionvalues(cls, v, info: ValidationInfo):
         # number of values should be equal to numlocations*numlevels
+        values = info.data
         numlevels = (
             1
             if (
