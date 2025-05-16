@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Union
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
@@ -130,7 +130,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
 
     document = parser.finalize()
 
-    wrapper = WrapperTest[List[Union[Weir, UniversalWeir]]].parse_obj(
+    wrapper = WrapperTest[List[Union[Weir, UniversalWeir]]].model_validate(
         {"val": document.sections}
     )
     expected_structures = [
