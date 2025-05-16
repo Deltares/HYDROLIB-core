@@ -85,13 +85,13 @@ def test_universal_construction_with_parser():
     assert universal_weir.id == "uweir_id"
     assert universal_weir.name == "W002"
     assert universal_weir.branchid == "branch"
-    assert universal_weir.chainage == 6.0
+    assert universal_weir.chainage == pytest.approx(6.0)
     assert universal_weir.allowedflowdir == FlowDirection.positive
     assert universal_weir.numlevels == 2
     assert universal_weir.yvalues == [1.0, 2.0]
     assert universal_weir.zvalues == [3.0, 4.0]
-    assert universal_weir.crestlevel == 10.5
-    assert universal_weir.dischargecoeff == 0.5
+    assert universal_weir.crestlevel == pytest.approx(10.5)
+    assert universal_weir.dischargecoeff == pytest.approx(0.5)
 
 
 def test_weir_and_universal_weir_resolve_from_parsed_document():
@@ -377,7 +377,7 @@ class TestBridge:
         assert bridge.id == "b003"
         assert bridge.name == "B003"
         assert bridge.branchid == "B1"
-        assert bridge.chainage == 5.0
+        assert bridge.chainage == pytest.approx(5.0)
         assert bridge.allowedflowdir == FlowDirection.both
         assert bridge.csdefid == "W_980.1S_0"
         assert bridge.shift == -1.23
@@ -430,16 +430,16 @@ class TestBridge:
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
         assert bridge.branchid == "riv_RS1_264"
-        assert bridge.chainage == 104.184
+        assert bridge.chainage == pytest.approx(104.184)
         assert bridge.type == "bridge"
         assert bridge.allowedflowdir == FlowDirection.both
         assert bridge.csdefid == "W_980.1S_0"
-        assert bridge.shift == 0.0
+        assert bridge.shift == pytest.approx(0.0)
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
         assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
-        assert bridge.length == 9.75
+        assert bridge.length == pytest.approx(9.75)
 
     def test_bridge_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
@@ -481,16 +481,16 @@ class TestBridge:
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
         assert bridge.branchid == "riv_RS1_264"
-        assert bridge.chainage == 104.184
+        assert bridge.chainage == pytest.approx(104.184)
         assert bridge.type == "bridge"
         assert bridge.allowedflowdir == FlowDirection.both
         assert bridge.csdefid == "W_980.1S_0"
-        assert bridge.shift == 0.0
+        assert bridge.shift == pytest.approx(0.0)
         assert bridge.inletlosscoeff == 1
         assert bridge.outletlosscoeff == 1
         assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
-        assert bridge.length == 9.75
+        assert bridge.length == pytest.approx(9.75)
 
     def test_bridge_with_missing_required_parameters(self):
         parser = Parser(ParserConfig())
@@ -2350,7 +2350,7 @@ class TestCulvert:
             Culvert(**values)
 
         expected_message = (
-            f"bendlosscoeff should be provided when subtype is invertedSiphon"
+            "bendlosscoeff should be provided when subtype is invertedSiphon"
         )
         assert expected_message in str(error.value)
 
@@ -2362,7 +2362,7 @@ class TestCulvert:
         with pytest.raises(ValidationError) as error:
             Culvert(**values)
 
-        expected_message = f"bendlosscoeff is forbidden when subtype is culvert"
+        expected_message = "bendlosscoeff is forbidden when subtype is culvert"
         assert expected_message in str(error.value)
 
     def _create_culvert_values(self, valveonoff: bool):
@@ -2396,7 +2396,7 @@ class TestCulvert:
 
 
 class TestLongCulvert:
-    @pytest.fixture()
+    @pytest.fixture
     def longculvert_values(self) -> Dict[str, Any]:
         return {
             "id": "lc1",
@@ -2454,3 +2454,11 @@ class TestLongCulvert:
         longculvert_values["zcoordinates"] = [-0.3, -0.3, -0.4]
         with pytest.raises(Exception):
             LongCulvert(**longculvert_values)
+
+    def test_create_longculvert_without_zcoordinates(
+        self, longculvert_values: Dict[str, Any]
+    ):
+        del longculvert_values["zcoordinates"]
+
+        lc = LongCulvert(**longculvert_values)
+        assert lc.zcoordinates is None
