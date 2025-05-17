@@ -1,9 +1,8 @@
 import logging
 from typing import List, Literal, Optional
 
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.types import NonNegativeInt
+from pydantic import Field, model_validator
+from pydantic.types import NonNegativeInt
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -87,7 +86,7 @@ class OneDFieldBranch(INIBasedModel):
         "values",
     )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_length_values(cls, values):
         """Validates that the length of the values field is as expected."""
         return validate_correct_length(
@@ -98,7 +97,7 @@ class OneDFieldBranch(INIBasedModel):
             min_length=1,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_length_chainage(cls, values):
         """Validates that the length of the chainage field is as expected."""
         return validate_correct_length(

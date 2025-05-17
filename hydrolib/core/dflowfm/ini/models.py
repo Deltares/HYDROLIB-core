@@ -18,9 +18,8 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic.v1 import Extra, Field, root_validator
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import ModelField
+from pydantic import ConfigDict, Field, ValidationInfo, field_validator, model_validator
+from pydantic.fields import FieldInfo
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.basemodel import (
@@ -118,9 +117,7 @@ class INIBasedModel(BaseModel, ABC):
         r"([\d.]+)([dD])([+-]?\d{1,3})"
     )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
-    class Config:
-        extra = Extra.ignore
-        arbitrary_types_allowed = False
+    model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=False)
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
@@ -180,8 +177,12 @@ class INIBasedModel(BaseModel, ABC):
             str: the delimiter string to be used for serializing the given field.
         """
         delimiter = None
-        if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
-            delimiter = field.field_info.extra.get("delimiter")
+        if (
+            (field := cls.model_fields.get(field_key))
+            and isinstance(field, FieldInfo)
+            and field.json_schema_extra
+        ):
+            delimiter = field.json_schema_extra.get("delimiter")
         if not delimiter:
             delimiter = cls.get_list_delimiter()
 
@@ -201,13 +202,12 @@ class INIBasedModel(BaseModel, ABC):
                 Indicates that only known types are allowed.
         """
 
-        class Config:
-            extra = Extra.allow
-            arbitrary_types_allowed = False
+        model_config = ConfigDict(extra="allow", arbitrary_types_allowed=False)
 
     comments: Optional[Comments] = Comments()
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def _validate_unknown_keywords(cls, values):
         """
         Validates fields and raises errors for unknown keywords.
@@ -227,12 +227,12 @@ class INIBasedModel(BaseModel, ABC):
             unknown_keyword_error_manager.raise_error_for_unknown_keywords(
                 values,
                 cls._header,
-                cls.__fields__,
+                cls.model_fields,
                 cls._exclude_fields() | do_not_validate,
             )
         return values
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields.
 
@@ -258,7 +258,7 @@ class INIBasedModel(BaseModel, ABC):
 
         return values
 
-    @validator("comments", always=True, allow_reuse=True)
+    @field_validator("comments")
     def comments_matches_has_comments(cls, v):
         """
         Validates the presence of comments if supported by the model.
@@ -274,8 +274,10 @@ class INIBasedModel(BaseModel, ABC):
             v = None
         return v
 
-    @validator("*", pre=True, allow_reuse=True)
-    def replace_fortran_scientific_notation_for_floats(cls, value, field):
+    @field_validator("*", mode="before")
+    def replace_fortran_scientific_notation_for_floats(
+        cls, value, field: ValidationInfo
+    ):
         """
         Converts FORTRAN-style scientific notation to standard notation for float fields.
 
@@ -286,7 +288,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             Any: The processed field value.
         """
-        if field.type_ != float:
+        if not isinstance(value, float):
             return value
 
         return cls._replace_fortran_scientific_notation(value)
@@ -350,7 +352,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             Set: Set of field names to exclude.
         """
-        return {"comments", "datablock", "_header"}
+        return {"comments", "datablock", "header"}
 
     def _convert_value(
         self,
@@ -438,14 +440,14 @@ class INIBasedModel(BaseModel, ABC):
         if key in self._exclude_fields():
             return False
 
-        if save_settings._exclude_unset and key not in self.__fields_set__:
+        if save_settings._exclude_unset and key not in self.model_fields_set:
             return False
 
-        field = self.__fields__.get(key)
+        field = self.model_fields.get(key)
         if not field:
             return value is not None
 
-        field_type = field.type_
+        field_type = field.annotation
         if self._is_union(field_type):
             return value is not None or self._union_has_filemodel(field_type)
 
@@ -660,7 +662,7 @@ class DataBlockINIBasedModel(INIBasedModel):
 
         return value
 
-    @validator("datablock")
+    @field_validator("datablock")
     def _validate_no_nans_are_present(cls, datablock: Datablock) -> Datablock:
         """Validate that the datablock does not have any NaN values.
 

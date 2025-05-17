@@ -10,8 +10,7 @@ from enum import Enum
 from operator import gt, ne
 from typing import Dict, List, Literal, Optional, Set, Union
 
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import root_validator, validator
+from pydantic import Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
@@ -97,11 +96,11 @@ class Structure(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    @validator("type", pre=True)
+    @field_validator("type", mode="before")
     def _validate_type(cls, value):
         return get_from_subclass_defaults(Structure, "type", value)
 
-    @root_validator
+    @model_validator(mode="before")
     @classmethod
     def check_location(cls, values: dict) -> dict:
         """
@@ -442,7 +441,7 @@ class Culvert(Structure):
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
     _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def validate_that_valve_related_fields_are_present_for_culverts_with_valves(
         cls, values: Dict
     ) -> Dict:
@@ -457,7 +456,7 @@ class Culvert(Structure):
             conditional_value=True,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def validate_that_bendlosscoeff_field_is_present_for_invertedsyphons(
         cls, values: Dict
     ) -> Dict:
@@ -469,7 +468,7 @@ class Culvert(Structure):
             conditional_value=CulvertSubType.invertedSiphon,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def check_list_lengths(cls, values):
         """Validates that the length of the relopening and losscoeff fields are as expected."""
         return validate_correct_length(
@@ -480,7 +479,7 @@ class Culvert(Structure):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def validate_that_bendlosscoeff_is_not_provided_for_culverts(
         cls, values: Dict
     ) -> Dict:
@@ -518,7 +517,7 @@ class LongCulvert(Structure):
 
     _split_to_list = get_split_string_on_delimiter_validator("zcoordinates")
 
-    @validator("zcoordinates", always=True)
+    @field_validator("zcoordinates")
     @classmethod
     def _validate_zcoordinates(cls, v, values):
         if v is None:
@@ -569,7 +568,7 @@ class Pump(Structure):
 
     _orientation_validator = get_enum_validator("orientation", enum=Orientation)
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def validate_that_controlside_is_provided_when_numstages_is_provided(
         cls, values: Dict
     ) -> Dict:
@@ -592,7 +591,7 @@ class Pump(Structure):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def conditionally_check_list_lengths_suctionside(cls, values: Dict) -> Dict:
         """
         Validates the length of the suction side fields, but only if there is a controlside value
@@ -618,7 +617,7 @@ class Pump(Structure):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def conditionally_check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
         """
         Validates the length of the delivery side fields, but only if there is a controlside value
@@ -633,7 +632,7 @@ class Pump(Structure):
             ne,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def check_list_lengths_head_and_reductionfactor(cls, values):
         """Validates that the lengths of the head and reductionfactor fields are as expected."""
         return validate_correct_length(
@@ -692,12 +691,12 @@ class Orifice(Structure):
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
-    @validator("limitflowpos", always=True)
+    @field_validator("limitflowpos")
     @classmethod
     def _validate_limitflowpos(cls, v, values):
         return cls._validate_limitflow(v, values, "limitFlowPos", "useLimitFlowPos")
 
-    @validator("limitflowneg", always=True)
+    @field_validator("limitflowneg")
     @classmethod
     def _validate_limitflowneg(cls, v, values):
         return cls._validate_limitflow(v, values, "limitFlowNeg", "useLimitFlowNeg")
@@ -977,7 +976,7 @@ class Dambreak(Structure):
         alias="dambreakLevelsAndWidths"
     )
 
-    @validator("algorithm", pre=True)
+    @field_validator("algorithm", mode="before")
     @classmethod
     def validate_algorithm(cls, value: str) -> DambreakAlgorithm:
         """
@@ -1002,7 +1001,7 @@ class Dambreak(Structure):
             return DambreakAlgorithm(int_value)
         raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
 
-    @validator("dambreaklevelsandwidths")
+    @field_validator("dambreaklevelsandwidths")
     @classmethod
     def validate_dambreak_levels_and_widths(
         cls, field_value: Optional[Union[TimModel, ForcingModel]], values: dict
@@ -1030,7 +1029,7 @@ class Dambreak(Structure):
             )
         return field_value
 
-    @root_validator
+    @model_validator(mode="before")
     @classmethod
     def check_location_dambreak(cls, values: dict) -> dict:
         """
