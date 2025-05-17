@@ -846,7 +846,10 @@ class ExtOldForcing(BaseModel):
             raw_path = values.get(filename_var_name)
             model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
 
-            values[filename_var_name] = model(raw_path)
+            if not isinstance(raw_path, model):
+                raw_path = model(raw_path)
+
+            values[filename_var_name] = raw_path
 
         return values
 
