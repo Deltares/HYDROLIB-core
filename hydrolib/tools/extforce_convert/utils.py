@@ -232,7 +232,9 @@ def create_initial_cond_and_parameter_input_dict(
         block_data["extrapolationmethod"] = (
             "yes" if forcing.extrapolation == 1 else "no"
         )
-
+    for key, value in forcing.__dict__:
+        if key.lower().startswith("tracer"):
+            block_data[key] = value
     return block_data
 
 
