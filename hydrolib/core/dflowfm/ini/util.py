@@ -142,12 +142,12 @@ def validate_correct_length(
 
         return field
 
-    length = int(values.get(length_name))
+    length = values.get(length_name)
     if length is None:
         # length attribute not present, possibly defer validation to a subclass.
         return values
 
-    requiredlength = max(length + length_incr, min_length)
+    requiredlength = max(int(length) + length_incr, min_length)
 
     for field_name in field_names:
         field = values.get(field_name)
