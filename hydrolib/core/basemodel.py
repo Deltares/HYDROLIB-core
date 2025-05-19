@@ -1008,12 +1008,12 @@ class FileModel(BaseModel, ABC):
         return updated_file_path
 
     @classmethod
-    def validate(cls: Type["FileModel"], value: Any):
+    def model_validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
             # Pydantic Model init requires a dict
             value = {"filepath": Path(value)}
-        return super().validate(value)
+        return super().model_validate_json(value)
 
     def save(
         self,
