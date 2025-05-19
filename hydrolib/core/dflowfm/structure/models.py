@@ -10,7 +10,7 @@ from enum import Enum
 from operator import gt, ne
 from typing import Dict, List, Literal, Optional, Set, Union
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, ValidationInfo, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import DiskOnlyFileModel
@@ -72,14 +72,16 @@ class Structure(INIBasedModel):
     name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
-    polylinefile: Optional[DiskOnlyFileModel] = Field(None, alias="polylinefile")
+    polylinefile: Optional[DiskOnlyFileModel] = Field(
+        default=None, alias="polylinefile"
+    )
 
-    branchid: Optional[str] = Field(None, alias="branchId")
-    chainage: Optional[float] = Field(None, alias="chainage")
+    branchid: Optional[str] = Field(default=None, alias="branchId")
+    chainage: Optional[float] = Field(default=None, alias="chainage")
 
-    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+    numcoordinates: Optional[int] = Field(default=None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(default=None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(default=None, alias="yCoordinates")
 
     _loc_coord_fields = {"numcoordinates", "xcoordinates", "ycoordinates"}
     _loc_branch_fields = {"branchid", "chainage"}
@@ -97,8 +99,28 @@ class Structure(INIBasedModel):
     )
 
     @field_validator("type", mode="before")
+    @classmethod
     def _validate_type(cls, value):
         return get_from_subclass_defaults(Structure, "type", value)
+
+    @classmethod
+    def model_validate(cls, values):
+        """Resolves the subclass of the CrossSectionDefinition based on the type field.
+
+        Args:
+            values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
+        """
+        if not isinstance(values, dict):
+            values = cls.flatten_model(values)
+        type_value = values.get("type", "").lower()
+        for subclass in cls.__subclasses__():
+            subclass_type = subclass.model_fields["type"].default.lower()
+            if subclass_type == type_value:
+                return subclass(**values)
+        raise ValueError(
+            f"Type of {cls.__name__} with id={values.get('id', '')}"
+            f" and type={values.get('type', '')} is not recognized."
+        )
 
     @model_validator(mode="before")
     @classmethod
@@ -118,6 +140,8 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
+        if not isinstance(values, dict):
+            values = cls.flatten_model(values)
         filtered_values = {k: v for k, v in values.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
@@ -243,32 +267,6 @@ class Structure(INIBasedModel):
         raise ValueError(
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
-
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `type` field.
-        This field is compared to each `type` field of the derived models of `Structure`.
-        The derived model with an equal structure type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known structure type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("type").default.lower()
-                    == v.get("type", "").lower()
-                ):
-                    v = c(**v)
-                    break
-            else:
-                raise ValueError(
-                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
-                )
-        return super().validate(v)
 
     def _exclude_fields(self) -> Set:
         # exclude the non-applicable, or unset props like coordinates or branches
@@ -425,16 +423,20 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[ForcingData] = Field(alias="valveOpeningHeight")
-    numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
-    relopening: Optional[List[float]] = Field(alias="relOpening")
-    losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
-    bedfrictiontype: Optional[FrictionType] = Field(alias="bedFrictionType")
-    bedfriction: Optional[float] = Field(alias="bedFriction")
+    valveopeningheight: Optional[ForcingData] = Field(
+        default=None, alias="valveOpeningHeight"
+    )
+    numlosscoeff: Optional[int] = Field(default=None, alias="numLossCoeff")
+    relopening: Optional[List[float]] = Field(default=None, alias="relOpening")
+    losscoeff: Optional[List[float]] = Field(default=None, alias="lossCoeff")
+    bedfrictiontype: Optional[FrictionType] = Field(
+        default=None, alias="bedFrictionType"
+    )
+    bedfriction: Optional[float] = Field(default=None, alias="bedFriction")
     subtype: Optional[CulvertSubType] = Field(
         CulvertSubType.culvert.value, alias="subType"
     )
-    bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
+    bendlosscoeff: Optional[float] = Field(default=None, alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
@@ -502,7 +504,9 @@ class LongCulvert(Structure):
     """
 
     type: Literal["longCulvert"] = Field("longCulvert", alias="type")
-    allowedflowdir: Optional[FlowDirection] = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(
+        default=None, alias="allowedFlowDir"
+    )
     zcoordinates: Optional[List[float]] = Field(None, alias="zCoordinates")
 
     width: float = Field(alias="width")
@@ -510,7 +514,7 @@ class LongCulvert(Structure):
     frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
     valverelativeopening: float = Field(alias="valveRelativeOpening")
-    csdefid: Optional[str] = Field(alias="csDefId")
+    csdefid: Optional[str] = Field(default=None, alias="csDefId")
 
     _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
@@ -519,13 +523,13 @@ class LongCulvert(Structure):
 
     @field_validator("zcoordinates")
     @classmethod
-    def _validate_zcoordinates(cls, v, values):
+    def _validate_zcoordinates(cls, v, info: ValidationInfo):
         if v is None:
             return v
 
-        if len(v) != values["numcoordinates"]:
+        if len(v) != info.data["numcoordinates"]:
             raise ValueError(
-                f"Expected {values['numcoordinates']} z-coordinates, but got {len(v)}."
+                f"Expected {info.data['numcoordinates']} z-coordinates, but got {len(v)}."
             )
 
         return v
@@ -542,20 +546,28 @@ class Pump(Structure):
 
     type: Literal["pump"] = Field("pump", alias="type")
 
-    orientation: Optional[Orientation] = Field(alias="orientation")
-    controlside: Optional[str] = Field(alias="controlSide")  # TODO Enum
-    numstages: Optional[int] = Field(alias="numStages")
+    orientation: Optional[Orientation] = Field(default=None, alias="orientation")
+    controlside: Optional[str] = Field(default=None, alias="controlSide")  # TODO Enum
+    numstages: Optional[int] = Field(default=None, alias="numStages")
     capacity: ForcingData = Field(alias="capacity")
 
-    startlevelsuctionside: Optional[List[float]] = Field(alias="startLevelSuctionSide")
-    stoplevelsuctionside: Optional[List[float]] = Field(alias="stopLevelSuctionSide")
-    startleveldeliveryside: Optional[List[float]] = Field(
-        alias="startLevelDeliverySide"
+    startlevelsuctionside: Optional[List[float]] = Field(
+        default=None, alias="startLevelSuctionSide"
     )
-    stopleveldeliveryside: Optional[List[float]] = Field(alias="stopLevelDeliverySide")
-    numreductionlevels: Optional[int] = Field(alias="numReductionLevels")
-    head: Optional[List[float]] = Field(alias="head")
-    reductionfactor: Optional[List[float]] = Field(alias="reductionFactor")
+    stoplevelsuctionside: Optional[List[float]] = Field(
+        default=None, alias="stopLevelSuctionSide"
+    )
+    startleveldeliveryside: Optional[List[float]] = Field(
+        default=None, alias="startLevelDeliverySide"
+    )
+    stopleveldeliveryside: Optional[List[float]] = Field(
+        default=None, alias="stopLevelDeliverySide"
+    )
+    numreductionlevels: Optional[int] = Field(default=None, alias="numReductionLevels")
+    head: Optional[List[float]] = Field(default=None, alias="head")
+    reductionfactor: Optional[List[float]] = Field(
+        default=None, alias="reductionFactor"
+    )
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "startlevelsuctionside",
@@ -684,10 +696,10 @@ class Orifice(Structure):
 
     # TODO Use a validator here to check the optionals related to the bool field
     uselimitflowpos: Optional[bool] = Field(False, alias="useLimitFlowPos")
-    limitflowpos: Optional[float] = Field(alias="limitFlowPos")
+    limitflowpos: Optional[float] = Field(default=None, alias="limitFlowPos")
 
     uselimitflowneg: Optional[bool] = Field(False, alias="useLimitFlowNeg")
-    limitflowneg: Optional[float] = Field(alias="limitFlowNeg")
+    limitflowneg: Optional[float] = Field(default=None, alias="limitFlowNeg")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
@@ -957,23 +969,25 @@ class Dambreak(Structure):
     f2: float = Field(alias="f2")
     ucrit: float = Field(alias="uCrit")
     waterlevelupstreamlocationx: Optional[float] = Field(
-        alias="waterLevelUpstreamLocationX"
+        default=None, alias="waterLevelUpstreamLocationX"
     )
     waterlevelupstreamlocationy: Optional[float] = Field(
-        alias="waterLevelUpstreamLocationY"
+        default=None, alias="waterLevelUpstreamLocationY"
     )
     waterleveldownstreamlocationx: Optional[float] = Field(
-        alias="waterLevelDownstreamLocationX"
+        default=None, alias="waterLevelDownstreamLocationX"
     )
     waterleveldownstreamlocationy: Optional[float] = Field(
-        alias="waterLevelDownstreamLocationY"
+        default=None, alias="waterLevelDownstreamLocationY"
     )
-    waterlevelupstreamnodeid: Optional[str] = Field(alias="waterLevelUpstreamNodeId")
+    waterlevelupstreamnodeid: Optional[str] = Field(
+        default=None, alias="waterLevelUpstreamNodeId"
+    )
     waterleveldownstreamnodeid: Optional[str] = Field(
-        alias="waterLevelDownstreamNodeId"
+        default=None, alias="waterLevelDownstreamNodeId"
     )
     dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(
-        alias="dambreakLevelsAndWidths"
+        default=None, alias="dambreakLevelsAndWidths"
     )
 
     @field_validator("algorithm", mode="before")
@@ -1004,7 +1018,7 @@ class Dambreak(Structure):
     @field_validator("dambreaklevelsandwidths")
     @classmethod
     def validate_dambreak_levels_and_widths(
-        cls, field_value: Optional[Union[TimModel, ForcingModel]], values: dict
+        cls, field_value: Optional[Union[TimModel, ForcingModel]], info: ValidationInfo
     ) -> Optional[Union[TimModel, ForcingModel]]:
         """
         Validates whether a dambreak can be created with the given dambreakLevelsAndWidths
@@ -1021,7 +1035,7 @@ class Dambreak(Structure):
             Optional[Union[TimModel, ForcingModel]]: The value given for dambreakLevelsAndwidths.
         """
         # Retrieve the algorithm value (if not found use 0).
-        algorithm_value = values.get("algorithm", 0)
+        algorithm_value = info.data.get("algorithm", 0)
         if field_value is not None and algorithm_value != 3:
             # dambreakLevelsAndWidths can only be set when algorithm = 3
             raise ValueError(
