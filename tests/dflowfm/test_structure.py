@@ -162,7 +162,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
 
     for val, expected in zip(wrapper.val, expected_structures):
         # TODO Make sure datablock never ends up in these structures!
-        assert val.dict(exclude={"datablock"}) == expected.dict()
+        assert val.model_dump(exclude={"datablock"}) == expected.model_dump()
 
 
 def test_read_structures_missing_structure_field_raises_correct_error():
@@ -476,7 +476,7 @@ class TestBridge:
         wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
         bridge = wrapper.val
 
-        assert bridge.dict().get("unknown") is None  # type: ignore
+        assert bridge.model_dump().get("unknown") is None  # type: ignore
 
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
@@ -1649,7 +1649,7 @@ class TestWeir:
         wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
         weir = wrapper.val
 
-        assert weir.dict().get("unknown") is None  # type: ignore
+        assert weir.model_dump().get("unknown") is None  # type: ignore
 
         assert weir.id == "weir_id"
         assert weir.name == "weir"
@@ -2240,7 +2240,7 @@ class TestGeneralStructure:
         wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
         struct = wrapper.val
 
-        assert struct.dict().get("unknown") is None  # type: ignore
+        assert struct.model_dump().get("unknown") is None  # type: ignore
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
