@@ -7,8 +7,7 @@ namespace for storing the branches as branches.gui file
 import logging
 from typing import List, Literal, Optional
 
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.fields import Field
+from pydantic import Field, field_validator, model_validator
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import make_list_validator
@@ -75,7 +74,7 @@ class Branch(INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    @root_validator
+    @model_validator(mode="before")
     @classmethod
     def _validate_branch(cls, values: dict):
         if values.get("branchtype") == 2 and (
@@ -88,7 +87,7 @@ class Branch(INIBasedModel):
 
         return values
 
-    @validator("branchtype")
+    @field_validator("branchtype")
     def _validate_branchtype(cls, branchtype: int):
         allowed_branchtypes = [0, 1, 2]
         if branchtype not in allowed_branchtypes:
@@ -98,7 +97,7 @@ class Branch(INIBasedModel):
 
         return branchtype
 
-    @validator("material")
+    @field_validator("material")
     def _validate_material(cls, material: int):
         allowed_materials = range(10)
         if material not in allowed_materials:
