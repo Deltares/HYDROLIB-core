@@ -281,7 +281,7 @@ class INIBasedModel(BaseModel, ABC):
             v = None
         return v
 
-    @field_validator("*", mode="before")
+    @field_validator("*", mode="after")
     def replace_fortran_scientific_notation_for_floats(
         cls, value, field: ValidationInfo
     ):
