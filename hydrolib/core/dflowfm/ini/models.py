@@ -206,6 +206,10 @@ class INIBasedModel(BaseModel, ABC):
 
     comments: Optional[Comments] = Comments()
 
+    @classmethod
+    def flatten_model(cls, values):
+        return values.flatten(cls._duplicate_keys_as_list(), cls._supports_comments())
+
     @model_validator(mode="before")
     @classmethod
     def _validate_unknown_keywords(cls, values):
@@ -233,6 +237,7 @@ class INIBasedModel(BaseModel, ABC):
         return values
 
     @model_validator(mode="before")
+    @classmethod
     def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields.
 
@@ -244,9 +249,11 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             dict: Updated field values with None values removed.
         """
+        if isinstance(values, Section):
+            values = cls.flatten_model(values)
         dropkeys = []
         for k, v in values.items():
-            if v is None and k in cls.__fields__.keys():
+            if v is None and k in cls.model_fields.keys():
                 dropkeys.append(k)
 
         logger.info(f"Dropped unset keys: {dropkeys}")
@@ -312,24 +319,6 @@ class INIBasedModel(BaseModel, ABC):
                     value[i] = cls._scientific_notation_regex.sub(r"\1e\3", v)
 
         return value
-
-    @classmethod
-    def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
-        """
-        Validates a value as an instance of INIBasedModel.
-
-        Args:
-            value (Any): The value to validate.
-
-        Returns:
-            INIBasedModel: The validated instance.
-        """
-        if isinstance(value, Section):
-            value = value.flatten(
-                cls._duplicate_keys_as_list(), cls._supports_comments()
-            )
-
-        return super().validate(value)
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
