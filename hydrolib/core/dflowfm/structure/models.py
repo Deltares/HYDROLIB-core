@@ -8,7 +8,7 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.dflow
 import logging
 from enum import Enum
 from operator import gt, ne
-from typing import Dict, List, Literal, Optional, Set, Union
+from typing import Annotated, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import Field, ValidationInfo, field_validator, model_validator
 from strenum import StrEnum
@@ -34,7 +34,6 @@ from hydrolib.core.utils import str_is_empty_or_none
 logger = logging.getLogger(__name__)
 
 ForcingData = Union[float, TimModel, ForcingModel]
-
 
 # TODO: handle comment blocks
 # TODO: handle duplicate keys
@@ -98,29 +97,30 @@ class Structure(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    @field_validator("type", mode="before")
-    @classmethod
-    def _validate_type(cls, value):
-        return get_from_subclass_defaults(Structure, "type", value)
+    # @field_validator("type", mode="before")
+    # @classmethod
+    # def _validate_type(cls, value):
+    #     return get_from_subclass_defaults(Structure, "type", value)
 
-    @classmethod
-    def model_validate(cls, values):
-        """Resolves the subclass of the CrossSectionDefinition based on the type field.
+    # @model_validator(mode="before")
+    # @classmethod
+    # def resolve_subclass(cls, values):
+    #     """Resolves the subclass of the CrossSectionDefinition based on the type field.
 
-        Args:
-            values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
-        """
-        if not isinstance(values, dict):
-            values = cls.flatten_model(values)
-        type_value = values.get("type", "").lower()
-        for subclass in cls.__subclasses__():
-            subclass_type = subclass.model_fields["type"].default.lower()
-            if subclass_type == type_value:
-                return subclass(**values)
-        raise ValueError(
-            f"Type of {cls.__name__} with id={values.get('id', '')}"
-            f" and type={values.get('type', '')} is not recognized."
-        )
+    #     Args:
+    #         values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
+    #     """
+    #     if not isinstance(values, dict):
+    #         values = cls.flatten_model(values)
+    #     type_value = values.get("type", "").lower()
+    #     for subclass in cls.__subclasses__():
+    #         subclass_type = subclass.model_fields["type"].default.lower()
+    #         if subclass_type == type_value:
+    #             return subclass(**values)
+    #     raise ValueError(
+    #         f"Type of {cls.__name__} with id={values.get('id', '')}"
+    #         f" and type={values.get('type', '')} is not recognized."
+    #     )
 
     @model_validator(mode="before")
     @classmethod
@@ -592,6 +592,7 @@ class Pump(Structure):
             comparison_func=gt,
         )
 
+    @model_validator(mode="after")
     @classmethod
     def _check_list_lengths_suctionside(cls, values: Dict) -> Dict:
         """Validates that the length of the startlevelsuctionside and stoplevelsuctionside fields are as expected."""
@@ -1151,7 +1152,18 @@ class StructureGeneral(INIGeneral):
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
-
+STRUCTURES = Union[
+    Weir,
+    UniversalWeir,
+    Culvert,
+    LongCulvert,
+    Pump,
+    Compound,
+    Orifice,
+    GeneralStructure,
+    Dambreak,
+    Bridge,
+]
 class StructureModel(INIModel):
     """
     The overall structure model that contains the contents of one structure file.
@@ -1164,7 +1176,9 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: List[Structure] = []
+    structure: list[Annotated[STRUCTURES, Field(discriminator="type")]] = Field(
+        default_factory=list
+    )
 
     @classmethod
     def _ext(cls) -> str:
