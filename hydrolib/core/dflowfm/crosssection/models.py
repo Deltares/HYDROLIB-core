@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic.v1 import Field, root_validator
 from pydantic.v1.class_validators import validator
@@ -739,7 +739,7 @@ class CrossLocModel(INIModel):
     """
 
     general: CrossLocGeneral = CrossLocGeneral()
-    crosssection: List[CrossSection] = []
+    crosssection: Union[CrossSection, List[CrossSection]] = []
 
     @classmethod
     def _filename(cls) -> str:
