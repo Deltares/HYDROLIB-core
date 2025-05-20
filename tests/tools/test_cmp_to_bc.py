@@ -3,6 +3,7 @@ from typing import List
 
 import pytest
 
+from hydrolib.core import __version__
 from hydrolib.core.dflowfm.bc.models import (
     Astronomic,
     ForcingModel,
@@ -55,7 +56,7 @@ def reference_path(tmpdir: Path) -> Path:
     reference_path = tmpdir / "reference.bc"
     with open(reference_path, "w") as file:
         file.write(
-            "# written by HYDROLIB-core 0.8.1\n\n"
+            f"# written by HYDROLIB-core {__version__}\n\n"
             "[General]\n"
             "fileVersion = 1.01\n"
             "fileType    = boundConds\n\n"
