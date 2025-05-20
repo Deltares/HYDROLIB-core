@@ -42,6 +42,8 @@ def test_tim_to_bc_converter(input_files_dir: Path, reference_files_dir: Path):
     forcing_model = ForcingModel(forcing=time_series_list)
     forcing_model.save(converted_bc_path)
     reference_bc = reference_files_dir / "bc/convert-tim-to-bc.bc"
-    diff = compare_two_files(str(converted_bc_path), str(reference_bc), ignore_line=ignore_version_lines)
+    diff = compare_two_files(
+        str(converted_bc_path), str(reference_bc), ignore_line=ignore_version_lines
+    )
     assert diff == []
     converted_bc_path.unlink()

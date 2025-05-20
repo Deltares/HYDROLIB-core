@@ -1,19 +1,22 @@
 import difflib
 import filecmp
 import os
-import sys
 import re
+import sys
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generator, Generic, List, Optional, TypeVar, Callable
+from typing import Callable, Generator, Generic, List, Optional, TypeVar
 
 from pydantic.v1.generics import GenericModel
 
 from hydrolib.core.basemodel import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
-VERSION_LINE_PATTERN = r'^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:-[\w\.]+)?\s*$'
+VERSION_LINE_PATTERN = (
+    r"^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:-[\w\.]+)?\s*$"
+)
+
 
 class WrapperTest(GenericModel, Generic[TWrapper]):
     val: TWrapper
@@ -217,7 +220,9 @@ def get_temp_file(filename: str) -> Generator[Path, None, None]:
         yield Path(temp_dir, filename)
 
 
-def compare_two_files(path1: PathOrStr, path2: PathOrStr, ignore_line: Callable[[str], bool] = None) -> List[str]:
+def compare_two_files(
+    path1: PathOrStr, path2: PathOrStr, ignore_line: Callable[[str], bool] = None
+) -> List[str]:
     """Compare two files and return the differences.
 
     Args:
@@ -254,6 +259,7 @@ def compare_two_files(path1: PathOrStr, path2: PathOrStr, ignore_line: Callable[
     )
     return list(diff)
 
+
 def read_clean(path: Path, ignore_line: Optional[Callable] = None) -> List[str]:
     """
     Read a file and remove trailing blank lines.
@@ -276,10 +282,10 @@ def read_clean(path: Path, ignore_line: Optional[Callable] = None) -> List[str]:
     if ignore_line:
         lines = [line for line in lines if not ignore_line(line)]
 
-    return  lines
+    return lines
 
 
-def ignore_version_lines(line: str, pattern = VERSION_LINE_PATTERN) -> bool:
+def ignore_version_lines(line: str, pattern=VERSION_LINE_PATTERN) -> bool:
     """Check if the line is a version line.
 
     Args:
@@ -298,6 +304,7 @@ def ignore_version_lines(line: str, pattern = VERSION_LINE_PATTERN) -> bool:
         #written by hydrolib-core 0.9.1
     """
     return bool(re.match(pattern, line, re.IGNORECASE))
+
 
 def is_macos():
     return os.name == "posix" and sys.platform == "darwin"

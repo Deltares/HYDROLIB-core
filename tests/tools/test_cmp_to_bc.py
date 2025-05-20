@@ -3,6 +3,7 @@ from typing import List
 
 import pytest
 
+from hydrolib.core import __version__
 from hydrolib.core.dflowfm.bc.models import (
     Astronomic,
     ForcingModel,
@@ -12,7 +13,7 @@ from hydrolib.core.dflowfm.bc.models import (
 from hydrolib.core.dflowfm.cmp.models import CMPModel
 from hydrolib.tools.extforce_convert.converters import CMPToForcingConverter
 from tests.utils import compare_two_files
-from hydrolib.core import __version__
+
 
 @pytest.fixture
 def cmp_models() -> List[CMPModel]:
