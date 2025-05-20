@@ -1,5 +1,7 @@
+"""Cross section models for D-Flow FM."""
+
 import logging
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic.v1 import Field, root_validator
 from pydantic.v1.class_validators import validator
@@ -48,7 +50,8 @@ class CrossLocGeneral(INIGeneral):
 
 
 class CrossSectionDefinition(INIBasedModel):
-    """
+    """CrossSectionDefinition.
+
     A `[Definition]` block for use inside a crosssection definition file,
     i.e., a [CrossDefModel][hydrolib.core.dflowfm.crosssection.models.CrossDefModel].
 
@@ -56,12 +59,12 @@ class CrossSectionDefinition(INIBasedModel):
     define they actual types of crosssection definitions.
     """
 
-    # TODO: would we want to load this from something externally and generate these automatically
     class Comments(INIBasedModel.Comments):
+        """Comments for the CrossSectionDefinition class."""
+
         id: Optional[str] = "Unique cross-section definition id."
         thalweg: Optional[str] = Field(
-            "Transverse Y coordinate at which the cross section aligns with the branch "
-            + "(Keyword used by GUI only)."
+            "Transverse Y coordinate at which the cross section aligns with the branch (Keyword used by GUI only)."
         )
 
     comments: Comments = Comments()
@@ -74,9 +77,7 @@ class CrossSectionDefinition(INIBasedModel):
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """
-        The CrossSectionDefinition does not currently support raising an error on unknown keywords.
-        """
+        """The CrossSectionDefinition does not currently support raising an error on unknown keywords."""
         return None
 
     def _get_identifier(self, data: dict) -> Optional[str]:
@@ -92,14 +93,14 @@ class CrossSectionDefinition(INIBasedModel):
 
     @classmethod
     def validate(cls, v):
-        """Try to initialize subclass based on the `type` field.
+        """Initialize subclass based on the `type` field.
+
         This field is compared to each `type` field of the derived models of `CrossSectionDefinition`.
         The derived model with an equal crosssection definition type will be initialized.
 
         Raises:
             ValueError: When the given type is not a known crosssection definition type.
         """
-
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict):
@@ -122,7 +123,8 @@ class CrossSectionDefinition(INIBasedModel):
         frictiontype_attr: str,
         frictionvalue_attr: str,
     ):
-        """
+        """Get a root_validator for the friction specification.
+
         Make a root_validator that verifies whether the crosssection definition (subclass)
         has a valid friction specification.
         Supposed to be embedded in subclasses for their friction fields.
@@ -137,12 +139,13 @@ class CrossSectionDefinition(INIBasedModel):
         """
 
         def validate_friction_specification(cls, values):
-            """
+            """Validate the friction specification.
+
             The actual validator function.
 
             Args:
-            cls: The subclass for which the root_validator is called.
-            values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
+                cls: The subclass for which the root_validator is called.
+                values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
             """
             frictionid = values.get(frictionid_attr) or ""
             frictiontype = values.get(frictiontype_attr) or ""
@@ -180,7 +183,8 @@ class CrossDefModel(INIModel):
 
 
 class CircleCrsDef(CrossSectionDefinition):
-    """
+    """CircleCrsDef.
+
     Crosssection definition with `type=circle`, to be included in a crossdef file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
@@ -189,6 +193,8 @@ class CircleCrsDef(CrossSectionDefinition):
     """
 
     class Comments(CrossSectionDefinition.Comments):
+        """Comments for the CircleCrsDef class."""
+
         type: Optional[str] = Field("Cross section type; must read circle")
 
         diameter: Optional[str] = Field("Internal diameter of the circle [m].")
@@ -220,7 +226,8 @@ class CircleCrsDef(CrossSectionDefinition):
 
 
 class RectangleCrsDef(CrossSectionDefinition):
-    """
+    """RectangleCrsDef.
+
     Crosssection definition with `type=rectangle`, to be included in a crossdef file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
@@ -229,6 +236,8 @@ class RectangleCrsDef(CrossSectionDefinition):
     """
 
     class Comments(CrossSectionDefinition.Comments):
+        """Comments for the RectangleCrsDef class."""
+
         type: Optional[str] = Field("Cross section type; must read rectangle")
         width: Optional[str] = Field("Width of the rectangle [m].")
         height: Optional[str] = Field("Height of the rectangle [m].")
@@ -263,7 +272,8 @@ class RectangleCrsDef(CrossSectionDefinition):
 
 
 class ZWRiverCrsDef(CrossSectionDefinition):
-    """
+    """ZWRiverCrsDef.
+
     Crosssection definition with `type=zwRiver`, to be included in a crossdef file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
@@ -272,6 +282,8 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     """
 
     class Comments(CrossSectionDefinition.Comments):
+        """Comments for the ZWRiverCrsDef class."""
+
         type: Optional[str] = Field(
             "Cross section type; must read zwRiver", alias="type"
         )
@@ -371,7 +383,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
 
     @root_validator(allow_reuse=True)
     def check_list_lengths(cls, values):
-        """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
+        """Validate that the length of the levels, flowwidths and totalwidths fields are as expected."""
         return validate_correct_length(
             values,
             "levels",
@@ -382,7 +394,8 @@ class ZWRiverCrsDef(CrossSectionDefinition):
 
 
 class ZWCrsDef(CrossSectionDefinition):
-    """
+    """ZWCrsDef.
+
     Crosssection definition with `type=zw`, to be included in a crossdef file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
@@ -391,6 +404,8 @@ class ZWCrsDef(CrossSectionDefinition):
     """
 
     class Comments(CrossSectionDefinition.Comments):
+        """Comments for the ZWCrsDef class."""
+
         type: Optional[str] = Field("Cross section type; must read zw", alias="type")
         # NOTE: Field "template" deliberately ignored for now.
         numlevels: Optional[str] = Field(
@@ -442,7 +457,7 @@ class ZWCrsDef(CrossSectionDefinition):
 
     @root_validator(allow_reuse=True)
     def check_list_lengths(cls, values):
-        """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
+        """Validate that the length of the levels, flowwidths and totalwidths fields are as expected."""
         return validate_correct_length(
             values,
             "levels",
@@ -458,7 +473,8 @@ class ZWCrsDef(CrossSectionDefinition):
 
 
 class YZCrsDef(CrossSectionDefinition):
-    """
+    """YZCrsDef.
+
     Crosssection definition with `type=yz`, to be included in a crossdef file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
@@ -467,6 +483,8 @@ class YZCrsDef(CrossSectionDefinition):
     """
 
     class Comments(CrossSectionDefinition.Comments):
+        """Comments for the YZCrsDef class."""
+
         type: Optional[str] = Field("Cross section type; must read yz", alias="type")
         conveyance: Optional[str] = Field(
             "lumped: Lumped, segmented: Vertically segmented. Only the default lumped "
@@ -540,7 +558,7 @@ class YZCrsDef(CrossSectionDefinition):
 
     @root_validator(allow_reuse=True)
     def check_list_lengths_coordinates(cls, values):
-        """Validates that the length of the ycoordinates and zcoordinates fields are as expected."""
+        """Validate that the length of the ycoordinates and zcoordinates fields are as expected."""
         return validate_correct_length(
             values,
             "ycoordinates",
@@ -550,7 +568,7 @@ class YZCrsDef(CrossSectionDefinition):
 
     @root_validator(allow_reuse=True)
     def check_list_lengths_friction(cls, values):
-        """Validates that the length of the frictionids, frictiontypes and frictionvalues field are as expected."""
+        """Validate that the length of the frictionids, frictiontypes and frictionvalues field are as expected."""
         return validate_correct_length(
             values,
             "frictionids",
@@ -561,7 +579,7 @@ class YZCrsDef(CrossSectionDefinition):
 
     @root_validator(allow_reuse=True)
     def check_list_length_frictionpositions(cls, values):
-        """Validates that the length of the frictionpositions field is as expected."""
+        """Validate that the length of the frictionpositions field is as expected."""
         return validate_correct_length(
             values,
             "frictionpositions",
@@ -576,7 +594,8 @@ class YZCrsDef(CrossSectionDefinition):
 
 
 class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
-    """
+    """XYZCrsDef.
+
     Crosssection definition with `type=xyz`, to be included in a crossdef file.
     Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile.definition[..]`
 
@@ -594,6 +613,8 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     """
 
     class Comments(YZCrsDef.Comments):
+        """Comments for the XYZCrsDef class."""
+
         type: Optional[str] = Field("Cross section type; must read xyz", alias="type")
         branchid: Optional[str] = Field(
             "Branch on which the cross section is located.", alias="branchId"
@@ -629,7 +650,8 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     @validator("xyzcount")
     @classmethod
     def validate_xyzcount_without_yzcount(cls, field_value: int, values: dict) -> int:
-        """
+        """Validate the xyzcount field.
+
         Validates whether this XYZCrsDef does have attribute xyzcount,
         but not the parent class's yzcount.
 
@@ -654,7 +676,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 
     @root_validator(allow_reuse=True)
     def check_list_lengths_coordinates(cls, values):
-        """Validates that the length of the xcoordinates, ycoordinates and zcoordinates field are as expected."""
+        """Validate that the length of the xcoordinates, ycoordinates and zcoordinates field are as expected."""
         return validate_correct_length(
             values,
             "xcoordinates",
@@ -665,7 +687,8 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 
 
 class CrossSection(INIBasedModel):
-    """
+    """Crosssection.
+
     A `[CrossSection]` block for use inside a crosssection location file,
     i.e., a [CrossLocModel][hydrolib.core.dflowfm.crosssection.models.CrossLocModel].
 
@@ -680,6 +703,8 @@ class CrossSection(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the CrossSection class."""
+
         id: Optional[str] = "Unique cross-section location id."
         branchid: Optional[str] = Field(
             "Branch on which the cross section is located.", alias="branchId"
@@ -715,7 +740,7 @@ class CrossSection(INIBasedModel):
 
     @root_validator(allow_reuse=True)
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
-        """Validates that the correct location specification is given."""
+        """Validate that the correct location specification is given."""
         return validate_location_specification(
             values,
             config=LocationValidationConfiguration(
@@ -739,7 +764,7 @@ class CrossLocModel(INIModel):
     """
 
     general: CrossLocGeneral = CrossLocGeneral()
-    crosssection: List[CrossSection] = []
+    crosssection: Union[CrossSection, List[CrossSection]] = []
 
     @classmethod
     def _filename(cls) -> str:
