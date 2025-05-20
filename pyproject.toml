@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.8.1"
+version = "0.9.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -13,8 +13,11 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 [tool.poetry.urls]
 "issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
+[tool.poetry.scripts]
+extforce-convert = 'hydrolib.tools.extforce_convert.cli:main'
+
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<4"
 # exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
 netCDF4 = "^1.5,!=1.7.0,!=1.7.1"
 # no caret here, since numpy v2 is required for future python 3.13 support, but this is not yet widely supported by packages numpy v1 support is also still required.
@@ -27,24 +30,27 @@ pydantic = "^2.5"
 lxml = "^5.0"
 meshkernel = "^7.0.0"
 strenum = "^0"
+tqdm = "^4.67.1"
+pandas = "^2.2.3"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
-pytest-cov = "^5.0"
-black = "^24.3"
+pytest-cov = "^6.0"
+devtools = "^0.12.2"
+commitizen = "^4.0"
 isort = "^5.8"
-devtools = "^0.6.1"
-commitizen = "^2.17"
-flake8 = "^3.9.2"
-mypy = "^0.910"
+black = "^24.8.0"
+mypy = "^1.13"
 openpyxl = "^3.0.9"
 jinja2 = "^3.0"
 markupsafe = "<2.1"
+jupyter = "^1.0.0"
 ipykernel = "^6.15.0"
 # matplotlib >=3.8 supports numpy 2.0
 matplotlib = "^3.8"
 # xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
 xarray = ">=2024.6.0"
+pyfakefs = "^5.7.4"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -60,10 +66,12 @@ mike = "^1.1.2"
 jupyter = "^1.0.0"
 notebook = "^7.3.2"
 mkdocstrings-python = "^1.13.0"
+mkdocs-mermaid2-plugin = "^1.2.1"
+
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.8.1"
+version = "0.9.0"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",
@@ -94,6 +102,14 @@ exclude = '''
   )/
 )
 '''
+
+[tool.flake8]
+ignore = ["E501", "W503", "E731", "E203"]
+per-file-ignores = [
+    '__init__.py:F401',
+]
+max-line-length = 120
+count = true
 
 [tool.isort]
 profile = "black"

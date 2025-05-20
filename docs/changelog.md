@@ -1,3 +1,12 @@
+## 0.9.0 (2025-05-16)
+
+### Feat
+
+- **extforce**: Introduce External forcing conversion tool with modular converters (UNST-8490, UNST-8528, UNST-8553) (#647)
+- **extforce**: Introduce External forcing conversion tool with modular converters (UNST-8490, UNST-8528, UNST-8553)
+- **meshkernel**: support refined parameters and clipping inside polygons with holes (#776)
+- **meshkernel**: support refined parameters and clipping inside polygons with holes
+
 ## 0.8.1 (2025-02-04)
 
 ### Feat

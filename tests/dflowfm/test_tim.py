@@ -105,6 +105,78 @@ class TestTimModel:
         model = TimModel()
         assert len(model.comments) == 0
         assert len(model.timeseries) == 0
+        assert model.as_dataframe().empty
+
+    def test_initialize_with_quantities_names(self, input_files_dir: Path):
+        """
+        Test Initializing the `TimModel` from a file and provide the name of the quantities in the files.
+
+        The initialization should initizline the super class `BaseModel` with the file path.
+        The `quantities_names` is used to initialize the `quantities_names` attribute.
+        """
+        path = input_files_dir / "tim/single_data_for_timeseries.tim"
+        model = TimModel(path, quantities_names=["a"])
+        assert model.quantities_names == ["a"]
+        assert len(model.timeseries) == 13
+
+    def test_get_units(self, input_files_dir: Path):
+        """
+        Test the `get_units` method. The method should return the units of the quantities in the timeseries.
+        """
+        path = input_files_dir / "tim/single_data_for_timeseries.tim"
+        model = TimModel(path, quantities_names=["discharge"])
+        assert model.get_units() == ["m3/s"]
+        model.quantities_names = ["waterlevel"]
+        assert model.get_units() == ["m"]
+        model.quantities_names = ["temperature"]
+        assert model.get_units() == ["degC"]
+        model.quantities_names = ["salinity"]
+        assert model.get_units() == ["1e-3"]
+        model.quantities_names = ["initialtracerAnyname"]
+        assert model.get_units() == ["-"]
+
+    def test_as_dataframe(self):
+        model = TimModel(
+            timeseries=self.single_data_for_timeseries_floats,
+            comments=["this file", "contains", "stuff"],
+        )
+        df = model.as_dataframe()
+        assert all(
+            df.index
+            == [
+                self.single_data_for_timeseries_floats[i].time
+                for i in range(len(self.single_data_for_timeseries_floats))
+            ]
+        )
+        assert df.shape == (13, 1)
+        assert df.columns.to_list() == [0]
+        vals = [
+            self.single_data_for_timeseries_floats[i].data[0]
+            for i in range(len(self.single_data_for_timeseries_floats))
+        ]
+        assert df.loc[:, 0].to_list() == vals
+
+        df = model.as_dataframe(columns=["data"])
+        assert df.columns.to_list() == ["data"]
+
+    def test_with_quantities_names(self):
+        model = TimModel(
+            timeseries=self.single_data_for_timeseries_floats, quantities_names=["a"]
+        )
+        assert model.quantities_names == ["a"]
+        with pytest.raises(ValueError):
+            TimModel(
+                timeseries=self.single_data_for_timeseries_floats,
+                quantities_names=["a", "b"],
+            )
+
+    def test_with_extra_un_needed_parameters(self):
+        with pytest.raises(ValueError):
+            TimModel(
+                timeseries=self.single_data_for_timeseries_floats,
+                extra_param="extra",
+            )
+            print("Extra parameters are not allowed")
 
     @pytest.mark.parametrize(
         "input_data, reference_path",
@@ -232,6 +304,31 @@ class TestTimModel:
         assert math.isclose(tim_model.timeseries[1].time, 9e9)
         assert tim_model.timeseries[1].data == [1.0, 270.0]
 
+    def test_add_location_values(self):
+        model = TimModel(
+            timeseries=[
+                TimRecord(time=0.0, data=[1.0, 2.0]),
+                TimRecord(time=1.0, data=[3.0, 4.0]),
+            ],
+            comments=["this file", "contains", "stuff"],
+            quantities_names=["discharge", "waterlevel"],
+        )
+
+        model.add_column([5.0, 6.0], "location")
+
+        assert model.timeseries[0].data == [1.0, 2.0, 5.0]
+        assert model.timeseries[1].data == [3.0, 4.0, 6.0]
+        assert model.quantities_names == ["discharge", "waterlevel", "location"]
+        model.as_dict()["location"] = [5.0, 6.0]
+
+        # Test with mismatched lengths
+        with pytest.raises(ValueError):
+            model.add_column([7.0])
+
+        # test when quantities_names is not provided
+        model.add_column([7.0, 8.0])
+        assert model.as_dict()["quantity-4"] == [7.0, 8.0]
+
 
 class TestTimRecord:
     def test_initialization(self):
@@ -332,7 +429,7 @@ class TestTimParser:
         with pytest.raises(ValueError) as error:
             TimParser.parse(input_path)
 
-        expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the time series data."
+        expected_error_msg = f"Line {5}: comments are only supported at the start of the file, before the data."
         assert expected_error_msg in str(error.value)
 
     @pytest.mark.parametrize(

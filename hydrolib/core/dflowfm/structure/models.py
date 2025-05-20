@@ -493,6 +493,45 @@ class Culvert(Structure):
         )
 
 
+class LongCulvert(Structure):
+    """
+    Hydraulic structure with `type=longCulvert`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the long culvert input as described in
+    [UM Sec.C.13.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.13.4).
+    """
+
+    type: Literal["longCulvert"] = Field("longCulvert", alias="type")
+    allowedflowdir: Optional[FlowDirection] = Field(alias="allowedFlowDir")
+    zcoordinates: Optional[List[float]] = Field(None, alias="zCoordinates")
+
+    width: float = Field(alias="width")
+    height: float = Field(alias="height")
+    frictiontype: FrictionType = Field(alias="frictionType")
+    frictionvalue: float = Field(alias="frictionValue")
+    valverelativeopening: float = Field(alias="valveRelativeOpening")
+    csdefid: Optional[str] = Field(alias="csDefId")
+
+    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+
+    _split_to_list = get_split_string_on_delimiter_validator("zcoordinates")
+
+    @validator("zcoordinates", always=True)
+    @classmethod
+    def _validate_zcoordinates(cls, v, values):
+        if v is None:
+            return v
+
+        if len(v) != values["numcoordinates"]:
+            raise ValueError(
+                f"Expected {values['numcoordinates']} z-coordinates, but got {len(v)}."
+            )
+
+        return v
+
+
 class Pump(Structure):
     """
     Hydraulic structure with `type=pump`, to be included in a structure file.

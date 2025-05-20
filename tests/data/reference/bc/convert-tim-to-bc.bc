@@ -1,0 +1,85 @@
+# written by HYDROLIB-core 0.8.1
+
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name              = any-name-1
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = any-name-1
+unit              = m³/s
+0.0    1.0
+100.0  1.0
+200.0  1.0
+300.0  1.0
+400.0  1.0
+
+[Forcing]
+name              = any-name-2
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = any-name-2
+unit              = m
+0.0    2.0
+100.0  2.0
+200.0  2.0
+300.0  2.0
+400.0  2.0
+
+[Forcing]
+name              = any-name-3
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = any-name-3
+unit              = C
+0.0    3.0
+100.0  3.0
+200.0  3.0
+300.0  3.0
+400.0  3.0
+
+[Forcing]
+name              = any-name-4
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = any-name-4
+unit              = ppt
+0.0    4.0
+100.0  4.0
+200.0  4.0
+300.0  4.0
+400.0  4.0
+
+[Forcing]
+name              = any-name-5
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = any-name-5
+unit              = -
+0.0    5.0
+100.0  5.0
+200.0  5.0
+300.0  5.0
+400.0  5.0

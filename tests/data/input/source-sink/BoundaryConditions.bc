@@ -1,0 +1,133 @@
+[General]
+    fileVersion           = 1.01
+    fileType              = boundConds          
+
+[forcing]
+    name                  = T1_Dwn_Bnd          
+    function              = constant            
+    time-interpolation    = linear  
+    quantity              = waterlevelbnd         
+    unit                  = m                   
+    2.5 
+
+[forcing]
+    name                  = T1_Up_Bnd           
+    function              = constant            
+    time-interpolation    = linear  
+    quantity              = dischargebnd     
+    unit                  = m³/s                
+    100 
+
+[forcing]
+    name                  = T2_Dwn_Bnd          
+    function              = constant            
+    time-interpolation    = linear  
+    quantity              = waterlevelbnd         
+    unit                  = m                   
+    2.5 
+
+[forcing]
+    name                  = T2_Up_Bnd           
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = dischargebnd     
+    unit                  = m³/s                
+    0 0 
+    1800 100 
+    4320 100 
+
+[forcing]
+    name                  = T3_Dwn_Bnd          
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = waterlevelbnd         
+    unit                  = m                   
+    0 0 
+    1800 2.5 
+    4320 2.5 
+
+[forcing]
+    name                  = T3_Up_Bnd           
+    function              = constant            
+    time-interpolation    = linear  
+    quantity              = dischargebnd     
+    unit                  = m³/s                
+    100 
+
+[forcing]
+    name                  = T4_Up_Bnd           
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = dischargebnd     
+    unit                  = m³/s                
+    0 0 
+    1800 100 
+    4320 100 
+
+[forcing]
+    name                  = T4_Dwn_Bnd          
+    function              = qhtable
+    quantity              = qhbnd discharge
+    unit                  = m³/s
+    quantity              = qhbnd waterlevel
+    unit                  = m
+    50 1.25
+    100 2.5
+    150 3.75 
+
+[forcing]
+    name                  = model_wide          
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = wind_speed          
+    unit                  = m/s                 
+    -2629440 0 
+
+[forcing]
+    name                  = model_wide          
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = wind_from_direction 
+    unit                  = degree              
+    -2629440 0 
+
+[forcing]
+    name                  = model_wide          
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = air_temperature     
+    unit                  = degrees C           
+    -2629440 0 
+
+[forcing]
+    name                  = model_wide          
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = humidity            
+    unit                  = percentage          
+    -2629440 0 
+
+[forcing]
+    name                  = model_wide          
+    function              = timeseries          
+    time-interpolation    = linear  
+    quantity              = time                
+    unit                  = minutes since 2015-01-01 00:00:00
+    quantity              = cloudiness          
+    unit                  = percentage          
+    -2629440 0 
+

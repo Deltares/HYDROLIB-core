@@ -18,6 +18,33 @@ from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
+INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
+    "initialtracer",
+    "initialsedfrac",
+    "initialverticalsedfracprofile",
+    "initialverticalsigmasedfracprofile",
+)
+
+BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = (
+    "tracerbnd",
+    "sedfracbnd",
+)
+
+FILETYPE_FILEMODEL_MAPPING = {
+    1: TimModel,
+    2: TimModel,
+    3: DiskOnlyFileModel,
+    4: DiskOnlyFileModel,
+    5: DiskOnlyFileModel,
+    6: DiskOnlyFileModel,
+    7: DiskOnlyFileModel,
+    8: DiskOnlyFileModel,
+    9: PolyFile,
+    10: PolyFile,
+    11: DiskOnlyFileModel,
+    12: DiskOnlyFileModel,
+}
+
 HEADER = """
  QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
              : outflowbnd, neumannbnd, qhbnd, uxuyadvectionvelocitybnd                             filetype=9         method=2,3
@@ -122,6 +149,207 @@ class ExtOldTracerQuantity(StrEnum):
     """User-defined tracer"""
     InitialTracer = "initialtracer"
     """Initial tracer"""
+    SedFracBnd = "sedfracbnd"
+
+
+class ExtOldBoundaryQuantity(StrEnum):
+    # Boundary conditions
+    WaterLevelBnd = "waterlevelbnd"
+    """Water level"""
+    NeumannBnd = "neumannbnd"
+    """Water level gradient"""
+    RiemannBnd = "riemannbnd"
+    """Riemann invariant"""
+    OutflowBnd = "outflowbnd"
+    """Outflow"""
+    VelocityBnd = "velocitybnd"
+    """Velocity"""
+    DischargeBnd = "dischargebnd"
+    """Discharge"""
+    RiemannVelocityBnd = "riemann_velocitybnd"
+    """Riemann invariant velocity"""
+    SalinityBnd = "salinitybnd"
+    """Salinity"""
+    TemperatureBnd = "temperaturebnd"
+    """Temperature"""
+    SedimentBnd = "sedimentbnd"
+    """Suspended sediment"""
+    UXUYAdvectionVelocityBnd = "uxuyadvectionvelocitybnd"
+    """ux-uy advection velocity"""
+    NormalVelocityBnd = "normalvelocitybnd"
+    """Normal velocity"""
+    TangentialVelocityBnd = "tangentialvelocitybnd"
+    """Tangential velocity"""
+    QhBnd = "qhbnd"
+    """Discharge-water level dependency"""
+
+    @classmethod
+    def _missing_(cls, value):
+        """Custom implementation for handling missing values.
+
+        the method parses any missing values and only allows the ones that start with "initialtracer".
+        """
+        # Allow strings starting with "tracer"
+        if isinstance(value, str) and value.startswith(
+            BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
+        ):
+            new_member = str.__new__(cls, value)
+            new_member._value_ = value
+            return new_member
+        else:
+            raise ValueError(
+                f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
+                f"and quantities that start with 'tracer'"
+            )
+
+
+class ExtOldParametersQuantity(StrEnum):
+    """Enum class containing the valid values for the Spatial parameter category
+    of the external forcings.
+
+    for more details check D-Flow FM User Manual 1D2D, Chapter D.3.1, Table D.2
+    https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D.pdf
+    """
+
+    FrictionCoefficient = "frictioncoefficient"
+    HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
+    HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
+    AdvectionType = "advectiontype"
+    InfiltrationCapacity = "infiltrationcapacity"
+    BedRockSurfaceElevation = "bedrock_surface_elevation"
+    WaveDirection = "wavedirection"
+    XWaveForce = "xwaveforce"
+    YWaveForce = "ywaveforce"
+    WavePeriod = "waveperiod"
+    WaveSignificantHeight = "wavesignificantheight"
+    InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
+
+
+class ExtOldMeteoQuantity(StrEnum):
+
+    # Meteorological fields
+    WindX = "windx"
+    """Wind x component"""
+    WindY = "windy"
+    """Wind y component"""
+    WindXY = "windxy"
+    """Wind vector"""
+    AirPressureWindXWindY = "airpressure_windx_windy"
+    """Atmospheric pressure and wind components"""
+    AirPressureWindXWindYCharnock = "airpressure_windx_windy_charnock"
+    "Atmospheric pressure and wind components Charnock"
+    AtmosphericPressure = "atmosphericpressure"
+    """Atmospheric pressure"""
+    Rainfall = "rainfall"
+    """Precipitation"""
+    RainfallRate = "rainfall_rate"
+    """Precipitation"""
+    HumidityAirTemperatureCloudiness = "humidity_airtemperature_cloudiness"
+    """Combined heat flux terms"""
+    HumidityAirTemperatureCloudinessSolarRadiation = (
+        "humidity_airtemperature_cloudiness_solarradiation"
+    )
+    """Combined heat flux terms"""
+    DewPointAirTemperatureCloudiness = "dewpoint_airtemperature_cloudiness"
+    """Dew point air temperature cloudiness"""
+    LongWaveRadiation = "longwaveradiation"
+    """Long wave radiation"""
+    SolarRadiation = "solarradiation"
+    """Solar radiation"""
+    NudgeSalinityTemperature = "nudge_salinity_temperature"
+    """Nudging salinity and temperature"""
+    AirPressure = "airpressure"
+    """AirPressure"""
+    StressX = "stressx"
+    """eastward wind stress"""
+    StressY = "stressy"
+    """northward wind stress"""
+    AirTemperature = "airtemperature"
+    """AirTemperature"""
+    Cloudiness = "cloudiness"
+    """Cloudiness, or cloud cover (fraction)"""
+    Humidity = "humidity"
+    """Humidity"""
+    StressXY = "stressxy"
+    """eastward and northward wind stress"""
+    AirpressureStressXStressY = "airpressure_stressx_stressy"
+    """Airpressure, eastward and northward wind stress"""
+    WindSpeed = "wind_speed"
+    """WindSpeed"""
+    WindFromDirection = "wind_from_direction"
+    """WindFromDirection"""
+    DewpointAirTemperatureCloudinessSolarradiation = (
+        "dewpoint_airtemperature_cloudiness_solarradiation"
+    )
+    """Dewpoint temperature, air temperature, cloudiness, solarradiation"""
+    AirDensity = "airdensity"
+    """Air density"""
+    Charnock = "charnock"
+    """Charnock coefficient"""
+    Dewpoint = "dewpoint"
+    """Dewpoint temperature"""
+
+
+class ExtOldInitialConditionQuantity(StrEnum):
+    """
+    Initial Condition quantities:
+        initialwaterlevel, initialsalinity, initialsalinitytop, initialtemperature,
+        initialverticaltemperatureprofile, initialverticalsalinityprofile, initialvelocityx,
+        initialvelocityy, initialvelocity
+
+    If there is a missing quantity that is mentioned in the "Accepted quantity names" section of the user manual
+    [Sec.C.5.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.3).
+    and [Sec.D.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.3).
+    please open and issue in github.
+    """
+
+    # Initial Condition fields
+    BedLevel = "bedlevel"
+    BedLevel1D = "bedlevel1D"
+    BedLevel2D = "bedlevel2D"
+
+    InitialWaterLevel = "initialwaterlevel"
+    InitialWaterLevel1D = "initialwaterlevel1d"
+    InitialWaterLevel2D = "initialwaterlevel2d"
+
+    InitialSalinity = "initialsalinity"
+    InitialSalinityTop = "initialsalinitytop"
+    InitialSalinityBot = "initialsalinitybot"
+    InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
+
+    InitialTemperature = "initialtemperature"
+    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
+
+    initialUnsaturatedZoneThickness = "initialunsaturatedzonethickness"
+    InitialVelocityX = "initialvelocityx"
+    InitialVelocityY = "initialvelocityy"
+    InitialVelocity = "initialvelocity"
+    InitialWaqBot = "initialwaqbot"
+
+    @classmethod
+    def _missing_(cls, value):
+        """Custom implementation for handling missing values.
+
+        the method parses any missing values and only allows the ones that start with "initialtracer".
+        """
+        # Allow strings starting with "tracer"
+        if isinstance(value, str) and value.startswith(
+            INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
+        ):
+            new_member = str.__new__(cls, value)
+            new_member._value_ = value
+            return new_member
+        else:
+            raise ValueError(
+                f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
+                f"and quantities that start with 'tracer'"
+            )
+
+
+class ExtOldSourcesSinks(StrEnum):
+    """Source and sink quantities"""
+
+    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
 
 
 class ExtOldQuantity(StrEnum):
@@ -261,6 +489,7 @@ class ExtOldQuantity(StrEnum):
     AdvectionType = "advectiontype"
     """Type of advection scheme"""
     IBotLevType = "ibotlevtype"
+    BedRockSurfaceElevation = "bedrock_surface_elevation"
     """Type of bed-level handling"""
 
     # Miscellaneous
@@ -272,6 +501,13 @@ class ExtOldQuantity(StrEnum):
     """Wave significant height"""
     WavePeriod = "waveperiod"
     """Wave period"""
+    WaveDirection = "wavedirection"
+    XWaveForce = "xwaveforce"
+    YWaveForce = "ywaveforce"
+
+    InitialVelocityX = "initialvelocityx"
+    InitialVelocityY = "initialvelocityy"
+    InitialVelocity = "initialvelocity"
 
 
 class ExtOldFileType(IntEnum):
@@ -296,9 +532,9 @@ class ExtOldFileType(IntEnum):
     TriangulationMagnitudeAndDirection = 8
     """8. Triangulation magnitude and direction"""
     Polyline = 9
-    """9. Polyline (<*.pli>-file)"""
-    Polyfile = 10
-    """10. Polyfile (<*.pol/*.pli>-file). uniform value inside polygon for INITIAL fields"""
+    """9. Polyline (<*.pli>-file) with boundary signals on support points"""
+    InsidePolygon = 10
+    """10. Polyfile (<*.pol>-file). Uniform value inside polygon for INITIAL fields"""
     NetCDFGridData = 11
     """11. NetCDF grid data (e.g. meteo fields)"""
     NetCDFWaveData = 14
@@ -324,6 +560,8 @@ class ExtOldMethod(IntEnum):
     """6. Averaging in space"""
     InterpolateExtrapolateTime = 7
     """7. Interpolate/Extrapolate time"""
+    Obsolete = 11
+    """11. METHOD=11 is obsolete; use METHOD=3 and EXTRAPOLATION_METHOD=1"""
 
 
 class ExtOldExtrapolationMethod(IntEnum):
@@ -358,7 +596,7 @@ class ExtOldForcing(BaseModel):
 
     filetype: ExtOldFileType = Field(alias="FILETYPE")
     """FileType: Indication of the file type.
-    
+
     Options:
     1. Time series
     2. Time series magnitude and direction
@@ -375,7 +613,7 @@ class ExtOldForcing(BaseModel):
 
     method: ExtOldMethod = Field(alias="METHOD")
     """ExtOldMethod: The method of interpolation.
-    
+
     Options:
     1. Pass through (no interpolation)
     2. Interpolate time and space
@@ -401,8 +639,8 @@ class ExtOldForcing(BaseModel):
 
     operand: Operand = Field(alias="OPERAND")
     """Operand: The operand to use for adding the provided values.
-    
-    Options:    
+
+    Options:
     'O' Existing values are overwritten with the provided values.
     'A' Provided values are used where existing values are missing.
     '+' Existing values are summed with the provided values.
@@ -546,6 +784,7 @@ class ExtOldForcing(BaseModel):
             extrapolation_method.value
             == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
             and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
+            and method.value != ExtOldMethod.Obsolete
         ):
             error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
             raise ValueError(error)
@@ -575,6 +814,42 @@ class ExtOldForcing(BaseModel):
 
         return values
 
+    @root_validator(pre=True)
+    def chooce_file_model(cls, values):
+        """Root-level validator to the right class for the filename parameter based on the filetype.
+
+        The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
+        dictionary.
+
+        FileType_FileModel_mapping = {
+            1: TimModel,
+            2: TimModel,
+            3: DiskOnlyFileModel,
+            4: DiskOnlyFileModel,
+            5: DiskOnlyFileModel,
+            6: DiskOnlyFileModel,
+            7: DiskOnlyFileModel,
+            8: DiskOnlyFileModel,
+            9: PolyFile,
+            10: PolyFile,
+            11: DiskOnlyFileModel,
+            12: DiskOnlyFileModel,
+        }
+        """
+        # if the filetype and the filename are present in the values
+        if any(par in values for par in ["filetype", "FILETYPE"]) and any(
+            par in values for par in ["filename", "FILENAME"]
+        ):
+            file_type_var_name = "filetype" if "filetype" in values else "FILETYPE"
+            filename_var_name = "filename" if "filename" in values else "FILENAME"
+            file_type = values.get(file_type_var_name)
+            raw_path = values.get(filename_var_name)
+            model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
+
+            values[filename_var_name] = model(raw_path)
+
+        return values
+
 
 class ExtOldModel(ParsableFileModel):
     """
@@ -583,9 +858,9 @@ class ExtOldModel(ParsableFileModel):
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefile`.
     """
 
-    comment: List[str] = HEADER.splitlines()[1:]
+    comment: List[str] = Field(default=HEADER.splitlines()[1:])
     """List[str]: The comments in the header of the external forcing file."""
-    forcing: List[ExtOldForcing] = []
+    forcing: List[ExtOldForcing] = Field(default_factory=list)
     """List[ExtOldForcing]: The external forcing/QUANTITY blocks in the external forcing file."""
 
     @classmethod
@@ -608,3 +883,8 @@ class ExtOldModel(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return Parser.parse
+
+    @property
+    def quantities(self) -> List[str]:
+        """List all the quantities in the external forcings file."""
+        return [forcing.quantity for forcing in self.forcing]

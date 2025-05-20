@@ -860,7 +860,7 @@ def test_network_netcdf_consistency_corrupt_file(tmp_path):
         extent=(-2, -2, 2, 2), dx=1, dy=1
     )
 
-    nc_file = "test.nc"
+    nc_file = tmp_path / "test.nc"
     model.save(filepath=nc_file)
 
     ds = xr.open_dataset(nc_file)
