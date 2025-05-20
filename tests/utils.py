@@ -2,17 +2,18 @@ import difflib
 import filecmp
 import os
 import sys
+import re
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generator, Generic, List, Optional, TypeVar
+from typing import Generator, Generic, List, Optional, TypeVar, Callable
 
 from pydantic.v1.generics import GenericModel
 
 from hydrolib.core.basemodel import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
-
+VERSION_LINE_PATTERN = r'^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:-[\w\.]+)?\s*$'
 
 class WrapperTest(GenericModel, Generic[TWrapper]):
     val: TWrapper
@@ -216,12 +217,14 @@ def get_temp_file(filename: str) -> Generator[Path, None, None]:
         yield Path(temp_dir, filename)
 
 
-def compare_two_files(path1: PathOrStr, path2: PathOrStr) -> List[str]:
+def compare_two_files(path1: PathOrStr, path2: PathOrStr, ignore_line: Callable[[str], bool] = None) -> List[str]:
     """Compare two files and return the differences.
 
     Args:
         path1 (PathOrStr): The path to the first file.
         path2 (PathOrStr): The path to the second file.
+        ignore_line (Callable[[str], bool], optional): A function that returns True for lines to ignore.
+
 
     Returns:
         List[str]: The differences between the two files.
@@ -243,20 +246,58 @@ def compare_two_files(path1: PathOrStr, path2: PathOrStr) -> List[str]:
     if not path2.exists():
         raise FileNotFoundError(f"File {path2} does not exist.")
 
-    file1_lines = path1.read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
-    file2_lines = path2.read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
-
-    # Remove trailing blank lines (if any)
-    while file1_lines and not file1_lines[-1].strip():
-        file1_lines.pop()
-    while file2_lines and not file2_lines[-1].strip():
-        file2_lines.pop()
+    file1_lines = read_clean(path1, ignore_line)
+    file2_lines = read_clean(path2, ignore_line)
 
     diff = difflib.unified_diff(
         file1_lines, file2_lines, lineterm="", fromfile=str(path1), tofile=str(path2)
     )
     return list(diff)
 
+def read_clean(path: Path, ignore_line: Optional[Callable] = None) -> List[str]:
+    """
+    Read a file and remove trailing blank lines.
+
+    Args:
+        path (Path):
+            file path
+        ignore_line (Callable, optional):
+            function that takes the file separated lines and returns True for lines to ignore. similat to
+            `ignore_version_lines`.
+
+    Returns:
+        lines (List[str]):
+            The lines of the file as a list of strings.
+    """
+    lines = path.read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
+    # Remove trailing blank lines (if any)
+    while lines and not lines[-1].strip():
+        lines.pop()
+    if ignore_line:
+        lines = [line for line in lines if not ignore_line(line)]
+
+    return  lines
+
+
+def ignore_version_lines(line: str, pattern = VERSION_LINE_PATTERN) -> bool:
+    """Check if the line is a version line.
+
+    Args:
+        line (str):
+            The line to check.
+        pattern (str, optional):
+            The regex pattern to match version lines.
+            Defaults to r'^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:-[\w\.]+)?\s*$'.
+
+    Notes:
+        This is used to match version definition lines such as:
+        # written by HYDROLIB-core 0.8.0
+        written by hydrolib-core 1.0
+        # written by Hydrolib-Core 1.2.3-beta.1
+        written by HYDROLIB-core 2.0.0-alpha
+        #written by hydrolib-core 0.9.1
+    """
+    return bool(re.match(pattern, line, re.IGNORECASE))
 
 def is_macos():
     return os.name == "posix" and sys.platform == "darwin"
