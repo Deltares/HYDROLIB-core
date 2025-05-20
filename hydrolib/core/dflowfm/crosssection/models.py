@@ -1,8 +1,7 @@
 import logging
 from typing import Dict, List, Literal, Optional
 
-from pydantic.v1 import Field, root_validator
-from pydantic.v1.class_validators import validator
+from pydantic import Field, field_validator, model_validator
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -86,35 +85,29 @@ class CrossSectionDefinition(INIBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    @validator("type", pre=True)
+    @field_validator("type", mode="before")
     def _validate_type(cls, value):
         return get_from_subclass_defaults(CrossSectionDefinition, "type", value)
 
+    @model_validator(mode="before")
     @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `type` field.
-        This field is compared to each `type` field of the derived models of `CrossSectionDefinition`.
-        The derived model with an equal crosssection definition type will be initialized.
+    def resolve_subclass(cls, values):
+        """Resolves the subclass of the CrossSectionDefinition based on the type field.
 
-        Raises:
-            ValueError: When the given type is not a known crosssection definition type.
+        Args:
+            values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
         """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("type").default.lower()
-                    == v.get("type", "").lower()
-                ):
-                    v = c(**v)
-                    break
-            else:
-                raise ValueError(
-                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
-                )
-        return super().validate(v)
+        if not isinstance(values, dict):
+            cls.flatten_section_if_needed(values)
+        type_value = values.get("type", "").lower()
+        for subclass in cls.__subclasses__():
+            subclass_type = subclass.model_fields["type"].default.lower()
+            if subclass_type == type_value:
+                return subclass(**values)
+        raise ValueError(
+            f"Type of {cls.__name__} with id={values.get('id', '')}"
+            f" and type={values.get('type', '')} is not recognized."
+        )
 
     @staticmethod
     def _get_friction_root_validator(
@@ -155,7 +148,7 @@ class CrossSectionDefinition(INIBasedModel):
 
             return values
 
-        return root_validator(allow_reuse=True)(validate_friction_specification)
+        return model_validator(mode="after")(validate_friction_specification)
 
 
 class CrossDefModel(INIModel):
@@ -369,7 +362,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     )
     _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_lengths(cls, values):
         """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
         return validate_correct_length(
@@ -440,7 +433,7 @@ class ZWCrsDef(CrossSectionDefinition):
         "totalwidths",
     )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_lengths(cls, values):
         """Validates that the length of the levels, flowwidths and totalwidths fields are as expected."""
         return validate_correct_length(
@@ -538,7 +531,7 @@ class YZCrsDef(CrossSectionDefinition):
         "frictiontypes",
     )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_lengths_coordinates(cls, values):
         """Validates that the length of the ycoordinates and zcoordinates fields are as expected."""
         return validate_correct_length(
@@ -548,7 +541,7 @@ class YZCrsDef(CrossSectionDefinition):
             length_name="yzcount",
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_lengths_friction(cls, values):
         """Validates that the length of the frictionids, frictiontypes and frictionvalues field are as expected."""
         return validate_correct_length(
@@ -559,7 +552,7 @@ class YZCrsDef(CrossSectionDefinition):
             length_name="sectioncount",
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_length_frictionpositions(cls, values):
         """Validates that the length of the frictionpositions field is as expected."""
         return validate_correct_length(
@@ -626,7 +619,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         "xcoordinates",
     )
 
-    @validator("xyzcount")
+    @field_validator("xyzcount")
     @classmethod
     def validate_xyzcount_without_yzcount(cls, field_value: int, values: dict) -> int:
         """
@@ -652,7 +645,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
             )
         return field_value
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def check_list_lengths_coordinates(cls, values):
         """Validates that the length of the xcoordinates, ycoordinates and zcoordinates field are as expected."""
         return validate_correct_length(
@@ -713,7 +706,7 @@ class CrossSection(INIBasedModel):
     shift: Optional[float] = Field(0.0)
     definitionid: str = Field(alias="definitionId")
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
         """Validates that the correct location specification is given."""
         return validate_location_specification(

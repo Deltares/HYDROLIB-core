@@ -1,7 +1,6 @@
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.fields import Field
+from pydantic import Field, ValidationInfo, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -140,25 +139,25 @@ class StorageNode(INIBasedModel):
     _header: Literal["StorageNode"] = "StorageNode"
     id: str = Field(alias="id")
     name: str = Field(alias="name")
-    manholeid: Optional[str] = Field(alias="manholeId")
+    manholeid: Optional[str] = Field(default=None, alias="manholeId")
 
     nodetype: Optional[NodeType] = Field(NodeType.unspecified.value, alias="nodeType")
     nodeid: str = Field(alias="nodeId")
     usetable: bool = Field(alias="useTable")
 
     # useTable is True
-    bedlevel: Optional[float] = Field(alias="bedLevel")
-    area: Optional[float] = Field(alias="area")
-    streetlevel: Optional[float] = Field(alias="streetLevel")
-    streetstoragearea: Optional[float] = Field(alias="streetStorageArea")
+    bedlevel: Optional[float] = Field(default=None, alias="bedLevel")
+    area: Optional[float] = Field(default=None, alias="area")
+    streetlevel: Optional[float] = Field(default=None, alias="streetLevel")
+    streetstoragearea: Optional[float] = Field(default=None, alias="streetStorageArea")
     storagetype: Optional[StorageType] = Field(
         StorageType.reservoir.value, alias="storageType"
     )
 
     # useTable is False
-    numlevels: Optional[int] = Field(alias="numLevels")
-    levels: Optional[List[float]] = Field(alias="levels")
-    storagearea: Optional[List[float]] = Field(alias="storageArea")
+    numlevels: Optional[int] = Field(default=None, alias="numLevels")
+    levels: Optional[List[float]] = Field(default=None, alias="levels")
+    storagearea: Optional[List[float]] = Field(default=None, alias="storageArea")
     interpolate: Optional[Interpolation] = Field(
         Interpolation.linear.value, alias="interpolate"
     )
@@ -178,9 +177,12 @@ class StorageNode(INIBasedModel):
         "storagearea",
     )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
+    @classmethod
     def check_list_length_levels(cls, values):
         """Validates that the length of the levels field is as expected."""
+        if not isinstance(values, dict):
+            values = values.model_dump()
         return validate_correct_length(
             values,
             "levels",
@@ -189,7 +191,8 @@ class StorageNode(INIBasedModel):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
+    @classmethod
     def validate_that_required_fields_are_present_when_using_tables(
         cls, values: Dict
     ) -> Dict:
@@ -203,7 +206,8 @@ class StorageNode(INIBasedModel):
             conditional_value=True,
         )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
+    @classmethod
     def validate_that_required_fields_are_present_when_not_using_tables(
         cls, values: Dict
     ) -> Dict:
@@ -241,21 +245,24 @@ class StorageNodeModel(INIModel):
     def _filename(cls) -> str:
         return "nodeFile"
 
-    @validator("storagenode", each_item=True)
-    def _validate(cls, storagenode: StorageNode, values: dict):
+    @field_validator("storagenode")
+    def _validate(
+        cls, storagenodes: List[Dict[str, Any]], info: ValidationInfo
+    ) -> List[StorageNode]:
         """Validates for each storage node whether the streetStorageArea value is provided
         when the general useStreetStorage is True and the storage node useTable is False.
         """
 
-        usestreetstorage = values["general"].usestreetstorage
+        usestreetstorage = info.data["general"].usestreetstorage
+        for storagenode in storagenodes:
+            if (
+                usestreetstorage
+                and not storagenode["usetable"]
+                and storagenode["streetstoragearea"] is None
+            ):
+                raise ValueError(
+                    "streetStorageArea should be provided when useStreetStorage is True"
+                    f" and useTable is False for storage node with id {storagenode['id']}"
+                )
 
-        if (
-            usestreetstorage
-            and not storagenode.usetable
-            and storagenode.streetstoragearea is None
-        ):
-            raise ValueError(
-                f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id {storagenode.id}"
-            )
-
-        return storagenode
+        return storagenodes

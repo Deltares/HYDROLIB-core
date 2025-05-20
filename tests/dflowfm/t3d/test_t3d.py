@@ -1,5 +1,5 @@
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.basemodel import ModelSaveSettings
 from hydrolib.core.dflowfm.t3d.models import LayerType, T3DModel, T3DTimeRecord
@@ -135,7 +135,7 @@ class TestT3DModel:
         assert model.comments == self.data["comments"]
         assert model.layer_type == self.data["layer_type"]
         assert model.layers == self.data["layers"]
-        assert model.records == self.data["records"]
+        assert model.model_dump()["records"] == self.data["records"]
 
     def test_initialize_with_file_path(self):
         filepath = t3d_file_path / "sigma-5-layers-3-times.t3d"
