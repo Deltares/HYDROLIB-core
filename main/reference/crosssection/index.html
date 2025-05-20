@@ -3044,7 +3044,7 @@ Typically inside the definition list of a <a class="autorefs autorefs-internal" 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">CrossLocGeneral</span> <span class="o">=</span> <span class="n">CrossLocGeneral</span><span class="p">()</span>
-    <span class="n">crosssection</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CrossSection</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">crosssection</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">CrossSection</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">CrossSection</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
