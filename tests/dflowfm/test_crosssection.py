@@ -16,7 +16,7 @@ from hydrolib.core.dflowfm.crosssection.models import (
 )
 from hydrolib.core.dflowfm.friction.models import FrictionType
 
-from ..utils import (
+from tests.utils import (
     assert_files_equal,
     test_data_dir,
     test_output_dir,
@@ -284,6 +284,19 @@ class TestCrossSectionLocation:
     """
     Class to test the cross section (location) input
     """
+    def test_one_crosssection(self):
+        """test whether a CrossLocModel can be created with one cross-section"""
+        data = {
+            "id": 99,
+            "branchId": 9,
+            "chainage": 403.089709,
+            "shift": 0.0,
+            "definitionId": 99,
+        }
+        cross_section = CrossSection(**data)
+
+        crossloc = CrossLocModel(crosssection=[cross_section])
+        assert len(crossloc.crosssection) == 1
 
     def test_crossdef_model_from_file(self):
         filepath = test_data_dir / "input/dflowfm_individual_files/crsloc.ini"
