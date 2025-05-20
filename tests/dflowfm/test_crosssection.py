@@ -15,7 +15,6 @@ from hydrolib.core.dflowfm.crosssection.models import (
     ZWRiverCrsDef,
 )
 from hydrolib.core.dflowfm.friction.models import FrictionType
-
 from tests.utils import (
     assert_files_equal,
     test_data_dir,
@@ -284,6 +283,7 @@ class TestCrossSectionLocation:
     """
     Class to test the cross section (location) input
     """
+
     def test_one_crosssection(self):
         """test whether a CrossLocModel can be created with one cross-section"""
         data = {
