@@ -1,7 +1,7 @@
 """Cross section models for D-Flow FM."""
 
 import logging
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional
 
 from pydantic.v1 import Field, root_validator
 from pydantic.v1.class_validators import validator
@@ -753,19 +753,79 @@ class CrossSection(INIBasedModel):
 
 
 class CrossLocModel(INIModel):
-    """
-    The overall crosssection location model that contains the contents of one crossloc file.
+    """The overall crosssection location model that contains the contents of one crossloc file.
 
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crosslocfile`.
 
     Attributes:
-        general (CrossLocGeneral): `[General]` block with file metadata.
-        crosssection (List[CrossSection]): List of `[CrossSection]` blocks for all cross section locations.
+        general (CrossLocGeneral):
+            `[General]` block with file metadata.
+        crosssection (List[CrossSection]):
+            List of `[CrossSection]` blocks for all cross-section locations, The crosssection attribute also accepts
+            single cross section.
+
+    Examples:
+        - Create the read `CrossLocModel` class from file.
+        ```python
+        >>> from hydrolib.core.dflowfm.crosssection.models import CrossLocModel
+        >>> from pathlib import Path
+        >>> path = Path("examples/data/crsloc.ini")
+        >>> crossloc_model = CrossLocModel(path)
+        >>> print(len(crossloc_model.crosssection))
+        2
+        >>> print(crossloc_model.crosssection[0])
+        comments=Comments(id=None, branchid=None, chainage=None, x='x-coordinate of the location of the cross section.', y='y-coordinate of the location of the cross section.', shift=None, definitionid=None) id='Channel1_50.000' branchid='Channel1' chainage=50.0 x=None y=None shift=1.0 definitionid='Prof1'
+
+        ```
+
+        - Create the `CrossLocModel` class by providing values for the `crosssection` attribute.
+        ```python
+        >>> data = {
+        ...    "id": 99,
+        ...    "branchId": 9,
+        ...    "chainage": 403,
+        ...    "shift": 0.0,
+        ...    "definitionId": 99
+        ... }
+        >>> cross_section = CrossSection(**data)
+        >>> crossloc = CrossLocModel(crosssection=cross_section)
+        >>> type(crossloc.crosssection)
+        <class 'list'>
+        >>> len(crossloc.crosssection)
+        1
+
+        ```
+
+        - Create the `CrossLocModel` class by providing values as a dictionary.
+        ```python
+        >>> data = {
+        ...     "crosssection": {
+        ...         "id": 99,
+        ...         "branchId": 9,
+        ...         "chainage": 403.089709,
+        ...         "shift": 0.0,
+        ...         "definitionId": 99,
+        ...     }
+        ... }
+        >>> crossloc = CrossLocModel(**data)
+        >>> print(crossloc.crosssection)
+        [CrossSection(comments=Comments(id='Unique cross-section location id.', branchid='Branch on which the cross section is located.', chainage='Chainage on the branch (m).', x='x-coordinate of the location of the cross section.', y='y-coordinate of the location of the cross section.', shift='Vertical shift of the cross section definition [m]. Defined positive upwards.', definitionid='Id of cross section definition.'), id='99', branchid='9', chainage=403.089709, x=None, y=None, shift=0.0, definitionid='99')]
+
+        ```
     """
 
     general: CrossLocGeneral = CrossLocGeneral()
-    crosssection: Union[CrossSection, List[CrossSection]] = []
+    crosssection: List[CrossSection] = Field(default=[])
 
     @classmethod
     def _filename(cls) -> str:
         return "crsloc"
+
+    @validator("crosssection", pre=True, always=True)
+    def ensure_crosssection_is_list(cls, v):
+        """Converting the crosssection to a list if it is not already a list."""
+        if isinstance(v, list):
+            return v
+        elif v is None:
+            return []
+        return [v]

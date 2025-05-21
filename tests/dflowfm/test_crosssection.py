@@ -295,7 +295,7 @@ class TestCrossSectionLocation:
         }
         cross_section = CrossSection(**data)
 
-        crossloc = CrossLocModel(crosssection=[cross_section])
+        crossloc = CrossLocModel(crosssection=cross_section)
         assert len(crossloc.crosssection) == 1
 
     def test_crossdef_model_from_file(self):
