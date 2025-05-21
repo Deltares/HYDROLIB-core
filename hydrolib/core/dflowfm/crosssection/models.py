@@ -815,7 +815,7 @@ class CrossLocModel(INIModel):
     """
 
     general: CrossLocGeneral = CrossLocGeneral()
-    crosssection: List[CrossSection] = Field(default=[])
+    crosssection: List[CrossSection] = Field(default_factory=list)
 
     @classmethod
     def _filename(cls) -> str:
