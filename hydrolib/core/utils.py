@@ -327,7 +327,23 @@ class FileChecksumCalculator:
 
     @staticmethod
     def _calculate_md5_checksum(filepath: Path) -> str:
-        md5_hash = md5()
+        """Calculate the MD5 checksum of a file.
+
+        This method uses the `hashlib.md5` function with the `usedforsecurity=False` parameter
+        to indicate that the MD5 hash is not being used for security purposes. MD5 is considered
+        cryptographically insecure and should not be used in security-sensitive contexts.
+
+        Note:
+            The `usedforsecurity` parameter was introduced in Python 3.9. This method requires
+            Python 3.9 or later to function correctly.
+
+        Args:
+            filepath (Path): The path to the file for which the checksum will be calculated.
+
+        Returns:
+            str: The MD5 checksum of the file.
+        """
+        md5_hash = md5(usedforsecurity=False)
         with open(filepath, "rb") as file:
             for chunk in iter(lambda: file.read(4096), b""):
                 md5_hash.update(chunk)
