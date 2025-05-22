@@ -29,7 +29,7 @@ class ParseMsg(BaseModel):
     line_start: int
     line_end: int
 
-    column: Optional[Tuple[int, int]]
+    column: Optional[Tuple[int, int]] = None
     reason: str
 
     def format_parsemsg_to_string(self, file_path: Optional[Path] = None) -> str:
