@@ -16,7 +16,8 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     validate_required_fields,
 )
-VALID_ATTRIBUTES_PREFIXES = ("tracer")
+
+VALID_ATTRIBUTES_PREFIXES = "tracer"
 logger = logging.getLogger(__name__)
 
 
@@ -171,8 +172,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
         unknown_keywords = [
             key
             for key in input_data.keys()
-            if key not in fields
-               and key.lower().startswith(VALID_ATTRIBUTES_PREFIXES)
+            if key not in fields and key.lower().startswith(VALID_ATTRIBUTES_PREFIXES)
         ]
         return set(unknown_keywords)
 
@@ -180,6 +180,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
         """
         Config class to tell Pydantic to accept fields not explicitly declared in the model.
         """
+
         # Allow dynamic fields
         extra = "allow"
 
@@ -188,7 +189,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
         # Add dynamic attributes for fields starting with 'tracer'
         for key, value in data.items():
             if isinstance(key, str) and key.lower().startswith(
-                    VALID_ATTRIBUTES_PREFIXES
+                VALID_ATTRIBUTES_PREFIXES
             ):
                 setattr(self, key, value)
 

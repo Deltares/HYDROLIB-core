@@ -328,14 +328,14 @@ class TestExcludeFromValidation:
         with the `tracerdecaytime` attribute even that it is not a field in the class.
         """
         data = {
-            'quantity': 'initialtracerdTR1',
-            'datafile': "domain.pol",
-            'datafiletype': DataFileType.polygon,
-            'value': 0.0,
-            'interpolationmethod': InterpolationMethod.constant,
-            'operand': 'O',
-            'tracerdecaytime': '8640000'
+            "quantity": "initialtracerdTR1",
+            "datafile": "domain.pol",
+            "datafiletype": DataFileType.polygon,
+            "value": 0.0,
+            "interpolationmethod": InterpolationMethod.constant,
+            "operand": "O",
+            "tracerdecaytime": "8640000",
         }
 
         model = InitialField(**data)
-        assert model.tracerdecaytime == '8640000'
+        assert model.tracerdecaytime == "8640000"
