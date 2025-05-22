@@ -14,9 +14,7 @@ import re
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, Set, Union
 
-from pydantic.v1 import Extra
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.fields import Field
+from pydantic import ConfigDict, Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.basemodel import BaseModel, ModelSaveSettings
@@ -94,7 +92,7 @@ class QuantityUnitPair(BaseModel):
     unit: str
     """str: Unit of quantity."""
 
-    vertpositionindex: Optional[int] = Field(alias="vertPositionIndex")
+    vertpositionindex: Optional[int] = Field(None, alias="vertPositionIndex")
     """int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only)."""
 
     def _to_properties(self):
@@ -123,7 +121,7 @@ class VectorQuantityUnitPairs(BaseModel):
     quantityunitpair: List[QuantityUnitPair]
     """List[QuantityUnitPair]: List of QuantityUnitPair that define the vector components."""
 
-    @root_validator
+    @model_validator(mode="before")
     @classmethod
     def _validate_quantity_element_names(cls, values: Dict):
         for idx, name in enumerate(
@@ -266,7 +264,7 @@ class ForcingBase(DataBlockINIBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _validate_quantityunitpair(cls, values):
         quantityunitpairkey = "quantityunitpair"
 
@@ -300,7 +298,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
         raise ValueError("Number of quantities should be equal to number of units")
 
-    @validator("function", pre=True)
+    @field_validator("function", mode="before")
     def _set_function(cls, value):
         return get_from_subclass_defaults(ForcingBase, "function", value)
 
@@ -348,8 +346,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
         return section
 
-    class Config:
-        extra = Extra.ignore
+    model_config = ConfigDict(extra="ignore")
 
     def __repr__(self) -> str:
         data = dict(self)
@@ -363,7 +360,7 @@ class VectorForcingBase(ForcingBase):
     The base class of a single [Forcing] block that supports vectors in a .bc forcings file.
     """
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def validate_and_update_quantityunitpairs(cls, values: Dict) -> Dict:
         """
         Validates and, if required, updates vector quantity unit pairs.
@@ -558,7 +555,7 @@ class VectorForcingBase(ForcingBase):
 
         return valid
 
-    @validator("function", pre=True)
+    @field_validator("function", mode="before")
     def _set_function(cls, value):
         return get_from_subclass_defaults(VectorForcingBase, "function", value)
 
@@ -671,7 +668,7 @@ class TimeSeries(VectorForcingBase):
         "timeinterpolation", enum=TimeInterpolation
     )
 
-    @root_validator(allow_reuse=True, pre=True)
+    @model_validator(mode="before")
     def rename_keys(cls, values: Dict) -> Dict:
         """Renames some old keywords to the currently supported keywords."""
         return rename_keys_for_backwards_compatibility(
@@ -753,7 +750,7 @@ class T3D(VectorForcingBase):
         "vertpositionindex": ["vertical_position"],
     }
 
-    @root_validator(allow_reuse=True, pre=True)
+    @model_validator(mode="before")
     def rename_keys(cls, values: Dict) -> Dict:
         """Renames some old keywords to the currently supported keywords."""
         return rename_keys_for_backwards_compatibility(values, cls._keys_to_rename)
@@ -799,7 +796,7 @@ class T3D(VectorForcingBase):
 
         return number_of_verticalpositions
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _validate_quantityunitpairs(cls, values: Dict) -> Dict:
         quantityunitpairs = values["quantityunitpair"]
 
