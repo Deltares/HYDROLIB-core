@@ -8,7 +8,6 @@ from typing import (
     Any,
     Callable,
     ClassVar,
-    Dict,
     List,
     Literal,
     Optional,
@@ -281,35 +280,6 @@ class INIBasedModel(BaseModel, ABC):
             logging.warning(f"Dropped unsupported comments from {cls.__name__} init.")
             v = None
         return v
-
-    @model_validator(mode="before")
-    @classmethod
-    def replace_fortran_scientific_notation_for_floats(
-        cls, values: Dict[str, Any], field_info: FieldInfo
-    ):
-        """
-        Converts FORTRAN-style scientific notation to standard notation for all float fields.
-
-        Args:
-            values (dict): The field values to process.
-
-        Returns:
-            dict: The processed field values.
-        """
-        for key, value in values.items():
-            field_info = cls.model_fields.get(key)
-            if not field_info:
-                continue
-            annotation = field_info.annotation
-            # Check for float, Optional[float], or Union containing float
-            if annotation is float or (
-                get_origin(annotation) is Union and float in get_args(annotation)
-            ):
-                if isinstance(value, str) or (
-                    isinstance(value, list) and any(isinstance(v, str) for v in value)
-                ):
-                    values[key] = cls._replace_fortran_scientific_notation(value)
-        return values
 
     @classmethod
     def _replace_fortran_scientific_notation(cls, value):

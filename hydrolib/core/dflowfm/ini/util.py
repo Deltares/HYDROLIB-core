@@ -4,6 +4,7 @@
 from datetime import datetime
 from enum import Enum
 from operator import eq
+from re import compile
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
 from pydantic import BaseModel, ValidationInfo, field_validator
@@ -11,6 +12,23 @@ from pydantic.fields import FieldInfo
 
 from hydrolib.core.dflowfm.common.models import LocationType
 from hydrolib.core.utils import operator_str, str_is_empty_or_none, to_list
+
+SCIENTIFIC_NOTATION = compile(r"([\d.]+)([dD])([+-]?\d{1,3})")
+
+
+def make_fortran_float_validator(*field_name: str):
+    def validate_fortran_float(cls, value, info):
+        if isinstance(value, str):
+            return SCIENTIFIC_NOTATION.sub(r"\1e\3", value)
+        if isinstance(value, list):
+            return [
+                SCIENTIFIC_NOTATION.sub(r"\1e\3", v) if isinstance(v, str) else v
+                for v in value
+            ]
+
+        return value
+
+    return field_validator(*field_name, mode="before")(validate_fortran_float)
 
 
 def get_split_string_on_delimiter_validator(*field_name: str):
