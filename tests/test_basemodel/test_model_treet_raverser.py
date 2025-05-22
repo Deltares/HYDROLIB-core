@@ -5,7 +5,6 @@ import pytest
 from hydrolib.core.basemodel import BaseModel, ModelTreeTraverser
 
 
-# Define test models
 class SimpleModel(BaseModel):
     name: str
     value: int
@@ -72,56 +71,54 @@ def complex_model():
     )
 
 
-# Tests for basic traversal functionality
-def test_traverse_simple_model(simple_model):
-    """Test traversal of a simple model with no children."""
-    # Count the number of models visited
+class TestBasicFunctionality:
+    def test_traverse_simple_model(self, simple_model):
+        """Test traversal of a simple model with no children."""
+        # Count the number of models visited
 
-    def count_visit(model: BaseModel, count: int) -> int:
-        return count + 1
+        def count_visit(model: BaseModel, count: int) -> int:
+            return count + 1
 
-    traverser = ModelTreeTraverser[int](post_traverse_func=count_visit)
+        traverser = ModelTreeTraverser[int](post_traverse_func=count_visit)
 
-    result = traverser.traverse(simple_model, 0)
+        result = traverser.traverse(simple_model, 0)
 
-    # Only the simple model itself should be visited
-    assert result == 1
+        # Only the simple model itself should be visited
+        assert result == 1
 
+    def test_traverse_nested_model(self, nested_model):
+        """Test traversal of a nested model."""
 
-def test_traverse_nested_model(nested_model):
-    """Test traversal of a nested model."""
+        # Collect model names during traversal
+        def collect_name(model: BaseModel, names: List[str]) -> List[str]:
+            if hasattr(model, "name"):
+                names.append(model.name)
+            return names
 
-    # Collect model names during traversal
-    def collect_name(model: BaseModel, names: List[str]) -> List[str]:
-        if hasattr(model, "name"):
-            names.append(model.name)
-        return names
+        traverser = ModelTreeTraverser[List[str]](post_traverse_func=collect_name)
 
-    traverser = ModelTreeTraverser[List[str]](post_traverse_func=collect_name)
+        result = traverser.traverse(nested_model, [])
 
-    result = traverser.traverse(nested_model, [])
+        # Both parent and child should be visited
+        assert len(result) == 2
+        assert "parent" in result
+        assert "child" in result
 
-    # Both parent and child should be visited
-    assert len(result) == 2
-    assert "parent" in result
-    assert "child" in result
+    def test_traverse_model_with_list(self, model_with_list):
+        """Test traversal of a model with a list of child models."""
 
+        # Sum the values of all models
+        def sum_values(model: BaseModel, total: int) -> int:
+            if hasattr(model, "value"):
+                return total + model.value
+            return total
 
-def test_traverse_model_with_list(model_with_list):
-    """Test traversal of a model with a list of child models."""
+        traverser = ModelTreeTraverser[int](post_traverse_func=sum_values)
 
-    # Sum the values of all models
-    def sum_values(model: BaseModel, total: int) -> int:
-        if hasattr(model, "value"):
-            return total + model.value
-        return total
+        result = traverser.traverse(model_with_list, 0)
 
-    traverser = ModelTreeTraverser[int](post_traverse_func=sum_values)
-
-    result = traverser.traverse(model_with_list, 0)
-
-    # Sum should be 1 + 2 + 3 = 6
-    assert result == 6
+        # Sum should be 1 + 2 + 3 = 6
+        assert result == 6
 
 
 def test_traverse_complex_model(complex_model):
