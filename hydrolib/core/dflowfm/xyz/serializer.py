@@ -31,7 +31,7 @@ class XYZSerializer:
                 geometry: str = space.join(
                     [format_float(p) for p in XYZSerializer._get_point_values(point)]
                 )
-                if point["comment"]:
+                if point.get("comment"):
                     f.write(f"{geometry} # {point["comment"]}\n")
                 else:
                     f.write(f"{geometry}\n")
