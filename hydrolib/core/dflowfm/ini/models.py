@@ -3,22 +3,23 @@ from abc import ABC
 from enum import Enum
 from inspect import isclass
 from math import isnan
-from re import compile
+from re import Pattern, compile
 from typing import (
     Any,
     Callable,
+    ClassVar,
+    Dict,
     List,
     Literal,
     Optional,
     Set,
-    Type,
     Union,
     get_args,
     get_origin,
 )
 
 from pandas import DataFrame
-from pydantic import ConfigDict, Field, ValidationInfo, field_validator, model_validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 from pydantic.fields import FieldInfo
 
 from hydrolib.core import __version__ as version
@@ -113,7 +114,7 @@ class INIBasedModel(BaseModel, ABC):
 
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
-    _scientific_notation_regex = compile(
+    _scientific_notation_regex: ClassVar[Pattern] = compile(
         r"([\d.]+)([dD])([+-]?\d{1,3})"
     )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
@@ -281,24 +282,34 @@ class INIBasedModel(BaseModel, ABC):
             v = None
         return v
 
-    @field_validator("*", mode="after")
+    @model_validator(mode="before")
+    @classmethod
     def replace_fortran_scientific_notation_for_floats(
-        cls, value, field: ValidationInfo
+        cls, values: Dict[str, Any], field_info: FieldInfo
     ):
         """
-        Converts FORTRAN-style scientific notation to standard notation for float fields.
+        Converts FORTRAN-style scientific notation to standard notation for all float fields.
 
         Args:
-            value (Any): The field value to process.
-            field (Field): The field being processed.
+            values (dict): The field values to process.
 
         Returns:
-            Any: The processed field value.
+            dict: The processed field values.
         """
-        if not isinstance(value, float):
-            return value
-
-        return cls._replace_fortran_scientific_notation(value)
+        for key, value in values.items():
+            field_info = cls.model_fields.get(key)
+            if not field_info:
+                continue
+            annotation = field_info.annotation
+            # Check for float, Optional[float], or Union containing float
+            if annotation is float or (
+                get_origin(annotation) is Union and float in get_args(annotation)
+            ):
+                if isinstance(value, str) or (
+                    isinstance(value, list) and any(isinstance(v, str) for v in value)
+                ):
+                    values[key] = cls._replace_fortran_scientific_notation(value)
+        return values
 
     @classmethod
     def _replace_fortran_scientific_notation(cls, value):
