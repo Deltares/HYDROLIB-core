@@ -86,8 +86,8 @@ class TestXYNSerializer:
 
         data = {
             "points": [
-                XYNPoint(x=1.1, y=2.2, n="randomName"),
-                XYNPoint(x=3.3, y=4.4, n="randomName 2"),
+                {"x": 1.1, "y": 2.2, "n": "randomName"},
+                {"x": 3.3, "y": 4.4, "n": "randomName 2"},
             ]
         }
 
