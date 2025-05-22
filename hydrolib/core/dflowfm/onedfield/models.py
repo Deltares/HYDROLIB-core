@@ -78,7 +78,7 @@ class OneDFieldBranch(INIBasedModel):
 
     branchid: str = Field(alias="branchId")
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
-    chainage: Optional[List[float]] = Field(alias="chainage")
+    chainage: Optional[List[float]] = Field(None, alias="chainage")
     values: List[float] = Field(alias="values")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -86,7 +86,7 @@ class OneDFieldBranch(INIBasedModel):
         "values",
     )
 
-    @model_validator(mode="after")
+    @model_validator(mode="before")
     def check_list_length_values(cls, values):
         """Validates that the length of the values field is as expected."""
         return validate_correct_length(
@@ -97,7 +97,7 @@ class OneDFieldBranch(INIBasedModel):
             min_length=1,
         )
 
-    @model_validator(mode="after")
+    @model_validator(mode="before")
     def check_list_length_chainage(cls, values):
         """Validates that the length of the chainage field is as expected."""
         return validate_correct_length(
