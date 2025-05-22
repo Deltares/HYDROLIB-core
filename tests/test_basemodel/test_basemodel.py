@@ -76,7 +76,7 @@ class TestFileModel:
             / "fm.mdu"
         )
 
-        model.save(filepath=output_path, recurse=True)
+        model.save(filepath=output_path, recurse=False)
 
         files_in_output = list(output_path.parent.glob("**/*"))
         assert len(files_in_output) == 1
