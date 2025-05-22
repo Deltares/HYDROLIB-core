@@ -8,6 +8,7 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     get_enum_validator,
     get_split_string_on_delimiter_validator,
+    make_fortran_float_validator,
     make_list_validator,
     validate_correct_length,
     validate_required_fields,
@@ -162,6 +163,15 @@ class StorageNode(INIBasedModel):
         Interpolation.linear.value, alias="interpolate"
     )
 
+    _validate_floats = make_fortran_float_validator(
+        "bedlevel",
+        "area",
+        "streetlevel",
+        "streetstoragearea",
+        "levels",
+        "storagearea",
+    )
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """
@@ -245,10 +255,11 @@ class StorageNodeModel(INIModel):
     def _filename(cls) -> str:
         return "nodeFile"
 
-    @field_validator("storagenode")
-    def _validate(
-        cls, storagenodes: List[Dict[str, Any]], info: ValidationInfo
-    ) -> List[StorageNode]:
+    @field_validator("storagenode", mode="after")
+    @classmethod
+    def _validate_storage_node(
+        cls, storagenodes: List["StorageNode"], info: ValidationInfo
+    ) -> List["StorageNode"]:
         """Validates for each storage node whether the streetStorageArea value is provided
         when the general useStreetStorage is True and the storage node useTable is False.
         """

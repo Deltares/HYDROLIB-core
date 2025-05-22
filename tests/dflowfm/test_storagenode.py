@@ -192,6 +192,8 @@ def test_scientific_notation_in_ini_file_are_correctly_parsed_for_strings_and_fl
     temporary_file_path_node_file.write_text(file_data)
 
     storage_node_model = StorageNodeModel(temporary_file_path_node_file)
+    general = storage_node_model.general
+    assert general.fileversion == "2.00"
 
     storage_node = storage_node_model.storagenode[0]
     assert storage_node.id == "0D05252"
