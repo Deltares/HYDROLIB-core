@@ -319,3 +319,23 @@ class TestInitialConditions:
 
         expected_message = f"{alias_field}\n  field required "
         assert expected_message in str(error.value)
+
+
+class TestExcludeFromValidation:
+    def test_exclude_tracer_prefix_fields(self):
+        """
+        Test that the tracer prefix fields are excluded from validation and creating the InitialField will succeed
+        with the `tracerdecaytime` attribute even that it is not a field in the class.
+        """
+        data = {
+            'quantity': 'initialtracerdTR1',
+            'datafile': "domain.pol",
+            'datafiletype': DataFileType.polygon,
+            'value': 0.0,
+            'interpolationmethod': InterpolationMethod.constant,
+            'operand': 'O',
+            'tracerdecaytime': '8640000'
+        }
+
+        model = InitialField(**data)
+        assert model.tracerdecaytime == '8640000'
