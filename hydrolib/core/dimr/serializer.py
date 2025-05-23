@@ -1,3 +1,5 @@
+"""DIMR Serializer."""
+
 from datetime import datetime
 from pathlib import Path
 from typing import List
@@ -19,8 +21,7 @@ class DIMRSerializer:
         config: SerializerConfig,
         save_settings: ModelSaveSettings,
     ):
-        """
-        Serializes the DIMR data to the file at the specified path.
+        """Serializes the DIMR data to the file at the specified path.
 
         Attributes:
             path (Path): The path to the destination file.
@@ -28,7 +29,6 @@ class DIMRSerializer:
             config (SerializerConfig): The serialization configuration.
             save_settings (ModelSaveSettings): The model save settings.
         """
-
         path.parent.mkdir(parents=True, exist_ok=True)
 
         xmlns = "http://schemas.deltares.nl/dimr"
