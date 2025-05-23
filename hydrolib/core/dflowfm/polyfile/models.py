@@ -130,7 +130,7 @@ class PolyFile(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         # Prevent circular dependency in Parser
-        from .parser import read_polyfile
+        from hydrolib.core.dflowfm.polyfile.parser import read_polyfile
 
         return read_polyfile
 
