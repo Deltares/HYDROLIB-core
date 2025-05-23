@@ -27,6 +27,61 @@ The file can contain multiple such blocks, each defining a separate polyline obj
 
 ## Class Diagram
 
+### Mermaid Class Diagram
+
+```mermaid
+classDiagram
+    class Description {
+        +str content
+    }
+
+    class Metadata {
+        +str name
+        +int n_rows
+        +int n_columns
+    }
+
+    class Point {
+        +float x
+        +float y
+        +Optional float z
+        +List data
+    }
+
+    class PolyObject {
+        +Optional Description description
+        +Metadata metadata
+        +List~Point~ points
+    }
+
+    class PolyFile {
+        +bool has_z_values
+        +List~PolyObject~ objects
+        +List~float~ x()
+        +List~float~ y()
+        +int number_of_points()
+        +get_z_sources_sinks()
+    }
+
+    class Parser {
+        +feed_line()
+        +finalize()
+    }
+
+    class Serializer {
+        +serialize_*()
+    }
+
+    PolyObject o-- Point : contains
+    PolyObject o-- Description : contains
+    PolyObject *-- Metadata : contains
+    PolyFile o-- PolyObject : contains
+    PolyFile ..> Parser : uses
+    PolyFile ..> Serializer : uses
+```
+
+### ASCII Class Diagram
+
 ```
 ┌───────────────┐     ┌───────────────┐
 │  Description  │     │    Metadata   │
