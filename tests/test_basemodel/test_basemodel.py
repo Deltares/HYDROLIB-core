@@ -978,6 +978,7 @@ class TestDiskOnlyFileModel:
 
 
 class TestFileCasingResolver:
+
     @pytest.mark.parametrize(
         "input_file, expected_file",
         [
@@ -990,6 +991,11 @@ class TestFileCasingResolver:
                 Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
                 Path("dflowfm_individual_files/beepboop.robot"),
                 id="resolve_casing True: No matching file",
+            ),
+            pytest.param(
+                Path("DFLOWFM_INDIVIDUAL_FILES/../old-external-forcing.ext"),
+                Path("old-external-forcing.ext"),
+                id="resolve_casing relative: Matching file exists with different casing",
             ),
         ],
     )
