@@ -28,6 +28,7 @@ class ParseMsg(BaseModel):
         reason (str):
             A human-readable string detailing the reason of the ParseMsg.
     """
+
     line_start: int
     line_end: int
 
@@ -265,7 +266,9 @@ class Parser:
     empty lines will generate a warning, and will be ignored by the parser.
     """
 
-    def __init__(self, file_path: Path, has_z_value: bool = False, verbose: bool = False) -> None:
+    def __init__(
+        self, file_path: Path, has_z_value: bool = False, verbose: bool = False
+    ) -> None:
         """Create a new Parser
 
         Args:
@@ -531,7 +534,9 @@ def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
     return isinstance(input_val, Path) and input_val.suffix == ".pliz"
 
 
-def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None, show_warnings: bool = False) -> Dict:
+def read_polyfile(
+    filepath: Path, has_z_values: Optional[bool] = None, show_warnings: bool = False
+) -> Dict:
     """Read the specified file and return the corresponding data.
 
     The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
