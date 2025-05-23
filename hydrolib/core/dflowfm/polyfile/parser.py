@@ -531,7 +531,7 @@ def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
     return isinstance(input_val, Path) and input_val.suffix == ".pliz"
 
 
-def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None, show_warnings: bool = False) -> Dict:
+def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None, verbose: bool = False) -> Dict:
     """Read the specified file and return the corresponding data.
 
     The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
@@ -580,7 +580,7 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None, show_warn
             Path to the pli(z)/pol convention structured file.
         has_z_values:
             Whether to create points containing a z-value. Defaults to None.
-        show_warnings:
+        verbose:
             Whether to show warnings when parsing the file. Defaults to False.
 
     Raises:
@@ -592,7 +592,7 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None, show_warn
     if has_z_values is None:
         has_z_values = _determine_has_z_value(filepath)
 
-    parser = Parser(filepath, has_z_value=has_z_values, verbose=show_warnings)
+    parser = Parser(filepath, has_z_value=has_z_values, verbose=verbose)
 
     with filepath.open("r", encoding="utf8") as f:
         for line in f:
