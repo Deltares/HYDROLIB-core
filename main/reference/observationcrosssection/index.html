@@ -1769,7 +1769,7 @@ You're not viewing the latest release version.
   
   
   <span class="md-ellipsis">
-    Polyline/polygon files
+    Polyline/Polygon Files Documentation
     
   </span>
   
@@ -3032,7 +3032,7 @@ and the last two columns will be considered as data values.
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
         <span class="c1"># Prevent circular dependency in Parser</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_polyfile</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.polyfile.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_polyfile</span>
 
         <span class="k">return</span> <span class="n">read_polyfile</span>
 
