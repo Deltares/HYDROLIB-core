@@ -283,6 +283,7 @@ class FileCasingResolver:
         """
 
         operating_system = get_operating_system()
+        path = path.resolve()
         if operating_system == OperatingSystem.WINDOWS:
             return self._resolve_casing_windows(path)
         if operating_system == OperatingSystem.LINUX:
@@ -295,7 +296,7 @@ class FileCasingResolver:
             )
 
     def _resolve_casing_windows(self, path: Path):
-        return path.resolve()
+        return path
 
     def _resolve_casing_linux(self, path: Path):
         if path.exists():
