@@ -298,6 +298,7 @@ class FileCasingResolver:
         return path.resolve()
 
     def _resolve_casing_linux(self, path: Path):
+        path.resolve()
         if path.exists():
             return path
 
@@ -883,7 +884,7 @@ class FileModel(BaseModel, ABC):
             return
 
         filepath = FileModel._change_to_path(filepath)
-        path_style = path_style_validator.validate(path_style)
+        path_style = path_style_validator.validate(path_style, file_path=filepath)
 
         with file_load_context() as context:
             context.initialize_load_settings(recurse, resolve_casing, path_style)
@@ -1472,7 +1473,9 @@ class PathStyleValidator:
 
     _os_path_style = get_path_style_for_current_operating_system()
 
-    def validate(self, path_style: Optional[str]) -> PathStyle:
+    def validate(
+        self, path_style: Optional[str], file_path: Optional[PathOrStr] = None
+    ) -> PathStyle:
         """Validates the path style as string on whether it is a supported path style.
         If it is a valid path style the path style enum value will be return as a result.
 
@@ -1486,7 +1489,7 @@ class PathStyleValidator:
             ValueError: When an unsupported path style is passed.
         """
         if path_style is None:
-            return self._os_path_style
+            return self._get_path_style_from_path(file_path)
 
         supported_path_styles = list(PathStyle)
         if path_style in supported_path_styles:
@@ -1496,6 +1499,27 @@ class PathStyleValidator:
         raise ValueError(
             f"Path style '{path_style}' not supported. Supported path styles: {supported_path_style_str}"
         )
+
+    def _get_path_style_from_path(self, file_path: Optional[PathOrStr]) -> PathStyle:
+        """Get the path style from the given path.
+        This method checks if the path is absolute and determines the path style
+        based on the operating system.
+        Args:
+            path (str): The path to check.
+        Returns:
+            PathStyle: The path style of the given path.
+        """
+        if file_path is None:
+            return self._os_path_style
+        if isinstance(file_path, Path):
+            path_str = file_path.as_posix()
+        else:
+            path_str = file_path
+        if ":" in path_str[:3]:
+            return PathStyle.WINDOWSLIKE
+        elif path_str.startswith("/"):
+            return PathStyle.UNIXLIKE
+        return self._os_path_style
 
 
 path_style_validator = PathStyleValidator()

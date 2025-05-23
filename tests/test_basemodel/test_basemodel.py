@@ -993,7 +993,7 @@ class TestFileCasingResolver:
                 id="resolve_casing True: No matching file",
             ),
             pytest.param(
-                Path("DFLOWFM_INDIVIDUAL_FILES/../old-external-forcing.ext"),
+                Path("DFLOWFM_INDIVIDUAL_FILES/../OLD-EXTERNAL-FORCING.ext"),
                 Path("old-external-forcing.ext"),
                 id="resolve_casing relative: Matching file exists with different casing",
             ),
