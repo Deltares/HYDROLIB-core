@@ -74,12 +74,12 @@ class Branch(INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    @model_validator(mode="before")
+    @model_validator(mode="after")
     @classmethod
-    def _validate_branch(cls, values: dict):
-        if values.get("branchtype") == 2 and (
-            values.get("sourcecompartmentname") is None
-            and values.get("targetcompartmentname") is None
+    def _validate_branch(cls, values: "Branch") -> "Branch":
+        if values.branchtype == 2 and (
+            values.sourcecompartmentname is None
+            and values.targetcompartmentname is None
         ):
             raise ValueError(
                 "Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."
