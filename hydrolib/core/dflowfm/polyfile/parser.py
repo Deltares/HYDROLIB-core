@@ -265,7 +265,7 @@ class Parser:
     empty lines will generate a warning, and will be ignored by the parser.
     """
 
-    def __init__(self, file_path: Path, has_z_value: bool = False) -> None:
+    def __init__(self, file_path: Path, has_z_value: bool = False, verbose: bool = False) -> None:
         """Create a new Parser
 
         Args:
@@ -274,9 +274,12 @@ class Parser:
             has_z_value (bool, optional):
                 Whether to interpret the third column as z-coordinates.
                 Defaults to False.
+            verbose (bool, optional):
+                Whether to show warnings when parsing the file. Defaults to False.
         """
         self._has_z_value = has_z_value
         self._file_path = file_path
+        self._verbose = verbose
 
         self._line = 0
         self._new_block()
@@ -452,7 +455,8 @@ class Parser:
 
     def _notify_as_warning(self, msg: ParseMsg) -> None:
         warning_message = msg.format_parsemsg_to_string(self._file_path)
-        warnings.warn(warning_message)
+        if self._verbose:
+            warnings.warn(warning_message)
 
     def _notify_as_error(self, msg: ParseMsg) -> None:
         error_message = msg.format_parsemsg_to_string(self._file_path)
@@ -527,7 +531,7 @@ def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
     return isinstance(input_val, Path) and input_val.suffix == ".pliz"
 
 
-def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
+def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None, show_warnings: bool = False) -> Dict:
     """Read the specified file and return the corresponding data.
 
     The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
@@ -576,6 +580,8 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
             Path to the pli(z)/pol convention structured file.
         has_z_values:
             Whether to create points containing a z-value. Defaults to None.
+        show_warnings:
+            Whether to show warnings when parsing the file. Defaults to False.
 
     Raises:
         ValueError: When the plifile is invalid.
@@ -586,7 +592,7 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
     if has_z_values is None:
         has_z_values = _determine_has_z_value(filepath)
 
-    parser = Parser(filepath, has_z_value=has_z_values)
+    parser = Parser(filepath, has_z_value=has_z_values, verbose=show_warnings)
 
     with filepath.open("r", encoding="utf8") as f:
         for line in f:

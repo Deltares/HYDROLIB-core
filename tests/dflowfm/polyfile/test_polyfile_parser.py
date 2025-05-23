@@ -349,11 +349,12 @@ name
             [(1, 3), (5, 5), (7, 8)],
         ),
     ],
+    ids=["no empty lines", "empty line at start", "empty line in between", "multiple empty lines", "multiple empty lines with trailing empty line"]
 )
 def test_empty_lines_is_correctly_logged(
     input_string: str, warnings_description: List[Tuple[int, int]], recwarn
 ):
-    parser = Parser(file_path)
+    parser = Parser(file_path, verbose=True)
 
     for l in input_string.splitlines():
         parser.feed_line(l)
@@ -372,6 +373,25 @@ def test_empty_lines_is_correctly_logged(
         found_msg = warning.message.args[0]
         expected_msg = f"Empty lines are ignored.\n{block_suffix}\nFile: {file_path}"
         assert found_msg == expected_msg
+
+
+def test_empty_lines_with_verbose_false(recwarn):
+    input_string = inspect.cleandoc(
+        """
+            * description
+
+            name
+            1 2
+            0.0 0.0"""
+    )
+    parser_no_warnings = Parser(file_path, verbose=False)
+
+    for l in input_string.splitlines():
+        parser_no_warnings.feed_line(l)
+
+    _ = parser_no_warnings.finalize()
+
+    assert len(recwarn) == 0
 
 
 @pytest.mark.parametrize(
