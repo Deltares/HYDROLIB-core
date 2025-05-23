@@ -1,10 +1,11 @@
-from typing import Optional, Tuple, List
 import inspect
-import pytest
 from pathlib import Path
-from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from typing import List, Optional, Tuple
+
+import pytest
+
+from hydrolib.core.dflowfm.polyfile.models import Description, Metadata, PolyFile
 from hydrolib.core.dflowfm.polyfile.parser import Parser, Point, PolyObject
-from hydrolib.core.dflowfm.polyfile.models import Description, Metadata
 from tests.utils import assert_files_equal, test_input_dir, test_output_dir
 
 
@@ -90,7 +91,7 @@ class TestParser:
         ],
     )
     def test_convert_to_dimensions(
-            self, input_string: str, expected_value: Optional[Tuple[int, int]]
+        self, input_string: str, expected_value: Optional[Tuple[int, int]]
     ):
         assert Parser._convert_to_dimensions(input_string) == expected_value
 
@@ -223,9 +224,12 @@ class TestParser:
         ],
     )
     def test_convert_to_point(
-            self, input_string: str, n_total_points: int, has_z: bool, expected_value: Point
+        self, input_string: str, n_total_points: int, has_z: bool, expected_value: Point
     ):
-        assert Parser._convert_to_point(input_string, n_total_points, has_z) == expected_value
+        assert (
+            Parser._convert_to_point(input_string, n_total_points, has_z)
+            == expected_value
+        )
 
     def test_correct_pli_expected_result(self, recwarn):
         input_data = inspect.cleandoc(
@@ -280,69 +284,69 @@ class TestParser:
         "input_string,warnings_description",
         [
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1 2
                         0.0 0.0"""
-                    ),
-                    [],
+                ),
+                [],
             ),
             (
-                    # No cleandoc here because we explicitly want the empty line
-                    # at the start
-                    """
+                # No cleandoc here because we explicitly want the empty line
+                # at the start
+                """
     * description
     name
     1 2
     0.0 0.0""",
-                    [(0, 0)],
+                [(0, 0)],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         * description
-    
+
                         name
                         1 2
                         0.0 0.0"""
-                    ),
-                    [(1, 1)],
+                ),
+                [(1, 1)],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         * description
-    
-    
-    
+
+
+
                         name
                         1 2
                         0.0 0.0"""
-                    ),
-                    [(1, 3)],
+                ),
+                [(1, 3)],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         * description
-    
-    
-    
+
+
+
                         name
-    
+
                         1 2
-    
-    
+
+
                         0.0 0.0"""
-                    ),
-                    [(1, 3), (5, 5), (7, 8)],
+                ),
+                [(1, 3), (5, 5), (7, 8)],
             ),
         ],
     )
     def test_empty_lines_is_correctly_logged(
-            self, input_string: str, warnings_description: List[Tuple[int, int]], recwarn
+        self, input_string: str, warnings_description: List[Tuple[int, int]], recwarn
     ):
         parser = Parser(self.file_path)
 
@@ -370,57 +374,57 @@ class TestParser:
         "input_string,expected_msg_data",
         [
             (
-                    "*description",
-                    [((0, 1), "EoF encountered before the block is finished.")],
+                "*description",
+                [((0, 1), "EoF encountered before the block is finished.")],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         2  5
                         1.0 2.0 3.0 4.0 5.0"""
-                    ),
-                    [((0, 4), "EoF encountered before the block is finished.")],
+                ),
+                [((0, 4), "EoF encountered before the block is finished.")],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1  5
                         1.0 2.0 3.0 4.0 5.0
                         2.0 3.0 4.0 5.0 6.0"""
-                    ),
-                    [
-                        (
-                                (4, 5),
-                                "EoF encountered before the block is finished.",
-                        )
-                    ],
+                ),
+                [
+                    (
+                        (4, 5),
+                        "EoF encountered before the block is finished.",
+                    )
+                ],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1     """
-                    ),
-                    [((0, 3), "Expected valid dimensions at line 2.")],
+                ),
+                [((0, 3), "Expected valid dimensions at line 2.")],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1  5
                         1.0 2.0 3.0"""
-                    ),
-                    [((0, 4), "Expected a valid next point at line 3.")],
+                ),
+                [((0, 4), "Expected a valid next point at line 3.")],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1  5
@@ -428,12 +432,12 @@ class TestParser:
                         another-name
                         1 3
                             1.0 2.0"""
-                    ),
-                    [((4, 7), "Expected a valid next point at line 6.")],
+                ),
+                [((4, 7), "Expected a valid next point at line 6.")],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1  5
@@ -447,12 +451,12 @@ class TestParser:
                         last-name
                         1 2
                         1.0 2.0"""
-                    ),
-                    [((4, 9), "Expected a valid next point at line 7.")],
+                ),
+                [((4, 9), "Expected a valid next point at line 7.")],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1  5
@@ -464,23 +468,23 @@ class TestParser:
                         last-name
                         1 2
                         1.0 2.0"""
-                    ),
-                    [((0, 3), "Expected a valid next point at line 3.")],
+                ),
+                [((0, 3), "Expected a valid next point at line 3.")],
             ),
             (
-                    inspect.cleandoc(
-                        """
+                inspect.cleandoc(
+                    """
                         *description
                         name
                         1  5
                         # 1.0 2.0 3.0 4.0 5.0 Comment after the values is valid"""
-                    ),
-                    [((0, 4), "Expected a valid next point at line 3.")],
+                ),
+                [((0, 4), "Expected a valid next point at line 3.")],
             ),
         ],
     )
     def test_invalid_block_correctly_raises_error(
-            self, input_string: str, expected_msg_data: str
+        self, input_string: str, expected_msg_data: str
     ):
         parser = Parser(self.file_path)
 
