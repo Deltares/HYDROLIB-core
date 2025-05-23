@@ -32,15 +32,13 @@ from hydrolib.core.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.rr.models import RainfallRunoffModel
-
-from .rr.meteo.test_bui import BuiTestData
-from .utils import (
+from tests.rr.meteo.test_bui import BuiTestData
+from tests.utils import (
     assert_files_equal,
     invalid_test_data_dir,
     test_data_dir,
     test_input_dir,
     test_output_dir,
-    test_reference_dir,
 )
 
 
