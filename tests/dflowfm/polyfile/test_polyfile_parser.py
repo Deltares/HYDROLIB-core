@@ -349,7 +349,13 @@ name
             [(1, 3), (5, 5), (7, 8)],
         ),
     ],
-    ids=["no empty lines", "empty line at start", "empty line in between", "multiple empty lines", "multiple empty lines with trailing empty line"]
+    ids=[
+        "no empty lines",
+        "empty line at start",
+        "empty line in between",
+        "multiple empty lines",
+        "multiple empty lines with trailing empty line",
+    ],
 )
 def test_empty_lines_is_correctly_logged(
     input_string: str, warnings_description: List[Tuple[int, int]], recwarn
