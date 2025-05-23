@@ -1,3 +1,5 @@
+"""Dimr models."""
+
 from abc import ABC, abstractclassmethod
 from datetime import datetime
 from pathlib import Path
@@ -198,7 +200,8 @@ class CoupledItem(BaseModel):
 
 
 class Logger(BaseModel):
-    """
+    """Logger.
+
     Used to log values to the specified file in workingdir for each timestep
 
     Attributes:
@@ -261,9 +264,9 @@ class StartGroup(BaseModel):
 
 
 class ControlModel(BaseModel):
-    """
-    Overrides to make sure that the control elements in the DIMR
-    are parsed and serialized correctly.
+    """Control Model.
+
+    Overrides to make sure that the control elements in the DIMR are parsed and serialized correctly.
     """
 
     _type: str
@@ -277,7 +280,6 @@ class ControlModel(BaseModel):
     @classmethod
     def validate(cls, v):
         """Remove control element prefixes from parsed data."""
-
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict) and len(v.keys()) == 1:
@@ -287,7 +289,8 @@ class ControlModel(BaseModel):
 
 
 class Parallel(ControlModel):
-    """
+    """Parallel control flow.
+
     Specification of a parallel control flow: one main component and a group of related components and couplers.
     Step wise execution order according to order in parallel control flow.
 
@@ -353,9 +356,7 @@ class DIMR(ParsableFileModel):
         return super().dict(*args, **kwargs)
 
     def _post_init_load(self) -> None:
-        """
-        Load the component models of this DIMR model.
-        """
+        """Load the component models of this DIMR model."""
         super()._post_init_load()
 
         for comp in self.component:
