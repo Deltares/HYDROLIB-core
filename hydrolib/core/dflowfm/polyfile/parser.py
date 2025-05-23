@@ -19,13 +19,15 @@ class ParseMsg(BaseModel):
     """ParseMsg defines a single message indicating a significant parse event.
 
     Attributes:
-        line_start (int): The start line of the block to which this ParseMsg refers.
-        line_end (int): The end line of the block to which this ParseMsg refers.
+        line_start (int):
+            The start line of the block to which this ParseMsg refers.
+        line_end (int):
+            The end line of the block to which this ParseMsg refers.
         column (Optional[Tuple[int, int]]):
             An optional begin and end column to which this ParseMsg refers.
-        reason (str): A human-readable string detailing the reason of the ParseMsg.
+        reason (str):
+            A human-readable string detailing the reason of the ParseMsg.
     """
-
     line_start: int
     line_end: int
 
@@ -33,7 +35,7 @@ class ParseMsg(BaseModel):
     reason: str
 
     def format_parsemsg_to_string(self, file_path: Optional[Path] = None) -> str:
-        """Format string describing this ParseMsg
+        """Format string describing this ParseMsg.
 
         Args:
             file_path (Optional[Path], optional):
@@ -434,6 +436,12 @@ class Parser:
         self._current_block.description.append(comment)  # type: ignore
 
     def _handle_empty_line(self) -> None:
+        """add the empty line to the current block if it is not in an invalid state.
+
+        Notes:
+            - Empty lines are ignored, but we want to keep track of them for the purpose of warnings.
+            - Empty lines are not added to the current block if it is in an invalid state.
+        """
         if self._state != StateType.INVALID_STATE:
             self._current_block.empty_lines.append(self._line)
 
