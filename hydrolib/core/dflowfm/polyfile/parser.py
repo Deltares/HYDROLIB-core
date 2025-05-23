@@ -122,19 +122,18 @@ class Block(BaseModel):
         return Metadata(name=self.name, n_rows=n_rows, n_columns=n_columns)
 
     def _get_empty_line_warnings(self):
-        if len(self.empty_lines) == 0:
-            return []
-
         warnings = []
-        empty_line = (self.empty_lines[0], self.empty_lines[0])
+        if len(self.empty_lines) > 0:
+            warnings = []
+            empty_line = (self.empty_lines[0], self.empty_lines[0])
 
-        for line in self.empty_lines[1:]:
-            if line == empty_line[1] + 1:
-                empty_line = (empty_line[0], line)
-            else:
-                warnings.append(Block._get_empty_line_msg(empty_line))
-                empty_line = (line, line)
-        warnings.append(Block._get_empty_line_msg(empty_line))
+            for line in self.empty_lines[1:]:
+                if line == empty_line[1] + 1:
+                    empty_line = (empty_line[0], line)
+                else:
+                    warnings.append(Block._get_empty_line_msg(empty_line))
+                    empty_line = (line, line)
+            warnings.append(Block._get_empty_line_msg(empty_line))
 
         return warnings
 
