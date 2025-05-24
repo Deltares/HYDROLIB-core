@@ -3,8 +3,9 @@ from typing import Callable, Dict, List, Optional
 
 from pydantic.v1 import Field
 
-from hydrolib.core.base.models import BaseModel, ModelSaveSettings
 from hydrolib.core.base.models import (
+    BaseModel,
+    ModelSaveSettings,
     ParsableFileModel,
     SerializerConfig,
 )

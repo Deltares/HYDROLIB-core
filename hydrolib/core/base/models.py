@@ -4,36 +4,31 @@ as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
 
 """
-import shutil
-from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    TypeVar,
-    Generic,
-    Type
-)
 
-from pydantic.v1 import validator
-from pydantic.v1 import BaseModel as PydanticBaseModel
-from pydantic.v1.fields import ModelField, PrivateAttr
-from pydantic.v1.error_wrappers import ErrorWrapper, ValidationError
-from weakref import WeakValueDictionary
-from hydrolib.core.base_utils import DummmyParser, DummySerializer
-from hydrolib.core.utils import to_key, get_path_style_for_current_operating_system, PathStyle
 import logging
+import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
+from pathlib import Path
+from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
+from weakref import WeakValueDictionary
+
+from pydantic.v1 import BaseModel as PydanticBaseModel
+from pydantic.v1 import validator
+from pydantic.v1.error_wrappers import ErrorWrapper, ValidationError
+from pydantic.v1.fields import ModelField, PrivateAttr
 
 from hydrolib.core.base.file_manager import (
+    FileLoadContext,
     PathOrStr,
-    path_style_validator,
     ResolveRelativeMode,
     file_load_context,
-    FileLoadContext
+    path_style_validator,
+)
+from hydrolib.core.base_utils import DummmyParser, DummySerializer
+from hydrolib.core.utils import (
+    PathStyle,
+    get_path_style_for_current_operating_system,
+    to_key,
 )
 
 TAcc = TypeVar("TAcc")
@@ -46,7 +41,6 @@ def _should_traverse(model: "BaseModel", _: FileLoadContext) -> bool:
 
 def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
     return model.is_file_link()
-
 
 
 def validator_set_default_disk_only_file_model_when_none() -> classmethod:
@@ -63,7 +57,6 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
         return v
 
     return validator("*", allow_reuse=True, pre=True)(adjust_none)
-
 
 
 class BaseModel(PydanticBaseModel):
@@ -88,9 +81,9 @@ class BaseModel(PydanticBaseModel):
             # Give a special message for faulty list input
             for re in e.raw_errors:
                 if (
-                        hasattr(re, "_loc")
-                        and hasattr(re.exc, "msg_template")
-                        and isinstance(data.get(to_key(re._loc)), list)
+                    hasattr(re, "_loc")
+                    and hasattr(re.exc, "msg_template")
+                    and isinstance(data.get(to_key(re._loc)), list)
                 ):
                     re.exc.msg_template += (
                         f". The key {re._loc} might be duplicated in the input file."
@@ -167,11 +160,11 @@ class ModelTreeTraverser(Generic[TAcc]):
     """
 
     def __init__(
-            self,
-            should_traverse: Optional[Callable[[BaseModel, TAcc], bool]] = None,
-            should_execute: Optional[Callable[[BaseModel, TAcc], bool]] = None,
-            pre_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
-            post_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
+        self,
+        should_traverse: Optional[Callable[[BaseModel, TAcc], bool]] = None,
+        should_execute: Optional[Callable[[BaseModel, TAcc], bool]] = None,
+        pre_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
+        post_traverse_func: Optional[Callable[[BaseModel, TAcc], TAcc]] = None,
     ):
         """Create a new ModelTreeTraverser with the given functions.
 
@@ -215,7 +208,7 @@ class ModelTreeTraverser(Generic[TAcc]):
 
     def _should_traverse(self, value: Any, acc: TAcc) -> bool:
         return isinstance(value, BaseModel) and (
-                self._should_traverse_func is None or self._should_traverse_func(value, acc)
+            self._should_traverse_func is None or self._should_traverse_func(value, acc)
         )
 
     def traverse(self, model: BaseModel, acc: TAcc) -> TAcc:
@@ -254,13 +247,14 @@ class ModelTreeTraverser(Generic[TAcc]):
 
         return acc
 
+
 class ModelSaveSettings:
     """A class that holds the global settings for model saving."""
 
     _os_path_style = get_path_style_for_current_operating_system()
 
     def __init__(
-            self, path_style: Optional[PathStyle] = None, exclude_unset: bool = False
+        self, path_style: Optional[PathStyle] = None, exclude_unset: bool = False
     ) -> None:
         """Initializes a new instance of the ModelSaveSettings class.
 
@@ -344,13 +338,13 @@ class FileModel(BaseModel, ABC):
             return super().__new__(cls)
 
     def __init__(
-            self,
-            filepath: Optional[PathOrStr] = None,
-            resolve_casing: bool = False,
-            recurse: bool = True,
-            path_style: Optional[str] = None,
-            *args,
-            **kwargs,
+        self,
+        filepath: Optional[PathOrStr] = None,
+        resolve_casing: bool = False,
+        recurse: bool = True,
+        path_style: Optional[str] = None,
+        *args,
+        **kwargs,
     ):
         """Create a new FileModel from the given filepath.
 
@@ -499,11 +493,11 @@ class FileModel(BaseModel, ABC):
         return super().validate(value)
 
     def save(
-            self,
-            filepath: Optional[Path] = None,
-            recurse: bool = False,
-            path_style: Optional[str] = None,
-            exclude_unset: bool = False,
+        self,
+        filepath: Optional[Path] = None,
+        recurse: bool = False,
+        path_style: Optional[str] = None,
+        exclude_unset: bool = False,
     ) -> None:
         """Save the model to disk.
 
@@ -571,7 +565,7 @@ class FileModel(BaseModel, ABC):
     ) -> None:
         # Ensure all names are generated prior to saving
         def execute_generate_name(
-                model: BaseModel, acc: FileLoadContext
+            model: BaseModel, acc: FileLoadContext
         ) -> FileLoadContext:
             if isinstance(model, FileModel) and model.filepath is None:
                 model.filepath = model._generate_name()
@@ -720,7 +714,6 @@ class FileModel(BaseModel, ABC):
         return FileModel._change_to_path(value)
 
 
-
 class SerializerConfig(BaseModel, ABC):
     """Class that holds the configuration settings for serialization."""
 
@@ -830,7 +823,7 @@ class ParsableFileModel(FileModel):
 
     @abstractclassmethod
     def _get_serializer(
-            cls,
+        cls,
     ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return DummySerializer.serialize
 
@@ -925,11 +918,11 @@ class DiskOnlyFileModel(FileModel):
 
     def _can_copy_to(self, target_file_path: Optional[Path]) -> bool:
         return (
-                self._source_file_path is not None
-                and target_file_path is not None
-                and self._source_file_path != target_file_path
-                and self._source_file_path.exists()
-                and self._source_file_path.is_file()
+            self._source_file_path is not None
+            and target_file_path is not None
+            and self._source_file_path != target_file_path
+            and self._source_file_path.exists()
+            and self._source_file_path.is_file()
         )
 
     @classmethod

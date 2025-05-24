@@ -1,15 +1,20 @@
 """File Manager Module."""
 
-from typing import Optional, List, Tuple, Dict, Union
-from pathlib import Path
-from enum import IntEnum
 from contextlib import contextmanager
 from contextvars import ContextVar
-from hydrolib.core.utils import (
-    PathStyle, get_path_style_for_current_operating_system, FileChecksumCalculator, get_operating_system,
-    OperatingSystem, str_is_empty_or_none, FilePathStyleConverter
-)
+from enum import IntEnum
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Union
 
+from hydrolib.core.utils import (
+    FileChecksumCalculator,
+    FilePathStyleConverter,
+    OperatingSystem,
+    PathStyle,
+    get_operating_system,
+    get_path_style_for_current_operating_system,
+    str_is_empty_or_none,
+)
 
 PathOrStr = Union[Path, str]
 # We use ContextVars to keep a reference to the folder
@@ -95,7 +100,7 @@ class FilePathResolver:
         return (parent / path).resolve()
 
     def push_new_parent(
-            self, parent_path: Path, relative_mode: ResolveRelativeMode
+        self, parent_path: Path, relative_mode: ResolveRelativeMode
     ) -> None:
         """Push a new parent_path with the given relative_mode to this FilePathResolver.
 
@@ -163,7 +168,7 @@ class ModelLoadSettings:
     """A class that holds the global settings for model loading."""
 
     def __init__(
-            self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
     ) -> None:
         """Initializes a new instance of the ModelLoadSettings class.
 
@@ -358,6 +363,7 @@ class FileCasingResolver:
 
         return path
 
+
 class FileLoadContext:
     """FileLoadContext.
 
@@ -375,7 +381,7 @@ class FileLoadContext:
         self._load_settings: Optional[ModelLoadSettings] = None
 
     def initialize_load_settings(
-            self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
     ):
         """Initialize the global model load setting. Can only be set once.
 
@@ -470,7 +476,7 @@ class FileLoadContext:
         return self._path_resolver.resolve(path)
 
     def push_new_parent(
-            self, parent_path: Path, relative_mode: ResolveRelativeMode
+        self, parent_path: Path, relative_mode: ResolveRelativeMode
     ) -> None:
         """Push a new parent_path with the given relative_mode on this FileLoadContext.
 

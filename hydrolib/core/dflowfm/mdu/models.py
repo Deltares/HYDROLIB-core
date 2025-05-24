@@ -3,10 +3,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic.v1 import Field, validator
-from hydrolib.core.base.models import FileModel
+
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
+    FileModel,
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel

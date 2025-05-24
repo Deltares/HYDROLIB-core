@@ -5,8 +5,7 @@ from pandas import DataFrame
 from pydantic.v1 import Field
 from pydantic.v1.class_validators import validator
 
-from hydrolib.core.base.models import ModelSaveSettings, BaseModel
-from hydrolib.core.base.models import ParsableFileModel
+from hydrolib.core.base.models import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
 from hydrolib.core.utils import FortranUtils
