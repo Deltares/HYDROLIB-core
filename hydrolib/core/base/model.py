@@ -4,10 +4,7 @@ as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
 
 """
-
-
 import shutil
-from abc import ABC, abstractclassmethod
 from pathlib import Path
 from typing import (
     Any,
@@ -32,11 +29,11 @@ import logging
 from abc import ABC, abstractclassmethod, abstractmethod
 
 from hydrolib.core.base.file_manager import (
-    FileLoadContext,
     PathOrStr,
     path_style_validator,
     ResolveRelativeMode,
-    file_load_context
+    file_load_context,
+    FileLoadContext
 )
 
 TAcc = TypeVar("TAcc")
@@ -570,7 +567,7 @@ class FileModel(BaseModel, ABC):
         self._save(save_settings)
 
     def _save_tree(
-            self, context: FileLoadContext, save_settings: ModelSaveSettings
+        self, context: FileLoadContext, save_settings: ModelSaveSettings
     ) -> None:
         # Ensure all names are generated prior to saving
         def execute_generate_name(

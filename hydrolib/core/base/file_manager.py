@@ -1,10 +1,14 @@
+"""File Manager Module."""
+
 from typing import Optional, List, Tuple, Dict, Union
 from pathlib import Path
 from enum import IntEnum
 from contextlib import contextmanager
 from contextvars import ContextVar
-from hydrolib.core.utils import PathStyle, get_path_style_for_current_operating_system, \
-    FileChecksumCalculator, get_operating_system, OperatingSystem, str_is_empty_or_none, FilePathStyleConverter
+from hydrolib.core.utils import (
+    PathStyle, get_path_style_for_current_operating_system, FileChecksumCalculator, get_operating_system,
+    OperatingSystem, str_is_empty_or_none, FilePathStyleConverter
+)
 
 
 PathOrStr = Union[Path, str]
@@ -13,8 +17,11 @@ PathOrStr = Union[Path, str]
 # we could move to https://github.com/samuelcolvin/pydantic/issues/1549
 context_file_loading: ContextVar["FileLoadContext"] = ContextVar("file_loading")
 
+
 class ResolveRelativeMode(IntEnum):
-    """ResolveRelativeMode defines the possible resolve modes used within the
+    """ResolveRelativeMode.
+
+    ResolveRelativeMode defines the possible resolve modes used within the
     FilePathResolver.
 
     It determines how the relative paths to child models within some FileModel
@@ -106,7 +113,7 @@ class FilePathResolver:
         self._parents.append((absolute_parent_path, relative_mode))
 
     def pop_last_parent(self) -> None:
-        """Pop the last added parent from this FilePathResolver
+        """Pop the last added parent from this FilePathResolver.
 
         If there are currently no parents defined, nothing will happen.
         """
@@ -118,13 +125,16 @@ class FilePathResolver:
         if relative_mode == ResolveRelativeMode.ToAnchor:
             self._anchors.pop()
 
+
 class PathStyleValidator:
     """Class to take care of path style validation."""
 
     _os_path_style = get_path_style_for_current_operating_system()
 
     def validate(self, path_style: Optional[str]) -> PathStyle:
-        """Validates the path style as string on whether it is a supported path style.
+        """Validate.
+
+        Validates the path style as string on whether it is a supported path style.
         If it is a valid path style the path style enum value will be return as a result.
 
         Args:
@@ -193,10 +203,9 @@ class ModelLoadSettings:
         """
         return self._path_style
 
+
 class CachedFileModel:
-    """
-    CachedFileModel provides a simple structure to keep the Filemodel and checksum together.
-    """
+    """CachedFileModel provides a simple structure to keep the Filemodel and checksum together."""
 
     _model: "FileModel"
     _checksum: str
@@ -208,11 +217,12 @@ class CachedFileModel:
 
     @property
     def checksum(self) -> str:
-        """ "Checksum of the file the filemodel is based on."""
+        """Checksum of the file the filemodel is based on."""
         return self._checksum
 
     def __init__(self, model: "FileModel", checksum: str) -> None:
         """Create a new empty CachedFileModel.
+
         Args:
             model (FileModel): filemodel to cache.
             checksum (str): checksum of the file.
@@ -220,18 +230,18 @@ class CachedFileModel:
         self._model = model
         self._checksum = checksum
 
+
 class FileModelCache:
-    """
-    FileModelCache provides a simple structure to register and retrieve FileModel
-    objects.
-    """
+    """FileModelCache provides a simple structure to register and retrieve FileModel objects."""
 
     def __init__(self):
         """Create a new empty FileModelCache."""
         self._cache_dict: Dict[Path, CachedFileModel] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
-        """Retrieve the model associated with the (absolute) path if
+        """Retrieve model.
+
+        Retrieve the model associated with the (absolute) path if
         it has been registered before, otherwise return None.
 
         Returns:
@@ -294,6 +304,7 @@ class FileModelCache:
     def _get_checksum(self, path: Path) -> Optional[str]:
         return FileChecksumCalculator.calculate_checksum(path)
 
+
 class FileCasingResolver:
     """Class for resolving file path in a case-insensitive manner."""
 
@@ -309,7 +320,6 @@ class FileCasingResolver:
         Raises:
             NotImplementedError: When this function is called with an operating system other than Windows, Linux or MacOS.
         """
-
         operating_system = get_operating_system()
         if operating_system == OperatingSystem.WINDOWS:
             return self._resolve_casing_windows(path)
