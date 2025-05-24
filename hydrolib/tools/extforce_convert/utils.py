@@ -3,8 +3,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
 from pydantic.v1 import Extra
-
-from hydrolib.core.basemodel import DiskOnlyFileModel, FileModel, PathOrStr
+from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.model import FileModel
+from hydrolib.core.base.model import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,

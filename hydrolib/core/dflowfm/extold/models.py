@@ -4,11 +4,9 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
-
-from hydrolib.core.basemodel import (
-    BaseModel,
+from hydrolib.core.base.model import BaseModel, ModelSaveSettings
+from hydrolib.core.base.model import (
     DiskOnlyFileModel,
-    ModelSaveSettings,
     ParsableFileModel,
     SerializerConfig,
 )

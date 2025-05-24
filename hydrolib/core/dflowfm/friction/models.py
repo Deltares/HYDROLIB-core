@@ -5,7 +5,7 @@ from pydantic.v1 import Field, NonNegativeInt, PositiveInt
 from pydantic.v1.class_validators import validator
 from strenum import StrEnum
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.model import (
     DiskOnlyFileModel,
     validator_set_default_disk_only_file_model_when_none,
 )

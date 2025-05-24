@@ -4,7 +4,8 @@ from typing import Callable, Dict, List, Optional
 
 from pydantic.v1 import Field
 
-from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
+from hydrolib.core.base.model import BaseModel, ModelSaveSettings
+from hydrolib.core.base.model import ParsableFileModel
 from hydrolib.core.dflowfm.cmp.parser import CMPParser
 from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer
 

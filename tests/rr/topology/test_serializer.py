@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.model import ModelSaveSettings, SerializerConfig
 from hydrolib.core.rr.topology.serializer import LinkFileSerializer, NodeFileSerializer
 from tests.utils import assert_files_equal
 

@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.base.model import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.inifield.models import (

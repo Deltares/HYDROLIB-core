@@ -1,10 +1,9 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.model import ModelSaveSettings, FileModel
+from hydrolib.core.base.model import (
     DiskOnlyFileModel,
-    FileModel,
-    ModelSaveSettings,
     SerializerConfig,
 )
 from hydrolib.core.dflowfm.extold.common_io import ORDERED_FORCING_FIELDS

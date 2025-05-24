@@ -4,7 +4,7 @@ from typing import Dict, List, Literal, Optional, Set, Union
 from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.model import (
     DiskOnlyFileModel,
     validator_set_default_disk_only_file_model_when_none,
 )

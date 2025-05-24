@@ -7,21 +7,22 @@ from unittest.mock import patch
 
 import pytest
 
-from hydrolib.core.basemodel import (
-    DiskOnlyFileModel,
+from hydrolib.core.base.file_manager import (
     FileCasingResolver,
     FileLoadContext,
-    FileModel,
     FileModelCache,
     FilePathResolver,
     ModelLoadSettings,
-    ModelSaveSettings,
-    ParsableFileModel,
     PathStyleValidator,
     ResolveRelativeMode,
-    SerializerConfig,
     context_file_loading,
-    file_load_context,
+    file_load_context
+)
+from hydrolib.core.base.model import FileModel, ModelSaveSettings
+from hydrolib.core.base.model import (
+    DiskOnlyFileModel,
+    ParsableFileModel,
+    SerializerConfig,
 )
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import ExtModel

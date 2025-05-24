@@ -7,7 +7,7 @@ from xml.dom import minidom
 
 from lxml import etree as e
 
-from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.model import ModelSaveSettings, SerializerConfig
 from hydrolib.core.utils import FilePathStyleConverter
 
 

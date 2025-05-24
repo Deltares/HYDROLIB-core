@@ -5,7 +5,7 @@ from typing import Iterable, List, Optional, Union
 import pytest
 from pydantic.v1 import Field, ValidationError
 
-from hydrolib.core.basemodel import FileModel, ModelSaveSettings
+from hydrolib.core.base.model import FileModel, ModelSaveSettings
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,

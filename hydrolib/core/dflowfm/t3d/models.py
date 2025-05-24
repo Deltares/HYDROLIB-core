@@ -7,7 +7,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.model import (
     BaseModel,
     ModelSaveSettings,
     ParsableFileModel,

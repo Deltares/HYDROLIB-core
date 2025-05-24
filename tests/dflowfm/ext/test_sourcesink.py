@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.base.model import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink
 from tests.utils import test_data_dir
 

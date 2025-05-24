@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Optional
 from pydantic.v1.class_validators import root_validator
 from pydantic.v1.fields import Field
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.model import (
     BaseModel,
     ModelSaveSettings,
     ParsableFileModel,

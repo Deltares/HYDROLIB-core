@@ -13,7 +13,7 @@ from meshkernel import (
     MeshRefinementParameters,
 )
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.base.model import BaseModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer

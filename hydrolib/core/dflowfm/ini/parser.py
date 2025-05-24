@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from pydantic.v1 import validator
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.base.model import BaseModel
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     Document,

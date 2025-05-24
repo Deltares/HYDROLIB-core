@@ -5,12 +5,9 @@ from typing import Callable, Optional
 
 import pytest
 
-from hydrolib.core.basemodel import (
-    DiskOnlyFileModel,
-    ModelSaveSettings,
-    ResolveRelativeMode,
-    file_load_context,
-)
+from hydrolib.core.base.file_manager import ResolveRelativeMode, file_load_context
+from hydrolib.core.base.model import ModelSaveSettings
+from hydrolib.core.base.model import DiskOnlyFileModel
 from hydrolib.core.dimr.models import DIMR
 from hydrolib.core.rr.models import (
     RainfallRunoffModel,
