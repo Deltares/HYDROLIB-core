@@ -9,19 +9,6 @@ from typing import Any, Callable, List, Optional
 from strenum import StrEnum
 
 
-def example(a: float, b: float = 1.0) -> float:
-    """[summary]
-
-    Args:
-        a (float): [description]
-        b (float): [description]
-
-    Returns:
-        float: [description]
-    """
-    return a * b
-
-
 def to_key(string: str) -> str:
     """
     Construct a key name from a given field name.
