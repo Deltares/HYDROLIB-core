@@ -23,9 +23,9 @@ from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import ModelField
 
 from hydrolib.core import __version__ as version
-from hydrolib.core.base.models import BaseModel
 from hydrolib.core.base.file_manager import FilePathStyleConverter
 from hydrolib.core.base.models import (
+    BaseModel,
     FileModel,
     ModelSaveSettings,
     ParsableFileModel,

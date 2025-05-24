@@ -22,5 +22,5 @@ __all__ = [
     "FilePathResolver",
     "ResolveRelativeMode",
     "context_file_loading",
-    "PathOrStr"
+    "PathOrStr",
 ]
