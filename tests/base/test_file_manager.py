@@ -20,7 +20,6 @@ from hydrolib.core.base.file_manager import (
     file_load_context,
     path_style_validator,
 )
-
 from hydrolib.core.base.models import FileModel, ModelSaveSettings
 from hydrolib.core.utils import PathStyle
 from tests.utils import test_input_dir
@@ -442,12 +441,18 @@ class TestFileLoadContext:
     @pytest.mark.parametrize(
         ("register_path", "retrieval_path"),
         [
-            pytest.param(Path("mock-file.txt"), Path("mock-file.txt"), id="relative-relative"),
             pytest.param(
-                Path("mock-file.txt"), Path.cwd() / Path("mock-file.txt"), id="relative-absolute"
+                Path("mock-file.txt"), Path("mock-file.txt"), id="relative-relative"
             ),
             pytest.param(
-                Path.cwd() / Path("mock-file.txt"), Path("mock-file.txt"), id="absolute-relative"
+                Path("mock-file.txt"),
+                Path.cwd() / Path("mock-file.txt"),
+                id="relative-absolute",
+            ),
+            pytest.param(
+                Path.cwd() / Path("mock-file.txt"),
+                Path("mock-file.txt"),
+                id="absolute-relative",
             ),
             pytest.param(
                 Path.cwd() / Path("mock-file.txt"),
@@ -621,7 +626,9 @@ class TestFileLoadContext:
         context = FileLoadContext()
         context.initialize_load_settings(True, True, PathStyle.WINDOWSLIKE)
 
-        with patch.object(context._file_path_style_converter, "convert_to_os_style") as mock_convert:
+        with patch.object(
+            context._file_path_style_converter, "convert_to_os_style"
+        ) as mock_convert:
             mock_convert.return_value = "converted/path"
             path = Path("original/path")
             result = context.convert_path_style(path)
