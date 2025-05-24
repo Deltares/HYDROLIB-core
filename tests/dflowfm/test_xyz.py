@@ -1,6 +1,6 @@
 import pytest
 
-from hydrolib.core.base.model import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dflowfm.xyz.models import XYZModel, XYZPoint
 from hydrolib.core.dflowfm.xyz.parser import XYZParser
 from hydrolib.core.dflowfm.xyz.serializer import XYZSerializer

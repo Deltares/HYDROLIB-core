@@ -1,7 +1,7 @@
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
-from hydrolib.core.base.model import ModelSaveSettings
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.t3d.models import LayerType, T3DModel, T3DTimeRecord
 from hydrolib.core.dflowfm.t3d.parser import T3DParser
 from hydrolib.core.dflowfm.t3d.serializer import T3DSerializer, T3DSerializerConfig

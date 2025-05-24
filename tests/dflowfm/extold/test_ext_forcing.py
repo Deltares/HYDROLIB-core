@@ -3,7 +3,7 @@ from typing import List
 
 import pytest
 
-from hydrolib.core.base.model import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldExtrapolationMethod,

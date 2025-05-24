@@ -4,7 +4,7 @@ import inspect
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Union
 
-from hydrolib.core.base.model import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 from hydrolib.core.utils import FilePathStyleConverter, get_str_len
 
 

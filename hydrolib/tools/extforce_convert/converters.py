@@ -5,7 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from hydrolib.core.base.file_manager import PathOrStr
-from hydrolib.core.base.model import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
     Astronomic,

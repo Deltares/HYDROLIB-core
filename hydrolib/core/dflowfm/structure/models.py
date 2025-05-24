@@ -14,7 +14,7 @@ from pydantic.v1 import Field
 from pydantic.v1.class_validators import root_validator, validator
 from strenum import StrEnum
 
-from hydrolib.core.base.model import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel

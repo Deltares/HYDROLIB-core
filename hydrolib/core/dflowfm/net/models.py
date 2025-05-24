@@ -13,8 +13,8 @@ from pydantic.v1 import Field
 
 from hydrolib.core import __version__
 from hydrolib.core.base.file_manager import  file_load_context
-from hydrolib.core.base.model import BaseModel
-from hydrolib.core.base.model import (
+from hydrolib.core.base.models import BaseModel
+from hydrolib.core.base.models import (
     ModelSaveSettings,
     ParsableFileModel,
 )

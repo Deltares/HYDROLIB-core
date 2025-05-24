@@ -18,8 +18,8 @@ from hydrolib.core.base.file_manager import (
     context_file_loading,
     file_load_context
 )
-from hydrolib.core.base.model import FileModel, ModelSaveSettings
-from hydrolib.core.base.model import (
+from hydrolib.core.base.models import FileModel, ModelSaveSettings
+from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     ParsableFileModel,
     SerializerConfig,

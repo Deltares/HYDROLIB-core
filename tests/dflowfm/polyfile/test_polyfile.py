@@ -4,7 +4,7 @@ from typing import Iterator, List, Optional, Tuple, Union
 
 import pytest
 
-from hydrolib.core.base.model import SerializerConfig
+from hydrolib.core.base.models import SerializerConfig
 from hydrolib.core.dflowfm.polyfile.models import (
     Description,
     Metadata,

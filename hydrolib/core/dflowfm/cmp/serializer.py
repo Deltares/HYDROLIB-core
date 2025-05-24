@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.base.model import ModelSaveSettings
+from hydrolib.core.base.models import ModelSaveSettings
 
 
 class CMPSerializer:

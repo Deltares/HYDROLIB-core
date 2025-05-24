@@ -6,7 +6,7 @@ from typing import Callable, Dict, Union
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
-from hydrolib.core.base.model import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictGeneral

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.base.model import ModelSaveSettings
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.tim.models import TimModel, TimRecord
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig

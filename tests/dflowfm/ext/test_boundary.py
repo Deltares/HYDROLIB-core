@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.base.model import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary
 

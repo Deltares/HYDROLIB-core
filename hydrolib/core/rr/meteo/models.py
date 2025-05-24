@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple
 
-from hydrolib.core.base.model import (
+from hydrolib.core.base.models import (
     BaseModel,
     ModelSaveSettings,
     ParsableFileModel,

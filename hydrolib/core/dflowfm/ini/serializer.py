@@ -2,8 +2,8 @@ from itertools import chain, count, repeat
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
-from hydrolib.core.base.model import BaseModel
-from hydrolib.core.base.model import SerializerConfig
+from hydrolib.core.base.models import BaseModel
+from hydrolib.core.base.models import SerializerConfig
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,

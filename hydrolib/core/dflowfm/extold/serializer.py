@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.base.model import ModelSaveSettings, FileModel
-from hydrolib.core.base.model import (
+from hydrolib.core.base.models import ModelSaveSettings, FileModel
+from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     SerializerConfig,
 )

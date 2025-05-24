@@ -4,7 +4,7 @@ from typing import List, Tuple
 import numpy as np
 import pytest
 
-from hydrolib.core.base.model import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ext.models import (
     Meteo,

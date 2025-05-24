@@ -1,6 +1,6 @@
 # for backward compatibility
 from hydrolib.core.base.file_manager import *
-from hydrolib.core.base.model import *
+from hydrolib.core.base.models import *
 
 __all__ = [
     "DiskOnlyFileModel",

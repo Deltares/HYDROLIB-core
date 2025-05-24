@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict
 
-from hydrolib.core.base.model import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 
 
 class NodeFileSerializer:

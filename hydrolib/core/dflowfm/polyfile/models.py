@@ -5,8 +5,8 @@ from typing import Callable, List, Optional, Sequence, Tuple
 
 from pydantic.v1 import Field
 
-from hydrolib.core.base.model import ModelSaveSettings, BaseModel
-from hydrolib.core.base.model import ParsableFileModel
+from hydrolib.core.base.models import ModelSaveSettings, BaseModel
+from hydrolib.core.base.models import ParsableFileModel
 
 
 class Description(BaseModel):

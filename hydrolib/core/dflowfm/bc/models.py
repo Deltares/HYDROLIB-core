@@ -19,7 +19,7 @@ from pydantic.v1.class_validators import root_validator, validator
 from pydantic.v1.fields import Field
 from strenum import StrEnum
 
-from hydrolib.core.base.model import BaseModel, ModelSaveSettings
+from hydrolib.core.base.models import BaseModel, ModelSaveSettings
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
 from hydrolib.core.dflowfm.ini.models import (
     DataBlockINIBasedModel,

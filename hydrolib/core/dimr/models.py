@@ -8,7 +8,7 @@ from typing import Callable, Dict, List, Literal, Optional, Type, Union
 from pydantic.v1 import Field, validator
 
 from hydrolib.core import __version__
-from hydrolib.core.base.model import (
+from hydrolib.core.base.models import (
     BaseModel,
     FileModel,
     ModelSaveSettings,

@@ -5,7 +5,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
-from hydrolib.core.base.model import BaseModel
+from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.polyfile.models import (
     Description,
     Metadata,

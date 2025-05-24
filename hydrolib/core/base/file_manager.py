@@ -359,7 +359,9 @@ class FileCasingResolver:
         return path
 
 class FileLoadContext:
-    """FileLoadContext provides the context necessary to resolve paths
+    """FileLoadContext.
+
+    FileLoadContext provides the context necessary to resolve paths
     during the init of a FileModel, as well as ensure the relevant models
     are only read once.
     """
@@ -470,8 +472,7 @@ class FileLoadContext:
     def push_new_parent(
             self, parent_path: Path, relative_mode: ResolveRelativeMode
     ) -> None:
-        """Push a new parent_path with the given relative_mode on this
-        FileLoadContext.
+        """Push a new parent_path with the given relative_mode on this FileLoadContext.
 
         Args:
             parent_path (Path): The parent path to be added to this FileLoadContext.
@@ -497,7 +498,9 @@ class FileLoadContext:
         return file_path
 
     def convert_path_style(self, file_path: Path) -> Path:
-        """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+        """convert_path_style.
+
+        Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
         Args:
             file_path (Path): The file path to convert to the OS path style.
@@ -535,7 +538,9 @@ class FileLoadContext:
 
 @contextmanager
 def file_load_context():
-    """Provide a FileLoadingContext. If none has been created in the context of
+    """file_load_context.
+
+    Provide a FileLoadingContext. If none has been created in the context of
     this call stack yet, a new one will be created, which will be maintained
     until it goes out of scope.
 
@@ -554,7 +559,6 @@ def file_load_context():
     finally:
         if context_reset_token is not None:
             context_file_loading.reset(context_reset_token)
-
 
 
 path_style_validator = PathStyleValidator()

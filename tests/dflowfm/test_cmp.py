@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from pyfakefs.fake_filesystem import FakeFilesystem
 
-from hydrolib.core.base.model import ModelSaveSettings
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.cmp.parser import CMPParser
 from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer

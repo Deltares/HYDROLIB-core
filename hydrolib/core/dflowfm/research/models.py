@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from pydantic.v1 import Field
 
-from hydrolib.core.base.model import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm import (
     FMModel,
     General,
