@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.baseparser import BaseParser
+from hydrolib.core.base.parser import BaseParser
 
 
 class T3DParser(BaseParser):

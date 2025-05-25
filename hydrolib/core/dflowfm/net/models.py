@@ -12,12 +12,8 @@ from meshkernel.py_structures import GeometryList
 from pydantic.v1 import Field
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import (
-    BaseModel,
-    ModelSaveSettings,
-    ParsableFileModel,
-    file_load_context,
-)
+from hydrolib.core.base.file_manager import file_load_context
+from hydrolib.core.base.models import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.net.reader import UgridReader
 from hydrolib.core.dflowfm.net.writer import UgridWriter
 

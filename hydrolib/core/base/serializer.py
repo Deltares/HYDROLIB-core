@@ -2,12 +2,6 @@ from pathlib import Path
 from typing import Dict
 
 
-class DummmyParser:
-    @staticmethod
-    def parse(filepath: Path) -> Dict:
-        return {}
-
-
 class DummySerializer:
     @staticmethod
     def serialize(path: Path, data: Dict, config, save_settings) -> None:
