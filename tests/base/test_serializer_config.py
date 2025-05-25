@@ -1,8 +1,4 @@
 import unittest
-from unittest.mock import MagicMock, patch
-
-import pytest
-
 from hydrolib.core.base.models import SerializerConfig
 
 
@@ -54,7 +50,3 @@ class TestSerializerConfig(unittest.TestCase):
         config_copy.float_format = ".6f"
         self.assertEqual(config.float_format, ".5f")
         self.assertEqual(config_copy.float_format, ".6f")
-
-
-if __name__ == "__main__":
-    unittest.main()

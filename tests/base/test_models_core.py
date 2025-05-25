@@ -1,22 +1,17 @@
 import unittest
-from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Optional, Type
+from typing import Any, List
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-from hydrolib.core.base.file_manager import FileLoadContext, ResolveRelativeMode
+from hydrolib.core.base.file_manager import FileLoadContext
 from hydrolib.core.base.models import (
     BaseModel,
     DiskOnlyFileModel,
-    FileModel,
     ModelSaveSettings,
     ModelTreeTraverser,
     ParsableFileModel,
     SerializerConfig,
     _should_execute,
     _should_traverse,
-    validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.base_utils import DummmyParser, DummySerializer
 
@@ -286,7 +281,7 @@ class TestModelSaveSettings(unittest.TestCase):
 
         # Test custom initialization
         settings = ModelSaveSettings(path_style="windows", exclude_unset=True)
-        self.assertEqual(settings._exclude_unset, True)
+        self.assertTrue(settings._exclude_unset)
 
 
 class TestParsableFileModel(unittest.TestCase):
