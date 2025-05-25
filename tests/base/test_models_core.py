@@ -330,7 +330,3 @@ class TestParsableFileModel(unittest.TestCase):
         quantities = ["discharge", "unknown", "waterlevel"]
         result = self.TestParsableModel._get_quantity_unit(quantities)
         self.assertEqual(result, ["m3/s", "-", "m"])
-
-
-if __name__ == "__main__":
-    unittest.main()
