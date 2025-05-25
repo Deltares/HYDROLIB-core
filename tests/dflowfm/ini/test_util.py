@@ -2,10 +2,8 @@ from typing import Dict, List, Literal, Optional
 from unittest.mock import Mock
 
 import pytest
-from pydantic.v1 import Extra
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.error_wrappers import ValidationError
-from pydantic.v1.fields import ModelField
+from pydantic import ValidationError, field_validator, model_validator
+from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -54,7 +52,7 @@ class TestLocationSpecificationValidator:
         numcoordinates: Optional[int]
         locationtype: Optional[str]
 
-        @root_validator(allow_reuse=True)
+        @model_validator(mode='before')
         def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
             return validate_location_specification(
                 values,
@@ -181,8 +179,9 @@ class TestLocationSpecificationValidator:
         ],
     )
     def test_correct_fields_initializes(self, values: dict):
-        validated_values = TestLocationSpecificationValidator.DummyModel.validate_that_location_specification_is_correct(
-            values
+        validated_values = validate_location_specification(
+            values,
+            config=LocationValidationConfiguration(minimum_num_coordinates=3),
         )
         assert validated_values == values
 
@@ -206,8 +205,9 @@ class TestLocationSpecificationValidator:
     def test_correct_1d_fields_locationtype_is_added(
         self, values: dict, expected_values: dict
     ):
-        validated_values = TestLocationSpecificationValidator.DummyModel.validate_that_location_specification_is_correct(
-            values
+        validated_values = validate_location_specification(
+            values,
+            config=LocationValidationConfiguration(minimum_num_coordinates=3),
         )
         assert validated_values == expected_values
 
@@ -256,21 +256,23 @@ class TestGetKeyRenamingRootValidator:
 
         randomproperty: str
 
-        @root_validator(allow_reuse=True, pre=True)
-        def rename_keys(cls, values: Dict) -> Dict:
-            return rename_keys_for_backwards_compatibility(
-                values,
-                {
-                    "randomproperty": [
-                        "randomProperty",
-                        "random_property",
-                        "oldRandomProperty",
-                    ],
-                },
-            )
+        @model_validator(mode='before')
+        @classmethod
+        def rename_keys(cls, values):
+            if isinstance(values, dict):
+                return rename_keys_for_backwards_compatibility(
+                    values,
+                    {
+                        "randomproperty": [
+                            "randomProperty",
+                            "random_property",
+                            "oldRandomProperty",
+                        ],
+                    },
+                )
+            return values
 
-        class Config:
-            extra = Extra.allow
+        model_config = {"extra": "allow", "populate_by_name": True}
 
     @pytest.mark.parametrize(
         "old_key", ["randomProperty", "random_property", "oldRandomProperty"]
@@ -288,7 +290,7 @@ class TestGetKeyRenamingRootValidator:
         with pytest.raises(ValidationError) as error:
             TestGetKeyRenamingRootValidator.DummyModel(**values)
 
-        expected_message = "field required"
+        expected_message = "Field required"
         assert expected_message in str(error.value)
 
 
@@ -390,6 +392,7 @@ class BaseClass(BaseModel):
 
 class WithDefaultProperty(BaseClass):
     name: Literal["WithDefaultProperty"] = "WithDefaultProperty"
+    model_config = {"populate_by_name": True}
 
 
 class WithoutDefaultProperty(BaseClass):
@@ -398,6 +401,7 @@ class WithoutDefaultProperty(BaseClass):
 
 class GrandChildWithDefaultProperty(WithoutDefaultProperty):
     name: Literal["GrandChildWithDefaultProperty"] = "GrandChildWithDefaultProperty"
+    model_config = {"populate_by_name": True}
 
 
 class TestUnknownKeywordErrorManager:
@@ -427,7 +431,7 @@ class TestUnknownKeywordErrorManager:
         excluded_fields = set()
         name = "keyname"
 
-        mocked_field = Mock(spec=ModelField)
+        mocked_field = Mock(spec=FieldInfo)
         mocked_field.name = "name"
         mocked_field.alias = name
 
@@ -448,7 +452,7 @@ class TestUnknownKeywordErrorManager:
         excluded_fields = set()
         name = "keyname"
 
-        mocked_field = Mock(spec=ModelField)
+        mocked_field = Mock(spec=FieldInfo)
         mocked_field.name = "name"
         mocked_field.alias = name
 

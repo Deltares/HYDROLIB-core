@@ -3,7 +3,7 @@ from itertools import chain
 from typing import Iterable, List, Optional, Union
 
 import pytest
-from pydantic.v1 import Field, ValidationError
+from pydantic import ValidationError, Field
 
 from hydrolib.core.base.models import FileModel, ModelSaveSettings
 from hydrolib.core.dflowfm.ini.io_models import (
@@ -31,7 +31,7 @@ from hydrolib.core.dflowfm.ini.serializer import (
     write_ini,
 )
 
-from ...utils import test_output_dir
+from tests.utils import test_output_dir
 
 
 class TestParserConfig:

@@ -1,7 +1,7 @@
 from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.base.utils import to_key
@@ -14,7 +14,7 @@ class CommentBlock(BaseModel):
         lines (List[str]): The actual lines of the CommentBlock
     """
 
-    lines: List[str]
+    lines: List[str] = Field(default_factory=list)
 
 
 class Property(BaseModel):
@@ -27,8 +27,8 @@ class Property(BaseModel):
     """
 
     key: str
-    value: Optional[str]
-    comment: Optional[str]
+    value: Optional[str] = None
+    comment: Optional[str] = None
 
     def get_item(self):
         return {self.key: self.value}
@@ -80,10 +80,10 @@ class Section(BaseModel):
     """
 
     header: str = Field(alias="_header")
-    content: List[ContentElement]
+    content: List[ContentElement] = Field(default_factory=list)
 
     # these are primarily relevant for bc files
-    datablock: Optional[Datablock]
+    datablock: Optional[Datablock] = None
 
     def dict(self, *args, **kwargs):
         kwargs["by_alias"] = True

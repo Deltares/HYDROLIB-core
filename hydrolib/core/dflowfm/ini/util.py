@@ -6,9 +6,8 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import ModelField
-from pydantic.v1.main import BaseModel
+from pydantic import BaseModel, ValidationInfo, field_validator
+from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.utils import operator_str, str_is_empty_or_none, to_list
 from hydrolib.core.dflowfm.common.models import LocationType
@@ -28,13 +27,13 @@ def get_split_string_on_delimiter_validator(*field_name: str):
         the validator which splits strings on the provided delimiter.
     """
 
-    def split(cls, v: Any, field: ModelField):
+    def split(cls, v: Any, field: ValidationInfo):
         if isinstance(v, str):
-            v = v.split(cls.get_list_field_delimiter(field.name))
+            v = v.split(cls.get_list_field_delimiter(field.field_name))
             v = [item.strip() for item in v if item != ""]
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True)(split)
+    return field_validator(*field_name, mode="before")(split)
 
 
 def get_enum_validator(
@@ -55,6 +54,8 @@ def get_enum_validator(
     """
 
     def get_enum(v):
+        if isinstance(v, list):
+            return [get_enum(item) for item in v]
         for entry in enum:
             if entry.lower() == v.lower():
                 return entry
@@ -67,7 +68,7 @@ def get_enum_validator(
 
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True, each_item=True)(get_enum)
+    return field_validator(*field_name, mode="before")(get_enum)
 
 
 def make_list_validator(*field_name: str):
@@ -78,7 +79,7 @@ def make_list_validator(*field_name: str):
             v = [v]
         return v
 
-    return validator(*field_name, allow_reuse=True, pre=True)(split)
+    return field_validator(*field_name, mode="before")(split)
 
 
 def validate_correct_length(
@@ -146,7 +147,7 @@ def validate_correct_length(
         # length attribute not present, possibly defer validation to a subclass.
         return values
 
-    requiredlength = max(length + length_incr, min_length)
+    requiredlength = max(int(length) + length_incr, min_length)
 
     for field_name in field_names:
         field = values.get(field_name)
@@ -269,7 +270,7 @@ def validate_conditionally(
 
 
 def validate_datetime_string(
-    field_value: Optional[str], field: ModelField
+    field_value: Optional[str], field: ValidationInfo
 ) -> Optional[str]:
     """Validate that a field value matches the YYYYmmddHHMMSS datetime format.
 
@@ -293,7 +294,7 @@ def validate_datetime_string(
             _ = datetime.strptime(field_value, r"%Y%m%d%H%M%S")
         except ValueError:
             raise ValueError(
-                f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS'."
+                f"Invalid datetime string for {field.field_name}: '{field_value}', expecting 'YYYYmmddHHMMSS'."
             )
 
     return field_value  # this is the value written to the class field
@@ -339,12 +340,16 @@ def _try_get_default_value(
     Returns:
         Optional[str]: The field default that corresponds to the value. If nothing is found return None.
     """
-    if (field := c.__fields__.get(fieldname)) is None:
+    if not hasattr(c, 'model_fields') or (field := c.model_fields.get(fieldname)) is None:
         return None
 
-    default = field.default
+    # In pydantic v2, default is accessed through default_factory or directly
+    if hasattr(field, 'default_factory') and field.default_factory is not None:
+        default = field.default_factory()
+    else:
+        default = field.default
 
-    if default is not None and default.lower() == value.lower():
+    if default is not None and hasattr(default, 'lower') and default.lower() == value.lower():
         # If this class's default matches, directly return it to end the recursion.
         return default
 
@@ -383,11 +388,16 @@ def get_type_based_on_subclass_default_value(
 
 
 def _get_type_based_on_default_value(cls, fieldname, value) -> Optional[Type]:
-    if (field := cls.__fields__.get(fieldname)) is None:
+    if not hasattr(cls, 'model_fields') or (field := cls.model_fields.get(fieldname)) is None:
         return None
 
-    default = field.default
-    if default is not None and default.lower() == value.lower():
+    # In pydantic v2, default is accessed through default_factory or directly
+    if hasattr(field, 'default_factory') and field.default_factory is not None:
+        default = field.default_factory()
+    else:
+        default = field.default
+
+    if default is not None and hasattr(default, 'lower') and default.lower() == value.lower():
         return cls
 
     for sc in cls.__subclasses__():
@@ -640,7 +650,7 @@ class UnknownKeywordErrorManager:
         self,
         data: Dict[str, Any],
         section_header: str,
-        fields: Dict[str, ModelField],
+        fields: Dict[str, FieldInfo],
         excluded_fields: Set[str],
     ) -> None:
         """
@@ -649,7 +659,7 @@ class UnknownKeywordErrorManager:
         Args:
             data (Dict[str, Any])           : Input data containing all properties which are checked on unknown keywords.
             section_header (str)            : Header of the section in which unknown keys might be detected.
-            fields (Dict[str, ModelField])  : Known fields of the section.
+            fields (Dict[str, FieldInfo])  : Known fields of the section.
             excluded_fields (Set[str])      : Fields which should be excluded from the check for unknown keywords.
         """
         unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
@@ -660,14 +670,17 @@ class UnknownKeywordErrorManager:
             )
 
     def _get_all_unknown_keywords(
-        self, data: Dict[str, Any], fields: Dict[str, ModelField], excluded_fields: Set
+        self,
+        data: Dict[str, Any],
+        fields: Dict[str, FieldInfo],
+        excluded_fields: Set,
     ) -> List[str]:
         """
         Get all unknown keywords in the data.
 
         Args:
             data: Dict[str, Any]: Input data containing all properties which are checked on unknown keywords.
-            fields: Dict[str, ModelField]: Known fields of the Model.
+            fields: Dict[str, FieldInfo]: Known fields of the Model.
             excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
 
         Returns:
@@ -682,24 +695,24 @@ class UnknownKeywordErrorManager:
 
     @staticmethod
     def _is_unknown_keyword(
-        keyword: str, fields: Dict[str, ModelField], excluded_fields: Set
-    ):
+        keyword: str, fields: Dict[str, FieldInfo], excluded_fields: Set
+    ) -> bool:
         """
         Check if the given field name equals to any of the model field names or aliases, if not, the function checks if
         the field is not in the excluded_fields parameter.
 
         Args:
             keyword: str: Name of the field.
-            fields: Dict[str, ModelField]: Known fields of the Model.
+            fields: Dict[str, FieldInfo]: Known fields of the Model.
             excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
 
         Returns:
             bool: True if the field is unknown (not a field name or alias and and not in the exclude list),
             False otherwise
         """
-        exists = any(
-            keyword == model_field.name or keyword == model_field.alias
-            for model_field in fields.values()
+        exists = keyword in fields or any(
+            hasattr(field_info, 'alias') and keyword == field_info.alias
+            for field_info in fields.values()
         )
         # the field is not in the known fields, check if it should be excluded
         unknown = not exists and keyword not in excluded_fields

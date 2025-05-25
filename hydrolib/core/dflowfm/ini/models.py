@@ -3,10 +3,11 @@ from abc import ABC
 from enum import Enum
 from inspect import isclass
 from math import isnan
-from re import compile
+from re import Pattern, compile
 from typing import (
     Any,
     Callable,
+    ClassVar,
     List,
     Literal,
     Optional,
@@ -18,9 +19,10 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic.v1 import Extra, Field, root_validator
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import ModelField
+from pydantic import Field, model_validator, field_validator
+from pydantic import ValidationInfo
+from pydantic.fields import FieldInfo
+from pydantic.config import ConfigDict
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.base.file_manager import FilePathStyleConverter
@@ -114,13 +116,11 @@ class INIBasedModel(BaseModel, ABC):
 
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
-    _scientific_notation_regex = compile(
+    _scientific_notation_regex: ClassVar[Pattern] = compile(
         r"([\d.]+)([dD])([+-]?\d{1,3})"
     )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
 
-    class Config:
-        extra = Extra.ignore
-        arbitrary_types_allowed = False
+    model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=False)
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
@@ -180,7 +180,10 @@ class INIBasedModel(BaseModel, ABC):
             str: the delimiter string to be used for serializing the given field.
         """
         delimiter = None
-        if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
+        if (
+            (field := cls.model_fields.get(field_key))
+                and isinstance(field, FieldInfo
+         )):
             delimiter = field.field_info.extra.get("delimiter")
         if not delimiter:
             delimiter = cls.get_list_delimiter()
@@ -201,13 +204,12 @@ class INIBasedModel(BaseModel, ABC):
                 Indicates that only known types are allowed.
         """
 
-        class Config:
-            extra = Extra.allow
-            arbitrary_types_allowed = False
+        model_config = ConfigDict(extra="allow", arbitrary_types_allowed=False)
 
     comments: Optional[Comments] = Comments()
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def _validate_unknown_keywords(cls, values):
         """
         Validates fields and raises errors for unknown keywords.
@@ -227,12 +229,13 @@ class INIBasedModel(BaseModel, ABC):
             unknown_keyword_error_manager.raise_error_for_unknown_keywords(
                 values,
                 cls._header,
-                cls.__fields__,
+                cls.model_fields,
                 cls._exclude_fields() | do_not_validate,
             )
         return values
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields.
 
@@ -246,7 +249,7 @@ class INIBasedModel(BaseModel, ABC):
         """
         dropkeys = []
         for k, v in values.items():
-            if v is None and k in cls.__fields__.keys():
+            if v is None and k in cls.model_fields.keys():
                 dropkeys.append(k)
 
         logger.info(f"Dropped unset keys: {dropkeys}")
@@ -258,7 +261,8 @@ class INIBasedModel(BaseModel, ABC):
 
         return values
 
-    @validator("comments", always=True, allow_reuse=True)
+    @field_validator("comments", mode="after")
+    @classmethod
     def comments_matches_has_comments(cls, v):
         """
         Validates the presence of comments if supported by the model.
@@ -274,19 +278,21 @@ class INIBasedModel(BaseModel, ABC):
             v = None
         return v
 
-    @validator("*", pre=True, allow_reuse=True)
-    def replace_fortran_scientific_notation_for_floats(cls, value, field):
+    @field_validator("*", mode="before")
+    @classmethod
+    def replace_fortran_scientific_notation_for_floats(cls, value, info: ValidationInfo):
         """
         Converts FORTRAN-style scientific notation to standard notation for float fields.
 
         Args:
             value (Any): The field value to process.
-            field (Field): The field being processed.
+            info: The field validation info.
 
         Returns:
             Any: The processed field value.
         """
-        if field.type_ != float:
+        field_type = cls.model_fields.get(info.field_name).annotation
+        if field_type != float and field_type != List[float]:
             return value
 
         return cls._replace_fortran_scientific_notation(value)
@@ -350,7 +356,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             Set: Set of field names to exclude.
         """
-        return {"comments", "datablock", "_header"}
+        return {"comments", "datablock", "header"}
 
     def _convert_value(
         self,
@@ -410,8 +416,8 @@ class INIBasedModel(BaseModel, ABC):
                 continue
 
             field_key = key
-            if key in self.__fields__:
-                key = self.__fields__[key].alias
+            if key in self.model_fields:
+                key = self.model_fields[key].alias
 
             prop = Property(
                 key=key,
@@ -438,14 +444,14 @@ class INIBasedModel(BaseModel, ABC):
         if key in self._exclude_fields():
             return False
 
-        if save_settings._exclude_unset and key not in self.__fields_set__:
+        if save_settings._exclude_unset and key not in self.model_fields_set:
             return False
 
-        field = self.__fields__.get(key)
+        field = self.model_fields.get(key)
         if not field:
             return value is not None
 
-        field_type = field.type_
+        field_type = field.annotation
         if self._is_union(field_type):
             return value is not None or self._union_has_filemodel(field_type)
 
@@ -660,7 +666,8 @@ class DataBlockINIBasedModel(INIBasedModel):
 
         return value
 
-    @validator("datablock")
+    @field_validator("datablock", mode="after")
+    @classmethod
     def _validate_no_nans_are_present(cls, datablock: Datablock) -> Datablock:
         """Validate that the datablock does not have any NaN values.
 
@@ -737,7 +744,7 @@ class INIModel(ParsableFileModel):
         for key, value in self:
             if key in self._exclude_fields() or value is None:
                 continue
-            if save_settings._exclude_unset and key not in self.__fields_set__:
+            if save_settings._exclude_unset and key not in self.model_fields_set:
                 continue
             if isinstance(value, list):
                 for v in value:
