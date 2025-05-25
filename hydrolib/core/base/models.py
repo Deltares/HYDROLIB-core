@@ -13,8 +13,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, Type
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import field_validator, PrivateAttr
-from pydantic.main import ValidationError
+from pydantic import field_validator, PrivateAttr, ValidationError
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
