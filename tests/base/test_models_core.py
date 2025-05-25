@@ -20,12 +20,14 @@ from hydrolib.core.base.serializer import DummySerializer
 # Common test model classes to reduce duplication
 class SimpleTestModel(BaseModel):
     """A simple test model with basic properties."""
+
     name: str
     value: int
 
 
 class TestModelWithLinks(BaseModel):
     """A test model that overrides link methods."""
+
     name: str
 
     def is_file_link(self) -> bool:
@@ -37,11 +39,13 @@ class TestModelWithLinks(BaseModel):
 
 class ChildTestModel(TestModelWithLinks):
     """A child test model for hierarchy testing."""
+
     value: int
 
 
 class ParentTestModel(TestModelWithLinks):
     """A parent test model for hierarchy testing."""
+
     child: ChildTestModel
     children: List[ChildTestModel] = []
 
@@ -56,16 +60,19 @@ class TestBaseModelWithFunc(BaseModel):
 
 class ChildModelWithFunc(TestBaseModelWithFunc, ChildTestModel):
     """A child model that includes the test_func method."""
+
     pass
 
 
 class ParentModelWithFunc(TestBaseModelWithFunc, ParentTestModel):
     """A parent model that includes the test_func method."""
+
     pass
 
 
 class TestParsableModelBase(ParsableFileModel):
     """Base class for parsable file model tests."""
+
     name: str = "default"
     value: int = 0
 
@@ -184,11 +191,13 @@ class TestBaseModel(unittest.TestCase):
             called_models.append(self)
 
         # Patch the test_func method
-        with patch.object(TestBaseModelWithFunc, 'test_func', test_func):
+        with patch.object(TestBaseModelWithFunc, "test_func", test_func):
             child1 = ChildModelWithFunc(name="child1", value=1)
             child2 = ChildModelWithFunc(name="child2", value=2)
             child3 = ChildModelWithFunc(name="child3", value=3)
-            parent = ParentModelWithFunc(name="parent", child=child1, children=[child2, child3])
+            parent = ParentModelWithFunc(
+                name="parent", child=child1, children=[child2, child3]
+            )
 
             # Apply the function recursively
             parent._apply_recurse("test_func")
@@ -289,9 +298,12 @@ class TestParsableFileModel(unittest.TestCase):
         """Test _get_quantity_unit method with different quantity types."""
         # Define test cases as tuples of (input_quantities, expected_units)
         test_cases = [
-            (["discharge", "waterlevel", "salinity", "temperature"], ["m3/s", "m", "1e-3", "degC"]),
+            (
+                ["discharge", "waterlevel", "salinity", "temperature"],
+                ["m3/s", "m", "1e-3", "degC"],
+            ),
             (["unknown1", "unknown2"], ["-", "-"]),
-            (["discharge", "unknown", "waterlevel"], ["m3/s", "-", "m"])
+            (["discharge", "unknown", "waterlevel"], ["m3/s", "-", "m"]),
         ]
 
         # Run all test cases
