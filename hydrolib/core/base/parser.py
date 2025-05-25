@@ -1,5 +1,5 @@
-from typing import List, Tuple, Dict
 from pathlib import Path
+from typing import Dict, List, Tuple
 
 
 class BaseParser:
