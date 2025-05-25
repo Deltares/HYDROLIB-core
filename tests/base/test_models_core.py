@@ -1,23 +1,23 @@
 import unittest
-from unittest.mock import MagicMock, patch
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type, ClassVar
+from typing import Any, ClassVar, Dict, List, Optional, Type
+from unittest.mock import MagicMock, patch
 
 import pytest
 
+from hydrolib.core.base.file_manager import FileLoadContext, ResolveRelativeMode
 from hydrolib.core.base.models import (
     BaseModel,
-    FileModel,
-    ParsableFileModel,
     DiskOnlyFileModel,
-    SerializerConfig,
+    FileModel,
     ModelSaveSettings,
     ModelTreeTraverser,
-    _should_traverse,
+    ParsableFileModel,
+    SerializerConfig,
     _should_execute,
+    _should_traverse,
     validator_set_default_disk_only_file_model_when_none,
 )
-from hydrolib.core.base.file_manager import FileLoadContext, ResolveRelativeMode
 from hydrolib.core.base_utils import DummmyParser, DummySerializer
 
 
@@ -42,6 +42,7 @@ class TestBaseModelFunctions(unittest.TestCase):
 
     def test_validator_set_default_disk_only_file_model_when_none(self):
         """Test validator_set_default_disk_only_file_model_when_none function."""
+
         # Get the validator function's inner adjust_none function
         # We need to access the inner function directly
         def adjust_none(v: Any, field: "ModelField") -> Any:
@@ -69,6 +70,7 @@ class TestBaseModel(unittest.TestCase):
 
     def test_init(self):
         """Test initialization of BaseModel."""
+
         # Create a simple subclass for testing
         class TestModel(BaseModel):
             name: str
@@ -85,6 +87,7 @@ class TestBaseModel(unittest.TestCase):
 
     def test_is_file_link(self):
         """Test is_file_link method."""
+
         # Create a simple subclass for testing
         class TestModel(BaseModel):
             name: str
@@ -95,6 +98,7 @@ class TestBaseModel(unittest.TestCase):
 
     def test_is_intermediate_link(self):
         """Test is_intermediate_link method."""
+
         # Create a simple subclass for testing
         class TestModel(BaseModel):
             name: str
@@ -105,6 +109,7 @@ class TestBaseModel(unittest.TestCase):
 
     def test_show_tree(self):
         """Test show_tree method."""
+
         # Create a simple model hierarchy for testing
         class ChildModel(BaseModel):
             name: str
@@ -130,10 +135,10 @@ class TestBaseModel(unittest.TestCase):
         parent = ParentModel(name="parent", child=child)
 
         # Capture stdout to verify output
-        with patch('builtins.print') as mock_print:
+        with patch("builtins.print") as mock_print:
             parent.show_tree()
             # Verify print was called with the model
-            mock_print.assert_any_call('', '', parent)
+            mock_print.assert_any_call("", "", parent)
 
     def test_apply_recurse(self):
         """Test _apply_recurse method."""
@@ -186,6 +191,7 @@ class TestBaseModel(unittest.TestCase):
 
     def test_get_identifier(self):
         """Test _get_identifier method."""
+
         # Create a simple subclass for testing
         class TestModel(BaseModel):
             name: str
@@ -201,6 +207,7 @@ class TestModelTreeTraverser(unittest.TestCase):
 
     def test_traverse_simple_model(self):
         """Test traversal of a simple model with no children."""
+
         # Create a simple model for testing
         class TestModel(BaseModel):
             name: str
@@ -223,6 +230,7 @@ class TestModelTreeTraverser(unittest.TestCase):
 
     def test_traverse_nested_model(self):
         """Test traversal of a nested model."""
+
         # Create a nested model for testing
         class ChildModel(BaseModel):
             name: str
@@ -286,6 +294,7 @@ class TestParsableFileModel(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
+
         # Create a concrete subclass of ParsableFileModel for testing
         class TestParsableModel(ParsableFileModel):
             name: str = "default"
