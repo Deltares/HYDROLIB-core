@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 
 
 class T3DSerializerConfig(SerializerConfig):
@@ -44,7 +44,7 @@ class T3DSerializer:
         Examples:
             ```python
             >>> from pathlib import Path
-            >>> from hydrolib.core.basemodel import ModelSaveSettings
+            >>> from hydrolib.core.base.models import ModelSaveSettings
             >>> from hydrolib.core.dflowfm.t3d.serializer import T3DSerializer, T3DSerializerConfig
             >>> data = {
             ... "comments": [],

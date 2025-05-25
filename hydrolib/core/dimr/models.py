@@ -8,18 +8,18 @@ from typing import Callable, Dict, List, Literal, Optional, Type, Union
 from pydantic.v1 import Field, validator
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.models import (
     BaseModel,
     FileModel,
     ModelSaveSettings,
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.parser import DIMRParser
 from hydrolib.core.dimr.serializer import DIMRSerializer
 from hydrolib.core.rr.models import RainfallRunoffModel
-from hydrolib.core.utils import to_list
 
 
 class KeyValuePair(BaseModel):
