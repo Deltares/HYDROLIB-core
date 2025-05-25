@@ -24,7 +24,8 @@ from hydrolib.core.base.file_manager import (
     file_load_context,
     path_style_validator,
 )
-from hydrolib.core.base_utils import DummmyParser, DummySerializer
+from hydrolib.core.base.parser import DummmyParser
+from hydrolib.core.base.serializer import DummySerializer
 from hydrolib.core.utils import (
     PathStyle,
     get_path_style_for_current_operating_system,

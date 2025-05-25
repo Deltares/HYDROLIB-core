@@ -13,7 +13,8 @@ from hydrolib.core.base.models import (
     _should_execute,
     _should_traverse,
 )
-from hydrolib.core.base_utils import DummmyParser, DummySerializer
+from hydrolib.core.base.parser import DummmyParser
+from hydrolib.core.base.serializer import DummySerializer
 
 
 class TestBaseModelFunctions(unittest.TestCase):
