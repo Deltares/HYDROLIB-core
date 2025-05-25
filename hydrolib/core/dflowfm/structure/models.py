@@ -30,7 +30,7 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_required_fields,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.base.utils import str_is_empty_or_none
 
 logger = logging.getLogger(__name__)
 

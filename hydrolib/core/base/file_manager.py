@@ -6,7 +6,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
-from hydrolib.core.utils import (
+from hydrolib.core.base.utils import (
     FileChecksumCalculator,
     FilePathStyleConverter,
     OperatingSystem,

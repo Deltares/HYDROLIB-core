@@ -9,7 +9,7 @@ from hydrolib.core.base.models import (
     ParsableFileModel,
     SerializerConfig,
 )
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.base.utils import str_is_empty_or_none
 
 from .parser import XYNParser
 from .serializer import XYNSerializer

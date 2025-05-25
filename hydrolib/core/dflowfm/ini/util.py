@@ -11,7 +11,7 @@ from pydantic.v1.fields import ModelField
 from pydantic.v1.main import BaseModel
 
 from hydrolib.core.dflowfm.common.models import LocationType
-from hydrolib.core.utils import operator_str, str_is_empty_or_none, to_list
+from hydrolib.core.base.utils import operator_str, str_is_empty_or_none, to_list
 
 
 def get_split_string_on_delimiter_validator(*field_name: str):

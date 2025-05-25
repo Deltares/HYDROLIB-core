@@ -12,7 +12,7 @@ from hydrolib.core.dflowfm.ini.io_models import (
     Property,
     Section,
 )
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.base.utils import str_is_empty_or_none
 
 
 class INISerializerConfig(SerializerConfig):

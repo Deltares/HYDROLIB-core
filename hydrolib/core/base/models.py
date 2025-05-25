@@ -26,7 +26,7 @@ from hydrolib.core.base.file_manager import (
 )
 from hydrolib.core.base.parser import DummmyParser
 from hydrolib.core.base.serializer import DummySerializer
-from hydrolib.core.utils import (
+from hydrolib.core.base.utils import (
     PathStyle,
     get_path_style_for_current_operating_system,
     to_key,
@@ -127,7 +127,7 @@ class BaseModel(PydanticBaseModel):
                     v.show_tree(indent + 1)
 
     def _apply_recurse(self, f, *args, **kwargs):
-        # TODO Could we use this function for `show_tree`?
+        # Could we use this function for `show_tree`?
         for _, value in self:
             # Handle lists of items
             if not isinstance(value, list):
@@ -771,7 +771,7 @@ class ParsableFileModel(FileModel):
     serializer_config: SerializerConfig = SerializerConfig()
 
     def _load(self, filepath: Path) -> Dict:
-        # TODO Make this lazy in some cases so it doesn't become slow
+        # Make this lazy in some cases so it doesn't become slow
         if filepath.is_file():
             return self._parse(filepath)
         else:
@@ -796,7 +796,7 @@ class ParsableFileModel(FileModel):
         """
         path = self._resolved_filepath
         if path is None:
-            # TODO: Do we need to add a warning / exception here
+            # Do we need to add a warning / exception here
             return
 
         path.parent.mkdir(parents=True, exist_ok=True)

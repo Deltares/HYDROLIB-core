@@ -36,7 +36,7 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     rename_keys_for_backwards_compatibility,
 )
-from hydrolib.core.utils import to_list
+from hydrolib.core.base.utils import to_list
 
 logger = logging.getLogger(__name__)
 

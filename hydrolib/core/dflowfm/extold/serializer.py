@@ -8,7 +8,7 @@ from hydrolib.core.base.models import (
     SerializerConfig,
 )
 from hydrolib.core.dflowfm.extold.common_io import ORDERED_FORCING_FIELDS
-from hydrolib.core.utils import FilePathStyleConverter
+from hydrolib.core.base.utils import FilePathStyleConverter
 
 
 class Serializer:

@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.dflowfm.mdu.models import Geometry, Output
-from hydrolib.core.utils import (
+from hydrolib.core.base.utils import (
     FileChecksumCalculator,
     FilePathStyleConverter,
     PathStyle,

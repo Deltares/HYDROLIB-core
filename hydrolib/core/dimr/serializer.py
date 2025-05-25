@@ -8,7 +8,7 @@ from xml.dom import minidom
 from lxml import etree as e
 
 from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
-from hydrolib.core.utils import FilePathStyleConverter
+from hydrolib.core.base.utils import FilePathStyleConverter
 
 
 class DIMRSerializer:

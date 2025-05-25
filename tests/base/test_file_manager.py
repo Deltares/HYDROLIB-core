@@ -21,7 +21,7 @@ from hydrolib.core.base.file_manager import (
     path_style_validator,
 )
 from hydrolib.core.base.models import FileModel, ModelSaveSettings
-from hydrolib.core.utils import PathStyle
+from hydrolib.core.base.utils import PathStyle
 from tests.utils import test_input_dir
 
 
