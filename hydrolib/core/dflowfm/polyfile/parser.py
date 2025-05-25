@@ -1,12 +1,11 @@
-"""parser.py defines all classes and functions related to parsing pol/pli(z) files.
-"""
+"""parser.py defines all classes and functions related to parsing pol/pli(z) files."""
 
 import warnings
 from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.polyfile.models import (
     Description,
     Metadata,
@@ -19,11 +18,14 @@ class ParseMsg(BaseModel):
     """ParseMsg defines a single message indicating a significant parse event.
 
     Attributes:
-        line_start (int): The start line of the block to which this ParseMsg refers.
-        line_end (int): The end line of the block to which this ParseMsg refers.
+        line_start (int):
+            The start line of the block to which this ParseMsg refers.
+        line_end (int):
+            The end line of the block to which this ParseMsg refers.
         column (Optional[Tuple[int, int]]):
             An optional begin and end column to which this ParseMsg refers.
-        reason (str): A human-readable string detailing the reason of the ParseMsg.
+        reason (str):
+            A human-readable string detailing the reason of the ParseMsg.
     """
 
     line_start: int
@@ -33,7 +35,7 @@ class ParseMsg(BaseModel):
     reason: str
 
     def format_parsemsg_to_string(self, file_path: Optional[Path] = None) -> str:
-        """Format string describing this ParseMsg
+        """Format string describing this ParseMsg.
 
         Args:
             file_path (Optional[Path], optional):
@@ -87,7 +89,7 @@ class Block(BaseModel):
     empty_lines: List[int] = []
 
     def finalize(self) -> Optional[Tuple[PolyObject, List[ParseMsg]]]:
-        """Finalise this Block and return the constructed PolyObject and warnings
+        """Finalize this Block and return the constructed PolyObject and warnings.
 
         If the metadata or the points are None, then None is returned.
 
@@ -120,19 +122,18 @@ class Block(BaseModel):
         return Metadata(name=self.name, n_rows=n_rows, n_columns=n_columns)
 
     def _get_empty_line_warnings(self):
-        if len(self.empty_lines) == 0:
-            return []
-
         warnings = []
-        empty_line = (self.empty_lines[0], self.empty_lines[0])
+        if len(self.empty_lines) > 0:
+            warnings = []
+            empty_line = (self.empty_lines[0], self.empty_lines[0])
 
-        for line in self.empty_lines[1:]:
-            if line == empty_line[1] + 1:
-                empty_line = (empty_line[0], line)
-            else:
-                warnings.append(Block._get_empty_line_msg(empty_line))
-                empty_line = (line, line)
-        warnings.append(Block._get_empty_line_msg(empty_line))
+            for line in self.empty_lines[1:]:
+                if line == empty_line[1] + 1:
+                    empty_line = (empty_line[0], line)
+                else:
+                    warnings.append(Block._get_empty_line_msg(empty_line))
+                    empty_line = (line, line)
+            warnings.append(Block._get_empty_line_msg(empty_line))
 
         return warnings
 
@@ -162,7 +163,7 @@ class InvalidBlock(BaseModel):
     reason: str
 
     def to_msg(self) -> ParseMsg:
-        """Convert this InvalidBlock to the corresponding ParseMsg
+        """Convert this InvalidBlock to the corresponding ParseMsg.
 
         Returns:
             ParseMsg: The ParseMsg corresponding with this InvalidBlock
@@ -178,13 +179,13 @@ class ErrorBuilder:
     """ErrorBuilder provides the functionality to the Parser to keep track of errors."""
 
     def __init__(self) -> None:
-        """Create a new ErorrorBuilder"""
+        """Create a new ErorrorBuilder."""
         self._current_block: Optional[InvalidBlock] = None
 
     def start_invalid_block(
         self, block_start: int, invalid_line: int, reason: str
     ) -> None:
-        """Start a new invalid block if none exists at the moment
+        """Start a new invalid block if none exists at the moment.
 
         If we are already in an invalid block, or the previous one
         was never finalised, we will not log the reason, and assume
@@ -201,7 +202,7 @@ class ErrorBuilder:
             )
 
     def end_invalid_block(self, line: int) -> None:
-        """Store the end line of the current block
+        """Store the end line of the current block.
 
         If no invalid block currently exists, nothing will be done.
 
@@ -212,7 +213,7 @@ class ErrorBuilder:
             self._current_block.end_line = line
 
     def finalize_previous_error(self) -> Optional[ParseMsg]:
-        """Finalize the current invalid block if it exists
+        """Finalize the current invalid block if it exists.
 
         If no current invalid block exists, None will be returned, and nothing will
         change. If a current block exists, it will be converted into a ParseMsg and
@@ -264,8 +265,10 @@ class Parser:
     empty lines will generate a warning, and will be ignored by the parser.
     """
 
-    def __init__(self, file_path: Path, has_z_value: bool = False) -> None:
-        """Create a new Parser
+    def __init__(
+        self, file_path: Path, has_z_value: bool = False, verbose: bool = False
+    ) -> None:
+        """Create a new Parser.
 
         Args:
             file_path (Path):
@@ -273,9 +276,12 @@ class Parser:
             has_z_value (bool, optional):
                 Whether to interpret the third column as z-coordinates.
                 Defaults to False.
+            verbose (bool, optional):
+                Whether to show warnings when parsing the file. Defaults to False.
         """
         self._has_z_value = has_z_value
         self._file_path = file_path
+        self._verbose = verbose
 
         self._line = 0
         self._new_block()
@@ -308,7 +314,6 @@ class Parser:
         Args:
             line (str): The line to parse
         """
-
         if not Parser._is_empty_line(line):
             self._feed_line[self._state](line)
         else:
@@ -434,6 +439,12 @@ class Parser:
         self._current_block.description.append(comment)  # type: ignore
 
     def _handle_empty_line(self) -> None:
+        """Add the empty line to the current block if it is not in an invalid state.
+
+        Notes:
+            - Empty lines are ignored, but we want to keep track of them for the purpose of warnings.
+            - Empty lines are not added to the current block if it is in an invalid state.
+        """
         if self._state != StateType.INVALID_STATE:
             self._current_block.empty_lines.append(self._line)
 
@@ -445,7 +456,8 @@ class Parser:
 
     def _notify_as_warning(self, msg: ParseMsg) -> None:
         warning_message = msg.format_parsemsg_to_string(self._file_path)
-        warnings.warn(warning_message)
+        if self._verbose:
+            warnings.warn(warning_message, stacklevel=2)
 
     def _notify_as_error(self, msg: ParseMsg) -> None:
         error_message = msg.format_parsemsg_to_string(self._file_path)
@@ -520,7 +532,9 @@ def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
     return isinstance(input_val, Path) and input_val.suffix == ".pliz"
 
 
-def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
+def read_polyfile(
+    filepath: Path, has_z_values: Optional[bool] = None, verbose: bool = False
+) -> Dict:
     """Read the specified file and return the corresponding data.
 
     The file is expected to follow the .pli(z) / .pol convention. A .pli(z) or .pol
@@ -569,6 +583,8 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
             Path to the pli(z)/pol convention structured file.
         has_z_values:
             Whether to create points containing a z-value. Defaults to None.
+        verbose:
+            Whether to show warnings when parsing the file. Defaults to False.
 
     Raises:
         ValueError: When the plifile is invalid.
@@ -579,7 +595,7 @@ def read_polyfile(filepath: Path, has_z_values: Optional[bool] = None) -> Dict:
     if has_z_values is None:
         has_z_values = _determine_has_z_value(filepath)
 
-    parser = Parser(filepath, has_z_value=has_z_values)
+    parser = Parser(filepath, has_z_value=has_z_values, verbose=verbose)
 
     with filepath.open("r", encoding="utf8") as f:
         for line in f:

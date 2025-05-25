@@ -3,13 +3,13 @@ from typing import Callable, Dict, List, Optional
 
 from pydantic import field_validator
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.models import (
     BaseModel,
     ModelSaveSettings,
     ParsableFileModel,
     SerializerConfig,
 )
-from hydrolib.core.utils import str_is_empty_or_none
+from hydrolib.core.base.utils import str_is_empty_or_none
 
 from .parser import XYNParser
 from .serializer import XYNSerializer

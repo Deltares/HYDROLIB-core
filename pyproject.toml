@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.8.1"
+version = "0.9.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -71,7 +71,7 @@ mkdocs-mermaid2-plugin = "^1.2.1"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.8.1"
+version = "0.9.0"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",
@@ -104,7 +104,7 @@ exclude = '''
 '''
 
 [tool.flake8]
-ignore = ["E501", "W503", "E731"]
+ignore = ["E501", "W503", "E731", "E203", "D401", "D102"]
 per-file-ignores = [
     '__init__.py:F401',
 ]

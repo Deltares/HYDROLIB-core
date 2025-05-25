@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 from pyfakefs.fake_filesystem import FakeFilesystem
 
-from hydrolib.core.basemodel import ModelSaveSettings
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.cmp.models import (
     AstronomicRecord,
     CMPModel,

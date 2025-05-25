@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Iterable, Optional
 from pydantic.v1 import Field, validator
 from pydantic.v1.types import FilePath
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     ModelSaveSettings,
     ParsableFileModel,

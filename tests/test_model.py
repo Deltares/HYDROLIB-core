@@ -6,7 +6,7 @@ from typing import Callable, Dict, Union
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictGeneral
@@ -32,15 +32,13 @@ from hydrolib.core.dimr.models import (
     StartGroup,
 )
 from hydrolib.core.rr.models import RainfallRunoffModel
-
-from .rr.meteo.test_bui import BuiTestData
-from .utils import (
+from tests.rr.meteo.test_bui import BuiTestData
+from tests.utils import (
     assert_files_equal,
     invalid_test_data_dir,
     test_data_dir,
     test_input_dir,
     test_output_dir,
-    test_reference_dir,
 )
 
 

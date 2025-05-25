@@ -6,7 +6,7 @@ from pydantic import Field, field_validator, model_validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel

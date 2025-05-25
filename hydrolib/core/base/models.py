@@ -503,6 +503,12 @@ class FileModel(BaseModel, ABC):
         if isinstance(value, (Path, str)):
             # Pydantic Model init requires a dict
             value = {"filepath": Path(value)}
+        elif value is None:
+            return None
+        elif not isinstance(value, cls) and not isinstance(value, dict):
+            raise ValueError(
+                f"Expected {cls.__name__} or dict, got {type(value).__name__}"
+            )
         return super().model_validate_json(value)
 
     def save(

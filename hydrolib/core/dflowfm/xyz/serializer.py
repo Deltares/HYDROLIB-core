@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, Generator
 
-from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 
 
 class XYZSerializer:

@@ -17,7 +17,8 @@ from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, Set, 
 from pydantic import ConfigDict, Field, field_validator, model_validator
 from strenum import StrEnum
 
-from hydrolib.core.basemodel import BaseModel, ModelSaveSettings
+from hydrolib.core.base.models import BaseModel, ModelSaveSettings
+from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
 from hydrolib.core.dflowfm.ini.models import (
     DataBlockINIBasedModel,
@@ -34,7 +35,6 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     rename_keys_for_backwards_compatibility,
 )
-from hydrolib.core.utils import to_list
 
 logger = logging.getLogger(__name__)
 

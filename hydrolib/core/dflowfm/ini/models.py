@@ -22,10 +22,10 @@ from pydantic import ConfigDict, Field, field_validator, model_validator
 from pydantic.fields import FieldInfo
 
 from hydrolib.core import __version__ as version
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.file_manager import FilePathStyleConverter
+from hydrolib.core.base.models import (
     BaseModel,
     FileModel,
-    FilePathStyleConverter,
     ModelSaveSettings,
     ParsableFileModel,
 )
@@ -98,7 +98,7 @@ class INIBasedModel(BaseModel, ABC):
         Serialize a model to an INI format:
             ```python
             >>> from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
-            >>> from hydrolib.core.basemodel import ModelSaveSettings
+            >>> from hydrolib.core.base.models import ModelSaveSettings
             >>> config = INISerializerConfig()
             >>> section = model._to_section(config, save_settings=ModelSaveSettings())
             >>> print(section.header)

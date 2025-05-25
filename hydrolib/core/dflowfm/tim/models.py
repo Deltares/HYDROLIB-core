@@ -4,10 +4,10 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from pandas import DataFrame
 from pydantic import Field, ValidationInfo, field_validator
 
-from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
+from hydrolib.core.base.models import BaseModel, ModelSaveSettings, ParsableFileModel
+from hydrolib.core.base.utils import FortranUtils
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.core.dflowfm.tim.serializer import TimSerializer, TimSerializerConfig
-from hydrolib.core.utils import FortranUtils
 
 
 class TimRecord(BaseModel):

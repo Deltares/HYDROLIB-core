@@ -1,3 +1,12 @@
+## 0.9.0 (2025-05-16)
+
+### Feat
+
+- **extforce**: Introduce External forcing conversion tool with modular converters (UNST-8490, UNST-8528, UNST-8553) (#647)
+- **extforce**: Introduce External forcing conversion tool with modular converters (UNST-8490, UNST-8528, UNST-8553)
+- **meshkernel**: support refined parameters and clipping inside polygons with holes (#776)
+- **meshkernel**: support refined parameters and clipping inside polygons with holes
+
 ## 0.8.1 (2025-02-04)
 
 ### Feat
@@ -205,8 +214,8 @@
     * 1D Roughness INI files: [FrictionModel][hydrolib.core.io.friction.models.FrictionModel] ({{gh_issue(118)}}).
     * Storage node files: [StorageNodeModel][hydrolib.core.io.storagenode.models.StorageNodeModel] ({{gh_issue(131)}}).
     * General structure:  [GeneralStructure][hydrolib.core.io.structure.models.GeneralStructure] ({{gh_issue(79)}}).
-* Many additions to the [API documentation](reference/api.md).
-    
+* Many additions to the [API documentation](reference/base/api.md).
+
 
 ### Changed
 * All classes that have fields with "keyword values" (such as `frictionType = WhiteColebrook`) now use Enum classes for those values.
@@ -218,7 +227,7 @@
   to `hydrolib.core.io.crosssection.models`. ({{gh_issue(149)}})
 * Changed behavior for file paths in saved files ({{gh_issue(96)}}).
   More information about: [technical background](topics/loadsave.md) and a [tutorial](tutorials/loading_and_saving_a_model.md).
-  
+
 
 ### Fixed
 * Too strict validation of optional fields in culvert ({{gh_issue(75)}}), pump ({{gh_issue(76)}}),

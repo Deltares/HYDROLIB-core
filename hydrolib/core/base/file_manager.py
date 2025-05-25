@@ -1,3 +1,5 @@
+"""File Manager Module."""
+
 from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
@@ -20,8 +22,11 @@ PathOrStr = Union[Path, str]
 # we could move to https://github.com/samuelcolvin/pydantic/issues/1549
 context_file_loading: ContextVar["FileLoadContext"] = ContextVar("file_loading")
 
+
 class ResolveRelativeMode(IntEnum):
-    """ResolveRelativeMode defines the possible resolve modes used within the
+    """ResolveRelativeMode.
+
+    ResolveRelativeMode defines the possible resolve modes used within the
     FilePathResolver.
 
     It determines how the relative paths to child models within some FileModel
@@ -95,7 +100,7 @@ class FilePathResolver:
         return (parent / path).resolve()
 
     def push_new_parent(
-            self, parent_path: Path, relative_mode: ResolveRelativeMode
+        self, parent_path: Path, relative_mode: ResolveRelativeMode
     ) -> None:
         """Push a new parent_path with the given relative_mode to this FilePathResolver.
 
@@ -113,7 +118,7 @@ class FilePathResolver:
         self._parents.append((absolute_parent_path, relative_mode))
 
     def pop_last_parent(self) -> None:
-        """Pop the last added parent from this FilePathResolver
+        """Pop the last added parent from this FilePathResolver.
 
         If there are currently no parents defined, nothing will happen.
         """
@@ -132,7 +137,9 @@ class PathStyleValidator:
     _os_path_style = get_path_style_for_current_operating_system()
 
     def validate(self, path_style: Optional[str]) -> PathStyle:
-        """Validates the path style as string on whether it is a supported path style.
+        """Validate.
+
+        Validates the path style as string on whether it is a supported path style.
         If it is a valid path style the path style enum value will be return as a result.
 
         Args:
@@ -161,7 +168,7 @@ class ModelLoadSettings:
     """A class that holds the global settings for model loading."""
 
     def __init__(
-            self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
     ) -> None:
         """Initializes a new instance of the ModelLoadSettings class.
 
@@ -203,9 +210,7 @@ class ModelLoadSettings:
 
 
 class CachedFileModel:
-    """
-    CachedFileModel provides a simple structure to keep the Filemodel and checksum together.
-    """
+    """CachedFileModel provides a simple structure to keep the Filemodel and checksum together."""
 
     _model: "FileModel"
     _checksum: str
@@ -217,11 +222,12 @@ class CachedFileModel:
 
     @property
     def checksum(self) -> str:
-        """ "Checksum of the file the filemodel is based on."""
+        """Checksum of the file the filemodel is based on."""
         return self._checksum
 
     def __init__(self, model: "FileModel", checksum: str) -> None:
         """Create a new empty CachedFileModel.
+
         Args:
             model (FileModel): filemodel to cache.
             checksum (str): checksum of the file.
@@ -231,17 +237,16 @@ class CachedFileModel:
 
 
 class FileModelCache:
-    """
-    FileModelCache provides a simple structure to register and retrieve FileModel
-    objects.
-    """
+    """FileModelCache provides a simple structure to register and retrieve FileModel objects."""
 
     def __init__(self):
         """Create a new empty FileModelCache."""
         self._cache_dict: Dict[Path, CachedFileModel] = {}
 
     def retrieve_model(self, path: Path) -> Optional["FileModel"]:
-        """Retrieve the model associated with the (absolute) path if
+        """Retrieve model.
+
+        Retrieve the model associated with the (absolute) path if
         it has been registered before, otherwise return None.
 
         Returns:
@@ -320,7 +325,6 @@ class FileCasingResolver:
         Raises:
             NotImplementedError: When this function is called with an operating system other than Windows, Linux or MacOS.
         """
-
         operating_system = get_operating_system()
         if operating_system == OperatingSystem.WINDOWS:
             return self._resolve_casing_windows(path)
@@ -361,7 +365,9 @@ class FileCasingResolver:
 
 
 class FileLoadContext:
-    """FileLoadContext provides the context necessary to resolve paths
+    """FileLoadContext.
+
+    FileLoadContext provides the context necessary to resolve paths
     during the init of a FileModel, as well as ensure the relevant models
     are only read once.
     """
@@ -375,7 +381,7 @@ class FileLoadContext:
         self._load_settings: Optional[ModelLoadSettings] = None
 
     def initialize_load_settings(
-            self, recurse: bool, resolve_casing: bool, path_style: PathStyle
+        self, recurse: bool, resolve_casing: bool, path_style: PathStyle
     ):
         """Initialize the global model load setting. Can only be set once.
 
@@ -470,10 +476,9 @@ class FileLoadContext:
         return self._path_resolver.resolve(path)
 
     def push_new_parent(
-            self, parent_path: Path, relative_mode: ResolveRelativeMode
+        self, parent_path: Path, relative_mode: ResolveRelativeMode
     ) -> None:
-        """Push a new parent_path with the given relative_mode on this
-        FileLoadContext.
+        """Push a new parent_path with the given relative_mode on this FileLoadContext.
 
         Args:
             parent_path (Path): The parent path to be added to this FileLoadContext.
@@ -499,7 +504,9 @@ class FileLoadContext:
         return file_path
 
     def convert_path_style(self, file_path: Path) -> Path:
-        """Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+        """convert_path_style.
+
+        Resolve the file path by converting it from its own file path style to the path style for the current operating system.
 
         Args:
             file_path (Path): The file path to convert to the OS path style.
@@ -537,7 +544,9 @@ class FileLoadContext:
 
 @contextmanager
 def file_load_context():
-    """Provide a FileLoadingContext. If none has been created in the context of
+    """file_load_context.
+
+    Provide a FileLoadingContext. If none has been created in the context of
     this call stack yet, a new one will be created, which will be maintained
     until it goes out of scope.
 
@@ -556,5 +565,6 @@ def file_load_context():
     finally:
         if context_reset_token is not None:
             context_file_loading.reset(context_reset_token)
+
 
 path_style_validator = PathStyleValidator()

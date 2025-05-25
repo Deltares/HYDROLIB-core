@@ -5,7 +5,7 @@ from typing import Callable, List, Optional, Sequence, Tuple
 
 from pydantic import Field
 
-from hydrolib.core.basemodel import BaseModel, ModelSaveSettings, ParsableFileModel
+from hydrolib.core.base.models import BaseModel, ModelSaveSettings, ParsableFileModel
 
 
 class Description(BaseModel):
@@ -130,7 +130,7 @@ class PolyFile(ParsableFileModel):
     @classmethod
     def _get_parser(cls) -> Callable:
         # Prevent circular dependency in Parser
-        from .parser import read_polyfile
+        from hydrolib.core.dflowfm.polyfile.parser import read_polyfile
 
         return read_polyfile
 

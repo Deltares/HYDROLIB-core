@@ -194,14 +194,18 @@ def get_path_style_for_current_operating_system() -> PathStyle:
 class FilePathStyleConverter:
     """Class for converting file paths between different path styles."""
 
-    _os_path_style = get_path_style_for_current_operating_system()
+    def __init__(self):
+        """Initialize the converter with the current operating system's path style."""
+        self._os_path_style = get_path_style_for_current_operating_system()
 
     def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> str:
         """Convert the file path from the source path style to the path style of the current operating system.
 
         Args:
-            file_path (Path): The file path to convert to the OS path style.
-            source_path_style (PathStyle): The file path style of the given file path.
+            file_path (Path):
+                The file path to convert to the OS path style.
+            source_path_style (PathStyle):
+                The file path style of the given file path.
 
         Returns:
             str: The converted file path with OS path style.
@@ -314,7 +318,23 @@ class FileChecksumCalculator:
 
     @staticmethod
     def _calculate_md5_checksum(filepath: Path) -> str:
-        md5_hash = md5()
+        """Calculate the MD5 checksum of a file.
+
+        This method uses the `hashlib.md5` function with the `usedforsecurity=False` parameter
+        to indicate that the MD5 hash is not being used for security purposes. MD5 is considered
+        cryptographically insecure and should not be used in security-sensitive contexts.
+
+        Note:
+            The `usedforsecurity` parameter was introduced in Python 3.9. This method requires
+            Python 3.9 or later to function correctly.
+
+        Args:
+            filepath (Path): The path to the file for which the checksum will be calculated.
+
+        Returns:
+            str: The MD5 checksum of the file.
+        """
+        md5_hash = md5(usedforsecurity=False)
         with open(filepath, "rb") as file:
             for chunk in iter(lambda: file.read(4096), b""):
                 md5_hash.update(chunk)
