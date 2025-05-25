@@ -1,16 +1,16 @@
 import unittest
-from unittest.mock import MagicMock, patch, PropertyMock
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type, ClassVar
+from typing import Any, ClassVar, Dict, List, Optional, Type
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
-from hydrolib.core.base.models import FileModel, BaseModel, ModelSaveSettings
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
     ResolveRelativeMode,
     file_load_context,
 )
+from hydrolib.core.base.models import BaseModel, FileModel, ModelSaveSettings
 
 
 class ConcreteFileModel(FileModel):
@@ -144,7 +144,9 @@ class TestFileModel(unittest.TestCase):
             model = ConcreteFileModel(filepath=self.test_path)
 
             # Use PropertyMock to mock the _resolved_filepath property
-            with patch.object(FileModel, '_resolved_filepath', new_callable=PropertyMock) as mock_resolved_filepath:
+            with patch.object(
+                FileModel, "_resolved_filepath", new_callable=PropertyMock
+            ) as mock_resolved_filepath:
                 # Set the return value for the property
                 mock_resolved_filepath.return_value = self.test_path
 
@@ -154,7 +156,9 @@ class TestFileModel(unittest.TestCase):
             # Test with None filepath
             model.filepath = None
             # Use PropertyMock again for the None case
-            with patch.object(FileModel, '_resolved_filepath', new_callable=PropertyMock) as mock_resolved_filepath:
+            with patch.object(
+                FileModel, "_resolved_filepath", new_callable=PropertyMock
+            ) as mock_resolved_filepath:
                 mock_resolved_filepath.return_value = None
                 self.assertIsNone(model._resolved_filepath)
 
@@ -226,8 +230,10 @@ class TestFileModel(unittest.TestCase):
             model = ConcreteFileModel(filepath=self.test_path)
 
             # Mock _save_instance and _save_tree
-            with patch.object(ConcreteFileModel, "_save_instance") as mock_save_instance, \
-                 patch.object(ConcreteFileModel, "_save_tree") as mock_save_tree:
+            with (
+                patch.object(ConcreteFileModel, "_save_instance") as mock_save_instance,
+                patch.object(ConcreteFileModel, "_save_tree") as mock_save_tree,
+            ):
 
                 # Call save
                 model.save()
