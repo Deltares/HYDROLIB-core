@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, List
+from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
 from unittest.mock import MagicMock, patch
 
 from hydrolib.core.base.file_manager import FileLoadContext
@@ -15,6 +15,75 @@ from hydrolib.core.base.models import (
 )
 from hydrolib.core.base.parser import DummmyParser
 from hydrolib.core.base.serializer import DummySerializer
+
+
+# Common test model classes to reduce duplication
+class SimpleTestModel(BaseModel):
+    """A simple test model with basic properties."""
+    name: str
+    value: int
+
+
+class TestModelWithLinks(BaseModel):
+    """A test model that overrides link methods."""
+    name: str
+
+    def is_file_link(self) -> bool:
+        return True
+
+    def is_intermediate_link(self) -> bool:
+        return True
+
+
+class ChildTestModel(TestModelWithLinks):
+    """A child test model for hierarchy testing."""
+    value: int
+
+
+class ParentTestModel(TestModelWithLinks):
+    """A parent test model for hierarchy testing."""
+    child: ChildTestModel
+    children: List[ChildTestModel] = []
+
+
+class TestBaseModelWithFunc(BaseModel):
+    """A test base model that can track function calls."""
+
+    def test_func(self):
+        """Test function that can be used to track calls."""
+        pass
+
+
+class ChildModelWithFunc(TestBaseModelWithFunc, ChildTestModel):
+    """A child model that includes the test_func method."""
+    pass
+
+
+class ParentModelWithFunc(TestBaseModelWithFunc, ParentTestModel):
+    """A parent model that includes the test_func method."""
+    pass
+
+
+class TestParsableModelBase(ParsableFileModel):
+    """Base class for parsable file model tests."""
+    name: str = "default"
+    value: int = 0
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "test"
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".test"
+
+    @classmethod
+    def _get_serializer(cls):
+        return DummySerializer.serialize
+
+    @classmethod
+    def _get_parser(cls):
+        return DummmyParser.parse
 
 
 class TestBaseModelFunctions(unittest.TestCase):
@@ -40,7 +109,6 @@ class TestBaseModelFunctions(unittest.TestCase):
         """Test validator_set_default_disk_only_file_model_when_none function."""
 
         # Get the validator function's inner adjust_none function
-        # We need to access the inner function directly
         def adjust_none(v: Any, field: "ModelField") -> Any:
             if field.type_ is DiskOnlyFileModel and v is None:
                 return {"filepath": None}
@@ -66,69 +134,39 @@ class TestBaseModel(unittest.TestCase):
 
     def test_init(self):
         """Test initialization of BaseModel."""
-
-        # Create a simple subclass for testing
-        class TestModel(BaseModel):
-            name: str
-            value: int
-
         # Test initialization with valid data
-        model = TestModel(name="test", value=42)
+        model = SimpleTestModel(name="test", value=42)
         self.assertEqual(model.name, "test")
         self.assertEqual(model.value, 42)
 
         # Test initialization with invalid data
         with self.assertRaises(Exception):
-            TestModel(name="test", value="not_an_int")
+            SimpleTestModel(name="test", value="not_an_int")
 
     def test_is_file_link(self):
         """Test is_file_link method."""
-
-        # Create a simple subclass for testing
-        class TestModel(BaseModel):
-            name: str
-
-        model = TestModel(name="test")
-        # Default implementation returns False
+        # Test default implementation
+        model = SimpleTestModel(name="test", value=42)
         self.assertFalse(model.is_file_link())
+
+        # Test overridden implementation
+        model_with_links = TestModelWithLinks(name="test")
+        self.assertTrue(model_with_links.is_file_link())
 
     def test_is_intermediate_link(self):
         """Test is_intermediate_link method."""
-
-        # Create a simple subclass for testing
-        class TestModel(BaseModel):
-            name: str
-
-        model = TestModel(name="test")
-        # Default implementation returns False
+        # Test default implementation
+        model = SimpleTestModel(name="test", value=42)
         self.assertFalse(model.is_intermediate_link())
+
+        # Test overridden implementation
+        model_with_links = TestModelWithLinks(name="test")
+        self.assertTrue(model_with_links.is_intermediate_link())
 
     def test_show_tree(self):
         """Test show_tree method."""
-
-        # Create a simple model hierarchy for testing
-        class ChildModel(BaseModel):
-            name: str
-            value: int
-
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        class ParentModel(BaseModel):
-            name: str
-            child: ChildModel
-
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        child = ChildModel(name="child", value=42)
-        parent = ParentModel(name="parent", child=child)
+        child = ChildTestModel(name="child", value=42)
+        parent = ParentTestModel(name="parent", child=child)
 
         # Capture stdout to verify output
         with patch("builtins.print") as mock_print:
@@ -141,59 +179,30 @@ class TestBaseModel(unittest.TestCase):
         # Create a list to track which models the function was called on
         called_models = []
 
-        # Create a simple model hierarchy for testing
-        class TestBaseModel(BaseModel):
-            """A test base model that tracks calls to a specific function."""
+        # Create a test function that records which model it was called on
+        def test_func(self):
+            called_models.append(self)
 
-            def test_func(self):
-                """Test function that records which model it was called on."""
-                called_models.append(self)
+        # Patch the test_func method
+        with patch.object(TestBaseModelWithFunc, 'test_func', test_func):
+            child1 = ChildModelWithFunc(name="child1", value=1)
+            child2 = ChildModelWithFunc(name="child2", value=2)
+            child3 = ChildModelWithFunc(name="child3", value=3)
+            parent = ParentModelWithFunc(name="parent", child=child1, children=[child2, child3])
 
-        class ChildModel(TestBaseModel):
-            name: str
-            value: int
+            # Apply the function recursively
+            parent._apply_recurse("test_func")
 
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        class ParentModel(TestBaseModel):
-            name: str
-            child: ChildModel
-            children: List[ChildModel] = []
-
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        child1 = ChildModel(name="child1", value=1)
-        child2 = ChildModel(name="child2", value=2)
-        child3 = ChildModel(name="child3", value=3)
-        parent = ParentModel(name="parent", child=child1, children=[child2, child3])
-
-        # Apply the function recursively
-        parent._apply_recurse("test_func")
-
-        # Verify the function was called on all models
-        self.assertEqual(len(called_models), 4)
-        self.assertIn(parent, called_models)
-        self.assertIn(child1, called_models)
-        self.assertIn(child2, called_models)
-        self.assertIn(child3, called_models)
+            # Verify the function was called on all models
+            self.assertEqual(len(called_models), 4)
+            self.assertIn(parent, called_models)
+            self.assertIn(child1, called_models)
+            self.assertIn(child2, called_models)
+            self.assertIn(child3, called_models)
 
     def test_get_identifier(self):
         """Test _get_identifier method."""
-
-        # Create a simple subclass for testing
-        class TestModel(BaseModel):
-            name: str
-            value: int
-
-        model = TestModel(name="test", value=42)
+        model = SimpleTestModel(name="test", value=42)
         # BaseModel's _get_identifier returns None by default
         self.assertIsNone(model._get_identifier({"name": "test", "value": 42}))
 
@@ -203,13 +212,7 @@ class TestModelTreeTraverser(unittest.TestCase):
 
     def test_traverse_simple_model(self):
         """Test traversal of a simple model with no children."""
-
-        # Create a simple model for testing
-        class TestModel(BaseModel):
-            name: str
-            value: int
-
-        model = TestModel(name="test", value=42)
+        model = SimpleTestModel(name="test", value=42)
 
         # Define a function to count models
         def count_models(model: BaseModel, count: int) -> int:
@@ -226,18 +229,8 @@ class TestModelTreeTraverser(unittest.TestCase):
 
     def test_traverse_nested_model(self):
         """Test traversal of a nested model."""
-
-        # Create a nested model for testing
-        class ChildModel(BaseModel):
-            name: str
-            value: int
-
-        class ParentModel(BaseModel):
-            name: str
-            child: ChildModel
-
-        child = ChildModel(name="child", value=42)
-        parent = ParentModel(name="parent", child=child)
+        child = ChildTestModel(name="child", value=42)
+        parent = ParentTestModel(name="parent", child=child)
 
         # Define a function to collect model names
         def collect_names(model: BaseModel, names: List[str]) -> List[str]:
@@ -260,13 +253,13 @@ class TestModelTreeTraverser(unittest.TestCase):
 class TestSerializerConfig(unittest.TestCase):
     """Test cases for the SerializerConfig class."""
 
-    def test_default_initialization(self):
-        """Test default initialization of SerializerConfig."""
+    def test_initialization(self):
+        """Test initialization of SerializerConfig."""
+        # Test default initialization
         config = SerializerConfig()
         self.assertEqual(config.float_format, "")
 
-    def test_custom_initialization(self):
-        """Test initialization with custom float_format."""
+        # Test custom initialization
         config = SerializerConfig(float_format=".2f")
         self.assertEqual(config.float_format, ".2f")
 
@@ -290,43 +283,19 @@ class TestParsableFileModel(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-
-        # Create a concrete subclass of ParsableFileModel for testing
-        class TestParsableModel(ParsableFileModel):
-            name: str = "default"
-            value: int = 0
-
-            @classmethod
-            def _filename(cls) -> str:
-                return "test"
-
-            @classmethod
-            def _ext(cls) -> str:
-                return ".test"
-
-            @classmethod
-            def _get_serializer(cls):
-                return DummySerializer.serialize
-
-            @classmethod
-            def _get_parser(cls):
-                return DummmyParser.parse
-
-        self.TestParsableModel = TestParsableModel
+        self.TestParsableModel = TestParsableModelBase
 
     def test_get_quantity_unit(self):
-        """Test _get_quantity_unit method."""
-        # Test with known quantities
-        quantities = ["discharge", "waterlevel", "salinity", "temperature"]
-        result = self.TestParsableModel._get_quantity_unit(quantities)
-        self.assertEqual(result, ["m3/s", "m", "1e-3", "degC"])
+        """Test _get_quantity_unit method with different quantity types."""
+        # Define test cases as tuples of (input_quantities, expected_units)
+        test_cases = [
+            (["discharge", "waterlevel", "salinity", "temperature"], ["m3/s", "m", "1e-3", "degC"]),
+            (["unknown1", "unknown2"], ["-", "-"]),
+            (["discharge", "unknown", "waterlevel"], ["m3/s", "-", "m"])
+        ]
 
-        # Test with unknown quantities
-        quantities = ["unknown1", "unknown2"]
-        result = self.TestParsableModel._get_quantity_unit(quantities)
-        self.assertEqual(result, ["-", "-"])
-
-        # Test with mixed quantities
-        quantities = ["discharge", "unknown", "waterlevel"]
-        result = self.TestParsableModel._get_quantity_unit(quantities)
-        self.assertEqual(result, ["m3/s", "-", "m"])
+        # Run all test cases
+        for quantities, expected_units in test_cases:
+            with self.subTest(quantities=quantities):
+                result = self.TestParsableModel._get_quantity_unit(quantities)
+                self.assertEqual(result, expected_units)
