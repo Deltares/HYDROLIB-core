@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     FileModel,
     ModelSaveSettings,

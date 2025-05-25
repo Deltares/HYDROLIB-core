@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 from hydrolib.core.dimr.models import FMComponent
 from hydrolib.core.dimr.parser import DIMRParser
 from hydrolib.core.dimr.serializer import DIMRSerializer
