@@ -396,46 +396,59 @@ class TestParsableFileModel(unittest.TestCase):
 class TestStandaloneFunctions(unittest.TestCase):
     """Test cases for standalone functions in the models module."""
 
-    def _test_function_with_model_method(self, test_function, model_method_name, expected_result_map):
-        """Helper method to test functions that depend on model methods.
+    def test_should_traverse(self):
+        """Test _should_traverse function."""
+        # Create a model that returns True for is_intermediate_link
+        model = MagicMock(spec=BaseModel)
+        model.is_intermediate_link.return_value = True
 
-        Args:
-            test_function: The function to test
-            model_method_name: The name of the model method that the function calls
-            expected_result_map: A dictionary mapping method return values to expected function results
-        """
         # Create a context
         context = FileLoadContext()
 
-        # Test with different return values
-        for method_return, expected_result in expected_result_map.items():
-            with self.subTest(method_return=method_return):
-                # Create a model with the specified return value for the method
-                model = MagicMock(spec=BaseModel)
-                getattr(model, model_method_name).return_value = method_return
+        # Call _should_traverse
+        result = _should_traverse(model, context)
 
-                # Call the function
-                result = test_function(model, context)
+        # Should return True when is_intermediate_link returns True
+        self.assertTrue(result)
+        model.is_intermediate_link.assert_called_once()
 
-                # Verify the result
-                self.assertEqual(result, expected_result)
-                getattr(model, model_method_name).assert_called_once()
+        # Create a model that returns False for is_intermediate_link
+        model = MagicMock(spec=BaseModel)
+        model.is_intermediate_link.return_value = False
 
-    def test_should_traverse(self):
-        """Test _should_traverse function."""
-        self._test_function_with_model_method(
-            _should_traverse, 
-            "is_intermediate_link", 
-            {True: True, False: False}
-        )
+        # Call _should_traverse
+        result = _should_traverse(model, context)
+
+        # Should return False when is_intermediate_link returns False
+        self.assertFalse(result)
+        model.is_intermediate_link.assert_called_once()
 
     def test_should_execute(self):
         """Test _should_execute function."""
-        self._test_function_with_model_method(
-            _should_execute, 
-            "is_file_link", 
-            {True: True, False: False}
-        )
+        # Create a model that returns True for is_file_link
+        model = MagicMock(spec=BaseModel)
+        model.is_file_link.return_value = True
+
+        # Create a context
+        context = FileLoadContext()
+
+        # Call _should_execute
+        result = _should_execute(model, context)
+
+        # Should return True when is_file_link returns True
+        self.assertTrue(result)
+        model.is_file_link.assert_called_once()
+
+        # Create a model that returns False for is_file_link
+        model = MagicMock(spec=BaseModel)
+        model.is_file_link.return_value = False
+
+        # Call _should_execute
+        result = _should_execute(model, context)
+
+        # Should return False when is_file_link returns False
+        self.assertFalse(result)
+        model.is_file_link.assert_called_once()
 
     def test_validator_set_default_disk_only_file_model_when_none(self):
         """Test validator_set_default_disk_only_file_model_when_none function."""

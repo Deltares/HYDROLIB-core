@@ -2,7 +2,7 @@
 
 import platform
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Tuple
+from typing import Dict, Optional, Sequence, Tuple, Any, List, Callable
 from unittest.mock import patch
 
 import pytest
@@ -46,6 +46,65 @@ class MockFileModel(FileModel):
 def runs_from_docker():
     """Check if the tests are running from a Docker container."""
     return platform.system() == "Linux" and Path("/.dockerenv").exists()
+
+
+# Helper functions to reduce duplication
+def create_test_file(tmp_path: Path, content: str = "Hello World") -> Path:
+    """Create a test file with the given content.
+
+    Args:
+        tmp_path: The temporary directory path
+        content: The content to write to the file
+
+    Returns:
+        The path to the created file
+    """
+    file_path = tmp_path / "some-mock-file.txt"
+    file_path.write_text(content)
+    return file_path
+
+
+def register_model_with_cache(cache: Any, path: Path, model: Optional[FileModel] = None) -> FileModel:
+    """Register a model with the given cache.
+
+    Args:
+        cache: The cache to register the model with
+        path: The path to register the model with
+        model: The model to register, or None to create a new MockFileModel
+
+    Returns:
+        The registered model
+    """
+    if model is None:
+        model = MockFileModel()
+    cache.register_model(path, model)
+    return model
+
+
+def setup_context_with_parent(parent_path: Path, mode: ResolveRelativeMode = ResolveRelativeMode.ToParent) -> FileLoadContext:
+    """Set up a FileLoadContext with a parent path.
+
+    Args:
+        parent_path: The parent path to push
+        mode: The resolve relative mode to use
+
+    Returns:
+        The FileLoadContext with the parent path
+    """
+    context = FileLoadContext()
+    context.push_new_parent(parent_path, mode)
+    return context
+
+
+def assert_path_resolution(resolver: Any, input_path: Path, expected_path: Path) -> None:
+    """Assert that a path is resolved correctly.
+
+    Args:
+        resolver: The resolver to use
+        input_path: The input path to resolve
+        expected_path: The expected resolved path
+    """
+    assert resolver.resolve(input_path) == expected_path
 
 
 class TestResolveRelativeMode:
@@ -191,7 +250,7 @@ class TestFilePathResolver:
         for _ in range(n_to_pop):
             resolver.pop_last_parent()
 
-        assert resolver.resolve(input_path) == expected_result
+        assert_path_resolution(resolver, input_path, expected_result)
 
     def test_get_current_parent_with_no_parents(self):
         """Test that get_current_parent returns cwd when no parents are set."""
@@ -200,15 +259,15 @@ class TestFilePathResolver:
 
     def test_get_current_parent_with_parent(self):
         """Test that get_current_parent returns the parent when a parent is set."""
-        resolver = FilePathResolver()
         parent_path = test_input_dir / "parent"
+        resolver = FilePathResolver()
         resolver.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
         assert resolver.get_current_parent() == parent_path
 
     def test_get_current_parent_with_anchor(self):
         """Test that get_current_parent returns the anchor when an anchor is set."""
-        resolver = FilePathResolver()
         anchor_path = test_input_dir / "anchor"
+        resolver = FilePathResolver()
         resolver.push_new_parent(anchor_path, ResolveRelativeMode.ToAnchor)
         assert resolver.get_current_parent() == anchor_path
 
@@ -300,56 +359,42 @@ class TestFileModelCache:
     def test_cache_with_state_returns_correct_result(self):
         """Test that retrieve_model returns the correct model when the cache has state."""
         cache = FileModelCache()
-
         path = Path.cwd() / "some-mock-file.txt"
-        model = MockFileModel()
-
-        cache.register_model(path, model)
-
+        model = register_model_with_cache(cache, path)
         assert cache.retrieve_model(path) is model
 
     def test_registed_model_when_cache_exists_returns_true(self, tmp_path):
         """Test that _exists returns True when a model is registered."""
         cache = FileModelCache()
         path = tmp_path / "some-mock-file.txt"
-        model = MockFileModel()
-        cache.register_model(path, model)
-
+        register_model_with_cache(cache, path)
         assert cache._exists(path)
 
     def test_no_registed_model_when_cache_exists_returns_false(self, tmp_path):
         """Test that _exists returns False when no model is registered."""
         cache = FileModelCache()
         path = tmp_path / "some-mock-file.txt"
-
         assert not cache._exists(path)
 
     def test_has_changed_on_unchanged_file_returns_false(self, tmp_path: Path):
         """Test that has_changed returns False when a file hasn't changed."""
         cache = FileModelCache()
-        path = tmp_path / "some-mock-file.txt"
-        path.write_text("Hello World")
-        model = MockFileModel()
-        cache.register_model(path, model)
-
+        path = create_test_file(tmp_path)
+        register_model_with_cache(cache, path)
         assert not cache.has_changed(path)
 
     def test_has_changed_on_changed_file_returns_true(self, tmp_path: Path):
         """Test that has_changed returns True when a file has changed."""
         cache = FileModelCache()
-        path = tmp_path / "some-mock-file.txt"
-        path.write_text("Hello World")
-        model = MockFileModel()
-        cache.register_model(path, model)
+        path = create_test_file(tmp_path)
+        register_model_with_cache(cache, path)
         path.write_text("Hello World second time")
-
         assert cache.has_changed(path)
 
     def test_has_changed_when_no_registed_model_returns_true(self, tmp_path: Path):
         """Test that has_changed returns True when no model is registered."""
         cache = FileModelCache()
         path = tmp_path / "some-mock-file.txt"
-
         assert cache.has_changed(path)
 
     def test_is_empty_returns_true_when_empty(self):
@@ -361,8 +406,7 @@ class TestFileModelCache:
         """Test that is_empty returns False when the cache is not empty."""
         cache = FileModelCache()
         path = tmp_path / "some-mock-file.txt"
-        model = MockFileModel()
-        cache.register_model(path, model)
+        register_model_with_cache(cache, path)
         assert not cache.is_empty()
 
 
@@ -431,11 +475,8 @@ class TestFileLoadContext:
     ):
         """Test that retrieve_model returns the correct model."""
         context = FileLoadContext()
-        model = MockFileModel()
-
-        context.register_model(path, model)
+        model = register_model_with_cache(context, path)
         retrieved_model = context.retrieve_model(path)
-
         assert retrieved_model is model
 
     @pytest.mark.parametrize(
@@ -468,9 +509,7 @@ class TestFileLoadContext:
     ):
         """Test that retrieve_model always uses the absolute path."""
         context = FileLoadContext()
-
-        model = MockFileModel()
-        context.register_model(register_path, model)
+        model = register_model_with_cache(context, register_path)
         assert context.retrieve_model(retrieval_path) is model
 
     def test_load_settings_property_raises_error_with_uninitialized_settings(self):
@@ -512,22 +551,16 @@ class TestFileLoadContext:
     def test_is_content_changed_on_unchanged_file_returns_false(self, tmp_path: Path):
         """Test that is_content_changed returns False for unchanged files."""
         context = FileLoadContext()
-        path = tmp_path / "some-mock-file.txt"
-        path.write_text("Hello World")
-        model = MockFileModel()
-        context.register_model(path, model)
-
+        path = create_test_file(tmp_path)
+        register_model_with_cache(context, path)
         assert not context.is_content_changed(path)
 
     def test_is_content_changed_on_changed_file_returns_true(self, tmp_path: Path):
         """Test that is_content_changed returns True for changed files."""
         context = FileLoadContext()
-        path = tmp_path / "some-mock-file.txt"
-        path.write_text("Hello World")
-        model = MockFileModel()
-        context.register_model(path, model)
+        path = create_test_file(tmp_path)
+        register_model_with_cache(context, path)
         path.write_text("Hello World second time")
-
         assert context.is_content_changed(path)
 
     def test_is_content_changed_when_no_registed_model_returns_true(
@@ -536,7 +569,6 @@ class TestFileLoadContext:
         """Test that is_content_changed returns True when no model is registered."""
         context = FileLoadContext()
         path = tmp_path / "some-mock-file.txt"
-
         assert context.is_content_changed(path)
 
     def test_cache_is_empty_returns_true_when_empty(self):
@@ -548,8 +580,7 @@ class TestFileLoadContext:
         """Test that cache_is_empty returns False when the cache is not empty."""
         context = FileLoadContext()
         path = tmp_path / "some-mock-file.txt"
-        model = MockFileModel()
-        context.register_model(path, model)
+        register_model_with_cache(context, path)
         assert not context.cache_is_empty()
 
     def test_get_current_parent(self):
@@ -558,26 +589,25 @@ class TestFileLoadContext:
         assert context.get_current_parent() == Path.cwd()
 
         parent_path = test_input_dir / "parent"
-        context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+        context = setup_context_with_parent(parent_path)
         assert context.get_current_parent() == parent_path
 
     def test_resolve(self):
         """Test that resolve returns the correct path."""
         context = FileLoadContext()
         path = Path("some/path")
-        assert context.resolve(path) == Path.cwd() / path
+        assert_path_resolution(context, path, Path.cwd() / path)
 
         parent_path = test_input_dir / "parent"
-        context.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
-        assert context.resolve(path) == parent_path / path
+        context = setup_context_with_parent(parent_path)
+        assert_path_resolution(context, path, parent_path / path)
 
     def test_push_new_parent_and_pop_last_parent(self):
         """Test that push_new_parent and pop_last_parent work correctly."""
-        context = FileLoadContext()
         parent1 = test_input_dir / "parent1"
         parent2 = test_input_dir / "parent2"
 
-        context.push_new_parent(parent1, ResolveRelativeMode.ToParent)
+        context = setup_context_with_parent(parent1)
         assert context.get_current_parent() == parent1
 
         context.push_new_parent(parent2, ResolveRelativeMode.ToParent)
