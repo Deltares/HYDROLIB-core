@@ -1,6 +1,6 @@
 import unittest
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Callable, Type, TypeVar
 from unittest.mock import MagicMock, patch
 
 from hydrolib.core.base.file_manager import FileLoadContext
@@ -14,69 +14,91 @@ from hydrolib.core.base.models import (
 )
 
 
+# Common test model classes to reduce duplication
+class SimpleTestModel(BaseModel):
+    """A simple test model with basic properties."""
+    name: str
+    value: int
+
+
+class TestModelWithLinks(BaseModel):
+    """A test model that overrides link methods."""
+    name: str
+
+    def is_file_link(self) -> bool:
+        return True
+
+    def is_intermediate_link(self) -> bool:
+        return True
+
+
+class ChildTestModel(TestModelWithLinks):
+    """A child test model for hierarchy testing."""
+    value: int
+
+
+class ParentTestModel(TestModelWithLinks):
+    """A parent test model for hierarchy testing."""
+    child: ChildTestModel
+    children: List[ChildTestModel] = []
+
+
+class TestBaseModelWithFunc(BaseModel):
+    """A test base model that can track function calls."""
+
+    def test_func(self):
+        """Test function that can be used to track calls."""
+        pass
+
+
+class ChildModelWithFunc(TestBaseModelWithFunc, ChildTestModel):
+    """A child model that includes the test_func method."""
+    pass
+
+
+class ParentModelWithFunc(TestBaseModelWithFunc, ParentTestModel):
+    """A parent model that includes the test_func method."""
+    pass
+
+
 class TestBaseModel(unittest.TestCase):
     """Test cases for the BaseModel class."""
 
     def test_init(self):
         """Test initialization of BaseModel."""
-
-        # Create a simple subclass for testing
-        class TestModel(BaseModel):
-            name: str
-            value: int
-
         # Test initialization with valid data
-        model = TestModel(name="test", value=42)
+        model = SimpleTestModel(name="test", value=42)
         self.assertEqual(model.name, "test")
         self.assertEqual(model.value, 42)
 
         # Test initialization with invalid data
         with self.assertRaises(Exception):
-            TestModel(name="test", value="not_an_int")
+            SimpleTestModel(name="test", value="not_an_int")
 
     def test_is_file_link(self):
         """Test is_file_link method."""
-
-        class TestModel(BaseModel):
-            name: str
-
-        model = TestModel(name="test")
+        # Test default implementation
+        model = SimpleTestModel(name="test", value=42)
         self.assertFalse(model.is_file_link())
+
+        # Test overridden implementation
+        model_with_links = TestModelWithLinks(name="test")
+        self.assertTrue(model_with_links.is_file_link())
 
     def test_is_intermediate_link(self):
         """Test is_intermediate_link method."""
-
-        class TestModel(BaseModel):
-            name: str
-
-        model = TestModel(name="test")
+        # Test default implementation
+        model = SimpleTestModel(name="test", value=42)
         self.assertFalse(model.is_intermediate_link())
+
+        # Test overridden implementation
+        model_with_links = TestModelWithLinks(name="test")
+        self.assertTrue(model_with_links.is_intermediate_link())
 
     def test_show_tree(self):
         """Test show_tree method."""
-
-        class ChildModel(BaseModel):
-            name: str
-            value: int
-
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        class ParentModel(BaseModel):
-            name: str
-            child: ChildModel
-
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        child = ChildModel(name="child", value=42)
-        parent = ParentModel(name="parent", child=child)
+        child = ChildTestModel(name="child", value=42)
+        parent = ParentTestModel(name="parent", child=child)
 
         # Capture stdout to verify output
         with patch("builtins.print") as mock_print:
@@ -90,60 +112,67 @@ class TestBaseModel(unittest.TestCase):
         # Create a list to track which models the function was called on
         called_models = []
 
-        # Create a simple model hierarchy for testing
-        class TestBaseModel(BaseModel):
-            """A test base model that tracks calls to a specific function."""
+        # Create a test function that records which model it was called on
+        def test_func(self):
+            called_models.append(self)
 
-            def test_func(self):
-                """Test function that records which model it was called on."""
-                called_models.append(self)
+        # Patch the test_func method
+        with patch.object(TestBaseModelWithFunc, 'test_func', test_func):
+            child1 = ChildModelWithFunc(name="child1", value=1)
+            child2 = ChildModelWithFunc(name="child2", value=2)
+            child3 = ChildModelWithFunc(name="child3", value=3)
+            parent = ParentModelWithFunc(name="parent", child=child1, children=[child2, child3])
 
-        class ChildModel(TestBaseModel):
-            name: str
-            value: int
+            # Apply the function recursively
+            parent._apply_recurse("test_func")
 
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        class ParentModel(TestBaseModel):
-            name: str
-            child: ChildModel
-            children: List[ChildModel] = []
-
-            def is_file_link(self) -> bool:
-                return True
-
-            def is_intermediate_link(self) -> bool:
-                return True
-
-        child1 = ChildModel(name="child1", value=1)
-        child2 = ChildModel(name="child2", value=2)
-        child3 = ChildModel(name="child3", value=3)
-        parent = ParentModel(name="parent", child=child1, children=[child2, child3])
-
-        # Apply the function recursively
-        parent._apply_recurse("test_func")
-
-        # Verify the function was called on all models
-        self.assertEqual(len(called_models), 4)
-        self.assertIn(parent, called_models)
-        self.assertIn(child1, called_models)
-        self.assertIn(child2, called_models)
-        self.assertIn(child3, called_models)
+            # Verify the function was called on all models
+            self.assertEqual(len(called_models), 4)
+            self.assertIn(parent, called_models)
+            self.assertIn(child1, called_models)
+            self.assertIn(child2, called_models)
+            self.assertIn(child3, called_models)
 
     def test_get_identifier(self):
         """Test _get_identifier method."""
-
-        class TestModel(BaseModel):
-            name: str
-            value: int
-
-        model = TestModel(name="test", value=42)
+        model = SimpleTestModel(name="test", value=42)
         # BaseModel's _get_identifier returns None by default
         self.assertIsNone(model._get_identifier({"name": "test", "value": 42}))
+
+
+# Common test model classes for ParsableFileModel tests
+class TestParsableModelBase(ParsableFileModel):
+    """Base class for parsable file model tests."""
+    name: str = "default"
+    value: int = 0
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "test"
+
+    @classmethod
+    def _ext(cls) -> str:
+        return ".test"
+
+    @classmethod
+    def _get_serializer(cls):
+        return MagicMock()
+
+    @classmethod
+    def _get_parser(cls):
+        return MagicMock(return_value={"name": "parsed", "value": 42})
+
+
+class TestSaveModelBase(TestParsableModelBase):
+    """Base class for testing save functionality."""
+
+    @property
+    def _resolved_filepath(self):
+        return Path(f"{self.__class__.__name__.lower()}.test")
+
+    def _load(self, filepath: Path) -> Dict:
+        # Override _load to avoid file not found error
+        return {"name": self.__class__.__name__.lower(), "value": 100}
 
 
 class TestParsableFileModel(unittest.TestCase):
@@ -151,29 +180,7 @@ class TestParsableFileModel(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-
-        # Create a concrete subclass of ParsableFileModel for testing
-        class TestParsableModel(ParsableFileModel):
-            name: str = "default"
-            value: int = 0
-
-            @classmethod
-            def _filename(cls) -> str:
-                return "test"
-
-            @classmethod
-            def _ext(cls) -> str:
-                return ".test"
-
-            @classmethod
-            def _get_serializer(cls):
-                return MagicMock()
-
-            @classmethod
-            def _get_parser(cls):
-                return MagicMock(return_value={"name": "parsed", "value": 42})
-
-        self.TestParsableModel = TestParsableModel
+        self.TestParsableModel = TestParsableModelBase
 
     def test_load(self):
         """Test _load method."""
@@ -203,37 +210,15 @@ class TestParsableFileModel(unittest.TestCase):
         # Create a test class with a mocked serializer
         mock_serializer = MagicMock()
 
-        class TestSaveModel(ParsableFileModel):
-            name: str = "default"
-            value: int = 0
-
-            @classmethod
-            def _filename(cls) -> str:
-                return "test"
-
-            @classmethod
-            def _ext(cls) -> str:
-                return ".test"
-
+        # Create a test model class that uses the mock serializer
+        class TestSaveModel(TestSaveModelBase):
             @classmethod
             def _get_serializer(cls):
                 return mock_serializer
 
-            @classmethod
-            def _get_parser(cls):
-                return MagicMock(return_value={"name": "parsed", "value": 42})
-
-            @property
-            def _resolved_filepath(self):
-                return Path("test_save.test")
-
-            def _load(self, filepath: Path) -> Dict:
-                # Override _load to avoid file not found error
-                return {"name": "test_save", "value": 100}
-
         # Create a model instance with a filepath
         model = TestSaveModel(
-            name="test_save", value=100, filepath=Path("test_save.test")
+            name="testsavemodel", value=100, filepath=Path("testsavemodel.test")
         )
 
         # Create save settings
@@ -248,7 +233,7 @@ class TestParsableFileModel(unittest.TestCase):
         # Verify serializer was called
         mock_serializer.assert_called_once()
         # Check that the first argument is the filepath
-        self.assertEqual(mock_serializer.call_args[0][0], Path("test_save.test"))
+        self.assertEqual(mock_serializer.call_args[0][0], Path("testsavemodel.test"))
         # Check that the second argument is a dict containing model data
         self.assertIsInstance(mock_serializer.call_args[0][1], dict)
         # Check that the third argument is the serializer config
@@ -261,42 +246,20 @@ class TestParsableFileModel(unittest.TestCase):
         # Create a test class with a mocked serializer
         mock_serializer = MagicMock()
 
-        class TestSerializeModel(ParsableFileModel):
-            name: str = "default"
-            value: int = 0
-
-            @classmethod
-            def _filename(cls) -> str:
-                return "test"
-
-            @classmethod
-            def _ext(cls) -> str:
-                return ".test"
-
+        # Create a test model class that uses the mock serializer
+        class TestSerializeModel(TestSaveModelBase):
             @classmethod
             def _get_serializer(cls):
                 return mock_serializer
 
-            @classmethod
-            def _get_parser(cls):
-                return MagicMock(return_value={"name": "parsed", "value": 42})
-
-            @property
-            def _resolved_filepath(self):
-                return Path("test_serialize.test")
-
-            def _load(self, filepath: Path) -> Dict:
-                # Override _load to avoid file not found error
-                return {"name": "test_serialize", "value": 100}
-
         # Create a model instance with a filepath
         model = TestSerializeModel(
-            name="test_serialize", value=100, filepath=Path("test_serialize.test")
+            name="testserializemodel", value=100, filepath=Path("testserializemodel.test")
         )
 
         # Create save settings and data
         save_settings = MagicMock()
-        data = {"name": "test_serialize", "value": 100}
+        data = {"name": "testserializemodel", "value": 100}
 
         # Mock the mkdir method to avoid creating directories
         with patch("pathlib.Path.mkdir"):
@@ -306,7 +269,7 @@ class TestParsableFileModel(unittest.TestCase):
         # Verify serializer was called
         mock_serializer.assert_called_once()
         # Check that the first argument is the filepath
-        self.assertEqual(mock_serializer.call_args[0][0], Path("test_serialize.test"))
+        self.assertEqual(mock_serializer.call_args[0][0], Path("testserializemodel.test"))
         # Check that the second argument is the data
         self.assertEqual(mock_serializer.call_args[0][1], data)
         # Check that the third argument is the serializer config
@@ -415,79 +378,64 @@ class TestParsableFileModel(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_get_quantity_unit(self):
-        """Test _get_quantity_unit method."""
-        # Test with known quantities
-        quantities = ["discharge", "waterlevel", "salinity", "temperature"]
-        result = self.TestParsableModel._get_quantity_unit(quantities)
-        self.assertEqual(result, ["m3/s", "m", "1e-3", "degC"])
+        """Test _get_quantity_unit method with different quantity types."""
+        # Define test cases as tuples of (input_quantities, expected_units)
+        test_cases = [
+            (["discharge", "waterlevel", "salinity", "temperature"], ["m3/s", "m", "1e-3", "degC"]),
+            (["unknown1", "unknown2"], ["-", "-"]),
+            (["discharge", "unknown", "waterlevel"], ["m3/s", "-", "m"])
+        ]
 
-        # Test with unknown quantities
-        quantities = ["unknown1", "unknown2"]
-        result = self.TestParsableModel._get_quantity_unit(quantities)
-        self.assertEqual(result, ["-", "-"])
-
-        # Test with mixed quantities
-        quantities = ["discharge", "unknown", "waterlevel"]
-        result = self.TestParsableModel._get_quantity_unit(quantities)
-        self.assertEqual(result, ["m3/s", "-", "m"])
+        # Run all test cases
+        for quantities, expected_units in test_cases:
+            with self.subTest(quantities=quantities):
+                result = self.TestParsableModel._get_quantity_unit(quantities)
+                self.assertEqual(result, expected_units)
 
 
 class TestStandaloneFunctions(unittest.TestCase):
     """Test cases for standalone functions in the models module."""
 
-    def test_should_traverse(self):
-        """Test _should_traverse function."""
-        # Create a model that returns True for is_intermediate_link
-        model = MagicMock(spec=BaseModel)
-        model.is_intermediate_link.return_value = True
+    def _test_function_with_model_method(self, test_function, model_method_name, expected_result_map):
+        """Helper method to test functions that depend on model methods.
 
+        Args:
+            test_function: The function to test
+            model_method_name: The name of the model method that the function calls
+            expected_result_map: A dictionary mapping method return values to expected function results
+        """
         # Create a context
         context = FileLoadContext()
 
-        # Call _should_traverse
-        result = _should_traverse(model, context)
+        # Test with different return values
+        for method_return, expected_result in expected_result_map.items():
+            with self.subTest(method_return=method_return):
+                # Create a model with the specified return value for the method
+                model = MagicMock(spec=BaseModel)
+                getattr(model, model_method_name).return_value = method_return
 
-        # Should return True when is_intermediate_link returns True
-        self.assertTrue(result)
-        model.is_intermediate_link.assert_called_once()
+                # Call the function
+                result = test_function(model, context)
 
-        # Create a model that returns False for is_intermediate_link
-        model = MagicMock(spec=BaseModel)
-        model.is_intermediate_link.return_value = False
+                # Verify the result
+                self.assertEqual(result, expected_result)
+                getattr(model, model_method_name).assert_called_once()
 
-        # Call _should_traverse
-        result = _should_traverse(model, context)
-
-        # Should return False when is_intermediate_link returns False
-        self.assertFalse(result)
-        model.is_intermediate_link.assert_called_once()
+    def test_should_traverse(self):
+        """Test _should_traverse function."""
+        self._test_function_with_model_method(
+            _should_traverse, 
+            "is_intermediate_link", 
+            {True: True, False: False}
+        )
 
     def test_should_execute(self):
         """Test _should_execute function."""
-        # Create a model that returns True for is_file_link
-        model = MagicMock(spec=BaseModel)
-        model.is_file_link.return_value = True
-
-        # Create a context
-        context = FileLoadContext()
-
-        # Call _should_execute
-        result = _should_execute(model, context)
-
-        # Should return True when is_file_link returns True
-        self.assertTrue(result)
-        model.is_file_link.assert_called_once()
-
-        # Create a model that returns False for is_file_link
-        model = MagicMock(spec=BaseModel)
-        model.is_file_link.return_value = False
-
-        # Call _should_execute
-        result = _should_execute(model, context)
-
-        # Should return False when is_file_link returns False
-        self.assertFalse(result)
-        model.is_file_link.assert_called_once()
+        self._test_function_with_model_method(
+            _should_execute, 
+            "is_file_link", 
+            {True: True, False: False}
+        )
 
     def test_validator_set_default_disk_only_file_model_when_none(self):
         """Test validator_set_default_disk_only_file_model_when_none function."""
