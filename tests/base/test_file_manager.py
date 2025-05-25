@@ -2,7 +2,7 @@
 
 import platform
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Tuple, Any, List, Callable
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 from unittest.mock import patch
 
 import pytest
@@ -64,7 +64,9 @@ def create_test_file(tmp_path: Path, content: str = "Hello World") -> Path:
     return file_path
 
 
-def register_model_with_cache(cache: Any, path: Path, model: Optional[FileModel] = None) -> FileModel:
+def register_model_with_cache(
+    cache: Any, path: Path, model: Optional[FileModel] = None
+) -> FileModel:
     """Register a model with the given cache.
 
     Args:
@@ -81,7 +83,9 @@ def register_model_with_cache(cache: Any, path: Path, model: Optional[FileModel]
     return model
 
 
-def setup_context_with_parent(parent_path: Path, mode: ResolveRelativeMode = ResolveRelativeMode.ToParent) -> FileLoadContext:
+def setup_context_with_parent(
+    parent_path: Path, mode: ResolveRelativeMode = ResolveRelativeMode.ToParent
+) -> FileLoadContext:
     """Set up a FileLoadContext with a parent path.
 
     Args:
@@ -96,7 +100,9 @@ def setup_context_with_parent(parent_path: Path, mode: ResolveRelativeMode = Res
     return context
 
 
-def assert_path_resolution(resolver: Any, input_path: Path, expected_path: Path) -> None:
+def assert_path_resolution(
+    resolver: Any, input_path: Path, expected_path: Path
+) -> None:
     """Assert that a path is resolved correctly.
 
     Args:

@@ -1,6 +1,6 @@
 import unittest
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable, Type, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
 from unittest.mock import MagicMock, patch
 
 from hydrolib.core.base.file_manager import FileLoadContext
@@ -17,12 +17,14 @@ from hydrolib.core.base.models import (
 # Common test model classes to reduce duplication
 class SimpleTestModel(BaseModel):
     """A simple test model with basic properties."""
+
     name: str
     value: int
 
 
 class TestModelWithLinks(BaseModel):
     """A test model that overrides link methods."""
+
     name: str
 
     def is_file_link(self) -> bool:
@@ -34,11 +36,13 @@ class TestModelWithLinks(BaseModel):
 
 class ChildTestModel(TestModelWithLinks):
     """A child test model for hierarchy testing."""
+
     value: int
 
 
 class ParentTestModel(TestModelWithLinks):
     """A parent test model for hierarchy testing."""
+
     child: ChildTestModel
     children: List[ChildTestModel] = []
 
@@ -53,11 +57,13 @@ class TestBaseModelWithFunc(BaseModel):
 
 class ChildModelWithFunc(TestBaseModelWithFunc, ChildTestModel):
     """A child model that includes the test_func method."""
+
     pass
 
 
 class ParentModelWithFunc(TestBaseModelWithFunc, ParentTestModel):
     """A parent model that includes the test_func method."""
+
     pass
 
 
@@ -117,11 +123,13 @@ class TestBaseModel(unittest.TestCase):
             called_models.append(self)
 
         # Patch the test_func method
-        with patch.object(TestBaseModelWithFunc, 'test_func', test_func):
+        with patch.object(TestBaseModelWithFunc, "test_func", test_func):
             child1 = ChildModelWithFunc(name="child1", value=1)
             child2 = ChildModelWithFunc(name="child2", value=2)
             child3 = ChildModelWithFunc(name="child3", value=3)
-            parent = ParentModelWithFunc(name="parent", child=child1, children=[child2, child3])
+            parent = ParentModelWithFunc(
+                name="parent", child=child1, children=[child2, child3]
+            )
 
             # Apply the function recursively
             parent._apply_recurse("test_func")
@@ -143,6 +151,7 @@ class TestBaseModel(unittest.TestCase):
 # Common test model classes for ParsableFileModel tests
 class TestParsableModelBase(ParsableFileModel):
     """Base class for parsable file model tests."""
+
     name: str = "default"
     value: int = 0
 
@@ -254,7 +263,9 @@ class TestParsableFileModel(unittest.TestCase):
 
         # Create a model instance with a filepath
         model = TestSerializeModel(
-            name="testserializemodel", value=100, filepath=Path("testserializemodel.test")
+            name="testserializemodel",
+            value=100,
+            filepath=Path("testserializemodel.test"),
         )
 
         # Create save settings and data
@@ -269,7 +280,9 @@ class TestParsableFileModel(unittest.TestCase):
         # Verify serializer was called
         mock_serializer.assert_called_once()
         # Check that the first argument is the filepath
-        self.assertEqual(mock_serializer.call_args[0][0], Path("testserializemodel.test"))
+        self.assertEqual(
+            mock_serializer.call_args[0][0], Path("testserializemodel.test")
+        )
         # Check that the second argument is the data
         self.assertEqual(mock_serializer.call_args[0][1], data)
         # Check that the third argument is the serializer config
@@ -381,9 +394,12 @@ class TestParsableFileModel(unittest.TestCase):
         """Test _get_quantity_unit method with different quantity types."""
         # Define test cases as tuples of (input_quantities, expected_units)
         test_cases = [
-            (["discharge", "waterlevel", "salinity", "temperature"], ["m3/s", "m", "1e-3", "degC"]),
+            (
+                ["discharge", "waterlevel", "salinity", "temperature"],
+                ["m3/s", "m", "1e-3", "degC"],
+            ),
             (["unknown1", "unknown2"], ["-", "-"]),
-            (["discharge", "unknown", "waterlevel"], ["m3/s", "-", "m"])
+            (["discharge", "unknown", "waterlevel"], ["m3/s", "-", "m"]),
         ]
 
         # Run all test cases
