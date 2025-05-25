@@ -1,16 +1,14 @@
 import unittest
-from unittest.mock import MagicMock, patch, PropertyMock
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type, ClassVar
+from typing import ClassVar, Dict, Optional
+from unittest.mock import MagicMock, PropertyMock, patch
 
-import pytest
-
-from hydrolib.core.base.models import FileModel, BaseModel, ModelSaveSettings
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
     ResolveRelativeMode,
     file_load_context,
 )
+from hydrolib.core.base.models import FileModel, ModelSaveSettings, ModelTreeTraverser
 
 
 class ConcreteFileModel(FileModel):
@@ -25,13 +23,13 @@ class ConcreteFileModel(FileModel):
         return True
 
     def _post_init_load(self) -> None:
+        """ Post-initialization load method."""
         pass
 
-    def _load(self, filepath: Path) -> None:
-        # Simple implementation that sets attributes based on filename
-        self.name = filepath.stem
-        self.value = len(filepath.stem)
+    def _load(self, filepath: Path) -> Dict:
+        # Return a dictionary with the data to be used for initialization
         self._source_file_path = filepath
+        return {"name": filepath.stem, "value": len(filepath.stem)}
 
     def _save(self, save_settings: ModelSaveSettings) -> None:
         # Simple implementation that does nothing
@@ -56,8 +54,10 @@ class TestFileModel(unittest.TestCase):
     def test_new_with_filepath(self):
         """Test __new__ method with filepath."""
         # Create a mock for the file load context
-        with patch("hydrolib.core.base.models.file_load_context") as mock_context, \
-             patch.object(ConcreteFileModel, "_load"):
+        with (
+            patch("hydrolib.core.base.models.file_load_context") as mock_context,
+            patch.object(ConcreteFileModel, "_load"),
+        ):
             # Set up the mock to return a context instance
             context_instance = MagicMock()
             mock_context.return_value.__enter__.return_value = context_instance
@@ -95,7 +95,45 @@ class TestFileModel(unittest.TestCase):
                 # Verify the model is the cached model
                 self.assertIs(model, cached_model)
 
+    def test_init_with_filepath(self):
+        """Test __init__ method with filepath."""
+        # Create a mock for the file load context
+        mock_context = MagicMock()
+        mock_context.get_current_parent.return_value = Path.cwd()
+        mock_context.resolve.return_value = self.test_path
+        mock_context.resolve_casing.return_value = self.test_path
+        mock_context.convert_path_style.return_value = self.test_path
+        mock_context.load_settings.resolve_casing = False
+        mock_context.load_settings.recurse = True
+        mock_context.cache_is_empty.return_value = True
 
+        # Create a mock for the load settings
+        mock_load_settings = MagicMock()
+        mock_context.load_settings = mock_load_settings
+
+        # Set up the mock _load method to return a dictionary with the data
+        mock_load_data = {"name": "test_file", "value": 9}
+
+        # Mock the _should_load_model method to return True
+        with (
+            patch.object(FileModel, "_should_load_model", return_value=True),
+            patch(
+                "hydrolib.core.base.models.file_load_context"
+            ) as mock_file_load_context,
+            patch.object(ConcreteFileModel, "_load", return_value=mock_load_data),
+        ):
+
+            # Set up the mock to return our mock context
+            mock_file_load_context.return_value.__enter__.return_value = mock_context
+
+            # Create a model with a filepath
+            model = ConcreteFileModel(filepath=self.test_path)
+
+            # Verify filepath was set
+            self.assertEqual(model.filepath, self.test_path)
+            # Verify other attributes were set from the mock data
+            self.assertEqual(model.name, "test_file")
+            self.assertEqual(model.value, 9)
 
     def test_init_without_filepath(self):
         """Test __init__ method without filepath."""
@@ -113,7 +151,9 @@ class TestFileModel(unittest.TestCase):
             model = ConcreteFileModel(filepath=self.test_path)
 
             # Use PropertyMock to mock the _resolved_filepath property
-            with patch.object(FileModel, '_resolved_filepath', new_callable=PropertyMock) as mock_resolved_filepath:
+            with patch.object(
+                FileModel, "_resolved_filepath", new_callable=PropertyMock
+            ) as mock_resolved_filepath:
                 # Set the return value for the property
                 mock_resolved_filepath.return_value = self.test_path
 
@@ -123,7 +163,9 @@ class TestFileModel(unittest.TestCase):
             # Test with None filepath
             model.filepath = None
             # Use PropertyMock again for the None case
-            with patch.object(FileModel, '_resolved_filepath', new_callable=PropertyMock) as mock_resolved_filepath:
+            with patch.object(
+                FileModel, "_resolved_filepath", new_callable=PropertyMock
+            ) as mock_resolved_filepath:
                 mock_resolved_filepath.return_value = None
                 self.assertIsNone(model._resolved_filepath)
 
@@ -141,7 +183,9 @@ class TestFileModel(unittest.TestCase):
 
             # Test with None filepath
             model.filepath = None
-            with patch.object(ConcreteFileModel, "_generate_name", return_value=Path("generated.txt")):
+            with patch.object(
+                ConcreteFileModel, "_generate_name", return_value=Path("generated.txt")
+            ):
                 self.assertEqual(model.save_location, Path.cwd() / "generated.txt")
 
     def test_is_file_link(self):
@@ -175,7 +219,6 @@ class TestFileModel(unittest.TestCase):
             expected_path = Path("path/file.txt")
             self.assertEqual(result, expected_path)
 
-
     def test_save(self):
         """Test save method."""
         # Create a model
@@ -183,8 +226,10 @@ class TestFileModel(unittest.TestCase):
             model = ConcreteFileModel(filepath=self.test_path)
 
             # Mock _save_instance and _save_tree
-            with patch.object(ConcreteFileModel, "_save_instance") as mock_save_instance, \
-                 patch.object(ConcreteFileModel, "_save_tree") as mock_save_tree:
+            with (
+                patch.object(ConcreteFileModel, "_save_instance") as mock_save_instance,
+                patch.object(ConcreteFileModel, "_save_tree") as mock_save_tree,
+            ):
 
                 # Call save
                 model.save()
@@ -233,7 +278,9 @@ class TestFileModel(unittest.TestCase):
 
             # Test with empty data
             data = {}
-            self.assertEqual(model._get_relative_mode_from_data(data), ResolveRelativeMode.ToParent)
+            self.assertEqual(
+                model._get_relative_mode_from_data(data), ResolveRelativeMode.ToParent
+            )
 
             # Test with data containing pathsrelativetoparent=True
             # This test is not applicable to ConcreteFileModel since it doesn't override the default implementation
@@ -284,6 +331,33 @@ class TestFileModel(unittest.TestCase):
         result = ConcreteFileModel._conform_filepath_to_pathlib(None)
         self.assertIsNone(result)
 
+    def test_save_tree(self):
+        """Test _save_tree method."""
+        # Create a model
+        with patch.object(ConcreteFileModel, "_load"):
+            model = ConcreteFileModel(filepath=self.test_path)
 
-if __name__ == "__main__":
-    unittest.main()
+            # Mock the _save method
+            with patch.object(ConcreteFileModel, "_save"):
+
+                # Instead of mocking ModelTreeTraverser, mock the traverse method directly
+                with patch.object(FileModel, "_save_tree") as mock_save_tree:
+                    # Call save with recurse=True to trigger _save_tree
+                    model.save(recurse=True)
+
+                    # Verify _save_tree was called
+                    mock_save_tree.assert_called_once()
+
+    def test_synchronize_filepaths(self):
+        """Test synchronize_filepaths method."""
+        # Create a model
+        with patch.object(ConcreteFileModel, "_load"):
+            model = ConcreteFileModel(filepath=self.test_path)
+
+            # Mock the traverse method directly
+            with patch.object(ModelTreeTraverser, "traverse") as mock_traverse:
+                # Call synchronize_filepaths
+                model.synchronize_filepaths()
+
+                # Verify traverse was called at least once
+                mock_traverse.assert_called()
