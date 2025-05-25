@@ -355,7 +355,7 @@ class TestFilePathStyleConverter(unittest.TestCase):
         with patch(
             "hydrolib.core.base.utils.get_path_style_for_current_operating_system",
             return_value=PathStyle.UNIXLIKE,
-        ):
+        ), patch("os.name", return_value="nt"):
             # Recreate converter with mocked OS style
             self.converter = FilePathStyleConverter()
             # The actual implementation returns the Windows path converted to Unix format
