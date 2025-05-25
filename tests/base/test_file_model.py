@@ -23,7 +23,7 @@ class ConcreteFileModel(FileModel):
         return True
 
     def _post_init_load(self) -> None:
-        """ Post-initialization load method."""
+        """Post-initialization load method."""
         pass
 
     def _load(self, filepath: Path) -> Dict:
