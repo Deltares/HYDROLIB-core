@@ -518,4 +518,3 @@ class TestStandaloneFunctions(unittest.TestCase):
         result = adjust_none(None, field)
         # The validator should return None unchanged
         self.assertIsNone(result)
-
