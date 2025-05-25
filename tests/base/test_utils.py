@@ -362,9 +362,8 @@ class TestFilePathStyleConverter(unittest.TestCase):
             result = self.converter.convert_to_os_style(
                 Path("c:/test/path"), PathStyle.WINDOWSLIKE
             )
-            # The mocking doesn't seem to be working as expected, so we'll adjust the expected result
-            # to match the actual behavior
-            self.assertEqual(result, "c:/test/path")
+            # The mocking is now working as expected, and the path is correctly converted
+            self.assertEqual(result, "/c/test/path")
 
     def test_convert_to_os_style_relative_path(self):
         """Test convert_to_os_style method with a relative path."""
@@ -398,9 +397,8 @@ class TestFilePathStyleConverter(unittest.TestCase):
             result = self.converter.convert_from_os_style(
                 Path("/c/test/path"), PathStyle.WINDOWSLIKE
             )
-            # The mocking doesn't seem to be working as expected, so we'll adjust the expected result
-            # to match the actual behavior
-            self.assertEqual(result, "/c/test/path")
+            # The mocking is now working as expected, and the path is correctly converted
+            self.assertEqual(result, "c:/test/path")
 
     def test_convert_from_os_style_windows_to_unix(self):
         """Test convert_from_os_style method when converting from Windows to Unix style."""
