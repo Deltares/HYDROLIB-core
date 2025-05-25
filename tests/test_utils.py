@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.dflowfm.mdu.models import Geometry, Output
 from hydrolib.core.base.utils import (
     FileChecksumCalculator,
     FilePathStyleConverter,
@@ -11,6 +10,7 @@ from hydrolib.core.base.utils import (
     get_substring_between,
     str_is_empty_or_none,
 )
+from hydrolib.core.dflowfm.mdu.models import Geometry, Output
 
 from .utils import test_input_dir
 

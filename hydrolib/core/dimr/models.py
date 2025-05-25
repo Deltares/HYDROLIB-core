@@ -15,11 +15,11 @@ from hydrolib.core.base.models import (
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.parser import DIMRParser
 from hydrolib.core.dimr.serializer import DIMRSerializer
 from hydrolib.core.rr.models import RainfallRunoffModel
-from hydrolib.core.base.utils import to_list
 
 
 class KeyValuePair(BaseModel):

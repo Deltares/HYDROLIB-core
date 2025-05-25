@@ -25,11 +25,11 @@ from hydrolib.core.base.models import (
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.base.utils import PathStyle
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.models import DIMR
-from hydrolib.core.base.utils import PathStyle
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
