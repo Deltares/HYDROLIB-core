@@ -493,7 +493,9 @@ class FileModel(BaseModel, ABC):
         elif value is None:
             return None
         elif not isinstance(value, cls) and not isinstance(value, dict):
-            raise ValueError(f"Expected {cls.__name__} or dict, got {type(value).__name__}")
+            raise ValueError(
+                f"Expected {cls.__name__} or dict, got {type(value).__name__}"
+            )
         return super().validate(value)
 
     def save(
