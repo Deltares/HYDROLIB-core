@@ -20,6 +20,7 @@ from pydantic.v1.fields import Field
 from strenum import StrEnum
 
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings
+from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
 from hydrolib.core.dflowfm.ini.models import (
     DataBlockINIBasedModel,
@@ -36,7 +37,6 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     rename_keys_for_backwards_compatibility,
 )
-from hydrolib.core.base.utils import to_list
 
 logger = logging.getLogger(__name__)
 

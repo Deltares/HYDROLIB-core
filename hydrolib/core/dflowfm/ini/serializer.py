@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
 from hydrolib.core.base.models import BaseModel, SerializerConfig
+from hydrolib.core.base.utils import str_is_empty_or_none
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     ContentElement,
@@ -12,7 +13,6 @@ from hydrolib.core.dflowfm.ini.io_models import (
     Property,
     Section,
 )
-from hydrolib.core.base.utils import str_is_empty_or_none
 
 
 class INISerializerConfig(SerializerConfig):
