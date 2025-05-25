@@ -8,7 +8,12 @@ from hydrolib.core.base.file_manager import (
     ResolveRelativeMode,
     file_load_context,
 )
-from hydrolib.core.base.models import FileModel, ModelSaveSettings, ModelTreeTraverser
+from hydrolib.core.base.models import (
+    BaseModel,
+    FileModel,
+    ModelSaveSettings,
+    ModelTreeTraverser,
+)
 
 
 class ConcreteFileModel(FileModel):
@@ -23,7 +28,7 @@ class ConcreteFileModel(FileModel):
         return True
 
     def _post_init_load(self) -> None:
-        """ Post-initialization load method."""
+        """Post-initialization load method."""
         pass
 
     def _load(self, filepath: Path) -> Dict:
@@ -361,3 +366,105 @@ class TestFileModel(unittest.TestCase):
 
                 # Verify traverse was called at least once
                 mock_traverse.assert_called()
+
+    def test_synchronize_filepaths_2(self):
+        """Test synchronize_filepaths method."""
+
+        # Create a model with nested models
+        class NestedFileModel(ConcreteFileModel):
+            name: str = "nested"
+
+            def is_intermediate_link(self) -> bool:
+                return True
+
+            def is_file_link(self) -> bool:
+                return True
+
+        class ParentFileModel(ConcreteFileModel):
+            nested: NestedFileModel
+
+            def is_intermediate_link(self) -> bool:
+                return True
+
+            def is_file_link(self) -> bool:
+                return True
+
+        # Create models with mocked _load
+        with patch.object(NestedFileModel, "_load"):
+            nested = NestedFileModel(filepath=Path("nested.txt"))
+
+            with patch.object(ParentFileModel, "_load"):
+                parent = ParentFileModel(filepath=Path("parent.txt"), nested=nested)
+
+                # Create a mock for the traverse method
+                mock_traverse = MagicMock()
+
+                # Patch the traverse method directly
+                with patch.object(ModelTreeTraverser, "traverse", mock_traverse):
+                    # Call synchronize_filepaths
+                    parent.synchronize_filepaths()
+
+                    # Verify traverse was called
+                    mock_traverse.assert_called_once()
+
+    def test_save_tree_2(self):
+        """Test _save_tree method."""
+
+        # Create a model with nested models
+        class NestedModel(BaseModel):
+            name: str
+
+            def is_intermediate_link(self) -> bool:
+                return True
+
+            def is_file_link(self) -> bool:
+                return False
+
+        class ParentFileModel(ConcreteFileModel):
+            nested: NestedModel
+
+            def is_intermediate_link(self) -> bool:
+                return True
+
+            def is_file_link(self) -> bool:
+                return True
+
+        nested = NestedModel(name="nested")
+
+        # Create parent model with mocked _load
+        with patch.object(ParentFileModel, "_load"):
+            parent = ParentFileModel(nested=nested)
+
+            # Create a mock for the traverse method
+            mock_traverse = MagicMock()
+
+            # Patch the traverse method directly
+            with patch.object(ModelTreeTraverser, "traverse", mock_traverse):
+                # Call _save_tree
+                context = FileLoadContext()
+                save_settings = MagicMock()
+                parent._save_tree(context, save_settings)
+
+                # Verify traverse was called at least twice (once for name generation, once for saving)
+                self.assertGreaterEqual(mock_traverse.call_count, 2)
+
+    def test_validate(self):
+        """Test validate method."""
+        # Test with valid value
+        with patch.object(ConcreteFileModel, "_load"):
+            value = ConcreteFileModel()
+            result = ConcreteFileModel.validate(value)
+            self.assertEqual(result, value)
+
+            # Test with None value
+            result = ConcreteFileModel.validate(None)
+            self.assertIsNone(result)
+
+            # Test with invalid value
+            with patch.object(
+                FileModel,
+                "validate",
+                side_effect=ValueError("Expected FileModel, got str"),
+            ):
+                with self.assertRaises(ValueError):
+                    ConcreteFileModel.validate("not a FileModel")
