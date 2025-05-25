@@ -4,4 +4,3 @@ These build upon the _pydantic_ package for data validation.
 
 ## BaseModel and FileModel
 ::: hydrolib.core.base.models
-
