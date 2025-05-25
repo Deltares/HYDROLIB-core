@@ -37,7 +37,7 @@ class TestSerializerConfig(unittest.TestCase):
         config1 = SerializerConfig(float_format=".2f")
         config2 = SerializerConfig(float_format=".2f")
         config3 = SerializerConfig(float_format=".3f")
-        
+
         self.assertEqual(config1, config2)
         self.assertNotEqual(config1, config3)
 
@@ -45,11 +45,11 @@ class TestSerializerConfig(unittest.TestCase):
         """Test copying a SerializerConfig instance."""
         config = SerializerConfig(float_format=".5f")
         config_copy = config.copy()
-        
+
         # Verify it's a different instance but with the same values
         self.assertIsNot(config, config_copy)
         self.assertEqual(config.float_format, config_copy.float_format)
-        
+
         # Verify changing the copy doesn't affect the original
         config_copy.float_format = ".6f"
         self.assertEqual(config.float_format, ".5f")
