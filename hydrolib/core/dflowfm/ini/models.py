@@ -499,7 +499,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             bool: True if the type is a list; otherwise, False.
         """
-        return get_origin(field_type) is List
+        return get_origin(field_type) is List or get_origin(field_type) is list
 
     @staticmethod
     def _value_is_not_none_or_type_is_filemodel(field_type: type, value: Any) -> bool:
