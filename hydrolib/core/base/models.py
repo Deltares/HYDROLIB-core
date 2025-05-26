@@ -786,7 +786,7 @@ class ParsableFileModel(FileModel):
         Args:
             save_settings (ModelSaveSettings): The model save settings.
         """
-        self._serialize(self.dict(), save_settings)
+        self._serialize(self.model_dump(), save_settings)
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
         """Serializes the data to file. Should not be called directly, only through `_save`.
@@ -802,9 +802,9 @@ class ParsableFileModel(FileModel):
         path.parent.mkdir(parents=True, exist_ok=True)
         self._get_serializer()(path, data, self.serializer_config, save_settings)
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["exclude"] = self._exclude_fields()
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
     @classmethod
     def _exclude_fields(cls) -> Set[str]:
