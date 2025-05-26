@@ -19,10 +19,8 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic import Field, model_validator, field_validator
-from pydantic import ValidationInfo
+from pydantic import ConfigDict, Field, field_validator, model_validator, ValidationInfo
 from pydantic.fields import FieldInfo
-from pydantic.config import ConfigDict
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.base.file_manager import FilePathStyleConverter
@@ -180,11 +178,13 @@ class INIBasedModel(BaseModel, ABC):
             str: the delimiter string to be used for serializing the given field.
         """
         delimiter = None
+        field_info = cls.model_fields.get(field_key)
         if (
-            (field := cls.model_fields.get(field_key))
-                and isinstance(field, FieldInfo
-         )):
-            delimiter = field.field_info.extra.get("delimiter")
+            (field := field_info)
+            and isinstance(field, FieldInfo)
+            and field.json_schema_extra
+        ):
+            delimiter = field.json_schema_extra.get("delimiter")
         if not delimiter:
             delimiter = cls.get_list_delimiter()
 

@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
 from weakref import WeakValueDictionary
 
-from pydantic import BaseModel as PydanticBaseModel
+from pydantic import BaseModel as PydanticBaseModel, ValidationInfo
 from pydantic import field_validator, PrivateAttr, ValidationError
 
 from hydrolib.core.base.file_manager import (
@@ -51,8 +51,9 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
     """
 
     @field_validator("*", mode="before")
-    def adjust_none(cls, v: Any, info):
-        if info.field_info.annotation is DiskOnlyFileModel and v is None:
+    def adjust_none(cls, v: Any, info: ValidationInfo):
+        field_type = cls.model_fields.get(info.field_name).annotation
+        if field_type is DiskOnlyFileModel and v is None:
             return {"filepath": None}
         return v
 

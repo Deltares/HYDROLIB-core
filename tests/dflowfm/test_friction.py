@@ -1,10 +1,8 @@
-import inspect
-from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import Any, Callable, List, Union
+from typing import List
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.friction.models import (
     FrictBranch,
@@ -12,16 +10,53 @@ from hydrolib.core.dflowfm.friction.models import (
     FrictionModel,
     FrictionType,
 )
-from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 
-from ..utils import (
-    WrapperTest,
+from tests.utils import (
     assert_files_equal,
     test_data_dir,
     test_output_dir,
     test_reference_dir,
 )
+general = {'_header': 'General',
+           'datablock': None,
+           'fileversion': '3.01',
+           'filetype': 'roughness',
+           'comments': {'fileversion': None, 'filetype': None}}
 
+branch_1 = {
+    '_header': 'Branch',
+    'datablock': None,
+    'branchid': 'Channel1',
+    'frictiontype': 'Manning',
+    'functiontype': 'constant',
+    'numlocations': '2',
+    'chainage': '0.000 100.000',
+    'frictionvalues': '0.20000 0.30000',
+    'comments': {
+        'branchid': None, 'frictiontype': None, 'functiontype': None, 'numlocations': 'at two locations',
+        'chainage': None, 'frictionvalues': None
+    }
+}
+
+branch_2 = {'_header': 'Branch',
+            'datablock': None,
+            'branchid': 'Channel4',
+            'frictiontype': 'Chezy',
+            'functiontype': 'constant',
+            'frictionvalues': '40.00000',
+            'comments': {'branchid': None,
+                         'frictiontype': None,
+                         'functiontype': None,
+                         'frictionvalues': None}}
+
+friction_global = {
+    '_header': 'Global',
+    'datablock': None,
+    'frictionid': 'Main',
+    'frictiontype': 'Chezy',
+    'frictionvalue': '45.000',
+    'comments': {'frictionid': None, 'frictiontype': None, 'frictionvalue': None}
+}
 
 def _get_frictiontype_cases() -> List:
     return [
@@ -47,6 +82,15 @@ def test_frictglobal_parses_frictiontype_case_insensitive(input, expected):
     )
 
     assert fg.frictiontype == expected
+
+def test_separate_elements():
+
+    assert FrictGlobal(**friction_global)
+    assert FrictBranch(**branch_1)
+    assert FrictBranch(**branch_2)
+    branch = {"branch": [branch_1, branch_2]}
+    data = {"general": general, "global_": friction_global, **branch}
+    assert FrictionModel(**data)
 
 
 def test_friction_model():
@@ -102,10 +146,10 @@ def test_create_a_frictbranch_from_scratch():
     assert fb.frictionvalues == [1.5]
 
 
-def test_create_a_frictbranch_with_incorrect_levels_or_locations():
+def test_create_a_frictbranch_with_incorrect_levels_or_locations(recwarn):
     branchid = "B1"
     with pytest.raises(ValidationError) as error:
-        _ = FrictBranch(
+        FrictBranch(
             branchid=branchid,
             frictiontype=FrictionType.walllawnikuradse,
             chainage=[10, 20],  # intentional wrong len(), should be 1
