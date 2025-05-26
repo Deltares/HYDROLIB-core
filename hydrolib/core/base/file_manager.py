@@ -338,7 +338,7 @@ class FileCasingResolver:
             )
 
     def _resolve_casing_windows(self, path: Path):
-        return path.resolve()
+        return path
 
     def _resolve_casing_linux(self, path: Path):
         if path.exists():
