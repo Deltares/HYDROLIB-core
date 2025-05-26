@@ -356,7 +356,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             Set: Set of field names to exclude.
         """
-        return {"comments", "datablock", "header"}
+        return {"comments", "datablock", "_header"}
 
     def _convert_value(
         self,
