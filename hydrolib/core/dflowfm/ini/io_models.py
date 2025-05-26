@@ -87,7 +87,7 @@ class Section(BaseModel):
 
     def dict(self, *args, **kwargs):
         kwargs["by_alias"] = True
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
     def flatten(self, duplicate_key_as_list=True, with_comments=True) -> Dict:
         converted_content = self._convert_section_content(
