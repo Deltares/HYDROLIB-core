@@ -3,11 +3,9 @@ from abc import ABC
 from enum import Enum
 from inspect import isclass
 from math import isnan
-from re import Pattern, compile
 from typing import (
     Any,
     Callable,
-    ClassVar,
     List,
     Literal,
     Optional,
@@ -19,9 +17,9 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic import ConfigDict, Field, field_validator, model_validator, ValidationInfo
+from pydantic import ConfigDict, Field, field_validator, model_validator, GetCoreSchemaHandler
 from pydantic.fields import FieldInfo
-
+from pydantic_core import core_schema
 from hydrolib.core import __version__ as version
 from hydrolib.core.base.file_manager import FilePathStyleConverter
 from hydrolib.core.base.models import (
@@ -46,7 +44,7 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     make_list_validator,
 )
-
+from hydrolib.core.base.utils import FortranScientificNotationConverter
 logger = logging.getLogger(__name__)
 
 
@@ -111,13 +109,8 @@ class INIBasedModel(BaseModel, ABC):
         - Subclasses can override the `_header` attribute to define the INI block header.
         - Arbitrary fields can be added dynamically and are included during serialization.
     """
-
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
-    _scientific_notation_regex: ClassVar[Pattern] = compile(
-        r"([\d.]+)([dD])([+-]?\d{1,3})"
-    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
-
     model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=False)
 
     @classmethod
@@ -278,44 +271,46 @@ class INIBasedModel(BaseModel, ABC):
             v = None
         return v
 
-    @field_validator("*", mode="before")
-    @classmethod
-    def replace_fortran_scientific_notation_for_floats(cls, value, info: ValidationInfo):
+    def __setattr__(self, key, value) -> None:
         """
-        Converts FORTRAN-style scientific notation to standard notation for float fields.
+        Custom setter to handle Fortran-style scientific notation conversion
+        for float fields when setting attributes.
 
         Args:
-            value (Any): The field value to process.
-            info: The field validation info.
-
-        Returns:
-            Any: The processed field value.
+            key (str): The attribute name.
+            value (Any): The value to set.
         """
-        field_type = cls.model_fields.get(info.field_name).annotation
+        field_type = self.model_fields.get(key).annotation
         if field_type != float and field_type != List[float]:
-            return value
-
-        return cls._replace_fortran_scientific_notation(value)
+            super().__setattr__(key, value)
+        else:
+            super().__setattr__(key, FortranScientificNotationConverter.convert(value))
 
     @classmethod
-    def _replace_fortran_scientific_notation(cls, value):
-        """
-        Replaces FORTRAN-style scientific notation in a value.
+    def preprocess_input(cls, values: dict) -> dict:
+        if isinstance(values, dict):
+            new_values = {}
+            for field_name, value in values.items():
+                field_type = cls.model_fields.get(field_name).annotation
+                if field_type != float and field_type != List[float]:
+                    new_values[field_name] = value
+                else:
+                    new_values[field_name] = FortranScientificNotationConverter.convert(value)
+        else:
+            new_values = values
 
-        Args:
-            value (Any): The value to process.
+        return new_values
 
-        Returns:
-            Any: The processed value.
-        """
-        if isinstance(value, str):
-            return cls._scientific_notation_regex.sub(r"\1e\3", value)
-        if isinstance(value, list):
-            for i, v in enumerate(value):
-                if isinstance(v, str):
-                    value[i] = cls._scientific_notation_regex.sub(r"\1e\3", v)
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        schema = handler(source_type)
 
-        return value
+        return core_schema.no_info_before_validator_function(
+            cls.preprocess_input,  # this is called BEFORE validation
+            schema,
+        )
 
     @classmethod
     def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":

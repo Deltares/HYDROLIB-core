@@ -4,9 +4,15 @@ from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
-from typing import Any, Callable, List, Optional
-
+from typing import Any, Callable, List, Optional, Union
 from strenum import StrEnum
+
+
+SCIENTIFIC_NOTATION_PATTERN = r"([\d.]+)([dD])([+-]?\d{1,3})"
+# matches a float: 1d9, 1D-3, 1.D+4, etc.
+SCIENTIFIC_NOTATION_REGEX = re.compile(SCIENTIFIC_NOTATION_PATTERN)
+
+PYTHON_STYLES = r"\1e\3"
 
 
 def to_key(string: str) -> str:
@@ -344,18 +350,37 @@ class FileChecksumCalculator:
 class FortranUtils:
     """Utility class for Fortran specific conventions."""
 
-    _scientific_exp_d_notation_regex = re.compile(
-        r"([\d.]+)([dD])([+-]?\d{1,3})"
-    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
-
     @staticmethod
     def replace_fortran_scientific_notation(value):
         """Replace Fortran scientific notation ("D" in exponent) with standard
         scientific notation ("e" in exponent).
         """
         if isinstance(value, str):
-            return FortranUtils._scientific_exp_d_notation_regex.sub(r"\1e\3", value)
+            return SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, value)
         elif isinstance(value, list):
             return list(map(FortranUtils.replace_fortran_scientific_notation, value))
+
+        return value
+
+
+class FortranScientificNotationConverter:
+
+    @classmethod
+    def convert(cls, value: Union[str, List[str]]) -> Union[str, List[str]]:
+        """
+        Replaces FORTRAN-style scientific notation in a value.
+
+        Args:
+            value (Any): The value to process.
+
+        Returns:
+            Any: The processed value.
+        """
+        if isinstance(value, str):
+            return SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, value)
+        if isinstance(value, list):
+            for i, v in enumerate(value):
+                if isinstance(v, str):
+                    value[i] = SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, v)
 
         return value
