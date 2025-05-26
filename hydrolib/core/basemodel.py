@@ -283,7 +283,6 @@ class FileCasingResolver:
         """
 
         operating_system = get_operating_system()
-        path = path.resolve()
         if operating_system == OperatingSystem.WINDOWS:
             return self._resolve_casing_windows(path)
         if operating_system == OperatingSystem.LINUX:
@@ -855,7 +854,7 @@ class FileModel(BaseModel, ABC):
     def __init__(
         self,
         filepath: Optional[PathOrStr] = None,
-        resolve_casing: bool = False,
+        resolve_casing: bool = True,
         recurse: bool = True,
         path_style: Optional[str] = None,
         *args,

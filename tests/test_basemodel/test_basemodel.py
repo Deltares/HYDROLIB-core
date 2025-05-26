@@ -996,7 +996,7 @@ class TestFileCasingResolver:
             ),
             pytest.param(
                 Path("DFLOWFM_INDIVIDUAL_FILES/../BOUNDARY-CONDITIONS/TFL_01.pli"),
-                Path("boundary-conditions/tfl_01.pli"),
+                Path("dflowfm_individual_files/../boundary-conditions/tfl_01.pli"),
                 True,
                 id="resolve_casing relative: Matching file exists with different casing",
             ),
