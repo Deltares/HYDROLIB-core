@@ -12,7 +12,7 @@ from hydrolib.core.base.utils import (
 )
 from hydrolib.core.dflowfm.mdu.models import Geometry, Output
 
-from .utils import test_input_dir
+from tests.utils import test_input_dir
 
 
 def runs_on_windows() -> bool:
