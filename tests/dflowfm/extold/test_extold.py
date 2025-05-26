@@ -4,7 +4,7 @@ from typing import List
 
 import pytest
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     ModelSaveSettings,
     SerializerConfig,

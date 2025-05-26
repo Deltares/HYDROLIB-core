@@ -2,7 +2,7 @@ from typing import Any, List, Optional
 
 import pytest
 
-from hydrolib.core.basemodel import BaseModel, ModelTreeTraverser
+from hydrolib.core.base.models import BaseModel, ModelTreeTraverser
 
 
 class SimpleModel(BaseModel):
