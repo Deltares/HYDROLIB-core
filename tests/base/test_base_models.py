@@ -296,7 +296,7 @@ class TestParsableFileModel(unittest.TestCase):
         model = self.TestParsableModel(name="test_dict", value=100)
 
         # Call dict
-        result = model.dict()
+        result = model.model_dump()
 
         # Verify result contains expected keys and values
         self.assertIn("name", result)
