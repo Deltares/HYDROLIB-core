@@ -411,13 +411,14 @@ class INIBasedModel(BaseModel, ABC):
             Section: The INI section representation of the model.
         """
         props = []
+        cls_fields = type(self).model_fields          # cache the class-level dict
         for key, value in self:
             if not self._should_be_serialized(key, value, save_settings):
                 continue
 
             field_key = key
-            if key in self.model_fields:
-                key = self.model_fields[key].alias
+            if key in cls_fields:
+                key = cls_fields[key].alias
 
             prop = Property(
                 key=key,
@@ -447,7 +448,8 @@ class INIBasedModel(BaseModel, ABC):
         if save_settings._exclude_unset and key not in self.model_fields_set:
             return False
 
-        field = self.model_fields.get(key)
+        cls_fields = type(self).model_fields
+        field = cls_fields.get(key)
         if not field:
             return value is not None
 
