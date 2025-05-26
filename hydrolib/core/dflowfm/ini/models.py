@@ -291,11 +291,16 @@ class INIBasedModel(BaseModel, ABC):
         if isinstance(values, dict):
             new_values = {}
             for field_name, value in values.items():
-                field_type = cls.model_fields.get(field_name).annotation
-                if field_type != float and field_type != List[float]:
-                    new_values[field_name] = value
+                field = cls.model_fields.get(field_name)
+                if field:
+                    field_type = field.annotation
+                    if field_type != float and field_type != List[float]:
+                        new_values[field_name] = value
+                    else:
+                        new_values[field_name] = FortranScientificNotationConverter.convert(value)
                 else:
-                    new_values[field_name] = FortranScientificNotationConverter.convert(value)
+                    # If the field is not defined in the model, keep it as is
+                    new_values[field_name] = value
         else:
             new_values = values
 
