@@ -2,7 +2,8 @@
 
 import logging
 from typing import Annotated, List, Literal, Optional, Union
-from pydantic import Field, field_validator, model_validator, ValidationInfo
+
+from pydantic import Field, ValidationInfo, field_validator, model_validator
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -148,13 +149,16 @@ class CircleCrsDef(CrossSectionDefinition):
 
     @model_validator(mode="after")
     def check_friction(self):
-        self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
+        self._check_friction_fields(
+            self.frictionid, self.frictiontype, self.frictionvalue, label=self.id
+        )
         return self
 
     @field_validator("frictiontype", mode="before")
     @classmethod
     def validate_enum_frictiontype(cls, v):
         return enum_value_parser(FrictionType)(v)
+
 
 class RectangleCrsDef(CrossSectionDefinition):
     """RectangleCrsDef.
@@ -198,7 +202,9 @@ class RectangleCrsDef(CrossSectionDefinition):
 
     @model_validator(mode="after")
     def check_friction(self):
-        self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
+        self._check_friction_fields(
+            self.frictionid, self.frictiontype, self.frictionvalue, label=self.id
+        )
         return self
 
     @field_validator("frictiontype", mode="before")
@@ -298,7 +304,9 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     fp1width: Optional[float] = Field(None, alias="fp1Width")
     fp2width: Optional[float] = Field(None, alias="fp2Width")
     frictionids: Optional[List[str]] = Field(None, alias="frictionIds", delimiter=";")
-    frictiontypes: Optional[List[FrictionType]] = Field(None, alias="frictionTypes", delimiter=";")
+    frictiontypes: Optional[List[FrictionType]] = Field(
+        None, alias="frictionTypes", delimiter=";"
+    )
     frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -312,7 +320,9 @@ class ZWRiverCrsDef(CrossSectionDefinition):
 
     @model_validator(mode="after")
     def check_friction(self):
-        self._check_friction_fields(self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id)
+        self._check_friction_fields(
+            self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id
+        )
         return self
 
     @field_validator("frictiontypes", mode="before")
@@ -409,7 +419,9 @@ class ZWCrsDef(CrossSectionDefinition):
 
     @model_validator(mode="after")
     def check_friction(self):
-        self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
+        self._check_friction_fields(
+            self.frictionid, self.frictiontype, self.frictionvalue, label=self.id
+        )
         return self
 
     @field_validator("frictiontype", mode="before")
@@ -488,7 +500,9 @@ class YZCrsDef(CrossSectionDefinition):
     sectioncount: Optional[int] = Field(1, alias="sectionCount")
     frictionpositions: Optional[List[float]] = Field(None, alias="frictionPositions")
     frictionids: Optional[List[str]] = Field(None, alias="frictionIds", delimiter=";")
-    frictiontypes: Optional[List[FrictionType]] = Field(None, alias="frictionTypes", delimiter=";")
+    frictiontypes: Optional[List[FrictionType]] = Field(
+        None, alias="frictionTypes", delimiter=";"
+    )
     frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(
@@ -502,7 +516,9 @@ class YZCrsDef(CrossSectionDefinition):
 
     @model_validator(mode="after")
     def check_friction(self):
-        self._check_friction_fields(self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id)
+        self._check_friction_fields(
+            self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id
+        )
         return self
 
     @field_validator("frictiontypes", mode="before")
@@ -589,7 +605,9 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 
     type: Literal["xyz"] = Field("xyz")
     branchid: Optional[str] = Field(None, alias="branchId")
-    yzcount: Optional[int] = Field(None, alias="yzCount")  # Trick to not inherit parent's yzcount required field.
+    yzcount: Optional[int] = Field(
+        None, alias="yzCount"
+    )  # Trick to not inherit parent's yzcount required field.
     xyzcount: int = Field(alias="xyzCount")
     xcoordinates: List[float] = Field(alias="xCoordinates")
 
@@ -599,7 +617,9 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 
     @field_validator("xyzcount")
     @classmethod
-    def validate_xyzcount_without_yzcount(cls, field_value: int, values: ValidationInfo) -> int:
+    def validate_xyzcount_without_yzcount(
+        cls, field_value: int, values: ValidationInfo
+    ) -> int:
         """Validate the xyzcount field.
 
         Validates whether this XYZCrsDef does have attribute xyzcount,
@@ -795,7 +815,7 @@ CrossSectionDefinitionUnion = Annotated[
         YZCrsDef,
         XYZCrsDef,
     ],
-    Field(discriminator="type")
+    Field(discriminator="type"),
 ]
 
 

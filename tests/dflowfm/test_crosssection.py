@@ -19,7 +19,6 @@ from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     validate_location_specification,
-
 )
 from tests.utils import (
     assert_files_equal,
@@ -365,7 +364,9 @@ class TestCrossSectionLocation:
                     validate_num_coordinates=False,
                     validate_location_type=False,
                 ),
-                fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
+                fields=LocationValidationFieldNames(
+                    x_coordinates="x", y_coordinates="y"
+                ),
             )
         assert (
             str(exc_err.value) == "branchId and chainage or x and y should be provided"

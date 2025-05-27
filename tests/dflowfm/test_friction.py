@@ -10,53 +10,64 @@ from hydrolib.core.dflowfm.friction.models import (
     FrictionModel,
     FrictionType,
 )
-
 from tests.utils import (
     assert_files_equal,
     test_data_dir,
     test_output_dir,
     test_reference_dir,
 )
-general = {'_header': 'General',
-           'datablock': None,
-           'fileversion': '3.01',
-           'filetype': 'roughness',
-           'comments': {'fileversion': None, 'filetype': None}}
+
+general = {
+    "_header": "General",
+    "datablock": None,
+    "fileversion": "3.01",
+    "filetype": "roughness",
+    "comments": {"fileversion": None, "filetype": None},
+}
 
 branch_1 = {
-    '_header': 'Branch',
-    'datablock': None,
-    'branchid': 'Channel1',
-    'frictiontype': 'Manning',
-    'functiontype': 'constant',
-    'numlocations': '2',
-    'chainage': '0.000 100.000',
-    'frictionvalues': '0.20000 0.30000',
-    'comments': {
-        'branchid': None, 'frictiontype': None, 'functiontype': None, 'numlocations': 'at two locations',
-        'chainage': None, 'frictionvalues': None
-    }
+    "_header": "Branch",
+    "datablock": None,
+    "branchid": "Channel1",
+    "frictiontype": "Manning",
+    "functiontype": "constant",
+    "numlocations": "2",
+    "chainage": "0.000 100.000",
+    "frictionvalues": "0.20000 0.30000",
+    "comments": {
+        "branchid": None,
+        "frictiontype": None,
+        "functiontype": None,
+        "numlocations": "at two locations",
+        "chainage": None,
+        "frictionvalues": None,
+    },
 }
 
-branch_2 = {'_header': 'Branch',
-            'datablock': None,
-            'branchid': 'Channel4',
-            'frictiontype': 'Chezy',
-            'functiontype': 'constant',
-            'frictionvalues': '40.00000',
-            'comments': {'branchid': None,
-                         'frictiontype': None,
-                         'functiontype': None,
-                         'frictionvalues': None}}
+branch_2 = {
+    "_header": "Branch",
+    "datablock": None,
+    "branchid": "Channel4",
+    "frictiontype": "Chezy",
+    "functiontype": "constant",
+    "frictionvalues": "40.00000",
+    "comments": {
+        "branchid": None,
+        "frictiontype": None,
+        "functiontype": None,
+        "frictionvalues": None,
+    },
+}
 
 friction_global = {
-    '_header': 'Global',
-    'datablock': None,
-    'frictionid': 'Main',
-    'frictiontype': 'Chezy',
-    'frictionvalue': '45.000',
-    'comments': {'frictionid': None, 'frictiontype': None, 'frictionvalue': None}
+    "_header": "Global",
+    "datablock": None,
+    "frictionid": "Main",
+    "frictiontype": "Chezy",
+    "frictionvalue": "45.000",
+    "comments": {"frictionid": None, "frictiontype": None, "frictionvalue": None},
 }
+
 
 def _get_frictiontype_cases() -> List:
     return [
@@ -82,6 +93,7 @@ def test_frictglobal_parses_frictiontype_case_insensitive(input, expected):
     )
 
     assert fg.frictiontype == expected
+
 
 def test_separate_elements():
 

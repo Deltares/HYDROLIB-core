@@ -35,11 +35,13 @@ def get_split_string_on_delimiter_validator(*field_name: str):
 
     return field_validator(*field_name, mode="before")(split)
 
+
 def enum_value_parser(
     enum: Type[Enum],
     alternative_enum_values: Optional[Dict[str, List[str]]] = None,
 ):
     """Return a function that converts strings (and string lists) to Enum values."""
+
     def parser(v):
         if isinstance(v, list):
             return [parser(item) for item in v]
@@ -50,13 +52,17 @@ def enum_value_parser(
                 if entry.value.lower() == v.lower():
                     return entry
                 if (
-                        alternative_enum_values
-                        and (alts := alternative_enum_values.get(entry.value))
-                        and v.lower() in (alt.lower() for alt in alts)
+                    alternative_enum_values
+                    and (alts := alternative_enum_values.get(entry.value))
+                    and v.lower() in (alt.lower() for alt in alts)
                 ):
                     return entry
-        raise ValueError(f"Invalid enum value: {v!r}. Expected one of: {[e.value for e in enum]}")
+        raise ValueError(
+            f"Invalid enum value: {v!r}. Expected one of: {[e.value for e in enum]}"
+        )
+
     return parser
+
 
 def get_enum_validator(
     *field_name: str,
@@ -354,16 +360,23 @@ def _try_get_default_value(
     Returns:
         Optional[str]: The field default that corresponds to the value. If nothing is found return None.
     """
-    if not hasattr(c, 'model_fields') or (field := c.model_fields.get(fieldname)) is None:
+    if (
+        not hasattr(c, "model_fields")
+        or (field := c.model_fields.get(fieldname)) is None
+    ):
         return None
 
     # In pydantic v2, default is accessed through default_factory or directly
-    if hasattr(field, 'default_factory') and field.default_factory is not None:
+    if hasattr(field, "default_factory") and field.default_factory is not None:
         default = field.default_factory()
     else:
         default = field.default
 
-    if default is not None and hasattr(default, 'lower') and default.lower() == value.lower():
+    if (
+        default is not None
+        and hasattr(default, "lower")
+        and default.lower() == value.lower()
+    ):
         # If this class's default matches, directly return it to end the recursion.
         return default
 
@@ -402,16 +415,23 @@ def get_type_based_on_subclass_default_value(
 
 
 def _get_type_based_on_default_value(cls, fieldname, value) -> Optional[Type]:
-    if not hasattr(cls, 'model_fields') or (field := cls.model_fields.get(fieldname)) is None:
+    if (
+        not hasattr(cls, "model_fields")
+        or (field := cls.model_fields.get(fieldname)) is None
+    ):
         return None
 
     # In pydantic v2, default is accessed through default_factory or directly
-    if hasattr(field, 'default_factory') and field.default_factory is not None:
+    if hasattr(field, "default_factory") and field.default_factory is not None:
         default = field.default_factory()
     else:
         default = field.default
 
-    if default is not None and hasattr(default, 'lower') and default.lower() == value.lower():
+    if (
+        default is not None
+        and hasattr(default, "lower")
+        and default.lower() == value.lower()
+    ):
         return cls
 
     for sc in cls.__subclasses__():
@@ -728,7 +748,7 @@ class UnknownKeywordErrorManager:
             False otherwise
         """
         exists = keyword in fields or any(
-            hasattr(field_info, 'alias') and keyword == field_info.alias
+            hasattr(field_info, "alias") and keyword == field_info.alias
             for field_info in fields.values()
         )
         # the field is not in the known fields, check if it should be excluded
