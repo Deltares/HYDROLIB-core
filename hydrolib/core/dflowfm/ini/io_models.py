@@ -1,7 +1,7 @@
 from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.base.utils import to_key
@@ -35,6 +35,13 @@ class Property(BaseModel):
 
     def get_comment(self):
         return {self.key: self.comment}
+
+    @field_validator("value", mode="before")
+    def make_value_str(cls, value: Any) -> Optional[str]:
+        """Ensure that the value is always a string, even if it is None."""
+        if value is None:
+            return None
+        return f"{value}"
 
 
 ContentElement = Union[Property, CommentBlock]
