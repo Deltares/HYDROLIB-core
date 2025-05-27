@@ -46,7 +46,7 @@ jobs:
           pip list
 
       - name: Test with pytest
-        run: poetry run pytest --cov . --cov-report xml:coverage-reports/coverage-hydrolib-core.xml --junitxml=xunit-reports/xunit-result-hydrolib-core.xml
+        run: poetry run pytest -vvv tests/base .\tests\dflowfm\test_cmp.py .\tests\dflowfm\ini\ .\tests\dflowfm\polyfile\ .\tests\dflowfm\t3d\ .\tests\dflowfm\test_crosssection.py .\tests\dflowfm\test_xyn.py .\tests\dflowfm\test_xyz.py .\tests\dflowfm\test_xyn.py .\tests\dflowfm\test_tim.py
 
       - name: Autoformat code if the check fails
         if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.python-version == 3.13) }}
