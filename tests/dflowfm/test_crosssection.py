@@ -139,14 +139,14 @@ class TestCrossSectionDefinition:
     def test_create_a_circlecrsdef_with_duplicate_frictionspec(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            _ = CircleCrsDef(
+            d = CircleCrsDef(
                 id=csdefid,
                 diameter=3.14,
                 frictionid="Brick",
                 frictiontype=FrictionType.walllawnikuradse,
                 frictionvalue=1.5,
             )
-        expected_message = f"Cross section has duplicate friction specification"
+        expected_message = f"{csdefid} has duplicate friction specification"
 
         assert expected_message in str(error.value)
 
