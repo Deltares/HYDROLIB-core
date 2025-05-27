@@ -553,10 +553,6 @@ class VectorForcingBase(ForcingBase):
 
         return valid
 
-    # @field_validator("function", mode="before")
-    # def _set_function(cls, value):
-    #     return get_from_subclass_defaults(VectorForcingBase, "function", value)
-
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:
         """Gets the number of expected quantityunitpairs for each vector element. Defaults to 1."""
