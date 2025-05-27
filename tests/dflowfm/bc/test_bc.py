@@ -50,26 +50,6 @@ class TestQuantityUnitPair:
 
 class TestTimeSeries:
 
-    def quantityunitpair(self, quantity, unit, verticalpositionindex=None):
-        return QuantityUnitPair(
-            quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
-        )
-
-    @pytest.fixture
-    def time_series_values(self) -> Dict[str, Any]:
-        return dict(
-            name="boundary_timeseries",
-            function="timeseries",
-            timeinterpolation=TimeInterpolation.block_to,
-            offset="1.23",
-            factor="2.34",
-            quantityunitpair=[
-                self.quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
-                self.quantityunitpair("dischargebnd", "m³/s"),
-            ],
-            datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
-        )
-
     def test_create_a_forcing_from_scratch(self, time_series_values):
         forcing = TimeSeries(**time_series_values)
 
@@ -315,35 +295,6 @@ class TestVectorForcingBase:
 
 
 class TestT3D:
-
-    def quantityunitpair(self, quantity, unit, verticalpositionindex=None):
-        return QuantityUnitPair(
-            quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
-        )
-
-    @pytest.fixture
-    def t3d_values(self):
-        return dict(
-            name="boundary_t3d",
-            function="t3d",
-            offset="1.23",
-            factor="2.34",
-            vertpositions="3.45 4.56 5.67",
-            vertinterpolation=VerticalInterpolation.log,
-            vertpositiontype=VerticalPositionType.percentage_bed,
-            timeinterpolation=TimeInterpolation.linear,
-            quantityunitpair=[
-                self.quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
-                self.quantityunitpair("salinitybnd", "ppt", 1),
-                self.quantityunitpair("salinitybnd", "ppt", 2),
-                self.quantityunitpair("salinitybnd", "ppt", 3),
-            ],
-            datablock=[
-                ["0", "1", "2", "3"],
-                ["60", "4", "5", "6"],
-                ["120", "7", "8", "9"],
-            ],
-        )
 
     @pytest.mark.parametrize(
         "vertical_position_type, exp_vertical_position_type",
