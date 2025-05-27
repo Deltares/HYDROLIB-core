@@ -879,9 +879,14 @@ class ExtOldForcing(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def validate_sourcemask(cls, data:Any) -> Any:
-        # filetype = info.data.get("file").filetype if info.data.get("file") else None
         filetype = data.get("filetype")
         sourcemask = data.get("sourcemask")
+
+        # Convert string to DiskOnlyFileModel if needed
+        if isinstance(sourcemask, str):
+            data["sourcemask"] = DiskOnlyFileModel(sourcemask)
+            sourcemask = data["sourcemask"]
+
         if sourcemask and filetype not in [ExtOldFileType.ArcInfo, ExtOldFileType.CurvilinearData]:
             raise ValueError("SOURCEMASK only allowed when FILETYPE is 4 or 6")
         return data
