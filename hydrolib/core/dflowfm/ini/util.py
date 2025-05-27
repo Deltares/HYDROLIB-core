@@ -89,7 +89,7 @@ def validate_correct_length(
     length_incr: int = 0,
     list_required_with_length: bool = False,
     min_length: int = 0,
-) -> Dict:
+):
     """
     Validate the correct length (and presence) of several list fields in an object.
 
@@ -150,7 +150,6 @@ def validate_correct_length(
     for field_name in field_names:
         field = values.get(field_name)
         _validate_listfield_length(field_name, field, requiredlength)
-
 
 
 def validate_forbidden_fields(
