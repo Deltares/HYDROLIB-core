@@ -5,8 +5,8 @@ from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
-from strenum import StrEnum
 
+from strenum import StrEnum
 
 SCIENTIFIC_NOTATION_PATTERN = r"([\d.]+)([dD])([+-]?\d{1,3})"
 # matches a float: 1d9, 1D-3, 1.D+4, etc.

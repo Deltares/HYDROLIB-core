@@ -12,8 +12,8 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
 from weakref import WeakValueDictionary
 
-from pydantic import BaseModel as PydanticBaseModel, ValidationInfo
-from pydantic import field_validator, PrivateAttr, ValidationError
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import PrivateAttr, ValidationError, ValidationInfo, field_validator
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
@@ -67,7 +67,7 @@ class BaseModel(PydanticBaseModel):
         "use_enum_values": True,
         "extra": "forbid",  # will throw errors so we can fix our models
         "populate_by_name": True,
-        "alias_generator": to_key
+        "alias_generator": to_key,
     }
 
     def __init__(self, **data: Any) -> None:
@@ -83,7 +83,9 @@ class BaseModel(PydanticBaseModel):
             for error in e.errors():
                 loc = error.get("loc", [])
                 if loc and isinstance(data.get(to_key(loc[0])), list):
-                    error["msg"] += f". The key {loc[0]} might be duplicated in the input file."
+                    error[
+                        "msg"
+                    ] += f". The key {loc[0]} might be duplicated in the input file."
 
             # Update error with specific model location name
             identifier = self._get_identifier(data)
@@ -95,9 +97,7 @@ class BaseModel(PydanticBaseModel):
                 errors = e.errors()
                 for error in errors:
                     error["loc"] = (identifier,) + tuple(error.get("loc", ()))
-                raise ValidationError.from_exception_data(
-                    title="", line_errors=errors
-                )
+                raise ValidationError.from_exception_data(title="", line_errors=errors)
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""

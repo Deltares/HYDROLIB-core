@@ -17,9 +17,16 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic import ConfigDict, Field, field_validator, model_validator, GetCoreSchemaHandler
+from pydantic import (
+    ConfigDict,
+    Field,
+    GetCoreSchemaHandler,
+    field_validator,
+    model_validator,
+)
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
+
 from hydrolib.core import __version__ as version
 from hydrolib.core.base.file_manager import FilePathStyleConverter
 from hydrolib.core.base.models import (
@@ -28,6 +35,7 @@ from hydrolib.core.base.models import (
     ModelSaveSettings,
     ParsableFileModel,
 )
+from hydrolib.core.base.utils import FortranScientificNotationConverter
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     Document,
@@ -44,7 +52,7 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     make_list_validator,
 )
-from hydrolib.core.base.utils import FortranScientificNotationConverter
+
 logger = logging.getLogger(__name__)
 
 
@@ -109,6 +117,7 @@ class INIBasedModel(BaseModel, ABC):
         - Subclasses can override the `_header` attribute to define the INI block header.
         - Arbitrary fields can be added dynamically and are included during serialization.
     """
+
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
     model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=False)
@@ -297,7 +306,9 @@ class INIBasedModel(BaseModel, ABC):
                     if field_type != float and field_type != List[float]:
                         new_values[field_name] = value
                     else:
-                        new_values[field_name] = FortranScientificNotationConverter.convert(value)
+                        new_values[field_name] = (
+                            FortranScientificNotationConverter.convert(value)
+                        )
                 else:
                     # If the field is not defined in the model, keep it as is
                     new_values[field_name] = value
@@ -411,7 +422,7 @@ class INIBasedModel(BaseModel, ABC):
             Section: The INI section representation of the model.
         """
         props = []
-        cls_fields = type(self).model_fields          # cache the class-level dict
+        cls_fields = type(self).model_fields  # cache the class-level dict
         for key, value in self:
             if not self._should_be_serialized(key, value, save_settings):
                 continue
