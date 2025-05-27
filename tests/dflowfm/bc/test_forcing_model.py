@@ -1,4 +1,4 @@
-from pathlib import Path
+from typing import Any, Dict
 
 import numpy as np
 import pytest
@@ -192,7 +192,7 @@ class TestForcingModel:
         with pytest.raises(ValidationError) as error:
             ForcingModel(filepath)
 
-        expected_message1 = f"{bc_file} -> forcing -> 1 -> {identifier}"
+        expected_message1 = f"`{bc_file}`.forcing.1.constant"
         expected_message2 = "quantity is not provided"
         assert expected_message1 in str(error.value)
         assert expected_message2 in str(error.value)
