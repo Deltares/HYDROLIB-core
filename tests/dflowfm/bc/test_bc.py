@@ -2,7 +2,7 @@ import inspect
 from typing import Dict, List, Literal
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
@@ -294,6 +294,36 @@ class TestVectorForcingBase:
 
 
 class TestT3D:
+
+    def quantityunitpair(self, quantity, unit, verticalpositionindex=None):
+        return QuantityUnitPair(
+            quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
+        )
+
+    @pytest.fixture
+    def t3d_values(self):
+        return dict(
+            name="boundary_t3d",
+            function="t3d",
+            offset="1.23",
+            factor="2.34",
+            vertpositions="3.45 4.56 5.67",
+            vertinterpolation=VerticalInterpolation.log,
+            vertpositiontype=VerticalPositionType.percentage_bed,
+            timeinterpolation=TimeInterpolation.linear,
+            quantityunitpair=[
+                self.quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
+                self.quantityunitpair("salinitybnd", "ppt", 1),
+                self.quantityunitpair("salinitybnd", "ppt", 2),
+                self.quantityunitpair("salinitybnd", "ppt", 3),
+            ],
+            datablock=[
+                ["0", "1", "2", "3"],
+                ["60", "4", "5", "6"],
+                ["120", "7", "8", "9"],
+            ],
+        )
+
     @pytest.mark.parametrize(
         "vertical_position_type, exp_vertical_position_type",
         [

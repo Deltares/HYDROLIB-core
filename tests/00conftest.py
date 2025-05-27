@@ -242,28 +242,3 @@ def time_series_values() -> Dict[str, Any]:
         ],
         datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
     )
-
-
-@pytest.fixture
-def t3d_values():
-    return dict(
-        name="boundary_t3d",
-        function="t3d",
-        offset="1.23",
-        factor="2.34",
-        vertpositions="3.45 4.56 5.67",
-        vertinterpolation=VerticalInterpolation.log,
-        vertpositiontype=VerticalPositionType.percentage_bed,
-        timeinterpolation=TimeInterpolation.linear,
-        quantityunitpair=[
-            quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
-            quantityunitpair("salinitybnd", "ppt", 1),
-            quantityunitpair("salinitybnd", "ppt", 2),
-            quantityunitpair("salinitybnd", "ppt", 3),
-        ],
-        datablock=[
-            ["0", "1", "2", "3"],
-            ["60", "4", "5", "6"],
-            ["120", "7", "8", "9"],
-        ],
-    )
