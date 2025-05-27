@@ -1,7 +1,7 @@
 """Cross section models for D-Flow FM."""
 
 import logging
-from typing import Annotated, List, Literal, Optional, Union, Dict
+from typing import Annotated, List, Literal, Optional, Union
 from pydantic import Field, field_validator, model_validator, ValidationInfo
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
@@ -85,13 +85,8 @@ class CrossSectionDefinition(INIBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-
     @staticmethod
-    def _get_friction_root_validator(
-        frictionid_attr: str,
-        frictiontype_attr: str,
-        frictionvalue_attr: str,
-    ):
+    def _check_friction_fields(frictionid, frictiontype, frictionvalue, label=""):
         """Get a root_validator for the friction specification.
 
         Make a root_validator that verifies whether the crosssection definition (subclass)
@@ -99,36 +94,21 @@ class CrossSectionDefinition(INIBasedModel):
         Supposed to be embedded in subclasses for their friction fields.
 
         Args:
-            frictionid_attr: name of the frictionid attribute in the subclass.
-            frictiontype_attr: name of the frictiontype attribute in the subclass.
-            frictionvalue_attr: name of the frictionvalue attribute in the subclass.
+            frictionid:
+                name of the frictionid attribute in the subclass.
+            frictiontype:
+                name of the frictiontype attribute in the subclass.
+            frictionvalue:
+                name of the frictionvalue attribute in the subclass.
 
         Returns:
             root_validator: to be embedded in the subclass that needs it.
         """
-        @model_validator(mode="after")
-        def validate_friction_specification(self, model):
-            """Validate the friction specification.
+        if frictionid and (frictiontype or frictionvalue):
+            raise ValueError(
+                f"{label} has duplicate friction specification: both frictionid and frictiontype/frictionvalue."
+            )
 
-            The actual validator function.
-
-            Args:
-                cls:
-                    The subclass for which the root_validator is called.
-                model (dict):
-                    Dictionary of values to create a CrossSectionDefinition subclass.
-            """
-            frictionid = getattr(model, frictionid_attr) or None
-            frictiontype = getattr(model, frictiontype_attr) or None
-            frictionvalue = getattr(model, frictionvalue_attr) or None
-
-            if frictionid and (frictiontype or frictionvalue):
-                raise ValueError(
-                    "Cross section has duplicate friction specification (both "
-                    f"{frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
-                )
-
-            return self
 
 class CircleCrsDef(CrossSectionDefinition):
     """CircleCrsDef.
@@ -167,11 +147,12 @@ class CircleCrsDef(CrossSectionDefinition):
     frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
     frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
-    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
-        "frictionid", "frictiontype", "frictionvalue"
-    )
     _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
+    @model_validator(mode="after")
+    def check_friction(self):
+        self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
+        return self
 
 class RectangleCrsDef(CrossSectionDefinition):
     """RectangleCrsDef.
@@ -213,10 +194,12 @@ class RectangleCrsDef(CrossSectionDefinition):
     frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
     frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
-    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
-        "frictionid", "frictiontype", "frictionvalue"
-    )
     _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+
+    @model_validator(mode="after")
+    def check_friction(self):
+        self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
+        return self
 
 
 class ZWRiverCrsDef(CrossSectionDefinition):
@@ -322,10 +305,12 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         "frictiontypes",
     )
 
-    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
-        "frictionids", "frictiontypes", "frictionvalues"
-    )
     _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
+
+    @model_validator(mode="after")
+    def check_friction(self):
+        self._check_friction_fields(self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id)
+        return self
 
     @model_validator(mode="after")
     def check_list_lengths(self):
@@ -414,11 +399,12 @@ class ZWCrsDef(CrossSectionDefinition):
         )
         return self
 
-    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
-        "frictionid", "frictiontype", "frictionvalue"
-    )
     _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
 
+    @model_validator(mode="after")
+    def check_friction(self):
+        self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
+        return self
 
 class YZCrsDef(CrossSectionDefinition):
     """YZCrsDef.
@@ -502,10 +488,12 @@ class YZCrsDef(CrossSectionDefinition):
         "frictiontypes",
     )
 
-    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
-        "frictionids", "frictiontypes", "frictionvalues"
-    )
     _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
+
+    @model_validator(mode="after")
+    def check_friction(self):
+        self._check_friction_fields(self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id)
+        return self
 
     @model_validator(mode="after")
     def check_list_lengths_coordinates(self):
@@ -791,6 +779,7 @@ CrossSectionDefinitionUnion = Annotated[
     ],
     Field(discriminator="type")
 ]
+
 
 class CrossDefModel(INIModel):
     """
