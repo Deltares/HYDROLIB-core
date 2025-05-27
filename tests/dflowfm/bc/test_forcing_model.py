@@ -94,25 +94,6 @@ def astronomic_values(iscorrection: bool, quantityunitpair):
 
 
 class TestForcingBase:
-    @pytest.mark.parametrize(
-        "input,expected",
-        [
-            ("TimeSeries", "timeseries"),
-            ("haRmoniC", "harmonic"),
-            ("ASTRONOMIC", "astronomic"),
-            ("harmonic-Correction", "harmonic-correction"),
-            ("Astronomic-Correction", "astronomic-correction"),
-            ("t3D", "t3d"),
-            ("QHtable", "qhtable"),
-            ("Constant", "constant"),
-            ("DOESNOTEXIST", "DOESNOTEXIST"),
-            ("doesnotexist", "doesnotexist"),
-        ],
-    )
-    def test_parses_function_case_insensitive(self, input, expected):
-        forcing = ForcingBase(function=input, name="somename", quantityunitpair=[])
-
-        assert forcing.function == expected
 
     @pytest.mark.parametrize(
         "missing_field",
@@ -182,6 +163,25 @@ class TestForcingModel:
         m = ForcingModel(filepath)
         assert len(m.forcing) == 13
         assert isinstance(m.forcing[-1], TimeSeries)
+
+    @pytest.mark.parametrize(
+        "input_type, values, expected",
+        [
+            ("Astronomic", astronomic_values, "astronomic"),
+            ("HarmOnic", harmonic_values, "harmonic"),
+        ],
+    )
+    def test_forcing_model_case_insensitive_discriminator(
+        self, input_type, values, expected
+    ):
+        values = (
+            values(False, quantityunitpair)
+            if input_type == "Astronomic"
+            else values(False)
+        )
+        values["function"] = input_type
+        model = ForcingModel(forcing=[values])
+        assert model.forcing[0].function == expected
 
     def test_read_bc_missing_field_raises_correct_error(self, invalid_data_dir):
         bc_file = "missing_field.bc"
