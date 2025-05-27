@@ -17,9 +17,16 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic import ConfigDict, Field, field_validator, model_validator, GetCoreSchemaHandler
+from pydantic import (
+    ConfigDict,
+    Field,
+    GetCoreSchemaHandler,
+    field_validator,
+    model_validator,
+)
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
+
 from hydrolib.core import __version__ as version
 from hydrolib.core.base.file_manager import FilePathStyleConverter
 from hydrolib.core.base.models import (
@@ -28,6 +35,7 @@ from hydrolib.core.base.models import (
     ModelSaveSettings,
     ParsableFileModel,
 )
+from hydrolib.core.base.utils import FortranScientificNotationConverter
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     Document,
@@ -44,7 +52,7 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     make_list_validator,
 )
-from hydrolib.core.base.utils import FortranScientificNotationConverter
+
 logger = logging.getLogger(__name__)
 
 
@@ -291,6 +299,9 @@ class INIBasedModel(BaseModel, ABC):
         if isinstance(values, dict):
             new_values = {}
             for field_name, value in values.items():
+                if cls.model_fields.get(field_name) is None:
+                    new_values[field_name] = value
+                    continue
                 field_type = cls.model_fields.get(field_name).annotation
                 if field_type != float and field_type != List[float]:
                     new_values[field_name] = value
