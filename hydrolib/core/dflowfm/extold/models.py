@@ -2,7 +2,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from pydantic.v1 import Field, root_validator, validator
+from pydantic import Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
@@ -143,12 +143,18 @@ HEADER = """
 class ExtOldTracerQuantity(StrEnum):
     """Enum class containing the valid values for the boundary conditions category
     of the external forcings that are specific to tracers.
+
+    Attributes:
+        TracerBnd (str):
+            User-defined tracer boundary condition.
+        InitialTracer (str):
+            Initial tracer condition.
+        SedFracBnd (str):
+            Sediment fraction boundary condition.
     """
 
     TracerBnd = "tracerbnd"
-    """User-defined tracer"""
     InitialTracer = "initialtracer"
-    """Initial tracer"""
     SedFracBnd = "sedfracbnd"
 
 
@@ -576,113 +582,116 @@ class ExtOldExtrapolationMethod(IntEnum):
 
 
 class ExtOldForcing(BaseModel):
-    """Class holding the external forcing values."""
+    """Class holding the external forcing values.
+
+    This class is used to represent the external forcing values in the D-Flow FM model.
+
+    Attributes:
+        quantity (Union[ExtOldQuantity, str]):
+            The name of the quantity.
+        filename (Union[PolyFile, TimModel, DiskOnlyFileModel]):
+            The file associated with this forcing.
+        varname (Optional[str]):
+            The variable name used in `filename` associated with this forcing; some input files may contain multiple variables.
+        sourcemask (DiskOnlyFileModel):
+            The file containing a mask.
+        filetype (ExtOldFileType):
+            Indication of the file type.
+            Options:
+                1. Time series
+                2. Time series magnitude and direction
+                3. Spatially varying weather
+                4. ArcInfo
+                5. Spiderweb data (cyclones)
+                6. Curvilinear data
+                7. Samples (C.3)
+                8. Triangulation magnitude and direction
+                9. Polyline (<*.pli>-file, C.2)
+                11. NetCDF grid data (e.g. meteo fields)
+                14. NetCDF wave data
+        method (ExtOldMethod):
+            The method of interpolation.
+            Options:
+                1. Pass through (no interpolation)
+                2. Interpolate time and space
+                3. Interpolate time and space, save weights
+                4. Interpolate space
+                5. Interpolate time
+                6. Averaging space
+                7. Interpolate/Extrapolate time
+        extrapolation_method (Optional[ExtOldExtrapolationMethod]):
+            The extrapolation method.
+                Options:
+                    0. No spatial extrapolation.
+                    1. Do spatial extrapolation outside of source data bounding box.
+        maxsearchradius (Optional[float]):
+            Search radius for model grid points that lie outside of the source data bounding box.
+        operand (Operand):
+            The operand to use for adding the provided values.
+
+            Options:
+                'O' Existing values are overwritten with the provided values.
+                'A' Provided values are used where existing values are missing.
+                '+' Existing values are summed with the provided values.
+                '*' Existing values are multiplied with the provided values.
+                'X' The maximum values of the existing values and provided values are used.
+                'N' The minimum values of the existing values and provided values are used.
+        value (Optional[float]):
+            Custom coefficients for transformation.
+        factor (Optional[float]):
+            The conversion factor.
+        ifrctyp (Optional[float]):
+            The friction type.
+        averagingtype (Optional[float]):
+            The averaging type.
+        relativesearchcellsize (Optional[float]):
+            The relative search cell size for samples inside a cell.
+        extrapoltol (Optional[float]):
+            The extrapolation tolerance.
+        percentileminmax (Optional[float]):
+            Changes the min/max operator to an average of the highest/lowest data points.
+            The value sets the percentage of the total set that is to be included.
+        area (Optional[float]):
+            The area for sources and sinks.
+        nummin (Optional[int]):
+            The minimum required number of source data points in each target cell.
+    """
 
     quantity: Union[ExtOldQuantity, str] = Field(alias="QUANTITY")
-    """Union[Quantity, str]: The name of the quantity."""
-
     filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
         None, alias="FILENAME"
     )
-    """Union[PolyFile, TimModel, DiskOnlyFileModel]: The file associated to this forcing."""
-
     varname: Optional[str] = Field(None, alias="VARNAME")
-    """Optional[str]: The variable name used in `filename` associated with this forcing; some input files may contain multiple variables."""
-
     sourcemask: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="SOURCEMASK"
     )
-    """DiskOnlyFileModel: The file containing a mask."""
-
     filetype: ExtOldFileType = Field(alias="FILETYPE")
-    """FileType: Indication of the file type.
-
-    Options:
-    1. Time series
-    2. Time series magnitude and direction
-    3. Spatially varying weather
-    4. ArcInfo
-    5. Spiderweb data (cyclones)
-    6. Curvilinear data
-    7. Samples (C.3)
-    8. Triangulation magnitude and direction
-    9. Polyline (<*.pli>-file, C.2)
-    11. NetCDF grid data (e.g. meteo fields)
-    14. NetCDF wave data
-    """
-
     method: ExtOldMethod = Field(alias="METHOD")
-    """ExtOldMethod: The method of interpolation.
-
-    Options:
-    1. Pass through (no interpolation)
-    2. Interpolate time and space
-    3. Interpolate time and space, save weights
-    4. Interpolate space
-    5. Interpolate time
-    6. Averaging space
-    7. Interpolate/Extrapolate time
-    """
-
     extrapolation_method: Optional[ExtOldExtrapolationMethod] = Field(
         None, alias="EXTRAPOLATION_METHOD"
     )
-    """Optional[ExtOldExtrapolationMethod]: The extrapolation method.
-
-    Options:
-    0. No spatial extrapolation.
-    1. Do spatial extrapolation outside of source data bounding box.
-    """
 
     maxsearchradius: Optional[float] = Field(None, alias="MAXSEARCHRADIUS")
-    """Optional[float]: Search radius (in m) for model grid points that lie outside of the source data bounding box."""
-
     operand: Operand = Field(alias="OPERAND")
-    """Operand: The operand to use for adding the provided values.
-
-    Options:
-    'O' Existing values are overwritten with the provided values.
-    'A' Provided values are used where existing values are missing.
-    '+' Existing values are summed with the provided values.
-    '*' Existing values are multiplied with the provided values.
-    'X' The maximum values of the existing values and provided values are used.
-    'N' The minimum values of the existing values and provided values are used.
-    """
-
     value: Optional[float] = Field(None, alias="VALUE")
-    """Optional[float]: Custom coefficients for transformation."""
-
     factor: Optional[float] = Field(None, alias="FACTOR")
-    """Optional[float]: The conversion factor."""
-
     ifrctyp: Optional[float] = Field(None, alias="IFRCTYP")
-    """Optional[float]: The friction type."""
-
     averagingtype: Optional[float] = Field(None, alias="AVERAGINGTYPE")
-    """Optional[float]: The averaging type."""
 
     relativesearchcellsize: Optional[float] = Field(
         None, alias="RELATIVESEARCHCELLSIZE"
     )
-    """Optional[float]: The relative search cell size for samples inside a cell."""
-
     extrapoltol: Optional[float] = Field(None, alias="EXTRAPOLTOL")
-    """Optional[float]: The extrapolation tolerance."""
-
     percentileminmax: Optional[float] = Field(None, alias="PERCENTILEMINMAX")
-    """Optional[float]: Changes the min/max operator to an average of the highest/lowest data points. The value sets the percentage of the total set that is to be included.."""
-
     area: Optional[float] = Field(None, alias="AREA")
-    """Optional[float]: The area for sources and sinks."""
-
     nummin: Optional[int] = Field(None, alias="NUMMIN")
-    """Optional[int]: The minimum required number of source data points in each target cell."""
 
     def is_intermediate_link(self) -> bool:
         return True
 
-    @validator("quantity", pre=True)
-    def validate_quantity(cls, value):
+    @field_validator("quantity", mode="before")
+    @classmethod
+    def validate_quantity(cls, value) -> Any:
         if isinstance(value, ExtOldQuantity):
             return value
 
@@ -712,17 +721,15 @@ class ExtOldForcing(BaseModel):
             f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
         )
 
-    @validator("operand", pre=True)
+    @field_validator("operand", mode="before")
+    @classmethod
     def validate_operand(cls, value):
         if isinstance(value, Operand):
             return value
-
         if isinstance(value, str):
-
             for operand in Operand:
                 if value.lower() == operand.value.lower():
                     return operand
-
             supported_value_str = ", ".join(([x.value for x in Operand]))
             raise ValueError(
                 f"OPERAND '{value}' not supported. Supported values: {supported_value_str}"
@@ -730,92 +737,108 @@ class ExtOldForcing(BaseModel):
 
         return value
 
-    @root_validator(skip_on_failure=True)
-    def validate_forcing(cls, values):
-        class _Field:
-            def __init__(self, key: str) -> None:
-                self.alias = cls.__fields__[key].alias
-                self.value = values[key]
 
-        def raise_error_only_allowed_when(
-            field: _Field, dependency: _Field, valid_dependency_value: str
-        ):
-            error = f"{field.alias} only allowed when {dependency.alias} is {valid_dependency_value}"
-            raise ValueError(error)
+    @model_validator(mode="after")
+    def validate_varname(self):
+        if self.varname and self.filetype != ExtOldFileType.NetCDFGridData:
+            raise ValueError("VARNAME only allowed when FILETYPE is 11 (NetCDFGridData)")
+        return self
 
-        def only_allowed_when(
-            field: _Field, dependency: _Field, valid_dependency_value: Any
-        ):
-            """This function checks if a particular field is allowed to have a value only when a dependency field has a specific value."""
-
-            if field.value is None or dependency.value == valid_dependency_value:
-                return
-
-            raise_error_only_allowed_when(field, dependency, valid_dependency_value)
-
-        quantity = _Field("quantity")
-        varname = _Field("varname")
-        sourcemask = _Field("sourcemask")
-        filetype = _Field("filetype")
-        method = _Field("method")
-        extrapolation_method = _Field("extrapolation_method")
-        maxsearchradius = _Field("maxsearchradius")
-        value = _Field("value")
-        factor = _Field("factor")
-        ifrctype = _Field("ifrctyp")
-        averagingtype = _Field("averagingtype")
-        relativesearchcellsize = _Field("relativesearchcellsize")
-        extrapoltol = _Field("extrapoltol")
-        percentileminmax = _Field("percentileminmax")
-        area = _Field("area")
-        nummin = _Field("nummin")
-
-        only_allowed_when(varname, filetype, ExtOldFileType.NetCDFGridData)
-
-        if sourcemask.value.filepath is not None and filetype.value not in [
-            ExtOldFileType.ArcInfo,
-            ExtOldFileType.CurvilinearData,
-        ]:
-            raise_error_only_allowed_when(
-                sourcemask, filetype, valid_dependency_value="4 or 6"
-            )
-
+    @field_validator("extrapolation_method")
+    @classmethod
+    def validate_extrapolation_method(cls, v, info):
+        method = info.data.get("method")
+        valid_extrapolation_method = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+        available_extrapolation_methods = [ExtOldMethod.InterpolateTimeAndSpaceSaveWeights, ExtOldMethod.Obsolete]
         if (
-            extrapolation_method.value
-            == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
-            and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
-            and method.value != ExtOldMethod.Obsolete
+                v == valid_extrapolation_method
+                and method not in available_extrapolation_methods
         ):
-            error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
-            raise ValueError(error)
+            raise ValueError(
+                f"EXTRAPOLATION_METHOD only allowed to be {valid_extrapolation_method} when METHOD is "
+                f"{available_extrapolation_methods[0]} or {available_extrapolation_methods[1]}"
+            )
+        return v
 
-        only_allowed_when(
-            maxsearchradius,
-            extrapolation_method,
-            ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox,
-        )
-        only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
+    @model_validator(mode="after")
+    def validate_factor(self):
+        quantity = self.quantity
+        if self.factor is not None and not str(quantity).startswith(ExtOldTracerQuantity.InitialTracer):
+            raise ValueError(f"FACTOR only allowed when QUANTITY starts with {ExtOldTracerQuantity.InitialTracer}")
+        return self
 
-        if factor.value is not None and not quantity.value.startswith(
-            ExtOldTracerQuantity.InitialTracer
-        ):
-            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
-            raise ValueError(error)
+    @model_validator(mode="after")
+    def validate_ifrctyp(self):
+        if self.ifrctyp is not None and self.quantity != ExtOldQuantity.FrictionCoefficient:
+            raise ValueError(f"IFRCTYP only allowed when QUANTITY is {ExtOldQuantity.FrictionCoefficient}")
+        return self
 
-        only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
-        only_allowed_when(averagingtype, method, ExtOldMethod.AveragingSpace)
-        only_allowed_when(relativesearchcellsize, method, ExtOldMethod.AveragingSpace)
-        only_allowed_when(extrapoltol, method, ExtOldMethod.InterpolateTime)
-        only_allowed_when(percentileminmax, method, ExtOldMethod.AveragingSpace)
-        only_allowed_when(
-            area, quantity, ExtOldQuantity.DischargeSalinityTemperatureSorSin
-        )
-        only_allowed_when(nummin, method, ExtOldMethod.AveragingSpace)
+    @model_validator(mode="after")
+    def validate_averagingtype(self):
+        # method = info.data.get("method")
+        if self.averagingtype is not None and self.method != ExtOldMethod.AveragingSpace:
+            raise ValueError(f"AVERAGINGTYPE only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+        return self
 
-        return values
+    @model_validator(mode="after")
+    def validate_relativesearchcellsize(self):
+        if self.relativesearchcellsize is not None and self.method != ExtOldMethod.AveragingSpace:
+            raise ValueError(f"RELATIVESEARCHCELLSIZE only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+        return self
 
-    @root_validator(pre=True)
-    def chooce_file_model(cls, values):
+    @model_validator(mode="after")
+    def validate_extrapoltol(self):
+        # method = info.data.get("method")
+        if self.extrapoltol is not None and self.method != ExtOldMethod.InterpolateTime:
+            raise ValueError("EXTRAPOLTOL only allowed when METHOD is 5")
+        return self
+
+    @model_validator(mode="after")
+    def validate_percentileminmax(self):
+        # method = info.data.get("method")
+        if self.percentileminmax is not None and self.method != ExtOldMethod.AveragingSpace:
+            raise ValueError(f"PERCENTILEMINMAX only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+        return self
+
+    @model_validator(mode="after")
+    def validate_area(self):
+        # quantity = info.data.get("quantity")
+        if self.area is not None and self.quantity != ExtOldQuantity.DischargeSalinityTemperatureSorSin:
+            raise ValueError(f"AREA only allowed when QUANTITY is {ExtOldQuantity.DischargeSalinityTemperatureSorSin}")
+        return self
+
+    @model_validator(mode="after")
+    def validate_nummin(self):
+        # method = info.data.get("method")
+        if self.nummin is not None and self.method != ExtOldMethod.AveragingSpace:
+            raise ValueError(f"NUMMIN only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+        return self
+
+    @field_validator("maxsearchradius")
+    def validate_maxsearchradius(cls, v, info):
+        if v is None:
+            return v
+        extrap = info.data.get("extrapolation_method")
+        extrapolation_method_value = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+        if extrap != extrapolation_method_value:
+            raise ValueError(
+                f"MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is {extrapolation_method_value}"
+            )
+        return v
+
+    @field_validator("value")
+    @classmethod
+    def validate_value(cls, v, info):
+        if v is None:
+            return v
+        method = info.data.get("method")
+        if method != ExtOldMethod.InterpolateSpace:
+            raise ValueError(f"VALUE only allowed when METHOD is {ExtOldMethod.InterpolateSpace} (InterpolateSpace)")
+        return v
+
+    @model_validator(mode="before")
+    @classmethod
+    def chooce_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Root-level validator to the right class for the filename parameter based on the filetype.
 
         The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
@@ -846,9 +869,22 @@ class ExtOldForcing(BaseModel):
             raw_path = values.get(filename_var_name)
             model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
 
-            values[filename_var_name] = model(raw_path)
+            if not isinstance(raw_path, model):
+                raw_path = model(raw_path)
+
+            values[filename_var_name] = raw_path
 
         return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_sourcemask(cls, data:Any) -> Any:
+        # filetype = info.data.get("file").filetype if info.data.get("file") else None
+        filetype = data.get("filetype")
+        sourcemask = data.get("sourcemask")
+        if sourcemask and filetype not in [ExtOldFileType.ArcInfo, ExtOldFileType.CurvilinearData]:
+            raise ValueError("SOURCEMASK only allowed when FILETYPE is 4 or 6")
+        return data
 
 
 class ExtOldModel(ParsableFileModel):
@@ -856,12 +892,16 @@ class ExtOldModel(ParsableFileModel):
     The overall external forcings model that contains the contents of one external forcings file (old format).
 
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefile`.
+
+    Attributes:
+        comment (List[str]):
+            The comments in the header of the external forcing file.
+        forcing (List[ExtOldForcing]):
+            The external forcing/QUANTITY blocks in the external forcing file.
     """
 
     comment: List[str] = Field(default=HEADER.splitlines()[1:])
-    """List[str]: The comments in the header of the external forcing file."""
     forcing: List[ExtOldForcing] = Field(default_factory=list)
-    """List[ExtOldForcing]: The external forcing/QUANTITY blocks in the external forcing file."""
 
     @classmethod
     def _ext(cls) -> str:
@@ -872,7 +912,7 @@ class ExtOldModel(ParsableFileModel):
         return "externalforcings"
 
     def dict(self, *args, **kwargs):
-        return dict(comment=self.comment, forcing=[dict(f) for f in self.forcing])
+        return dict(comment=self.comment, forcing=[f.model_dump() for f in self.forcing])
 
     @classmethod
     def _get_serializer(
