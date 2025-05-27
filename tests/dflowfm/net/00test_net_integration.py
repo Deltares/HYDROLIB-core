@@ -27,6 +27,7 @@ def test_add_short_connecting_branch():
         np.array([-25.0, -25.0, -25.0, 25.0, 25.0, 25.0, 0.0]),
     )
 
+
 def test_create_triangular():
 
     fmmodel = FMModel()
