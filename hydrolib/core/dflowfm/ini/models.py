@@ -306,7 +306,8 @@ class INIBasedModel(BaseModel, ABC):
                 if field_type != float and field_type != List[float]:
                     new_values[field_name] = value
                 else:
-                    new_values[field_name] = FortranScientificNotationConverter.convert(value)
+                    # If the field is not defined in the model, keep it as is
+                    new_values[field_name] = value
         else:
             new_values = values
 
