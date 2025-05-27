@@ -127,8 +127,8 @@ class TestXYNModel:
 
     def test_save_model(self):
         points = [
-            XYNPoint(x=1.1, y=2.2, n="randomName1"),
-            XYNPoint(x=3.3, y=4.4, n="randomName2"),
+            {"x": 1.1, "y": 2.2, "n": "randomName1"},
+            {"x": 3.3, "y": 4.4, "n": "randomName2"},
         ]
 
         model = XYNModel(points=points)
