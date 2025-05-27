@@ -1,5 +1,5 @@
 import inspect
-from typing import Dict, List, Literal
+from typing import Any, Dict, List, Literal
 
 import pytest
 from pydantic import ValidationError
@@ -49,6 +49,27 @@ class TestQuantityUnitPair:
 
 
 class TestTimeSeries:
+
+    def quantityunitpair(self, quantity, unit, verticalpositionindex=None):
+        return QuantityUnitPair(
+            quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
+        )
+
+    @pytest.fixture
+    def time_series_values(self) -> Dict[str, Any]:
+        return dict(
+            name="boundary_timeseries",
+            function="timeseries",
+            timeinterpolation=TimeInterpolation.block_to,
+            offset="1.23",
+            factor="2.34",
+            quantityunitpair=[
+                self.quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
+                self.quantityunitpair("dischargebnd", "m³/s"),
+            ],
+            datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
+        )
+
     def test_create_a_forcing_from_scratch(self, time_series_values):
         forcing = TimeSeries(**time_series_values)
 
