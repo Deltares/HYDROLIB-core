@@ -96,6 +96,10 @@ class Serializer:
             return Serializer._file_path_style_converter.convert_from_os_style(
                 value.filepath, save_settings.path_style
             )
+        if isinstance(value, dict) and "filepath" in value:
+            return Serializer._file_path_style_converter.convert_from_os_style(
+                value.get("filepath"), save_settings.path_style
+            )
 
         return str(value)
 
@@ -103,4 +107,4 @@ class Serializer:
     def _skip_field_serialization(cls, value: Any) -> str:
         return value is None or (
             isinstance(value, DiskOnlyFileModel) and value.filepath is None
-        )
+        ) or (isinstance(value, dict) and "filepath" in value and value["filepath"] is None)
