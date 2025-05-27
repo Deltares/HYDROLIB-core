@@ -59,7 +59,7 @@ class TestXYNParser:
 
         expected_result = {
             "points": [
-                {"x": "1.1", "y": "2.2", "n": "ObservationPoint 2D 01"},
+                {"x": 1.1, "y": 2.2, "n": "ObservationPoint 2D 01"},
             ]
         }
 
@@ -86,8 +86,8 @@ class TestXYNSerializer:
 
         data = {
             "points": [
-                XYNPoint(x=1.1, y=2.2, n="randomName"),
-                XYNPoint(x=3.3, y=4.4, n="randomName 2"),
+                {"x": 1.10, "y": 2.20, "n": "randomName"},
+                {"x": 3.30, "y": 4.40, "n": "randomName 2"},
             ]
         }
 
