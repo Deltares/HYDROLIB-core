@@ -112,7 +112,7 @@ class TestTimeSeries:
 
         document = parser.finalize()
         sec = document.sections[0].flatten()
-        forcing = TimeSeries.parse_obj(sec)
+        forcing = TimeSeries.model_validate(sec)
 
         assert forcing.name == "right01_0001"
         assert forcing.function == "timeseries"
