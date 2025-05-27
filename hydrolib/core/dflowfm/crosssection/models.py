@@ -10,8 +10,7 @@ from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
     UnknownKeywordErrorManager,
-    get_enum_validator,
-    get_from_subclass_defaults,
+    enum_value_parser,
     get_split_string_on_delimiter_validator,
     make_list_validator,
     validate_correct_length,
@@ -147,12 +146,15 @@ class CircleCrsDef(CrossSectionDefinition):
     frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
     frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
-
     @model_validator(mode="after")
     def check_friction(self):
         self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
         return self
+
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def validate_enum_frictiontype(cls, v):
+        return enum_value_parser(FrictionType)(v)
 
 class RectangleCrsDef(CrossSectionDefinition):
     """RectangleCrsDef.
@@ -194,12 +196,15 @@ class RectangleCrsDef(CrossSectionDefinition):
     frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
     frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
-
     @model_validator(mode="after")
     def check_friction(self):
         self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
         return self
+
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def validate_enum_frictiontype(cls, v):
+        return enum_value_parser(FrictionType)(v)
 
 
 class ZWRiverCrsDef(CrossSectionDefinition):
@@ -305,12 +310,15 @@ class ZWRiverCrsDef(CrossSectionDefinition):
         "frictiontypes",
     )
 
-    _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
-
     @model_validator(mode="after")
     def check_friction(self):
         self._check_friction_fields(self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id)
         return self
+
+    @field_validator("frictiontypes", mode="before")
+    @classmethod
+    def validate_enum_frictiontype(cls, v):
+        return enum_value_parser(FrictionType)(v)
 
     @model_validator(mode="after")
     def check_list_lengths(self):
@@ -399,12 +407,16 @@ class ZWCrsDef(CrossSectionDefinition):
         )
         return self
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
-
     @model_validator(mode="after")
     def check_friction(self):
         self._check_friction_fields(self.frictionid, self.frictiontype, self.frictionvalue, label=self.id)
         return self
+
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def validate_enum_frictiontype(cls, v):
+        return enum_value_parser(FrictionType)(v)
+
 
 class YZCrsDef(CrossSectionDefinition):
     """YZCrsDef.
@@ -488,12 +500,15 @@ class YZCrsDef(CrossSectionDefinition):
         "frictiontypes",
     )
 
-    _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
-
     @model_validator(mode="after")
     def check_friction(self):
         self._check_friction_fields(self.frictionids, self.frictiontypes, self.frictionvalues, label=self.id)
         return self
+
+    @field_validator("frictiontypes", mode="before")
+    @classmethod
+    def validate_enum_frictiontype(cls, v):
+        return enum_value_parser(FrictionType)(v)
 
     @model_validator(mode="after")
     def check_list_lengths_coordinates(self):

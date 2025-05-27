@@ -35,6 +35,28 @@ def get_split_string_on_delimiter_validator(*field_name: str):
 
     return field_validator(*field_name, mode="before")(split)
 
+def enum_value_parser(
+    enum: Type[Enum],
+    alternative_enum_values: Optional[Dict[str, List[str]]] = None,
+):
+    """Return a function that converts strings (and string lists) to Enum values."""
+    def parser(v):
+        if isinstance(v, list):
+            return [parser(item) for item in v]
+        if isinstance(v, enum):
+            return v
+        if isinstance(v, str):
+            for entry in enum:
+                if entry.value.lower() == v.lower():
+                    return entry
+                if (
+                        alternative_enum_values
+                        and (alts := alternative_enum_values.get(entry.value))
+                        and v.lower() in (alt.lower() for alt in alts)
+                ):
+                    return entry
+        raise ValueError(f"Invalid enum value: {v!r}. Expected one of: {[e.value for e in enum]}")
+    return parser
 
 def get_enum_validator(
     *field_name: str,
