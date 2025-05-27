@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.crosssection.models import (
     CircleCrsDef,
@@ -15,6 +15,12 @@ from hydrolib.core.dflowfm.crosssection.models import (
     ZWRiverCrsDef,
 )
 from hydrolib.core.dflowfm.friction.models import FrictionType
+from hydrolib.core.dflowfm.ini.util import (
+    LocationValidationConfiguration,
+    LocationValidationFieldNames,
+    validate_location_specification,
+
+)
 from tests.utils import (
     assert_files_equal,
     test_data_dir,
@@ -287,11 +293,11 @@ class TestCrossSectionLocation:
     def test_one_crosssection(self):
         """test whether a CrossLocModel can be created with one cross-section"""
         data = {
-            "id": 99,
-            "branchId": 9,
+            "id": "99",
+            "branchId": "9",
             "chainage": 403.089709,
             "shift": 0.0,
-            "definitionId": 99,
+            "definitionId": "99",
         }
         cross_section = CrossSection(**data)
 
@@ -354,7 +360,15 @@ class TestCrossSectionLocation:
     )
     def test_wrong_values_raises_valueerror(self, dict_values: dict):
         with pytest.raises(ValueError) as exc_err:
-            CrossSection.validate_that_location_specification_is_correct(dict_values)
+            validate_location_specification(
+                dict_values,
+                config=LocationValidationConfiguration(
+                    validate_node=False,
+                    validate_num_coordinates=False,
+                    validate_location_type=False,
+                ),
+                fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
+            )
         assert (
             str(exc_err.value) == "branchId and chainage or x and y should be provided"
         )
@@ -366,10 +380,16 @@ class TestCrossSectionLocation:
             x=42,
             y=24,
         )
-        return_value = CrossSection.validate_that_location_specification_is_correct(
-            test_dict
+
+        assert validate_location_specification(
+            test_dict,
+            config=LocationValidationConfiguration(
+                validate_node=False,
+                validate_num_coordinates=False,
+                validate_location_type=False,
+            ),
+            fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
-        assert return_value == test_dict
 
 
 class TestCrossSectionModel:

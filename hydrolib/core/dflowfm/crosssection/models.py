@@ -1,10 +1,8 @@
 """Cross section models for D-Flow FM."""
 
 import logging
-from typing import Dict, List, Literal, Optional
-
-from pydantic.v1 import Field, root_validator
-from pydantic.v1.class_validators import validator
+from typing import Annotated, List, Literal, Optional, Union, Dict
+from pydantic import Field, field_validator, model_validator, ValidationInfo
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -73,7 +71,7 @@ class CrossSectionDefinition(INIBasedModel):
 
     id: str = Field(alias="id")
     type: str = Field(alias="type")
-    thalweg: Optional[float]
+    thalweg: Optional[float] = None
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
@@ -87,35 +85,6 @@ class CrossSectionDefinition(INIBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    @validator("type", pre=True)
-    def _validate_type(cls, value):
-        return get_from_subclass_defaults(CrossSectionDefinition, "type", value)
-
-    @classmethod
-    def validate(cls, v):
-        """Initialize subclass based on the `type` field.
-
-        This field is compared to each `type` field of the derived models of `CrossSectionDefinition`.
-        The derived model with an equal crosssection definition type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known crosssection definition type.
-        """
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("type").default.lower()
-                    == v.get("type", "").lower()
-                ):
-                    v = c(**v)
-                    break
-            else:
-                raise ValueError(
-                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
-                )
-        return super().validate(v)
 
     @staticmethod
     def _get_friction_root_validator(
@@ -137,50 +106,29 @@ class CrossSectionDefinition(INIBasedModel):
         Returns:
             root_validator: to be embedded in the subclass that needs it.
         """
-
-        def validate_friction_specification(cls, values):
+        @model_validator(mode="after")
+        def validate_friction_specification(self, model):
             """Validate the friction specification.
 
             The actual validator function.
 
             Args:
-                cls: The subclass for which the root_validator is called.
-                values (dict): Dictionary of values to create a CrossSectionDefinition subclass.
+                cls:
+                    The subclass for which the root_validator is called.
+                model (dict):
+                    Dictionary of values to create a CrossSectionDefinition subclass.
             """
-            frictionid = values.get(frictionid_attr) or ""
-            frictiontype = values.get(frictiontype_attr) or ""
-            frictionvalue = values.get(frictionvalue_attr) or ""
+            frictionid = getattr(model, frictionid_attr) or None
+            frictiontype = getattr(model, frictiontype_attr) or None
+            frictionvalue = getattr(model, frictionvalue_attr) or None
 
-            if frictionid != "" and (frictiontype != "" or frictionvalue != ""):
+            if frictionid and (frictiontype or frictionvalue):
                 raise ValueError(
-                    f"Cross section has duplicate friction specification (both {frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
+                    "Cross section has duplicate friction specification (both "
+                    f"{frictionid_attr} and {frictiontype_attr}/{frictionvalue_attr})."
                 )
 
-            return values
-
-        return root_validator(allow_reuse=True)(validate_friction_specification)
-
-
-class CrossDefModel(INIModel):
-    """
-    The overall crosssection definition model that contains the contents of one crossdef file.
-
-    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile`.
-
-    Attributes:
-        general (CrossdefGeneral): `[General]` block with file metadata.
-        definition (List[CrossSectionDefinition]): List of `[Definition]` blocks for all cross sections.
-    """
-
-    general: CrossDefGeneral = CrossDefGeneral()
-    definition: List[CrossSectionDefinition] = []
-
-    _make_list = make_list_validator("definition")
-
-    @classmethod
-    def _filename(cls) -> str:
-        return "crsdef"
-
+            return self
 
 class CircleCrsDef(CrossSectionDefinition):
     """CircleCrsDef.
@@ -215,9 +163,9 @@ class CircleCrsDef(CrossSectionDefinition):
 
     type: Literal["circle"] = Field("circle")
     diameter: float
-    frictionid: Optional[str] = Field(alias="frictionId")
-    frictiontype: Optional[FrictionType] = Field(alias="frictionType")
-    frictionvalue: Optional[float] = Field(alias="frictionValue")
+    frictionid: Optional[str] = Field(None, alias="frictionId")
+    frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
+    frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionid", "frictiontype", "frictionvalue"
@@ -261,9 +209,9 @@ class RectangleCrsDef(CrossSectionDefinition):
     width: float
     height: float
     closed: bool = Field(True)
-    frictionid: Optional[str] = Field(alias="frictionId")
-    frictiontype: Optional[FrictionType] = Field(alias="frictionType")
-    frictionvalue: Optional[float] = Field(alias="frictionValue")
+    frictionid: Optional[str] = Field(None, alias="frictionId")
+    frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
+    frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionid", "frictiontype", "frictionvalue"
@@ -353,19 +301,17 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     numlevels: int = Field(alias="numLevels")
     levels: List[float]
     flowwidths: List[float] = Field(alias="flowWidths")
-    totalwidths: Optional[List[float]] = Field(alias="totalWidths")
-    leveecrestLevel: Optional[float] = Field(alias="leveeCrestlevel")
-    leveebaselevel: Optional[float] = Field(alias="leveeBaseLevel")
-    leveeflowarea: Optional[float] = Field(alias="leveeFlowArea")
-    leveetotalrea: Optional[float] = Field(alias="leveeTotalArea")
-    mainwidth: Optional[float] = Field(alias="mainWidth")
-    fp1width: Optional[float] = Field(alias="fp1Width")
-    fp2width: Optional[float] = Field(alias="fp2Width")
-    frictionids: Optional[List[str]] = Field(alias="frictionIds", delimiter=";")
-    frictiontypes: Optional[List[FrictionType]] = Field(
-        alias="frictionTypes", delimiter=";"
-    )
-    frictionvalues: Optional[List[float]] = Field(alias="frictionValues")
+    totalwidths: Optional[List[float]] = Field(None, alias="totalWidths")
+    leveecrestLevel: Optional[float] = Field(None, alias="leveeCrestlevel")
+    leveebaselevel: Optional[float] = Field(None, alias="leveeBaseLevel")
+    leveeflowarea: Optional[float] = Field(None, alias="leveeFlowArea")
+    leveetotalrea: Optional[float] = Field(None, alias="leveeTotalArea")
+    mainwidth: Optional[float] = Field(None, alias="mainWidth")
+    fp1width: Optional[float] = Field(None, alias="fp1Width")
+    fp2width: Optional[float] = Field(None, alias="fp2Width")
+    frictionids: Optional[List[str]] = Field(None, alias="frictionIds", delimiter=";")
+    frictiontypes: Optional[List[FrictionType]] = Field(None, alias="frictionTypes", delimiter=";")
+    frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "levels",
@@ -381,16 +327,17 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     )
     _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths(self):
         """Validate that the length of the levels, flowwidths and totalwidths fields are as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.__dict__,
             "levels",
             "flowwidths",
             "totalwidths",
             length_name="numlevels",
         )
+        return self
 
 
 class ZWCrsDef(CrossSectionDefinition):
@@ -444,10 +391,10 @@ class ZWCrsDef(CrossSectionDefinition):
     numlevels: int = Field(alias="numLevels")
     levels: List[float]
     flowwidths: List[float] = Field(alias="flowWidths")
-    totalwidths: Optional[List[float]] = Field(alias="totalWidths")
-    frictionid: Optional[str] = Field(alias="frictionId")
-    frictiontype: Optional[FrictionType] = Field(alias="frictionType")
-    frictionvalue: Optional[float] = Field(alias="frictionValue")
+    totalwidths: Optional[List[float]] = Field(None, alias="totalWidths")
+    frictionid: Optional[str] = Field(None, alias="frictionId")
+    frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
+    frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "levels",
@@ -455,16 +402,17 @@ class ZWCrsDef(CrossSectionDefinition):
         "totalwidths",
     )
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths(self):
         """Validate that the length of the levels, flowwidths and totalwidths fields are as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.__dict__,
             "levels",
             "flowwidths",
             "totalwidths",
             length_name="numlevels",
         )
+        return self
 
     _friction_validator = CrossSectionDefinition._get_friction_root_validator(
         "frictionid", "frictiontype", "frictionvalue"
@@ -534,18 +482,16 @@ class YZCrsDef(CrossSectionDefinition):
     comments: Comments = Comments()
 
     type: Literal["yz"] = Field("yz")
-    singlevaluedz: Optional[bool] = Field(alias="singleValuedZ")
+    singlevaluedz: Optional[bool] = Field(None, alias="singleValuedZ")
     yzcount: int = Field(alias="yzCount")
     ycoordinates: List[float] = Field(alias="yCoordinates")
     zcoordinates: List[float] = Field(alias="zCoordinates")
     conveyance: Optional[str] = Field("segmented")
     sectioncount: Optional[int] = Field(1, alias="sectionCount")
-    frictionpositions: Optional[List[float]] = Field(alias="frictionPositions")
-    frictionids: Optional[List[str]] = Field(alias="frictionIds", delimiter=";")
-    frictiontypes: Optional[List[FrictionType]] = Field(
-        alias="frictionTypes", delimiter=";"
-    )
-    frictionvalues: Optional[List[float]] = Field(alias="frictionValues")
+    frictionpositions: Optional[List[float]] = Field(None, alias="frictionPositions")
+    frictionids: Optional[List[str]] = Field(None, alias="frictionIds", delimiter=";")
+    frictiontypes: Optional[List[FrictionType]] = Field(None, alias="frictionTypes", delimiter=";")
+    frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "ycoordinates",
@@ -556,41 +502,44 @@ class YZCrsDef(CrossSectionDefinition):
         "frictiontypes",
     )
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths_coordinates(cls, values):
+    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
+        "frictionids", "frictiontypes", "frictionvalues"
+    )
+    _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
+
+    @model_validator(mode="after")
+    def check_list_lengths_coordinates(self):
         """Validate that the length of the ycoordinates and zcoordinates fields are as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.__dict__,
             "ycoordinates",
             "zcoordinates",
             length_name="yzcount",
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths_friction(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths_friction(self):
         """Validate that the length of the frictionids, frictiontypes and frictionvalues field are as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.__dict__,
             "frictionids",
             "frictiontypes",
             "frictionvalues",
             length_name="sectioncount",
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def check_list_length_frictionpositions(cls, values):
+    @model_validator(mode="after")
+    def check_list_length_frictionpositions(self):
         """Validate that the length of the frictionpositions field is as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.__dict__,
             "frictionpositions",
             length_name="sectioncount",
             length_incr=1,  # 1 extra for frictionpositions
         )
-
-    _friction_validator = CrossSectionDefinition._get_friction_root_validator(
-        "frictionids", "frictiontypes", "frictionvalues"
-    )
-    _frictiontype_validator = get_enum_validator("frictiontypes", enum=FrictionType)
+        return self
 
 
 class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
@@ -636,10 +585,8 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     comments: Comments = Comments()
 
     type: Literal["xyz"] = Field("xyz")
-    branchid: Optional[str] = Field(alias="branchId")
-    yzcount: Optional[int] = Field(
-        alias="yzCount"
-    )  # Trick to not inherit parent's yzcount required field.
+    branchid: Optional[str] = Field(None, alias="branchId")
+    yzcount: Optional[int] = Field(None, alias="yzCount")  # Trick to not inherit parent's yzcount required field.
     xyzcount: int = Field(alias="xyzCount")
     xcoordinates: List[float] = Field(alias="xCoordinates")
 
@@ -647,9 +594,9 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         "xcoordinates",
     )
 
-    @validator("xyzcount")
+    @field_validator("xyzcount")
     @classmethod
-    def validate_xyzcount_without_yzcount(cls, field_value: int, values: dict) -> int:
+    def validate_xyzcount_without_yzcount(cls, field_value: int, values: ValidationInfo) -> int:
         """Validate the xyzcount field.
 
         Validates whether this XYZCrsDef does have attribute xyzcount,
@@ -666,7 +613,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
             int: The value given for xyzcount.
         """
         # Retrieve the algorithm value (if not found use 0).
-        yzcount_value = values.get("yzcount")
+        yzcount_value = values.data.get("yzcount")
         if field_value is not None and yzcount_value is not None:
             # yzcount should not be set, when xyzcount is set.
             raise ValueError(
@@ -674,16 +621,17 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
             )
         return field_value
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths_coordinates(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths_coordinates(self):
         """Validate that the length of the xcoordinates, ycoordinates and zcoordinates field are as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.__dict__,
             "xcoordinates",
             "ycoordinates",
             "zcoordinates",
             length_name="xyzcount",
         )
+        return self
 
 
 class CrossSection(INIBasedModel):
@@ -725,7 +673,6 @@ class CrossSection(INIBasedModel):
         )
 
     comments: Comments = Comments()
-
     _header: Literal["CrossSection"] = "CrossSection"
     id: str = Field(alias="id")
 
@@ -738,11 +685,12 @@ class CrossSection(INIBasedModel):
     shift: Optional[float] = Field(0.0)
     definitionid: str = Field(alias="definitionId")
 
-    @root_validator(allow_reuse=True)
-    def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+    @model_validator(mode="after")
+    def validate_that_location_specification_is_correct(self):
         """Validate that the correct location specification is given."""
-        return validate_location_specification(
-            values,
+
+        validate_location_specification(
+            self.__dict__,
             config=LocationValidationConfiguration(
                 validate_node=False,
                 validate_num_coordinates=False,
@@ -750,6 +698,7 @@ class CrossSection(INIBasedModel):
             ),
             fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
+        return self
 
 
 class CrossLocModel(INIModel):
@@ -821,7 +770,7 @@ class CrossLocModel(INIModel):
     def _filename(cls) -> str:
         return "crsloc"
 
-    @validator("crosssection", pre=True, always=True)
+    @field_validator("crosssection", mode="before")
     def ensure_crosssection_is_list(cls, v):
         """Converting the crosssection to a list if it is not already a list."""
         if isinstance(v, list):
@@ -829,3 +778,36 @@ class CrossLocModel(INIModel):
         elif v is None:
             return []
         return [v]
+
+
+CrossSectionDefinitionUnion = Annotated[
+    Union[
+        CircleCrsDef,
+        RectangleCrsDef,
+        ZWRiverCrsDef,
+        ZWCrsDef,
+        YZCrsDef,
+        XYZCrsDef,
+    ],
+    Field(discriminator="type")
+]
+
+class CrossDefModel(INIModel):
+    """
+    The overall crosssection definition model that contains the contents of one crossdef file.
+
+    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.crossdeffile`.
+
+    Attributes:
+        general (CrossdefGeneral): `[General]` block with file metadata.
+        definition (List[CrossSectionDefinition]): List of `[Definition]` blocks for all cross sections.
+    """
+
+    general: CrossDefGeneral = CrossDefGeneral()
+    definition: List[CrossSectionDefinitionUnion] = []
+
+    _make_list = make_list_validator("definition")
+
+    @classmethod
+    def _filename(cls) -> str:
+        return "crsdef"

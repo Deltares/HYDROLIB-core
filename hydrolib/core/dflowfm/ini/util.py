@@ -140,8 +140,6 @@ def validate_correct_length(
                 f"List {field_name} cannot be missing if {length_name} is given."
             )
 
-        return field
-
     length = values.get(length_name)
     if length is None:
         # length attribute not present, possibly defer validation to a subclass.
@@ -151,13 +149,8 @@ def validate_correct_length(
 
     for field_name in field_names:
         field = values.get(field_name)
-        values[field_name] = _validate_listfield_length(
-            field_name,
-            field,
-            requiredlength,
-        )
+        _validate_listfield_length(field_name, field, requiredlength)
 
-    return values
 
 
 def validate_forbidden_fields(
@@ -469,9 +462,12 @@ def validate_location_specification(
     Validates for the locationType for nodeId and branchId.
 
     Args:
-        values (Dict): Dictionary of object's validated fields.
-        config (LocationValidationConfiguration, optional): Configuration for the location validation. Default is None.
-        field (LocationValidationFieldNames, optional): Fields names that should be used for the location validation. Default is None.
+        values (Dict):
+            Dictionary of object's validated fields.
+        config (LocationValidationConfiguration, optional):
+            Configuration for the location validation. Default is None.
+        fields (LocationValidationFieldNames, optional):
+            Fields names that should be used for the location validation. Default is None.
 
     Raises:
         ValueError: When exactly one of the following combinations were not given:
