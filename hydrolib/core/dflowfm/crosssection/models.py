@@ -606,14 +606,18 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         but not the parent class's yzcount.
 
         Args:
-            field_value (Optional[Path]): Value given for xyzcount.
-            values (dict): Dictionary of values already validated.
+            field_value (Optional[Path]):
+                Value given for xyzcount.
+            values (dict):
+                Dictionary of values already validated.
 
         Raises:
-            ValueError: When yzcount is present.
+            ValueError:
+                When yzcount is present.
 
         Returns:
-            int: The value given for xyzcount.
+            int:
+                The value given for xyzcount.
         """
         # Retrieve the algorithm value (if not found use 0).
         yzcount_value = values.data.get("yzcount")
@@ -691,7 +695,6 @@ class CrossSection(INIBasedModel):
     @model_validator(mode="after")
     def validate_that_location_specification_is_correct(self):
         """Validate that the correct location specification is given."""
-
         validate_location_specification(
             self.__dict__,
             config=LocationValidationConfiguration(
