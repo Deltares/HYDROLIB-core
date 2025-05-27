@@ -59,7 +59,7 @@ class TestXYNParser:
 
         expected_result = {
             "points": [
-                {"x": 1.1, "y": 2.2, "n": "ObservationPoint 2D 01"},
+                {"x": "1.1", "y": "2.2", "n": "ObservationPoint 2D 01"},
             ]
         }
 
