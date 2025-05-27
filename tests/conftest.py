@@ -1,14 +1,7 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 import pytest
-
-from hydrolib.core.dflowfm.bc.models import (
-    QuantityUnitPair,
-    TimeInterpolation,
-    VerticalInterpolation,
-    VerticalPositionType,
-)
 
 
 @pytest.fixture
@@ -220,25 +213,3 @@ def parameter_quantities() -> List[str]:
         "wavesignificantheight",
         "internaltidesfrictioncoefficient",
     ]
-
-
-def quantityunitpair(quantity, unit, verticalpositionindex=None):
-    return QuantityUnitPair(
-        quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
-    )
-
-
-@pytest.fixture
-def time_series_values() -> Dict[str, Any]:
-    return dict(
-        name="boundary_timeseries",
-        function="timeseries",
-        timeinterpolation=TimeInterpolation.block_to,
-        offset="1.23",
-        factor="2.34",
-        quantityunitpair=[
-            quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
-            quantityunitpair("dischargebnd", "m³/s"),
-        ],
-        datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
-    )
