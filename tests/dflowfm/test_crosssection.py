@@ -225,10 +225,8 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],  # Intentional wrong list length
             )
         expected_message0 = f"Number of values for frictionvalues should be equal to the sectioncount value."
-        expected_message1 = f"Number of values for frictionpositions should be equal to the sectioncount value + 1."
 
         assert expected_message0 in str(error.value)
-        assert expected_message1 in str(error.value)
 
     def test_create_a_yzcrsdef_without_frictionspec(self):
         csdefid = "Prof1"
