@@ -58,7 +58,8 @@ jobs:
            tests/dflowfm/test_xyn.py  \
            tests/dflowfm/test_xyz.py  \
            tests/dflowfm/test_crosssection.py \
-           tests/dflowfm/extold
+           tests/dflowfm/extold \
+           tests\dflowfm\net
 
       - name: Autoformat code if the check fails
         if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.python-version == 3.13) }}
