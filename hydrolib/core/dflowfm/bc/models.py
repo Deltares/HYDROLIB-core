@@ -13,6 +13,7 @@ import logging
 import re
 from pathlib import Path
 from typing import (
+    Annotated,
     Any,
     Callable,
     ClassVar,
@@ -29,6 +30,7 @@ from pydantic import (
     ConfigDict,
     Field,
     GetCoreSchemaHandler,
+    ValidationInfo,
     field_validator,
     model_validator,
 )
@@ -326,38 +328,6 @@ class ForcingBase(DataBlockINIBasedModel):
 
         raise ValueError("Number of quantities should be equal to number of units")
 
-    @field_validator("function", mode="before")
-    def _set_function(cls, value):
-        return get_from_subclass_defaults(ForcingBase, "function", value)
-
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `function` field.
-        This field is compared to each `function` field of the derived models of `ForcingBase`
-        or models derived from derived models.
-        The derived model with an equal function type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known structure type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            function_string = v.get("function", "").lower()
-            function_type = get_type_based_on_subclass_default_value(
-                cls, "function", function_string
-            )
-
-            if function_type is not None:
-                return function_type(**v)
-
-            else:
-                raise ValueError(
-                    f"Function of {cls.__name__} with name={v.get('name', '')} and function={v.get('function', '')} is not recognized."
-                )
-        return v
-
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
@@ -583,9 +553,9 @@ class VectorForcingBase(ForcingBase):
 
         return valid
 
-    @field_validator("function", mode="before")
-    def _set_function(cls, value):
-        return get_from_subclass_defaults(VectorForcingBase, "function", value)
+    # @field_validator("function", mode="before")
+    # def _set_function(cls, value):
+    #     return get_from_subclass_defaults(VectorForcingBase, "function", value)
 
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:
@@ -778,7 +748,17 @@ class T3D(VectorForcingBase):
         "vertpositionindex": ["vertical_position"],
     }
 
-    @model_validator(mode="before")
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        schema = super().__get_pydantic_core_schema__(source_type, handler)
+        return core_schema.no_info_before_validator_function(
+            cls.rename_keys,  # this is called BEFORE validation
+            schema,
+        )
+
+    @classmethod
     def rename_keys(cls, values: Dict) -> Dict:
         """Renames some old keywords to the currently supported keywords."""
         return rename_keys_for_backwards_compatibility(values, cls._keys_to_rename)
@@ -974,7 +954,16 @@ class ForcingGeneral(INIGeneral):
 
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
-
+FORCINGS = Union[
+    TimeSeries,
+    Harmonic,
+    Astronomic,
+    HarmonicCorrection,
+    AstronomicCorrection,
+    T3D,
+    QHTable,
+    Constant,
+]
 class ForcingModel(INIModel):
     """
     The overall model that contains the contents of one .bc forcings file.
@@ -1116,7 +1105,9 @@ class ForcingModel(INIModel):
     general: ForcingGeneral = ForcingGeneral()
     """ForcingGeneral: `[General]` block with file metadata."""
 
-    forcing: List[ForcingBase] = Field(default_factory=list)
+    forcing: list[Annotated[FORCINGS, Field(discriminator="function")]] = Field(
+        default_factory=list
+    )
     """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
     definitions in a single .bc file. Actual data is stored in
     forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel.datablock]."""
@@ -1128,6 +1119,28 @@ class ForcingModel(INIModel):
             section_indent=0, property_indent=0, datablock_indent=0
         )
     )
+
+    @field_validator("forcing", mode="before")
+    def _validate_forcing_case_insensitive(
+        cls, values: List[Dict]
+    ) -> List[ForcingBase]:
+        """
+        Validate and convert forcing definitions to ForcingBase subclasses.
+
+        Args:
+            values (List[Dict]): List of forcing definitions.
+
+        Returns:
+            List[ForcingBase]: List of validated and converted forcing definitions.
+        """
+        for v in values:
+            if (
+                isinstance(v, dict)
+                and "function" in v
+                and isinstance(v["function"], str)
+            ):
+                v["function"] = v["function"].lower()
+        return values
 
     @classmethod
     def _ext(cls) -> str:
