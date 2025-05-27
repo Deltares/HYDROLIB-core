@@ -737,22 +737,28 @@ class ExtOldForcing(BaseModel):
 
         return value
 
-
     @model_validator(mode="after")
     def validate_varname(self):
         if self.varname and self.filetype != ExtOldFileType.NetCDFGridData:
-            raise ValueError("VARNAME only allowed when FILETYPE is 11 (NetCDFGridData)")
+            raise ValueError(
+                "VARNAME only allowed when FILETYPE is 11 (NetCDFGridData)"
+            )
         return self
 
     @field_validator("extrapolation_method")
     @classmethod
     def validate_extrapolation_method(cls, v, info):
         method = info.data.get("method")
-        valid_extrapolation_method = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
-        available_extrapolation_methods = [ExtOldMethod.InterpolateTimeAndSpaceSaveWeights, ExtOldMethod.Obsolete]
+        valid_extrapolation_method = (
+            ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+        )
+        available_extrapolation_methods = [
+            ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            ExtOldMethod.Obsolete,
+        ]
         if (
-                v == valid_extrapolation_method
-                and method not in available_extrapolation_methods
+            v == valid_extrapolation_method
+            and method not in available_extrapolation_methods
         ):
             raise ValueError(
                 f"EXTRAPOLATION_METHOD only allowed to be {valid_extrapolation_method} when METHOD is "
@@ -763,27 +769,46 @@ class ExtOldForcing(BaseModel):
     @model_validator(mode="after")
     def validate_factor(self):
         quantity = self.quantity
-        if self.factor is not None and not str(quantity).startswith(ExtOldTracerQuantity.InitialTracer):
-            raise ValueError(f"FACTOR only allowed when QUANTITY starts with {ExtOldTracerQuantity.InitialTracer}")
+        if self.factor is not None and not str(quantity).startswith(
+            ExtOldTracerQuantity.InitialTracer
+        ):
+            raise ValueError(
+                f"FACTOR only allowed when QUANTITY starts with {ExtOldTracerQuantity.InitialTracer}"
+            )
         return self
 
     @model_validator(mode="after")
     def validate_ifrctyp(self):
-        if self.ifrctyp is not None and self.quantity != ExtOldQuantity.FrictionCoefficient:
-            raise ValueError(f"IFRCTYP only allowed when QUANTITY is {ExtOldQuantity.FrictionCoefficient}")
+        if (
+            self.ifrctyp is not None
+            and self.quantity != ExtOldQuantity.FrictionCoefficient
+        ):
+            raise ValueError(
+                f"IFRCTYP only allowed when QUANTITY is {ExtOldQuantity.FrictionCoefficient}"
+            )
         return self
 
     @model_validator(mode="after")
     def validate_averagingtype(self):
         # method = info.data.get("method")
-        if self.averagingtype is not None and self.method != ExtOldMethod.AveragingSpace:
-            raise ValueError(f"AVERAGINGTYPE only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+        if (
+            self.averagingtype is not None
+            and self.method != ExtOldMethod.AveragingSpace
+        ):
+            raise ValueError(
+                f"AVERAGINGTYPE only allowed when METHOD is {ExtOldMethod.AveragingSpace}"
+            )
         return self
 
     @model_validator(mode="after")
     def validate_relativesearchcellsize(self):
-        if self.relativesearchcellsize is not None and self.method != ExtOldMethod.AveragingSpace:
-            raise ValueError(f"RELATIVESEARCHCELLSIZE only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+        if (
+            self.relativesearchcellsize is not None
+            and self.method != ExtOldMethod.AveragingSpace
+        ):
+            raise ValueError(
+                f"RELATIVESEARCHCELLSIZE only allowed when METHOD is {ExtOldMethod.AveragingSpace}"
+            )
         return self
 
     @model_validator(mode="after")
@@ -796,22 +821,34 @@ class ExtOldForcing(BaseModel):
     @model_validator(mode="after")
     def validate_percentileminmax(self):
         # method = info.data.get("method")
-        if self.percentileminmax is not None and self.method != ExtOldMethod.AveragingSpace:
-            raise ValueError(f"PERCENTILEMINMAX only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+        if (
+            self.percentileminmax is not None
+            and self.method != ExtOldMethod.AveragingSpace
+        ):
+            raise ValueError(
+                f"PERCENTILEMINMAX only allowed when METHOD is {ExtOldMethod.AveragingSpace}"
+            )
         return self
 
     @model_validator(mode="after")
     def validate_area(self):
         # quantity = info.data.get("quantity")
-        if self.area is not None and self.quantity != ExtOldQuantity.DischargeSalinityTemperatureSorSin:
-            raise ValueError(f"AREA only allowed when QUANTITY is {ExtOldQuantity.DischargeSalinityTemperatureSorSin}")
+        if (
+            self.area is not None
+            and self.quantity != ExtOldQuantity.DischargeSalinityTemperatureSorSin
+        ):
+            raise ValueError(
+                f"AREA only allowed when QUANTITY is {ExtOldQuantity.DischargeSalinityTemperatureSorSin}"
+            )
         return self
 
     @model_validator(mode="after")
     def validate_nummin(self):
         # method = info.data.get("method")
         if self.nummin is not None and self.method != ExtOldMethod.AveragingSpace:
-            raise ValueError(f"NUMMIN only allowed when METHOD is {ExtOldMethod.AveragingSpace}")
+            raise ValueError(
+                f"NUMMIN only allowed when METHOD is {ExtOldMethod.AveragingSpace}"
+            )
         return self
 
     @field_validator("maxsearchradius")
@@ -819,7 +856,9 @@ class ExtOldForcing(BaseModel):
         if v is None:
             return v
         extrap = info.data.get("extrapolation_method")
-        extrapolation_method_value = ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+        extrapolation_method_value = (
+            ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
+        )
         if extrap != extrapolation_method_value:
             raise ValueError(
                 f"MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is {extrapolation_method_value}"
@@ -833,7 +872,9 @@ class ExtOldForcing(BaseModel):
             return v
         method = info.data.get("method")
         if method != ExtOldMethod.InterpolateSpace:
-            raise ValueError(f"VALUE only allowed when METHOD is {ExtOldMethod.InterpolateSpace} (InterpolateSpace)")
+            raise ValueError(
+                f"VALUE only allowed when METHOD is {ExtOldMethod.InterpolateSpace} (InterpolateSpace)"
+            )
         return v
 
     @model_validator(mode="before")
@@ -878,7 +919,7 @@ class ExtOldForcing(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_sourcemask(cls, data:Any) -> Any:
+    def validate_sourcemask(cls, data: Any) -> Any:
         filetype = data.get("filetype")
         sourcemask = data.get("sourcemask")
 
@@ -887,7 +928,10 @@ class ExtOldForcing(BaseModel):
             data["sourcemask"] = DiskOnlyFileModel(sourcemask)
             sourcemask = data["sourcemask"]
 
-        if sourcemask and filetype not in [ExtOldFileType.ArcInfo, ExtOldFileType.CurvilinearData]:
+        if sourcemask and filetype not in [
+            ExtOldFileType.ArcInfo,
+            ExtOldFileType.CurvilinearData,
+        ]:
             raise ValueError("SOURCEMASK only allowed when FILETYPE is 4 or 6")
         return data
 
@@ -917,7 +961,9 @@ class ExtOldModel(ParsableFileModel):
         return "externalforcings"
 
     def dict(self, *args, **kwargs):
-        return dict(comment=self.comment, forcing=[f.model_dump() for f in self.forcing])
+        return dict(
+            comment=self.comment, forcing=[f.model_dump() for f in self.forcing]
+        )
 
     @classmethod
     def _get_serializer(

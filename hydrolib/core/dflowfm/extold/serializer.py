@@ -105,6 +105,12 @@ class Serializer:
 
     @classmethod
     def _skip_field_serialization(cls, value: Any) -> str:
-        return value is None or (
-            isinstance(value, DiskOnlyFileModel) and value.filepath is None
-        ) or (isinstance(value, dict) and "filepath" in value and value["filepath"] is None)
+        return (
+            value is None
+            or (isinstance(value, DiskOnlyFileModel) and value.filepath is None)
+            or (
+                isinstance(value, dict)
+                and "filepath" in value
+                and value["filepath"] is None
+            )
+        )
