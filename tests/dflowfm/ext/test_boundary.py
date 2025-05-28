@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.ext.models import Boundary
 
 
 def test_existing_file():
+    """Test creation of Boundary with an existing file and default values."""
     polyline = "tests/data/input/boundary-conditions/tfl_01.pli"
     data = {
         "quantity": "waterlevelbnd",
@@ -41,10 +42,11 @@ def test_given_args_expected_values():
     created_boundary = Boundary(**dict_values)
 
     # 3. Verify boundary values as expected.
-    created_boundary_dict = created_boundary.dict()
+    created_boundary_dict = created_boundary.model_dump()
 
     compare_data = dict(dict_values)
     expected_location_path = compare_data.pop("locationfile")
+    compare_data["forcingfile"] = compare_data["forcingfile"].model_dump()
 
     for key, value in compare_data.items():
         assert created_boundary_dict[key] == value
@@ -64,7 +66,7 @@ def test_given_args_as_alias_expected_values():
     }
 
     created_boundary = Boundary(**dict_values)
-    boundary_as_dict = created_boundary.dict()
+    boundary_as_dict = created_boundary.model_dump()
     # 3. Verify boundary values as expected.
     assert boundary_as_dict["quantity"] == dict_values["quantity"]
     assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
@@ -164,10 +166,9 @@ class TestValidateFromCtor:
         expected_locationfile = test_values.pop("locationfile", None)
 
         for key, value in test_values.items():
-            if key == "forcing_file":
-                value = value.dict()
-            assert created_boundary.dict()[key] == value
+            assert created_boundary.model_dump()[key] == value
 
         assert (
-            created_boundary.dict()["locationfile"]["filepath"] == expected_locationfile
+            created_boundary.model_dump()["locationfile"]["filepath"]
+            == expected_locationfile
         )
