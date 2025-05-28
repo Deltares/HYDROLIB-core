@@ -51,7 +51,7 @@ class Boundary(INIBasedModel):
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
-    forcingfile: Union[ForcingModel, List[ForcingModel]] = Field(alias="forcingFile")
+    forcingfile: List[ForcingModel] = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
     returntime: Optional[float] = Field(None, alias="returnTime")
@@ -67,6 +67,15 @@ class Boundary(INIBasedModel):
         # Convert string to DiskOnlyFileModel if needed
         if isinstance(file_location, Union[str, Path]):
             data["locationfile"] = DiskOnlyFileModel(file_location)
+        return data
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_forcingfile(cls, data: Any) -> Any:
+        """Validates the forcingfile field to ensure it is a list of ForcingModel."""
+        forcing_file = data.get("forcingfile")
+        if not isinstance(forcing_file, list):
+            data["forcingfile"] = [forcing_file]
         return data
 
     @classmethod
