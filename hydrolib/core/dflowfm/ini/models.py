@@ -300,7 +300,11 @@ class INIBasedModel(BaseModel, ABC):
 
     @classmethod
     def preprocess_input(cls, values: dict) -> dict:
-        """Convert Fortran-style scientific notation to Python float."""
+        """Pre-process input values for the model.
+
+        The preprocess_input method is called before validation and triggers the following actions:
+            - Convert Fortran-style scientific notation to Python float.
+        """
         if isinstance(values, dict):
             new_values = FortranScientificNotationConverter.convert_fields(values, cls.model_fields)
         else:
