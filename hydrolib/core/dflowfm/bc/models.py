@@ -950,6 +950,7 @@ class ForcingGeneral(INIGeneral):
 
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
+
 FORCINGS = Union[
     TimeSeries,
     Harmonic,
@@ -960,6 +961,8 @@ FORCINGS = Union[
     QHTable,
     Constant,
 ]
+
+
 class ForcingModel(INIModel):
     """
     The overall model that contains the contents of one .bc forcings file.
