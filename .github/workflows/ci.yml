@@ -47,7 +47,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          poetry run pytest -vvv tests/base tests/dflowfm/ini tests/dflowfm/test_friction.py tests/dflowfm/test_cmp.py tests/dflowfm/polyfile tests/dflowfm/t3d tests/dflowfm/test_tim.py tests/dflowfm/test_tim.py tests/dflowfm/test_xyn.py tests/dflowfm/test_xyz.py tests/dflowfm/test_crosssection.py tests/dflowfm/extold tests\dflowfm\net
+          poetry run pytest -vvv tests/base tests/dflowfm/ini tests/dflowfm/test_friction.py tests/dflowfm/test_cmp.py tests/dflowfm/polyfile tests/dflowfm/t3d tests/dflowfm/test_tim.py tests/dflowfm/test_tim.py tests/dflowfm/test_xyn.py tests/dflowfm/test_xyz.py tests/dflowfm/test_crosssection.py tests/dflowfm/extold tests/dflowfm/net
 
       - name: Autoformat code if the check fails
         if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.python-version == 3.13) }}
