@@ -1,12 +1,14 @@
-import pytest
 import unittest
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from hydrolib.core.base.utils import (
     FileChecksumCalculator,
     FilePathStyleConverter,
+    FortranScientificNotationConverter,
     FortranUtils,
     OperatingSystem,
     PathStyle,
@@ -18,7 +20,6 @@ from hydrolib.core.base.utils import (
     str_is_empty_or_none,
     to_key,
     to_list,
-    FortranScientificNotationConverter
 )
 
 
@@ -542,33 +543,44 @@ class Test:
         def __init__(self, annotation):
             self.annotation = annotation
 
-    @pytest.mark.parametrize("input_values,field_definitions,expected_output", [
-        (
+    @pytest.mark.parametrize(
+        "input_values,field_definitions,expected_output",
+        [
+            (
                 {"a": "1.23D+03", "b": "text", "c": [1.0, "2.34D+02"]},
-                {"a": MockField(float), "b": MockField(str), "c": MockField(list[float])},
+                {
+                    "a": MockField(float),
+                    "b": MockField(str),
+                    "c": MockField(list[float]),
+                },
                 {"a": "1.23e+03", "b": "text", "c": [1.0, "2.34e+02"]},
-        ),
-        (
+            ),
+            (
                 {"a": "1.0E+02"},
                 {"a": MockField(float)},
                 {"a": "1.0E+02"},
-        ),
-        (
+            ),
+            (
                 {"a": ["1.0D+01", "2.0D+02"]},
                 {"a": MockField(list[float])},
                 {"a": ["1.0e+01", "2.0e+02"]},
-        ),
-        (
+            ),
+            (
                 {"a": "value"},
                 {},
                 {"a": "value"},
-        ),
-        (
+            ),
+            (
                 {"a": "value"},
                 {"a": MockField(str)},
                 {"a": "value"},
-        ),
-    ])
-    def test_convert_fortran_notation_fields(self, input_values, field_definitions, expected_output):
-        result = FortranScientificNotationConverter.convert_fields(input_values, field_definitions)
+            ),
+        ],
+    )
+    def test_convert_fortran_notation_fields(
+        self, input_values, field_definitions, expected_output
+    ):
+        result = FortranScientificNotationConverter.convert_fields(
+            input_values, field_definitions
+        )
         assert result == expected_output

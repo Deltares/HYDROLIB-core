@@ -6,8 +6,8 @@ from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 
-from strenum import StrEnum
 from pydantic.fields import FieldInfo
+from strenum import StrEnum
 
 SCIENTIFIC_NOTATION_PATTERN = r"([\d.]+)([dD])([+-]?\d{1,3})"
 # matches a float: 1d9, 1D-3, 1.D+4, etc.
@@ -15,7 +15,14 @@ SCIENTIFIC_NOTATION_REGEX = re.compile(SCIENTIFIC_NOTATION_PATTERN)
 
 PYTHON_STYLES = r"\1e\3"
 
-valid_types = (float, list[float], List[float], Optional[float], Optional[List[float]], Optional[list[float]])
+valid_types = (
+    float,
+    list[float],
+    List[float],
+    Optional[float],
+    Optional[List[float]],
+    Optional[list[float]],
+)
 
 
 def to_key(string: str) -> str:
