@@ -297,6 +297,7 @@ class INIBasedModel(BaseModel, ABC):
 
     @classmethod
     def preprocess_input(cls, values: dict) -> dict:
+        """Convert Fortran-style scientific notation to Python float."""
         if isinstance(values, dict):
             new_values = {}
             for field_name, value in values.items():
