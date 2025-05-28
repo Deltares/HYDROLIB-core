@@ -59,14 +59,18 @@ class Boundary(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @model_validator(mode="before")
+    @field_validator("forcingfile", mode="before")
     @classmethod
     def validate_forcingfile(cls, data: Any) -> Any:
-        """Validates the forcingfile field to ensure it is a list of ForcingModel."""
-        forcing_file = data.get("forcingfile") or data.get("forcingFile")
-        data.pop("forcingFile", None)  # Remove alias if present
-        if not isinstance(forcing_file, list):
-            data["forcingfile"] = [forcing_file]
+        if not isinstance(data, list):
+            data = [data]
+        for i, forcing in enumerate(data):
+            if isinstance(forcing, (str, Path)):
+                data[i] = ForcingModel(filepath=forcing)
+            elif not isinstance(forcing, ForcingModel):
+                raise TypeError(
+                    "Forcing file must be a ForcingModel or a path to a forcing file."
+                )
         return data
 
     @classmethod
