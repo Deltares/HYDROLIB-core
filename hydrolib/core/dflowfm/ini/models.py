@@ -284,16 +284,16 @@ class INIBasedModel(BaseModel, ABC):
         """
         Custom setter to handle Fortran-style scientific notation conversion
         for float fields when setting attributes.
-
-        Args:
-            key (str): The attribute name.
-            value (Any): The value to set.
         """
-        field_type = self.model_fields.get(key).annotation
-        if field_type != float and field_type != List[float]:
+        field = self.model_fields.get(key)
+        if field is None:
             super().__setattr__(key, value)
-        else:
-            super().__setattr__(key, FortranScientificNotationConverter.convert(value))
+            return
+
+        field_type = field.annotation
+        if field_type in (float, List[float]):
+            value = FortranScientificNotationConverter.convert(value)
+        super().__setattr__(key, value)
 
     @classmethod
     def preprocess_input(cls, values: dict) -> dict:
