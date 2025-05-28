@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Generator, Generic, List, Optional, TypeVar
+from pydantic import BaseModel
 
 from pydantic.v1.generics import GenericModel
 

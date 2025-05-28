@@ -1,10 +1,9 @@
 import logging
 from abc import ABC
 from typing import Dict, List, Literal, Optional
-
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.types import NonNegativeFloat, PositiveInt
+from pathlib import Path
+from pydantic import Field, field_validator, model_validator, ConfigDict
+from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -12,9 +11,9 @@ from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
-    get_enum_validator,
     make_list_validator,
     validate_required_fields,
+    enum_value_parser,
 )
 
 logger = logging.getLogger(__name__)
@@ -139,9 +138,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
     datafile: DiskOnlyFileModel = Field(alias="dataFile")
 
     datafiletype: DataFileType = Field(alias="dataFileType")
-    interpolationmethod: Optional[InterpolationMethod] = Field(
-        alias="interpolationMethod"
-    )
+    interpolationmethod: Optional[InterpolationMethod] = Field(None, alias="interpolationMethod")
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     averagingtype: Optional[AveragingType] = Field(
         AveragingType.mean.value, alias="averagingType"
@@ -155,35 +152,59 @@ class AbstractSpatialField(INIBasedModel, ABC):
     locationtype: Optional[LocationType] = Field(
         LocationType.all.value, alias="locationType"
     )
-    value: Optional[float] = Field(alias="value")
+    value: Optional[float] = Field(None, alias="value")
 
-    datafiletype_validator = get_enum_validator("datafiletype", enum=DataFileType)
-    interpolationmethod_validator = get_enum_validator(
-        "interpolationmethod", enum=InterpolationMethod
-    )
-    operand_validator = get_enum_validator("operand", enum=Operand)
-    averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
-    locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
+    @classmethod
     def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
         """Validates that the value is provided when dealing with polygons."""
-        return validate_required_fields(
+        # if isinstance(values, dict) :
+        data_file = values.get("datafile")
+        if isinstance(data_file, (str, Path)):
+            data_file = DiskOnlyFileModel(data_file)
+            values["datafile"] = data_file
+
+        values = validate_required_fields(
             values,
             "value",
             conditional_field_name="datafiletype",
             conditional_value=DataFileType.polygon,
         )
 
-    @validator("value", always=True)
-    @classmethod
-    def _validate_value_and_filetype(cls, v, values: dict):
-        if v is not None and values.get("datafiletype") != DataFileType.polygon:
+        value_field_value = values.get("value")
+        datafiletype_field_value = values.get("datafiletype")
+        if value_field_value is not None and  datafiletype_field_value.lower() != DataFileType.polygon:
             raise ValueError(
-                f"When value={v} is given, dataFileType={DataFileType.polygon} is required."
+                f"When value={value_field_value} is given, dataFileType={DataFileType.polygon} is required."
             )
 
-        return v
+        return values
+
+    @field_validator("locationtype", mode="before")
+    @classmethod
+    def validate_location_type(cls, v):
+        return enum_value_parser(LocationType)(v)
+
+    @field_validator("averagingtype", mode="before")
+    @classmethod
+    def validate_average_type(cls, v):
+        return enum_value_parser(AveragingType)(v)
+
+    @field_validator("datafiletype", mode="before")
+    @classmethod
+    def validate_data_file_type(cls, v):
+        return enum_value_parser(DataFileType)(v)
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v):
+        return enum_value_parser(Operand)(v)
+
+    @field_validator("interpolationmethod", mode="before")
+    @classmethod
+    def validate_interpolation_method(cls, v):
+        return enum_value_parser(InterpolationMethod)(v)
 
 
 class InitialField(AbstractSpatialField):
