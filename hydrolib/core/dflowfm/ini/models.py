@@ -22,7 +22,7 @@ from pydantic import (
     Field,
     GetCoreSchemaHandler,
     field_validator,
-    model_validator
+    model_validator,
 )
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
@@ -306,7 +306,9 @@ class INIBasedModel(BaseModel, ABC):
             - Convert Fortran-style scientific notation to Python float.
         """
         if isinstance(values, dict):
-            new_values = FortranScientificNotationConverter.convert_fields(values, cls.model_fields)
+            new_values = FortranScientificNotationConverter.convert_fields(
+                values, cls.model_fields
+            )
         else:
             new_values = values
 
@@ -341,7 +343,9 @@ class INIBasedModel(BaseModel, ABC):
         return value
 
     @classmethod
-    def _extract_file_model_from_section(cls, section: Section, key: str, file_model_class: Type):
+    def _extract_file_model_from_section(
+        cls, section: Section, key: str, file_model_class: Type
+    ):
         """Extracts a file model from a Section object.
 
         Args:

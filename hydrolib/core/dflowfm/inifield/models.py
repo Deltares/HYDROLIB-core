@@ -1,7 +1,8 @@
 import logging
 from abc import ABC
-from typing import Dict, List, Literal, Optional
 from pathlib import Path
+from typing import Dict, List, Literal, Optional
+
 from pydantic import Field, field_validator, model_validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
@@ -9,12 +10,12 @@ from strenum import StrEnum
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import Operand
-from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.io_models import Section
+from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
+    enum_value_parser,
     make_list_validator,
     validate_required_fields,
-    enum_value_parser,
 )
 
 logger = logging.getLogger(__name__)
@@ -139,7 +140,9 @@ class AbstractSpatialField(INIBasedModel, ABC):
     datafile: DiskOnlyFileModel = Field(alias="dataFile")
 
     datafiletype: DataFileType = Field(alias="dataFileType")
-    interpolationmethod: Optional[InterpolationMethod] = Field(None, alias="interpolationMethod")
+    interpolationmethod: Optional[InterpolationMethod] = Field(
+        None, alias="interpolationMethod"
+    )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     averagingtype: Optional[AveragingType] = Field(
         AveragingType.mean.value, alias="averagingType"
@@ -155,7 +158,6 @@ class AbstractSpatialField(INIBasedModel, ABC):
     )
     value: Optional[float] = Field(None, alias="value")
 
-
     @classmethod
     def _process_section_values(cls, values):
         """Process Section objects and extract/convert values as needed.
@@ -169,7 +171,9 @@ class AbstractSpatialField(INIBasedModel, ABC):
         # If values is a Section object, we need to handle it specially
         if isinstance(values, Section):
             # Extract the datafile value if present
-            data_file = super()._extract_file_model_from_section(values, "datafile", DiskOnlyFileModel)
+            data_file = super()._extract_file_model_from_section(
+                values, "datafile", DiskOnlyFileModel
+            )
 
             # Convert Section to dictionary
             values_dict = super()._convert_section_to_dict(values)
@@ -204,7 +208,11 @@ class AbstractSpatialField(INIBasedModel, ABC):
 
         value_field_value = values.get("value")
         datafiletype_field_value = values.get("datafiletype")
-        if value_field_value is not None and datafiletype_field_value is not None and datafiletype_field_value.lower() != DataFileType.polygon:
+        if (
+            value_field_value is not None
+            and datafiletype_field_value is not None
+            and datafiletype_field_value.lower() != DataFileType.polygon
+        ):
             raise ValueError(
                 f"When value={value_field_value} is given, dataFileType={DataFileType.polygon} is required."
             )
