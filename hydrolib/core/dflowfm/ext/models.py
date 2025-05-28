@@ -446,6 +446,20 @@ class Meteo(INIBasedModel):
         "interpolationmethod", enum=MeteoInterpolationMethod
     )
 
+    @field_validator("forcingfile", mode="before")
+    @classmethod
+    def validate_forcingfile(cls, data: Any) -> Any:
+        """Validates the forcingfile field to ensure it is a valid type."""
+        if isinstance(data, (str, Path)):
+            data = str(data)
+            if data.endswith(".tim"):
+                return TimModel(filepath=data)
+            elif data.endswith(".bc"):
+                return ForcingModel(filepath=data)
+            else:
+                return DiskOnlyFileModel(data)
+        return data
+
 
 class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta-data."""
