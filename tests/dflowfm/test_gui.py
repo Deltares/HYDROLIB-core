@@ -63,6 +63,7 @@ class TestBranch:
 
         assert expected_message in str(error.value)
 
+
 class TestBranchModelValidator:
 
     def test_branchmodel_single_branch_dict(self):
@@ -71,7 +72,7 @@ class TestBranchModelValidator:
                 "name": "b1",
                 "branchType": 1,
                 "isLengthCustom": True,
-                "material": 2
+                "material": 2,
             }
         }
 
@@ -80,12 +81,16 @@ class TestBranchModelValidator:
         assert len(model.branch) == 1
         assert model.branch[0].name == "b1"
 
-
     def test_branchmodel_list_of_branches(self):
         multi_branch_input = {
             "branch": [
                 {"name": "b1", "branchType": 0, "material": 1},
-                {"name": "b2", "branchType": 2, "sourceCompartmentName": "sc1", "material": 3}
+                {
+                    "name": "b2",
+                    "branchType": 2,
+                    "sourceCompartmentName": "sc1",
+                    "material": 3,
+                },
             ]
         }
 
@@ -93,7 +98,6 @@ class TestBranchModelValidator:
         assert isinstance(model.branch, list)
         assert len(model.branch) == 2
         assert model.branch[1].name == "b2"
-
 
     def test_branchmodel_invalid_branch_type(self):
         with pytest.raises(ValidationError):
