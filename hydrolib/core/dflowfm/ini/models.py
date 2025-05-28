@@ -120,7 +120,9 @@ class INIBasedModel(BaseModel, ABC):
 
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
-    model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=False, populate_by_name=True)
+    model_config = ConfigDict(
+        extra="ignore", arbitrary_types_allowed=False, populate_by_name=True
+    )
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
