@@ -7,9 +7,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Generator, Generic, List, Optional, TypeVar
-from pydantic import BaseModel
 
-from pydantic.v1.generics import GenericModel
+from pydantic import BaseModel
 
 from hydrolib.core.base.file_manager import PathOrStr
 
@@ -19,7 +18,7 @@ VERSION_LINE_PATTERN = (
 )
 
 
-class WrapperTest(GenericModel, Generic[TWrapper]):
+class WrapperTest(BaseModel, Generic[TWrapper]):
     val: TWrapper
 
 

@@ -161,7 +161,7 @@ class TestIniField:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[InitialField].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[InitialField].model_validate({"val": document.sections[0]})
         inifield = wrapper.val
 
         assert inifield.quantity == "waterDepth"
