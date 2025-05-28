@@ -239,16 +239,6 @@ class SourceSink(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @model_validator(mode="before")
-    @classmethod
-    def validate_locationfile(cls, data: Any) -> Any:
-        file_location = data.get("locationfile")
-
-        # Convert string to DiskOnlyFileModel if needed
-        if isinstance(file_location, Union[str, Path]):
-            data["locationfile"] = DiskOnlyFileModel(file_location)
-        return data
-
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
@@ -309,6 +299,17 @@ class SourceSink(INIBasedModel):
             )
 
         return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_locationfile(cls, data: Any) -> Any:
+        file_location = data.get("locationfile") or data.get("locationFile")
+        data.pop("locationFile", None)  # Remove alias if present
+
+        # Convert string to DiskOnlyFileModel if needed
+        if isinstance(file_location, (str, Path)):
+            data["locationfile"] = DiskOnlyFileModel(file_location)
+        return data
 
 
 class MeteoForcingFileType(StrEnum):
