@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 import pytest
-from pydantic.v1 import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime
 from hydrolib.core.dflowfm.ext.models import ExtModel, Lateral
