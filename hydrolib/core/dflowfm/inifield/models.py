@@ -2,7 +2,7 @@ import logging
 from abc import ABC
 from typing import Dict, List, Literal, Optional
 from pathlib import Path
-from pydantic import Field, field_validator, model_validator, ConfigDict
+from pydantic import Field, field_validator, model_validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
@@ -10,6 +10,7 @@ from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.util import (
     make_list_validator,
     validate_required_fields,
@@ -160,30 +161,19 @@ class AbstractSpatialField(INIBasedModel, ABC):
     def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
         """Validates that the value is provided when dealing with polygons."""
         # Check if values is a Section object from the parser
-        from hydrolib.core.dflowfm.ini.io_models import Section
         if isinstance(values, Section):
-            # Convert Section to dictionary using flatten method
-            values_dict = values.flatten()
-
-            # Extract the values we need
-            data_file = None
-            for prop in values.content:
-                from hydrolib.core.dflowfm.ini.io_models import Property
-                if isinstance(prop, Property):
-                    if prop.key.lower() == "datafile":
-                        data_file = prop.value
-                        break
+            # Extract the datafile value if present
+            data_file = super()._extract_file_model_from_section(values, "datafile", DiskOnlyFileModel)
 
             if data_file is not None:
-                data_file = DiskOnlyFileModel(data_file)
                 # We can't modify the Section object, so we'll return it as is
                 # The validation will be done later when the actual model is created
                 return values
 
-            # Continue with the flattened dictionary
-            values = values_dict
+            # Convert Section to dictionary using flatten method
+            values = super()._convert_section_to_dict(values)
 
-        # Original code for dictionary-like objects
+        # Process dictionary-like objects
         data_file = values.get("datafile")
         if isinstance(data_file, (str, Path)):
             data_file = DiskOnlyFileModel(data_file)
