@@ -1,7 +1,8 @@
 import numpy as np
+from meshkernel import GeometryList
+
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dflowfm.net.models import Branch
-from meshkernel import GeometryList
 
 
 def test_add_short_connecting_branch():
@@ -53,4 +54,3 @@ def test_create_triangular():
         network._mesh2d.mesh2d_edge_nodes,
         np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
     )
-
