@@ -1,7 +1,6 @@
 from typing import Dict, List, Literal, Optional
 
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.fields import Field
+from pydantic import Field, model_validator
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -62,17 +61,17 @@ class ObservationCrossSection(INIBasedModel):
     comments: Comments = Comments()
     _header: Literal["ObservationCrossSection"] = "ObservationCrossSection"
     name: str = Field(max_length=255, alias="name")
-    branchid: Optional[str] = Field(alias="branchId")
-    chainage: Optional[float] = Field(alias="chainage")
-    numcoordinates: Optional[int] = Field(alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
+    branchid: Optional[str] = Field(None, alias="branchId")
+    chainage: Optional[float] = Field(None, alias="chainage")
+    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
     )
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
         """Validates that the correct location specification is given."""
         return validate_location_specification(
