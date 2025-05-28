@@ -1,18 +1,19 @@
 import logging
 from abc import ABC
+from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.types import NonNegativeFloat, PositiveInt
+from pydantic import Field, field_validator, model_validator
+from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
-    get_enum_validator,
+    enum_value_parser,
     make_list_validator,
     validate_required_fields,
 )
@@ -140,7 +141,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
 
     datafiletype: DataFileType = Field(alias="dataFileType")
     interpolationmethod: Optional[InterpolationMethod] = Field(
-        alias="interpolationMethod"
+        None, alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
     averagingtype: Optional[AveragingType] = Field(
@@ -155,34 +156,100 @@ class AbstractSpatialField(INIBasedModel, ABC):
     locationtype: Optional[LocationType] = Field(
         LocationType.all.value, alias="locationType"
     )
-    value: Optional[float] = Field(alias="value")
+    value: Optional[float] = Field(None, alias="value")
 
-    datafiletype_validator = get_enum_validator("datafiletype", enum=DataFileType)
-    interpolationmethod_validator = get_enum_validator(
-        "interpolationmethod", enum=InterpolationMethod
-    )
-    operand_validator = get_enum_validator("operand", enum=Operand)
-    averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
-    locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
+    @classmethod
+    def _process_section_values(cls, values):
+        """Process Section objects and extract/convert values as needed.
 
-    @root_validator(allow_reuse=True)
+        Args:
+            values: The values to process, which may be a Section object or a dictionary.
+
+        Returns:
+            A dictionary containing the processed values.
+        """
+        # If values is a Section object, we need to handle it specially
+        if isinstance(values, Section):
+            # Extract the datafile value if present
+            data_file = super()._extract_file_model_from_section(
+                values, "datafile", DiskOnlyFileModel
+            )
+
+            # Convert Section to dictionary
+            values_dict = super()._convert_section_to_dict(values)
+
+            # If we found a datafile, add it to the dictionary
+            if data_file is not None:
+                values_dict["datafile"] = data_file
+
+            return values_dict
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
     def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
         """Validates that the value is provided when dealing with polygons."""
-        return validate_required_fields(
+        # Process Section objects if needed
+        values = cls._process_section_values(values)
+
+        # Process dictionary-like objects
+        data_file = values.get("datafile")
+        if isinstance(data_file, (str, Path)):
+            data_file = DiskOnlyFileModel(data_file)
+            values["datafile"] = data_file
+
+        values = validate_required_fields(
             values,
             "value",
             conditional_field_name="datafiletype",
             conditional_value=DataFileType.polygon,
         )
 
-    @validator("value", always=True)
-    @classmethod
-    def _validate_value_and_filetype(cls, v, values: dict):
-        if v is not None and values.get("datafiletype") != DataFileType.polygon:
+        value_field_value = values.get("value")
+        datafiletype_field_value = values.get("datafiletype")
+        if (
+            value_field_value is not None
+            and datafiletype_field_value is not None
+            and datafiletype_field_value.lower() != DataFileType.polygon
+        ):
             raise ValueError(
-                f"When value={v} is given, dataFileType={DataFileType.polygon} is required."
+                f"When value={value_field_value} is given, dataFileType={DataFileType.polygon} is required."
             )
 
+        return values
+
+    @field_validator("locationtype", mode="before")
+    @classmethod
+    def validate_location_type(cls, v):
+        return enum_value_parser(LocationType)(v)
+
+    @field_validator("averagingtype", mode="before")
+    @classmethod
+    def validate_average_type(cls, v):
+        return enum_value_parser(AveragingType)(v)
+
+    @field_validator("datafiletype", mode="before")
+    @classmethod
+    def validate_data_file_type(cls, v):
+        return enum_value_parser(DataFileType)(v)
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v):
+        return enum_value_parser(Operand)(v)
+
+    @field_validator("interpolationmethod", mode="before")
+    @classmethod
+    def validate_interpolation_method(cls, v):
+        return enum_value_parser(InterpolationMethod)(v)
+
+    @field_validator("datafile", mode="before")
+    @classmethod
+    def validate_datafile(cls, v):
+        """Convert string values to DiskOnlyFileModel instances."""
+        if isinstance(v, (str, Path)):
+            return DiskOnlyFileModel(filepath=v)
         return v
 
 

@@ -249,6 +249,9 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             dict: Updated field values with None values removed.
         """
+        # Convert Section to dictionary if needed
+        values = cls._convert_section_to_dict(values)
+
         dropkeys = []
         for k, v in values.items():
             if v is None and k in cls.model_fields.keys():
@@ -284,34 +287,28 @@ class INIBasedModel(BaseModel, ABC):
         """
         Custom setter to handle Fortran-style scientific notation conversion
         for float fields when setting attributes.
-
-        Args:
-            key (str): The attribute name.
-            value (Any): The value to set.
         """
-        field_type = self.model_fields.get(key).annotation
-        if field_type != float and field_type != List[float]:
+        field = self.__class__.model_fields.get(key)
+        if field is None:
             super().__setattr__(key, value)
-        else:
-            super().__setattr__(key, FortranScientificNotationConverter.convert(value))
+            return
+
+        field_type = field.annotation
+        if field_type in (float, List[float]):
+            value = FortranScientificNotationConverter.convert(value)
+        super().__setattr__(key, value)
 
     @classmethod
     def preprocess_input(cls, values: dict) -> dict:
+        """Pre-process input values for the model.
+
+        The preprocess_input method is called before validation and triggers the following actions:
+            - Convert Fortran-style scientific notation to Python float.
+        """
         if isinstance(values, dict):
-            new_values = {}
-            for field_name, value in values.items():
-                field = cls.model_fields.get(field_name)
-                if field:
-                    field_type = field.annotation
-                    if field_type != float and field_type != List[float]:
-                        new_values[field_name] = value
-                    else:
-                        new_values[field_name] = (
-                            FortranScientificNotationConverter.convert(value)
-                        )
-                else:
-                    # If the field is not defined in the model, keep it as is
-                    new_values[field_name] = value
+            new_values = FortranScientificNotationConverter.convert_fields(
+                values, cls.model_fields
+            )
         else:
             new_values = values
 
@@ -329,7 +326,47 @@ class INIBasedModel(BaseModel, ABC):
         )
 
     @classmethod
-    def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
+    def _convert_section_to_dict(cls, value: Any) -> Any:
+        """
+        Converts a Section object to a dictionary if needed.
+
+        Args:
+            value (Any): The value to convert.
+
+        Returns:
+            Any: The converted value (dictionary) or the original value if not a Section.
+        """
+        if isinstance(value, Section):
+            return value.flatten(
+                cls._duplicate_keys_as_list(), cls._supports_comments()
+            )
+        return value
+
+    @classmethod
+    def _extract_file_model_from_section(
+        cls, section: Section, key: str, file_model_class: Type
+    ):
+        """Extracts a file model from a Section object.
+
+        Args:
+            section (Section):
+                The Section object to extract from.
+            key (str):
+                The key to look for in the Section.
+            file_model_class (Type):
+                The class to use for creating the file model.
+
+        Returns:
+            Optional[Any]:
+                The file model if found, None otherwise.
+        """
+        for prop in section.content:
+            if isinstance(prop, Property) and prop.key.lower() == key.lower():
+                return file_model_class(prop.value)
+        return None
+
+    @classmethod
+    def model_validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
         """
         Validates a value as an instance of INIBasedModel.
 
@@ -339,12 +376,8 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             INIBasedModel: The validated instance.
         """
-        if isinstance(value, Section):
-            value = value.flatten(
-                cls._duplicate_keys_as_list(), cls._supports_comments()
-            )
-
-        return super().validate(value)
+        value = cls._convert_section_to_dict(value)
+        return super().model_validate(value)
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:

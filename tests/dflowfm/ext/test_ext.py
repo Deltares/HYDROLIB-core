@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 import numpy as np
 import pytest
-from pydantic.v1 import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -182,7 +182,7 @@ class TestMeteo:
         with pytest.raises(ValidationError) as error:
             Meteo(**dict_values)
 
-        expected_message = f"{alias_field}\n  field required "
+        expected_message = f"{alias_field}\n  Field required "
         assert expected_message in str(error.value)
 
     def test_is_intermediate_link(self):

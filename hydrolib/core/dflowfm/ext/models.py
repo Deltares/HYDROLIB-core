@@ -1,7 +1,7 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Set, Union
+from typing import Any, Dict, List, Literal, Optional, Set, Union
 
-from pydantic.v1 import Field, root_validator, validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
@@ -9,7 +9,12 @@ from hydrolib.core.base.models import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.base.utils import str_is_empty_or_none
-from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
+from hydrolib.core.dflowfm.bc.models import (
+    ForcingBase,
+    ForcingData,
+    ForcingModel,
+    RealTime,
+)
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
@@ -47,17 +52,31 @@ class Boundary(INIBasedModel):
 
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
-    nodeid: Optional[str] = Field(alias="nodeId")
+    nodeid: Optional[str] = Field(None, alias="nodeId")
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
-    forcingfile: Union[ForcingModel, List[ForcingModel]] = Field(alias="forcingFile")
-    bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
-    bndbldepth: Optional[float] = Field(alias="bndBlDepth")
-    returntime: Optional[float] = Field(alias="returnTime")
+    forcingfile: List[ForcingModel] = Field(alias="forcingFile")
+    bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
+    bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
+    returntime: Optional[float] = Field(None, alias="returnTime")
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @field_validator("forcingfile", mode="before")
+    @classmethod
+    def validate_forcingfile(cls, data: Any) -> Any:
+        if not isinstance(data, list):
+            data = [data]
+        for i, forcing in enumerate(data):
+            if isinstance(forcing, (str, Path)):
+                data[i] = ForcingModel(filepath=forcing)
+            elif not isinstance(forcing, ForcingModel):
+                raise TypeError(
+                    "Forcing file must be a ForcingModel or a path to a forcing file."
+                )
+        return data
 
     @classmethod
     def _is_valid_locationfile_data(
@@ -67,11 +86,10 @@ class Boundary(INIBasedModel):
             isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
         )
 
-    @root_validator
+    @model_validator(mode="before")
     @classmethod
-    def check_nodeid_or_locationfile_present(cls, values: Dict):
-        """
-        Verifies that either nodeid or locationfile properties have been set.
+    def check_nodeid_or_locationfile_present(cls, values: Dict) -> Dict:
+        """Verifies that either nodeid or locationfile properties have been set.
 
         Args:
             values (Dict): Dictionary with values already validated.
@@ -82,8 +100,8 @@ class Boundary(INIBasedModel):
         Returns:
             Dict: Validated dictionary of values for Boundary.
         """
-        node_id = values.get("nodeid", None)
-        location_file = values.get("locationfile", None)
+        node_id = values.get("nodeid")
+        location_file = values.get("locationfile")
         if str_is_empty_or_none(node_id) and not cls._is_valid_locationfile_data(
             location_file
         ):
@@ -124,6 +142,17 @@ class Boundary(INIBasedModel):
 
         return result
 
+    @model_validator(mode="before")
+    @classmethod
+    def validate_locationfile(cls, data: Any) -> Any:
+        file_location = data.get("locationfile") or data.get("locationFile")
+        data.pop("locationFile", None)  # Remove alias if present
+
+        # Convert string to DiskOnlyFileModel if needed
+        if isinstance(file_location, (str, Path)):
+            data["locationfile"] = DiskOnlyFileModel(file_location)
+        return data
+
 
 class Lateral(INIBasedModel):
     """
@@ -137,13 +166,13 @@ class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationtype: Optional[str] = Field(alias="locationType")
-    nodeid: Optional[str] = Field(alias="nodeId")
-    branchid: Optional[str] = Field(alias="branchId")
-    chainage: Optional[float] = Field(alias="chainage")
-    numcoordinates: Optional[int] = Field(alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
+    locationtype: Optional[str] = Field(None, alias="locationType")
+    nodeid: Optional[str] = Field(None, alias="nodeId")
+    branchid: Optional[str] = Field(None, alias="branchId")
+    chainage: Optional[float] = Field(None, alias="chainage")
+    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
@@ -153,7 +182,30 @@ class Lateral(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    @root_validator(allow_reuse=True)
+    @field_validator("discharge", mode="before")
+    @classmethod
+    def validate_discharge(cls, v):
+        if isinstance(v, (float, ForcingModel, RealTime)):
+            return v
+        if isinstance(v, str):
+            # Try float
+            try:
+                return float(v)
+            except ValueError:
+                pass
+            # Try RealTime enum (case-insensitive)
+            try:
+                return RealTime(v.lower())
+            except ValueError:
+                pass
+            return ForcingModel(filepath=v)
+        if isinstance(v, Path):
+            return ForcingModel(filepath=str(v))
+        if isinstance(v, dict):
+            # Try to instantiate ForcingModel from dict
+            return ForcingModel(**v)
+
+    @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
         """Validates that the correct location specification is given."""
         return validate_location_specification(
@@ -163,7 +215,7 @@ class Lateral(INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
 
-    @validator("locationtype")
+    @field_validator("locationtype", mode="before")
     @classmethod
     def validate_location_type(cls, v: str) -> str:
         """
@@ -204,24 +256,24 @@ class SourceSink(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
 
-    numcoordinates: Optional[int] = Field(alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(alias="yCoordinates")
+    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
-    zsource: Optional[Union[float, List[float]]] = Field(alias="zSource")
-    zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
-    area: Optional[float] = Field(alias="Area")
+    zsource: Optional[Union[float, List[float]]] = Field(None, alias="zSource")
+    zsink: Optional[Union[float, List[float]]] = Field(None, alias="zSink")
+    area: Optional[float] = Field(None, alias="Area")
 
     discharge: ForcingData = Field(alias="discharge")
-    salinitydelta: Optional[ForcingData] = Field(alias="salinityDelta")
-    temperaturedelta: Optional[ForcingData] = Field(alias="temperatureDelta")
+    salinitydelta: Optional[ForcingData] = Field(None, alias="salinityDelta")
+    temperaturedelta: Optional[ForcingData] = Field(None, alias="temperatureDelta")
 
     def is_intermediate_link(self) -> bool:
         return True
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
-        fields = cls.__fields__
+        fields = cls.model_fields
         unknown_keywords = [
             key
             for key in input_data.keys()
@@ -230,13 +282,7 @@ class SourceSink(INIBasedModel):
         ]
         return set(unknown_keywords)
 
-    class Config:
-        """
-        Config class to tell Pydantic to accept fields not explicitly declared in the model.
-        """
-
-        # Allow dynamic fields
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -247,7 +293,7 @@ class SourceSink(INIBasedModel):
             ):
                 setattr(self, key, value)
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def validate_location_specification(cls, values):
         """
         Ensures that either `locationfile` or a valid set of coordinates is provided.
@@ -285,6 +331,17 @@ class SourceSink(INIBasedModel):
             )
 
         return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_locationfile(cls, data: Any) -> Any:
+        file_location = data.get("locationfile") or data.get("locationFile")
+        data.pop("locationFile", None)  # Remove alias if present
+
+        # Convert string to DiskOnlyFileModel if needed
+        if isinstance(file_location, (str, Path)):
+            data["locationfile"] = DiskOnlyFileModel(file_location)
+        return data
 
 
 class MeteoForcingFileType(StrEnum):
@@ -396,21 +453,21 @@ class Meteo(INIBasedModel):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
         alias="forcingFile"
     )
-    forcingVariableName: Optional[str] = Field(alias="forcingVariableName")
+    forcingVariableName: Optional[str] = Field(None, alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
     interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
-        alias="interpolationMethod"
+        None, alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationAllowed: Optional[bool] = Field(alias="extrapolationAllowed")
+    extrapolationAllowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
     extrapolationSearchRadius: Optional[float] = Field(
-        alias="extrapolationSearchRadius"
+        None, alias="extrapolationSearchRadius"
     )
-    averagingType: Optional[int] = Field(alias="averagingType")
-    averagingNumMin: Optional[float] = Field(alias="averagingNumMin")
-    averagingPercentile: Optional[float] = Field(alias="averagingPercentile")
+    averagingType: Optional[int] = Field(None, alias="averagingType")
+    averagingNumMin: Optional[float] = Field(None, alias="averagingNumMin")
+    averagingPercentile: Optional[float] = Field(None, alias="averagingPercentile")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -421,6 +478,20 @@ class Meteo(INIBasedModel):
     interpolationmethod_validator = get_enum_validator(
         "interpolationmethod", enum=MeteoInterpolationMethod
     )
+
+    @field_validator("forcingfile", mode="before")
+    @classmethod
+    def validate_forcingfile(cls, data: Any) -> Any:
+        """Validates the forcingfile field to ensure it is a valid type."""
+        if isinstance(data, (str, Path)):
+            data = str(data)
+            if data.endswith(".tim"):
+                return TimModel(filepath=data)
+            elif data.endswith(".bc"):
+                return ForcingModel(filepath=data)
+            else:
+                return DiskOnlyFileModel(data)
+        return data
 
 
 class ExtGeneral(INIGeneral):

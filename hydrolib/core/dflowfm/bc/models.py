@@ -49,9 +49,7 @@ from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     get_enum_validator,
-    get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
-    get_type_based_on_subclass_default_value,
     make_list_validator,
     rename_keys_for_backwards_compatibility,
 )
@@ -349,7 +347,7 @@ class ForcingBase(DataBlockINIBasedModel):
     def __repr__(self) -> str:
         data = dict(self)
         data["datablock"] = "<omitted>"
-        representable = BaseModel.construct(**data)
+        representable = BaseModel.model_construct(**data)
         return str(representable)
 
 
