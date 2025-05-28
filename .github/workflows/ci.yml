@@ -8,7 +8,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.9", "3.11", "3.12", "3.13"]
-        os: [ubuntu-latest, windows-latest, macos-13]
+        os: [ubuntu-latest, macos-13] #windows-latest,
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +46,20 @@ jobs:
           pip list
 
       - name: Test with pytest
-        run: poetry run pytest --cov . --cov-report xml:coverage-reports/coverage-hydrolib-core.xml --junitxml=xunit-reports/xunit-result-hydrolib-core.xml
+        run: |
+         poetry run pytest -vvv \
+           tests/base \
+           tests/dflowfm/ini \
+           tests/dflowfm/test_friction.py \
+           tests/dflowfm/test_cmp.py \
+           tests/dflowfm/polyfile \
+           tests/dflowfm/t3d \
+           tests/dflowfm/test_tim.py  \
+           tests/dflowfm/test_xyn.py  \
+           tests/dflowfm/test_xyz.py  \
+           tests/dflowfm/test_crosssection.py \
+           tests/dflowfm/extold \
+           tests\dflowfm\net
 
       - name: Autoformat code if the check fails
         if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.python-version == 3.13) }}

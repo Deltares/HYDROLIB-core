@@ -40,6 +40,7 @@ class FrictionType(StrEnum):
         debosbijkerk: str
             De Bos-Bijkerk γ [1/s]
     """
+
     chezy = "Chezy"
     manning = "Manning"
     walllawnikuradse = "wallLawNikuradse"
@@ -167,7 +168,9 @@ class FrictBranch(INIBasedModel):
     levels: Optional[List[float]] = Field(None, alias="levels")
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
     chainage: Optional[List[float]] = Field(None, alias="chainage")
-    frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")  # TODO: turn this into List[List[float]], see issue #143.
+    frictionvalues: Optional[List[float]] = Field(
+        None, alias="frictionValues"
+    )  # TODO: turn this into List[List[float]], see issue #143.
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "levels",
@@ -225,16 +228,22 @@ class FrictBranch(INIBasedModel):
         v = values
         if v.levels is not None:
             if v.numlevels is None or len(v.levels) != v.numlevels:
-                raise ValueError(f"Number of values for levels should be equal to the numLevels value (branchId={v.branchid}).")
+                raise ValueError(
+                    f"Number of values for levels should be equal to the numLevels value (branchId={v.branchid})."
+                )
 
         if v.chainage is not None and len(v.chainage) != v.numlocations:
-            raise ValueError(f"Number of values for chainage should be equal to the numLocations value (branchId={v.branchid}).")
+            raise ValueError(
+                f"Number of values for chainage should be equal to the numLocations value (branchId={v.branchid})."
+            )
 
         if v.frictionvalues is not None:
             numlevels = 1 if not v.numlevels else v.numlevels
             numvals = max(1, v.numlocations) * numlevels
             if len(v.frictionvalues) != numvals:
-                raise ValueError(f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={v.branchid}).")
+                raise ValueError(
+                    f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={v.branchid})."
+                )
 
         return v
 
@@ -252,7 +261,9 @@ class FrictionModel(INIModel):
     """
 
     general: FrictGeneral = FrictGeneral()
-    global_: List[FrictGlobal] = Field(default_factory=list, alias="global")  # to circumvent built-in kw
+    global_: List[FrictGlobal] = Field(
+        default_factory=list, alias="global"
+    )  # to circumvent built-in kw
     branch: List[FrictBranch] = []
 
     _split_to_list = make_list_validator(

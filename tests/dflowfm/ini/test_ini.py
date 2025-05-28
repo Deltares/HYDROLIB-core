@@ -3,7 +3,7 @@ from itertools import chain
 from typing import Iterable, List, Optional, Union
 
 import pytest
-from pydantic import ValidationError, Field
+from pydantic import Field, ValidationError
 
 from hydrolib.core.base.models import FileModel, ModelSaveSettings
 from hydrolib.core.dflowfm.ini.io_models import (
@@ -30,7 +30,6 @@ from hydrolib.core.dflowfm.ini.serializer import (
     _serialize_comment_block,
     write_ini,
 )
-
 from tests.utils import test_output_dir
 
 

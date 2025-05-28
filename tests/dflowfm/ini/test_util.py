@@ -52,7 +52,7 @@ class TestLocationSpecificationValidator:
         numcoordinates: Optional[int]
         locationtype: Optional[str]
 
-        @model_validator(mode='before')
+        @model_validator(mode="before")
         def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
             return validate_location_specification(
                 values,
@@ -256,7 +256,7 @@ class TestGetKeyRenamingRootValidator:
 
         randomproperty: str
 
-        @model_validator(mode='before')
+        @model_validator(mode="before")
         @classmethod
         def rename_keys(cls, values):
             if isinstance(values, dict):

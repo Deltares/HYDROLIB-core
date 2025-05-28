@@ -117,7 +117,10 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
-markers = ["plots", "docker"]
+markers = [
+    "plots", "docker",
+    "pydantic: marks tests as pydantic (deselect with '-m \"not pydantic\"')",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -36,6 +36,34 @@ def get_split_string_on_delimiter_validator(*field_name: str):
     return field_validator(*field_name, mode="before")(split)
 
 
+def enum_value_parser(
+    enum: Type[Enum],
+    alternative_enum_values: Optional[Dict[str, List[str]]] = None,
+):
+    """Return a function that converts strings (and string lists) to Enum values."""
+
+    def parser(v):
+        if isinstance(v, list):
+            return [parser(item) for item in v]
+        if isinstance(v, enum):
+            return v
+        if isinstance(v, str):
+            for entry in enum:
+                if entry.value.lower() == v.lower():
+                    return entry
+                if (
+                    alternative_enum_values
+                    and (alts := alternative_enum_values.get(entry.value))
+                    and v.lower() in (alt.lower() for alt in alts)
+                ):
+                    return entry
+        raise ValueError(
+            f"Invalid enum value: {v!r}. Expected one of: {[e.value for e in enum]}"
+        )
+
+    return parser
+
+
 def get_enum_validator(
     *field_name: str,
     enum: Type[Enum],
@@ -89,7 +117,7 @@ def validate_correct_length(
     length_incr: int = 0,
     list_required_with_length: bool = False,
     min_length: int = 0,
-) -> Dict:
+):
     """
     Validate the correct length (and presence) of several list fields in an object.
 
@@ -140,8 +168,6 @@ def validate_correct_length(
                 f"List {field_name} cannot be missing if {length_name} is given."
             )
 
-        return field
-
     length = values.get(length_name)
     if length is None:
         # length attribute not present, possibly defer validation to a subclass.
@@ -151,13 +177,7 @@ def validate_correct_length(
 
     for field_name in field_names:
         field = values.get(field_name)
-        values[field_name] = _validate_listfield_length(
-            field_name,
-            field,
-            requiredlength,
-        )
-
-    return values
+        _validate_listfield_length(field_name, field, requiredlength)
 
 
 def validate_forbidden_fields(
@@ -340,16 +360,23 @@ def _try_get_default_value(
     Returns:
         Optional[str]: The field default that corresponds to the value. If nothing is found return None.
     """
-    if not hasattr(c, 'model_fields') or (field := c.model_fields.get(fieldname)) is None:
+    if (
+        not hasattr(c, "model_fields")
+        or (field := c.model_fields.get(fieldname)) is None
+    ):
         return None
 
     # In pydantic v2, default is accessed through default_factory or directly
-    if hasattr(field, 'default_factory') and field.default_factory is not None:
+    if hasattr(field, "default_factory") and field.default_factory is not None:
         default = field.default_factory()
     else:
         default = field.default
 
-    if default is not None and hasattr(default, 'lower') and default.lower() == value.lower():
+    if (
+        default is not None
+        and hasattr(default, "lower")
+        and default.lower() == value.lower()
+    ):
         # If this class's default matches, directly return it to end the recursion.
         return default
 
@@ -388,16 +415,23 @@ def get_type_based_on_subclass_default_value(
 
 
 def _get_type_based_on_default_value(cls, fieldname, value) -> Optional[Type]:
-    if not hasattr(cls, 'model_fields') or (field := cls.model_fields.get(fieldname)) is None:
+    if (
+        not hasattr(cls, "model_fields")
+        or (field := cls.model_fields.get(fieldname)) is None
+    ):
         return None
 
     # In pydantic v2, default is accessed through default_factory or directly
-    if hasattr(field, 'default_factory') and field.default_factory is not None:
+    if hasattr(field, "default_factory") and field.default_factory is not None:
         default = field.default_factory()
     else:
         default = field.default
 
-    if default is not None and hasattr(default, 'lower') and default.lower() == value.lower():
+    if (
+        default is not None
+        and hasattr(default, "lower")
+        and default.lower() == value.lower()
+    ):
         return cls
 
     for sc in cls.__subclasses__():
@@ -469,9 +503,12 @@ def validate_location_specification(
     Validates for the locationType for nodeId and branchId.
 
     Args:
-        values (Dict): Dictionary of object's validated fields.
-        config (LocationValidationConfiguration, optional): Configuration for the location validation. Default is None.
-        field (LocationValidationFieldNames, optional): Fields names that should be used for the location validation. Default is None.
+        values (Dict):
+            Dictionary of object's validated fields.
+        config (LocationValidationConfiguration, optional):
+            Configuration for the location validation. Default is None.
+        fields (LocationValidationFieldNames, optional):
+            Fields names that should be used for the location validation. Default is None.
 
     Raises:
         ValueError: When exactly one of the following combinations were not given:
@@ -711,7 +748,7 @@ class UnknownKeywordErrorManager:
             False otherwise
         """
         exists = keyword in fields or any(
-            hasattr(field_info, 'alias') and keyword == field_info.alias
+            hasattr(field_info, "alias") and keyword == field_info.alias
             for field_info in fields.values()
         )
         # the field is not in the known fields, check if it should be excluded

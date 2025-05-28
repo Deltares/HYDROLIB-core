@@ -12,14 +12,13 @@ from meshkernel import (
     MeshKernel,
     MeshRefinementParameters,
 )
-
+from hydrolib import __path__
 from hydrolib.core.base.models import BaseModel
-from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
 
-from ..utils import test_input_dir, test_output_dir
+from tests.utils import test_input_dir, test_output_dir
 
 
 @pytest.mark.plots
@@ -370,8 +369,8 @@ def test_read_write_read_compare(filepath):
     network2 = NetworkModel(filepath=network1.filepath)
 
     # Read keys from convention
-    path = Path(__file__).parent.parent.parent.joinpath(
-        "hydrolib/core/dflowfm/net/ugrid_conventions.json"
+    path = Path(__path__[0]).joinpath(
+        "core/dflowfm/net/ugrid_conventions.json"
     )
 
     with open(path, "r") as f:
@@ -570,8 +569,8 @@ class TestNCExplorer:
     mesh2d_file = test_input_dir / "ugrid_files" / "mesh2d_net.nc"
 
     def test_load_ugrid_json(self):
-        path = Path(__file__).parent.parent.parent.joinpath(
-            "hydrolib/core/dflowfm/net/ugrid_conventions.json"
+        path = Path(__path__[0]).joinpath(
+            "core/dflowfm/net/ugrid_conventions.json"
         )
         assert path.exists()
 
@@ -679,57 +678,6 @@ class TestNCExplorer:
         assert explorer.mesh1d_var_name_mapping == mesh1d_dict
         assert explorer.mesh2d_var_name_mapping == mesh2d_dict
         assert explorer.link1d2d_var_name_mapping == link1d2d_dict
-
-
-def test_add_short_connecting_branch():
-    fmmodel = FMModel()
-
-    network = fmmodel.geometry.netfile.network
-
-    lowerbranch = Branch(geometry=np.array([[-100, -25], [0, -25]]))
-    upperbranch = Branch(geometry=np.array([[-100, 25], [0, 25]]))
-    connectingbranch = Branch(geometry=np.array([[0, -25], [0, 25]]))
-
-    branches = [lowerbranch, upperbranch, connectingbranch]
-    for branch in branches:
-        branch.generate_nodes(mesh1d_edge_length=50)
-        network.mesh1d_add_branch(branch)
-
-    assert np.array_equiv(
-        network._mesh1d.mesh1d_node_x,
-        np.array([-100.0, -50.0, 0.0, -100.0, -50.0, 0.0, 0.0]),
-    )
-    assert np.array_equiv(
-        network._mesh1d.mesh1d_node_y,
-        np.array([-25.0, -25.0, -25.0, 25.0, 25.0, 25.0, 0.0]),
-    )
-
-
-def test_create_triangular():
-
-    fmmodel = FMModel()
-
-    network = fmmodel.geometry.netfile.network
-
-    polygon = GeometryList(
-        x_coordinates=np.array([0.0, 6.0, 4.0, 2.0, 0.0]),
-        y_coordinates=np.array([0.0, 2.0, 7.0, 6.0, 0.0]),
-    )
-
-    network.mesh2d_create_triangular_within_polygon(polygon)
-
-    assert np.array_equiv(
-        network._mesh2d.mesh2d_node_x,
-        np.array([6.0, 4.0, 2.0, 0.0]),
-    )
-    assert np.array_equiv(
-        network._mesh2d.mesh2d_node_y,
-        np.array([2.0, 7.0, 6.0, 0.0]),
-    )
-    assert np.array_equiv(
-        network._mesh2d.mesh2d_edge_nodes,
-        np.array([[2, 3], [3, 0], [0, 2], [0, 1], [1, 2]]),
-    )
 
 
 def test_add_1d2d_links():

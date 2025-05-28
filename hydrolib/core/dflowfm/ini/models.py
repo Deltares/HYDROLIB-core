@@ -117,6 +117,7 @@ class INIBasedModel(BaseModel, ABC):
         - Subclasses can override the `_header` attribute to define the INI block header.
         - Arbitrary fields can be added dynamically and are included during serialization.
     """
+
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
     model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=False)
@@ -299,12 +300,15 @@ class INIBasedModel(BaseModel, ABC):
         if isinstance(values, dict):
             new_values = {}
             for field_name, value in values.items():
-                if cls.model_fields.get(field_name) is None:
-                    new_values[field_name] = value
-                    continue
-                field_type = cls.model_fields.get(field_name).annotation
-                if field_type != float and field_type != List[float]:
-                    new_values[field_name] = value
+                field = cls.model_fields.get(field_name)
+                if field:
+                    field_type = field.annotation
+                    if field_type != float and field_type != List[float]:
+                        new_values[field_name] = value
+                    else:
+                        new_values[field_name] = (
+                            FortranScientificNotationConverter.convert(value)
+                        )
                 else:
                     # If the field is not defined in the model, keep it as is
                     new_values[field_name] = value
@@ -418,7 +422,7 @@ class INIBasedModel(BaseModel, ABC):
             Section: The INI section representation of the model.
         """
         props = []
-        cls_fields = type(self).model_fields          # cache the class-level dict
+        cls_fields = type(self).model_fields  # cache the class-level dict
         for key, value in self:
             if not self._should_be_serialized(key, value, save_settings):
                 continue
