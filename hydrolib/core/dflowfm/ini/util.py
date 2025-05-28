@@ -99,6 +99,15 @@ def get_enum_validator(
     return field_validator(*field_name, mode="before")(get_enum)
 
 
+def ensure_list(v: Any):
+    # Convert single object to a list if needed
+    if isinstance(v, dict):
+        return [v]
+    if not isinstance(v, list):
+        raise TypeError("Expected a list or a single dictionary")
+    return v
+
+
 def make_list_validator(*field_name: str):
     """Get a validator make a list of object if a single object is passed."""
 

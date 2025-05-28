@@ -5,13 +5,12 @@ namespace for storing the branches as branches.gui file
 # TODO reconsider the definition and/or filename of the branches.gui (from Prisca)
 
 import logging
-from typing import List, Literal, Optional
+from typing import Any, List, Literal, Optional
 
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.fields import Field
+from pydantic import Field, field_validator, model_validator
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.dflowfm.ini.util import make_list_validator
+from hydrolib.core.dflowfm.ini.util import ensure_list
 
 logger = logging.getLogger(__name__)
 
@@ -75,20 +74,20 @@ class Branch(INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    @root_validator
+    @model_validator(mode="after")
     @classmethod
-    def _validate_branch(cls, values: dict):
-        if values.get("branchtype") == 2 and (
-            values.get("sourcecompartmentname") is None
-            and values.get("targetcompartmentname") is None
+    def _validate_branch(cls, model: Any):
+        if model.branchtype == 2 and (
+            model.sourcecompartmentname is None and model.targetcompartmentname is None
         ):
             raise ValueError(
                 "Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."
             )
 
-        return values
+        return model
 
-    @validator("branchtype")
+    @field_validator("branchtype")
+    @classmethod
     def _validate_branchtype(cls, branchtype: int):
         allowed_branchtypes = [0, 1, 2]
         if branchtype not in allowed_branchtypes:
@@ -98,7 +97,8 @@ class Branch(INIBasedModel):
 
         return branchtype
 
-    @validator("material")
+    @field_validator("material")
+    @classmethod
     def _validate_material(cls, material: int):
         allowed_materials = range(10)
         if material not in allowed_materials:
@@ -123,8 +123,6 @@ class BranchModel(INIModel):
     general: BranchGeneral = BranchGeneral()
     branch: List[Branch] = []
 
-    _make_list = make_list_validator("branch")
-
     @classmethod
     def _ext(cls) -> str:
         return ".gui"
@@ -132,3 +130,8 @@ class BranchModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "branches"
+
+    @field_validator("branch", mode="before")
+    @classmethod
+    def _ensure_list(cls, v):
+        return ensure_list(v)
