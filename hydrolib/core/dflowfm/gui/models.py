@@ -5,10 +5,9 @@ namespace for storing the branches as branches.gui file
 # TODO reconsider the definition and/or filename of the branches.gui (from Prisca)
 
 import logging
-from typing import List, Literal, Optional, Any
+from typing import Any, List, Literal, Optional
 
-from pydantic import field_validator, model_validator
-from pydantic import Field
+from pydantic import Field, field_validator, model_validator
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import make_list_validator
@@ -79,8 +78,7 @@ class Branch(INIBasedModel):
     @classmethod
     def _validate_branch(cls, model: Any):
         if model.branchtype == 2 and (
-                model.sourcecompartmentname is None
-            and model.targetcompartmentname is None
+            model.sourcecompartmentname is None and model.targetcompartmentname is None
         ):
             raise ValueError(
                 "Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."
@@ -88,7 +86,7 @@ class Branch(INIBasedModel):
 
         return model
 
-    @field_validator('branchtype')
+    @field_validator("branchtype")
     @classmethod
     def _validate_branchtype(cls, branchtype: int):
         allowed_branchtypes = [0, 1, 2]
@@ -99,8 +97,7 @@ class Branch(INIBasedModel):
 
         return branchtype
 
-
-    @field_validator('material')
+    @field_validator("material")
     @classmethod
     def _validate_material(cls, material: int):
         allowed_materials = range(10)
@@ -134,8 +131,7 @@ class BranchModel(INIModel):
     def _filename(cls) -> str:
         return "branches"
 
-
-    @field_validator('branch', mode='before')
+    @field_validator("branch", mode="before")
     @classmethod
     def _ensure_list(cls, v):
         # Convert single Branch object to a list of Branches if needed
