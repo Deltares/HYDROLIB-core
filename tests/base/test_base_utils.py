@@ -546,17 +546,17 @@ class Test:
         (
                 {"a": "1.23D+03", "b": "text", "c": [1.0, "2.34D+02"]},
                 {"a": MockField(float), "b": MockField(str), "c": MockField(list[float])},
-                {"a": 1230.0, "b": "text", "c": [1.0, 234.0]},
+                {"a": "1.23e+03", "b": "text", "c": [1.0, "2.34e+02"]},
         ),
         (
                 {"a": "1.0E+02"},
                 {"a": MockField(float)},
-                {"a": 100.0},
+                {"a": "1.0E+02"},
         ),
         (
                 {"a": ["1.0D+01", "2.0D+02"]},
                 {"a": MockField(list[float])},
-                {"a": [10.0, 200.0]},
+                {"a": ["1.0e+01", "2.0e+02"]},
         ),
         (
                 {"a": "value"},

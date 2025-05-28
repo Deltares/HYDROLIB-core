@@ -15,6 +15,8 @@ SCIENTIFIC_NOTATION_REGEX = re.compile(SCIENTIFIC_NOTATION_PATTERN)
 
 PYTHON_STYLES = r"\1e\3"
 
+valid_types = (float, list[float], List[float], Optional[float], Optional[List[float]], Optional[list[float]])
+
 
 def to_key(string: str) -> str:
     """
@@ -378,11 +380,11 @@ class FortranScientificNotationConverter:
             Any: The processed value.
         """
         if isinstance(value, str):
-            return float(SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, value))
+            return SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, value)
         if isinstance(value, list):
             for i, v in enumerate(value):
                 if isinstance(v, str):
-                    value[i] = float(SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, v))
+                    value[i] = SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, v)
 
         return value
 
@@ -408,7 +410,7 @@ class FortranScientificNotationConverter:
             field: FieldInfo = field_definitions.get(field_name)
             if field:
                 field_type = field.annotation
-                if field_type != float and field_type != List[float] and field_type!= list[float]:
+                if field_type not in valid_types:
                     new_values[field_name] = value
                 else:
                     # convert only the value if it is a float or a list of floats
