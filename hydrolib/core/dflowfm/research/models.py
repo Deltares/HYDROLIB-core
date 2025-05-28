@@ -3,14 +3,14 @@ from typing import List, Literal, Optional
 from pydantic.v1 import Field
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm import (
+from hydrolib.core.dflowfm.polyfile import PolyFile
+from hydrolib.core.dflowfm.mdu import (
     FMModel,
     General,
     Geometry,
     Numerics,
     Output,
     Physics,
-    PolyFile,
     Processes,
     Restart,
     Sediment,
