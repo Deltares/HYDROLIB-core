@@ -9,7 +9,12 @@ from hydrolib.core.base.models import (
     validator_set_default_disk_only_file_model_when_none,
 )
 from hydrolib.core.base.utils import str_is_empty_or_none
-from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingData, ForcingModel
+from hydrolib.core.dflowfm.bc.models import (
+    ForcingBase,
+    ForcingData,
+    ForcingModel,
+    RealTime,
+)
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
@@ -176,6 +181,29 @@ class Lateral(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "xcoordinates", "ycoordinates"
     )
+
+    @field_validator("discharge", mode="before")
+    @classmethod
+    def validate_discharge(cls, v):
+        if isinstance(v, (float, ForcingModel, RealTime)):
+            return v
+        if isinstance(v, str):
+            # Try float
+            try:
+                return float(v)
+            except ValueError:
+                pass
+            # Try RealTime enum (case-insensitive)
+            try:
+                return RealTime(v.lower())
+            except ValueError:
+                pass
+            return ForcingModel(filepath=v)
+        if isinstance(v, Path):
+            return ForcingModel(filepath=str(v))
+        if isinstance(v, dict):
+            # Try to instantiate ForcingModel from dict
+            return ForcingModel(**v)
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
