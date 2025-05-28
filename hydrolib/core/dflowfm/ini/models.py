@@ -249,6 +249,11 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             dict: Updated field values with None values removed.
         """
+        # Check if values is a Section object and convert it to a dictionary
+        if isinstance(values, Section):
+            values = values.flatten(cls._duplicate_keys_as_list(), cls._supports_comments())
+
+        # Now proceed with the original logic for dictionary-like objects
         dropkeys = []
         for k, v in values.items():
             if v is None and k in cls.model_fields.keys():

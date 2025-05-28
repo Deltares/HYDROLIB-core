@@ -159,7 +159,31 @@ class AbstractSpatialField(INIBasedModel, ABC):
     @classmethod
     def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
         """Validates that the value is provided when dealing with polygons."""
-        # if isinstance(values, dict) :
+        # Check if values is a Section object from the parser
+        from hydrolib.core.dflowfm.ini.io_models import Section
+        if isinstance(values, Section):
+            # Convert Section to dictionary using flatten method
+            values_dict = values.flatten()
+
+            # Extract the values we need
+            data_file = None
+            for prop in values.content:
+                from hydrolib.core.dflowfm.ini.io_models import Property
+                if isinstance(prop, Property):
+                    if prop.key.lower() == "datafile":
+                        data_file = prop.value
+                        break
+
+            if data_file is not None:
+                data_file = DiskOnlyFileModel(data_file)
+                # We can't modify the Section object, so we'll return it as is
+                # The validation will be done later when the actual model is created
+                return values
+
+            # Continue with the flattened dictionary
+            values = values_dict
+
+        # Original code for dictionary-like objects
         data_file = values.get("datafile")
         if isinstance(data_file, (str, Path)):
             data_file = DiskOnlyFileModel(data_file)
@@ -174,7 +198,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
 
         value_field_value = values.get("value")
         datafiletype_field_value = values.get("datafiletype")
-        if value_field_value is not None and  datafiletype_field_value.lower() != DataFileType.polygon:
+        if value_field_value is not None and datafiletype_field_value is not None and datafiletype_field_value.lower() != DataFileType.polygon:
             raise ValueError(
                 f"When value={value_field_value} is given, dataFileType={DataFileType.polygon} is required."
             )
@@ -205,6 +229,15 @@ class AbstractSpatialField(INIBasedModel, ABC):
     @classmethod
     def validate_interpolation_method(cls, v):
         return enum_value_parser(InterpolationMethod)(v)
+
+    @field_validator("datafile", mode="before")
+    @classmethod
+    def validate_datafile(cls, v):
+        """Convert string values to DiskOnlyFileModel instances."""
+        if isinstance(v, str):
+            from hydrolib.core.base.models import DiskOnlyFileModel
+            return DiskOnlyFileModel(filepath=v)
+        return v
 
 
 class InitialField(AbstractSpatialField):
