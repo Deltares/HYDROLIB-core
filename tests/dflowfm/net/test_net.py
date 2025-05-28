@@ -12,12 +12,12 @@ from meshkernel import (
     MeshKernel,
     MeshRefinementParameters,
 )
+
 from hydrolib import __path__
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
-
 from tests.utils import test_input_dir, test_output_dir
 
 
@@ -369,9 +369,7 @@ def test_read_write_read_compare(filepath):
     network2 = NetworkModel(filepath=network1.filepath)
 
     # Read keys from convention
-    path = Path(__path__[0]).joinpath(
-        "core/dflowfm/net/ugrid_conventions.json"
-    )
+    path = Path(__path__[0]).joinpath("core/dflowfm/net/ugrid_conventions.json")
 
     with open(path, "r") as f:
         conventions = json.load(f)
@@ -569,9 +567,7 @@ class TestNCExplorer:
     mesh2d_file = test_input_dir / "ugrid_files" / "mesh2d_net.nc"
 
     def test_load_ugrid_json(self):
-        path = Path(__path__[0]).joinpath(
-            "core/dflowfm/net/ugrid_conventions.json"
-        )
+        path = Path(__path__[0]).joinpath("core/dflowfm/net/ugrid_conventions.json")
         assert path.exists()
 
         with path.open() as f:

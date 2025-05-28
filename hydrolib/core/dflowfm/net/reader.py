@@ -4,7 +4,7 @@ import json
 import logging
 from collections import namedtuple
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Optional, Tuple
 
 import netCDF4 as nc
 import numpy as np
