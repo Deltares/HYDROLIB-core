@@ -22,7 +22,7 @@ from pydantic import (
     Field,
     GetCoreSchemaHandler,
     field_validator,
-    model_validator,
+    model_validator
 )
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
@@ -302,20 +302,7 @@ class INIBasedModel(BaseModel, ABC):
     def preprocess_input(cls, values: dict) -> dict:
         """Convert Fortran-style scientific notation to Python float."""
         if isinstance(values, dict):
-            new_values = {}
-            for field_name, value in values.items():
-                field = cls.model_fields.get(field_name)
-                if field:
-                    field_type = field.annotation
-                    if field_type != float and field_type != List[float]:
-                        new_values[field_name] = value
-                    else:
-                        new_values[field_name] = (
-                            FortranScientificNotationConverter.convert(value)
-                        )
-                else:
-                    # If the field is not defined in the model, keep it as is
-                    new_values[field_name] = value
+            new_values = FortranScientificNotationConverter.convert_fields(values, cls.model_fields)
         else:
             new_values = values
 
