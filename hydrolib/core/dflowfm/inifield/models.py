@@ -240,8 +240,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
     @classmethod
     def validate_datafile(cls, v):
         """Convert string values to DiskOnlyFileModel instances."""
-        if isinstance(v, str):
-            from hydrolib.core.base.models import DiskOnlyFileModel
+        if isinstance(v, (str, Path)):
             return DiskOnlyFileModel(filepath=v)
         return v
 
