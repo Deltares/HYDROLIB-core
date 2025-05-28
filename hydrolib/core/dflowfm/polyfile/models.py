@@ -47,7 +47,7 @@ class Point(BaseModel):
 
     x: float
     y: float
-    z: Optional[float]
+    z: Optional[float] = Field(None)
     data: Sequence[float]
 
     def _get_identifier(self, data: dict) -> Optional[str]:
