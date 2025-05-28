@@ -182,7 +182,7 @@ class TestMeteo:
         with pytest.raises(ValidationError) as error:
             Meteo(**dict_values)
 
-        expected_message = f"{alias_field}\n  field required "
+        expected_message = f"{alias_field}\n  Field required "
         assert expected_message in str(error.value)
 
     def test_is_intermediate_link(self):
