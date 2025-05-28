@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Set, Union
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
@@ -228,9 +228,19 @@ class SourceSink(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
+    @model_validator(mode="before")
+    @classmethod
+    def validate_locationfile(cls, data: Any) -> Any:
+        file_location = data.get("locationfile")
+
+        # Convert string to DiskOnlyFileModel if needed
+        if isinstance(file_location, Union[str, Path]):
+            data["locationfile"] = DiskOnlyFileModel(file_location)
+        return data
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
-        fields = cls.__fields__
+        fields = cls.model_fields
         unknown_keywords = [
             key
             for key in input_data.keys()
@@ -239,13 +249,7 @@ class SourceSink(INIBasedModel):
         ]
         return set(unknown_keywords)
 
-    class Config:
-        """
-        Config class to tell Pydantic to accept fields not explicitly declared in the model.
-        """
-
-        # Allow dynamic fields
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
     def __init__(self, **data):
         super().__init__(**data)
