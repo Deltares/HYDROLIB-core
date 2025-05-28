@@ -162,7 +162,7 @@ class TestObservationCrossSectionModel:
         model.observationcrosssection.append(
             ObservationCrossSection(
                 name="testName",
-                branchId="testbranch",
+                branchid="testbranch",
                 chainage=123,
             )
         )
