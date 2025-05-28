@@ -61,19 +61,10 @@ class Boundary(INIBasedModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_locationfile(cls, data: Any) -> Any:
-        file_location = data.get("locationfile")
-
-        # Convert string to DiskOnlyFileModel if needed
-        if isinstance(file_location, Union[str, Path]):
-            data["locationfile"] = DiskOnlyFileModel(file_location)
-        return data
-
-    @model_validator(mode="before")
-    @classmethod
     def validate_forcingfile(cls, data: Any) -> Any:
         """Validates the forcingfile field to ensure it is a list of ForcingModel."""
-        forcing_file = data.get("forcingfile")
+        forcing_file = data.get("forcingfile") or data.get("forcingFile")
+        data.pop("forcingFile", None)  # Remove alias if present
         if not isinstance(forcing_file, list):
             data["forcingfile"] = [forcing_file]
         return data
@@ -86,9 +77,9 @@ class Boundary(INIBasedModel):
             isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
         )
 
-    @model_validator(mode="after")
+    @model_validator(mode="before")
     @classmethod
-    def check_nodeid_or_locationfile_present(cls, values: "Boundary") -> "Boundary":
+    def check_nodeid_or_locationfile_present(cls, values: Dict) -> Dict:
         """Verifies that either nodeid or locationfile properties have been set.
 
         Args:
@@ -100,8 +91,8 @@ class Boundary(INIBasedModel):
         Returns:
             Dict: Validated dictionary of values for Boundary.
         """
-        node_id = values.nodeid
-        location_file = values.locationfile
+        node_id = values.get("nodeid")
+        location_file = values.get("locationfile")
         if str_is_empty_or_none(node_id) and not cls._is_valid_locationfile_data(
             location_file
         ):
@@ -141,6 +132,17 @@ class Boundary(INIBasedModel):
                     break
 
         return result
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_locationfile(cls, data: Any) -> Any:
+        file_location = data.get("locationfile") or data.get("locationFile")
+        data.pop("locationFile", None)  # Remove alias if present
+
+        # Convert string to DiskOnlyFileModel if needed
+        if isinstance(file_location, (str, Path)):
+            data["locationfile"] = DiskOnlyFileModel(file_location)
+        return data
 
 
 class Lateral(INIBasedModel):
