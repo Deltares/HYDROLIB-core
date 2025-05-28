@@ -6,6 +6,7 @@ from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 
+from pydantic.fields import FieldInfo
 from strenum import StrEnum
 
 SCIENTIFIC_NOTATION_PATTERN = r"([\d.]+)([dD])([+-]?\d{1,3})"
@@ -13,6 +14,15 @@ SCIENTIFIC_NOTATION_PATTERN = r"([\d.]+)([dD])([+-]?\d{1,3})"
 SCIENTIFIC_NOTATION_REGEX = re.compile(SCIENTIFIC_NOTATION_PATTERN)
 
 PYTHON_STYLES = r"\1e\3"
+
+valid_types = (
+    float,
+    list[float],
+    List[float],
+    Optional[float],
+    Optional[List[float]],
+    Optional[list[float]],
+)
 
 
 def to_key(string: str) -> str:
@@ -384,3 +394,34 @@ class FortranScientificNotationConverter:
                     value[i] = SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, v)
 
         return value
+
+    @classmethod
+    def convert_fields(cls, values: dict, field_definitions: dict) -> dict:
+        """Convert Fields
+
+        Converts values in a dictionary using Fortran-style scientific notation
+        to Python floats for fields defined as float or List[float].
+
+        Args:
+            values (dict):
+                The input dictionary of field values.
+            field_definitions (dict):
+                A mapping of field names to Pydantic Field definitions.
+
+        Returns:
+            dict:
+                The updated dictionary with converted float fields.
+        """
+        new_values = {}
+        for field_name, value in values.items():
+            field: FieldInfo = field_definitions.get(field_name)
+            if field:
+                field_type = field.annotation
+                if field_type not in valid_types:
+                    new_values[field_name] = value
+                else:
+                    # convert only the value if it is a float or a list of floats
+                    new_values[field_name] = cls.convert(value)
+            else:
+                new_values[field_name] = value
+        return new_values
