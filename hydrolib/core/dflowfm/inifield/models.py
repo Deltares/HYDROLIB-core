@@ -156,22 +156,38 @@ class AbstractSpatialField(INIBasedModel, ABC):
     value: Optional[float] = Field(None, alias="value")
 
 
-    @model_validator(mode="before")
     @classmethod
-    def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
-        """Validates that the value is provided when dealing with polygons."""
-        # Check if values is a Section object from the parser
+    def _process_section_values(cls, values):
+        """Process Section objects and extract/convert values as needed.
+
+        Args:
+            values: The values to process, which may be a Section object or a dictionary.
+
+        Returns:
+            A dictionary containing the processed values.
+        """
+        # If values is a Section object, we need to handle it specially
         if isinstance(values, Section):
             # Extract the datafile value if present
             data_file = super()._extract_file_model_from_section(values, "datafile", DiskOnlyFileModel)
 
-            if data_file is not None:
-                # We can't modify the Section object, so we'll return it as is
-                # The validation will be done later when the actual model is created
-                return values
+            # Convert Section to dictionary
+            values_dict = super()._convert_section_to_dict(values)
 
-            # Convert Section to dictionary using flatten method
-            values = super()._convert_section_to_dict(values)
+            # If we found a datafile, add it to the dictionary
+            if data_file is not None:
+                values_dict["datafile"] = data_file
+
+            return values_dict
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
+        """Validates that the value is provided when dealing with polygons."""
+        # Process Section objects if needed
+        values = cls._process_section_values(values)
 
         # Process dictionary-like objects
         data_file = values.get("datafile")
