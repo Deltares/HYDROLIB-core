@@ -589,6 +589,43 @@ class DataBlockINIBasedModel(INIBasedModel):
 
     _make_lists = make_list_validator("datablock")
 
+    @staticmethod
+    def _is_float(value: str) -> bool:
+        """
+        Determines whether a value is a float.
+
+        Args:
+            value (str): The value to check.
+
+        Returns:
+            bool: True if the value can be converted to a float; otherwise, False.
+        """
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    @field_validator("datablock", mode="before")
+    def _convert_to_float(cls, datablock: Datablock) -> Datablock:
+        """
+        Validates that all values in the datablock are either floats or strings.
+
+        Args:
+            datablock (Datablock): The datablock to validate.
+
+        Returns:
+            Datablock: The validated datablock.
+
+        Raises:
+            ValueError: If any value in the datablock is not a float or string.
+        """
+        for r, row in enumerate(datablock):
+            for c, value in enumerate(row):
+                if isinstance(value, str) and cls._is_float(value):
+                    datablock[r][c] = float(value)
+        return datablock
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """
