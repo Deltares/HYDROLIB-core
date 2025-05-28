@@ -10,7 +10,7 @@ from typing import Any, List, Literal, Optional
 from pydantic import Field, field_validator, model_validator
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.dflowfm.ini.util import make_list_validator
+from hydrolib.core.dflowfm.ini.util import ensure_list
 
 logger = logging.getLogger(__name__)
 
@@ -134,9 +134,4 @@ class BranchModel(INIModel):
     @field_validator("branch", mode="before")
     @classmethod
     def _ensure_list(cls, v):
-        # Convert single Branch object to a list of Branches if needed
-        if isinstance(v, dict):
-            return [v]
-        if not isinstance(v, list):
-            raise TypeError("Expected a list of branches or a single branch dict")
-        return v
+        return ensure_list(v)
