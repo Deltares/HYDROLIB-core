@@ -672,24 +672,17 @@ class Orifice(Structure):
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
-    @validator("limitflowpos", always=True)
-    @classmethod
-    def _validate_limitflowpos(cls, v, values):
-        return cls._validate_limitflow(v, values, "limitFlowPos", "useLimitFlowPos")
-
-    @validator("limitflowneg", always=True)
-    @classmethod
-    def _validate_limitflowneg(cls, v, values):
-        return cls._validate_limitflow(v, values, "limitFlowNeg", "useLimitFlowNeg")
-
-    @classmethod
-    def _validate_limitflow(cls, v, values, limitflow: str, uselimitflow: str):
-        if v is None and values[uselimitflow.lower()] == True:
+    @model_validator(mode="after")
+    def _validate_limitflowpos(self):
+        if self.limitflowpos is None and self.uselimitflowpos:
             raise ValueError(
-                f"{limitflow} should be defined when {uselimitflow} is true"
+                "`limitFlowPos` should be defined when `useLimitFlowPos` is True."
             )
-
-        return v
+        if self.limitflowneg is None and self.uselimitflowneg:
+            raise ValueError(
+                "`limitFlowNeg` should be defined when `useLimitFlowNeg` is True."
+            )
+        return self
 
 
 class GateOpeningHorizontalDirection(StrEnum):
