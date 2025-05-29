@@ -663,7 +663,6 @@ class Orifice(Structure):
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
-    # TODO Use a validator here to check the optionals related to the bool field
     uselimitflowpos: Optional[bool] = Field(False, alias="useLimitFlowPos")
     limitflowpos: Optional[float] = Field(None, alias="limitFlowPos")
 
@@ -1009,11 +1008,8 @@ class Dambreak(Structure):
         """Check location dambreak
 
             - Verifies whether the location for this structure contains valid values for numCoordinates, xCoordinates and
-            yCoordinates or instead is using a polyline file.
+                yCoordinates or instead is using a polyline file.
             - Verifies whether de water level location specifications are valid.
-
-        Args:
-            values (dict): Dictionary of validated values to create a Dambreak.
 
         Raises:
             ValueError: When the values dictionary does not contain valid coordinates or polyline file or when the water level location specifications are not valid.
