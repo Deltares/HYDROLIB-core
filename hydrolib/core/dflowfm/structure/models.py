@@ -426,16 +426,16 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[ForcingData] = Field(alias="valveOpeningHeight")
-    numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
-    relopening: Optional[List[float]] = Field(alias="relOpening")
-    losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
-    bedfrictiontype: Optional[FrictionType] = Field(alias="bedFrictionType")
-    bedfriction: Optional[float] = Field(alias="bedFriction")
+    valveopeningheight: Optional[ForcingData] = Field(None, alias="valveOpeningHeight")
+    numlosscoeff: Optional[int] = Field(None, alias="numLossCoeff")
+    relopening: Optional[List[float]] = Field(None, alias="relOpening")
+    losscoeff: Optional[List[float]] = Field(None, alias="lossCoeff")
+    bedfrictiontype: Optional[FrictionType] = Field(None, alias="bedFrictionType")
+    bedfriction: Optional[float] = Field(None, alias="bedFriction")
     subtype: Optional[CulvertSubType] = Field(
         CulvertSubType.culvert.value, alias="subType"
     )
-    bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
+    bendlosscoeff: Optional[float] = Field(None, alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
@@ -503,7 +503,7 @@ class LongCulvert(Structure):
     """
 
     type: Literal["longCulvert"] = Field("longCulvert", alias="type")
-    allowedflowdir: Optional[FlowDirection] = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(None, alias="allowedFlowDir")
     zcoordinates: Optional[List[float]] = Field(None, alias="zCoordinates")
 
     width: float = Field(alias="width")
@@ -511,7 +511,7 @@ class LongCulvert(Structure):
     frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
     valverelativeopening: float = Field(alias="valveRelativeOpening")
-    csdefid: Optional[str] = Field(alias="csDefId")
+    csdefid: Optional[str] = Field(None, alias="csDefId")
 
     _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
@@ -543,20 +543,20 @@ class Pump(Structure):
 
     type: Literal["pump"] = Field("pump", alias="type")
 
-    orientation: Optional[Orientation] = Field(alias="orientation")
-    controlside: Optional[str] = Field(alias="controlSide")  # TODO Enum
-    numstages: Optional[int] = Field(alias="numStages")
+    orientation: Optional[Orientation] = Field(None, alias="orientation")
+    controlside: Optional[str] = Field(None, alias="controlSide")
+    numstages: Optional[int] = Field(None, alias="numStages")
     capacity: ForcingData = Field(alias="capacity")
 
-    startlevelsuctionside: Optional[List[float]] = Field(alias="startLevelSuctionSide")
-    stoplevelsuctionside: Optional[List[float]] = Field(alias="stopLevelSuctionSide")
+    startlevelsuctionside: Optional[List[float]] = Field(None, alias="startLevelSuctionSide")
+    stoplevelsuctionside: Optional[List[float]] = Field(None, alias="stopLevelSuctionSide")
     startleveldeliveryside: Optional[List[float]] = Field(
-        alias="startLevelDeliverySide"
+        None, alias="startLevelDeliverySide"
     )
-    stopleveldeliveryside: Optional[List[float]] = Field(alias="stopLevelDeliverySide")
-    numreductionlevels: Optional[int] = Field(alias="numReductionLevels")
-    head: Optional[List[float]] = Field(alias="head")
-    reductionfactor: Optional[List[float]] = Field(alias="reductionFactor")
+    stopleveldeliveryside: Optional[List[float]] = Field(None, alias="stopLevelDeliverySide")
+    numreductionlevels: Optional[int] = Field(None, alias="numReductionLevels")
+    head: Optional[List[float]] = Field(None, alias="head")
+    reductionfactor: Optional[List[float]] = Field(None, alias="reductionFactor")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "startlevelsuctionside",
@@ -685,10 +685,10 @@ class Orifice(Structure):
 
     # TODO Use a validator here to check the optionals related to the bool field
     uselimitflowpos: Optional[bool] = Field(False, alias="useLimitFlowPos")
-    limitflowpos: Optional[float] = Field(alias="limitFlowPos")
+    limitflowpos: Optional[float] = Field(None, alias="limitFlowPos")
 
     uselimitflowneg: Optional[bool] = Field(False, alias="useLimitFlowNeg")
-    limitflowneg: Optional[float] = Field(alias="limitFlowNeg")
+    limitflowneg: Optional[float] = Field(None, alias="limitFlowNeg")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
@@ -958,23 +958,23 @@ class Dambreak(Structure):
     f2: float = Field(alias="f2")
     ucrit: float = Field(alias="uCrit")
     waterlevelupstreamlocationx: Optional[float] = Field(
-        alias="waterLevelUpstreamLocationX"
+        None, alias="waterLevelUpstreamLocationX"
     )
     waterlevelupstreamlocationy: Optional[float] = Field(
-        alias="waterLevelUpstreamLocationY"
+        None, alias="waterLevelUpstreamLocationY"
     )
     waterleveldownstreamlocationx: Optional[float] = Field(
-        alias="waterLevelDownstreamLocationX"
+        None, alias="waterLevelDownstreamLocationX"
     )
     waterleveldownstreamlocationy: Optional[float] = Field(
-        alias="waterLevelDownstreamLocationY"
+        None, alias="waterLevelDownstreamLocationY"
     )
-    waterlevelupstreamnodeid: Optional[str] = Field(alias="waterLevelUpstreamNodeId")
+    waterlevelupstreamnodeid: Optional[str] = Field(None, alias="waterLevelUpstreamNodeId")
     waterleveldownstreamnodeid: Optional[str] = Field(
-        alias="waterLevelDownstreamNodeId"
+        None, alias="waterLevelDownstreamNodeId"
     )
     dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(
-        alias="dambreakLevelsAndWidths"
+        None, alias="dambreakLevelsAndWidths"
     )
 
     @validator("algorithm", pre=True)
