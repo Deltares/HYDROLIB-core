@@ -3,8 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Union
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
-
+from pydantic import ValidationError
 from unittest.mock import MagicMock
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
