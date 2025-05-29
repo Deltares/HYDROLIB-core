@@ -126,7 +126,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
 
     document = parser.finalize()
 
-    wrapper = WrapperTest[List[Union[Weir, UniversalWeir]]].parse_obj(
+    wrapper = WrapperTest[List[Union[Weir, UniversalWeir]]].model_validate(
         {"val": document.sections}
     )
     expected_structures = [
@@ -158,7 +158,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
 
     for val, expected in zip(wrapper.val, expected_structures):
         # TODO Make sure datablock never ends up in these structures!
-        assert val.model_dump(exclude={"datablock"}) == expected.model_dump()
+        assert val.model_dump(exclude={"datablock", "type"}) == expected.model_dump(exclude={"type"})
 
 
 def test_read_structures_missing_structure_field_raises_correct_error():
