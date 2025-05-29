@@ -203,7 +203,7 @@ def test_create_structure_without_type(locfields_structure):
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    "structure_type,expected",
     [
         ("WEIR", "weir"),
         ("UniversalWeir", "universalWeir"),
@@ -212,8 +212,8 @@ def test_create_structure_without_type(locfields_structure):
         ("Orifice", "orifice"),
     ],
 )
-def test_parses_structure_type_case_insensitive(locfields_structure, input, expected):
-    structure = Structure(type=input, **locfields_structure)
+def test_parses_structure_type_case_insensitive(locfields_structure, structure_type, expected):
+    structure = Structure(type=structure_type, **locfields_structure)
 
     assert structure.type == expected
 
