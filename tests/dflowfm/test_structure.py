@@ -986,14 +986,12 @@ class TestDambreak:
         err_mssg: str,
         default_dambreak_values: dict,
     ):
-        # 1. Define test data
         test_values = {**default_dambreak_values, **location_dict}
 
         # 2. Run test
         with pytest.raises(ValidationError) as exc_err:
             Dambreak(**test_values)
 
-        # 3. Verify final expectations.
         assert err_mssg in str(exc_err.value)
 
     def test_given_valid_values_creates_dambreak(self, valid_dambreak_values: dict):
@@ -1001,7 +999,7 @@ class TestDambreak:
         self.validate_valid_default_dambreak(dambreak)
 
     def test_given_structure_text_with_num_x_y_coordinates_parses_structure(self):
-        # 1. Define structure text.
+
         structure_text = inspect.cleandoc(
             """
             [Structure]
@@ -1027,7 +1025,7 @@ class TestDambreak:
             waterLevelDownstreamNodeId = aDownstreamNodeId # Node Id of custom downstream water level point.
             """
         )
-        # 2. Parse data.
+
         dambreak_obj = self.parse_dambreak_from_text(structure_text)
         self.validate_valid_default_dambreak(dambreak_obj)
 
@@ -1105,7 +1103,7 @@ class TestDambreak:
         document = parser.finalize()
 
         # 2. Parse object
-        return WrapperTest[Dambreak].parse_obj({"val": document.sections[0]}).val
+        return WrapperTest[Dambreak].model_validate({"val": document.sections[0]}).val
 
     def validate_valid_default_dambreak(self, dambreak: Dambreak):
         """

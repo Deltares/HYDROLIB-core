@@ -2,9 +2,6 @@
 structure namespace for storing the contents of an [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]'s structure file.
 """
 
-# TODO Implement the following structures
-# - Gate
-
 import logging
 from enum import Enum
 from operator import gt, ne
@@ -37,10 +34,8 @@ logger = logging.getLogger(__name__)
 ForcingData = Union[float, TimModel, ForcingModel]
 
 
-# TODO: handle comment blocks
-# TODO: handle duplicate keys
 class Structure(INIBasedModel):
-    # TODO: would we want to load this from something externally and generate these automatically
+
     class Comments(INIBasedModel.Comments):
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
