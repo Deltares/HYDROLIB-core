@@ -256,7 +256,6 @@ class Structure(INIBasedModel):
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
-
     def _exclude_fields(self) -> Set:
         # exclude the non-applicable, or unset props like coordinates or branches
         if self.type == "compound":
@@ -567,7 +566,7 @@ class Pump(Structure):
         return self
 
     @classmethod
-    def _check_list_lengths_suctionside(cls, values: Dict) -> Dict:
+    def _check_list_lengths_suctionside(cls, values: Dict):
         """Validates that the length of the startlevelsuctionside and stoplevelsuctionside fields are as expected."""
         validate_correct_length(
             values,
@@ -592,8 +591,8 @@ class Pump(Structure):
         )
         return self
 
-    @classmethod
-    def _check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
+    @staticmethod
+    def _check_list_lengths_deliveryside(values: Dict) -> Dict:
         """Validates that the length of the startleveldeliveryside and stopleveldeliveryside fields are as expected."""
         validate_correct_length(
             values,
@@ -619,16 +618,17 @@ class Pump(Structure):
         )
         return self
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths_head_and_reductionfactor(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths_head_and_reductionfactor(self):
         """Validates that the lengths of the head and reductionfactor fields are as expected."""
-            values,
         validate_correct_length(
+            self.model_dump(),
             "head",
             "reductionfactor",
             length_name="numreductionlevels",
             list_required_with_length=True,
         )
+        return self
 
 
 class Compound(Structure):
@@ -955,7 +955,7 @@ class Dambreak(Structure):
         None, alias="dambreakLevelsAndWidths"
     )
 
-    @validator("algorithm", pre=True)
+    @field_validator("algorithm", mode="after")
     @classmethod
     def validate_algorithm(cls, value: str) -> DambreakAlgorithm:
         """
@@ -980,7 +980,8 @@ class Dambreak(Structure):
             raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
         return DambreakAlgorithm(int_value)
 
-    @validator("dambreaklevelsandwidths")
+
+    @field_validator("dambreaklevelsandwidths", mode="after")
     @classmethod
     def validate_dambreak_levels_and_widths(
         cls, field_value: Optional[Union[TimModel, ForcingModel]], values: dict
@@ -1008,9 +1009,8 @@ class Dambreak(Structure):
             )
         return field_value
 
-    @root_validator
-    @classmethod
-    def check_location_dambreak(cls, model: "Dambreak") -> "Dambreak":
+    @model_validator(mode="after")
+    def check_location_dambreak(self) -> "Dambreak":
         """Check location dambreak
 
             - Verifies whether the location for this structure contains valid values for numCoordinates, xCoordinates and
@@ -1036,7 +1036,7 @@ class Dambreak(Structure):
             "waterLevelDownstreamNodeId",
         )
 
-        return model
+        return self
 
     @staticmethod
     def _validate_waterlevel_location(values, x_key: str, y_key: str, node_key: str):
