@@ -101,9 +101,9 @@ class Structure(INIBasedModel):
     )
 
 
-    @root_validator
+    @model_validator(mode="after")
     @classmethod
-    def check_location(cls, values: dict) -> dict:
+    def check_location(cls, values: "Structure") -> "Structure":
         """
         Validates the location of the structure based on the given parameters for the following cases:
             - if a branchid is given, then it is expected also the chainage, otherwise numcoordinates xcoordinates
@@ -119,7 +119,9 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
-        filtered_values = {k: v for k, v in values.items() if v is not None}
+        values_dict = values.model_dump()
+
+        filtered_values = {k: v for k, v in values_dict.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
         if structype == "compound" or issubclass(cls, Compound):
