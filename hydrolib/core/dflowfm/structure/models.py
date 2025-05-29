@@ -96,9 +96,9 @@ class Structure(INIBasedModel):
     @classmethod
     def check_location(cls, values: dict) -> dict:
         """
-        Validates the location of the structure based on the given parameters.
-        For instance, if a branchid is given, then it is expected also the chainage,
-        otherwise numcoordinates xcoordinates and ycoordinates shall be expected.
+        Validates the location of the structure based on the given parameters for the following cases:
+            - if a branchid is given, then it is expected also the chainage, otherwise numcoordinates xcoordinates
+            and ycoordinates shall be expected.
 
         Args:
             values (dict): Dictionary of values validated for the new structure.
@@ -1003,6 +1003,11 @@ class Dambreak(Structure):
         Verifies whether the location for this structure contains valid values for
         numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
         Verifies whether de water level location specifications are valid.
+        """Check location dambreak
+
+            - Verifies whether the location for this structure contains valid values for numCoordinates, xCoordinates and
+            yCoordinates or instead is using a polyline file.
+            - Verifies whether de water level location specifications are valid.
 
         Args:
             values (dict): Dictionary of validated values to create a Dambreak.
@@ -1112,8 +1117,10 @@ class StructureModel(INIModel):
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[..]`.
 
     Attributes:
-        general (StructureGeneral): `[General]` block with file metadata.
-        branch (List[Structure]): List of `[Structure]` blocks for all hydraulic structures.
+        general (StructureGeneral):
+            `[General]` block with file metadata.
+        structure (List[Structure]):
+            List of `[Structure]` blocks for all hydraulic structures.
     """
 
     general: StructureGeneral = StructureGeneral()
