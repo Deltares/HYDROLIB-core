@@ -959,14 +959,14 @@ class Dambreak(Structure):
         Returns:
             int: Validated value.
         """
-        int_value = -1
         try:
             int_value = int(value)
         except Exception:
             raise ValueError("Dambreak algorithm value should be of type int.")
-        if 0 < int_value <= 3:
-            return DambreakAlgorithm(int_value)
-        raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
+
+        if not (0 < int_value <= 3):
+            raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
+        return DambreakAlgorithm(int_value)
 
     @validator("dambreaklevelsandwidths")
     @classmethod
@@ -998,11 +998,7 @@ class Dambreak(Structure):
 
     @root_validator
     @classmethod
-    def check_location_dambreak(cls, values: dict) -> dict:
-        """
-        Verifies whether the location for this structure contains valid values for
-        numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
-        Verifies whether de water level location specifications are valid.
+    def check_location_dambreak(cls, model: "Dambreak") -> "Dambreak":
         """Check location dambreak
 
             - Verifies whether the location for this structure contains valid values for numCoordinates, xCoordinates and
