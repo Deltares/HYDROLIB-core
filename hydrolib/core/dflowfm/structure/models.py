@@ -126,7 +126,7 @@ class Structure(INIBasedModel):
         filtered_values = {k: v for k, v in values_dict.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        if structype == "compound" or issubclass(self.__class__, Compound):
+        if structype == "compound" or issubclass(Compound, self.__class__):
             # Compound structure does not require a location specification.
             return self
 

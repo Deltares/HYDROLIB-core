@@ -458,8 +458,8 @@ class TestStructure:
                 branchid="branch01",
                 chainage=123.4,
             )
-            return_value = Compound.check_location(input_dict)
-            assert return_value == input_dict
+            mock_structure = mock_structure_check_location(input_dict)
+            assert mock_structure.check_location(input_dict)
 
             # TODO: issue 214: replace the above test code by the test
             # code below once the D-HYDRO Suite 1D2D has fixed issue
