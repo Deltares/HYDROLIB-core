@@ -27,13 +27,13 @@ from tests.utils import (
 uniqueid_str = "Unique structure id (max. 256 characters)."
 
 
-def mock_structure_check_location(dict_values: Dict[str, Any]) -> MagicMock:
-    mock_structure = MagicMock(spec=Structure)
+def mock_structure_check_location(dict_values: Dict[str, Any], structure_type=Structure) -> MagicMock:
+    mock_structure = MagicMock(spec=structure_type)
     mock_structure.model_dump.return_value = dict_values
     mock_structure.check_location = Structure.check_location.__get__(mock_structure, Structure)
     mock_structure.validate_coordinates_in_model = Structure.validate_coordinates_in_model
     mock_structure.validate_branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model
-
+    mock_structure.__class__ = structure_type  # Ensure the mock is treated as a Structure instance
     return mock_structure
 
 
