@@ -206,7 +206,7 @@ def test_create_structure_without_type(locfields_structure):
     "structure_type,expected",
     [
         ("WEIR", "weir"),
-        ("UniversalWeir", "universalWeir"),
+        ("UniversalWeir", "universalweir"),
         ("Culvert", "culvert"),
         ("Pump", "pump"),
         ("Orifice", "orifice"),
