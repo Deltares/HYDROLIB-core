@@ -5,10 +5,9 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.dflow
 import logging
 from enum import Enum
 from operator import gt, ne
-from typing import Dict, List, Literal, Optional, Set, Union
+from typing import Dict, List, Literal, Optional, Set, Union, Annotated, Any
 
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import root_validator, validator
+from pydantic import Field, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -92,9 +91,6 @@ class Structure(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    @validator("type", pre=True)
-    def _validate_type(cls, value):
-        return get_from_subclass_defaults(Structure, "type", value)
 
     @root_validator
     @classmethod
@@ -240,31 +236,6 @@ class Structure(INIBasedModel):
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `type` field.
-        This field is compared to each `type` field of the derived models of `Structure`.
-        The derived model with an equal structure type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known structure type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("type").default.lower()
-                    == v.get("type", "").lower()
-                ):
-                    v = c(**v)
-                    break
-            else:
-                raise ValueError(
-                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
-                )
-        return super().validate(v)
 
     def _exclude_fields(self) -> Set:
         # exclude the non-applicable, or unset props like coordinates or branches
