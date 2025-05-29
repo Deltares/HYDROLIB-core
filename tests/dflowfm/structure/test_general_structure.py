@@ -153,7 +153,7 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
         struct = wrapper.val
 
         assert struct.id == "potato_id"
@@ -240,7 +240,7 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
         struct = wrapper.val
 
         assert struct.comments is not None
@@ -330,10 +330,10 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[GeneralStructure].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
         struct = wrapper.val
 
-        assert struct.dict().get("unknown") is None  # type: ignore
+        assert struct.model_dump().get("unknown") is None  # type: ignore
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"

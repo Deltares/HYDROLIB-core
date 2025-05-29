@@ -590,7 +590,7 @@ class TestPump:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Pump].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[Pump].model_validate({"val": document.sections[0]})
         structure = wrapper.val
 
         assert structure.id == "pump_id"
