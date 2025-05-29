@@ -171,7 +171,7 @@ def test_read_structures_missing_structure_field_raises_correct_error():
 
     filepath = invalid_test_data_dir / file
 
-    with pytest.raises(ValidationError) as error:
+    with pytest.raises(ValueError) as error:
         StructureModel(filepath)
 
     expected_message = f"{file} -> structure -> 1 -> {identifier} -> {field}"
@@ -186,7 +186,7 @@ def locfields_structure():
 
 def test_create_structure_without_id(locfields_structure):
     field = "id"
-    with pytest.raises(ValidationError) as error:
+    with pytest.raises(ValueError) as error:
         _ = Structure(**locfields_structure)  # Intentionally no id+type
 
     expected_message = f"{field}"
@@ -197,7 +197,7 @@ def test_create_structure_without_id(locfields_structure):
 def test_create_structure_without_type(locfields_structure):
     identifier = "structA"
     field = "type"
-    with pytest.raises(ValidationError) as error:
+    with pytest.raises(ValueError) as error:
         _ = Structure(id=identifier, **locfields_structure)  # Intentionally no type
 
     expected_message = f"{identifier} -> {field}"
@@ -520,7 +520,7 @@ class TestBridge:
 
         expected_message = "7 validation errors for WrapperTest[Bridge]"
         with pytest.raises(ValueError) as exc_err:
-            wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+            wrapper = WrapperTest[Bridge].model_validate({"val": document.sections[0]})
             bridge = wrapper.val
         assert expected_message in str(exc_err.value)
 
@@ -2319,7 +2319,7 @@ class TestCulvert:
         values = self._create_culvert_values(valveonoff=True)
         del values[missing_field]
 
-        with pytest.raises(ValidationError) as error:
+        with pytest.raises(ValueError) as error:
             Culvert(**values)
 
         expected_message = f"{missing_field} should be provided when valveonoff is True"
@@ -2334,7 +2334,7 @@ class TestCulvert:
         values = self._create_culvert_values(valveonoff=False)
         values["subtype"] = CulvertSubType.invertedSiphon
 
-        with pytest.raises(ValidationError) as error:
+        with pytest.raises(ValueError) as error:
             Culvert(**values)
 
         expected_message = (
@@ -2347,7 +2347,7 @@ class TestCulvert:
         values["subtype"] = CulvertSubType.culvert
         values["bendlosscoeff"] = 0.1
 
-        with pytest.raises(ValidationError) as error:
+        with pytest.raises(ValueError) as error:
             Culvert(**values)
 
         expected_message = "bendlosscoeff is forbidden when subtype is culvert"
@@ -2426,7 +2426,7 @@ class TestLongCulvert:
         self, missing_field, longculvert_values: Dict[str, Any]
     ):
         del longculvert_values[missing_field]
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             LongCulvert(**longculvert_values)
 
     def test_invalid_coordinates_length_raises(
@@ -2440,7 +2440,7 @@ class TestLongCulvert:
         self, longculvert_values: Dict[str, Any]
     ):
         longculvert_values["zcoordinates"] = [-0.3, -0.3, -0.4]
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             LongCulvert(**longculvert_values)
 
     def test_create_longculvert_without_zcoordinates(
