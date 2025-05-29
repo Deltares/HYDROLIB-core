@@ -102,15 +102,11 @@ class Structure(INIBasedModel):
 
 
     @model_validator(mode="after")
-    @classmethod
-    def check_location(cls, values: "Structure") -> "Structure":
+    def check_location(self):
         """
         Validates the location of the structure based on the given parameters for the following cases:
             - if a branchid is given, then it is expected also the chainage, otherwise numcoordinates xcoordinates
             and ycoordinates shall be expected.
-
-        Args:
-            values (dict): Dictionary of values validated for the new structure.
 
         Raises:
             ValueError: When branchid or chainage values are not valid (empty strings).
@@ -119,14 +115,14 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
-        values_dict = values.model_dump()
+        values_dict = self.model_dump()
 
         filtered_values = {k: v for k, v in values_dict.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        if structype == "compound" or issubclass(cls, Compound):
+        if structype == "compound" or issubclass(self.__class__, Compound):
             # Compound structure does not require a location specification.
-            return values
+            return self
 
         # Backwards compatibility for old-style polylinefile input field (instead of num/x/yCoordinates):
         polyline_compatible_structures = dict(
@@ -187,7 +183,7 @@ class Structure(INIBasedModel):
                 "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
             )
 
-        return values
+        return self
 
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:
