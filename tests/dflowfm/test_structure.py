@@ -1854,7 +1854,7 @@ class TestPump:
         values.update({ln: [1.1] for ln in present_list_names})
 
         if should_raise_error:
-            with pytest.raises(ValidationError):
+            with pytest.raises(ValueError):
                 _ = Pump(**values)
         else:
             # Simply create the Pump and accept no Error raised.
@@ -1875,7 +1875,7 @@ class TestPump:
             listargs[_lengthname] = correctlength
         listargs["controlside"] = "both"
 
-        with pytest.raises(ValidationError) as error:
+        with pytest.raises(ValueError) as error:
 
             _ = Pump(
                 **self._create_required_pump_values(),
