@@ -113,7 +113,7 @@ class Structure(INIBasedModel):
         filtered_values = {k: v for k, v in values.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        if structype == "compound" or issubclass(cls, (Compound)):
+        if structype == "compound" or issubclass(cls, Compound):
             # Compound structure does not require a location specification.
             return values
 
@@ -171,7 +171,10 @@ class Structure(INIBasedModel):
             branch_and_chainage_in_model
             or coordinates_in_model
             or polylinefile_in_model
-        ), "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+        ):
+            raise ValueError(
+                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+            )
 
         return values
 
@@ -417,8 +420,8 @@ class Culvert(Structure):
         cls, values: Dict
     ) -> Dict:
         """Validates that valve-related fields are present when there is a valve present."""
-        return validate_required_fields(
             values,
+        validate_required_fields(
             "valveopeningheight",
             "numlosscoeff",
             "relopening",
@@ -432,8 +435,8 @@ class Culvert(Structure):
         cls, values: Dict
     ) -> Dict:
         """Validates that the bendlosscoeff value is present when dealing with inverted syphons."""
-        return validate_required_fields(
             values,
+        validate_required_fields(
             "bendlosscoeff",
             conditional_field_name="subtype",
             conditional_value=CulvertSubType.invertedSiphon,
@@ -442,8 +445,8 @@ class Culvert(Structure):
     @root_validator(allow_reuse=True)
     def check_list_lengths(cls, values):
         """Validates that the length of the relopening and losscoeff fields are as expected."""
-        return validate_correct_length(
             values,
+        validate_correct_length(
             "relopening",
             "losscoeff",
             length_name="numlosscoeff",
@@ -455,8 +458,8 @@ class Culvert(Structure):
         cls, values: Dict
     ) -> Dict:
         """Validates that the bendlosscoeff field is not provided when the subtype is a culvert."""
-        return validate_forbidden_fields(
             values,
+        validate_forbidden_fields(
             "bendlosscoeff",
             conditional_field_name="subtype",
             conditional_value=CulvertSubType.culvert,
@@ -543,8 +546,8 @@ class Pump(Structure):
     def validate_that_controlside_is_provided_when_numstages_is_provided(
         cls, values: Dict
     ) -> Dict:
-        return validate_required_fields(
             values,
+        validate_required_fields(
             "controlside",
             conditional_field_name="numstages",
             conditional_value=0,
@@ -554,7 +557,7 @@ class Pump(Structure):
     @classmethod
     def _check_list_lengths_suctionside(cls, values: Dict) -> Dict:
         """Validates that the length of the startlevelsuctionside and stoplevelsuctionside fields are as expected."""
-        return validate_correct_length(
+        validate_correct_length(
             values,
             "startlevelsuctionside",
             "stoplevelsuctionside",
@@ -568,9 +571,9 @@ class Pump(Structure):
         Validates the length of the suction side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the deliverySide.
         """
-        return validate_conditionally(
             cls,
             values,
+        validate_conditionally(
             Pump._check_list_lengths_suctionside,
             "controlside",
             "deliverySide",
@@ -580,7 +583,7 @@ class Pump(Structure):
     @classmethod
     def _check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
         """Validates that the length of the startleveldeliveryside and stopleveldeliveryside fields are as expected."""
-        return validate_correct_length(
+        validate_correct_length(
             values,
             "startleveldeliveryside",
             "stopleveldeliveryside",
@@ -594,9 +597,9 @@ class Pump(Structure):
         Validates the length of the delivery side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the suctionSide.
         """
-        return validate_conditionally(
             cls,
             values,
+        validate_conditionally(
             Pump._check_list_lengths_deliveryside,
             "controlside",
             "suctionSide",
@@ -606,8 +609,8 @@ class Pump(Structure):
     @root_validator(allow_reuse=True)
     def check_list_lengths_head_and_reductionfactor(cls, values):
         """Validates that the lengths of the head and reductionfactor fields are as expected."""
-        return validate_correct_length(
             values,
+        validate_correct_length(
             "head",
             "reductionfactor",
             length_name="numreductionlevels",
@@ -1018,13 +1021,14 @@ class Dambreak(Structure):
         Returns:
             dict: Dictionary of validated values.
         """
-        cls._validate_waterlevel_location(
+        self._validate_waterlevel_location(
+            self.model_dump(),
             "waterLevelUpstreamLocationX",
             "waterLevelUpstreamLocationY",
             "waterLevelUpstreamNodeId",
         )
-        _validate_waterlevel_location(
-        cls._validate_waterlevel_location(
+        self._validate_waterlevel_location(
+            self.model_dump(),
             "waterLevelDownstreamLocationX",
             "waterLevelDownstreamLocationY",
             "waterLevelDownstreamNodeId",
