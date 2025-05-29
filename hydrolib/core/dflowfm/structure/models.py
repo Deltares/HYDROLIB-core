@@ -137,33 +137,37 @@ class Structure(INIBasedModel):
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Error: do not allow both x/y and polyline file:
-        assert not (
-            polylinefile_in_model and coordinates_in_model
-        ), f"`Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+        if polylinefile_in_model and coordinates_in_model:
+            raise ValueError(
+                "Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+            )
 
         # Error: require x/y or polyline file:
         if (
             structype in polyline_compatible_structures.keys()
             and structype in only_coordinates_structures.keys()
         ):
-            assert (
-                coordinates_in_model or polylinefile_in_model
-            ), f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
+            if not (coordinates_in_model or polylinefile_in_model):
+                raise ValueError(
+                    f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
+                )
 
         # Error: Some structures require coordinates_in_model, but not branchId and chainage.
         if (
             not polylinefile_in_model
             and structype in only_coordinates_structures.keys()
         ):
-            assert (
-                coordinates_in_model
-            ), f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
+            if not coordinates_in_model:
+                raise ValueError(
+                    f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
+                )
 
         # Error: final check: at least one of x/y, branchId+chainage or polyline file must be given
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
             filtered_values
         )
-        assert (
+
+        if not (
             branch_and_chainage_in_model
             or coordinates_in_model
             or polylinefile_in_model
