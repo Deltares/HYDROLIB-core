@@ -573,20 +573,20 @@ class Pump(Structure):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
-    def conditionally_check_list_lengths_suctionside(cls, values: Dict) -> Dict:
+    @model_validator(mode="after")
+    def conditionally_check_list_lengths_suctionside(self) -> Dict:
         """
         Validates the length of the suction side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the deliverySide.
         """
-            cls,
-            values,
         validate_conditionally(
+            self.model_dump(),
             Pump._check_list_lengths_suctionside,
             "controlside",
             "deliverySide",
             ne,
         )
+        return self
 
     @classmethod
     def _check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
@@ -599,20 +599,21 @@ class Pump(Structure):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
-    def conditionally_check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
+
+    @model_validator(mode="after")
+    def conditionally_check_list_lengths_deliveryside(self):
         """
         Validates the length of the delivery side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the suctionSide.
         """
-            cls,
-            values,
         validate_conditionally(
+            self.model_dump(),
             Pump._check_list_lengths_deliveryside,
             "controlside",
             "suctionSide",
             ne,
         )
+        return self
 
     @root_validator(allow_reuse=True)
     def check_list_lengths_head_and_reductionfactor(cls, values):
