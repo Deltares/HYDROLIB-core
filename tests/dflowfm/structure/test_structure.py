@@ -663,7 +663,3 @@ class TestValidateCoordinatesInModel:
                 str(exc_err.value)
                 == f"Expected at least 2 coordinates, but only {n_coords} declared."
         )
-
-
-
-
