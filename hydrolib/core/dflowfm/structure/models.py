@@ -1110,6 +1110,22 @@ class StructureGeneral(INIGeneral):
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
+StructureUnion = Annotated[
+    Union[
+        Weir,
+        UniversalWeir,
+        Culvert,
+        LongCulvert,
+        Pump,
+        Compound,
+        Orifice,
+        GeneralStructure,
+        Dambreak,
+        Bridge
+    ],
+    Field(discriminator="type")
+]
+
 class StructureModel(INIModel):
     """
     The overall structure model that contains the contents of one structure file.
@@ -1124,7 +1140,7 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: List[Structure] = []
+    structure: List[StructureUnion] = []
 
     @classmethod
     def _ext(cls) -> str:
