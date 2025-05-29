@@ -68,6 +68,7 @@ class BaseModel(PydanticBaseModel):
         "extra": "forbid",  # will throw errors so we can fix our models
         "populate_by_name": True,
         "alias_generator": to_key,
+        "error_url_template": None
     }
 
     def __init__(self, **data: Any) -> None:
