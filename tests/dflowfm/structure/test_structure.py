@@ -445,8 +445,9 @@ class TestStructure:
                 branchid=None,
                 chainage=None,
             )
-            return_value = Compound.check_location(input_dict)
-            assert return_value == input_dict
+            mock_structure = mock_structure_check_location(input_dict)
+            assert mock_structure.check_location()
+
 
         def test_check_location_given_compound_structure_raises_error(self):
             input_dict = dict(
