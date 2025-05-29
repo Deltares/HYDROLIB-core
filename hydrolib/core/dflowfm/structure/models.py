@@ -1018,34 +1018,34 @@ class Dambreak(Structure):
         Returns:
             dict: Dictionary of validated values.
         """
-
-        def _validate_waterlevel_location(x_key: str, y_key: str, node_key: str):
-            x_is_given = values.get(x_key.lower()) is not None
-            y_is_given = values.get(y_key.lower()) is not None
-            node_is_given = values.get(node_key.lower()) is not None
-
-            if (x_is_given and y_is_given and not node_is_given) or (
-                node_is_given and not x_is_given and not y_is_given
-            ):
-                return
-
-            raise ValueError(
-                f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
-            )
-
-        _validate_waterlevel_location(
+        cls._validate_waterlevel_location(
             "waterLevelUpstreamLocationX",
             "waterLevelUpstreamLocationY",
             "waterLevelUpstreamNodeId",
         )
         _validate_waterlevel_location(
+        cls._validate_waterlevel_location(
             "waterLevelDownstreamLocationX",
             "waterLevelDownstreamLocationY",
             "waterLevelDownstreamNodeId",
         )
 
-        return values
+        return model
 
+    @staticmethod
+    def _validate_waterlevel_location(values, x_key: str, y_key: str, node_key: str):
+        x_is_given = values.get(x_key.lower()) is not None
+        y_is_given = values.get(y_key.lower()) is not None
+        node_is_given = values.get(node_key.lower()) is not None
+
+        if not (
+                (x_is_given and y_is_given and not node_is_given) or
+                (node_is_given and not x_is_given and not y_is_given)
+        ):
+
+            raise ValueError(
+                f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
+            )
 
 class Bridge(Structure):
     """
