@@ -545,97 +545,89 @@ class TestStructure:
         structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
 
         @pytest.mark.parametrize(
-            "type, expectation, error_mssg",
+            "structure_type, error_mssg",
             [
                 pytest.param(
                     "",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="No structure raises.",
                 ),
                 pytest.param(
                     None,
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="None structure raises.",
                 ),
                 pytest.param(
                     "weir",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="Weir raises.",
                 ),
                 pytest.param(
                     "universalWeir",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="UniversalWeir raises.",
                 ),
                 pytest.param(
                     "culvert",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="Culvert raises.",
                 ),
                 pytest.param(
                     "longCulvert",
-                    pytest.raises(AssertionError),
                     long_culvert_err,
                     id="LongCulvert raises.",
                 ),
                 pytest.param(
                     "orifice",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="Orifice raises.",
                 ),
                 pytest.param(
                     "bridge",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="Bridge raises.",
                 ),
                 pytest.param(
                     "gate",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="Gate raises.",
                 ),
                 pytest.param(
                     "generalStructure",
-                    pytest.raises(AssertionError),
                     structure_err,
                     id="GeneralStructure raises.",
                 ),
                 pytest.param(
                     "dambreak",
-                    pytest.raises(AssertionError),
                     dambreak_err,
                     id="Dambreak raises.",
                 ),
                 pytest.param(
-                    "compound", does_not_raise(), None, id="Compound DOES NOT raise."
+                    "compound", None, id="Compound DOES NOT raise." # does_not_raise(),
                 ),
             ],
         )
         def test_check_location_given_no_values_raises_expectation(
-            self, type: str, expectation, error_mssg: str
+            self, structure_type, error_mssg: str
         ):
-            with expectation as exc_err:
-                input_dict = dict(
-                    notAValue="Not a relevant value 1",
-                    type=type,
-                    numcoordinates=None,
-                    xcoordinates=None,
-                    ycoordinates=None,
-                    branchid=None,
-                    chainage=None,
-                )
+            input_dict = dict(
+                notAValue="Not a relevant value 1",
+                type=structure_type,
+                numcoordinates=None,
+                xcoordinates=None,
+                ycoordinates=None,
+                branchid=None,
+                chainage=None,
+            )
+
+            if error_mssg is None:
                 return_value = Structure.check_location(input_dict)
-                if not error_mssg:
-                    assert return_value == input_dict
-                    return
-            assert str(exc_err.value) == error_mssg
+                assert return_value == input_dict
+            else:
+                with pytest.raises(ValueError) as exc_err:
+                    Structure.check_location(input_dict)
+
+                assert str(exc_err.value) == error_mssg
 
         def test_check_nolocation_given_compound_structure_raises_nothing(self):
             input_dict = dict(
@@ -988,8 +980,7 @@ class TestDambreak:
     ):
         test_values = {**default_dambreak_values, **location_dict}
 
-        # 2. Run test
-        with pytest.raises(ValidationError) as exc_err:
+        with pytest.raises(ValueError) as exc_err:
             Dambreak(**test_values)
 
         assert err_mssg in str(exc_err.value)
