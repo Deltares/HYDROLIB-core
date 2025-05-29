@@ -2433,7 +2433,7 @@ class TestLongCulvert:
         self, longculvert_values: Dict[str, Any]
     ):
         longculvert_values["numcoordinates"] = 3
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             LongCulvert(**longculvert_values)
 
     def test_invalid_zcoordinates_length_raises(

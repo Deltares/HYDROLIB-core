@@ -7,7 +7,7 @@ from enum import Enum
 from operator import gt, ne
 from typing import Dict, List, Literal, Optional, Set, Union, Annotated, Any
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, field_validator, model_validator, ValidationInfo
 from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -414,13 +414,11 @@ class Culvert(Structure):
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
     _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
 
-    @root_validator(allow_reuse=True)
-    def validate_that_valve_related_fields_are_present_for_culverts_with_valves(
-        cls, values: Dict
-    ) -> Dict:
+    @model_validator(mode="after")
+    def validate_that_valve_related_fields_are_present_for_culverts_with_valves(self):
         """Validates that valve-related fields are present when there is a valve present."""
-            values,
         validate_required_fields(
+            self.model_dump(),
             "valveopeningheight",
             "numlosscoeff",
             "relopening",
@@ -428,41 +426,43 @@ class Culvert(Structure):
             conditional_field_name="valveonoff",
             conditional_value=True,
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def validate_that_bendlosscoeff_field_is_present_for_invertedsyphons(
-        cls, values: Dict
-    ) -> Dict:
+    @model_validator(mode="after")
+    def validate_that_bendlosscoeff_field_is_present_for_invertedsyphons(self):
         """Validates that the bendlosscoeff value is present when dealing with inverted syphons."""
-            values,
         validate_required_fields(
+            self.model_dump(),
             "bendlosscoeff",
             conditional_field_name="subtype",
             conditional_value=CulvertSubType.invertedSiphon,
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths(self):
         """Validates that the length of the relopening and losscoeff fields are as expected."""
-            values,
         validate_correct_length(
+            self.model_dump(),
             "relopening",
             "losscoeff",
             length_name="numlosscoeff",
             list_required_with_length=True,
         )
+        return self
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def validate_that_bendlosscoeff_is_not_provided_for_culverts(
-        cls, values: Dict
+        self
     ) -> Dict:
         """Validates that the bendlosscoeff field is not provided when the subtype is a culvert."""
-            values,
         validate_forbidden_fields(
+            self.model_dump(),
             "bendlosscoeff",
             conditional_field_name="subtype",
             conditional_value=CulvertSubType.culvert,
         )
+        return self
 
 
 class LongCulvert(Structure):
@@ -490,15 +490,15 @@ class LongCulvert(Structure):
 
     _split_to_list = get_split_string_on_delimiter_validator("zcoordinates")
 
-    @validator("zcoordinates", always=True)
+    @field_validator("zcoordinates", mode="after")
     @classmethod
-    def _validate_zcoordinates(cls, v, values):
+    def _validate_zcoordinates(cls, v, values: ValidationInfo):
         if v is None:
             return v
-
-        if len(v) != values["numcoordinates"]:
+        num_coordinates = values.data.get("numcoordinates")
+        if len(v) != num_coordinates:
             raise ValueError(
-                f"Expected {values['numcoordinates']} z-coordinates, but got {len(v)}."
+                f"Expected {num_coordinates} z-coordinates, but got {len(v)}."
             )
 
         return v
@@ -541,17 +541,16 @@ class Pump(Structure):
 
     _orientation_validator = get_enum_validator("orientation", enum=Orientation)
 
-    @root_validator(allow_reuse=True)
-    def validate_that_controlside_is_provided_when_numstages_is_provided(
-        cls, values: Dict
-    ) -> Dict:
-            values,
+    @model_validator(mode="after")
+    def validate_that_controlside_is_provided_when_numstages_is_provided(self):
         validate_required_fields(
+            self.model_dump(),
             "controlside",
             conditional_field_name="numstages",
             conditional_value=0,
             comparison_func=gt,
         )
+        return self
 
     @classmethod
     def _check_list_lengths_suctionside(cls, values: Dict) -> Dict:
