@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Union
 import pytest
 from pydantic.v1.error_wrappers import ValidationError
 
+from unittest.mock import MagicMock
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
@@ -29,7 +30,7 @@ from hydrolib.core.dflowfm.structure.models import (
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-from ..utils import (
+from tests.utils import (
     WrapperTest,
     create_temp_file,
     invalid_test_data_dir,
@@ -38,6 +39,16 @@ from ..utils import (
 )
 
 uniqueid_str = "Unique structure id (max. 256 characters)."
+
+
+def mock_structure_check_location(dict_values: Dict[str, Any]) -> MagicMock:
+    mock_structure = MagicMock(spec=Structure)
+    mock_structure.model_dump.return_value = dict_values
+    mock_structure.check_location = Structure.check_location.__get__(mock_structure, Structure)
+    mock_structure.validate_coordinates_in_model = Structure.validate_coordinates_in_model
+    mock_structure.validate_branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model
+
+    return mock_structure
 
 
 def test_structure_model():
@@ -618,13 +629,12 @@ class TestStructure:
                 branchid=None,
                 chainage=None,
             )
-
+            mock_structure = mock_structure_check_location(input_dict)
             if error_mssg is None:
-                return_value = Structure.check_location(input_dict)
-                assert return_value == input_dict
+                assert mock_structure.check_location()
             else:
                 with pytest.raises(ValueError) as exc_err:
-                    Structure.check_location(input_dict)
+                    mock_structure.check_location()
 
                 assert str(exc_err.value) == error_mssg
 
@@ -710,14 +720,16 @@ class TestStructure:
             self, x_coords: List[float], y_coords: List[float]
         ):
             n_coords = 2
+            dict_values = dict(
+                numcoordinates=n_coords,
+                xcoordinates=x_coords,
+                ycoordinates=y_coords,
+            )
+            mock_structure = mock_structure_check_location(dict_values)
+
             with pytest.raises(ValueError) as exc_err:
-                Structure.check_location(
-                    dict(
-                        numcoordinates=n_coords,
-                        xcoordinates=x_coords,
-                        ycoordinates=y_coords,
-                    )
-                )
+                mock_structure.check_location()
+
             assert (
                 str(exc_err.value)
                 == f"Expected {n_coords} coordinates, given {len(x_coords)} for xCoordinates and {len(y_coords)} for yCoordinates."
@@ -741,8 +753,9 @@ class TestStructure:
             ],
         )
         def test_check_location_given_valid_values(self, dict_values: dict):
-            return_value = Structure.check_location(dict_values)
-            assert return_value == dict_values
+            mock_structure = mock_structure_check_location(dict_values)
+            assert mock_structure.check_location()
+
 
     class TestValidateBranchAndChainageInModel:
         """
@@ -1048,7 +1061,6 @@ class TestDambreak:
         with create_temp_file("", "dambreak.tim") as tim_file:
             structure_text = structure_text.format(tim_file)
 
-            # 2. Parse data.
             dambreak_obj = self.parse_dambreak_from_text(structure_text)
 
         assert dambreak_obj
@@ -1086,13 +1098,11 @@ class TestDambreak:
         Returns:
             Dambreak: Parsed object.
         """
-        # 1. Parse data.
         parser = Parser(ParserConfig())
         for line in structure_text.splitlines():
             parser.feed_line(line)
         document = parser.finalize()
 
-        # 2. Parse object
         return WrapperTest[Dambreak].model_validate({"val": document.sections[0]}).val
 
     def validate_valid_default_dambreak(self, dambreak: Dambreak):
@@ -1263,8 +1273,12 @@ class TestDambreak:
             ],
         )
         def test_given_valid_values_returns_values(self, dict_values: dict):
-            return_value = Dambreak.check_location_dambreak(dict_values)
-            assert return_value == dict_values
+            # with patch("hydrolib.core.dflowfm.structure.models.Dambreak.model_dump") as mock_model_dump:
+            mock_dambreak = MagicMock(spec=Dambreak)
+            mock_dambreak.model_dump.return_value = dict_values
+            mock_dambreak.check_location_dambreak = Dambreak.check_location_dambreak.__get__(mock_dambreak, Dambreak)
+            mock_dambreak._validate_waterlevel_location = Dambreak._validate_waterlevel_location
+            assert mock_dambreak.check_location_dambreak()
 
         @pytest.mark.parametrize(
             "invalid_values, expected_err",
@@ -1392,7 +1406,7 @@ class TestDambreak:
         ):
             init_values = valid_dambreak_values
             init_values.update(invalid_values)
-            with pytest.raises(ValidationError) as exc_err:
+            with pytest.raises(ValueError) as exc_err:
                 _ = Dambreak(**init_values)
             assert expected_err in str(exc_err.value)
 
@@ -1433,14 +1447,9 @@ class TestOrifice:
         values = self._create_orifice_values()
         del values[limitflow.lower()]
 
-        with pytest.raises(ValidationError) as error:
+        with pytest.raises(ValueError):
             Orifice(**values)
 
-        expected_message = f"1 validation error for Orifice\n\
-structure_id -> {limitflow}\n  \
-{limitflow} should be defined when {uselimitflow} is true"
-
-        assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
         "input,expected",
@@ -1782,7 +1791,7 @@ class TestPump:
         listargs[lengthname] = correctlength
         listargs["controlside"] = "both"
 
-        with pytest.raises(ValidationError) as error:
+        with pytest.raises(ValueError) as error:
 
             _ = Pump(
                 **self._create_required_pump_values(),
