@@ -85,7 +85,7 @@ class TestBridge:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[Bridge].model_validate({"val": document.sections[0]})
         bridge = wrapper.val
 
         assert isinstance(
@@ -138,10 +138,10 @@ class TestBridge:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Bridge].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[Bridge].model_validate({"val": document.sections[0]})
         bridge = wrapper.val
 
-        assert bridge.dict().get("unknown") is None  # type: ignore
+        assert bridge.model_dump().get("unknown") is None  # type: ignore
 
         assert bridge.id == "RS1-KBR31"
         assert bridge.name == "RS1-KBR31name"
@@ -368,7 +368,7 @@ class TestWeir:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[Weir].model_validate({"val": document.sections[0]})
         weir = wrapper.val
 
         assert weir.id == "weir_id"
@@ -404,7 +404,7 @@ class TestWeir:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[Weir].model_validate({"val": document.sections[0]})
         weir = wrapper.val
 
         assert weir.comments.id is None
@@ -445,10 +445,10 @@ class TestWeir:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Weir].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[Weir].model_validate({"val": document.sections[0]})
         weir = wrapper.val
 
-        assert weir.dict().get("unknown") is None  # type: ignore
+        assert weir.model_dump().get("unknown") is None  # type: ignore
 
         assert weir.id == "weir_id"
         assert weir.name == "weir"
