@@ -100,6 +100,12 @@ class Structure(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
+    @field_validator("type", mode="after")
+    @classmethod
+    def lowercase_type(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.lower()
+        return v
 
     @model_validator(mode="after")
     def check_location(self):
