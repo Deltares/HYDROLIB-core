@@ -7,27 +7,29 @@ from unittest.mock import patch
 
 import pytest
 
-from hydrolib.core.basemodel import (
-    DiskOnlyFileModel,
+from hydrolib.core.base.file_manager import (
     FileCasingResolver,
     FileLoadContext,
-    FileModel,
     FileModelCache,
     FilePathResolver,
     ModelLoadSettings,
-    ModelSaveSettings,
-    ParsableFileModel,
     PathStyleValidator,
     ResolveRelativeMode,
-    SerializerConfig,
     context_file_loading,
     file_load_context,
 )
+from hydrolib.core.base.models import (
+    DiskOnlyFileModel,
+    FileModel,
+    ModelSaveSettings,
+    ParsableFileModel,
+    SerializerConfig,
+)
+from hydrolib.core.base.utils import PathStyle
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.models import DIMR
-from hydrolib.core.utils import PathStyle
 from tests.utils import test_input_dir, test_output_dir
 
 _external_path = test_output_dir / "test_save_and_load_maintains_correct_paths_external"
@@ -978,18 +980,27 @@ class TestDiskOnlyFileModel:
 
 
 class TestFileCasingResolver:
+
     @pytest.mark.parametrize(
-        "input_file, expected_file",
+        "input_file, expected_file, exist",
         [
             pytest.param(
                 Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
                 Path("dflowfm_individual_files/FlowFM_boundaryconditions1d.bc"),
+                True,
                 id="resolve_casing True: Matching file exists with different casing",
             ),
             pytest.param(
                 Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
                 Path("dflowfm_individual_files/beepboop.robot"),
+                False,
                 id="resolve_casing True: No matching file",
+            ),
+            pytest.param(
+                Path("DFLOWFM_INDIVIDUAL_FILES/../BOUNDARY-CONDITIONS/TFL_01.pli"),
+                Path("dflowfm_individual_files/../boundary-conditions/tfl_01.pli"),
+                True,
+                id="resolve_casing relative: Matching file exists with different casing",
             ),
         ],
     )
@@ -998,7 +1009,7 @@ class TestFileCasingResolver:
         reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
     )
     def test_resolve_returns_correct_result(
-        self, input_file: str, expected_file: str
+        self, input_file: str, expected_file: str, exist: bool
     ) -> None:
         resolver = FileCasingResolver()
 
@@ -1008,6 +1019,8 @@ class TestFileCasingResolver:
         actual_file_path = resolver.resolve(file_path)
 
         assert actual_file_path == expected_file_path
+        if exist:
+            assert actual_file_path.exists()
 
 
 class TestModelSaveSettings:

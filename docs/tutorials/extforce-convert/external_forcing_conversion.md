@@ -7,17 +7,17 @@ This document provides detailed usage instructions, argument descriptions, and e
 - [Installation](#installation)
 - [Usage Overview](#usage-overview)
 - [Arguments](#arguments)
-    - [`--version`](#version)
-    - [`--verbose` / `-v`](#verbose--v)
+    - [`--version`](#-version)
+    - [`--verbose` / `-v`](#-verbose---v)
     - [Mutually Exclusive Options](#mutually-exclusive-options)
-        - [`--mdufile` / `-m`](#mdufile--m)
-        - [`--extoldfile` / `-e`](#extoldfile--e)
-        - [`--dir` / `-d`](#dir--d)
-    - [`--outfiles` / `-o`](#outfiles--o)
+        - [`--mdufile` / `-m`](#-mdufile---m)
+        - [`--extoldfile` / `-e`](#-extoldfile---e)
+        - [`--dir` / `-d`](#-dir---d)
+    - [`--outfiles` / `-o`](#-outfiles---o)
     - [Backup Options](#backup-options)
-        - [`--backup` / `-b`](#backup--b)
-        - [`--no-backup`](#no-backup)
-    - [`--remove-legacy-files`](#remove-legacy-files)
+        - [`--backup` / `-b`](#-backup---b)
+        - [`--no-backup`](#-no-backup)
+    - [`--remove-legacy-files`](#-remove-legacy-files)
 - [Examples](#examples)
 - [Additional Notes](#additional-notes)
 
@@ -62,11 +62,11 @@ Where exactly one of `--mdufile`, `--extoldfile`, or `--dir` is required.
 
 Below is a complete list of arguments supported by the CLI:
 
-### `--version`
+### `--version` {#version}
 **Syntax**: `--version`  
 Displays the version of the `hydrolib` package currently installed, then exits.
 
-### `--verbose` / `-v`
+### `--verbose` / `-v` {#verbose--v}
 **Syntax**: `--verbose` or `-v`  
 Enables additional diagnostic information during the conversion process. Use this option if you need more insight into what the tool is doing.
 
@@ -76,24 +76,24 @@ Enables additional diagnostic information during the conversion process. Use thi
 
 You must choose **one** of these three arguments to specify your source of legacy external forcing data.
 
-#### `--mdufile` / `-m`
+#### `--mdufile` / `-m` {#mdufile--m}
 **Syntax**: `--mdufile MDUFILE` or `-m MDUFILE`  
 Specifies an `mdu` file from which input and output filenames for the conversion are automatically inferred.
 - **Example**: `-m path/to/project.mdu`
 
-#### `--extoldfile` / `-e`
+#### `--extoldfile` / `-e` {#extoldfile--e}
 **Syntax**: `--extoldfile EXTOLDFILE` or `-e EXTOLDFILE`  
 Specifies a single legacy external forcing file (e.g., `.ext` format) to be converted.
 - **Example**: `-e path/to/old_external_forcing.ext`
 
-#### `--dir` / `-d`
+#### `--dir` / `-d` {#dir--d}
 **Syntax**: `--dir DIRECTORY` or `-d DIRECTORY`  
 Specifies a directory path; the tool will search recursively for `.mdu` files and convert them.
 - **Example**: `-d /path/to/projects`
 
 ---
 
-### `--outfiles` / `-o`
+### `--outfiles` / `-o` {#outfiles--o}
 **Syntax**: `--outfiles EXTFILE INIFIELDFILE STRUCTUREFILE` or `-o EXTFILE INIFIELDFILE STRUCTUREFILE`  
 Allows you to explicitly set the output filenames for:
 1. External forcings file
@@ -106,17 +106,17 @@ If you omit these, default names will be used (e.g., `inifields.ini`, `structure
 
 ### Backup Options
 
-#### `--backup` / `-b`
+#### `--backup` / `-b` {#backup--b}
 **Syntax**: `--backup` or `-b` (default)  
 Tells the tool to create backups of every file that might be overwritten during the conversion. By default, this behavior is **enabled**.
 
-#### `--no-backup`
+#### `--no-backup` {#no-backup}
 **Syntax**: `--no-backup`  
 Disables the backup creation behavior. The tool will overwrite files without saving previous copies.
 
 ---
 
-### `--remove-legacy-files`
+### `--remove-legacy-files` {#remove-legacy-files}
 **Syntax**: `--remove-legacy-files`  
 Deletes old/legacy files (e.g., `.tim`) after successfully converting them to the new format. Default is `False`.
 

@@ -7,7 +7,7 @@ from pydantic.v1.class_validators import root_validator, validator
 from pydantic.v1.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel

@@ -214,8 +214,8 @@
     * 1D Roughness INI files: [FrictionModel][hydrolib.core.io.friction.models.FrictionModel] ({{gh_issue(118)}}).
     * Storage node files: [StorageNodeModel][hydrolib.core.io.storagenode.models.StorageNodeModel] ({{gh_issue(131)}}).
     * General structure:  [GeneralStructure][hydrolib.core.io.structure.models.GeneralStructure] ({{gh_issue(79)}}).
-* Many additions to the [API documentation](reference/api.md).
-    
+* Many additions to the [API documentation](reference/base/api.md).
+
 
 ### Changed
 * All classes that have fields with "keyword values" (such as `frictionType = WhiteColebrook`) now use Enum classes for those values.
@@ -227,7 +227,7 @@
   to `hydrolib.core.io.crosssection.models`. ({{gh_issue(149)}})
 * Changed behavior for file paths in saved files ({{gh_issue(96)}}).
   More information about: [technical background](topics/loadsave.md) and a [tutorial](tutorials/loading_and_saving_a_model.md).
-  
+
 
 ### Fixed
 * Too strict validation of optional fields in culvert ({{gh_issue(75)}}), pump ({{gh_issue(76)}}),

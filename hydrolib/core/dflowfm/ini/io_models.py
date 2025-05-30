@@ -3,8 +3,8 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 from pydantic.v1 import Field
 
-from hydrolib.core.basemodel import BaseModel
-from hydrolib.core.utils import to_key
+from hydrolib.core.base.models import BaseModel
+from hydrolib.core.base.utils import to_key
 
 
 class CommentBlock(BaseModel):
