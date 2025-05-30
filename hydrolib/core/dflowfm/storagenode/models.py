@@ -177,9 +177,11 @@ class StorageNode(INIBasedModel):
         "storagearea",
     )
 
-    @model_validator(mode="before")
+    @model_validator(mode="after")
     def check_list_length_levels(cls, values):
         """Validates that the length of the levels field is as expected."""
+        if isinstance(values, StorageNode):
+            values = values.model_dump()
         return validate_correct_length(
             values,
             "levels",
