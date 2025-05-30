@@ -67,7 +67,7 @@ class TestModels:
         fmmodel.geometry.netfile.network = network
         importfm.geometry.netfile.network = network
 
-        assert importfm == fmmodel
+        assert importfm.model_dump() == fmmodel.model_dump()
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
