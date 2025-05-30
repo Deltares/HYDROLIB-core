@@ -1,16 +1,17 @@
 import inspect
+
 import pytest
-from hydrolib.core.dflowfm.structure.models import (
-    GeneralStructure, GateOpeningHorizontalDirection, FlowDirection
-)
-from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.tim.models import TimModel
-from tests.utils import (
-    WrapperTest,
-    test_input_dir,
+from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolib.core.dflowfm.structure.models import (
+    FlowDirection,
+    GateOpeningHorizontalDirection,
+    GeneralStructure,
 )
-from tests.dflowfm.structure.test_structure import uniqueid_str, create_structure_values
+from hydrolib.core.dflowfm.tim.models import TimModel
+from tests.dflowfm.structure.test_structure import create_structure_values, uniqueid_str
+from tests.utils import WrapperTest, test_input_dir
 
 
 class TestGeneralStructure:
@@ -24,9 +25,9 @@ class TestGeneralStructure:
 
     def test_initialize_gateopeningwidth_with_bcfile_initializes_forcingmodel(self):
         gateloweredgelevel = (
-                test_input_dir
-                / "dflowfm_individual_files"
-                / "FlowFM_boundaryconditions2d_and_vectors.bc"
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "FlowFM_boundaryconditions2d_and_vectors.bc"
         )
         values = self._create_general_structure_values()
         values["gateloweredgelevel"] = gateloweredgelevel
@@ -81,8 +82,8 @@ class TestGeneralStructure:
         assert struct.gateheight == pytest.approx(8.6)
         assert struct.gateopeningwidth == pytest.approx(8.7)
         assert (
-                struct.gateopeninghorizontaldirection
-                == GateOpeningHorizontalDirection.from_left
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_left
         )
         assert struct.usevelocityheight == False
 
@@ -153,7 +154,9 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+        wrapper = WrapperTest[GeneralStructure].model_validate(
+            {"val": document.sections[0]}
+        )
         struct = wrapper.val
 
         assert struct.id == "potato_id"
@@ -188,8 +191,8 @@ class TestGeneralStructure:
         assert struct.gateheight == pytest.approx(18.6)
         assert struct.gateopeningwidth == pytest.approx(18.7)
         assert (
-                struct.gateopeninghorizontaldirection
-                == GateOpeningHorizontalDirection.from_left
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_left
         )
         assert struct.usevelocityheight == False
 
@@ -240,7 +243,9 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+        wrapper = WrapperTest[GeneralStructure].model_validate(
+            {"val": document.sections[0]}
+        )
         struct = wrapper.val
 
         assert struct.comments is not None
@@ -330,7 +335,9 @@ class TestGeneralStructure:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+        wrapper = WrapperTest[GeneralStructure].model_validate(
+            {"val": document.sections[0]}
+        )
         struct = wrapper.val
 
         assert struct.model_dump().get("unknown") is None  # type: ignore
@@ -367,8 +374,8 @@ class TestGeneralStructure:
         assert struct.gateheight == pytest.approx(118.6)
         assert struct.gateopeningwidth == pytest.approx(118.7)
         assert (
-                struct.gateopeninghorizontaldirection
-                == GateOpeningHorizontalDirection.from_right
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_right
         )
         assert struct.usevelocityheight == False
 

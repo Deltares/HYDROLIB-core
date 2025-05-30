@@ -987,7 +987,9 @@ class Dambreak(Structure):
     waterleveldownstreamlocationy: Optional[float] = Field(
         None, alias="waterLevelDownstreamLocationY"
     )
-    waterlevelupstreamnodeid: Optional[str] = Field(None, alias="waterLevelUpstreamNodeId")
+    waterlevelupstreamnodeid: Optional[str] = Field(
+        None, alias="waterLevelUpstreamNodeId"
+    )
     waterleveldownstreamnodeid: Optional[str] = Field(
         None, alias="waterLevelDownstreamNodeId"
     )
@@ -1085,7 +1087,8 @@ class Dambreak(Structure):
         node_is_given = values.get(node_key.lower()) is not None
 
         if not (
-            (x_is_given and y_is_given and not node_is_given) or (node_is_given and not x_is_given and not y_is_given)
+            (x_is_given and y_is_given and not node_is_given)
+            or (node_is_given and not x_is_given and not y_is_given)
         ):
             raise ValueError(
                 f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
@@ -1167,9 +1170,9 @@ StructureUnion = Annotated[
         Orifice,
         GeneralStructure,
         Dambreak,
-        Bridge
+        Bridge,
     ],
-    Field(discriminator="type")
+    Field(discriminator="type"),
 ]
 
 

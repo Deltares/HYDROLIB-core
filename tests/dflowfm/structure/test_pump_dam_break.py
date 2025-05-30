@@ -1,12 +1,14 @@
 import inspect
-import pytest
 from pathlib import Path
 from typing import Any, List
-from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
-from hydrolib.core.dflowfm.structure import Dambreak, Pump, Orientation, Structure
-from tests.dflowfm.structure.test_structure import uniqueid_str, create_structure_values
-from tests.utils import WrapperTest, create_temp_file
 from unittest.mock import MagicMock
+
+import pytest
+
+from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolib.core.dflowfm.structure import Dambreak, Orientation, Pump, Structure
+from tests.dflowfm.structure.test_structure import create_structure_values, uniqueid_str
+from tests.utils import WrapperTest, create_temp_file
 
 
 class DambreakTestCases:
@@ -110,10 +112,10 @@ class TestDambreak:
         ],
     )
     def test_given_invalid_location_raises_validation_error(
-            self,
-            location_dict: dict,
-            err_mssg: str,
-            default_dambreak_values: dict,
+        self,
+        location_dict: dict,
+        err_mssg: str,
+        default_dambreak_values: dict,
     ):
         test_values = {**default_dambreak_values, **location_dict}
 
@@ -276,7 +278,7 @@ class TestDambreak:
             with pytest.raises(ValueError) as exc_err:
                 Dambreak.validate_algorithm(value)
             assert (
-                    str(exc_err.value) == "Dambreak algorithm value should be of type int."
+                str(exc_err.value) == "Dambreak algorithm value should be of type int."
             )
 
         @pytest.mark.parametrize(
@@ -317,7 +319,7 @@ class TestDambreak:
             ],
         )
         def test_given_field_value_but_no_algorithm_3_raises_value_error(
-                self, field_value: str, algorithm_value: int
+            self, field_value: str, algorithm_value: int
         ):
             with pytest.raises(ValueError) as exc_err:
                 Dambreak.validate_dambreak_levels_and_widths(
@@ -327,8 +329,8 @@ class TestDambreak:
                     ),
                 )
             assert (
-                    str(exc_err.value)
-                    == f"Dambreak field dambreakLevelsAndWidths can only be set when algorithm = 3, current value: {algorithm_value}."
+                str(exc_err.value)
+                == f"Dambreak field dambreakLevelsAndWidths can only be set when algorithm = 3, current value: {algorithm_value}."
             )
 
         def test_given_algorithm_value_3_returns_field_value(self):
@@ -340,7 +342,7 @@ class TestDambreak:
 
         @pytest.mark.parametrize("algorithm_value", algorithm_values)
         def test_given_none_field_value_and_algorithm_value_not_3_returns_field_value(
-                self, algorithm_value: int
+            self, algorithm_value: int
         ):
             return_value = Dambreak.validate_dambreak_levels_and_widths(
                 None, dict(algorithm=algorithm_value)
@@ -401,8 +403,12 @@ class TestDambreak:
             # with patch("hydrolib.core.dflowfm.structure.models.Dambreak.model_dump") as mock_model_dump:
             mock_dambreak = MagicMock(spec=Dambreak)
             mock_dambreak.model_dump.return_value = dict_values
-            mock_dambreak.check_location_dambreak = Dambreak.check_location_dambreak.__get__(mock_dambreak, Dambreak)
-            mock_dambreak._validate_waterlevel_location = Dambreak._validate_waterlevel_location
+            mock_dambreak.check_location_dambreak = (
+                Dambreak.check_location_dambreak.__get__(mock_dambreak, Dambreak)
+            )
+            mock_dambreak._validate_waterlevel_location = (
+                Dambreak._validate_waterlevel_location
+            )
             assert mock_dambreak.check_location_dambreak()
 
         @pytest.mark.parametrize(
@@ -527,7 +533,7 @@ class TestDambreak:
             ],
         )
         def test_given_invalid_values_raises_expectation(
-                self, invalid_values: dict, expected_err: str, valid_dambreak_values: dict
+            self, invalid_values: dict, expected_err: str, valid_dambreak_values: dict
         ):
             init_values = valid_dambreak_values
             init_values.update(invalid_values)
@@ -563,8 +569,8 @@ class TestPump:
         assert pump.head == [0, 2]
         assert pump.reductionfactor == [0, 0.1]
         assert (
-                pump.comments.name
-                == "P stands for pump, 003 because we expect to have at most 999 pumps"
+            pump.comments.name
+            == "P stands for pump, 003 because we expect to have at most 999 pumps"
         )
 
         assert pump.comments.id == uniqueid_str
@@ -618,7 +624,7 @@ class TestPump:
         _pumplists,
     )
     def test_create_a_pump_with_wrong_list_lengths(
-            self, listname: str, lengthname: str
+        self, listname: str, lengthname: str
     ):
         """Creates a pump with one start/stop/reduction attribute with wrong list length
         and checks for correct error detection."""
@@ -647,44 +653,44 @@ class TestPump:
         [
             ("suctionSide", "startlevelsuctionside", [], True),
             (
-                    "deliverySide",
-                    "startlevelsuctionside",
-                    ["startleveldeliveryside", "stopleveldeliveryside"],
-                    False,
+                "deliverySide",
+                "startlevelsuctionside",
+                ["startleveldeliveryside", "stopleveldeliveryside"],
+                False,
             ),
             ("both", "startlevelsuctionside", [], True),
             ("suctionSide", "stoplevelsuctionside", [], True),
             (
-                    "deliverySide",
-                    "stoplevelsuctionside",
-                    ["startleveldeliveryside", "stopleveldeliveryside"],
-                    False,
+                "deliverySide",
+                "stoplevelsuctionside",
+                ["startleveldeliveryside", "stopleveldeliveryside"],
+                False,
             ),
             ("both", "stoplevelsuctionside", [], True),
             (
-                    "suctionSide",
-                    "startleveldeliveryside",
-                    ["startlevelsuctionside", "stoplevelsuctionside"],
-                    False,
+                "suctionSide",
+                "startleveldeliveryside",
+                ["startlevelsuctionside", "stoplevelsuctionside"],
+                False,
             ),
             ("deliverySide", "startleveldeliveryside", [], True),
             ("both", "startleveldeliveryside", [], True),
             (
-                    "suctionSide",
-                    "stopleveldeliveryside",
-                    ["startlevelsuctionside", "stoplevelsuctionside"],
-                    False,
+                "suctionSide",
+                "stopleveldeliveryside",
+                ["startlevelsuctionside", "stoplevelsuctionside"],
+                False,
             ),
             ("deliverySide", "stopleveldeliveryside", [], True),
             ("both", "stopleveldeliveryside", [], True),
         ],
     )
     def test_dont_validate_unneeded_pump_lists(
-            self,
-            control_side: str,
-            missing_list_name: str,
-            present_list_names: List[str],
-            should_raise_error: bool,
+        self,
+        control_side: str,
+        missing_list_name: str,
+        present_list_names: List[str],
+        should_raise_error: bool,
     ):
         """Creates a pump with one particular list attribute missing
         and checks for correct (i.e., no unneeded) error detection,
