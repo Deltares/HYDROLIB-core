@@ -2,7 +2,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic.v1 import Field, validator
+from pydantic import Field, field_validator
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
@@ -842,7 +842,7 @@ class Time(INIBasedModel):
     updateroughnessinterval: float = Field(86400.0, alias="updateRoughnessInterval")
     dtfacmax: float = Field(1.1, alias="Dtfacmax")
 
-    @validator("startdatetime", "stopdatetime")
+    @field_validator("startdatetime", "stopdatetime", mode="before")
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
 
@@ -879,7 +879,7 @@ class Restart(INIBasedModel):
     )
     restartdatetime: Optional[str] = Field("", alias="restartDateTime")
 
-    @validator("restartdatetime")
+    @field_validator("restartdatetime", mode="before")
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
 
