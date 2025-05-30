@@ -1,13 +1,21 @@
-"""
+"""Structure models for D-Flow FM.
+
 structure namespace for storing the contents of an [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]'s structure file.
 """
-from pathlib import Path
+
 import logging
 from enum import Enum
 from operator import gt, ne
-from typing import Dict, List, Literal, Optional, Set, Union, Annotated, Any
+from pathlib import Path
+from typing import Annotated, Dict, List, Literal, Optional, Set, Union
 
-from pydantic import Field, field_validator, model_validator, ValidationInfo, BeforeValidator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -31,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 def load_model(value):
+    """Load a model from a file path or return the value as is."""
     if isinstance(value, (str, Path)):
         path = Path(value)
         if path.suffix == ".tim":
@@ -39,10 +48,14 @@ def load_model(value):
             return ForcingModel(filepath=path)
     return value  # already a float, TimModel, or ForcingModel
 
-ForcingDataUnion = Annotated[Union[float, TimModel, ForcingModel], BeforeValidator(load_model)]
+
+ForcingDataUnion = Annotated[
+    Union[float, TimModel, ForcingModel], BeforeValidator(load_model)
+]
 
 
 class Structure(INIBasedModel):
+    """Structure model."""
 
     class Comments(INIBasedModel.Comments):
         id: Optional[str] = "Unique structure id (max. 256 characters)."
@@ -91,7 +104,8 @@ class Structure(INIBasedModel):
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """
+        """Get the UnknownKeywordErrorManager for this model.
+
         The Structure does not currently support raising an error on unknown keywords.
         """
         return None
@@ -109,7 +123,8 @@ class Structure(INIBasedModel):
 
     @model_validator(mode="after")
     def check_location(self):
-        """
+        """Check location of the structure.
+
         Validates the location of the structure based on the given parameters for the following cases:
             - if a branchid is given, then it is expected also the chainage, otherwise numcoordinates xcoordinates
             and ycoordinates shall be expected.
@@ -193,7 +208,8 @@ class Structure(INIBasedModel):
 
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:
-        """
+        """Validate branch and chainage in model.
+
         Static method to validate whether the given branchid and chainage values
         match the expectation of a new structure.
 
@@ -219,7 +235,8 @@ class Structure(INIBasedModel):
 
     @staticmethod
     def validate_coordinates_in_model(values: dict) -> bool:
-        """
+        """Validate coordinates in model.
+
         Static method to validate whether the given values match the expectations
         of a structure to define its coordinates.
 
@@ -272,7 +289,8 @@ class Structure(INIBasedModel):
 
 
 class FlowDirection(StrEnum):
-    """
+    """Flow direction of a structure.
+
     Enum class containing the valid values for the allowedFlowDirection
     attribute in several subclasses of Structure.
     """
@@ -285,7 +303,8 @@ class FlowDirection(StrEnum):
 
 
 class Orientation(StrEnum):
-    """
+    """Orientation of a structure.
+
     Enum class containing the valid values for the orientation
     attribute in several subclasses of Structure.
     """
@@ -296,7 +315,8 @@ class Orientation(StrEnum):
 
 
 class Weir(Structure):
-    """
+    """Weir structure.
+
     Hydraulic structure with `type=weir`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -338,7 +358,8 @@ class Weir(Structure):
 
 
 class UniversalWeir(Structure):
-    """
+    """Universal Weir structure.
+
     Hydraulic structure with `type=universalWeir`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -393,7 +414,8 @@ class CulvertSubType(StrEnum):
 
 
 class Culvert(Structure):
-    """
+    """Culvert structure.
+
     Hydraulic structure with `type=culvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -411,7 +433,9 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[ForcingDataUnion] = Field(None, alias="valveOpeningHeight")
+    valveopeningheight: Optional[ForcingDataUnion] = Field(
+        None, alias="valveOpeningHeight"
+    )
     numlosscoeff: Optional[int] = Field(None, alias="numLossCoeff")
     relopening: Optional[List[float]] = Field(None, alias="relOpening")
     losscoeff: Optional[List[float]] = Field(None, alias="lossCoeff")
@@ -465,9 +489,7 @@ class Culvert(Structure):
         return self
 
     @model_validator(mode="after")
-    def validate_that_bendlosscoeff_is_not_provided_for_culverts(
-        self
-    ) -> Dict:
+    def validate_that_bendlosscoeff_is_not_provided_for_culverts(self):
         """Validates that the bendlosscoeff field is not provided when the subtype is a culvert."""
         validate_forbidden_fields(
             self.model_dump(),
@@ -479,7 +501,8 @@ class Culvert(Structure):
 
 
 class LongCulvert(Structure):
-    """
+    """Long Culvert structure.
+
     Hydraulic structure with `type=longCulvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -518,7 +541,8 @@ class LongCulvert(Structure):
 
 
 class Pump(Structure):
-    """
+    """Pump structure.
+
     Hydraulic structure with `type=pump`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -533,12 +557,18 @@ class Pump(Structure):
     numstages: Optional[int] = Field(None, alias="numStages")
     capacity: ForcingDataUnion = Field(alias="capacity")
 
-    startlevelsuctionside: Optional[List[float]] = Field(None, alias="startLevelSuctionSide")
-    stoplevelsuctionside: Optional[List[float]] = Field(None, alias="stopLevelSuctionSide")
+    startlevelsuctionside: Optional[List[float]] = Field(
+        None, alias="startLevelSuctionSide"
+    )
+    stoplevelsuctionside: Optional[List[float]] = Field(
+        None, alias="stopLevelSuctionSide"
+    )
     startleveldeliveryside: Optional[List[float]] = Field(
         None, alias="startLevelDeliverySide"
     )
-    stopleveldeliveryside: Optional[List[float]] = Field(None, alias="stopLevelDeliverySide")
+    stopleveldeliveryside: Optional[List[float]] = Field(
+        None, alias="stopLevelDeliverySide"
+    )
     numreductionlevels: Optional[int] = Field(None, alias="numReductionLevels")
     head: Optional[List[float]] = Field(None, alias="head")
     reductionfactor: Optional[List[float]] = Field(None, alias="reductionFactor")
@@ -578,7 +608,8 @@ class Pump(Structure):
 
     @model_validator(mode="after")
     def conditionally_check_list_lengths_suctionside(self) -> Dict:
-        """
+        """Check the length of suction side list.
+
         Validates the length of the suction side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the deliverySide.
         """
@@ -602,10 +633,10 @@ class Pump(Structure):
             list_required_with_length=True,
         )
 
-
     @model_validator(mode="after")
     def conditionally_check_list_lengths_deliveryside(self):
-        """
+        """Check the length of deliveryside list.
+
         Validates the length of the delivery side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the suctionSide.
         """
@@ -632,7 +663,8 @@ class Pump(Structure):
 
 
 class Compound(Structure):
-    """
+    """Compound structure.
+
     Hydraulic structure with `type=compound`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -650,7 +682,8 @@ class Compound(Structure):
 
 
 class Orifice(Structure):
-    """
+    """Orifice structure.
+
     Hydraulic structure with `type=orifice`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -700,7 +733,8 @@ class GateOpeningHorizontalDirection(StrEnum):
 
 
 class GeneralStructure(Structure):
-    """
+    """General Structure.
+
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -810,7 +844,9 @@ class GeneralStructure(Structure):
     downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
     downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: Optional[ForcingDataUnion] = Field(11.0, alias="gateLowerEdgeLevel")
+    gateloweredgelevel: Optional[ForcingDataUnion] = Field(
+        11.0, alias="gateLowerEdgeLevel"
+    )
     posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
     posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
     posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
@@ -832,13 +868,16 @@ class GeneralStructure(Structure):
 
 
 class DambreakAlgorithm(int, Enum):
+    """Dambreak algorithm options."""
+
     van_der_knaap = 1  # "van der Knaap, 2000"
     verheij_van_der_knaap = 2  # "Verheij-van der Knaap, 2002"
     timeseries = 3  # "Predefined time series, dambreakLevelsAndWidths."
 
     @property
     def description(self) -> str:
-        """
+        """Description.
+
         Property to return the description of the enums defined above.
         Useful for comments in output files.
 
@@ -854,7 +893,8 @@ class DambreakAlgorithm(int, Enum):
 
 
 class Dambreak(Structure):
-    """
+    """Dambreak structure.
+
     Hydraulic structure with `type=dambreak`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -980,13 +1020,13 @@ class Dambreak(Structure):
             raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
         return DambreakAlgorithm(int_value)
 
-
     @field_validator("dambreaklevelsandwidths", mode="after")
     @classmethod
     def validate_dambreak_levels_and_widths(
         cls, field_value: Optional[Union[TimModel, ForcingModel]], values: dict
     ) -> Optional[Union[TimModel, ForcingModel]]:
-        """
+        """Validate dambreak levels and widths.
+
         Validates whether a dambreak can be created with the given dambreakLevelsAndWidths
         property. This property should be given when the algorithm value is 3.
 
@@ -1011,7 +1051,7 @@ class Dambreak(Structure):
 
     @model_validator(mode="after")
     def check_location_dambreak(self) -> "Dambreak":
-        """Check location dambreak
+        """Check location dambreak.
 
             - Verifies whether the location for this structure contains valid values for numCoordinates, xCoordinates and
                 yCoordinates or instead is using a polyline file.
@@ -1045,16 +1085,16 @@ class Dambreak(Structure):
         node_is_given = values.get(node_key.lower()) is not None
 
         if not (
-                (x_is_given and y_is_given and not node_is_given) or
-                (node_is_given and not x_is_given and not y_is_given)
+            (x_is_given and y_is_given and not node_is_given) or (node_is_given and not x_is_given and not y_is_given)
         ):
-
             raise ValueError(
                 f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
             )
 
+
 class Bridge(Structure):
-    """
+    """Bridge structure.
+
     Hydraulic structure with `type=bridge`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -1131,6 +1171,7 @@ StructureUnion = Annotated[
     ],
     Field(discriminator="type")
 ]
+
 
 class StructureModel(INIModel):
     """

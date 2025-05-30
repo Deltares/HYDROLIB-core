@@ -160,7 +160,7 @@ class TestGeneralStructure:
         assert struct.name == "structure_potato"
         assert struct.branchid == "branch"
         assert struct.chainage == pytest.approx(3.53)
-        assert struct.type == "generalStructure"
+        assert struct.type == "generalstructure"
         assert struct.allowedflowdir == FlowDirection.positive
         assert struct.upstream1width == pytest.approx(11.0)
         assert struct.upstream1level == pytest.approx(12.0)
