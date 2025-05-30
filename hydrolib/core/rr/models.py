@@ -552,7 +552,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     @field_validator("link_data", mode="before")
     @classmethod
-    def _validate_node_data(cls, value: Optional[str]) -> Optional[LinkFile]:
+    def _validate_link_data(cls, value: Optional[str]) -> Optional[LinkFile]:
         """Ensure that link_data is set to parsed to a model if not none."""
         if value and isinstance(value, (str, Path)):
             return LinkFile(Path(value))
@@ -560,7 +560,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     @field_validator("bui_file", mode="before")
     @classmethod
-    def _validate_node_data(cls, value: Optional[str]) -> Optional[BuiModel]:
+    def _validate_bui_file(cls, value: Optional[str]) -> Optional[BuiModel]:
         """Ensure that bui_file is set to parsed to a model if not none."""
         if value and isinstance(value, (str, Path)):
             return BuiModel(Path(value))
