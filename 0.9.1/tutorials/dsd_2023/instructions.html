@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__left">
+    <div class="stackedit__toc">
+      
+<ul>
+<li><a href="#hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</a>
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#user-guide">User guide</a></li>
+<li><a href="#cheat-sheet">Cheat sheet</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+  </div>
+  <div class="stackedit__right">
+    <div class="stackedit__html">
+      <h1 id="hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</h1>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#hydrolib-core-guide-for-the-delft-software-days-2023">HYDROLIB-core guide for the Delft Software Days 2023</a>
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#user-guide">User guide</a>
+<ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#run-the-demo-notebook">Run the demo notebook</a></li>
+</ul>
+</li>
+<li><a href="#cheat-sheet">Cheat sheet</a>
+<ul>
+<li><a href="#kernel-files-vs-hydrolib-core-filemodels">Kernel files vs HYDROLIB-core FileModels</a></li>
+<li><a href="#commonly-used-functions-of-a-filemodel">Commonly used functions of a FileModel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>This document contains instructions about the installation and usage of HYDROLIB-core during the Delft Software Days 2023.</p>
+<p>HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content.<br>
+HYDROLIB-core serves as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations in D-HYDRO.</p>
+<h2 id="user-guide">User guide</h2>
+<h3 id="requirements">Requirements</h3>
+<p>Before getting started with HYDROLIB-core, make sure you have the following software and tools installed:</p>
+<ul>
+<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/download">https://www.anaconda.com/download</a><br>
+Anaconda is an open-source distribution for Python and contains the package manager “conda”.<br>
+(!) Make sure to add Anaconda to your PATH environment variable during installation.</li>
+</ul>
+<h3 id="installation">Installation</h3>
+<p>Once you’ve installed the required software, you can create a Python 3.11 environment with HYDROLIB-core 0.5.2, the latest release.<br>
+Note that the environment that we are creating now contains not only HYDROLIB-core, but also the other packages that are needed today during the breakout sessions.</p>
+<p>Follow these steps:</p>
+<ol>
+<li>Open your command line interface</li>
+<li>Enter the following commands:</li>
+</ol>
+<pre><code>conda create --name dsd_env python=3.11 git -c conda-forge -y
+conda activate dsd_env
+pip install hydromt_delft3dfm[examples] dfm_tools pyogrio openpyxl
+conda deactivate
+</code></pre>
+<p>After executing these commands, an Anaconda environment with the latest HYDROLIB-core is created. After deactivation, you can reactivate this environment at any time by using the following command:</p>
+<pre><code>conda activate dsd_env
+</code></pre>
+<p>If you’d like to remove the environment entirely, call the following command:</p>
+<pre><code>conda remove -n dsd_env --all
+</code></pre>
+<p>This will remove all the packages in the environment and the environment folder itself.</p>
+<h3 id="run-the-demo-notebook">Run the demo notebook</h3>
+<p>We’d like to be able to run the provided demo notebook. We can set it up with the following steps:</p>
+<ol>
+<li>Open a command line in the <em>HYDROLIB-core</em> folder</li>
+<li>Activate the conda environment:</li>
+</ol>
+<pre><code>conda activate dsd_env
+</code></pre>
+<ol start="3">
+<li>And start Jupyter Notebook:</li>
+</ol>
+<pre><code>jupyter notebook
+</code></pre>
+<ol start="4">
+<li>Open the <em>demo.ipynb</em> inside the <em>demo</em> folder</li>
+</ol>
+<h2 id="cheat-sheet">Cheat sheet</h2>
+<p>In HYDROLIB-core, there is a class called FileModel, which is used to represent an individual kernel file. This class has multiple derived implementations, with each one corresponding to a specific kernel file. Every FileModel, except for the root model, is referenced within another FileModel, following the same hierarchy as the kernel files themselves.</p>
+<p>The table below contains the models relevant for today’s exercises.</p>
+<h3 id="kernel-files-vs-hydrolib-core-filemodels">Kernel files vs HYDROLIB-core FileModels</h3>
+
+<table>
+<thead>
+<tr>
+<th><strong>Kernel file</strong></th>
+<th><strong>FileModel</strong></th>
+<th><strong>File reference</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model definition file (*.mdu)</td>
+<td>FMModel</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Network file (*_net.nc)</td>
+<td>NetworkModel</td>
+<td>Model definition file &gt; geometry &gt; netFile</td>
+</tr>
+<tr>
+<td>Cross-section location file (crosloc.ini)</td>
+<td>CrossLocModel</td>
+<td>Model definition file &gt; geometry &gt; crossLocFile</td>
+</tr>
+<tr>
+<td>Cross-section definition file (crosdef.ini)</td>
+<td>CrossDefModel</td>
+<td>Model definition file &gt; geometry &gt; crossDefFile</td>
+</tr>
+<tr>
+<td>Roughness file (roughness-*.ini)</td>
+<td>FrictionModel</td>
+<td>Model definition file &gt; geometry &gt; frictFile</td>
+</tr>
+<tr>
+<td>New external forcing file (*_bnd.ext)</td>
+<td>ExtModel</td>
+<td>Model definition file &gt; external forcing &gt; extForceFileNew</td>
+</tr>
+<tr>
+<td>Boundary conditions file (*.bc)</td>
+<td>ForcingModel</td>
+<td>New external forcing file &gt; boundary &gt; forcingFile</td>
+</tr>
+<tr>
+<td>1D initial conditions field file (*.ini)</td>
+<td>OneDFieldModel</td>
+<td>Initial field file &gt; initial &gt; dataFile</td>
+</tr>
+<tr>
+<td>Initial field file (*.ini)</td>
+<td>IniFieldModel</td>
+<td>Model definition file &gt; geometry &gt; iniFieldFile</td>
+</tr>
+<tr>
+<td>Structures file (structures.ini)</td>
+<td>StructureModel</td>
+<td>Model definition file &gt; geometry &gt; structureFile</td>
+</tr>
+</tbody>
+</table><h3 id="commonly-used-functions-of-a-filemodel">Commonly used functions of a FileModel</h3>
+<p>Each FileModel offers a set of commonly used functions.</p>
+<p><strong><strong>init</strong>()</strong> — Initialize a new file model instance</p>
+<p>Parameters (all optional):</p>
+<ul>
+<li><code>filepath (Path)</code>: The file path from which the file model should be loaded. Default to None.</li>
+<li><code>resolve_casing (bool)</code>: Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.</li>
+<li><code>recurse (bool)</code>: Whether or not to recursively load the model. Defaults to True.</li>
+<li><code>path_style (str)</code>: Which path style is used in the loaded files. Options: ‘unix’, ‘windows’. Defaults to the path style that matches the current operating system.</li>
+</ul>
+<p><strong>save()</strong> — Export the file model data to a file</p>
+<p>Parameters (all optional):</p>
+<ul>
+<li><code>filepath (Path)</code>: The file path at which this model is saved. If None is specified it defaults to the filepath currently stored in the filemodel. Defaults to None.</li>
+<li><code>recurse (bool)</code>: Whether or not to recursively save all children of this file model, or only save this model. Defaults to False.</li>
+<li><code>path_style (str)</code>: With which file path style to save the model. File references will be written with the specified path style. Options: ‘unix’, ‘windows’. Defaults to the path style used by the current operating system.</li>
+</ul>
+<p><strong>show_tree()</strong> — Print the file model tree</p>
+
+    </div>
+  </div>
+</body>
+
+</html>
