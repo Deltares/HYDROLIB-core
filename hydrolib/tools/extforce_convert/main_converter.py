@@ -271,7 +271,12 @@ class ExternalForcingConverter:
 
         return new_quantity_block
 
-    def save(self, backup: bool = True, recursive: bool = True, exclude_unset: bool = False,):
+    def save(
+        self,
+        backup: bool = True,
+        recursive: bool = True,
+        exclude_unset: bool = False,
+    ):
         """Save the updated models to disk.
 
         Args:
@@ -305,12 +310,16 @@ class ExternalForcingConverter:
         if self.mdu_parser is not None:
             self.mdu_parser.save(backup=True)
 
-    def _save_inifield_model(self, backup: bool, recursive: bool, exclude_unset: bool = False):
+    def _save_inifield_model(
+        self, backup: bool, recursive: bool, exclude_unset: bool = False
+    ):
         if backup and self.inifield_model.filepath.exists():
             backup_file(self.inifield_model.filepath)
         self.inifield_model.save(recurse=recursive, exclude_unset=exclude_unset)
 
-    def _save_structure_model(self, backup: bool, recursive: bool, exclude_unset: bool = False):
+    def _save_structure_model(
+        self, backup: bool, recursive: bool, exclude_unset: bool = False
+    ):
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
         self.structure_model.save(recurse=recursive, exclude_unset=exclude_unset)
