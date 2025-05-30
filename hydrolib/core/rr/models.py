@@ -3,8 +3,7 @@
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Optional
 
-from pydantic.v1 import Field, validator
-from pydantic.v1.types import FilePath
+from pydantic import Field, FilePath, field_validator
 
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
@@ -20,7 +19,7 @@ from .serializer import write
 from .topology.models import LinkFile, NodeFile
 
 
-class ImmutableDiskOnlyFileModel(DiskOnlyFileModel, allow_mutation=False):
+class ImmutableDiskOnlyFileModel(DiskOnlyFileModel):
     """
     ImmutableDiskOnlyFileModel modifies the DiskOnlyFileModel to provide faux
     immutablitity.
@@ -28,8 +27,7 @@ class ImmutableDiskOnlyFileModel(DiskOnlyFileModel, allow_mutation=False):
     This behaviour is required for the mappix properties, which should always
     have the same name and path and should not be modified by users.
     """
-
-    pass
+    model_config = {"frozen": True}
 
 
 _mappix_paved_area_sewage_storage_name = "pvstordt.his"
@@ -58,7 +56,7 @@ def _validator_mappix_value(field_name: str, expected: str) -> classmethod:
             )
         return v
 
-    return validator(field_name, allow_reuse=True, pre=True)(validate)
+    return field_validator(field_name, mode="before")(validate)
 
 
 class RainfallRunoffModel(ParsableFileModel):
