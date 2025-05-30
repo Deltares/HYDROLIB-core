@@ -2,7 +2,7 @@ import inspect
 from typing import List, Optional
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.onedfield.models import (
@@ -53,7 +53,11 @@ class TestOneDField:
             parser.feed_line(line)
         document = parser.finalize()
 
-        fb = WrapperTest[OneDFieldBranch].parse_obj({"val": document.sections[0]}).val
+        fb = (
+            WrapperTest[OneDFieldBranch]
+            .model_validate({"val": document.sections[0]})
+            .val
+        )
 
         assert fb
         assert isinstance(fb, OneDFieldBranch)
@@ -87,18 +91,47 @@ class TestOneDField:
         assert fb.chainage == chainage
         assert fb.values == values
 
-    def test_create_a_frictbranch_with_incorrect_levels_or_locations(self):
+    @pytest.mark.parametrize(
+        "chainage,values,expected",
+        [
+            (
+                [10, 20, 30],
+                [1.5, 2.5],
+                "Number of values for values should be equal to the numlocations value (and at least 1).",
+            ),
+            (
+                [10, 20, 30],
+                [1.5, 2.5, 3.5, 4.5],
+                "Number of values for values should be equal to the numlocations value (and at least 1).",
+            ),
+            (
+                [10, 20],
+                [1.5, 2.5, 3.5],
+                "Number of values for chainage should be equal to the numlocations value.",
+            ),
+            (
+                [10, 20, 30, 40],
+                [1.5, 2.5, 3.5],
+                "Number of values for chainage should be equal to the numlocations value.",
+            ),
+        ],
+        ids=[
+            "values smaller than numlocations",
+            "values longer than numlocations",
+            "chainage shorter than numlocations",
+            "chainage longer than numlocations",
+        ],
+    )
+    def test_create_a_frictbranch_with_incorrect_levels_or_locations(
+        self, chainage, values, expected: str
+    ):
         branchid = "B1"
         with pytest.raises(ValidationError) as error:
             _ = OneDFieldBranch(
                 branchid=branchid,
-                chainage=[10, 20],  # intentional wrong len(), should be 1
-                values=[1.5, 2.5, 3.5],  # intentional wrong len(), should be 1
+                numlocations=3,
+                chainage=chainage,
+                values=values,
             )
-        expected_message0 = (
-            f"Number of values for chainage should be equal to the numlocations value."
-        )
-        expected_message1 = f"Number of values for values should be equal to the numlocations value (and at least 1)."
 
-        assert expected_message0 in str(error.value)
-        assert expected_message1 in str(error.value)
+        assert expected in str(error.value)
