@@ -244,7 +244,7 @@ class StorageNodeModel(INIModel):
         return "nodeFile"
 
     @field_validator("storagenode", mode="after")
-    def _validate(cls, storagenodes: StorageNode, info: ValidationInfo):
+    def _validate(cls, storagenodes: List[StorageNode], info: ValidationInfo):
         """Validates for each storage node whether the streetStorageArea value is provided
         when the general useStreetStorage is True and the storage node useTable is False.
         """
