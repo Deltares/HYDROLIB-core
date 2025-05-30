@@ -27,6 +27,7 @@ class ImmutableDiskOnlyFileModel(DiskOnlyFileModel):
     This behaviour is required for the mappix properties, which should always
     have the same name and path and should not be modified by users.
     """
+
     model_config = {"frozen": True}
 
 
