@@ -233,7 +233,7 @@ def validate_required_fields(
     conditional_field_name: str,
     conditional_value: Any,
     comparison_func: Callable[[Any, Any], bool] = eq,
-) -> Dict:
+):
     """
     Validates whether the specified fields are provided, if `conditional_field_name` is equal to `conditional_value`.
     The equality check can be overridden with another comparison operator function.
@@ -263,11 +263,8 @@ def validate_required_fields(
                 f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )
 
-    return values
-
 
 def validate_conditionally(
-    cls,
     values: Dict,
     root_vldt: classmethod,
     conditional_field_name: str,
@@ -279,23 +276,26 @@ def validate_conditionally(
     The equality check can be overridden with another comparison operator function.
 
     Args:
-        cls: Reference to a class.
-        values (Dict): Dictionary of input class fields.
-        root_vldt (classmethod): A root validator that is to be called *if* the condition is satisfied.
-        conditional_field_name (str): Name of the instance variable that determines whether the root validator must be called or not.
-        conditional_value (Any): Value that the conditional field should be compared with to perform this validation.
-        comparison_func (Callable): Binary operator function, used to override the default "eq" check for the conditional field value.
+        values (Dict):
+            Dictionary of input class fields.
+        root_vldt (classmethod):
+            A root validator that is to be called *if* the condition is satisfied.
+        conditional_field_name (str):
+            Name of the instance variable that determines whether the root validator must be called or not.
+        conditional_value (Any):
+            Value that the conditional field should be compared with to perform this validation.
+        comparison_func (Callable):
+            Binary operator function, used to override the default "eq" check for the conditional field value.
 
     Returns:
-        Dict: Validated dictionary of input class fields.
+        Dict:
+            Validated dictionary of input class fields.
     """
     if (val := values.get(conditional_field_name)) is not None and comparison_func(
         val, conditional_value
     ):
         # Condition is met: call the actual root validator, passing on the attribute values.
-        root_vldt.__func__(cls, values)
-
-    return values
+        root_vldt(values)
 
 
 def validate_datetime_string(

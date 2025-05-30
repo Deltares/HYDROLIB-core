@@ -121,7 +121,10 @@ class INIBasedModel(BaseModel, ABC):
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
     model_config = ConfigDict(
-        extra="ignore", arbitrary_types_allowed=False, populate_by_name=True
+        extra="ignore",
+        arbitrary_types_allowed=False,
+        populate_by_name=True,
+        error_url_template=None,
     )
 
     @classmethod
