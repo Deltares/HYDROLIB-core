@@ -13,7 +13,6 @@ from tests.utils import (
 
 
 class TestNode:
-
     def test_create_node(self):
         node = Node(**create_node_values())
 
