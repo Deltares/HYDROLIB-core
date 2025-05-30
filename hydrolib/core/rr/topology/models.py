@@ -1,8 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.fields import Field
+from pydantic import Field, model_validator
 
 from hydrolib.core.base.models import (
     BaseModel,
@@ -43,7 +42,7 @@ class Node(BaseModel):
     """Represents a node from the topology node file."""
 
     id: str = Field(alias="id")
-    name: Optional[str] = Field(alias="nm")
+    name: Optional[str] = Field(None, alias="nm")
     branchid: int = Field(alias="ri")
     modelnodetype: int = Field(alias="mt")
     netternodetype: int = Field(alias="nt")
@@ -58,7 +57,7 @@ class Node(BaseModel):
         kwargs["by_alias"] = True
         return super().dict(*args, **kwargs)
 
-    @root_validator()
+    @model_validator(mode="before")
     @classmethod
     def _validate_node_type(cls, values):
 
@@ -124,7 +123,7 @@ class NodeFile(ParsableFileModel):
     """Represents the file with the RR node topology data."""
 
     _parser = NetworkTopologyFileParser(enclosing_tag="node")
-    node: List[Node] = Field([], alias="node")
+    node: List[Node] = Field(default_factory=list, alias="node")
 
     @classmethod
     def _ext(cls) -> str:
@@ -149,7 +148,7 @@ class Link(BaseModel):
     """Represents a link from the topology link file."""
 
     id: str = Field(alias="id")
-    name: Optional[str] = Field(alias="nm")
+    name: Optional[str] = Field(None, alias="nm")
     branchid: int = Field(alias="ri")
     modellinktype: int = Field(alias="mt")
     branchtype: int = Field(alias="bt")
