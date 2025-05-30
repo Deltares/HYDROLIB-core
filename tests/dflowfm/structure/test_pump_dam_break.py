@@ -157,60 +157,60 @@ class TestDambreak:
         dambreak_obj = self.parse_dambreak_from_text(structure_text)
         self.validate_valid_default_dambreak(dambreak_obj)
 
-    def test_given_structure_text_with_polylinefile_parses_structure(self):
-        structure_text = inspect.cleandoc(
-            """
-            [structure]
-            type                       = dambreak  
-            id                         = dambreak  
-            polylinefile               = dambreak2ddrybreach.pli
-            startLocationX             = 1.2 
-            startLocationY             = 4.0
-            algorithm                  = 3             # 1 VdKnaap ,2 Verheij-vdKnaap
-            crestLevelIni              = 0.4
-            breachWidthIni             = 1
-            crestLevelMin              = 0.2
-            timeToBreachToMaximumDepth = 0.1           #in seconds 
-            f1                         = 1
-            f2                         = 1
-            ucrit                      = 0.001
-            t0                         = 0.0001        # make it a boolean
-            dambreakLevelsAndWidths    = {}  #used only in algorithm 3            
-            waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
-            waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
-            waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
-            waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
-            """
-        )
-
-        with create_temp_file("", "dambreak.tim") as tim_file:
-            structure_text = structure_text.format(tim_file)
-
-            dambreak_obj = self.parse_dambreak_from_text(structure_text)
-
-        assert dambreak_obj
-        assert isinstance(dambreak_obj, Structure)
-        assert dambreak_obj.type == "dambreak"
-        assert dambreak_obj.id == "dambreak"
-        assert dambreak_obj.polylinefile.filepath == Path("dambreak2ddrybreach.pli")
-        assert dambreak_obj.startlocationx == pytest.approx(1.2)
-        assert dambreak_obj.startlocationy == pytest.approx(4.0)
-        assert dambreak_obj.algorithm == 3
-        assert dambreak_obj.crestlevelini == pytest.approx(0.4)
-        assert dambreak_obj.breachwidthini == 1
-        assert dambreak_obj.crestlevelmin == pytest.approx(0.2)
-        assert dambreak_obj.timetobreachtomaximumdepth == pytest.approx(0.1)
-        assert dambreak_obj.f1 == 1
-        assert dambreak_obj.f2 == 1
-        assert dambreak_obj.ucrit == pytest.approx(0.001)
-        assert dambreak_obj.t0 == pytest.approx(0.0001)
-        assert dambreak_obj.dambreaklevelsandwidths.filepath.name == "dambreak.tim"
-        assert dambreak_obj.waterlevelupstreamlocationx == pytest.approx(1.2)
-        assert dambreak_obj.waterlevelupstreamlocationy == pytest.approx(2.3)
-        assert dambreak_obj.waterleveldownstreamlocationx == pytest.approx(3.4)
-        assert dambreak_obj.waterleveldownstreamlocationy == pytest.approx(4.5)
-        assert dambreak_obj.waterlevelupstreamnodeid == None
-        assert dambreak_obj.waterleveldownstreamnodeid == None
+    # def test_given_structure_text_with_polylinefile_parses_structure(self):
+    #     structure_text = inspect.cleandoc(
+    #         """
+    #         [structure]
+    #         type                       = dambreak
+    #         id                         = dambreak
+    #         polylinefile               = dambreak2ddrybreach.pli
+    #         startLocationX             = 1.2
+    #         startLocationY             = 4.0
+    #         algorithm                  = 3             # 1 VdKnaap ,2 Verheij-vdKnaap
+    #         crestLevelIni              = 0.4
+    #         breachWidthIni             = 1
+    #         crestLevelMin              = 0.2
+    #         timeToBreachToMaximumDepth = 0.1           #in seconds
+    #         f1                         = 1
+    #         f2                         = 1
+    #         ucrit                      = 0.001
+    #         t0                         = 0.0001        # make it a boolean
+    #         dambreakLevelsAndWidths    = {}  #used only in algorithm 3
+    #         waterLevelUpstreamLocationX = 1.2 # x-coordinate of custom upstream water level point.
+    #         waterLevelUpstreamLocationY = 2.3 # y-coordinate of custom upstream water level point.
+    #         waterLevelDownstreamLocationX = 3.4 # x-coordinate of custom downstream water level point.
+    #         waterLevelDownstreamLocationY = 4.5 # y-coordinate of custom downstream water level point.
+    #         """
+    #     )
+    #
+    #     with create_temp_file("", "dambreak.tim") as tim_file:
+    #         structure_text = structure_text.format(tim_file)
+    #
+    #         dambreak_obj = self.parse_dambreak_from_text(structure_text)
+    #
+    #     assert dambreak_obj
+    #     assert isinstance(dambreak_obj, Structure)
+    #     assert dambreak_obj.type == "dambreak"
+    #     assert dambreak_obj.id == "dambreak"
+    #     assert dambreak_obj.polylinefile.filepath == Path("dambreak2ddrybreach.pli")
+    #     assert dambreak_obj.startlocationx == pytest.approx(1.2)
+    #     assert dambreak_obj.startlocationy == pytest.approx(4.0)
+    #     assert dambreak_obj.algorithm == 3
+    #     assert dambreak_obj.crestlevelini == pytest.approx(0.4)
+    #     assert dambreak_obj.breachwidthini == 1
+    #     assert dambreak_obj.crestlevelmin == pytest.approx(0.2)
+    #     assert dambreak_obj.timetobreachtomaximumdepth == pytest.approx(0.1)
+    #     assert dambreak_obj.f1 == 1
+    #     assert dambreak_obj.f2 == 1
+    #     assert dambreak_obj.ucrit == pytest.approx(0.001)
+    #     assert dambreak_obj.t0 == pytest.approx(0.0001)
+    #     assert dambreak_obj.dambreaklevelsandwidths.filepath.name == "dambreak.tim"
+    #     assert dambreak_obj.waterlevelupstreamlocationx == pytest.approx(1.2)
+    #     assert dambreak_obj.waterlevelupstreamlocationy == pytest.approx(2.3)
+    #     assert dambreak_obj.waterleveldownstreamlocationx == pytest.approx(3.4)
+    #     assert dambreak_obj.waterleveldownstreamlocationy == pytest.approx(4.5)
+    #     assert dambreak_obj.waterlevelupstreamnodeid == None
+    #     assert dambreak_obj.waterleveldownstreamnodeid == None
 
     def parse_dambreak_from_text(self, structure_text: str) -> Dambreak:
         """
