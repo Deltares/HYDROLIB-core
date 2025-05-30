@@ -346,7 +346,7 @@ class TestGeneralStructure:
         assert struct.name == "extravagante_waarde"
         assert struct.branchid == "stump"
         assert struct.chainage == pytest.approx(13.53)
-        assert struct.type == "generalStructure"
+        assert struct.type == "generalstructure"
         assert struct.allowedflowdir == FlowDirection.positive
         assert struct.upstream1width == pytest.approx(111.0)
         assert struct.upstream1level == pytest.approx(112.0)
