@@ -535,7 +535,7 @@ class TestLongCulvert:
         lc = LongCulvert(**longculvert_values)
         assert lc.id == "lc1"
         assert lc.name == "Long Culvert 1"
-        assert lc.type == "longCulvert"
+        assert lc.type == "longculvert"
         assert lc.numcoordinates == 2
         assert lc.xcoordinates == [6.515339, 44.636787]
         assert lc.ycoordinates == [25.151608, 25.727361]
