@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Optional
 
-from pydantic import Field, FilePath, field_validator
+from pydantic import Field, FilePath, field_validator, model_validator
 
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
@@ -50,7 +50,7 @@ _mappix_salt_concentrations_name = "saltdt.his"
 
 def _validator_mappix_value(field_name: str, expected: str) -> classmethod:
     def validate(v: Any) -> Any:
-        if v != expected:
+        if str(v.filepath) != expected:
             actual_value = v or "None"
             raise ValueError(
                 f"Expected a value of '{expected}' for '{field_name}' but got '{actual_value}'. Mappix values should not be changed."
@@ -384,10 +384,10 @@ class RainfallRunoffModel(ParsableFileModel):
     balance_file: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(Path("3b_bal.out"))
     )
-    his_3B_area_length: DiskOnlyFileModel = Field(
+    his_3b_area_length: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(Path("3bareas.his"))
     )
-    his_3B_structure_data: DiskOnlyFileModel = Field(
+    his_3b_structure_data: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(Path("3bstrdim.his"))
     )
     his_rr_runoff: DiskOnlyFileModel = Field(
@@ -512,10 +512,64 @@ class RainfallRunoffModel(ParsableFileModel):
         default_factory=lambda: DiskOnlyFileModel(filepath=None)
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_diskonlyfilemodel(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Ensure that all DiskOnlyFileModel fields are set to a default value if None."""
+        for key, value in values.items():
+            field = cls.model_fields.get(key)
+            if (
+                field is not None
+                and field.annotation is DiskOnlyFileModel
+                and isinstance(value, (str, Path))
+            ):
+                values[key] = DiskOnlyFileModel(Path(value))
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_immutable_diskonlyfilemodel(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Ensure that all DiskOnlyFileModel fields are set to a default value if None."""
+        for key, value in values.items():
+            field = cls.model_fields.get(key)
+            if (
+                field is not None
+                and field.annotation is ImmutableDiskOnlyFileModel
+                and isinstance(value, (str, Path))
+            ):
+                values[key] = ImmutableDiskOnlyFileModel(Path(value))
+        return values
+
+    @field_validator("node_data", mode="before")
+    @classmethod
+    def _validate_node_data(cls, value: Optional[str]) -> Optional[NodeFile]:
+        """Ensure that node_data is set to parsed to a model if not none."""
+        if value and isinstance(value, (str, Path)):
+            return NodeFile(Path(value))
+        return value
+
+    @field_validator("link_data", mode="before")
+    @classmethod
+    def _validate_node_data(cls, value: Optional[str]) -> Optional[LinkFile]:
+        """Ensure that link_data is set to parsed to a model if not none."""
+        if value and isinstance(value, (str, Path)):
+            return LinkFile(Path(value))
+        return value
+
+    @field_validator("bui_file", mode="before")
+    @classmethod
+    def _validate_node_data(cls, value: Optional[str]) -> Optional[BuiModel]:
+        """Ensure that bui_file is set to parsed to a model if not none."""
+        if value and isinstance(value, (str, Path)):
+            return BuiModel(Path(value))
+        return value
+
     @classmethod
     def property_keys(cls) -> Iterable[str]:
         # Skip first two elements corresponding with file_path and serializer_config introduced by the FileModel.
-        return list(cls.schema()["properties"].keys())[2:]
+        return list(cls.model_json_schema()["properties"].keys())[2:]
 
     @classmethod
     def _ext(cls) -> str:
