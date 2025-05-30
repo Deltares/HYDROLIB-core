@@ -47,7 +47,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          poetry run pytest -vvv tests/base tests/dflowfm/ini tests/dflowfm/test_friction.py tests/dflowfm/test_cmp.py tests/dflowfm/polyfile tests/dflowfm/t3d tests/dflowfm/test_tim.py tests/dflowfm/test_tim.py tests/dflowfm/test_xyn.py tests/dflowfm/test_xyz.py tests/dflowfm/test_crosssection.py tests/dflowfm/extold tests/dflowfm/net tests/dflowfm/bc tests/dflowfm/test_gui.py tests/dflowfm/ext tests/dflowfm/test_inifield.py tests/dflowfm/test_obscrosssection.py tests/dflowfm/test_obs.py tests/rr
+          poetry run pytest -vvv tests/base tests/dflowfm/ini tests/dflowfm/test_friction.py tests/dflowfm/test_cmp.py tests/dflowfm/polyfile tests/dflowfm/t3d tests/dflowfm/test_tim.py tests/dflowfm/test_tim.py tests/dflowfm/test_xyn.py tests/dflowfm/test_xyz.py tests/dflowfm/test_crosssection.py tests/dflowfm/extold tests/dflowfm/net tests/dflowfm/bc tests/dflowfm/test_gui.py tests/dflowfm/ext tests/dflowfm/test_inifield.py tests/dflowfm/test_obscrosssection.py tests/dflowfm/test_obs.py tests/dflowfm/structure tests/dflowfm/test_onedfield.py tests/dflowfm/test_storagenode.py tests/rr
 
       - name: Autoformat code if the check fails
         if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.python-version == 3.13) }}

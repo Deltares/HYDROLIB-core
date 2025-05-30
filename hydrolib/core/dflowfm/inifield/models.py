@@ -199,7 +199,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
             data_file = DiskOnlyFileModel(data_file)
             values["datafile"] = data_file
 
-        values = validate_required_fields(
+        validate_required_fields(
             values,
             "value",
             conditional_field_name="datafiletype",
