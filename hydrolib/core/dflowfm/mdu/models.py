@@ -1,11 +1,12 @@
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union, get_args, get_origin
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
+    BaseModel,
     DiskOnlyFileModel,
     FileModel,
     validator_set_default_disk_only_file_model_when_none,
@@ -657,6 +658,14 @@ class Sediment(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile"
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_sediment_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Resolve the sediment model based on the sedimentmodelnr.
+        """
+        return ModelFieldResolver.resolve(cls, values)
+
 
 class Wind(INIBasedModel):
     """
@@ -879,6 +888,14 @@ class Restart(INIBasedModel):
     )
     restartdatetime: Optional[str] = Field("", alias="restartDateTime")
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_restart_file(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Resolve the restartfile field to the correct type.
+        """
+        return ModelFieldResolver.resolve(cls, values)
+
     @field_validator("restartdatetime", mode="before")
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
@@ -933,6 +950,14 @@ class ExternalForcing(INIBasedModel):
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_ext_force_file(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Resolve the extforcefile and extforcefilenew fields to the correct type.
+        """
+        return ModelFieldResolver.resolve(cls, values)
 
 
 class Hydrology(INIBasedModel):
@@ -1712,6 +1737,11 @@ class Output(INIBasedModel):
         [0.0], alias="VelocityMagnitudeClasses"
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_output_fields(cls, values: dict) -> dict:
+        return ModelFieldResolver.resolve(cls, values)
+
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
         "waterdepthclasses",
@@ -2092,6 +2122,14 @@ class Geometry(INIBasedModel):
         0.1, alias="uniformWidth1DRoofGutterPipes"
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_geometry_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Resolve the geometry fields to ensure that the correct types are used.
+        """
+        return ModelFieldResolver.resolve(cls, values)
+
     _split_to_list = get_split_string_on_delimiter_validator(
         "frictfile",
         "structurefile",
@@ -2144,6 +2182,11 @@ class Calibration(INIBasedModel):
     areafile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile"
     )
+
+    @model_validator(mode="after")
+    @classmethod
+    def resolve_calibration_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        return ModelFieldResolver.resolve(cls, values)
 
 
 class InfiltrationMethod(IntEnum):
@@ -2307,6 +2350,12 @@ class Processes(INIBasedModel):
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_processes_fields(cls, values: dict) -> dict:
+        """Resolve model fields to their respective model classes."""
+        return ModelFieldResolver.resolve(cls, values)
+
 
 class ParticlesThreeDType(IntEnum):
     """
@@ -2364,6 +2413,12 @@ class Particles(INIBasedModel):
     threedtype: Optional[ParticlesThreeDType] = Field(
         ParticlesThreeDType.DepthAveraged, alias="3Dtype"
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_particles_fields(cls, values: dict) -> dict:
+        """Resolve model fields to their respective model classes."""
+        return ModelFieldResolver.resolve(cls, values)
 
 
 class VegetationModelNr(IntEnum):
@@ -2461,6 +2516,12 @@ class FMModel(INIModel):
     def _filename(cls) -> str:
         return "fm"
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_fmmodel_fields(cls, values: dict) -> dict:
+        """Resolve model fields to their respective model classes."""
+        return ModelFieldResolver.resolve(cls, values)
+
     @FileModel._relative_mode.getter
     def _relative_mode(self) -> ResolveRelativeMode:
         # This method overrides the _relative_mode property of the FileModel:
@@ -2502,3 +2563,66 @@ class FMModel(INIModel):
             return ResolveRelativeMode.ToAnchor
         else:
             return ResolveRelativeMode.ToParent
+
+
+class ModelFieldResolver:
+    @staticmethod
+    def get_model_class(annotation):
+        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+            return annotation
+        origin = get_origin(annotation)
+        if origin is Union:
+            args = [a for a in get_args(annotation) if a is not type(None)]
+            if (
+                len(args) == 1
+                and isinstance(args[0], type)
+                and issubclass(args[0], BaseModel)
+            ):
+                return args[0]
+        return None
+
+    @staticmethod
+    def get_list_model_class(annotation):
+        origin = get_origin(annotation)
+        if origin is list or origin is List:
+            args = get_args(annotation)
+            if (
+                len(args) == 1
+                and isinstance(args[0], type)
+                and issubclass(args[0], BaseModel)
+            ):
+                return args[0]
+        if origin is Union:
+            args = [a for a in get_args(annotation) if a is not type(None)]
+            if len(args) == 1:
+                return ModelFieldResolver.get_list_model_class(args[0])
+        return None
+
+    @staticmethod
+    def resolve_list_field(list_model_cls, value):
+        """Convert value to a list of model instances if needed."""
+        if isinstance(value, list):
+            return [
+                v if isinstance(v, list_model_cls) else list_model_cls(v) for v in value
+            ]
+        elif isinstance(value, (str, Path)):
+            return [list_model_cls(value)]
+        return value
+
+    @classmethod
+    def resolve(cls, model_cls, values: dict) -> dict:
+        for key, value in list(values.items()):
+            field = model_cls.model_fields.get(key)
+            if field is None:
+                continue
+            # Handle List[Model] and Optional[List[Model]]
+            list_model_cls = cls.get_list_model_class(field.annotation)
+            if list_model_cls:
+                values[key] = cls.resolve_list_field(list_model_cls, value)
+                continue
+
+            # Handle Model and Optional[Model]
+            model_cls_ = cls.get_model_class(field.annotation)
+            if model_cls_ and isinstance(value, (str, Path)):
+                values[key] = model_cls_(value)
+        return values
