@@ -175,7 +175,7 @@ def test_read_structures_missing_structure_field_raises_correct_error():
 
     filepath = invalid_test_data_dir / file
 
-    with pytest.raises(ValueError) as error:
+    with pytest.raises(ValueError):
         StructureModel(filepath)
 
 
