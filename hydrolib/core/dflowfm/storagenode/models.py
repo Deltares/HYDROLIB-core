@@ -178,45 +178,46 @@ class StorageNode(INIBasedModel):
     )
 
     @model_validator(mode="after")
-    def check_list_length_levels(cls, values):
+    def check_list_length_levels(cls, values: "StorageNode") -> "StorageNode":
         """Validates that the length of the levels field is as expected."""
-        if isinstance(values, StorageNode):
-            values = values.model_dump()
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            values.model_dump(),
             "levels",
             "storagearea",
             length_name="numlevels",
             list_required_with_length=True,
         )
+        return values
 
-    @model_validator(mode="before")
+    @model_validator(mode="after")
     def validate_that_required_fields_are_present_when_using_tables(
-        cls, values: Dict
-    ) -> Dict:
+        cls, values: "StorageNode"
+    ) -> "StorageNode":
         """Validates that the specified fields are present when the usetable field is also present."""
-        return validate_required_fields(
-            values,
+        validate_required_fields(
+            values.model_dump(),
             "numlevels",
             "levels",
             "storagearea",
             conditional_field_name="usetable",
             conditional_value=True,
         )
+        return values
 
-    @model_validator(mode="before")
+    @model_validator(mode="after")
     def validate_that_required_fields_are_present_when_not_using_tables(
-        cls, values: Dict
-    ) -> Dict:
+        cls, values: "StorageNode"
+    ) -> "StorageNode":
         """Validates that the specified fields are present."""
-        return validate_required_fields(
-            values,
+        validate_required_fields(
+            values.model_dump(),
             "bedlevel",
             "area",
             "streetlevel",
             conditional_field_name="usetable",
             conditional_value=False,
         )
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
