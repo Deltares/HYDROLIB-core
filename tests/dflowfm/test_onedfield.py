@@ -53,7 +53,11 @@ class TestOneDField:
             parser.feed_line(line)
         document = parser.finalize()
 
-        fb = WrapperTest[OneDFieldBranch].parse_obj({"val": document.sections[0]}).val
+        fb = (
+            WrapperTest[OneDFieldBranch]
+            .model_validate({"val": document.sections[0]})
+            .val
+        )
 
         assert fb
         assert isinstance(fb, OneDFieldBranch)
