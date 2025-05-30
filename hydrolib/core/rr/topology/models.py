@@ -53,9 +53,9 @@ class Node(BaseModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("nm")
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["by_alias"] = True
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
     @model_validator(mode="before")
     @classmethod
@@ -159,9 +159,9 @@ class Link(BaseModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("nm")
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["by_alias"] = True
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
 
 class LinkFile(ParsableFileModel):

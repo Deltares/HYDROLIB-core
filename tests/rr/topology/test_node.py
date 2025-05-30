@@ -13,6 +13,7 @@ from tests.utils import (
 
 
 class TestNode:
+
     def test_create_node(self):
         node = Node(**create_node_values())
 
@@ -117,7 +118,7 @@ class TestNodeFile:
         data = create_node_values()
         node = Node(**data)
 
-        result = node.dict()
+        result = node.model_dump()
 
         assert result == data
 
