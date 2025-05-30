@@ -1,13 +1,27 @@
 import inspect
-import pytest
-from typing import Dict, Any
-from hydrolib.core.dflowfm.structure.models import (
-    Bridge, FlowDirection, FrictionType, Structure, DambreakAlgorithm, Orifice, Weir, LongCulvert, Culvert, CulvertSubType
-)
-from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from typing import Any, Dict
 
+import pytest
+
+from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolib.core.dflowfm.structure.models import (
+    Bridge,
+    Culvert,
+    CulvertSubType,
+    DambreakAlgorithm,
+    FlowDirection,
+    FrictionType,
+    LongCulvert,
+    Orifice,
+    Structure,
+    Weir,
+)
+from tests.dflowfm.structure.test_structure import (
+    _get_allowedflowdir_cases,
+    create_structure_values,
+    uniqueid_str,
+)
 from tests.utils import WrapperTest
-from tests.dflowfm.structure.test_structure import create_structure_values, uniqueid_str, _get_allowedflowdir_cases
 
 
 class TestBridge:
@@ -52,8 +66,8 @@ class TestBridge:
         assert bridge.friction == 70
         assert bridge.length == 100
         assert (
-                bridge.comments.name
-                == "B stands for Bridge, 003 because we expect to have at most 999 weirs"
+            bridge.comments.name
+            == "B stands for Bridge, 003 because we expect to have at most 999 weirs"
         )
 
         assert bridge.comments.id == uniqueid_str
@@ -208,7 +222,7 @@ class TestDambreakAlgorithm:
         ],
     )
     def test_get_enum_as_str_returns_description(
-            self, enum_value: int, enum_description: str
+        self, enum_value: int, enum_description: str
     ):
         assert DambreakAlgorithm(enum_value).description == enum_description
 
@@ -251,7 +265,6 @@ class TestOrifice:
 
         with pytest.raises(ValueError):
             Orifice(**values)
-
 
     @pytest.mark.parametrize(
         "input,expected",
@@ -328,8 +341,8 @@ class TestWeir:
         assert weir.crestwidth == pytest.approx(3.45)
         assert weir.usevelocityheight == True
         assert (
-                weir.comments.name
-                == "W stands for weir, 003 because we expect to have at most 999 weirs"
+            weir.comments.name
+            == "W stands for weir, 003 because we expect to have at most 999 weirs"
         )
 
         assert weir.comments.id == uniqueid_str
@@ -538,28 +551,28 @@ class TestLongCulvert:
         ["numcoordinates", "xcoordinates", "ycoordinates"],
     )
     def test_missing_coordinates_raises(
-            self, missing_field, longculvert_values: Dict[str, Any]
+        self, missing_field, longculvert_values: Dict[str, Any]
     ):
         del longculvert_values[missing_field]
         with pytest.raises(ValueError):
             LongCulvert(**longculvert_values)
 
     def test_invalid_coordinates_length_raises(
-            self, longculvert_values: Dict[str, Any]
+        self, longculvert_values: Dict[str, Any]
     ):
         longculvert_values["numcoordinates"] = 3
         with pytest.raises(ValueError):
             LongCulvert(**longculvert_values)
 
     def test_invalid_zcoordinates_length_raises(
-            self, longculvert_values: Dict[str, Any]
+        self, longculvert_values: Dict[str, Any]
     ):
         longculvert_values["zcoordinates"] = [-0.3, -0.3, -0.4]
         with pytest.raises(ValueError):
             LongCulvert(**longculvert_values)
 
     def test_create_longculvert_without_zcoordinates(
-            self, longculvert_values: Dict[str, Any]
+        self, longculvert_values: Dict[str, Any]
     ):
         del longculvert_values["zcoordinates"]
 

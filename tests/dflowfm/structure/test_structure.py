@@ -1,9 +1,10 @@
 import inspect
 from typing import Any, Dict, List, Union
+from unittest.mock import MagicMock
 
 import pytest
 from pydantic import ValidationError
-from unittest.mock import MagicMock
+
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.structure.models import (
@@ -17,23 +18,28 @@ from hydrolib.core.dflowfm.structure.models import (
     UniversalWeir,
     Weir,
 )
-
-from tests.utils import (
-    WrapperTest,
-    invalid_test_data_dir,
-    test_data_dir,
-)
+from tests.utils import WrapperTest, invalid_test_data_dir, test_data_dir
 
 uniqueid_str = "Unique structure id (max. 256 characters)."
 
 
-def mock_structure_check_location(dict_values: Dict[str, Any], structure_type=Structure) -> MagicMock:
+def mock_structure_check_location(
+    dict_values: Dict[str, Any], structure_type=Structure
+) -> MagicMock:
     mock_structure = MagicMock(spec=structure_type)
     mock_structure.model_dump.return_value = dict_values
-    mock_structure.check_location = Structure.check_location.__get__(mock_structure, Structure)
-    mock_structure.validate_coordinates_in_model = Structure.validate_coordinates_in_model
-    mock_structure.validate_branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model
-    mock_structure.__class__ = structure_type  # Ensure the mock is treated as a Structure instance
+    mock_structure.check_location = Structure.check_location.__get__(
+        mock_structure, Structure
+    )
+    mock_structure.validate_coordinates_in_model = (
+        Structure.validate_coordinates_in_model
+    )
+    mock_structure.validate_branch_and_chainage_in_model = (
+        Structure.validate_branch_and_chainage_in_model
+    )
+    mock_structure.__class__ = (
+        structure_type  # Ensure the mock is treated as a Structure instance
+    )
     return mock_structure
 
 
@@ -157,7 +163,9 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
     ]
 
     for val, expected in zip(wrapper.val, expected_structures):
-        assert val.model_dump(exclude={"datablock", "type"}) == expected.model_dump(exclude={"type"})
+        assert val.model_dump(exclude={"datablock", "type"}) == expected.model_dump(
+            exclude={"type"}
+        )
 
 
 def test_read_structures_missing_structure_field_raises_correct_error():
@@ -208,7 +216,9 @@ def test_create_structure_without_type(locfields_structure):
         ("Orifice", "orifice"),
     ],
 )
-def test_parses_structure_type_case_insensitive(locfields_structure, structure_type, expected):
+def test_parses_structure_type_case_insensitive(
+    locfields_structure, structure_type, expected
+):
     structure = Structure(type=structure_type, **locfields_structure)
 
     assert structure.type == expected
@@ -233,7 +243,6 @@ def _get_allowedflowdir_cases() -> List:
         ("NEGATIVE", "negative"),
         ("Both", "both"),
     ]
-
 
 
 @pytest.mark.parametrize(
@@ -337,7 +346,9 @@ class TestRootValidator:
     in the Structure class
     """
 
-    long_culvert_err = "Specify location by setting `num/x/yCoordinates` for a LongCulvert structure."
+    long_culvert_err = (
+        "Specify location by setting `num/x/yCoordinates` for a LongCulvert structure."
+    )
     dambreak_err = "Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a Dambreak structure."
     structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
 
@@ -400,12 +411,12 @@ class TestRootValidator:
                 id="Dambreak raises.",
             ),
             pytest.param(
-                "compound", None, id="Compound DOES NOT raise." # does_not_raise(),
+                "compound", None, id="Compound DOES NOT raise."  # does_not_raise(),
             ),
         ],
     )
     def test_check_location_given_no_values_raises_expectation(
-            self, structure_type, error_mssg: str
+        self, structure_type, error_mssg: str
     ):
         input_dict = dict(
             notAValue="Not a relevant value 1",
@@ -434,9 +445,10 @@ class TestRootValidator:
             branchid=None,
             chainage=None,
         )
-        mock_structure = mock_structure_check_location(input_dict, structure_type=Compound)
+        mock_structure = mock_structure_check_location(
+            input_dict, structure_type=Compound
+        )
         assert mock_structure.check_location()
-
 
     def test_check_location_given_compound_structure_raises_error(self):
         input_dict = dict(
@@ -470,20 +482,18 @@ class TestRootValidator:
             pytest.param(
                 dict(branchid="aValue", chainage=None), id="Chainage is None."
             ),
-            pytest.param(
-                dict(branchid="", chainage=2.4), id="Only chainage value."
-            ),
+            pytest.param(dict(branchid="", chainage=2.4), id="Only chainage value."),
         ],
     )
     def test_check_location_given_invalid_branchid_chainage_raises_value_error(
-            self, dict_values: dict
+        self, dict_values: dict
     ):
         with pytest.raises(ValueError) as exc_err:
             mock_structure = mock_structure_check_location(dict_values)
             mock_structure.check_location()
         assert (
-                str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchId key is specified."
+            str(exc_err.value)
+            == "A valid value for branchId and chainage is required when branchId key is specified."
         )
 
     wrong_coord_test_cases = [
@@ -506,7 +516,7 @@ class TestRootValidator:
         wrong_coord_test_cases,
     )
     def test_check_location_given_invalid_coordinates_raises_assertion_error(
-            self, x_coords: List[float], y_coords: List[float]
+        self, x_coords: List[float], y_coords: List[float]
     ):
         n_coords = 2
         dict_values = dict(
@@ -520,8 +530,8 @@ class TestRootValidator:
             mock_structure.check_location()
 
         assert (
-                str(exc_err.value)
-                == f"Expected {n_coords} coordinates, given {len(x_coords)} for xCoordinates and {len(y_coords)} for yCoordinates."
+            str(exc_err.value)
+            == f"Expected {n_coords} coordinates, given {len(x_coords)} for xCoordinates and {len(y_coords)} for yCoordinates."
         )
 
     @pytest.mark.parametrize(
@@ -559,7 +569,7 @@ class TestValidateBranchAndChainageInModel:
         ],
     )
     def test_given_valid_values_returns_expectation(
-            self, branch_id: str, chainage: float, expectation: bool
+        self, branch_id: str, chainage: float, expectation: bool
     ):
         dict_values = dict(branchid=branch_id, chainage=chainage)
         validation = Structure.validate_branch_and_chainage_in_model(dict_values)
@@ -578,8 +588,8 @@ class TestValidateBranchAndChainageInModel:
         with pytest.raises(ValueError) as exc_err:
             Structure.validate_branch_and_chainage_in_model(dict_values)
         assert (
-                str(exc_err.value)
-                == "A valid value for branchId and chainage is required when branchId key is specified."
+            str(exc_err.value)
+            == "A valid value for branchId and chainage is required when branchId key is specified."
         )
 
 
@@ -626,7 +636,7 @@ class TestValidateCoordinatesInModel:
         ],
     )
     def test_given_valid_values_returns_expectation(
-            self, dict_values: dict, expectation: bool
+        self, dict_values: dict, expectation: bool
     ):
         validation = Structure.validate_coordinates_in_model(dict_values)
         assert validation == expectation
@@ -641,8 +651,8 @@ class TestValidateCoordinatesInModel:
                 )
             )
         assert (
-                str(exc_err.value)
-                == "Expected 2 coordinates, given 3 for xCoordinates and 4 for yCoordinates."
+            str(exc_err.value)
+            == "Expected 2 coordinates, given 3 for xCoordinates and 4 for yCoordinates."
         )
 
     @pytest.mark.parametrize("n_coords", [(0), (1)])
@@ -656,6 +666,6 @@ class TestValidateCoordinatesInModel:
                 )
             )
         assert (
-                str(exc_err.value)
-                == f"Expected at least 2 coordinates, but only {n_coords} declared."
+            str(exc_err.value)
+            == f"Expected at least 2 coordinates, but only {n_coords} declared."
         )
