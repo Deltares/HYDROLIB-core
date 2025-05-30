@@ -194,7 +194,7 @@ class StorageNode(INIBasedModel):
         cls, values: Dict
     ) -> Dict:
         """Validates that the specified fields are present when the usetable field is also present."""
-        return validate_required_fields(
+        validate_required_fields(
             values,
             "numlevels",
             "levels",
@@ -202,13 +202,14 @@ class StorageNode(INIBasedModel):
             conditional_field_name="usetable",
             conditional_value=True,
         )
+        return values
 
     @root_validator(allow_reuse=True)
     def validate_that_required_fields_are_present_when_not_using_tables(
         cls, values: Dict
     ) -> Dict:
         """Validates that the specified fields are present."""
-        return validate_required_fields(
+        validate_required_fields(
             values,
             "bedlevel",
             "area",
@@ -216,6 +217,7 @@ class StorageNode(INIBasedModel):
             conditional_field_name="usetable",
             conditional_value=False,
         )
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")

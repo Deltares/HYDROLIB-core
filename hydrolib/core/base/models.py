@@ -68,6 +68,7 @@ class BaseModel(PydanticBaseModel):
         "extra": "forbid",  # will throw errors so we can fix our models
         "populate_by_name": True,
         "alias_generator": to_key,
+        "error_url_template": None,
     }
 
     def __init__(self, **data: Any) -> None:
@@ -95,9 +96,14 @@ class BaseModel(PydanticBaseModel):
                 # If there is an identifier, include this in the ValidationError messages.
                 # Create a new ValidationError with the identifier as the location
                 errors = e.errors()
+                title = e.title or "Validation Error"
                 for error in errors:
                     error["loc"] = (identifier,) + tuple(error.get("loc", ()))
-                raise ValidationError.from_exception_data(title="", line_errors=errors)
+                    error.pop("url", None)
+
+                raise ValidationError.from_exception_data(
+                    title=title, line_errors=errors
+                )
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
